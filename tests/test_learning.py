@@ -695,6 +695,70 @@ class LearningTests(unittest.TestCase):
             self.assertEqual(payload["summary"]["subtype_matches"]["matched"], 3)
             self.assertTrue(Path(payload["output_path"]).exists())
 
+    def test_compare_benchmarks_reports_variant_deltas(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            before_path = Path(tmpdir) / "before.json"
+            after_path = Path(tmpdir) / "after.json"
+            before_path.write_text(
+                json.dumps(
+                    {
+                        "benchmark_name": "before-run",
+                        "brands": [
+                            {
+                                "brand_name": "Example",
+                                "url": "https://example.com",
+                                "results": [
+                                    {
+                                        "variant": "auto",
+                                        "composite_score": 50.0,
+                                        "dimensions": {"diferenciacion": 40.0},
+                                        "predicted_niche": "base",
+                                        "predicted_subtype": "startup_studio",
+                                        "niche_match": False,
+                                        "subtype_match": False,
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            after_path.write_text(
+                json.dumps(
+                    {
+                        "benchmark_name": "after-run",
+                        "brands": [
+                            {
+                                "brand_name": "Example",
+                                "url": "https://example.com",
+                                "results": [
+                                    {
+                                        "variant": "auto",
+                                        "composite_score": 58.0,
+                                        "dimensions": {"diferenciacion": 47.0},
+                                        "predicted_niche": "frontier_ai",
+                                        "predicted_subtype": "model_lab",
+                                        "niche_match": True,
+                                        "subtype_match": True,
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            with patch.object(brand_service, "PROJECT_ROOT", Path(tmpdir)):
+                payload = brand_service.compare_benchmarks(str(before_path), str(after_path))
+
+            self.assertEqual(payload["summary"]["shared_brands"], 1)
+            self.assertEqual(payload["summary"]["variant_deltas"]["auto"]["average_composite_delta"], 8.0)
+            self.assertEqual(payload["summary"]["variant_deltas"]["auto"]["niche_match_improved"], 1)
+            self.assertEqual(payload["summary"]["variant_deltas"]["auto"]["subtype_match_improved"], 1)
+            self.assertTrue(Path(payload["output_path"]).exists())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -131,6 +131,18 @@ def _save_benchmark_result(result: dict) -> Path:
     return output_path
 
 
+def _save_benchmark_comparison_result(result: dict) -> Path:
+    output_dir = PROJECT_ROOT / "output" / "benchmarks"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    before_name = _slugify(result.get("before_benchmark", "before"))
+    after_name = _slugify(result.get("after_benchmark", "after"))
+    output_path = output_dir / f"{after_name}-vs-{before_name}-{timestamp}.json"
+    output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    return output_path
+
+
 def _from_web_payload(payload: dict | None) -> WebData | None:
     if not payload:
         return None
@@ -918,6 +930,152 @@ def benchmark_profiles(
         "brands": results,
     }
     output_path = _save_benchmark_result(payload)
+    payload["output_path"] = str(output_path)
+    print(json.dumps(payload, indent=2))
+    return payload
+
+
+def compare_benchmarks(before_path: str, after_path: str) -> dict:
+    before_file = Path(before_path)
+    after_file = Path(after_path)
+    before_payload = json.loads(before_file.read_text(encoding="utf-8"))
+    after_payload = json.loads(after_file.read_text(encoding="utf-8"))
+
+    def _brand_key(item: dict) -> tuple[str, str]:
+        return (item.get("brand_name") or "", item.get("url") or "")
+
+    def _variant_map(item: dict) -> dict[str, dict]:
+        return {result["variant"]: result for result in item.get("results", [])}
+
+    before_brands = {_brand_key(item): item for item in before_payload.get("brands", [])}
+    after_brands = {_brand_key(item): item for item in after_payload.get("brands", [])}
+
+    shared_keys = sorted(set(before_brands) & set(after_brands))
+    added_keys = sorted(set(after_brands) - set(before_brands))
+    removed_keys = sorted(set(before_brands) - set(after_brands))
+
+    variant_deltas: dict[str, list[float]] = {}
+    variant_match_changes: dict[str, dict[str, int]] = {}
+    brand_results = []
+
+    for key in shared_keys:
+        before_brand = before_brands[key]
+        after_brand = after_brands[key]
+        before_variants = _variant_map(before_brand)
+        after_variants = _variant_map(after_brand)
+        shared_variants = sorted(set(before_variants) & set(after_variants))
+        comparisons = []
+
+        for variant in shared_variants:
+            before_variant = before_variants[variant]
+            after_variant = after_variants[variant]
+            before_composite = before_variant.get("composite_score")
+            after_composite = after_variant.get("composite_score")
+            delta = None
+            if before_composite is not None and after_composite is not None:
+                delta = round(float(after_composite) - float(before_composite), 1)
+                variant_deltas.setdefault(variant, []).append(delta)
+
+            dimension_names = sorted(
+                set((before_variant.get("dimensions") or {}).keys())
+                | set((after_variant.get("dimensions") or {}).keys())
+            )
+            dimension_deltas = {}
+            for dimension_name in dimension_names:
+                before_value = (before_variant.get("dimensions") or {}).get(dimension_name)
+                after_value = (after_variant.get("dimensions") or {}).get(dimension_name)
+                if before_value is None or after_value is None:
+                    dimension_deltas[dimension_name] = {
+                        "before": before_value,
+                        "after": after_value,
+                        "delta": None,
+                    }
+                else:
+                    dimension_deltas[dimension_name] = {
+                        "before": before_value,
+                        "after": after_value,
+                        "delta": round(float(after_value) - float(before_value), 1),
+                    }
+
+            match_stats = variant_match_changes.setdefault(
+                variant,
+                {
+                    "niche_match_improved": 0,
+                    "niche_match_worsened": 0,
+                    "subtype_match_improved": 0,
+                    "subtype_match_worsened": 0,
+                },
+            )
+            before_niche_match = before_variant.get("niche_match")
+            after_niche_match = after_variant.get("niche_match")
+            if before_niche_match is False and after_niche_match is True:
+                match_stats["niche_match_improved"] += 1
+            elif before_niche_match is True and after_niche_match is False:
+                match_stats["niche_match_worsened"] += 1
+
+            before_subtype_match = before_variant.get("subtype_match")
+            after_subtype_match = after_variant.get("subtype_match")
+            if before_subtype_match is False and after_subtype_match is True:
+                match_stats["subtype_match_improved"] += 1
+            elif before_subtype_match is True and after_subtype_match is False:
+                match_stats["subtype_match_worsened"] += 1
+
+            comparisons.append(
+                {
+                    "variant": variant,
+                    "before": {
+                        "composite_score": before_composite,
+                        "predicted_niche": before_variant.get("predicted_niche"),
+                        "predicted_subtype": before_variant.get("predicted_subtype"),
+                        "niche_match": before_niche_match,
+                        "subtype_match": before_subtype_match,
+                    },
+                    "after": {
+                        "composite_score": after_composite,
+                        "predicted_niche": after_variant.get("predicted_niche"),
+                        "predicted_subtype": after_variant.get("predicted_subtype"),
+                        "niche_match": after_niche_match,
+                        "subtype_match": after_subtype_match,
+                    },
+                    "composite_delta": delta,
+                    "dimension_deltas": dimension_deltas,
+                }
+            )
+
+        brand_results.append(
+            {
+                "brand_name": after_brand.get("brand_name"),
+                "url": after_brand.get("url"),
+                "variant_comparisons": comparisons,
+            }
+        )
+
+    summary = {
+        "shared_brands": len(shared_keys),
+        "added_brands": len(added_keys),
+        "removed_brands": len(removed_keys),
+        "variant_deltas": {
+            variant: {
+                "count": len(deltas),
+                "average_composite_delta": round(mean(deltas), 1) if deltas else None,
+                **variant_match_changes.get(variant, {}),
+            }
+            for variant, deltas in variant_deltas.items()
+        },
+    }
+
+    payload = {
+        "before_benchmark": before_payload.get("benchmark_name") or before_file.stem,
+        "after_benchmark": after_payload.get("benchmark_name") or after_file.stem,
+        "before_path": str(before_file),
+        "after_path": str(after_file),
+        "generated_at": datetime.now().isoformat(),
+        "summary": summary,
+        "brands": brand_results,
+        "added_brand_keys": [{"brand_name": key[0], "url": key[1]} for key in added_keys],
+        "removed_brand_keys": [{"brand_name": key[0], "url": key[1]} for key in removed_keys],
+    }
+    output_path = _save_benchmark_comparison_result(payload)
     payload["output_path"] = str(output_path)
     print(json.dumps(payload, indent=2))
     return payload

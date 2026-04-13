@@ -68,6 +68,10 @@ def benchmark_profiles(*args, **kwargs):
     return _delegate("benchmark_profiles", *args, **kwargs)
 
 
+def compare_benchmarks(*args, **kwargs):
+    return _delegate("compare_benchmarks", *args, **kwargs)
+
+
 def list_feedback(*args, **kwargs):
     return _delegate("list_feedback", *args, **kwargs)
 
@@ -231,6 +235,7 @@ if __name__ == "__main__":
         print("       python3 main.py brands [--limit N]")
         print("       python3 main.py profiles")
         print("       python3 main.py benchmark --spec PATH [--profiles p1,p2] [--no-auto] [--no-llm] [--no-social]")
+        print("       python3 main.py benchmark-compare --before PATH --after PATH")
         print("       python3 main.py annotations [--brand NAME]")
         print("       python3 main.py show-run --run-id N")
         print("       python3 main.py report --brand NAME [--limit N]")
@@ -367,6 +372,24 @@ if __name__ == "__main__":
             use_llm=use_llm,
             use_social=use_social,
         )
+        sys.exit(0)
+
+    if sys.argv[1] == "benchmark-compare":
+        args = sys.argv[2:]
+        before_path = None
+        after_path = None
+        i = 0
+        while i < len(args):
+            if args[i] == "--before":
+                before_path = args[i + 1]; i += 2
+            elif args[i] == "--after":
+                after_path = args[i + 1]; i += 2
+            else:
+                i += 1
+        if not before_path or not after_path:
+            print("Usage: python3 main.py benchmark-compare --before PATH --after PATH")
+            sys.exit(1)
+        compare_benchmarks(before_path, after_path)
         sys.exit(0)
 
     if sys.argv[1] == "annotations":

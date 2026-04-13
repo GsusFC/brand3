@@ -55,6 +55,8 @@ python3 main.py https://stripe.com Stripe --no-social
 - Template para benchmark canónico: [examples/canonical_benchmark.template.json](/Users/gsus/brand3-scoring/examples/canonical_benchmark.template.json)
 - Política de benchmark: [docs/benchmark_policy.md](/Users/gsus/brand3-scoring/docs/benchmark_policy.md)
 - Revisión del motor de scoring: [docs/scoring_review.md](/Users/gsus/brand3-scoring/docs/scoring_review.md)
+- Runbook de validación de benchmarks: [docs/benchmark_validation.md](/Users/gsus/brand3-scoring/docs/benchmark_validation.md)
+- Script de benchmark aislado: [scripts/run_benchmark_validation.sh](/Users/gsus/brand3-scoring/scripts/run_benchmark_validation.sh)
 
 ## InsForge
 

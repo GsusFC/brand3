@@ -2,6 +2,8 @@ import unittest
 
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.web_collector import WebData
+from src.collectors.web_collector import WebCollector
+from src.features.coherencia import CoherenciaExtractor
 from src.features.diferenciacion import DiferenciacionExtractor
 from src.features.percepcion import PercepcionExtractor
 from src.features.presencia import PresenciaExtractor
@@ -153,6 +155,82 @@ class PresenciaExtractorTests(unittest.TestCase):
         self.assertGreater(visibility.value, 20.0)
         self.assertLess(visibility.value, 60.0)
         self.assertIn("weighted=", visibility.raw_value)
+
+
+class WebCollectorTests(unittest.TestCase):
+    def test_clean_markdown_removes_cookie_banner_noise(self):
+        collector = WebCollector()
+        raw = """
+![Revisit consent button](https://example.com/revisit.svg)
+We value your privacy
+Accept All
+Reject All
+Customise
+
+# Prior Labs
+
+Tabular foundation models for real-world data.
+"""
+        cleaned = collector._clean_markdown_content(raw)
+
+        self.assertNotIn("We value your privacy", cleaned)
+        self.assertNotIn("Accept All", cleaned)
+        self.assertIn("# Prior Labs", cleaned)
+        self.assertIn("Tabular foundation models", cleaned)
+
+    def test_clean_markdown_trims_leading_ui_preamble(self):
+        collector = WebCollector()
+        raw = """
+NecessaryAlways Active
+
+Functional
+
+Analytics
+
+[Deploy now](https://example.com/deploy)
+
+One Model, Infinite Predictions
+
+Tabular foundation models for real-world data.
+"""
+
+        cleaned = collector._clean_markdown_content(raw)
+
+        self.assertTrue(cleaned.startswith("One Model, Infinite Predictions"))
+        self.assertNotIn("NecessaryAlways Active", cleaned)
+        self.assertNotIn("Functional", cleaned)
+
+    def test_trim_to_title_drops_navigation_before_detected_title(self):
+        collector = WebCollector()
+        content = """
+Models
+
+Deployment
+
+One Model, Infinite Predictions
+
+Tabular foundation models for real-world data.
+"""
+
+        trimmed = collector._trim_to_title(content.strip(), "One Model, Infinite Predictions")
+
+        self.assertTrue(trimmed.startswith("One Model, Infinite Predictions"))
+        self.assertNotIn("Models", trimmed)
+
+
+class CoherenciaExtractorTests(unittest.TestCase):
+    def test_skip_visual_analysis_uses_heuristic_fallback(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content="Brand guidelines and logo usage live here.",
+        )
+        extractor = CoherenciaExtractor(skip_visual_analysis=True)
+
+        feature = extractor._visual_consistency(web)
+
+        self.assertEqual(feature.source, "web_scrape_heuristic")
+        self.assertIn("visual analysis skipped", feature.raw_value)
 
 
 if __name__ == "__main__":

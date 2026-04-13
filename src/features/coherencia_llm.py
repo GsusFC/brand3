@@ -16,8 +16,16 @@ from .visual_analyzer import VisualAnalyzer
 class CoherenciaLLMExtractor(CoherenciaExtractor):
     """LLM-enhanced coherencia extractor."""
 
-    def __init__(self, llm: LLMAnalyzer = None, visual_analyzer: VisualAnalyzer = None):
-        super().__init__(visual_analyzer=visual_analyzer)
+    def __init__(
+        self,
+        llm: LLMAnalyzer = None,
+        visual_analyzer: VisualAnalyzer = None,
+        skip_visual_analysis: bool = False,
+    ):
+        super().__init__(
+            visual_analyzer=visual_analyzer,
+            skip_visual_analysis=skip_visual_analysis,
+        )
         self.llm = llm or LLMAnalyzer()
 
     def extract(self, web: WebData = None, exa: ExaData = None) -> dict[str, FeatureValue]:

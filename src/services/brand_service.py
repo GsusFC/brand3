@@ -474,6 +474,7 @@ def run(
     use_llm: bool = True,
     use_social: bool = True,
     calibration_profile_override: str | None = None,
+    skip_visual_analysis: bool = False,
     progress_cb=None,
     cancel_check=None,
 ) -> dict:
@@ -612,14 +613,17 @@ def run(
         print("[2/4] Extracting features...")
 
         screenshot_url = None
-        try:
-            from src.features.visual_analyzer import VisualAnalyzer
-            visual = VisualAnalyzer()
-            screenshot_url = visual.take_screenshot(url).get("screenshot_url")
-            if screenshot_url:
-                print("  Screenshot: captured")
-        except Exception as e:
-            print(f"  Screenshot: skipped ({e})")
+        if not skip_visual_analysis:
+            try:
+                from src.features.visual_analyzer import VisualAnalyzer
+                visual = VisualAnalyzer()
+                screenshot_url = visual.take_screenshot(url).get("screenshot_url")
+                if screenshot_url:
+                    print("  Screenshot: captured")
+            except Exception as e:
+                print(f"  Screenshot: skipped ({e})")
+        else:
+            print("  Screenshot: skipped (benchmark mode)")
 
         features_by_dim = {}
         presencia_ext = PresenciaExtractor()
@@ -629,14 +633,14 @@ def run(
         features_by_dim["vitalidad"] = vitalidad_ext.extract(web=web_data, exa=exa_data)
 
         if llm:
-            coherencia_ext = CoherenciaLLMExtractor(llm=llm)
+            coherencia_ext = CoherenciaLLMExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)
             diferenciacion_ext = DiferenciacionLLMExtractor(llm=llm)
             percepcion_ext = PercepcionLLMExtractor(llm=llm)
         else:
             from src.features.coherencia import CoherenciaExtractor
             from src.features.diferenciacion import DiferenciacionExtractor
             from src.features.percepcion import PercepcionExtractor
-            coherencia_ext = CoherenciaExtractor()
+            coherencia_ext = CoherenciaExtractor(skip_visual_analysis=skip_visual_analysis)
             diferenciacion_ext = DiferenciacionExtractor()
             percepcion_ext = PercepcionExtractor()
             if use_llm:
@@ -862,6 +866,7 @@ def benchmark_profiles(
                 use_llm=use_llm,
                 use_social=use_social,
                 calibration_profile_override=variant["profile"],
+                skip_visual_analysis=True,
             )
             expected_niche = brand.get("expected_niche")
             expected_subtype = brand.get("expected_subtype")

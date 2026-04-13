@@ -32,8 +32,9 @@ GENERIC_PHRASES = [
 class CoherenciaExtractor:
     """Extract coherencia features."""
 
-    def __init__(self, visual_analyzer: VisualAnalyzer = None):
+    def __init__(self, visual_analyzer: VisualAnalyzer = None, skip_visual_analysis: bool = False):
         self.visual_analyzer = visual_analyzer or VisualAnalyzer()
+        self.skip_visual_analysis = skip_visual_analysis
 
     def extract(self, web: WebData = None, exa: ExaData = None) -> dict[str, FeatureValue]:
         features = {}
@@ -53,6 +54,25 @@ class CoherenciaExtractor:
             return FeatureValue("visual_consistency", 0.0, confidence=0.3, source="none")
 
         brand_name = web.title or ""
+
+        if self.skip_visual_analysis:
+            content = web.markdown_content.lower()
+            brand_in_header = web.title and len(web.title) > 0
+            has_style = any(s in content for s in ["style guide", "brand guidelines", "logo"])
+
+            score = 40.0
+            if brand_in_header:
+                score += 20
+            if has_style:
+                score += 10
+
+            return FeatureValue(
+                "visual_consistency",
+                min(score, 100.0),
+                raw_value="benchmark heuristic fallback (visual analysis skipped)",
+                confidence=0.25,
+                source="web_scrape_heuristic",
+            )
 
         # If we already have a screenshot from the web scrape, use it
         if web.screenshot_path and web.screenshot_path.startswith("http"):

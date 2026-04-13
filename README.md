@@ -61,6 +61,15 @@ python3 main.py https://stripe.com Stripe --no-social
 - Esquema SQL inicial para InsForge: [db/insforge_v1.sql](/Users/gsus/brand3-scoring/db/insforge_v1.sql)
 - Handoff para retomar el proyecto: [docs/HANDOFF.md](/Users/gsus/brand3-scoring/docs/HANDOFF.md)
 
+## Design
+
+- Índice de diseño/frontend: [design/README.md](/Users/gsus/brand3-scoring/design/README.md)
+- Documento maestro de diseño: [design/DESIGN.md](/Users/gsus/brand3-scoring/design/DESIGN.md)
+- Plan de frontend: [design/FRONTEND_PLAN.md](/Users/gsus/brand3-scoring/design/FRONTEND_PLAN.md)
+- Responsive y breakpoints: [design/RESPONSIVE.md](/Users/gsus/brand3-scoring/design/RESPONSIVE.md)
+- Sistema de componentes: [design/COMPONENTS.md](/Users/gsus/brand3-scoring/design/COMPONENTS.md)
+- Tokens base: [design/TOKENS.css](/Users/gsus/brand3-scoring/design/TOKENS.css)
+
 ## Fases
 
 - **Fase 1**: Uso interno FLOC*. Validación con clientes reales.

@@ -1,0 +1,71 @@
+:root {
+  --bg: #f3efe7;
+  --surface: #fbf8f2;
+  --surface-2: #efe8dc;
+  --surface-3: #e6dece;
+  --border: #d9cfbf;
+
+  --text: #181716;
+  --text-muted: #5f5a52;
+  --text-soft: #7a7369;
+
+  --accent: #a64b2a;
+  --accent-soft: #e8c1b2;
+  --ink-blue: #27445d;
+  --olive: #5e6b47;
+
+  --success: #40634a;
+  --warning: #9a6a18;
+  --danger: #9b3a30;
+  --info: #355c7d;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  --shadow-soft: 0 1px 0 rgba(24, 23, 22, 0.04);
+  --shadow-panel: 0 8px 24px rgba(24, 23, 22, 0.04);
+
+  --font-display: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
+  --font-sans: "Manrope", "Inter", "Segoe UI", sans-serif;
+
+  --fs-display: 48px;
+  --lh-display: 52px;
+  --fs-h1: 40px;
+  --lh-h1: 44px;
+  --fs-h2: 32px;
+  --lh-h2: 36px;
+  --fs-h3: 22px;
+  --lh-h3: 28px;
+  --fs-body: 15px;
+  --lh-body: 22px;
+  --fs-table: 14px;
+  --lh-table: 20px;
+  --fs-meta: 12px;
+  --lh-meta: 16px;
+}
+
+[data-profile="base"] {
+  --profile-accent: var(--text-muted);
+}
+
+[data-profile="frontier_ai"] {
+  --profile-accent: var(--ink-blue);
+}
+
+[data-profile="enterprise_ai"] {
+  --profile-accent: var(--accent);
+}
+
+[data-profile="physical_ai"] {
+  --profile-accent: var(--olive);
+}

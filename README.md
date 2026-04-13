@@ -55,6 +55,12 @@ python3 main.py https://stripe.com Stripe --no-social
 - Template para benchmark canónico: [examples/canonical_benchmark.template.json](/Users/gsus/brand3-scoring/examples/canonical_benchmark.template.json)
 - Política de benchmark: [docs/benchmark_policy.md](/Users/gsus/brand3-scoring/docs/benchmark_policy.md)
 
+## InsForge
+
+- Plan v1 para webapp multiusuario: [docs/insforge_v1.md](/Users/gsus/brand3-scoring/docs/insforge_v1.md)
+- Esquema SQL inicial para InsForge: [db/insforge_v1.sql](/Users/gsus/brand3-scoring/db/insforge_v1.sql)
+- Handoff para retomar el proyecto: [docs/HANDOFF.md](/Users/gsus/brand3-scoring/docs/HANDOFF.md)
+
 ## Fases
 
 - **Fase 1**: Uso interno FLOC*. Validación con clientes reales.

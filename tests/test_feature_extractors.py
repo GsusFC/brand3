@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from src.collectors.exa_collector import ExaData, ExaResult
+from src.collectors.exa_collector import ExaCollector
 from src.collectors.web_collector import WebData
 from src.collectors.web_collector import WebCollector
 from src.features.coherencia import CoherenciaExtractor
@@ -469,6 +470,24 @@ Tabular foundation models for real-world data.
         self.assertIn("safe super intelligence", data.markdown_content.lower())
         self.assertEqual(data.meta_description, "The fastest path to safe super intelligence.")
         self.assertEqual(data.error, "")
+
+
+class ExaCollectorTests(unittest.TestCase):
+    def test_brand_query_includes_domain_anchor_when_available(self):
+        collector = ExaCollector(api_key="test")
+
+        query = collector._brand_query("Movements", "https://movements.mov/en", "news")
+
+        self.assertIn('"Movements"', query)
+        self.assertIn('"movements.mov"', query)
+        self.assertTrue(query.endswith("news"))
+
+    def test_brand_query_works_without_domain(self):
+        collector = ExaCollector(api_key="test")
+
+        query = collector._brand_query("CTGT", None, "brand company")
+
+        self.assertEqual(query, '"CTGT" brand company')
 
 
 class CoherenciaExtractorTests(unittest.TestCase):

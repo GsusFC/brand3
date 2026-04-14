@@ -9,6 +9,7 @@ Uses Exa API for:
 """
 
 from dataclasses import dataclass, field
+from urllib.parse import urlparse
 
 
 @dataclass
@@ -50,6 +51,23 @@ class ExaCollector:
             self._client = Exa(api_key=self.api_key)
         return self._client
 
+    @staticmethod
+    def _domain_anchor(brand_url: str | None) -> str:
+        if not brand_url:
+            return ""
+        parsed = urlparse(brand_url)
+        hostname = (parsed.netloc or parsed.path or "").lower()
+        hostname = hostname.replace("www.", "").strip("/")
+        return hostname
+
+    def _brand_query(self, brand_name: str, brand_url: str | None, suffix: str) -> str:
+        domain_anchor = self._domain_anchor(brand_url)
+        parts = [f'"{brand_name}"']
+        if domain_anchor:
+            parts.append(f'"{domain_anchor}"')
+        parts.append(suffix)
+        return " ".join(part for part in parts if part)
+
     def search(self, query: str, num_results: int = 10, **kwargs) -> list[ExaResult]:
         """Run a search query via Exa."""
         try:
@@ -86,7 +104,7 @@ class ExaCollector:
 
         # 1. Brand mentions — how is the brand talked about?
         data.mentions = self.search(
-            f'"{brand_name}" brand company',
+            self._brand_query(brand_name, brand_url, "brand company"),
             num_results=15,
         )
 
@@ -100,22 +118,22 @@ class ExaCollector:
 
         # 3. News — recent coverage
         data.news = self.search(
-            f'"{brand_name}" news',
+            self._brand_query(brand_name, brand_url, "news"),
             num_results=10,
             category="news",
         )
 
         # 4. AI visibility — does the brand appear in AI-related recommendations/content?
-        data.ai_visibility_results = self.probe_ai_visibility(brand_name)
+        data.ai_visibility_results = self.probe_ai_visibility(brand_name, brand_url=brand_url)
 
         return data
 
-    def probe_ai_visibility(self, brand_name: str) -> list[ExaResult]:
+    def probe_ai_visibility(self, brand_name: str, brand_url: str | None = None) -> list[ExaResult]:
         """
         Check if the brand appears in AI-related content.
         Proxies 'AI visibility' — do LLMs know this brand?
         """
         return self.search(
-            f'"{brand_name}" AI artificial intelligence recommendation',
+            self._brand_query(brand_name, brand_url, "AI artificial intelligence recommendation"),
             num_results=5,
         )

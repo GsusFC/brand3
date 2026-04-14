@@ -144,6 +144,29 @@ SUBTYPE_SIGNALS: dict[str, dict[str, object]] = {
             (r"\bventure studio\b", 3.0, "Venture-studio language detected"),
         ],
     },
+    "community_platform": {
+        "profile": "base",
+        "keywords": {
+            "petition": 2.5,
+            "petitions": 2.5,
+            "community": 2.0,
+            "subscriptions": 2.0,
+            "supporters": 2.0,
+            "audience": 1.5,
+            "cause": 2.0,
+            "movement": 1.5,
+            "organize": 1.5,
+            "activate": 1.5,
+            "mobilize": 1.5,
+        },
+        "patterns": [
+            (r"\bconvert your cause into an unstoppable movement\b", 4.0, "Cause-to-movement positioning detected"),
+            (r"\bcomplete control over your audience\b", 3.0, "Audience-control language detected"),
+            (r"\bno algorithms limiting your reach\b", 3.0, "Anti-algorithm distribution language detected"),
+            (r"\bdrive change\b", 2.0, "Change-oriented positioning detected"),
+            (r"\borganize, scale and sustain your cause\b", 3.0, "Cause-platform operating model detected"),
+        ],
+    },
     "physical_ai_data": {
         "profile": "physical_ai",
         "keywords": {
@@ -187,6 +210,23 @@ def _score_signal_set(text: str, config: dict[str, object]) -> tuple[float, list
     return score, evidence
 
 
+def _score_signal_sources(
+    sources: list[tuple[str, str, float]],
+    config: dict[str, object],
+) -> tuple[float, list[str]]:
+    score = 0.0
+    evidence: list[str] = []
+    for source_name, text, weight in sources:
+        if not text:
+            continue
+        source_score, source_evidence = _score_signal_set(text, config)
+        if source_score <= 0:
+            continue
+        score += source_score * weight
+        evidence.extend(f"{message} [{source_name}]" for message in source_evidence)
+    return score, evidence
+
+
 def classify_brand_niche(
     brand_name: str | None,
     url: str | None,
@@ -196,14 +236,17 @@ def classify_brand_niche(
     exa_texts: list[str] | None = None,
     competitor_names: list[str] | None = None,
 ) -> dict[str, Any]:
-    corpus = _normalise_text(
-        brand_name,
-        url,
-        web_title,
-        web_content,
-        " ".join(exa_texts or []),
-        " ".join(competitor_names or []),
-    )
+    identity_text = _normalise_text(brand_name, url)
+    web_text = _normalise_text(web_title, web_content)
+    exa_text = _normalise_text(" ".join(exa_texts or []))
+    competitor_text = _normalise_text(" ".join(competitor_names or []))
+    corpus = _normalise_text(identity_text, web_text, exa_text, competitor_text)
+    weighted_sources = [
+        ("identity", identity_text, 0.3),
+        ("web", web_text, 1.0),
+        ("exa", exa_text, 0.35),
+        ("competitors", competitor_text, 0.2),
+    ]
 
     if not corpus.strip():
         return {
@@ -219,7 +262,7 @@ def classify_brand_niche(
     subtype_evidence: dict[str, list[str]] = {}
 
     for subtype_id, config in SUBTYPE_SIGNALS.items():
-        score, evidence = _score_signal_set(corpus, config)
+        score, evidence = _score_signal_sources(weighted_sources, config)
         subtype_scores[subtype_id] = score
         subtype_evidence[subtype_id] = evidence
         profile_id = str(config["profile"])
@@ -227,7 +270,7 @@ def classify_brand_niche(
         evidence_map.setdefault(profile_id, []).extend(evidence)
 
     for profile_id, config in PROFILE_SIGNALS.items():
-        score, evidence = _score_signal_set(corpus, config)
+        score, evidence = _score_signal_sources(weighted_sources, config)
         profile_scores[profile_id] = profile_scores.get(profile_id, 0.0) + score
         evidence_map.setdefault(profile_id, []).extend(evidence)
 

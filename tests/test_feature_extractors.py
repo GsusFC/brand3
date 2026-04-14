@@ -161,6 +161,23 @@ class DiferenciacionExtractorTests(unittest.TestCase):
         self.assertIn("proof_points=", feature.raw_value)
         self.assertIn("signature_hits=", feature.raw_value)
 
+    def test_unique_value_prop_rewards_control_and_surface_bundle_for_cause_platforms(self):
+        web = WebData(
+            url="https://movements.mov/en",
+            title="MOVEMENTS",
+            markdown_content=(
+                "# MOVEMENTS\n\n"
+                "Convert your cause into an unstoppable movement. MOVEMENTS offers petitions, community, content and subscriptions to drive change.\n"
+                "No algorithms limiting your reach. You maintain complete control over your audience.\n"
+            ),
+        )
+
+        feature = self.extractor._unique_value_prop(web)
+
+        self.assertGreaterEqual(feature.value, 45.0)
+        self.assertIn("control_hits=", feature.raw_value)
+        self.assertIn("cause_terms=", feature.raw_value)
+
     def test_generic_language_is_normalized_by_content_length(self):
         short_web = WebData(
             url="https://short.example",
@@ -227,6 +244,22 @@ class DiferenciacionExtractorTests(unittest.TestCase):
         self.assertGreaterEqual(feature.value, 20.0)
         self.assertIn("acronyms=", feature.raw_value)
         self.assertIn("signature_phrases=", feature.raw_value)
+
+    def test_brand_vocabulary_detects_repeated_all_caps_brand_name(self):
+        web = WebData(
+            url="https://movements.mov/en",
+            title="MOVEMENTS",
+            markdown_content=(
+                "# MOVEMENTS\n\n"
+                "MOVEMENTS helps you organize, scale and sustain your cause.\n"
+                "At MOVEMENTS, everything you generate is yours.\n"
+            ),
+        )
+
+        feature = self.extractor._brand_vocabulary(web, exa=None, competitor_data=None)
+
+        self.assertGreaterEqual(feature.value, 10.0)
+        self.assertIn("all_caps=", feature.raw_value)
 
 
 class PresenciaExtractorTests(unittest.TestCase):

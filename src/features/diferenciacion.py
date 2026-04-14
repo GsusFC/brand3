@@ -61,6 +61,23 @@ BRAND_SIGNATURE_PHRASES = [
     "self-improving systems",
     "structured data",
     "tabular foundation models",
+    "social change",
+    "community of movers",
+    "no algorithms limiting your reach",
+    "complete control over your audience",
+]
+
+CONTROL_POSITIONING_PHRASES = [
+    "no algorithms limiting your reach",
+    "complete control over your audience",
+    "absolute owner of what you build",
+    "owner of what you build",
+    "everything you generate is yours",
+]
+
+CAUSE_PLATFORM_TERMS = [
+    "petitions", "community", "content", "subscriptions",
+    "cause", "activist", "collective", "social change",
 ]
 
 
@@ -137,12 +154,23 @@ class DiferenciacionExtractor:
         signature_hits = [
             phrase for phrase in BRAND_SIGNATURE_PHRASES if phrase in hero_text or phrase in content[:1200]
         ]
+        control_hits = [
+            phrase for phrase in CONTROL_POSITIONING_PHRASES if phrase in content[:1600]
+        ]
+        cause_terms = [
+            term for term in CAUSE_PLATFORM_TERMS if term in content[:1200]
+        ]
+        bundle_bonus = 0
+        if len(cause_terms) >= 3:
+            bundle_bonus = 12
 
         score = 20.0  # baseline
         score += min(diff_count * 12, 36)
         score += min(len(proof_signals) * 6, 18)
         score += min(len(specificity_hits) * 9, 27)
         score += min(len(signature_hits) * 6, 18)
+        score += min(len(control_hits) * 6, 12)
+        score += bundle_bonus
 
         # Check first 500 chars for a clear positioning statement
         first_chunk = hero_text or web.markdown_content[:500].lower()
@@ -161,7 +189,9 @@ class DiferenciacionExtractor:
                 f"diff_signals={diff_count}, "
                 f"proof_points={len(proof_signals)}, "
                 f"specificity_hits={len(specificity_hits)}, "
-                f"signature_hits={len(signature_hits)}"
+                f"signature_hits={len(signature_hits)}, "
+                f"control_hits={len(control_hits)}, "
+                f"cause_terms={len(cause_terms)}"
             ),
             confidence=0.6,
             source="web_scrape",
@@ -395,6 +425,10 @@ class DiferenciacionExtractor:
             if count >= 2 and token not in {"AI", "API", "SDK", "LLM"}
         ]
 
+        all_caps_brands = re.findall(r"\b[A-Z]{7,}\b", content)
+        all_caps_counter = Counter(all_caps_brands)
+        repeated_all_caps = [token for token, count in all_caps_counter.items() if count >= 2]
+
         # Look for coined phrases in quotes
         coined = re.findall(r'"([^"]{5,40})"', content)
 
@@ -405,6 +439,7 @@ class DiferenciacionExtractor:
         score += min(len(branded_terms) * 15, 40)
         score += min(len(coined) * 5, 20)
         score += min(len(repeated_acronyms) * 10, 20)
+        score += min(len(repeated_all_caps) * 10, 20)
         score += min(len(signature_phrases) * 8, 32)
 
         raw_parts = [
@@ -412,6 +447,7 @@ class DiferenciacionExtractor:
             f"branded_terms={len(branded_terms)}",
             f"coined={len(coined)}",
             f"acronyms={len(repeated_acronyms)}",
+            f"all_caps={len(repeated_all_caps)}",
             f"signature_phrases={len(signature_phrases)}",
         ]
 
@@ -419,6 +455,7 @@ class DiferenciacionExtractor:
         if competitor_data and competitor_data.comparisons:
             brand_kw = set(t.lower() for t in branded_terms)
             brand_kw.update(token.lower() for token in repeated_acronyms)
+            brand_kw.update(token.lower() for token in repeated_all_caps)
             brand_kw.update(phrase.lower() for phrase in signature_phrases)
             if brand_kw:
                 all_comp_kw = set()

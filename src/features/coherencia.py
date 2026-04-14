@@ -337,12 +337,16 @@ class CoherenciaExtractor:
         has_touchpoint = any(s in content for s in [
             "request demo", "book a demo", "get in touch", "talk to sales",
             "join waitlist", "waitlist", "apply", "your request has been received",
-            "we will be in touch", "secure your place", "sign up", "get started",
+            "we will be in touch", "secure your place", "sign up", "sign in",
+            "log in", "get started", "join the movement", "support the movement",
+            "become a member", "create your petition", "create movement",
+            "create petition", "support this cause",
         ])
 
         has_owned_surface = any(s in content for s in [
             "/docs", " docs", "/blog", " blog", "/about", " about",
             "/careers", " careers", "/privacy", "privacy policy", "terms",
+            "/manifest", "manifest", "/search", "search?q=",
         ])
 
         # Check if social profiles mention the brand URL

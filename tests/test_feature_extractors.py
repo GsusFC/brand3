@@ -620,6 +620,29 @@ class CoherenciaExtractorTests(unittest.TestCase):
 
         self.assertLessEqual(feature.value, 25.0)
 
+    def test_cross_channel_coherence_recognizes_membership_and_creation_flows(self):
+        web = WebData(
+            url="https://movements.mov/en",
+            title="MOVEMENTS",
+            markdown_content=(
+                "# MOVEMENTS\n\n"
+                "Start the movement.\n"
+                "Sign In\n"
+                "Sign Up\n"
+                "Create your petition\n"
+                "All-in-one to create a movement.\n"
+                "Privacy Policy\n"
+                "Terms\n"
+            ),
+        )
+        extractor = CoherenciaExtractor()
+
+        feature = extractor._cross_channel_coherence(web, exa=None)
+
+        self.assertGreaterEqual(feature.value, 50.0)
+        self.assertIn("touchpoint=True", feature.raw_value)
+        self.assertIn("owned_surface=True", feature.raw_value)
+
 
 if __name__ == "__main__":
     unittest.main()

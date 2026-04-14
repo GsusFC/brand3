@@ -232,6 +232,25 @@ class PresenciaExtractorTests(unittest.TestCase):
     def setUp(self):
         self.extractor = PresenciaExtractor()
 
+    def test_social_footprint_rewards_professional_and_builder_mix(self):
+        web = WebData(
+            url="https://example.dev",
+            title="Example",
+            markdown_content=(
+                "# Example\n\n"
+                "Follow us on LinkedIn and GitHub.\n"
+                "https://linkedin.com/company/example\n"
+                "https://github.com/example\n"
+            ),
+        )
+
+        feature = self.extractor._social_footprint(web=web, exa=None, social=None)
+
+        self.assertGreaterEqual(feature.value, 55.0)
+        self.assertIn("weighted_presence=", feature.raw_value)
+        self.assertIn("builder", feature.raw_value)
+        self.assertIn("professional", feature.raw_value)
+
     def test_ai_visibility_weights_relevance_and_brand_centrality(self):
         exa = ExaData(
             brand_name="Acme AI",
@@ -260,8 +279,38 @@ class PresenciaExtractorTests(unittest.TestCase):
         visibility = self.extractor._ai_visibility(exa)
 
         self.assertGreater(visibility.value, 20.0)
-        self.assertLess(visibility.value, 60.0)
+        self.assertLess(visibility.value, 70.0)
         self.assertIn("weighted=", visibility.raw_value)
+
+    def test_ai_visibility_gets_neutral_boost_from_multiple_medium_results(self):
+        exa = ExaData(
+            brand_name="Acme AI",
+            ai_visibility_results=[
+                ExaResult(
+                    url="https://example.com/tools/acme-ai",
+                    title="Acme AI tooling",
+                    text="Acme AI appears in an enterprise tooling roundup.",
+                    score=0.45,
+                ),
+                ExaResult(
+                    url="https://another.example.com/acme-ai",
+                    title="Acme AI for teams",
+                    text="Acme AI is mentioned as a relevant product for teams.",
+                    score=0.4,
+                ),
+                ExaResult(
+                    url="https://third.example.com/roundup",
+                    title="AI roundup",
+                    text="Acme AI appears among notable vendors.",
+                    score=0.35,
+                ),
+            ],
+        )
+
+        visibility = self.extractor._ai_visibility(exa)
+
+        self.assertGreaterEqual(visibility.value, 55.0)
+        self.assertIn("medium_results=", visibility.raw_value)
 
 
 class VitalidadExtractorTests(unittest.TestCase):

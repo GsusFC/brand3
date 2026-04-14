@@ -17,6 +17,26 @@ from ..collectors.social_collector import SocialData
 class PresenciaExtractor:
     """Extract presencia features from raw collected data."""
 
+    PLATFORM_WEIGHTS = {
+        "linkedin": 1.0,
+        "github": 1.0,
+        "twitter": 0.9,
+        "youtube": 0.8,
+        "instagram": 0.8,
+        "tiktok": 0.7,
+        "facebook": 0.6,
+    }
+
+    PLATFORM_GROUPS = {
+        "linkedin": "professional",
+        "github": "builder",
+        "twitter": "social",
+        "youtube": "social",
+        "instagram": "social",
+        "tiktok": "social",
+        "facebook": "social",
+    }
+
     @staticmethod
     def _subject_relevance(result, brand_name: str) -> float:
         """Estimate whether the brand is central in the result, not just mentioned in passing."""
@@ -185,24 +205,39 @@ class PresenciaExtractor:
                     if any(d in r.url.lower() for d in domains) and platform not in platforms_found:
                         platforms_found.append(platform)
 
-        if len(platforms_found) == 0:
-            score = 10.0  # Not 0 — some brands intentionally skip social
-        elif len(platforms_found) == 1:
-            score = 30.0
-        elif len(platforms_found) == 2:
-            score = 50.0
-        elif len(platforms_found) <= 4:
-            score = 60.0 + (len(platforms_found) - 2) * 10
-        else:
-            score = 80.0 + min(len(platforms_found) - 4, 4) * 5
+        score, raw = self._score_discovered_platforms(platforms_found)
 
         return FeatureValue(
             "social_footprint",
             min(score, 100.0),
-            raw_value=f"platforms: {', '.join(platforms_found)}",
+            raw_value=raw,
             confidence=0.6,
             source="web_scrape+exa",
         )
+
+    def _score_discovered_platforms(self, platforms_found: list[str]) -> tuple[float, str]:
+        """Score platform mix when only inferred public profiles are available."""
+        unique_platforms = sorted(set(platforms_found))
+        if not unique_platforms:
+            return 12.0, "platforms: none"
+
+        weighted_presence = sum(self.PLATFORM_WEIGHTS.get(platform, 0.7) for platform in unique_platforms)
+        groups = {self.PLATFORM_GROUPS.get(platform, "social") for platform in unique_platforms}
+
+        score = 18.0 + (weighted_presence * 18.0)
+        if "professional" in groups and "builder" in groups:
+            score += 8.0
+        if len(groups) >= 2:
+            score += 6.0
+        if len(unique_platforms) >= 3:
+            score += 6.0
+
+        raw = (
+            f"platforms: {', '.join(unique_platforms)}, "
+            f"weighted_presence={weighted_presence:.1f}, "
+            f"groups={','.join(sorted(groups))}"
+        )
+        return min(score, 100.0), raw
     
     def _score_social_from_data(self, social: SocialData) -> FeatureValue:
         """Score social footprint using scraped social data."""
@@ -312,20 +347,38 @@ class PresenciaExtractor:
 
         weighted_sum = 0.0
         strong_results = 0
+        medium_results = 0
         for result in exa.ai_visibility_results[:5]:
             relevance = self._normalize_relevance(getattr(result, "score", 0.0))
             subject_relevance = self._subject_relevance(result, exa.brand_name)
-            contribution = 25 * relevance * subject_relevance
+            contribution = 30 * relevance * subject_relevance
             weighted_sum += contribution
             if contribution >= 12:
                 strong_results += 1
+            elif contribution >= 7:
+                medium_results += 1
 
-        score = min(weighted_sum, 100.0)
+        score = weighted_sum
+        if strong_results >= 2:
+            score = max(score, 60.0)
+        elif strong_results == 1 and medium_results >= 1:
+            score = max(score, 55.0)
+        elif strong_results == 0 and medium_results >= 2:
+            score = max(score, 50.0)
+        elif strong_results >= 1:
+            score += min(strong_results * 4, 10)
+
+        score = min(score, 100.0)
 
         return FeatureValue(
             "ai_visibility",
             score,
-            raw_value=f"weighted={weighted_sum:.1f}, strong_results={strong_results}, total_results={len(exa.ai_visibility_results)}",
+            raw_value=(
+                f"weighted={weighted_sum:.1f}, "
+                f"strong_results={strong_results}, "
+                f"medium_results={medium_results}, "
+                f"total_results={len(exa.ai_visibility_results)}"
+            ),
             confidence=0.6,
             source="exa",
         )

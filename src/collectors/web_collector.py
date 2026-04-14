@@ -13,6 +13,7 @@ import subprocess
 import json
 from dataclasses import dataclass
 from html import unescape
+from urllib.parse import urlparse
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
@@ -25,6 +26,8 @@ class WebData:
     meta_description: str = ""
     markdown_content: str = ""
     html: str = ""
+    canonical_url: str = ""
+    alternate_domains: list[str] = None
     links: list = None
     images: list = None
     screenshot_path: str = ""
@@ -34,6 +37,7 @@ class WebData:
 
     def __post_init__(self):
         self.links = self.links or []
+        self.alternate_domains = self.alternate_domains or []
         self.images = self.images or []
         self.tech_stack = self.tech_stack or []
 
@@ -247,6 +251,44 @@ class WebCollector:
         cleaned = unescape(re.sub(r"\s+", " ", text or "")).strip()
         return cleaned
 
+    def _extract_domains_from_urls(self, urls: list[str]) -> list[str]:
+        domains = []
+        seen = set()
+        for value in urls:
+            if not value:
+                continue
+            parsed = urlparse(value if "://" in value else f"https://{value}")
+            host = (parsed.netloc or parsed.path or "").strip().lower()
+            if host.startswith("www."):
+                host = host[4:]
+            if not host or "." not in host or host in seen:
+                continue
+            seen.add(host)
+            domains.append(host)
+        return domains
+
+    def _extract_canonical_metadata(self, html: str) -> tuple[str, list[str]]:
+        if not html:
+            return "", []
+
+        urls = []
+        patterns = [
+            r'<link[^>]+rel=["\']canonical["\'][^>]+href=["\'](.*?)["\']',
+            r'<link[^>]+rel=["\']alternate["\'][^>]+href=["\'](.*?)["\']',
+            r'<meta[^>]+property=["\']og:url["\'][^>]+content=["\'](.*?)["\']',
+            r'"url"\s*:\s*"(https?://[^"]+)"',
+        ]
+        for pattern in patterns:
+            urls.extend(
+                match.strip()
+                for match in re.findall(pattern, html, flags=re.IGNORECASE | re.DOTALL)
+                if match and isinstance(match, str)
+            )
+
+        canonical_url = urls[0] if urls else ""
+        alternate_domains = self._extract_domains_from_urls(urls)
+        return canonical_url, alternate_domains
+
     def _html_to_markdown_fallback(self, html: str) -> str:
         """Extract a minimal, readable text snapshot from raw HTML."""
         if not html:
@@ -309,6 +351,7 @@ class WebCollector:
             html, html_error = self._fetch_html_fallback(url)
             if html:
                 data.html = html
+                data.canonical_url, data.alternate_domains = self._extract_canonical_metadata(html)
                 data.meta_description = self._extract_meta_description(html)
                 data.title = self._extract_html_title(html) or data.title
                 data.markdown_content = self._html_to_markdown_fallback(html)

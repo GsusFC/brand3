@@ -149,6 +149,12 @@ def _from_web_payload(payload: dict | None) -> WebData | None:
     return WebData(**payload)
 
 
+def _effective_brand_url(original_url: str, web_data: WebData | None) -> str:
+    if web_data and getattr(web_data, "canonical_url", ""):
+        return web_data.canonical_url
+    return original_url
+
+
 def _from_exa_payload(payload: dict | None) -> ExaData | None:
     if not payload:
         return None
@@ -503,13 +509,14 @@ def run(
             print(f"  Web: {len(web_data.markdown_content)} chars scraped")
             if run_id:
                 _store_safely(store, "web save", lambda: store.save_raw_input(run_id, "web", web_data))
+        effective_brand_url = _effective_brand_url(url, web_data)
 
         exa_collector = ExaCollector(api_key=EXA_API_KEY)
         exa_data = _load_cached(store, brand_name, url, "exa", BRAND3_CACHE_TTL_HOURS, _from_exa_payload)
         if exa_data:
             print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
         else:
-            exa_data = exa_collector.collect_brand_data(brand_name, url)
+            exa_data = exa_collector.collect_brand_data(brand_name, effective_brand_url)
             print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
             if run_id:
                 _store_safely(store, "exa save", lambda: store.save_raw_input(run_id, "exa", exa_data))
@@ -544,7 +551,7 @@ def run(
         else:
             competitor_data = competitor_collector.collect(
                 brand_name=brand_name,
-                brand_url=url,
+                brand_url=effective_brand_url,
                 brand_web=web_data,
                 exa_data=exa_data,
             )

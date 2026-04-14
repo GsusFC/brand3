@@ -9,6 +9,7 @@ Data sources: web scrape, social profiles (TODO), Exa
 
 import re
 from collections import Counter
+from urllib.parse import urlparse
 from ..models.brand import FeatureValue
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
@@ -318,9 +319,22 @@ class CoherenciaExtractor:
             return FeatureValue("cross_channel_coherence", 0.0, confidence=0.3, source="none")
 
         content = web.markdown_content.lower()
-        brand_domain = ""
-        if web.url:
-            brand_domain = web.url.replace("https://", "").replace("http://", "").split("/")[0]
+        brand_domains = set()
+        for candidate in [web.url, getattr(web, "canonical_url", "")]:
+            if not candidate:
+                continue
+            parsed = urlparse(candidate if "://" in candidate else f"https://{candidate}")
+            host = (parsed.netloc or parsed.path or "").lower().strip("/")
+            if host.startswith("www."):
+                host = host[4:]
+            if host:
+                brand_domains.add(host)
+        for domain in getattr(web, "alternate_domains", []) or []:
+            normalized = (domain or "").lower().strip("/")
+            if normalized.startswith("www."):
+                normalized = normalized[4:]
+            if normalized:
+                brand_domains.add(normalized)
 
         # Check if web links to socials
         has_social_links = any(s in content for s in [
@@ -353,7 +367,8 @@ class CoherenciaExtractor:
         brand_url_mentioned = False
         if exa and exa.mentions:
             for r in exa.mentions:
-                if brand_domain and brand_domain in (r.url or ""):
+                result_url = (r.url or "").lower()
+                if any(domain in result_url for domain in brand_domains):
                     brand_url_mentioned = True
                     break
 
@@ -377,7 +392,8 @@ class CoherenciaExtractor:
                 f"contact={has_contact}, "
                 f"touchpoint={has_touchpoint}, "
                 f"owned_surface={has_owned_surface}, "
-                f"brand_url_mentioned={brand_url_mentioned}"
+                f"brand_url_mentioned={brand_url_mentioned}, "
+                f"domains={','.join(sorted(brand_domains)) or 'none'}"
             ),
             confidence=0.7,
             source="web_scrape+exa",

@@ -480,6 +480,24 @@ Tabular foundation models for real-world data.
         self.assertIn("Runtime policy enforcement, steering, and audit trails", content)
         self.assertNotIn("ignore me", content)
 
+    def test_extract_canonical_metadata_captures_alternate_domains(self):
+        collector = WebCollector()
+        html = """
+<html>
+  <head>
+    <link rel="canonical" href="https://movements.dev/en" />
+    <link rel="alternate" href="https://movements.dev/es" hreflang="es" />
+    <meta property="og:url" content="https://movements.dev/en" />
+    <script type="application/ld+json">{"url":"https://movements.dev/en/search?q=test"}</script>
+  </head>
+</html>
+"""
+
+        canonical_url, alternate_domains = collector._extract_canonical_metadata(html)
+
+        self.assertEqual(canonical_url, "https://movements.dev/en")
+        self.assertIn("movements.dev", alternate_domains)
+
     def test_scrape_uses_html_fallback_when_firecrawl_is_empty(self):
         collector = WebCollector()
         html = """
@@ -642,6 +660,31 @@ class CoherenciaExtractorTests(unittest.TestCase):
         self.assertGreaterEqual(feature.value, 50.0)
         self.assertIn("touchpoint=True", feature.raw_value)
         self.assertIn("owned_surface=True", feature.raw_value)
+
+    def test_cross_channel_coherence_accepts_alternate_domains_as_brand_mentions(self):
+        web = WebData(
+            url="https://movements.mov/en",
+            canonical_url="https://movements.dev/en",
+            alternate_domains=["movements.dev"],
+            title="MOVEMENTS",
+            markdown_content="# MOVEMENTS\n\nJoin the movement.\n",
+        )
+        exa = ExaData(
+            brand_name="Movements",
+            mentions=[
+                ExaResult(
+                    url="https://movements.dev/en/blog/launch",
+                    title="MOVEMENTS launch",
+                    text="Movements launches its petition platform.",
+                )
+            ],
+        )
+        extractor = CoherenciaExtractor()
+
+        feature = extractor._cross_channel_coherence(web, exa)
+
+        self.assertIn("brand_url_mentioned=True", feature.raw_value)
+        self.assertIn("movements.dev", feature.raw_value)
 
 
 if __name__ == "__main__":

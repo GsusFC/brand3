@@ -1,0 +1,75 @@
+{
+  "name": "ai-startups-wave2-exploratory",
+  "brands": [
+    {
+      "brand_name": "Thinking Machines Lab",
+      "url": "https://thinkingmachines.ai/",
+      "expected_niche": "frontier_ai",
+      "expected_subtype": "model_lab",
+      "notes": "Mira Murati startup focused on open-source custom fine-tuning infrastructure (Tinker)."
+    },
+    {
+      "brand_name": "Cognition AI",
+      "url": "https://cognition.ai/",
+      "expected_niche": "base",
+      "expected_subtype": null,
+      "notes": "Known for Devin and moving toward specialized AI engineering validation workflows."
+    },
+    {
+      "brand_name": "Hume AI",
+      "url": "https://hume.ai/",
+      "expected_niche": "frontier_ai",
+      "expected_subtype": "ai_research_lab",
+      "notes": "Emotion-aware voice and expression models with large emotion taxonomy."
+    },
+    {
+      "brand_name": "Figure AI",
+      "url": "https://figure.ai/",
+      "expected_niche": "physical_ai",
+      "expected_subtype": null,
+      "notes": "Humanoid robotics company with AI-first product positioning."
+    },
+    {
+      "brand_name": "Kura",
+      "url": "https://kura.ai/",
+      "expected_niche": "base",
+      "expected_subtype": null,
+      "notes": "AI agent browsing and web interaction tools; subtype pending stronger signal."
+    },
+    {
+      "brand_name": "Harmonic",
+      "url": "https://harmonic.ai/",
+      "expected_niche": "frontier_ai",
+      "expected_subtype": "ai_research_lab",
+      "notes": "Mathematical superintelligence positioning with major Series B funding signal."
+    },
+    {
+      "brand_name": "Melder",
+      "url": "https://melder.ai/",
+      "expected_niche": "base",
+      "expected_subtype": null,
+      "notes": "AI Excel add-on for structured analysis and document workflows."
+    },
+    {
+      "brand_name": "Traba",
+      "url": "https://traba.work/",
+      "expected_niche": "base",
+      "expected_subtype": null,
+      "notes": "Industrial marketplace with AI agent automation in labor and supply operations."
+    },
+    {
+      "brand_name": "ConcertAI",
+      "url": "https://www.concertai.com/",
+      "expected_niche": "enterprise_ai",
+      "expected_subtype": null,
+      "notes": "Applied AI for life sciences and clinical-trial optimization."
+    },
+    {
+      "brand_name": "LangChain",
+      "url": "https://langchain.com/",
+      "expected_niche": "base",
+      "expected_subtype": null,
+      "notes": "Leading open-source framework ecosystem for LLM-powered application development."
+    }
+  ]
+}

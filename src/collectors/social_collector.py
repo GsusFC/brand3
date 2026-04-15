@@ -10,13 +10,14 @@ Scrapes public social media profiles and extracts:
 Supported platforms: Instagram, LinkedIn, TikTok, Twitter/X
 """
 
-import subprocess
 import re
 import json
 import os
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List, Tuple
+
+from firecrawl import Firecrawl
 
 
 @dataclass
@@ -85,29 +86,17 @@ class SocialCollector:
         self.api_key = api_key or os.environ.get("FIRECRAWL_API_KEY", "")
     
     def _run_firecrawl(self, url: str) -> dict:
-        """Run firecrawl CLI and return parsed output."""
-        cmd = ["firecrawl", "scrape", url, "--format", "markdown"]
-        
-        env = None
-        if self.api_key:
-            env = {**os.environ, "FIRECRAWL_API_KEY": self.api_key}
-        
+        """Scrape URL via Firecrawl Python SDK. Returns legacy {content, raw, error} shape."""
+        if not self.api_key:
+            return {"error": "FIRECRAWL_API_KEY not set"}
         try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=60, env=env
+            doc = Firecrawl(api_key=self.api_key).scrape(
+                url, formats=["markdown"], timeout=60000
             )
-            
-            if result.returncode != 0:
-                return {"error": result.stderr or f"Firecrawl failed with code {result.returncode}"}
-            
-            # Parse output — skip first line (Scrape ID)
-            lines = result.stdout.strip().split("\n")
-            content = "\n".join(lines[1:]) if lines else ""
-            return {"content": content, "raw": result.stdout}
-        except subprocess.TimeoutExpired:
-            return {"error": "Firecrawl timed out"}
-        except Exception as e:
-            return {"error": str(e)}
+        except Exception as exc:
+            return {"error": str(exc)}
+        content = (doc.markdown or "").strip()
+        return {"content": content, "raw": content}
     
     def _detect_social_profiles_from_content(self, content: str) -> Dict[str, List[str]]:
         """

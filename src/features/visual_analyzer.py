@@ -13,13 +13,14 @@ Returns visual consistency scores with confidence levels.
 
 import json
 import os
-import subprocess
 import tempfile
 import urllib.request
 import urllib.error
 import base64
 from dataclasses import dataclass, field
 from typing import Optional
+
+from firecrawl import Firecrawl
 
 from src.config import BRAND3_LLM_API_KEY, LLM_BASE_URL, VISION_MODEL
 
@@ -52,52 +53,25 @@ class VisualAnalyzer:
 
     def take_screenshot(self, url: str) -> dict:
         """
-        Take a screenshot of a URL using Firecrawl CLI.
-        Returns dict with 'screenshot_url' and optionally 'metadata'.
+        Take a screenshot via Firecrawl SDK. Returns {screenshot_url, metadata, error}.
         """
-        cmd = [
-            "firecrawl", "scrape", url,
-            "--format", "screenshot",
-            "--json",
-            "--max-age", "0",  # Force fresh screenshot to get non-expired URL
-        ]
-
-        env = os.environ.copy()
-        if self.firecrawl_api_key:
-            env["FIRECRAWL_API_KEY"] = self.firecrawl_api_key
-
+        if not self.firecrawl_api_key:
+            return {"error": "FIRECRAWL_API_KEY not set"}
         try:
-            result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=60, env=env
+            doc = Firecrawl(api_key=self.firecrawl_api_key).scrape(
+                url, formats=["screenshot"], max_age=0, timeout=60000
             )
+        except Exception as exc:
+            return {"error": f"Screenshot failed: {exc}"}
 
-            if result.returncode != 0:
-                return {"error": f"Firecrawl failed: {result.stderr}"}
+        screenshot_url = doc.screenshot or ""
+        if not screenshot_url:
+            return {"error": "No screenshot URL in response"}
 
-            # Parse JSON output
-            output = result.stdout.strip()
-            # Find the JSON part (skip timing/scrape ID lines)
-            json_start = output.find("{")
-            if json_start == -1:
-                return {"error": "No JSON found in firecrawl output"}
-
-            data = json.loads(output[json_start:])
-            screenshot_url = data.get("screenshot", "")
-
-            if not screenshot_url:
-                return {"error": "No screenshot URL in response"}
-
-            return {
-                "screenshot_url": screenshot_url,
-                "metadata": data.get("metadata", {}),
-            }
-
-        except subprocess.TimeoutExpired:
-            return {"error": "Firecrawl screenshot timed out"}
-        except json.JSONDecodeError as e:
-            return {"error": f"Failed to parse firecrawl output: {e}"}
-        except Exception as e:
-            return {"error": f"Screenshot failed: {e}"}
+        metadata = doc.metadata
+        if hasattr(metadata, "model_dump"):
+            metadata = metadata.model_dump()
+        return {"screenshot_url": screenshot_url, "metadata": metadata or {}}
 
     def _download_image(self, url: str) -> Optional[str]:
         """Download image to a temp file, return the path."""

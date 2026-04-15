@@ -9,13 +9,14 @@ Scrapes the brand's website and extracts:
 """
 
 import re
-import subprocess
 import json
 from dataclasses import dataclass
 from html import unescape
 from urllib.parse import urlparse
 from urllib.error import URLError
 from urllib.request import Request, urlopen
+
+from firecrawl import Firecrawl
 
 
 @dataclass
@@ -77,28 +78,18 @@ class WebCollector:
     def __init__(self, api_key: str = None):
         self.api_key = api_key
 
-    def _run_firecrawl(self, url: str, options: list[str] = None) -> dict:
-        """Run firecrawl CLI and return parsed output."""
-        cmd = ["firecrawl", "scrape", url, "--format", "markdown"]
-        if options:
-            cmd.extend(options)
-
-        env = None
-        if self.api_key:
-            import os
-            env = {**os.environ, "FIRECRAWL_API_KEY": self.api_key}
-
-        result = subprocess.run(
-            cmd, capture_output=True, text=True, timeout=60, env=env
-        )
-
-        if result.returncode != 0:
-            return {"error": result.stderr}
-
-        # Parse output — skip first line (Scrape ID)
-        lines = result.stdout.strip().split("\n")
-        content = "\n".join(lines[1:]) if lines else ""
-        return {"content": content, "raw": result.stdout}
+    def _run_firecrawl(self, url: str) -> dict:
+        """Scrape URL via Firecrawl Python SDK. Returns legacy {content, raw, error} shape."""
+        if not self.api_key:
+            return {"error": "FIRECRAWL_API_KEY not set"}
+        try:
+            doc = Firecrawl(api_key=self.api_key).scrape(
+                url, formats=["markdown"], timeout=60000
+            )
+        except Exception as exc:
+            return {"error": str(exc)}
+        content = (doc.markdown or "").strip()
+        return {"content": content, "raw": content}
 
     def _clean_markdown_content(self, content: str) -> str:
         """Remove obvious cookie/consent UI sludge from scraped markdown."""

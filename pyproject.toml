@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
   "exa-py>=1.8.8",
   "fastapi>=0.115.0",
+  "firecrawl-py>=4.0,<5",
   "uvicorn>=0.30.0",
 ]
 

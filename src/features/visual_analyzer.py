@@ -21,6 +21,8 @@ import base64
 from dataclasses import dataclass, field
 from typing import Optional
 
+from src.config import BRAND3_LLM_API_KEY, LLM_BASE_URL, VISION_MODEL
+
 
 @dataclass
 class VisualAnalysisResult:
@@ -44,34 +46,9 @@ class VisualAnalyzer:
     def __init__(self, api_key: str = None, vision_api_key: str = None,
                  vision_base_url: str = None, vision_model: str = None):
         self.firecrawl_api_key = api_key or os.environ.get("FIRECRAWL_API_KEY", "")
-        self.vision_api_key = vision_api_key or self._load_nous_key()
-        self.vision_base_url = vision_base_url or os.environ.get(
-            "BRAND3_VISION_BASE_URL",
-            "https://inference-api.nousresearch.com/v1"
-        )
-        self.vision_model = vision_model or os.environ.get(
-            "BRAND3_VISION_MODEL", "qwen/qwen3-vl-8b-instruct"
-        )
-
-    @staticmethod
-    def _load_nous_key() -> str:
-        """Load a working Nous agent key from Hermes auth.json."""
-        auth_path = os.path.expanduser("~/.hermes/auth.json")
-        if not os.path.exists(auth_path):
-            return ""
-        try:
-            with open(auth_path) as f:
-                data = json.load(f)
-            nous_creds = data.get("credential_pool", {}).get("nous", [])
-            for cred in nous_creds:
-                if cred.get("last_status") == "ok":
-                    return cred.get("agent_key", "")
-            for cred in nous_creds:
-                if cred.get("label") == "default":
-                    return cred.get("access_token", "")
-        except Exception:
-            pass
-        return ""
+        self.vision_api_key = vision_api_key or BRAND3_LLM_API_KEY
+        self.vision_base_url = vision_base_url or LLM_BASE_URL
+        self.vision_model = vision_model or VISION_MODEL
 
     def take_screenshot(self, url: str) -> dict:
         """

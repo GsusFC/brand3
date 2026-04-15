@@ -7,44 +7,23 @@ Uses LLM to make subjective judgments that keyword matching can't:
 - How does third-party perception compare to self-description?
 - What are the brand's distinctive concepts?
 
-Uses Nous API (OpenAI-compatible).
+Provider is configured via src.config (OpenAI-compatible API).
 """
 
 import json
-import os
 import urllib.request
 import urllib.error
+
+from src.config import BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MODEL
 
 
 class LLMAnalyzer:
     """LLM-powered brand content analyzer."""
 
     def __init__(self, api_key: str = None, base_url: str = None, model: str = None):
-        self.api_key = api_key or self._load_nous_key()
-        self.base_url = base_url or os.environ.get("BRAND3_LLM_BASE_URL", "https://inference-api.nousresearch.com/v1")
-        self.model = model or os.environ.get("BRAND3_LLM_MODEL", "xiaomi/mimo-v2-pro")
-
-    @staticmethod
-    def _load_nous_key() -> str:
-        """Load a working Nous agent key from Hermes auth.json."""
-        auth_path = os.path.expanduser("~/.hermes/auth.json")
-        if not os.path.exists(auth_path):
-            return ""
-        try:
-            with open(auth_path) as f:
-                data = json.load(f)
-            nous_creds = data.get("credential_pool", {}).get("nous", [])
-            # Find first credential with status "ok"
-            for cred in nous_creds:
-                if cred.get("last_status") == "ok":
-                    return cred.get("agent_key", "")
-            # Fallback: try the default api_key entry
-            for cred in nous_creds:
-                if cred.get("label") == "default":
-                    return cred.get("access_token", "")
-        except Exception:
-            pass
-        return ""
+        self.api_key = api_key or BRAND3_LLM_API_KEY
+        self.base_url = base_url or LLM_BASE_URL
+        self.model = model or LLM_MODEL
 
     def _call(self, system: str, user: str, max_tokens: int = 1000) -> str:
         """Make an LLM call via Nous API."""
@@ -59,7 +38,6 @@ class LLMAnalyzer:
             ],
             "max_tokens": max_tokens,
             "temperature": 0.1,
-            "reasoning": {"enabled": False},  # Disable reasoning for faster JSON responses
         }).encode()
 
         req = urllib.request.Request(

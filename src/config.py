@@ -14,9 +14,18 @@ if env_file.exists():
             os.environ.setdefault(key.strip(), value.strip())
 
 # API Keys
-FIRECRAWL_API_KEY=os.environ.get("FIRECRAWL_API_KEY", "")
-EXA_API_KEY=os.environ.get("EXA_API_KEY", "")
-OPENROUTER_API_KEY=os.environ.get("OPENROUTER_API_KEY", "")
+FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY", "")
+EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
+
+# Single LLM provider. Defaults to Google AI Studio (OpenAI-compatible),
+# but any OpenAI-compatible endpoint works by overriding BRAND3_LLM_BASE_URL
+# + BRAND3_LLM_API_KEY. Accepts common Google/OpenRouter env names as fallback.
+BRAND3_LLM_API_KEY = (
+    os.environ.get("BRAND3_LLM_API_KEY")
+    or os.environ.get("GEMINI_API_KEY")
+    or os.environ.get("GOOGLE_API_KEY")
+    or os.environ.get("OPENROUTER_API_KEY", "")
+)
 
 # Scoring defaults
 DEFAULT_NUM_EXA_RESULTS = 10
@@ -48,6 +57,10 @@ if _promotion_dimension_drops:
     except json.JSONDecodeError:
         pass
 
-# LLM config
-LLM_MODEL = os.environ.get("BRAND3_LLM_MODEL", "google/gemini-2.0-flash-001")
-LLM_BASE_URL = os.environ.get("BRAND3_LLM_BASE_URL", "https://openrouter.ai/api/v1")
+# LLM config (text + vision share the same provider by default)
+LLM_BASE_URL = os.environ.get(
+    "BRAND3_LLM_BASE_URL",
+    "https://generativelanguage.googleapis.com/v1beta/openai",
+)
+LLM_MODEL = os.environ.get("BRAND3_LLM_MODEL", "gemini-2.5-flash")
+VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", LLM_MODEL)

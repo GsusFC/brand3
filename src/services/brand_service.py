@@ -1588,21 +1588,36 @@ def list_analysis_jobs(
 
 
 def execute_analysis_job(job_id: int) -> dict:
+    """Atomically claim a queued job by id and run it to completion."""
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
-        job = store.get_analysis_job(job_id)
-        if not job:
+        existing = store.get_analysis_job(job_id)
+        if not existing:
             raise ValueError(f"Analysis job {job_id} not found")
-        if job["status"] not in {"queued"}:
-            return job
-        if job.get("cancel_requested"):
+        if existing["status"] != "queued":
+            return existing
+        if existing.get("cancel_requested"):
             store.cancel_analysis_job(job_id)
             cancelled = store.get_analysis_job(job_id)
             print(json.dumps(cancelled, indent=2))
             return cancelled
-        store.start_analysis_job(job_id)
+        claimed = store.claim_pending_job(job_id=job_id)
+        if not claimed:
+            return store.get_analysis_job(job_id)
     finally:
         store.close()
+
+    return run_claimed_job(claimed)
+
+
+def run_claimed_job(job: dict) -> dict:
+    """Run the pipeline for a job already claimed (status='running').
+
+    Intended for the polling worker: `claim_pending_job()` returns the claimed
+    job, which is then passed here. Callers with a specific job id should use
+    `execute_analysis_job(job_id)` instead — it handles the claim.
+    """
+    job_id = int(job["id"])
 
     def progress_cb(phase: str) -> None:
         progress_store = SQLiteStore(BRAND3_DB_PATH)
@@ -1654,6 +1669,15 @@ def execute_analysis_job(job_id: int) -> dict:
             return failed
         finally:
             store.close()
+
+
+def claim_next_job(worker_id: str | None = None) -> dict | None:
+    """Claim the oldest queued job for a worker. Returns None if nothing pending."""
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.claim_pending_job(worker_id=worker_id)
+    finally:
+        store.close()
 
 
 def cancel_analysis_job(job_id: int) -> dict:

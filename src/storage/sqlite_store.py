@@ -707,6 +707,58 @@ class SQLiteStore:
         self.conn.commit()
         self.add_analysis_job_event(job_id, phase="collecting", level="info", message="Job started")
 
+    def claim_pending_job(
+        self,
+        job_id: int | None = None,
+        worker_id: str | None = None,
+    ) -> dict | None:
+        """Atomically transition a queued job to running.
+
+        If job_id is None, picks the oldest queued job. Returns the job row or None
+        if nothing was claimable (no queued jobs, or another worker won the race).
+        Safe for multiple workers against the same SQLite DB in WAL mode.
+        """
+        if job_id is None:
+            row = self.conn.execute(
+                """
+                SELECT id FROM analysis_jobs
+                WHERE status='queued' AND cancel_requested=0
+                ORDER BY requested_at ASC, id ASC
+                LIMIT 1
+                """
+            ).fetchone()
+            if not row:
+                return None
+            job_id = int(row["id"])
+
+        cursor = self.conn.execute(
+            """
+            UPDATE analysis_jobs
+            SET status='running',
+                phase='collecting',
+                started_at=?,
+                completed_at=NULL,
+                error=NULL,
+                run_id=NULL,
+                result_json=NULL,
+                attempt_count=COALESCE(attempt_count, 0) + 1
+            WHERE id=? AND status='queued' AND cancel_requested=0
+            """,
+            (datetime.now().isoformat(), job_id),
+        )
+        self.conn.commit()
+        if cursor.rowcount == 0:
+            return None
+
+        suffix = f" by {worker_id}" if worker_id else ""
+        self.add_analysis_job_event(
+            job_id,
+            phase="collecting",
+            level="info",
+            message=f"Job claimed{suffix}",
+        )
+        return self.get_analysis_job(job_id)
+
     def update_analysis_job_phase(self, job_id: int, phase: str) -> None:
         row = self.conn.execute(
             "SELECT phase FROM analysis_jobs WHERE id=?",

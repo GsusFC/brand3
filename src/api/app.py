@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.services import brand_service
-
-
-JOB_EXECUTOR = ThreadPoolExecutor(max_workers=2, thread_name_prefix="brand3-job")
 
 
 class AnalyzeRequest(BaseModel):
@@ -121,7 +117,7 @@ def build_app() -> FastAPI:
     @app.post("/api/analyze/jobs", response_model=AnalysisJobResponse, status_code=202)
     def analyze_brand_async(payload: AnalyzeRequest) -> dict[str, Any]:
         try:
-            job = brand_service.enqueue_analysis_job(
+            return brand_service.enqueue_analysis_job(
                 payload.url,
                 brand_name=payload.brand_name,
                 use_llm=payload.use_llm,
@@ -129,17 +125,13 @@ def build_app() -> FastAPI:
             )
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        JOB_EXECUTOR.submit(brand_service.execute_analysis_job, job["id"])
-        return job
 
     @app.post("/api/analyze/jobs/{job_id}/retry", response_model=AnalysisJobResponse, status_code=202)
     def retry_analysis_job(job_id: int) -> dict[str, Any]:
         try:
-            job = brand_service.retry_analysis_job(job_id)
+            return brand_service.retry_analysis_job(job_id)
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=str(exc)) from exc
-        JOB_EXECUTOR.submit(brand_service.execute_analysis_job, job["id"])
-        return job
 
     @app.post("/api/analyze/jobs/{job_id}/cancel", response_model=AnalysisJobResponse)
     def cancel_analysis_job(job_id: int) -> dict[str, Any]:

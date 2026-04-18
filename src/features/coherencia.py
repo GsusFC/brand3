@@ -87,23 +87,27 @@ def _clean_messaging_gaps(raw_gaps) -> tuple[list[dict], bool]:
     return cleaned, dropped_any
 
 
-def _clean_tone_examples(raw_examples) -> list[dict]:
-    """Filter malformed tone examples. Returns only items matching the contract."""
+def _clean_tone_examples(raw_examples) -> tuple[list[dict], bool]:
+    """Filter malformed tone examples. Returns (cleaned, dropped_any)."""
     if not isinstance(raw_examples, list):
-        return []
+        return [], raw_examples is not None
     cleaned = []
+    dropped_any = False
     for item in raw_examples:
         if not isinstance(item, dict):
+            dropped_any = True
             continue
         source = item.get("source")
         quote = item.get("quote")
         marker = item.get("tone_marker")
         if source not in {"web", "mention"}:
+            dropped_any = True
             continue
         if not isinstance(quote, str) or not isinstance(marker, str):
+            dropped_any = True
             continue
         cleaned.append({"source": source, "quote": quote, "tone_marker": marker})
-    return cleaned
+    return cleaned, dropped_any
 
 
 def _extract_domains_from_web(web: WebData) -> set[str]:
@@ -431,8 +435,11 @@ class CoherenciaExtractor:
                                             extra={"got": type(result.get("tone_consistency_score")).__name__})
             score = max(0.0, min(score, 100.0))
 
-            cleaned = _clean_tone_examples(result.get("examples"))
-            partial_evidence = bool(snippets) and not cleaned and gap_signal != "none"
+            cleaned, dropped_any = _clean_tone_examples(result.get("examples"))
+            partial_evidence = bool(snippets) and (
+                (not cleaned and (gap_signal != "none" or dropped_any))
+                or (dropped_any and not cleaned)
+            )
             confidence = 0.5 if (gap_signal == "none" and not snippets) or partial_evidence else 0.85
 
             raw_payload: dict = {

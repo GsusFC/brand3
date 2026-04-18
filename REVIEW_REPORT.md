@@ -1,3 +1,95 @@
+# Review report — Dimensión Diferenciación
+
+## Resumen ejecutivo
+
+- **Decisión**: APPROVE
+- **Fixes aplicados**: 1
+- **Bloqueantes**: 0
+- **Advertencias**: 2
+
+## Fixes aplicados por el revisor
+
+### 1. `91c74be` — Validación de shape en las listas del output LLM de `uniqueness`
+
+**Archivo:** `src/features/diferenciacion.py:268-295`.
+
+`_uniqueness` validaba `verdict` y `uniqueness_score`, pero las cuatro listas que el LLM devuelve (`unique_phrases`, `generic_phrases`, `brand_vocabulary`, `competitor_overlap_signals`) se pasaban sin filtrar:
+
+```python
+"unique_phrases": result.get("unique_phrases") or [],
+```
+
+Si el LLM hubiera devuelto un string en vez de lista, o items no-string, quedaban en `raw_value` con shape inconsistente. Regla #9 del review brief — trivial.
+
+**Fix:** helper `_clean_string_list(items, limit=20)` que descarta no-strings, strips whitespace y clamps a 20. Si las cuatro listas quedan vacías y `verdict != "unclear"`, degrada `confidence` a 0.5 y añade `raw_value.reason = "llm_partial_evidence"` — mismo patrón ya establecido en `coherencia` y `vitalidad`.
+
+## Bloqueantes restantes
+
+Ninguno.
+
+## Advertencias
+
+### A1. Learning system sigue referenciando la feature eliminada `generic_language_score`
+
+**Archivos:** `src/learning/calibration.py:135,143,193`, `src/learning/applier.py:40`, y `tests/test_learning.py` (múltiples líneas).
+
+`calibration.py` analiza rows históricos buscando `feature_name == "generic_language_score"` para generar candidates de la rule `lenguaje_generico`. Esa feature ya no existe — el engine ahora chequea `uniqueness`. El código no crashea (solo nunca encuentra rows nuevos), pero el loop de aprendizaje sobre generic language quedó dormido.
+
+El prompt de review no lo incluye en scope — learning system queda fuera del refactor de Diferenciación. Recomendación para humano: migrar esas referencias a `uniqueness` (con la semántica invertida: low uniqueness = generic) cuando se retome el learning system. No bloquea merge.
+
+### A2. Rule `lenguaje_generico` mantiene su nombre (opción B del prompt)
+
+Codex eligió la opción B: mantener `condition="lenguaje_generico"` y cambiar el check para leer `uniqueness` (`engine.py:60, 126-128`). Coherente en:
+- `src/scoring/engine.py`
+- `src/niche/profiles.py:35, 56, 77` — overrides por perfil siguen usando la key `lenguaje_generico`.
+- `src/dimensions.py` — string human-readable en la lista `rules` no referencia nombres técnicos.
+
+No hay inconsistencia parcial. Es una decisión de diseño aceptable, pero quien lea el código por primera vez puede extrañarse de que la rule se llame `lenguaje_generico` y lea la feature `uniqueness`. Un comentario en `engine.py:126` ayudaría. No bloqueante.
+
+## Tests
+
+```
+132 passed in 1.46s
+```
+
+Suite completa verde tras el fix. Tests focales de Diferenciación + scoring engine corridos una vez antes y una vez después del fix (ambas rondas 16/16 y suite 132/132).
+
+### Cumplimiento del prompt verificado
+
+- ✅ 5 features con nombres exactos: `positioning_clarity`, `uniqueness`, `competitor_distance`, `content_authenticity`, `brand_personality` (`dimensions.py:113-138`, `diferenciacion.py:97-101`).
+- ✅ Pesos `0.30 / 0.25 / 0.20 / 0.15 / 0.10`. Suman 1.0 (assert en `dimensions.py` pasa en import).
+- ✅ `raw_value` de las 5 features es dict nativo.
+- ✅ `diferenciacion_llm.py` eliminado (no aparece en árbol).
+- ✅ Features viejas (`unique_value_prop`, `generic_language_score`, `brand_vocabulary` como top-level) eliminadas del extractor y de `dimensions.py`. `brand_vocabulary` sigue como **sub-key** del `raw_value` de `uniqueness`, no como feature independiente — correcto.
+- ✅ `DiferenciacionExtractor.__init__` acepta `llm` (verificado en tests y en `brand_service.py`).
+- ✅ `LLMAnalyzer` gana `analyze_positioning_clarity` y `analyze_uniqueness`; `analyze_positioning` y `analyze_differentiation` conservados.
+- ✅ Regla `lenguaje_generico` coherente cross-file (opción B).
+- ✅ Validación shape en `_positioning_clarity` (verdict enum, score numérico, `evidence` filtrada vía `_clean_positioning_evidence`, degradación a `llm_partial_evidence`).
+- ✅ Validación shape en `_uniqueness` tras el fix.
+- ✅ Fallback de `uniqueness` normaliza por longitud: `ratio = len(generic_hits) / sentence_count` (`diferenciacion.py:236`). Era el bug documentado en `scoring_review.md`. OK.
+- ✅ `AuthenticityAnalyzer` intacto (no tocado por el refactor).
+
+### Bugs potenciales revisados, descartados
+
+- División por cero: `_uniqueness_fallback` ya guardiaba `sentence_count` (`if sentence_count else 0.0`).
+- `CompetitorData=None`: ambos métodos LLM hacen `if competitor_data:` antes de iterar.
+- `max([])` / slicing: no encontrado en los caminos nuevos.
+
+## Notas cualitativas
+
+- Evidencia literal preservada: `positioning_clarity.raw_value.evidence` con `{quote, signal}`; `uniqueness.raw_value` con 4 listas de strings + `reasoning`. Excelente material para conversación comercial ("aquí están las frases de plantilla que detectamos en vuestra web").
+- Normalización por longitud en el fallback de `uniqueness` es la decisión correcta — el bug original del scoring generaba falsos "muy genérico" para webs largas con volumen alto de copy incluso cuando el ratio era bajo.
+- `_competitor_distance` usa `CompetitorData.comparisons` con distancias ya calculadas; `raw_value` con `closest_competitor`, `most_different`, y `brand_unique_terms`. Útil.
+- Patrón de diseño uniforme con Vitalidad, Presencia y Coherencia: LLM-first con fallback heurístico + dict raw_value estructurado + validación de enum y listas.
+
+---
+
+**Branch:** `main`
+**Último commit del refactor:** `bb95068` (Codex) + `91c74be` (fix review)
+**Base:** `main`
+
+---
+
 # Review report — Dimensión Presencia
 
 ## Resumen ejecutivo

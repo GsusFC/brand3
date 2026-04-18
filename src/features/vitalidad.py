@@ -241,7 +241,17 @@ class VitalidadExtractor:
             )
 
         verdict = result.get("verdict", "unclear")
-        score = float(result.get("momentum_score", 50))
+        try:
+            score = float(result.get("momentum_score", 50))
+        except (TypeError, ValueError):
+            raw = json.dumps({
+                "reason": "llm_invalid_response",
+                "got": type(result.get("momentum_score")).__name__,
+            })
+            return FeatureValue(
+                "momentum", 50.0,
+                raw_value=raw, confidence=0.3, source="heuristic_fallback",
+            )
         score = max(0.0, min(score, 100.0))
         confidence = 0.5 if verdict == "unclear" else 0.85
 

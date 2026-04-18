@@ -30,10 +30,9 @@ class ScoringEngineTests(unittest.TestCase):
                 "controversy_flag": FeatureValue("controversy_flag", 0.0),
             },
             "diferenciacion": {
-                "unique_value_prop": FeatureValue("unique_value_prop", 75.0),
-                "generic_language_score": FeatureValue("generic_language_score", 30.0),
+                "positioning_clarity": FeatureValue("positioning_clarity", 75.0),
+                "uniqueness": FeatureValue("uniqueness", 70.0),
                 "competitor_distance": FeatureValue("competitor_distance", 70.0),
-                "brand_vocabulary": FeatureValue("brand_vocabulary", 65.0),
                 "content_authenticity": FeatureValue("content_authenticity", 85.0),
                 "brand_personality": FeatureValue("brand_personality", 80.0),
             },
@@ -46,12 +45,12 @@ class ScoringEngineTests(unittest.TestCase):
 
         brand = self.engine.score_brand("https://example.com", "Example", features_by_dim)
 
-        self.assertAlmostEqual(brand.dimensions["coherencia"].score, 66.5)
+        self.assertAlmostEqual(brand.dimensions["coherencia"].score, 65.5)
         self.assertAlmostEqual(brand.dimensions["presencia"].score, 76.3)
-        self.assertAlmostEqual(brand.dimensions["diferenciacion"].score, 66.1)
+        self.assertAlmostEqual(brand.dimensions["diferenciacion"].score, 74.8)
         # vitalidad = 0.40*90 + 0.35*80 + 0.25*60 = 79.0
         self.assertAlmostEqual(brand.dimensions["vitalidad"].score, 79.0)
-        self.assertEqual(brand.composite_score, 67.6)
+        self.assertEqual(brand.composite_score, 69.2)
 
     def test_presence_ghost_brand_rule_caps_score(self):
         score = self.engine.score_dimension(
@@ -133,10 +132,9 @@ class ScoringEngineTests(unittest.TestCase):
                 "controversy_flag": FeatureValue("controversy_flag", 0.0),
             },
             "diferenciacion": {
-                "unique_value_prop": FeatureValue("unique_value_prop", 84.0),
-                "generic_language_score": FeatureValue("generic_language_score", 40.0),
+                "positioning_clarity": FeatureValue("positioning_clarity", 84.0),
+                "uniqueness": FeatureValue("uniqueness", 60.0),
                 "competitor_distance": FeatureValue("competitor_distance", 82.0),
-                "brand_vocabulary": FeatureValue("brand_vocabulary", 86.0),
                 "content_authenticity": FeatureValue("content_authenticity", 88.0),
                 "brand_personality": FeatureValue("brand_personality", 78.0),
             },
@@ -157,10 +155,9 @@ class ScoringEngineTests(unittest.TestCase):
         frontier_engine = ScoringEngine(calibration_profile="frontier_ai")
 
         features = {
-            "unique_value_prop": FeatureValue("unique_value_prop", 90.0),
-            "generic_language_score": FeatureValue("generic_language_score", 78.0),
+            "positioning_clarity": FeatureValue("positioning_clarity", 90.0),
+            "uniqueness": FeatureValue("uniqueness", 20.0),
             "competitor_distance": FeatureValue("competitor_distance", 85.0),
-            "brand_vocabulary": FeatureValue("brand_vocabulary", 88.0),
             "content_authenticity": FeatureValue("content_authenticity", 82.0),
             "brand_personality": FeatureValue("brand_personality", 76.0),
         }

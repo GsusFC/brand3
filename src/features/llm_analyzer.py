@@ -144,6 +144,93 @@ Return JSON:
 }}"""
         )
 
+    def analyze_positioning_clarity(
+        self, web_content: str, brand_name: str, competitor_snippets: list[str] | None = None
+    ) -> dict:
+        """LLM judgment for positioning clarity with literal evidence."""
+        content = web_content[:3000]
+        competitor_block = ""
+        if competitor_snippets:
+            competitor_block = "\n\nCompetitor context:\n---\n" + "\n---\n".join(
+                snippet[:500] for snippet in competitor_snippets[:3]
+            )
+
+        return self._call_json(
+            system=(
+                "You are a brand positioning analyst. Return ONLY valid JSON. "
+                "You must use literal quotes from the website as evidence."
+            ),
+            user=f"""Analyze the positioning clarity of this brand.
+
+Brand: {brand_name}
+Website content:
+---
+{content}
+---{competitor_block}
+
+Instructions:
+- Distinguish:
+  - clear: the position is articulated concretely and sustained in the content
+  - diffuse: it gestures at a position but loses focus
+  - generic: template SaaS language with little real positioning
+  - unclear: too little substance or under 500 words of usable content
+- Evidence quotes must be literal snippets from the website, not paraphrases.
+
+Return JSON with this exact structure:
+{{
+  "clarity_score": 0,
+  "verdict": "clear" | "diffuse" | "generic" | "unclear",
+  "stated_position": "one sentence",
+  "target_audience": "one phrase",
+  "differentiator_claimed": "one phrase",
+  "evidence": [
+    {{"quote": "literal quote", "signal": "clear" | "generic" | "aspirational"}}
+  ],
+  "reasoning": "1-2 sentences"
+}}"""
+        )
+
+    def analyze_uniqueness(
+        self, web_content: str, brand_name: str, competitor_snippets: list[str] | None = None
+    ) -> dict:
+        """LLM judgment for brand uniqueness vs generic language."""
+        content = web_content[:3000]
+        competitor_block = ""
+        if competitor_snippets:
+            competitor_block = "\n\nCompetitor context:\n---\n" + "\n---\n".join(
+                snippet[:500] for snippet in competitor_snippets[:3]
+            )
+
+        return self._call_json(
+            system=(
+                "You are a brand differentiation analyst. Return ONLY valid JSON. "
+                "Distinguish generic SaaS template language from ownable vocabulary."
+            ),
+            user=f"""Analyze how unique this brand's language is.
+
+Brand: {brand_name}
+Website content:
+---
+{content}
+---{competitor_block}
+
+Instructions:
+- Distinguish generic SaaS language ("cutting edge", "seamless", "revolutionary").
+- Distinguish empty aspirational language ("we empower", "unlock potential").
+- Highlight authentic brand vocabulary and repeated ownable terms.
+
+Return JSON with this exact structure:
+{{
+  "uniqueness_score": 0,
+  "verdict": "highly_unique" | "moderately_unique" | "derivative" | "generic" | "unclear",
+  "unique_phrases": ["phrase"],
+  "generic_phrases": ["phrase"],
+  "brand_vocabulary": ["term"],
+  "competitor_overlap_signals": ["signal"],
+  "reasoning": "1-2 sentences"
+}}"""
+        )
+
     def analyze_sentiment(self, mentions: list[str], brand_name: str) -> dict:
         """
         Analyze sentiment from third-party mentions.
@@ -168,6 +255,125 @@ Return JSON:
     "negative_signals": ["specific negative things mentioned"],
     "controversy_detected": true/false,
     "controversy_details": "description if any, null otherwise"
+}}"""
+        )
+
+    def analyze_messaging_consistency(
+        self,
+        web_content: str,
+        third_party_mentions: list[dict],
+        brand_name: str,
+    ) -> dict:
+        """Compare self-description (web) with third-party descriptions (mentions).
+
+        Returns verdict with literal quotes in `gaps` as evidence.
+        """
+        # REVIEW: método nuevo para messaging_consistency de coherencia.
+        if not web_content or not isinstance(third_party_mentions, list):
+            return {}
+
+        content = web_content[:3000]
+        lines = []
+        for i, m in enumerate(third_party_mentions[:8], start=1):
+            text = (m.get("text") or "")[:400].replace("\n", " ").strip()
+            url = m.get("url") or ""
+            title = (m.get("title") or "").replace("\n", " ").strip()
+            if not text and not title:
+                continue
+            lines.append(f"[{i}] {url}\n{title}\n{text}")
+        mentions_block = "\n---\n".join(lines) if lines else "(no mentions available)"
+
+        return self._call_json(
+            system=(
+                "You are a brand coherence analyst. Compare how the brand describes "
+                "itself against how third parties describe it. You quote sources "
+                "literally. Return ONLY valid JSON."
+            ),
+            user=f"""Analyse whether "{brand_name}" describes itself consistently with how others describe it.
+
+Brand's own website copy:
+---
+{content}
+---
+
+Third-party mentions:
+---
+{mentions_block}
+---
+
+Rules:
+- Return literal quotes in `gaps`, not paraphrase.
+- If fewer than 2 third-party mentions are useful, return `verdict: "unclear"` and empty `gaps`.
+- Ignore mentions that are clearly NOT about "{brand_name}" (scraping false positives).
+
+Return JSON with this exact structure:
+{{
+    "consistency_score": 0-100,
+    "verdict": "aligned" | "partial_gap" | "divergent" | "unclear",
+    "self_category": "how the brand describes itself in one phrase",
+    "third_party_category": "how others describe it in one phrase",
+    "aligned_themes": ["themes both agree on"],
+    "gaps": [
+        {{"self_says": "literal quote from website", "third_party_says": "literal quote from a mention", "source_url": "the mention url"}}
+    ],
+    "reasoning": "1-2 sentences explaining the verdict"
+}}"""
+        )
+
+    def analyze_tone_consistency(
+        self,
+        web_content: str,
+        third_party_snippets: list[dict],
+        brand_name: str,
+    ) -> dict:
+        """Assess whether tone on the brand's surface matches third-party tone."""
+        # REVIEW: método nuevo para tone_consistency de coherencia.
+        if not web_content:
+            return {}
+
+        content = web_content[:2500]
+        lines = []
+        for i, m in enumerate((third_party_snippets or [])[:5], start=1):
+            text = (m.get("text") or "")[:300].replace("\n", " ").strip()
+            url = m.get("url") or ""
+            if not text:
+                continue
+            lines.append(f"[{i}] {url}\n{text}")
+        mentions_block = "\n---\n".join(lines) if lines else "(no third-party snippets)"
+
+        return self._call_json(
+            system=(
+                "You are a brand tone analyst. Describe the tone of the brand's own "
+                "copy and the tone of third-party mentions, and judge whether they "
+                "match. Quote sources literally. Return ONLY valid JSON."
+            ),
+            user=f"""Assess tone consistency for "{brand_name}".
+
+Brand's own website copy:
+---
+{content}
+---
+
+Third-party mentions:
+---
+{mentions_block}
+---
+
+Rules:
+- Tone examples MUST be literal quotes.
+- If no useful third-party material, return `gap_signal: "none"`.
+- If contradictions exist, return `gap_signal: "strong"` and a lower score.
+
+Return JSON with this exact structure:
+{{
+    "tone_consistency_score": 0-100,
+    "self_tone": "description of the tone in the website",
+    "third_party_tone": "how the mentions sound about the brand",
+    "gap_signal": "none" | "mild" | "strong",
+    "examples": [
+        {{"source": "web" | "mention", "quote": "literal quote", "tone_marker": "what signals the tone"}}
+    ],
+    "reasoning": "1-2 sentences"
 }}"""
         )
 

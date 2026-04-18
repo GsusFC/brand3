@@ -125,7 +125,7 @@ class ScoringEngine:
                 ScoringRule(
                     condition="lenguaje_generico",
                     check=lambda f, threshold=float(generic.get("threshold", 80)): (
-                        f.get("generic_language_score", FeatureValue("", 0)).value > threshold
+                        f.get("uniqueness", FeatureValue("", 100)).value < (100 - threshold)
                     ),
                     cap=float(generic.get("cap", 25)),
                     insight="Lenguaje excesivamente genérico — baja diferenciación",

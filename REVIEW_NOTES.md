@@ -1,81 +1,107 @@
-# REVIEW NOTES — Rediseño Presencia
+# REVIEW NOTES — Rediseño Diferenciación
 
-**Branch:** `refactor/presencia`
-**Scope:** refactor completo de la dimensión `presencia` siguiendo el patrón single-file ya usado en Vitalidad.
+**Branch:** `refactor/diferenciacion`
+**Scope:** refactor completo de la dimensión `diferenciacion` siguiendo el patrón single-file y `raw_value` estructurado ya usado en Vitalidad y Presencia.
 
 ## Archivos modificados
 
-1. `src/features/presencia.py` — reescritura completa a 4 features heurísticas con `raw_value` estructurado.
-2. `src/dimensions.py` — bloque `presencia` actualizado de 5 features a 4 con pesos `0.30 / 0.35 / 0.25 / 0.10`.
-3. `tests/test_feature_extractors.py` — tests viejos de presencia sustituidos por cobertura de las 4 features nuevas.
-4. `tests/test_scoring_engine.py` — fixtures de presencia actualizados con los nuevos nombres/pesos y asserts recalculados.
+1. `src/features/diferenciacion.py` — reescritura completa a 5 features con dos paths LLM-first y fallbacks heurísticos.
+2. `src/features/diferenciacion_llm.py` — eliminado; la lógica LLM quedó absorbida en `diferenciacion.py`.
+3. `src/features/llm_analyzer.py` — añadidos `analyze_positioning_clarity` y `analyze_uniqueness`.
+4. `src/dimensions.py` — bloque `diferenciacion` actualizado a pesos `0.30 / 0.25 / 0.20 / 0.15 / 0.10`.
+5. `src/scoring/engine.py` — rule `lenguaje_generico` adaptada para usar `uniqueness`.
+6. `src/services/brand_service.py` — wiring actualizado para usar `DiferenciacionExtractor(llm=llm)`.
+7. `tests/test_feature_extractors.py` — tests viejos sustituidos por cobertura de las 5 features nuevas y validación LLM.
+8. `tests/test_scoring_engine.py` — fixtures y expected values recalculados con los nombres/pesos nuevos.
+
+## Decisión sobre la rule rename
+
+Se eligió **Opción B**.
+
+Mantengo el nombre `lenguaje_generico` en `src/scoring/engine.py` y en `src/niche/profiles.py` sin cambios de nombres. La condición ahora capea cuando `uniqueness < (100 - threshold)`.
+
+Razón:
+- minimiza conflictos con el trabajo paralelo de Coherencia;
+- evita tocar `src/niche/profiles.py`;
+- conserva la semántica práctica de la regla sin introducir una migración de nombres innecesaria.
 
 ## Decisiones de implementación no obvias
 
-### D1. `raw_value` estructurado como dict nativo
+### D1. `positioning_clarity` valida `verdict` y evidencia por separado
 
-La instrucción pedía `raw_value` dict y no string. A diferencia de Vitalidad, aquí no serialicé JSON: `FeatureValue.raw_value` sigue tipado como `Optional[str]`, pero el modelo no impone validación runtime y el criterio explícito del encargo era devolver dict estructurado.
+La validación estricta sigue el patrón de `momentum`:
+- `verdict` fuera del enum => fallback total con `reason="llm_invalid_verdict"`;
+- `evidence` malformada o vacía => se conserva `source="llm"` pero baja `confidence` a `0.5` y se marca `reason="llm_partial_evidence"`.
 
-### D2. `social_footprint` sin fallback heurístico desde web/exa
+### D2. `uniqueness` fallback normalizado por longitud
 
-El diseño objetivo pedía explícitamente que, si no hay `SocialData`, la feature no castigue con `0` sino con `15`, `confidence=0.3` y `raw_value.reason="no_social_data"`. Por eso eliminé el fallback viejo que infería plataformas desde `web`/`exa`. Queda más consistente y evita inflar la presencia con señales débiles.
+El fallback ya no usa conteo bruto de frases genéricas. Ahora calcula `ratio = generic_hits / sentence_count`, y desde ahí mapea el score, para no castigar textos largos por volumen absoluto.
 
-### D3. `search_visibility` fusiona búsqueda + AI visibility
+### D3. `content_authenticity` y `brand_personality` conservan el score del analyzer pero no su `raw_value`
 
-La nueva feature parte de menciones Exa relevantes (`_subject_relevance > 0.35`), añade bonus por `own_url_in_top3` e integra la señal antigua de `ai_visibility` como un bonus adicional. El output conserva evidencia literal: top 3 resultados relevantes con `url`, `title`, `snippet`.
+No toqué `src/features/authenticity.py`. En su lugar, `diferenciacion.py` reutiliza sus scores y construye `raw_value` dict estructurado encima:
+- `content_authenticity`: `ai_pattern_hits`, `structural_hits`, `uniformity_penalty`, `authenticity_verdict`, `evidence_snippets`
+- `brand_personality`: `personality_score`, `signals_detected`, `corporate_signals_count`, `verdict`
 
-### D4. `directory_presence` por tiers
+### D4. `competitor_distance` prioriza `CompetitorData`
 
-Se renombró `directory_listings` → `directory_presence` y se separaron dominios en:
-- Tier 1: `Crunchbase`, `LinkedIn company`, `G2`, `Capterra`
-- Tier 2: `Yelp`, `Glassdoor`, `Trustpilot`, `AngelList`, `Product Hunt`
+Cuando hay `competitor_data.comparisons`, la feature devuelve `source="competitor_web_comparison"` con resumen estructurado:
+- `avg_distance`
+- `closest_competitor`
+- `most_different`
+- `competitors_analyzed`
+- `brand_unique_terms`
+- `similarity_threshold_crossed`
 
-Puntuación: `20` por tier-1, `8` por tier-2, `max 100`.
-
-### D5. Distinción `minimal` vs `thin` en `web_presence`
-
-`web_presence` marca como `thin` solo contenido meaningful mínimo (`>=24 chars`). Cadenas tipo `"Login"` quedaban demasiado arriba y pasaron a `minimal`, que era el comportamiento esperado por los tests y por el diseño objetivo.
+Si no hay comparaciones, cae a un fallback neutral con `raw_value` dict, no string.
 
 ## Tests añadidos vs eliminados
 
 ### Eliminados / sustituidos
 
-- Tests de `ai_visibility` como feature independiente.
-- Tests de `directory_listings` con nombre viejo.
-- Test viejo de `social_footprint` basado en `weighted_presence=` string.
+- Tests de `unique_value_prop`.
+- Tests de `generic_language_score`.
+- Tests de `brand_vocabulary` como feature independiente.
 
 ### Añadidos
 
-`web_presence`
-- `test_web_presence_placeholder_page_scores_minimal`
-- `test_web_presence_normal_site_scores_high_with_structured_raw_value`
-- `test_web_presence_without_https_loses_signal`
-- `test_web_presence_without_meaningful_content_stays_low`
+`positioning_clarity`
+- `test_positioning_clarity_without_llm_uses_heuristic_fallback`
+- `test_positioning_clarity_with_llm_uses_structured_output`
+- `test_positioning_clarity_invalid_verdict_falls_back`
+- `test_positioning_clarity_malformed_evidence_degrades_confidence`
 
-`social_footprint`
-- `test_social_footprint_without_social_data_degrades_gracefully`
-- `test_social_footprint_with_multiple_platforms_is_structured`
-- `test_social_footprint_rewards_verified_accounts`
+`uniqueness`
+- `test_uniqueness_without_llm_uses_normalized_ratio_fallback`
+- `test_uniqueness_with_llm_uses_structured_output`
+- `test_uniqueness_invalid_verdict_falls_back`
 
-`search_visibility`
-- `test_search_visibility_without_results_returns_low_neutral`
-- `test_search_visibility_with_few_results_stays_mid_low`
-- `test_search_visibility_rewards_many_results_and_own_url_top3`
-- `test_search_visibility_filters_low_subject_relevance`
+`competitor_distance`
+- `test_competitor_distance_uses_structured_raw_value`
 
-`directory_presence`
-- `test_directory_presence_without_directories_is_zero`
-- `test_directory_presence_with_only_tier2_is_limited`
-- `test_directory_presence_with_tier1_and_tier2_mix_scores_higher`
+`content_authenticity` / `brand_personality`
+- `test_content_authenticity_and_brand_personality_return_structured_raw_value`
+
+`scoring`
+- fixtures y expected values recalculados en `test_weighted_average_and_composite_score`
+- fixture de rule override actualizada para `uniqueness`
 
 ## Warnings no bloqueantes
 
-1. El runner documentado en el encargo era `./venv/bin/pytest`, pero en este repo el entorno útil está en `./.venv`, no `./venv`.
-2. La suite completa con `./.venv/bin/pytest -v` no terminó limpia por un problema de import en `tests/test_learning.py` y `tests/test_main_experiment.py`: `ModuleNotFoundError: No module named 'main'` durante collection, pese a que `main.py` existe en raíz. No lo toqué por estar fuera del scope del refactor de Presencia.
-3. También apareció un artefacto no relacionado en el árbol: `brand3_scoring.egg-info/`. No lo toqué.
+1. La suite completa con `./.venv/bin/pytest -v` falla en collection fuera del scope del refactor por `ModuleNotFoundError: No module named 'main'` en `tests/test_learning.py` y `tests/test_main_experiment.py`.
+2. En este workspace hay cambios paralelos de Coherencia sin commit (`src/features/coherencia.py`, eliminación de `src/features/coherencia_llm.py`). No los toqué ni los incluí en el commit de Diferenciación.
+3. El entorno local no tiene `firecrawl`, así que para la verificación dirigida con `unittest` tuve que stubear ese módulo en memoria.
 
-## Verificaciones manuales pendientes
+## Verificaciones realizadas
 
-1. Re-ejecutar `tests/test_feature_extractors.py` y `tests/test_scoring_engine.py` después de los dos ajustes finales (`minimal` vs `thin`, y asserts recalculados) si quieres un verde final documentado; no lo hice porque el encargo pedía no correr tests más de 2 veces y ambas corridas ya se usaron.
-2. Verificar por qué `pytest` no puede importar `main` en la suite completa dentro de `.venv`; parece un problema del entorno/configuración de imports, no del refactor de Presencia.
-3. Revisar con ejemplos reales si el bonus de `search_visibility` por `ai_weighted_sum` es demasiado generoso para marcas con pocas menciones search pero buena presencia en roundups de IA.
+1. `python3 -m py_compile` sobre los archivos modificados por Diferenciación: OK.
+2. `./.venv/bin/pytest tests/test_feature_extractors.py tests/test_scoring_engine.py -v`:
+   falló inicialmente porque la rama aún tenía wiring viejo y expected values obsoletos; eso quedó corregido después.
+3. `./.venv/bin/pytest -v`:
+   interrumpido por collection errors fuera de scope (`import main`).
+4. `python3 -m unittest` con stub de `firecrawl` sobre:
+   - `DiferenciacionExtractorTests`
+   - `ScoringEngineTests`
+   Resultado: **16 tests OK**.
+5. Verificación manual de `DiferenciacionExtractor().extract(None, None, None)` con stub de `firecrawl`:
+   no crashea, devuelve las 5 features y todos los `raw_value` son dict.

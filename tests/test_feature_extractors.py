@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+from src.collectors.competitor_collector import ComparisonResult, CompetitorData
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.exa_collector import ExaCollector
 from src.collectors.social_collector import PlatformMetrics, SocialData
@@ -8,6 +9,7 @@ from src.collectors.web_collector import WebData
 from src.collectors.web_collector import WebCollector
 from src.features.coherencia import CoherenciaExtractor
 from src.features.diferenciacion import DiferenciacionExtractor
+from src.features.llm_analyzer import LLMAnalyzer
 from src.features.percepcion import PercepcionExtractor
 from src.features.presencia import PresenciaExtractor
 from src.features.vitalidad import VitalidadExtractor
@@ -110,157 +112,251 @@ class DiferenciacionExtractorTests(unittest.TestCase):
     def setUp(self):
         self.extractor = DiferenciacionExtractor()
 
-    def test_unique_value_prop_rewards_specific_technical_positioning_and_proof(self):
+    @staticmethod
+    def _competitor_data():
+        return CompetitorData(
+            brand_name="Example",
+            brand_url="https://example.com",
+            comparisons=[
+                ComparisonResult(
+                    competitor_name="ClosestCo",
+                    competitor_url="https://closest.example",
+                    overall_distance=0.22,
+                    brand_unique_terms=["deterministic", "control", "governance"],
+                ),
+                ComparisonResult(
+                    competitor_name="FarCo",
+                    competitor_url="https://far.example",
+                    overall_distance=0.81,
+                    brand_unique_terms=["deterministic", "control", "governance", "audit"],
+                ),
+            ],
+        )
+
+    @staticmethod
+    def _make_llm(positioning=None, uniqueness=None):
+        llm = LLMAnalyzer(api_key="test")
+        llm.analyze_positioning_clarity = lambda *args, **kwargs: positioning or {}
+        llm.analyze_uniqueness = lambda *args, **kwargs: uniqueness or {}
+        return llm
+
+    def test_positioning_clarity_without_llm_uses_heuristic_fallback(self):
         web = WebData(
             url="https://priorlabs.ai",
             title="One Model, Infinite Predictions",
             markdown_content=(
                 "# One Model, Infinite Predictions\n\n"
-                "Pre-trained tabular foundation models for making predictions on structured data.\n\n"
-                "6K GITHUB STARS\n"
-                "3M DOWNLOADS\n"
-                "PUBLISHED IN NATURE\n"
+                "We are building tabular foundation models for developers.\n"
+                "Built for teams making predictions on structured data.\n"
             ),
         )
 
-        feature = self.extractor._unique_value_prop(web)
+        feature = self.extractor.extract(web=web)["positioning_clarity"]
 
-        self.assertGreaterEqual(feature.value, 60.0)
-        self.assertIn("specificity_hits=", feature.raw_value)
-        self.assertIn("proof_points=", feature.raw_value)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.confidence, 0.4)
+        self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
+        self.assertIn("built for", feature.raw_value["signals_detected"])
 
-    def test_unique_value_prop_stays_low_for_generic_claims_without_proof(self):
+    def test_positioning_clarity_with_llm_uses_structured_output(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("word " * 600),
+        )
+        extractor = DiferenciacionExtractor(
+            llm=self._make_llm(
+                positioning={
+                    "clarity_score": 82,
+                    "verdict": "clear",
+                    "stated_position": "Deterministic infrastructure for enterprise AI.",
+                    "target_audience": "Enterprise AI teams",
+                    "differentiator_claimed": "A deterministic control layer",
+                    "evidence": [
+                        {"quote": "Deterministic infrastructure for enterprise AI.", "signal": "clear"}
+                    ],
+                    "reasoning": "The statement is concrete and repeated.",
+                }
+            )
+        )
+
+        feature = extractor.extract(web=web)["positioning_clarity"]
+
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 82)
+        self.assertEqual(feature.raw_value["verdict"], "clear")
+        self.assertEqual(len(feature.raw_value["evidence"]), 1)
+        self.assertEqual(feature.confidence, 0.85)
+
+    def test_positioning_clarity_invalid_verdict_falls_back(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("word " * 600),
+        )
+        extractor = DiferenciacionExtractor(
+            llm=self._make_llm(
+                positioning={
+                    "clarity_score": 82,
+                    "verdict": "sharp",
+                    "stated_position": "x",
+                    "target_audience": "y",
+                    "differentiator_claimed": "z",
+                    "evidence": [{"quote": "x", "signal": "clear"}],
+                    "reasoning": "bad verdict",
+                }
+            )
+        )
+
+        feature = extractor.extract(web=web)["positioning_clarity"]
+
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_invalid_verdict")
+
+    def test_positioning_clarity_malformed_evidence_degrades_confidence(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("word " * 600),
+        )
+        extractor = DiferenciacionExtractor(
+            llm=self._make_llm(
+                positioning={
+                    "clarity_score": 78,
+                    "verdict": "clear",
+                    "stated_position": "x",
+                    "target_audience": "y",
+                    "differentiator_claimed": "z",
+                    "evidence": [{"quote": "x"}],
+                    "reasoning": "partial evidence",
+                }
+            ),
+        )
+
+        feature = extractor.extract(web=web)["positioning_clarity"]
+
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.confidence, 0.5)
+        self.assertEqual(feature.raw_value["reason"], "llm_partial_evidence")
+        self.assertEqual(feature.raw_value["evidence"], [])
+
+    def test_uniqueness_without_llm_uses_normalized_ratio_fallback(self):
         web = WebData(
             url="https://generic.example",
             title="Generic SaaS",
             markdown_content=(
                 "# Generic SaaS\n\n"
                 "We help businesses grow and improve efficiency.\n"
-                "Save time. Save money. Better results.\n"
+                "Save time. Save money. Better results. Cutting edge workflows.\n"
             ),
         )
 
-        feature = self.extractor._unique_value_prop(web)
+        feature = self.extractor.extract(web=web)["uniqueness"]
 
-        self.assertLessEqual(feature.value, 35.0)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
+        self.assertGreater(feature.raw_value["ratio"], 0.0)
+        self.assertGreater(feature.raw_value["sentence_count"], 0)
 
-    def test_unique_value_prop_rewards_signature_and_proof_language_for_frontier_brands(self):
+    def test_uniqueness_with_llm_uses_structured_output(self):
         web = WebData(
-            url="https://ricursive.com",
-            title="Ricursive",
-            markdown_content=(
-                "# Ricursive\n\n"
-                "We develop frontier AI methods to reinvent chip development.\n"
-                "Ricursive Intelligence is a frontier AI lab focused on building self-improving systems.\n"
-                "We are the team behind AlphaChip (Nature 2021) and DAC Best Paper 2023.\n"
-            ),
+            url="https://example.com",
+            title="Example",
+            markdown_content=("word " * 600),
+        )
+        extractor = DiferenciacionExtractor(
+            llm=self._make_llm(
+                uniqueness={
+                    "uniqueness_score": 76,
+                    "verdict": "moderately_unique",
+                    "unique_phrases": ["deterministic layer"],
+                    "generic_phrases": ["cutting edge"],
+                    "brand_vocabulary": ["frontier intelligence"],
+                    "competitor_overlap_signals": ["shares some enterprise framing"],
+                    "reasoning": "Some ownable language exists.",
+                }
+            )
         )
 
-        feature = self.extractor._unique_value_prop(web)
+        feature = extractor.extract(web=web)["uniqueness"]
 
-        self.assertGreaterEqual(feature.value, 50.0)
-        self.assertIn("proof_points=", feature.raw_value)
-        self.assertIn("signature_hits=", feature.raw_value)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 76)
+        self.assertEqual(feature.raw_value["verdict"], "moderately_unique")
+        self.assertIn("deterministic layer", feature.raw_value["unique_phrases"])
+        self.assertEqual(feature.confidence, 0.85)
 
-    def test_unique_value_prop_rewards_control_and_surface_bundle_for_cause_platforms(self):
+    def test_uniqueness_invalid_verdict_falls_back(self):
         web = WebData(
-            url="https://movements.mov/en",
-            title="MOVEMENTS",
-            markdown_content=(
-                "# MOVEMENTS\n\n"
-                "Convert your cause into an unstoppable movement. MOVEMENTS offers petitions, community, content and subscriptions to drive change.\n"
-                "No algorithms limiting your reach. You maintain complete control over your audience.\n"
-            ),
+            url="https://example.com",
+            title="Example",
+            markdown_content=("word " * 600),
+        )
+        extractor = DiferenciacionExtractor(
+            llm=self._make_llm(
+                uniqueness={
+                    "uniqueness_score": 90,
+                    "verdict": "iconic",
+                    "unique_phrases": [],
+                    "generic_phrases": [],
+                    "brand_vocabulary": [],
+                    "competitor_overlap_signals": [],
+                    "reasoning": "bad verdict",
+                }
+            )
         )
 
-        feature = self.extractor._unique_value_prop(web)
+        feature = extractor.extract(web=web)["uniqueness"]
 
-        self.assertGreaterEqual(feature.value, 45.0)
-        self.assertIn("control_hits=", feature.raw_value)
-        self.assertIn("cause_terms=", feature.raw_value)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_invalid_verdict")
 
-    def test_generic_language_is_normalized_by_content_length(self):
-        short_web = WebData(
-            url="https://short.example",
-            title="Short",
-            markdown_content=(
-                "We are a leading provider. "
-                "Our innovative solutions help teams save time. "
-                "We deliver scalable solutions. "
-                "We help businesses grow."
-            ),
+    def test_competitor_distance_uses_structured_raw_value(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content="Deterministic infrastructure for AI teams.",
         )
-        long_web = WebData(
-            url="https://long.example",
-            title="Long",
-            markdown_content=(
-                " ".join(
-                    [
-                        "This product helps finance teams reconcile multi-entity close workflows with auditable approvals."
-                    ] * 24
-                )
-                + " Leading provider. Innovative solutions. Save time. We help businesses grow."
-            ),
-        )
+        feature = self.extractor.extract(
+            web=web,
+            competitor_data=self._competitor_data(),
+        )["competitor_distance"]
 
-        short_score = self.extractor._generic_language(short_web)
-        long_score = self.extractor._generic_language(long_web)
+        self.assertEqual(feature.source, "competitor_web_comparison")
+        self.assertEqual(feature.raw_value["closest_competitor"]["name"], "ClosestCo")
+        self.assertEqual(feature.raw_value["most_different"]["name"], "FarCo")
+        self.assertEqual(feature.raw_value["competitors_analyzed"], 2)
+        self.assertIsInstance(feature.raw_value["brand_unique_terms"], list)
 
-        self.assertGreater(short_score.value, long_score.value)
-        self.assertIn("ratio=", short_score.raw_value)
-        self.assertIn("ratio=", long_score.raw_value)
-
-    def test_generic_language_low_ratio_stays_low_even_with_some_generic_phrases(self):
+    def test_content_authenticity_and_brand_personality_return_structured_raw_value(self):
         web = WebData(
             url="https://example.com",
             title="Example",
             markdown_content=(
-                " ".join(
-                    [
-                        "This platform automates supplier onboarding across legal, procurement, and finance systems."
-                    ] * 18
+                "We're building a deterministic layer for enterprise AI. "
+                "We believe teams deserve control instead of generic copilots. "
+                "Learn more about our platform and how we help teams move faster."
+            ),
+        )
+        exa = ExaData(
+            brand_name="Example",
+            mentions=[
+                ExaResult(
+                    url="https://example.com/coverage",
+                    title="Coverage",
+                    text="Opinionated founder-led product.",
                 )
-                + " Save time."
-            ),
+            ],
         )
 
-        score = self.extractor._generic_language(web)
+        features = self.extractor.extract(web=web, exa=exa)
+        authenticity = features["content_authenticity"]
+        personality = features["brand_personality"]
 
-        self.assertLessEqual(score.value, 30.0)
-
-    def test_brand_vocabulary_detects_signature_phrases_and_repeated_acronyms(self):
-        web = WebData(
-            url="https://ctgt.ai",
-            title="CTGT",
-            markdown_content=(
-                "# CTGT\n\n"
-                "The deterministic layer for frontier intelligence.\n"
-                "CTGT helps teams govern mission critical applications.\n"
-                "CTGT introduces a deterministic layer for frontier intelligence.\n"
-            ),
-        )
-
-        feature = self.extractor._brand_vocabulary(web, exa=None, competitor_data=None)
-
-        self.assertGreaterEqual(feature.value, 20.0)
-        self.assertIn("acronyms=", feature.raw_value)
-        self.assertIn("signature_phrases=", feature.raw_value)
-
-    def test_brand_vocabulary_detects_repeated_all_caps_brand_name(self):
-        web = WebData(
-            url="https://movements.mov/en",
-            title="MOVEMENTS",
-            markdown_content=(
-                "# MOVEMENTS\n\n"
-                "MOVEMENTS helps you organize, scale and sustain your cause.\n"
-                "At MOVEMENTS, everything you generate is yours.\n"
-            ),
-        )
-
-        feature = self.extractor._brand_vocabulary(web, exa=None, competitor_data=None)
-
-        self.assertGreaterEqual(feature.value, 10.0)
-        self.assertIn("all_caps=", feature.raw_value)
+        self.assertIsInstance(authenticity.raw_value, dict)
+        self.assertIn("authenticity_verdict", authenticity.raw_value)
+        self.assertIsInstance(personality.raw_value, dict)
+        self.assertIn("signals_detected", personality.raw_value)
 
 
 class PresenciaExtractorTests(unittest.TestCase):
@@ -1028,126 +1124,185 @@ class ExaCollectorTests(unittest.TestCase):
 
 
 class CoherenciaExtractorTests(unittest.TestCase):
-    def test_skip_visual_analysis_uses_heuristic_fallback(self):
-        web = WebData(
-            url="https://example.com",
-            title="Example",
-            markdown_content="Brand guidelines and logo usage live here.",
-        )
+    """Covers the 4 coherencia features with dict raw_value."""
+
+    def test_visual_consistency_skip_flag_emits_structured_fallback(self):
+        web = WebData(url="https://example.com", title="Example",
+                      markdown_content="Brand guidelines and logo usage live here.")
         extractor = CoherenciaExtractor(skip_visual_analysis=True)
-
         feature = extractor._visual_consistency(web)
-
         self.assertEqual(feature.source, "web_scrape_heuristic")
-        self.assertIn("visual analysis skipped", feature.raw_value)
+        self.assertEqual(feature.raw_value["reason"], "visual_analysis_skipped")
+        self.assertTrue(feature.raw_value["heuristic_score_used"])
+        self.assertIn("brand_in_header", feature.raw_value["heuristic_signals"])
 
-    def test_messaging_consistency_extracts_category_from_hero_copy(self):
+    def test_visual_consistency_without_web_returns_zero_with_reason(self):
+        feature = CoherenciaExtractor(skip_visual_analysis=True)._visual_consistency(web=None)
+        self.assertEqual(feature.value, 0.0)
+        self.assertEqual(feature.raw_value["reason"], "no_web_data")
+
+    def test_messaging_consistency_without_llm_uses_heuristic_category_matching(self):
         web = WebData(
             url="https://priorlabs.ai",
             title="One Model, Infinite Predictions",
             markdown_content=(
                 "# One Model, Infinite Predictions\n\n"
-                "Pre-trained tabular foundation models for making predictions on structured data.\n\n"
-                "Talk to sales\n"
+                "Pre-trained tabular foundation models for making predictions on structured data.\n"
             ),
         )
         exa = ExaData(
             brand_name="Prior Labs",
-            mentions=[
-                ExaResult(
-                    url="https://example.com/post-1",
-                    title="Prior Labs launches tabular foundation model",
-                    text="The company builds pre-trained foundation models for structured data prediction.",
-                )
-            ],
+            mentions=[ExaResult(
+                url="https://example.com/post-1",
+                title="Prior Labs launches tabular foundation model",
+                text="The company builds pre-trained foundation models for structured data prediction.",
+            )],
         )
-        extractor = CoherenciaExtractor()
-
-        feature = extractor._messaging_consistency(web, exa)
-
+        feature = CoherenciaExtractor()._messaging_consistency(web, exa)
+        self.assertEqual(feature.source, "heuristic_fallback")
         self.assertGreater(feature.value, 60.0)
-        self.assertIn("tabular foundation models", feature.raw_value)
+        self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
 
-    def test_messaging_consistency_with_web_category_but_no_exa_data_is_not_default_failure(self):
+    def test_messaging_consistency_without_exa_degrades_gracefully(self):
         web = WebData(
             url="https://example.com",
             title="Deterministic AI",
-            markdown_content=(
-                "# Deterministic AI\n\n"
-                "A deterministic policy layer for enterprise AI governance.\n"
-            ),
+            markdown_content="# Deterministic AI\n\nA deterministic policy layer for enterprise AI governance.\n",
         )
-        extractor = CoherenciaExtractor()
-
-        feature = extractor._messaging_consistency(web, exa=None)
-
+        feature = CoherenciaExtractor()._messaging_consistency(web, exa=None)
         self.assertEqual(feature.value, 55.0)
-        self.assertIn("policy layer", feature.raw_value)
+        self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
 
-    def test_cross_channel_coherence_is_not_overly_punitive_for_startup_touchpoints(self):
-        web = WebData(
-            url="https://poetiq.ai/",
-            title="Poetiq",
-            markdown_content=(
-                "# Poetiq\n\n"
-                "Secure your place for the next generation of reasoning.\n"
-                "Your request has been received. We will be in touch shortly.\n"
-            ),
-        )
-        exa = ExaData(
-            brand_name="Poetiq",
-            mentions=[
-                ExaResult(
-                    url="https://poetiq.ai/blog/launch",
-                    title="Poetiq launch",
-                    text="Poetiq launches reasoning research platform.",
-                )
+    def _make_coherence_llm(self, messaging_payload=None, tone_payload=None):
+        class FakeLLM:
+            api_key = "sk-test"
+            def analyze_messaging_consistency(self, web_content, mentions, brand_name):
+                return messaging_payload
+            def analyze_tone_consistency(self, web_content, snippets, brand_name):
+                return tone_payload
+        return FakeLLM()
+
+    def test_messaging_consistency_with_llm_uses_structured_verdict(self):
+        web = WebData(url="https://example.com", title="Example",
+                      markdown_content="We are predictive infrastructure for structured data.")
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(url="https://x.com/a", title="launches", text="Example is building predictive infra."),
+            ExaResult(url="https://x.com/b", title="take", text="Example, a predictive data company."),
+        ])
+        llm = self._make_coherence_llm(messaging_payload={
+            "consistency_score": 88, "verdict": "aligned",
+            "self_category": "predictive infrastructure",
+            "third_party_category": "predictive data company",
+            "aligned_themes": ["prediction", "structured data"],
+            "gaps": [], "reasoning": "Aligned.",
+        })
+        feature = CoherenciaExtractor(llm=llm)._messaging_consistency(web, exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 88.0)
+        self.assertEqual(feature.confidence, 0.85)
+        self.assertEqual(feature.raw_value["verdict"], "aligned")
+        self.assertIn("prediction", feature.raw_value["aligned_themes"])
+
+    def test_messaging_consistency_with_invalid_verdict_falls_back(self):
+        web = WebData(url="https://example.com", title="Example", markdown_content="x")
+        exa = ExaData(brand_name="Example", mentions=[ExaResult(url="https://x/1", title="t", text="t")])
+        llm = self._make_coherence_llm(messaging_payload={
+            "consistency_score": 70, "verdict": "harmonious", "gaps": [],
+        })
+        feature = CoherenciaExtractor(llm=llm)._messaging_consistency(web, exa)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_invalid_verdict")
+
+    def test_messaging_consistency_malformed_gaps_are_filtered(self):
+        web = WebData(url="https://example.com", title="Example",
+                      markdown_content="We are a data platform for teams.")
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(url="https://x/1", title="t", text="t"),
+            ExaResult(url="https://x/2", title="u", text="u"),
+        ])
+        llm = self._make_coherence_llm(messaging_payload={
+            "consistency_score": 55, "verdict": "partial_gap",
+            "gaps": [
+                {"self_says": "data platform", "third_party_says": "analytics tool", "source_url": "https://x/1"},
+                {"self_says": "platform", "third_party_says": 123, "source_url": "https://x/2"},
+                "not a dict",
             ],
-        )
-        extractor = CoherenciaExtractor()
+            "reasoning": "Mismatch.",
+        })
+        feature = CoherenciaExtractor(llm=llm)._messaging_consistency(web, exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(len(feature.raw_value["gaps"]), 1)
+        self.assertNotIn("reason", feature.raw_value)
 
-        feature = extractor._cross_channel_coherence(web, exa)
+    def test_messaging_consistency_partial_gap_all_dropped_degrades_confidence(self):
+        web = WebData(url="https://example.com", title="Example",
+                      markdown_content="We are a data platform.")
+        exa = ExaData(brand_name="Example", mentions=[ExaResult(url="https://x/1", title="t", text="t")])
+        llm = self._make_coherence_llm(messaging_payload={
+            "consistency_score": 50, "verdict": "partial_gap",
+            "gaps": [{"self_says": 123, "third_party_says": "analytics"}],
+            "reasoning": "Mismatch.",
+        })
+        feature = CoherenciaExtractor(llm=llm)._messaging_consistency(web, exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.confidence, 0.5)
+        self.assertEqual(feature.raw_value["reason"], "llm_partial_evidence")
 
-        self.assertGreaterEqual(feature.value, 50.0)
-        self.assertIn("touchpoint=True", feature.raw_value)
-        self.assertIn("brand_url_mentioned=True", feature.raw_value)
+    def test_tone_consistency_with_llm_uses_structured_gap_signal(self):
+        web = WebData(url="https://example.com", title="Example",
+                      markdown_content="We build deterministic policy layers.")
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(url="https://x/1", title="t", text="Example is a rigorous enterprise platform."),
+        ])
+        llm = self._make_coherence_llm(tone_payload={
+            "tone_consistency_score": 78,
+            "self_tone": "formal technical", "third_party_tone": "formal enterprise",
+            "gap_signal": "mild",
+            "examples": [{"source": "web", "quote": "deterministic policy layers",
+                          "tone_marker": "technical precision"}],
+            "reasoning": "Both lean formal.",
+        })
+        feature = CoherenciaExtractor(llm=llm)._tone_consistency(web, exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 78.0)
+        self.assertEqual(feature.raw_value["gap_signal"], "mild")
+        self.assertEqual(len(feature.raw_value["examples"]), 1)
 
-    def test_cross_channel_coherence_stays_low_when_site_has_no_touchpoints(self):
+    def test_tone_consistency_without_llm_falls_back_to_heuristic(self):
+        web = WebData(url="https://example.com", title="Example",
+                      markdown_content="Hey! This is gonna be awesome. Let's go!")
+        feature = CoherenciaExtractor()._tone_consistency(web, exa=None)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
+        self.assertGreater(feature.raw_value["heuristic_signals"]["informal_markers"], 0)
+
+    def test_cross_channel_coherence_counts_social_platforms_explicitly(self):
         web = WebData(
-            url="https://example.com/",
-            title="Example",
-            markdown_content="# Example\n\nMinimal landing page.\n",
-        )
-        extractor = CoherenciaExtractor()
-
-        feature = extractor._cross_channel_coherence(web, exa=None)
-
-        self.assertLessEqual(feature.value, 25.0)
-
-    def test_cross_channel_coherence_recognizes_membership_and_creation_flows(self):
-        web = WebData(
-            url="https://movements.mov/en",
-            title="MOVEMENTS",
+            url="https://poetiq.ai/", title="Poetiq",
             markdown_content=(
-                "# MOVEMENTS\n\n"
-                "Start the movement.\n"
-                "Sign In\n"
-                "Sign Up\n"
-                "Create your petition\n"
-                "All-in-one to create a movement.\n"
-                "Privacy Policy\n"
-                "Terms\n"
+                "# Poetiq\n\nFollow us at https://twitter.com/poetiq and https://linkedin.com/company/poetiq.\n"
+                "Get in touch. Privacy Policy. About us.\n"
             ),
         )
-        extractor = CoherenciaExtractor()
-
-        feature = extractor._cross_channel_coherence(web, exa=None)
-
+        exa = ExaData(brand_name="Poetiq", mentions=[
+            ExaResult(url="https://poetiq.ai/blog/launch", title="launch", text="..."),
+        ])
+        feature = CoherenciaExtractor()._cross_channel_coherence(web, exa)
         self.assertGreaterEqual(feature.value, 50.0)
-        self.assertIn("touchpoint=True", feature.raw_value)
-        self.assertIn("owned_surface=True", feature.raw_value)
+        self.assertTrue(feature.raw_value["has_social_links"])
+        self.assertIn("twitter", feature.raw_value["social_platforms_detected"])
+        self.assertIn("linkedin", feature.raw_value["social_platforms_detected"])
+        self.assertTrue(feature.raw_value["brand_url_mentioned_in_exa"])
 
-    def test_cross_channel_coherence_accepts_alternate_domains_as_brand_mentions(self):
+    def test_cross_channel_coherence_stays_low_on_minimal_landing(self):
+        web = WebData(url="https://example.com/", title="Example",
+                      markdown_content="# Example\n\nMinimal landing page.\n")
+        feature = CoherenciaExtractor()._cross_channel_coherence(web, exa=None)
+        self.assertLessEqual(feature.value, 25.0)
+        self.assertFalse(feature.raw_value["has_social_links"])
+        self.assertEqual(feature.raw_value["social_platforms_detected"], [])
+
+    def test_cross_channel_coherence_accepts_alternate_domains(self):
         web = WebData(
             url="https://movements.mov/en",
             canonical_url="https://movements.dev/en",
@@ -1155,22 +1310,19 @@ class CoherenciaExtractorTests(unittest.TestCase):
             title="MOVEMENTS",
             markdown_content="# MOVEMENTS\n\nJoin the movement.\n",
         )
-        exa = ExaData(
-            brand_name="Movements",
-            mentions=[
-                ExaResult(
-                    url="https://movements.dev/en/blog/launch",
-                    title="MOVEMENTS launch",
-                    text="Movements launches its petition platform.",
-                )
-            ],
+        exa = ExaData(brand_name="Movements", mentions=[
+            ExaResult(url="https://movements.dev/en/blog/launch", title="launch", text="..."),
+        ])
+        feature = CoherenciaExtractor()._cross_channel_coherence(web, exa)
+        self.assertTrue(feature.raw_value["brand_url_mentioned_in_exa"])
+        self.assertIn("movements.dev", feature.raw_value["brand_domains"])
+
+    def test_extract_always_returns_four_features(self):
+        features = CoherenciaExtractor(skip_visual_analysis=True).extract(web=None, exa=None)
+        self.assertEqual(
+            set(features.keys()),
+            {"visual_consistency", "messaging_consistency", "tone_consistency", "cross_channel_coherence"},
         )
-        extractor = CoherenciaExtractor()
-
-        feature = extractor._cross_channel_coherence(web, exa)
-
-        self.assertIn("brand_url_mentioned=True", feature.raw_value)
-        self.assertIn("movements.dev", feature.raw_value)
 
 
 if __name__ == "__main__":

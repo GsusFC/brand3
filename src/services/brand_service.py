@@ -36,8 +36,8 @@ from src.niche import (
 )
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.percepcion_llm import PercepcionLLMExtractor
-from src.features.coherencia_llm import CoherenciaLLMExtractor
-from src.features.diferenciacion_llm import DiferenciacionLLMExtractor
+from src.features.coherencia import CoherenciaExtractor
+from src.features.diferenciacion import DiferenciacionExtractor
 from src.features.presencia import PresenciaExtractor
 from src.features.vitalidad import VitalidadExtractor
 from src.learning.applier import CandidateApplyError, apply_candidate
@@ -654,12 +654,10 @@ def run(
         features_by_dim["vitalidad"] = vitalidad_ext.extract(web=web_data, exa=exa_data)
 
         if llm:
-            coherencia_ext = CoherenciaLLMExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)
-            diferenciacion_ext = DiferenciacionLLMExtractor(llm=llm)
+            coherencia_ext = CoherenciaExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)
+            diferenciacion_ext = DiferenciacionExtractor(llm=llm)
             percepcion_ext = PercepcionLLMExtractor(llm=llm)
         else:
-            from src.features.coherencia import CoherenciaExtractor
-            from src.features.diferenciacion import DiferenciacionExtractor
             from src.features.percepcion import PercepcionExtractor
             coherencia_ext = CoherenciaExtractor(skip_visual_analysis=skip_visual_analysis)
             diferenciacion_ext = DiferenciacionExtractor()

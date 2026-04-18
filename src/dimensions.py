@@ -14,24 +14,24 @@ DIMENSIONS = {
         "weight": 0.20,
         "features": {
             "visual_consistency": {
-                "description": "¿Colores, tipografía e imágenes son consistentes entre web y socials?",
-                "weight": 0.30,
-                "sources": ["web_scrape", "social_media"],
+                "description": "¿Colores, tipografía e imágenes son consistentes? (AI-vision)",
+                "weight": 0.25,
+                "sources": ["web_scrape", "visual_analysis"],
             },
             "messaging_consistency": {
-                "description": "¿El tagline, bio y descripciones dicen lo mismo en todos los canales?",
-                "weight": 0.35,
-                "sources": ["web_scrape", "social_media", "exa"],
+                "description": "¿Cómo se describe la marca vs cómo la describen terceros? Juicio LLM con citas literales",
+                "weight": 0.40,
+                "sources": ["web_scrape", "exa", "llm_analysis"],
             },
             "tone_consistency": {
-                "description": "¿El tono de comunicación es el mismo en web, redes y contenido?",
+                "description": "¿El tono de la web coincide con el tono de cómo hablan de ella? Juicio LLM",
                 "weight": 0.20,
-                "sources": ["web_scrape", "social_media"],
+                "sources": ["web_scrape", "exa", "llm_analysis"],
             },
             "cross_channel_coherence": {
-                "description": "¿Los canales se enlazan y referencian entre sí correctamente?",
+                "description": "¿Links a socials, contact, touchpoints, y mentions externas al propio dominio?",
                 "weight": 0.15,
-                "sources": ["web_scrape", "social_media"],
+                "sources": ["web_scrape", "exa"],
             },
         },
         "rules": [
@@ -110,29 +110,24 @@ DIMENSIONS = {
         "description": "¿Dice algo distinto a sus competidores o es genérica?",
         "weight": 0.20,
         "features": {
-            "unique_value_prop": {
-                "description": "¿Articula claramente qué la hace diferente?",
-                "weight": 0.22,
-                "sources": ["web_scrape", "exa"],
+            "positioning_clarity": {
+                "description": "¿La marca articula una posición clara y defendible en su mercado?",
+                "weight": 0.30,
+                "sources": ["web_scrape", "llm_analysis"],
             },
-            "generic_language_score": {
-                "description": "Cuánto usa frases genéricas vs lenguaje propio (inverso)",
-                "weight": 0.18,
+            "uniqueness": {
+                "description": "¿La marca usa lenguaje y vocabulario propios en vez de plantilla?",
+                "weight": 0.25,
                 "sources": ["web_scrape", "llm_analysis"],
             },
             "competitor_distance": {
                 "description": "¿Se posiciona distinto a la competencia principal?",
-                "weight": 0.22,
+                "weight": 0.20,
                 "sources": ["exa", "llm_analysis"],
-            },
-            "brand_vocabulary": {
-                "description": "¿Tiene términos, frases o conceptos propios reconocibles?",
-                "weight": 0.15,
-                "sources": ["web_scrape", "exa"],
             },
             "content_authenticity": {
                 "description": "¿El contenido se siente original y humano, no plantilla/AI sludge?",
-                "weight": 0.13,
+                "weight": 0.15,
                 "sources": ["content_analysis", "vision"],
             },
             "brand_personality": {

@@ -153,6 +153,19 @@ class DiferenciacionExtractor:
             cleaned.append({"quote": quote.strip(), "signal": signal})
         return cleaned
 
+    @staticmethod
+    def _clean_string_list(items, limit: int = 20) -> list[str]:
+        """Keep only non-empty strings from an LLM-returned list. Malformed → dropped."""
+        if not isinstance(items, list):
+            return []
+        out: list[str] = []
+        for item in items:
+            if isinstance(item, str) and item.strip():
+                out.append(item.strip())
+            if len(out) >= limit:
+                break
+        return out
+
     def _positioning_fallback(self, web: WebData = None, reason: str = "llm_unavailable") -> FeatureValue:
         content = self._content(web).lower()
         if not content:
@@ -278,18 +291,32 @@ class DiferenciacionExtractor:
         if not isinstance(score, (int, float)):
             return self._uniqueness_fallback(web, reason="llm_invalid_score")
 
+        unique_phrases = self._clean_string_list(result.get("unique_phrases"))
+        generic_phrases = self._clean_string_list(result.get("generic_phrases"))
+        brand_vocabulary = self._clean_string_list(result.get("brand_vocabulary"))
+        competitor_overlap = self._clean_string_list(result.get("competitor_overlap_signals"))
+
+        raw_value: dict = {
+            "verdict": verdict,
+            "unique_phrases": unique_phrases,
+            "generic_phrases": generic_phrases,
+            "brand_vocabulary": brand_vocabulary,
+            "competitor_overlap_signals": competitor_overlap,
+            "reasoning": result.get("reasoning") or "",
+        }
+
+        # verdict="unclear" degrades on its own. For other verdicts, if all four
+        # evidence lists are empty the LLM gave no citable evidence; degrade.
         confidence = 0.5 if verdict == "unclear" else 0.85
+        has_evidence = any((unique_phrases, generic_phrases, brand_vocabulary, competitor_overlap))
+        if not has_evidence and verdict != "unclear":
+            confidence = 0.5
+            raw_value["reason"] = "llm_partial_evidence"
+
         return FeatureValue(
             "uniqueness",
             max(0.0, min(float(score), 100.0)),
-            raw_value={
-                "verdict": verdict,
-                "unique_phrases": result.get("unique_phrases") or [],
-                "generic_phrases": result.get("generic_phrases") or [],
-                "brand_vocabulary": result.get("brand_vocabulary") or [],
-                "competitor_overlap_signals": result.get("competitor_overlap_signals") or [],
-                "reasoning": result.get("reasoning") or "",
-            },
+            raw_value=raw_value,
             confidence=confidence,
             source="llm",
         )

@@ -74,34 +74,28 @@ DIMENSIONS = {
         "description": "¿Qué sentiment genera? ¿Cómo hablan de ella?",
         "weight": 0.25,
         "features": {
-            "sentiment_score": {
-                "description": "Sentiment promedio en menciones y contenido sobre la marca",
-                "weight": 0.35,
-                "sources": ["exa", "social_media"],
+            "brand_sentiment": {
+                "description": "Juicio LLM del sentimiento público con citas literales; absorbe detección de controversia",
+                "weight": 0.40,
+                "sources": ["exa", "llm_analysis"],
             },
             "mention_volume": {
-                "description": "Cuánto se habla de la marca (absoluto y relativo al nicho)",
-                "weight": 0.20,
+                "description": "Cuánto se habla de la marca (absoluto + top dominios)",
+                "weight": 0.25,
                 "sources": ["exa"],
             },
             "sentiment_trend": {
-                "description": "¿Mejora o empeora el sentiment con el tiempo?",
+                "description": "¿Mejora o empeora el sentiment con el tiempo? LLM sobre mitades históricas con fallback heurístico",
                 "weight": 0.20,
-                "sources": ["exa"],
+                "sources": ["exa", "llm_analysis"],
             },
             "review_quality": {
-                "description": "Calidad y cantidad de reviews donde aparezca",
+                "description": "Presencia en plataformas de reviews profesionales y consumer",
                 "weight": 0.15,
-                "sources": ["exa", "web_scrape"],
-            },
-            "controversy_flag": {
-                "description": "¿Hay controversia, crisis o mentions negativas significativas?",
-                "weight": 0.10,
                 "sources": ["exa"],
             },
         },
         "rules": [
-            "si controversy_flag está activo → percepción cap a 35",
             "si no hay mentions suficientes → score = 50 (neutral, no hay datos)",
         ],
     },

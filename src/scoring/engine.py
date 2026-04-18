@@ -55,7 +55,6 @@ class ScoringEngine:
     def _build_rules(self) -> dict[str, list[ScoringRule]]:
         """Build heuristic rules from dimension definitions."""
         ghost = self._rule_override("presencia", "marca_fantasma")
-        controversia = self._rule_override("percepcion", "controversia_activa")
         low_mentions = self._rule_override("percepcion", "sin_datos_suficientes")
         generic = self._rule_override("diferenciacion", "lenguaje_generico")
         inactive_6m = self._rule_override("vitalidad", "inactiva_6m")
@@ -104,14 +103,6 @@ class ScoringEngine:
                 ),
             ],
             "percepcion": [
-                ScoringRule(
-                    condition="controversia_activa",
-                    check=lambda f, threshold=float(controversia.get("threshold", 70)): (
-                        f.get("controversy_flag", FeatureValue("", 0)).value > threshold
-                    ),
-                    cap=float(controversia.get("cap", 35)),
-                    insight="Controversia detectada — percepción significativamente afectada",
-                ),
                 ScoringRule(
                     condition="sin_datos_suficientes",
                     check=lambda f, threshold=float(low_mentions.get("threshold", 10)): (

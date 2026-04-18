@@ -16,96 +16,240 @@ from src.features.vitalidad import VitalidadExtractor
 
 
 class PercepcionExtractorTests(unittest.TestCase):
-    def setUp(self):
-        self.extractor = PercepcionExtractor()
+    """Covers the 4 percepcion features after the refactor with dict raw_value."""
 
-    def test_sentiment_trend_uses_published_dates_not_result_order(self):
+    def _make_llm(self, sentiment_payload=None, older_payload=None, newer_payload=None, sequence=None):
+        class FakeLLM:
+            api_key = "sk-test"
+            _calls = 0
+            def analyze_brand_sentiment(self, mentions, brand_name):
+                if sequence is not None:
+                    idx = FakeLLM._calls
+                    FakeLLM._calls += 1
+                    if idx < len(sequence):
+                        return sequence[idx]
+                    return sequence[-1]
+                # Two-call trend case
+                if older_payload is not None and newer_payload is not None:
+                    idx = FakeLLM._calls
+                    FakeLLM._calls += 1
+                    return older_payload if idx == 0 else newer_payload
+                return sentiment_payload
+        return FakeLLM()
+
+    # ── brand_sentiment ────────────────────────────────────────────────
+
+    def test_brand_sentiment_without_llm_uses_normalized_heuristic(self):
         exa = ExaData(
             brand_name="Test Brand",
             mentions=[
-                ExaResult(
-                    url="https://example.com/recent-1",
-                    title="Recent positive",
-                    text="excellent breakthrough",
-                    published_date="2026-04-01",
-                ),
-                ExaResult(
-                    url="https://example.com/old-1",
-                    title="Old negative",
-                    text="lawsuit outage",
-                    published_date="2024-01-01",
-                ),
-                ExaResult(
-                    url="https://example.com/recent-2",
-                    title="Recent positive 2",
-                    text="amazing reliable",
-                    published_date="2026-03-15",
-                ),
-                ExaResult(
-                    url="https://example.com/old-2",
-                    title="Old negative 2",
-                    text="fraud scam",
-                    published_date="2024-02-01",
-                ),
+                ExaResult(url="https://x/1", title="t", text="excellent amazing outstanding"),
+                ExaResult(url="https://x/2", title="t", text="great innovative reliable"),
             ],
         )
+        feature = PercepcionExtractor()._brand_sentiment(exa)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
+        self.assertGreater(feature.raw_value["pos_count"], 0)
 
-        trend = self.extractor._sentiment_trend(exa)
-
-        self.assertGreater(trend.value, 50.0)
-        self.assertEqual(trend.confidence, 0.6)
-        self.assertIn("dated_results=4", trend.raw_value)
-
-    def test_sentiment_trend_returns_low_confidence_without_enough_dated_results(self):
-        exa = ExaData(
-            brand_name="Test Brand",
-            mentions=[
-                ExaResult(url="https://example.com/1", title="One", text="great", published_date=""),
-                ExaResult(url="https://example.com/2", title="Two", text="great", published_date="2026-04-01"),
-                ExaResult(url="https://example.com/3", title="Three", text="bad", published_date=""),
-            ],
-        )
-
-        trend = self.extractor._sentiment_trend(exa)
-
-        self.assertEqual(trend.value, 50.0)
-        self.assertEqual(trend.confidence, 0.1)
-        self.assertEqual(trend.raw_value, "insufficient dated mentions")
-
-    def test_review_quality_is_neutral_when_brand_has_mentions_but_no_review_platforms(self):
-        exa = ExaData(
-            brand_name="Test Brand",
-            mentions=[
-                ExaResult(url=f"https://example.com/{idx}", title="Mention", text="strong traction")
-                for idx in range(4)
-            ],
-            news=[
-                ExaResult(url="https://news.example.com/item", title="Launch", text="new launch")
-            ],
-        )
-
-        feature = self.extractor._review_quality(exa)
-
+    def test_brand_sentiment_without_mentions_returns_neutral(self):
+        feature = PercepcionExtractor()._brand_sentiment(ExaData(brand_name="X"))
         self.assertEqual(feature.value, 50.0)
-        self.assertEqual(feature.confidence, 0.2)
-        self.assertIn("mentions=5", feature.raw_value)
+        self.assertEqual(feature.raw_value["reason"], "no_mentions")
 
-    def test_review_quality_uses_review_platforms_when_present(self):
-        exa = ExaData(
-            brand_name="Test Brand",
-            mentions=[
-                ExaResult(
-                    url="https://www.producthunt.com/posts/test-brand",
-                    title="Product Hunt",
-                    text="great innovative reliable product",
-                ),
+    def test_brand_sentiment_with_llm_uses_structured_verdict(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="a"),
+            ExaResult(url="https://x/2", title="t", text="b"),
+            ExaResult(url="https://x/3", title="t", text="c"),
+        ])
+        llm = self._make_llm(sentiment_payload={
+            "sentiment_score": 82,
+            "verdict": "positive",
+            "overall_tone": "People praise reliability",
+            "positive_themes": ["reliability", "speed"],
+            "negative_themes": [],
+            "evidence": [
+                {"quote": "they ship fast", "source_url": "https://x/1", "signal": "positive"},
             ],
+            "controversy_detected": False,
+            "controversy_details": None,
+            "reasoning": "Positive across mentions.",
+        })
+        feature = PercepcionExtractor(llm=llm)._brand_sentiment(exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 82.0)
+        self.assertEqual(feature.raw_value["verdict"], "positive")
+        self.assertFalse(feature.raw_value["controversy_detected"])
+        self.assertEqual(len(feature.raw_value["evidence"]), 1)
+
+    def test_brand_sentiment_with_controversy_caps_score(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="a"),
+            ExaResult(url="https://x/2", title="t", text="b"),
+            ExaResult(url="https://x/3", title="t", text="c"),
+        ])
+        llm = self._make_llm(sentiment_payload={
+            "sentiment_score": 80,  # LLM gave high score but flagged controversy
+            "verdict": "mixed",
+            "overall_tone": "Mixed with legal concerns",
+            "positive_themes": [],
+            "negative_themes": ["lawsuit"],
+            "evidence": [
+                {"quote": "filed a class action", "source_url": "https://x/1", "signal": "negative"},
+            ],
+            "controversy_detected": True,
+            "controversy_details": "Class action lawsuit filed Q2 2026.",
+            "reasoning": "Legal issue dominates.",
+        })
+        feature = PercepcionExtractor(llm=llm)._brand_sentiment(exa)
+        self.assertLessEqual(feature.value, 35.0)
+        self.assertTrue(feature.raw_value["controversy_detected"])
+        self.assertEqual(feature.raw_value["controversy_details"], "Class action lawsuit filed Q2 2026.")
+
+    def test_brand_sentiment_invalid_verdict_falls_back(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="a"),
+        ])
+        llm = self._make_llm(sentiment_payload={
+            "sentiment_score": 70, "verdict": "glowing", "evidence": [],
+        })
+        feature = PercepcionExtractor(llm=llm)._brand_sentiment(exa)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_invalid_verdict")
+
+    def test_brand_sentiment_malformed_evidence_is_filtered(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="a"),
+            ExaResult(url="https://x/2", title="t", text="b"),
+        ])
+        llm = self._make_llm(sentiment_payload={
+            "sentiment_score": 72,
+            "verdict": "positive",
+            "positive_themes": [],
+            "negative_themes": [],
+            "evidence": [
+                {"quote": "solid", "source_url": "https://x/1", "signal": "positive"},
+                {"quote": 123, "source_url": "https://x/2", "signal": "positive"},  # malformed
+                "not a dict",
+            ],
+            "controversy_detected": False,
+            "reasoning": "ok",
+        })
+        feature = PercepcionExtractor(llm=llm)._brand_sentiment(exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(len(feature.raw_value["evidence"]), 1)
+
+    def test_brand_sentiment_non_bool_controversy_is_treated_as_false_with_warning(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="a"),
+        ])
+        llm = self._make_llm(sentiment_payload={
+            "sentiment_score": 72,
+            "verdict": "positive",
+            "evidence": [
+                {"quote": "ok", "source_url": "https://x/1", "signal": "positive"},
+            ],
+            "controversy_detected": "yes",  # wrong type
+            "reasoning": "ok",
+        })
+        feature = PercepcionExtractor(llm=llm)._brand_sentiment(exa)
+        self.assertFalse(feature.raw_value["controversy_detected"])
+        self.assertEqual(feature.raw_value["controversy_detected_type_warning"], "str")
+        self.assertEqual(feature.value, 72.0)
+
+    # ── mention_volume ─────────────────────────────────────────────────
+
+    def test_mention_volume_returns_dict_with_tier_and_top_domains(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://techcrunch.com/a", title="t", text="..."),
+            ExaResult(url="https://techcrunch.com/b", title="t", text="..."),
+            ExaResult(url="https://theverge.com/a", title="t", text="..."),
+        ], news=[
+            ExaResult(url="https://news.example.com/a", title="t", text="..."),
+        ])
+        feature = PercepcionExtractor()._mention_volume(exa)
+        self.assertEqual(feature.raw_value["total_mentions"], 4)
+        self.assertEqual(feature.raw_value["volume_tier"], "low")
+        self.assertEqual(feature.raw_value["top_domains"][0], "techcrunch.com")
+
+    def test_mention_volume_without_exa_reports_none(self):
+        feature = PercepcionExtractor()._mention_volume(exa=None)
+        self.assertEqual(feature.raw_value["volume_tier"], "none")
+        self.assertEqual(feature.raw_value["total_mentions"], 0)
+
+    # ── sentiment_trend ────────────────────────────────────────────────
+
+    def test_sentiment_trend_insufficient_dated_returns_neutral(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="great", published_date=""),
+            ExaResult(url="https://x/2", title="t", text="great", published_date="2026-04-01"),
+            ExaResult(url="https://x/3", title="t", text="bad", published_date=""),
+        ])
+        feature = PercepcionExtractor()._sentiment_trend(exa)
+        self.assertEqual(feature.value, 50.0)
+        self.assertEqual(feature.raw_value["reason"], "insufficient_dated_mentions")
+
+    def test_sentiment_trend_with_llm_compares_halves(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="lawsuit trouble", published_date="2024-01-01"),
+            ExaResult(url="https://x/2", title="t", text="controversy", published_date="2024-02-01"),
+            ExaResult(url="https://x/3", title="t", text="great recovery", published_date="2026-03-01"),
+            ExaResult(url="https://x/4", title="t", text="amazing growth", published_date="2026-04-01"),
+        ])
+        llm = self._make_llm(
+            older_payload={"sentiment_score": 30, "verdict": "negative", "evidence": []},
+            newer_payload={"sentiment_score": 80, "verdict": "positive", "evidence": []},
         )
+        feature = PercepcionExtractor(llm=llm)._sentiment_trend(exa)
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.raw_value["trend"], "improving")
+        self.assertEqual(feature.raw_value["delta"], 50.0)
 
-        feature = self.extractor._review_quality(exa)
+    def test_sentiment_trend_without_llm_uses_normalized_heuristic(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://x/1", title="t", text="lawsuit trouble", published_date="2024-01-01"),
+            ExaResult(url="https://x/2", title="t", text="fraud scam", published_date="2024-02-01"),
+            ExaResult(url="https://x/3", title="t", text="great innovative", published_date="2026-03-01"),
+            ExaResult(url="https://x/4", title="t", text="amazing reliable", published_date="2026-04-01"),
+        ])
+        feature = PercepcionExtractor()._sentiment_trend(exa)
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["method"], "heuristic_fallback")
+        self.assertEqual(feature.raw_value["trend"], "improving")
 
-        self.assertGreater(feature.value, 50.0)
-        self.assertIn("1 review platforms", feature.raw_value)
+    # ── review_quality ─────────────────────────────────────────────────
+
+    def test_review_quality_without_platforms_returns_absent(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url=f"https://example.com/{i}", title="t", text="strong") for i in range(4)
+        ], news=[ExaResult(url="https://news.example.com/item", title="t", text="launch")])
+        feature = PercepcionExtractor()._review_quality(exa)
+        self.assertEqual(feature.raw_value["review_signal"], "absent")
+        self.assertEqual(feature.raw_value["total_review_results"], 0)
+
+    def test_review_quality_rewards_professional_platforms(self):
+        exa = ExaData(brand_name="X", mentions=[
+            ExaResult(url="https://www.g2.com/products/example/reviews", title="G2", text="..."),
+            ExaResult(url="https://www.trustpilot.com/review/example.com", title="TP", text="..."),
+        ])
+        feature = PercepcionExtractor()._review_quality(exa)
+        self.assertTrue(feature.raw_value["has_professional_reviews"])
+        self.assertFalse(feature.raw_value["has_consumer_reviews"])
+        self.assertGreaterEqual(feature.value, 60.0)
+        self.assertIn(feature.raw_value["review_signal"], {"moderate", "strong"})
+        domains = [p["domain"] for p in feature.raw_value["platforms_with_reviews"]]
+        self.assertIn("g2.com", domains)
+        self.assertIn("trustpilot.com", domains)
+
+    # ── contract ───────────────────────────────────────────────────────
+
+    def test_extract_always_returns_four_features(self):
+        features = PercepcionExtractor().extract(web=None, exa=None)
+        self.assertEqual(
+            set(features.keys()),
+            {"brand_sentiment", "mention_volume", "sentiment_trend", "review_quality"},
+        )
 
 
 class DiferenciacionExtractorTests(unittest.TestCase):

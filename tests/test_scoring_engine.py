@@ -23,11 +23,10 @@ class ScoringEngineTests(unittest.TestCase):
                 "directory_presence": FeatureValue("directory_presence", 30.0),
             },
             "percepcion": {
-                "sentiment_score": FeatureValue("sentiment_score", 70.0),
+                "brand_sentiment": FeatureValue("brand_sentiment", 70.0),
                 "mention_volume": FeatureValue("mention_volume", 65.0),
                 "sentiment_trend": FeatureValue("sentiment_trend", 55.0),
                 "review_quality": FeatureValue("review_quality", 50.0),
-                "controversy_flag": FeatureValue("controversy_flag", 0.0),
             },
             "diferenciacion": {
                 "positioning_clarity": FeatureValue("positioning_clarity", 75.0),
@@ -50,7 +49,7 @@ class ScoringEngineTests(unittest.TestCase):
         self.assertAlmostEqual(brand.dimensions["diferenciacion"].score, 74.8)
         # vitalidad = 0.40*90 + 0.35*80 + 0.25*60 = 79.0
         self.assertAlmostEqual(brand.dimensions["vitalidad"].score, 79.0)
-        self.assertEqual(brand.composite_score, 69.2)
+        self.assertEqual(brand.composite_score, 70.9)
 
     def test_presence_ghost_brand_rule_caps_score(self):
         score = self.engine.score_dimension(
@@ -92,11 +91,10 @@ class ScoringEngineTests(unittest.TestCase):
         score = self.engine.score_dimension(
             "percepcion",
             {
-                "sentiment_score": FeatureValue("sentiment_score", 90.0),
+                "brand_sentiment": FeatureValue("brand_sentiment", 90.0),
                 "mention_volume": FeatureValue("mention_volume", 5.0),
                 "sentiment_trend": FeatureValue("sentiment_trend", 80.0),
                 "review_quality": FeatureValue("review_quality", 70.0),
-                "controversy_flag": FeatureValue("controversy_flag", 0.0),
             },
         )
 
@@ -125,11 +123,10 @@ class ScoringEngineTests(unittest.TestCase):
                 "directory_presence": FeatureValue("directory_presence", 20.0),
             },
             "percepcion": {
-                "sentiment_score": FeatureValue("sentiment_score", 58.0),
+                "brand_sentiment": FeatureValue("brand_sentiment", 58.0),
                 "mention_volume": FeatureValue("mention_volume", 8.0),
                 "sentiment_trend": FeatureValue("sentiment_trend", 50.0),
                 "review_quality": FeatureValue("review_quality", 42.0),
-                "controversy_flag": FeatureValue("controversy_flag", 0.0),
             },
             "diferenciacion": {
                 "positioning_clarity": FeatureValue("positioning_clarity", 84.0),

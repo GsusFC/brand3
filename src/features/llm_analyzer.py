@@ -377,6 +377,65 @@ Return JSON with this exact structure:
 }}"""
         )
 
+    def analyze_brand_sentiment(self, mentions: list[dict], brand_name: str) -> dict:
+        """Unified sentiment + controversy analysis for Percepción.
+
+        Reads up to 15 third-party mentions and returns a structured verdict
+        with literal quotes as evidence. Flags controversy explicitly so the
+        caller can cap the score without needing a separate rule.
+        """
+        # REVIEW: método nuevo para brand_sentiment de percepcion.
+        if not mentions:
+            return {}
+
+        lines = []
+        for i, m in enumerate(mentions[:15], start=1):
+            text = (m.get("text") or "")[:400].replace("\n", " ").strip()
+            url = m.get("url") or ""
+            title = (m.get("title") or "").replace("\n", " ").strip()
+            if not text and not title:
+                continue
+            lines.append(f"[{i}] {url}\n{title}\n{text}")
+        mentions_block = "\n---\n".join(lines) if lines else "(no mentions available)"
+
+        return self._call_json(
+            system=(
+                "You are a brand perception analyst. Read third-party mentions "
+                "and decide whether public sentiment towards the brand is "
+                "positive, mixed, negative, or unclear. Flag serious "
+                "controversies separately from ordinary product criticism. "
+                "Quote sources literally. Return ONLY valid JSON."
+            ),
+            user=f"""Analyse public sentiment about "{brand_name}" based on these mentions.
+
+Mentions:
+---
+{mentions_block}
+---
+
+Rules:
+- Evidence MUST be literal quotes from the mentions above, not paraphrase.
+- Distinguish legitimate product criticism (expensive, confusing UX) from serious controversy (lawsuits, scandals, data breaches, regulatory action).
+- Set `controversy_detected: true` only for serious issues, not ordinary complaints.
+- If fewer than 3 useful mentions, return `verdict: "unclear"`.
+- Ignore mentions that are clearly NOT about "{brand_name}" (scraping false positives).
+
+Return JSON with this exact structure:
+{{
+    "sentiment_score": 0-100,
+    "verdict": "positive" | "mixed" | "negative" | "unclear",
+    "overall_tone": "one sentence describing how people talk about the brand",
+    "positive_themes": ["recurring positive themes"],
+    "negative_themes": ["recurring negative themes or criticisms"],
+    "evidence": [
+        {{"quote": "literal quote from a mention", "source_url": "the url", "signal": "positive" | "negative" | "neutral"}}
+    ],
+    "controversy_detected": true | false,
+    "controversy_details": "concrete description if true, null if false",
+    "reasoning": "1-2 sentences"
+}}"""
+        )
+
     def analyze_momentum(self, mentions: list[dict], brand_name: str) -> dict:
         """
         Is the brand actively building or drifting into maintenance?

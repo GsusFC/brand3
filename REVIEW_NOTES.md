@@ -1,107 +1,72 @@
-# REVIEW NOTES — Rediseño Diferenciación
+# REVIEW NOTES — Rediseño Percepción
 
-**Branch:** `refactor/diferenciacion`
-**Scope:** refactor completo de la dimensión `diferenciacion` siguiendo el patrón single-file y `raw_value` estructurado ya usado en Vitalidad y Presencia.
+**Branch:** `refactor/percepcion`
+**Scope:** última dimensión del refactor. Single-file + LLM-first + dict `raw_value`.
 
 ## Archivos modificados
 
-1. `src/features/diferenciacion.py` — reescritura completa a 5 features con dos paths LLM-first y fallbacks heurísticos.
-2. `src/features/diferenciacion_llm.py` — eliminado; la lógica LLM quedó absorbida en `diferenciacion.py`.
-3. `src/features/llm_analyzer.py` — añadidos `analyze_positioning_clarity` y `analyze_uniqueness`.
-4. `src/dimensions.py` — bloque `diferenciacion` actualizado a pesos `0.30 / 0.25 / 0.20 / 0.15 / 0.10`.
-5. `src/scoring/engine.py` — rule `lenguaje_generico` adaptada para usar `uniqueness`.
-6. `src/services/brand_service.py` — wiring actualizado para usar `DiferenciacionExtractor(llm=llm)`.
-7. `tests/test_feature_extractors.py` — tests viejos sustituidos por cobertura de las 5 features nuevas y validación LLM.
-8. `tests/test_scoring_engine.py` — fixtures y expected values recalculados con los nombres/pesos nuevos.
+1. `src/features/percepcion.py` — reescritura completa. 4 features (`brand_sentiment`, `mention_volume`, `sentiment_trend`, `review_quality`) con `raw_value` dict nativo.
+2. `src/features/percepcion_llm.py` — **eliminado**.
+3. `src/features/llm_analyzer.py` — añadido `analyze_brand_sentiment`. `analyze_sentiment` se conserva.
+4. `src/dimensions.py` — bloque `percepcion` actualizado: 4 features con pesos `0.40 / 0.25 / 0.20 / 0.15`. `controversy_flag` eliminada como feature. Rule `controversia_activa` eliminada de la lista (el cap se aplica ahora dentro de `brand_sentiment`).
+5. `src/scoring/engine.py` — rule `controversia_activa` eliminada del `_build_rules` y del return dict. `sin_datos_suficientes` se mantiene.
+6. `src/services/brand_service.py` — `PercepcionLLMExtractor` sustituido por `PercepcionExtractor(llm=llm)`.
+7. `tests/test_feature_extractors.py` — `PercepcionExtractorTests` reescrita: 14 tests nuevos cubriendo LLM happy path, controversia capping, verdict inválido, evidence malformada, `controversy_detected` no-bool, fallback sin LLM, tier heurístico de `mention_volume` y señal de `review_quality`.
+8. `tests/test_scoring_engine.py` — fixtures actualizados (`brand_sentiment` en lugar de `sentiment_score` + `controversy_flag`); assert de composite recalculado a 70.9.
 
-## Decisión sobre la rule rename
+## Decisiones de implementación
 
-Se eligió **Opción B**.
+### D1. `brand_sentiment` absorbe `controversy_flag` y aplica el cap dentro de la feature
 
-Mantengo el nombre `lenguaje_generico` en `src/scoring/engine.py` y en `src/niche/profiles.py` sin cambios de nombres. La condición ahora capea cuando `uniqueness < (100 - threshold)`.
+Antes el cap a 35 por controversia estaba en una rule del `ScoringEngine` que leía `controversy_flag.value > 70`. Ahora el LLM devuelve `controversy_detected: bool` y la feature aplica `min(score, 35)` internamente. La rule del engine queda eliminada. Razón: mantiene el cap pero lo ata a la señal LLM concreta (más precisa que keyword matching) sin depender de una rule cross-feature que puede quedar inconsistente.
 
-Razón:
-- minimiza conflictos con el trabajo paralelo de Coherencia;
-- evita tocar `src/niche/profiles.py`;
-- conserva la semántica práctica de la regla sin introducir una migración de nombres innecesaria.
+### D2. Rule `controversia_activa` eliminada, `sin_datos_suficientes` conservada
 
-## Decisiones de implementación no obvias
+Solo eliminé la rule cuyo cap ya está dentro de la feature. `sin_datos_suficientes` depende de `mention_volume`, una señal estructural independiente — tiene sentido que siga siendo una rule del engine (si no hay datos, el score es neutral cualquiera sea el sentiment).
 
-### D1. `positioning_clarity` valida `verdict` y evidencia por separado
+### D3. `sentiment_trend` LLM-first con dos llamadas
 
-La validación estricta sigue el patrón de `momentum`:
-- `verdict` fuera del enum => fallback total con `reason="llm_invalid_verdict"`;
-- `evidence` malformada o vacía => se conserva `source="llm"` pero baja `confidence` a `0.5` y se marca `reason="llm_partial_evidence"`.
+Cuando hay LLM disponible y ≥4 menciones con fecha parseable, se corre `analyze_brand_sentiment` sobre cada mitad (older/newer) y se comparan los `sentiment_score` devueltos. Delta > 5 → "improving"; delta < -5 → "declining"; resto → "stable". Cuesta 2 llamadas LLM extra por análisis — el prompt lo pide explícitamente. Fallback heurístico normalizado si falla cualquiera de las dos llamadas.
 
-### D2. `uniqueness` fallback normalizado por longitud
+### D4. Fallback heurístico normalizado por total de palabras
 
-El fallback ya no usa conteo bruto de frases genéricas. Ahora calcula `ratio = generic_hits / sentence_count`, y desde ahí mapea el score, para no castigar textos largos por volumen absoluto.
+Antes `_sentiment_score` usaba `pos_count / (pos_count + neg_count)` — ratio entre señales detectadas pero no densidad. Ahora: `net = pos_ratio - neg_ratio` (cada uno dividido por total de palabras), comprimido a `50 + max(-50, min(50, net*5000))`. Evita que una web muy larga con pocos marcadores se escore como "neutro alto". Mismo patrón en `sentiment_trend` heurístico.
 
-### D3. `content_authenticity` y `brand_personality` conservan el score del analyzer pero no su `raw_value`
+### D5. Validación estricta del output LLM
 
-No toqué `src/features/authenticity.py`. En su lugar, `diferenciacion.py` reutiliza sus scores y construye `raw_value` dict estructurado encima:
-- `content_authenticity`: `ai_pattern_hits`, `structural_hits`, `uniformity_penalty`, `authenticity_verdict`, `evidence_snippets`
-- `brand_personality`: `personality_score`, `signals_detected`, `corporate_signals_count`, `verdict`
+Patrón ya establecido en las otras dimensiones:
+- `verdict` fuera del enum → fallback total con `reason="llm_invalid_verdict"`.
+- `sentiment_score` no numérico → `reason="llm_invalid_response"`.
+- `controversy_detected` no-bool → tratado como `false` con warning explícito en `raw_value.controversy_detected_type_warning` (no fallback total — es campo accesorio).
+- `evidence` no-lista o items malformados → filtrados por `_clean_sentiment_evidence`; si queda vacía y verdict ≠ "unclear" y había datos → confidence degradada a 0.5 con `reason="llm_partial_evidence"`.
 
-### D4. `competitor_distance` prioriza `CompetitorData`
+### D6. `mention_volume` y `review_quality` con dict estructurado
 
-Cuando hay `competitor_data.comparisons`, la feature devuelve `source="competitor_web_comparison"` con resumen estructurado:
-- `avg_distance`
-- `closest_competitor`
-- `most_different`
-- `competitors_analyzed`
-- `brand_unique_terms`
-- `similarity_threshold_crossed`
+- `mention_volume.raw_value` incluye `volume_tier` (enum) y `top_domains` (top 3). Útil para ventas ("vuestra cobertura viene mayoritariamente de TechCrunch y The Verge").
+- `review_quality.raw_value` separa `has_professional_reviews` (G2, Trustpilot, Capterra…) de `has_consumer_reviews` (Yelp, app stores) y devuelve `platforms_with_reviews[{domain, count, sample_urls}]`. Se puede decir: "aparecéis en G2 con 3 reviews, nada en Trustpilot".
 
-Si no hay comparaciones, cae a un fallback neutral con `raw_value` dict, no string.
+## Tests
 
-## Tests añadidos vs eliminados
+**Eliminados** (4 antiguos con assertions sobre strings en raw_value).
 
-### Eliminados / sustituidos
+**Añadidos** (14 nuevos): cobertura para los 4 features, happy path LLM, controversy cap, verdict inválido, evidence malformada, `controversy_detected` no-bool, fallbacks sin LLM, tiers, signals.
 
-- Tests de `unique_value_prop`.
-- Tests de `generic_language_score`.
-- Tests de `brand_vocabulary` como feature independiente.
+Helper de test: `_make_llm(sentiment_payload, older_payload, newer_payload, sequence)`.
 
-### Añadidos
+## Resultado
 
-`positioning_clarity`
-- `test_positioning_clarity_without_llm_uses_heuristic_fallback`
-- `test_positioning_clarity_with_llm_uses_structured_output`
-- `test_positioning_clarity_invalid_verdict_falls_back`
-- `test_positioning_clarity_malformed_evidence_degrades_confidence`
+```
+143 passed in 1.28s
+```
 
-`uniqueness`
-- `test_uniqueness_without_llm_uses_normalized_ratio_fallback`
-- `test_uniqueness_with_llm_uses_structured_output`
-- `test_uniqueness_invalid_verdict_falls_back`
+## Verificaciones manuales pendientes
 
-`competitor_distance`
-- `test_competitor_distance_uses_structured_raw_value`
+1. **Prompt de `analyze_brand_sentiment`**: pide distinguir crítica ordinaria de controversia seria. En producción puede requerir ajuste — el umbral es subjetivo.
+2. **Coste operativo de `sentiment_trend`**: 2 llamadas LLM extra por análisis. En benchmarks grandes puede ser relevante; considerar flag para omitir trend en modo benchmark (fuera de scope).
+3. **Learning system sigue buscando `sentiment_score` y `controversy_flag`** (nombres viejos) en `src/learning/`. Mismo patrón dormido que Diferenciación. Fuera de scope; se re-enganchará cuando se retome el learning.
 
-`content_authenticity` / `brand_personality`
-- `test_content_authenticity_and_brand_personality_return_structured_raw_value`
+## Fuera de scope
 
-`scoring`
-- fixtures y expected values recalculados en `test_weighted_average_and_composite_score`
-- fixture de rule override actualizada para `uniqueness`
-
-## Warnings no bloqueantes
-
-1. La suite completa con `./.venv/bin/pytest -v` falla en collection fuera del scope del refactor por `ModuleNotFoundError: No module named 'main'` en `tests/test_learning.py` y `tests/test_main_experiment.py`.
-2. En este workspace hay cambios paralelos de Coherencia sin commit (`src/features/coherencia.py`, eliminación de `src/features/coherencia_llm.py`). No los toqué ni los incluí en el commit de Diferenciación.
-3. El entorno local no tiene `firecrawl`, así que para la verificación dirigida con `unittest` tuve que stubear ese módulo en memoria.
-
-## Verificaciones realizadas
-
-1. `python3 -m py_compile` sobre los archivos modificados por Diferenciación: OK.
-2. `./.venv/bin/pytest tests/test_feature_extractors.py tests/test_scoring_engine.py -v`:
-   falló inicialmente porque la rama aún tenía wiring viejo y expected values obsoletos; eso quedó corregido después.
-3. `./.venv/bin/pytest -v`:
-   interrumpido por collection errors fuera de scope (`import main`).
-4. `python3 -m unittest` con stub de `firecrawl` sobre:
-   - `DiferenciacionExtractorTests`
-   - `ScoringEngineTests`
-   Resultado: **16 tests OK**.
-5. Verificación manual de `DiferenciacionExtractor().extract(None, None, None)` con stub de `firecrawl`:
-   no crashea, devuelve las 5 features y todos los `raw_value` son dict.
+- Collectors, learning, versioning, SQLiteStore no se tocan.
+- Otras 4 dimensiones ya mergeadas no se tocan.
+- `AuthenticityAnalyzer` intacto.

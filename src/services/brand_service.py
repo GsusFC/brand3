@@ -35,7 +35,7 @@ from src.niche import (
     select_calibration_profile,
 )
 from src.features.llm_analyzer import LLMAnalyzer
-from src.features.percepcion_llm import PercepcionLLMExtractor
+from src.features.percepcion import PercepcionExtractor
 from src.features.coherencia import CoherenciaExtractor
 from src.features.diferenciacion import DiferenciacionExtractor
 from src.features.presencia import PresenciaExtractor
@@ -656,9 +656,8 @@ def run(
         if llm:
             coherencia_ext = CoherenciaExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)
             diferenciacion_ext = DiferenciacionExtractor(llm=llm)
-            percepcion_ext = PercepcionLLMExtractor(llm=llm)
+            percepcion_ext = PercepcionExtractor(llm=llm)
         else:
-            from src.features.percepcion import PercepcionExtractor
             coherencia_ext = CoherenciaExtractor(skip_visual_analysis=skip_visual_analysis)
             diferenciacion_ext = DiferenciacionExtractor()
             percepcion_ext = PercepcionExtractor()

@@ -317,6 +317,16 @@ def _cmd_report(a: argparse.Namespace) -> None:
     brand_report(a.brand_name, limit=a.limit)
 
 
+def _cmd_render_report(a: argparse.Namespace) -> None:
+    from src.reports.renderer import render_latest, render_run
+
+    if a.latest:
+        path = render_latest(theme=a.theme)
+    else:
+        path = render_run(a.run_id, theme=a.theme)
+    print(f"Rendered HTML report: {path}")
+
+
 def _cmd_propose(a: argparse.Namespace) -> None:
     propose_calibration(a.brand_name, limit=a.limit, persist=a.persist)
 
@@ -475,6 +485,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int, default=10)
     p.set_defaults(func=_cmd_report)
 
+    # REVIEW: D4 — `report` (history listing) already taken; new command is `render-report`.
+    p = sub.add_parser("render-report", help="Render a run as self-contained HTML")
+    group = p.add_mutually_exclusive_group(required=True)
+    group.add_argument("--run-id", type=int)
+    group.add_argument("--latest", action="store_true")
+    p.add_argument("--theme", choices=["dark", "light"], default="dark")
+    p.set_defaults(func=_cmd_render_report)
+
     p = sub.add_parser("propose")
     p.add_argument("--brand", dest="brand_name", required=True)
     p.add_argument("--limit", type=int, default=20)
@@ -568,8 +586,8 @@ def _build_parser() -> argparse.ArgumentParser:
 
 _KNOWN_COMMANDS = {
     "analyze", "feedback", "learn", "runs", "brands", "profiles", "benchmark",
-    "benchmark-compare", "annotations", "show-run", "report", "propose",
-    "candidates", "review-candidate", "apply-candidates", "experiment",
+    "benchmark-compare", "annotations", "show-run", "report", "render-report",
+    "propose", "candidates", "review-candidate", "apply-candidates", "experiment",
     "experiments", "versions", "rollback-version", "promote-baseline",
     "baselines", "compare-version", "gate-config", "set-gate-config", "jobs",
     "job", "enqueue-job", "retry-job", "cancel-job",

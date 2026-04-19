@@ -8,6 +8,7 @@ data/*.db-shm
 data/*.db-wal
 output/*.json
 output/**/*.json
+output/reports/
 
 # InsForge & AI agent skills
 .insforge

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>brand-audit :: {{ brand.url or brand.name }}{% if theme == 'dark' %} · night{% endif %}</title>
+<style>
+  @font-face {
+    font-family: 'BerkeleyMono';
+    src: local('IBM Plex Mono'), local('JetBrains Mono'), local('Menlo'), local('Consolas');
+  }
+  :root {
+  {%- if theme == 'dark' %}
+    --fg: #d6d3cc;
+    --fg-bright: #f2efe7;
+    --bg: #0e0f10;
+    --panel: #121314;
+    --muted: #6a6963;
+    --rule: #2a2b2d;
+    --alert: #e06b5c;
+    --ok: #8fbf6a;
+    --warn: #e0c26b;
+    --accent: #6fa8c9;
+    --key: #b58a6a;
+  {%- else %}
+    --fg: #111111;
+    --fg-bright: #111111;
+    --bg: #fafaf7;
+    --panel: #fafaf7;
+    --muted: #6b6b6b;
+    --rule: #111111;
+    --alert: #a8261c;
+    --ok: #1f5d3a;
+    --warn: #9a7a00;
+    --accent: #111111;
+    --key: #6b6b6b;
+  {%- endif %}
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "IBM Plex Mono", "JetBrains Mono", "Menlo", "Consolas", ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
+  .page { max-width: 920px; margin: 0 auto; padding: 40px 28px 80px; }
+  .term-head {
+    white-space: pre-wrap; margin: 0 0 6px;
+    font-family: inherit; font-size: 13px; line-height: 1.55;
+  }
+  .prompt {
+    color: {% if theme == 'dark' %}var(--ok){% else %}var(--muted){% endif %};
+    user-select: none;
+    {% if theme == 'dark' %}font-weight: 700;{% endif %}
+  }
+  .dim { color: var(--muted); }
+  .rule { border: 0; border-top: 1px solid var(--rule); margin: 18px 0; }
+  .rule-thin { border: 0; border-top: 1px dashed {% if theme == 'dark' %}var(--rule){% else %}#bdbdbd{% endif %}; margin: 14px 0; }
+  h1, h2, h3, h4 {
+    font-size: 13px; font-weight: 700; margin: 0; letter-spacing: 0;
+    color: var(--fg-bright);
+  }
+  .section-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    gap: 12px; margin: 28px 0 10px;
+  }
+  .section-head .tag { color: var(--muted); font-weight: 400; }
+  .section-head .label { text-transform: uppercase; font-weight: 700; }
+  table {
+    width: 100%; border-collapse: collapse;
+    font-family: inherit; font-size: 13px;
+  }
+  th, td { text-align: left; padding: 4px 10px 4px 0; vertical-align: top; font-weight: 400; }
+  th {
+    border-bottom: 1px solid {% if theme == 'dark' %}var(--rule){% else %}var(--fg){% endif %};
+    font-weight: 700; color: var(--fg-bright);
+  }
+  td.num { text-align: right; white-space: nowrap; padding-right: 18px;}
+  td.bar { font-family: inherit; white-space: pre; color: var(--fg); }
+  td.verdict { color: var(--muted); }
+  .kv {
+    display: grid; grid-template-columns: 180px 1fr;
+    row-gap: 2px; column-gap: 12px;
+  }
+  .kv .k { color: {% if theme == 'dark' %}var(--key){% else %}var(--muted){% endif %}; }
+  .kv .v { color: var(--fg); }
+  .score-huge {
+    font-size: 74px; line-height: 1; font-weight: 700;
+    letter-spacing: -2px; margin: 6px 0 0;
+  }
+  .score-scale { color: var(--muted); font-size: 12px; }
+  .header-grid {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 32px; align-items: end;
+  }
+  .evidence {
+    border-left: 2px solid {% if theme == 'dark' %}var(--accent){% else %}var(--fg){% endif %};
+    padding: {% if theme == 'dark' %}6px 10px 6px 12px{% else %}4px 0 4px 12px{% endif %};
+    margin: 8px 0 4px;
+    background: {% if theme == 'dark' %}var(--panel){% else %}transparent{% endif %};
+  }
+  .evidence .quote { color: var(--fg); }
+  .evidence .src {
+    color: var(--muted); font-size: 12px;
+    display: block; margin-top: 2px; word-break: break-all;
+  }
+  .evidence .signal {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+    color: var(--muted); margin-right: 6px;
+  }
+  ul.obs { margin: 4px 0 8px; padding: 0; list-style: none; }
+  ul.obs li { padding-left: 18px; position: relative; }
+  ul.obs li::before { content: "-"; position: absolute; left: 4px; color: var(--muted); }
+  .verdict-line {
+    display: flex; gap: 10px; align-items: baseline;
+    flex-wrap: wrap; margin: 4px 0 8px;
+  }
+  .badge {
+    display: inline-block; border: 1px solid var(--fg); padding: 0 6px;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+    font-weight: 700; color: var(--fg-bright);
+  }
+  .badge.warn { border-color: var(--alert); color: var(--alert); }
+  .badge.ok { border-color: var(--ok); color: var(--ok); }
+  .hl-alert { color: var(--alert); }
+  .hl-ok { color: var(--ok); }
+  .hl-warn { color: var(--warn); }
+  .hl-accent { color: var(--accent); }
+  .footer {
+    margin-top: 40px; padding-top: 12px;
+    border-top: 1px solid {% if theme == 'dark' %}var(--rule){% else %}var(--fg){% endif %};
+    color: var(--muted); font-size: 12px;
+  }
+  .cursor {
+    display: inline-block; width: 7px; height: 14px;
+    background: {% if theme == 'dark' %}var(--ok){% else %}var(--fg){% endif %};
+    vertical-align: -2px;
+    animation: blink 1.05s steps(1, end) infinite;
+    margin-left: 4px;
+  }
+  @keyframes blink {
+    0%, 55% { opacity: 1; }
+    56%, 100% { opacity: 0; }
+  }
+  a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  .mono-inline { font-family: inherit; }
+  .empty { color: var(--muted); font-style: normal; }
+  .small { font-size: 12px; color: var(--muted); }
+  .prose { max-width: 78ch; }
+  .num-inline { font-variant-numeric: tabular-nums; }
+  @media (max-width: 640px) {
+    .header-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 120px 1fr; }
+    .score-huge { font-size: 56px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .cursor { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<pre class="term-head"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand-audit <span class="hl-accent">--target</span> {{ brand.url or brand.name }} <span class="hl-accent">--profile</span> {{ brand.profile }} <span class="hl-accent">--engine</span> {{ footer.engine }}
+{%- for line in term_lines %}
+<span class="hl-{{ line.level }}">[{{ line.level }}]</span>{% if line.level == 'ok' %}   {% else %} {% endif %}<span class="dim">{{ line.text }}</span>
+{%- endfor %}</pre>
+
+<hr class="rule">
+
+<div class="header-grid">
+  <div>
+    <div class="kv">
+      <span class="k">brand</span>        <span class="v">{{ brand.name }}</span>
+      <span class="k">url</span>          <span class="v">{% if brand.url %}<a href="{{ brand.url }}">{{ brand.url }}</a>{% else %}<span class="empty">(no url)</span>{% endif %}</span>
+      <span class="k">analysis_date</span><span class="v">{{ brand.analysis_date or 'n/a' }}</span>
+      <span class="k">profile</span>     <span class="v">{{ brand.profile }}{% if brand.profile_source %} · source={{ brand.profile_source }}{% endif %}</span>
+      <span class="k">data_quality</span><span class="v">{{ brand.data_quality }}</span>
+      <span class="k">scope</span>        <span class="v">public web surface + organic mentions (no paid)</span>
+    </div>
+  </div>
+  <div style="text-align:right">
+    <div class="small">SCORE_GLOBAL</div>
+    <div class="score-huge num-inline">{{ score.global_display }}</div>
+    <div class="score-scale">/ 100 · <span class="dim">band: {{ score.band_letter }} · "{{ score.band_label }}"</span></div>
+  </div>
+</div>
+
+<hr class="rule">
+
+<div class="section-head">
+  <span class="label">§1  resumen_ejecutivo</span>
+  <span class="tag">// 3-5 líneas</span>
+</div>
+<div class="prose">{% if summary %}{{ summary }}{% else %}<span class="empty">// resumen no disponible — no hay suficientes insights para narrar.</span>{% endif %}</div>
+
+<hr class="rule">
+
+<div class="section-head">
+  <span class="label">§2  scores_por_dimension</span>
+  <span class="tag">// 0-100 · barras = 5%/bloque</span>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 28%">dimensión</th>
+      <th style="width: 10%" class="num">score</th>
+      <th style="width: 32%">barra</th>
+      <th>verdict</th>
+    </tr>
+  </thead>
+  <tbody>
+  {%- for dim in dimensions %}
+    <tr>
+      <td>{{ dim.name }}</td>
+      <td class="num num-inline">{% if dim.badge_type == 'warn' %}<span class="hl-alert">{{ dim.score_display }}</span>{% else %}{{ dim.score_display }}{% endif %}</td>
+      <td class="bar">{% if dim.badge_type == 'warn' %}<span class="hl-alert">{{ dim.bar }}</span>{% else %}{{ dim.bar }}{% endif %}</td>
+      <td class="verdict">{{ dim.verdict }}</td>
+    </tr>
+  {%- endfor %}
+  </tbody>
+</table>
+
+<hr class="rule">
+
+<div class="section-head">
+  <span class="label">§3  detalle_por_dimension</span>
+  <span class="tag">// observaciones + evidencia</span>
+</div>
+
+{%- for dim in dimensions %}
+<h3 style="margin-top:18px">3.{{ loop.index }}  {{ dim.name }} <span class="dim">· {{ dim.score_display }}/100</span></h3>
+<div class="verdict-line">
+  <span class="badge {{ dim.badge_type }}">{{ dim.band_label }}</span>
+  <span class="small">{{ dim.verdict }}</span>
+</div>
+{%- if dim.observations %}
+<ul class="obs">
+  {%- for obs in dim.observations %}
+  <li>{{ obs }}</li>
+  {%- endfor %}
+</ul>
+{%- else %}
+<div class="empty">// sin observaciones registradas para esta dimensión.</div>
+{%- endif %}
+{%- if dim.evidence %}
+  {%- for ev in dim.evidence %}
+<div class="evidence">
+  <div class="quote">{% if ev.signal %}<span class="signal">{{ ev.signal }}</span>{% endif %}{% if ev.quote %}"{{ ev.quote }}"{% else %}<span class="empty">(sin cita literal)</span>{% endif %}</div>
+  {%- if ev.source_url %}
+  <span class="src">→ {{ ev.source_url }}</span>
+  {%- endif %}
+</div>
+  {%- endfor %}
+{%- else %}
+<div class="empty" style="margin-top:4px">// no evidence available</div>
+{%- endif %}
+{%- if not loop.last %}
+<hr class="rule-thin">
+{%- endif %}
+{%- endfor %}
+
+<hr class="rule">
+
+<div class="section-head">
+  <span class="label">§4  observaciones_transversales</span>
+  <span class="tag">// rules applied cross-dim</span>
+</div>
+{%- if rules_applied %}
+<ul class="obs">
+  {%- for entry in rules_applied %}
+  <li><span class="dim">[{{ entry.dimension }}]</span> {{ entry.rule }}</li>
+  {%- endfor %}
+</ul>
+{%- else %}
+<div class="empty">// (reservado — sin reglas heurísticas disparadas en esta corrida)</div>
+{%- endif %}
+
+<hr class="rule">
+
+<div class="footer">
+  <div class="kv">
+    <span class="k">engine</span>         <span class="v">{{ footer.engine }}</span>
+    <span class="k">profile</span>        <span class="v">{{ footer.profile }}</span>
+    <span class="k">fingerprint</span>    <span class="v">{{ footer.fingerprint }}</span>
+    <span class="k">runtime</span>        <span class="v">{{ footer.runtime }}</span>
+    <span class="k">report_id</span>      <span class="v">{{ footer.report_id }}</span>
+  </div>
+  <div style="margin-top:10px"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> _<span class="cursor"></span></div>
+</div>
+
+</div>
+</body>
+</html>

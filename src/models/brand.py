@@ -18,7 +18,7 @@ class FeatureValue:
 class DimensionScore:
     """Score breakdown for a single dimension."""
     name: str
-    score: float  # 0-100
+    score: Optional[float]  # 0-100
     features: dict = field(default_factory=dict)
     insights: list = field(default_factory=list)
     rules_applied: list = field(default_factory=list)  # heuristic rules that fired
@@ -30,9 +30,9 @@ class BrandScore:
     url: str
     brand_name: str
     dimensions: dict[str, DimensionScore] = field(default_factory=dict)
-    composite_score: float = 0.0
+    composite_score: Optional[float] = 0.0
     timestamp: str = ""
 
     @property
-    def breakdown(self) -> dict[str, float]:
+    def breakdown(self) -> dict[str, Optional[float]]:
         return {name: d.score for name, d in self.dimensions.items()}

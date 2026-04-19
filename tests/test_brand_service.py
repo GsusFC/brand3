@@ -2,7 +2,11 @@ import unittest
 
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.web_collector import WebData
-from src.services.brand_service import _aggregate_exa_content, _build_content_web
+from src.services.brand_service import (
+    _aggregate_exa_content,
+    _build_content_web,
+    _compute_data_quality,
+)
 
 
 class BrandServiceContentFallbackTests(unittest.TestCase):
@@ -77,6 +81,15 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertIsNone(content_web)
         self.assertEqual(content_source, "none")
         self.assertEqual(data_sources["content_source"], "none")
+
+    def test_compute_data_quality_distinguishes_good_degraded_and_insufficient(self):
+        rich_exa = ExaData(brand_name="Example", mentions=[ExaResult(url=f"https://e{i}.com", title="x") for i in range(5)])
+        degraded_exa = ExaData(brand_name="Example", mentions=[ExaResult(url=f"https://e{i}.com", title="x") for i in range(3)])
+        empty_exa = ExaData(brand_name="Example", mentions=[])
+
+        self.assertEqual(_compute_data_quality(rich_exa, "firecrawl"), "good")
+        self.assertEqual(_compute_data_quality(degraded_exa, "exa_fallback"), "degraded")
+        self.assertEqual(_compute_data_quality(empty_exa, "none"), "insufficient")
 
 
 if __name__ == "__main__":

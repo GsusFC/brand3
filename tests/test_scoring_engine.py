@@ -105,6 +105,41 @@ class ScoringEngineTests(unittest.TestCase):
         score = self.engine.score_dimension("vitalidad", {})
         self.assertEqual(score.score, 50.0)
 
+    def test_unavailable_dimensions_return_null_and_are_excluded_from_composite(self):
+        features_by_dim = {
+            "presencia": {
+                "web_presence": FeatureValue("web_presence", 90.0),
+                "social_footprint": FeatureValue("social_footprint", 75.0),
+                "search_visibility": FeatureValue("search_visibility", 80.0),
+                "directory_presence": FeatureValue("directory_presence", 30.0),
+            },
+            "percepcion": {
+                "brand_sentiment": FeatureValue("brand_sentiment", 70.0),
+                "mention_volume": FeatureValue("mention_volume", 65.0),
+                "sentiment_trend": FeatureValue("sentiment_trend", 55.0),
+                "review_quality": FeatureValue("review_quality", 50.0),
+            },
+            "vitalidad": {
+                "content_recency": FeatureValue("content_recency", 90.0),
+                "publication_cadence": FeatureValue("publication_cadence", 80.0),
+                "momentum": FeatureValue("momentum", 60.0),
+            },
+        }
+
+        brand = self.engine.score_brand(
+            "https://example.com",
+            "Example",
+            features_by_dim,
+            unavailable_dimensions={"coherencia", "diferenciacion"},
+        )
+
+        self.assertIsNone(brand.dimensions["coherencia"].score)
+        self.assertIsNone(brand.dimensions["diferenciacion"].score)
+        self.assertEqual(brand.dimensions["presencia"].score, 76.3)
+        self.assertEqual(brand.dimensions["percepcion"].score, 62.8)
+        self.assertEqual(brand.dimensions["vitalidad"].score, 79.0)
+        self.assertEqual(brand.composite_score, 71.4)
+
     def test_frontier_ai_profile_prioritises_differentiation_and_vitality(self):
         base_engine = ScoringEngine()
         frontier_engine = ScoringEngine(calibration_profile="frontier_ai")

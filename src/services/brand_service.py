@@ -53,6 +53,7 @@ _MIN_USABLE_WEB_CHARS = 200
 _MIN_EXA_FALLBACK_MENTIONS = 3
 _MIN_EXA_FALLBACK_CHARS = 300
 _MAX_EXA_FALLBACK_ITEMS = 8
+_PARTIAL_DIMENSIONS = ("coherencia", "diferenciacion")
 
 
 class AnalysisJobCancelled(Exception):
@@ -264,6 +265,15 @@ def _annotate_content_source(features_by_dim: dict[str, dict], content_source: s
             if not isinstance(feature.raw_value, dict):
                 continue
             feature.raw_value["content_source"] = content_source
+
+
+def _compute_data_quality(exa_data: ExaData | None, content_source: str) -> str:
+    mentions_count = len(exa_data.mentions) if exa_data else 0
+    if content_source == "firecrawl" and mentions_count >= 5:
+        return "good"
+    if content_source == "exa_fallback" and mentions_count >= 3:
+        return "degraded"
+    return "insufficient"
 
 
 def _from_exa_payload(payload: dict | None) -> ExaData | None:
@@ -746,6 +756,8 @@ def run(
             web_data,
             exa_data,
         )
+        data_quality = _compute_data_quality(exa_data, content_source)
+        partial_dimensions = list(_PARTIAL_DIMENSIONS) if data_quality == "insufficient" else []
         if content_source == "exa_fallback" and content_web:
             print(
                 "  Web fallback:"
@@ -754,6 +766,7 @@ def run(
             )
         elif content_source == "none":
             print("  Web fallback: no usable Firecrawl or Exa content available")
+        print(f"  Data quality: {data_quality}")
 
         _emit_progress(progress_cb, "extracting")
         _check_cancel(cancel_check)
@@ -790,10 +803,14 @@ def run(
             if use_llm:
                 print("  LLM: disabled (no API key)")
 
-        features_by_dim["coherencia"] = coherencia_ext.extract(web=content_web, exa=exa_data)
-        features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
-            web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url
-        )
+        if data_quality == "insufficient":
+            features_by_dim["coherencia"] = {}
+            features_by_dim["diferenciacion"] = {}
+        else:
+            features_by_dim["coherencia"] = coherencia_ext.extract(web=content_web, exa=exa_data)
+            features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
+                web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url
+            )
         features_by_dim["percepcion"] = percepcion_ext.extract(web=web_data, exa=exa_data)
         _annotate_content_source(features_by_dim, content_source)
 
@@ -807,7 +824,14 @@ def run(
         _check_cancel(cancel_check)
         print("[3/4] Scoring...")
         engine = ScoringEngine(calibration_profile=calibration_profile)
-        brand_score = engine.score_brand(url, brand_name, features_by_dim)
+        brand_score = engine.score_brand(
+            url,
+            brand_name,
+            features_by_dim,
+            unavailable_dimensions=set(partial_dimensions),
+        )
+        if data_quality == "insufficient":
+            brand_score.composite_score = None
         if run_id:
             _store_safely(store, "feature save", lambda: store.save_features(run_id, features_by_dim))
             _store_safely(store, "score save", lambda: store.save_scores(run_id, brand_score))
@@ -821,6 +845,9 @@ def run(
         print("\n--- Feature Details ---")
         for dim_name, dim_score in brand_score.dimensions.items():
             print(f"\n[{dim_name}]")
+            if dim_score.score is None:
+                print("  score unavailable  reason=insufficient_data")
+                continue
             for feat_name, feat in dim_score.features.items():
                 conf = f"(conf: {feat.confidence:.0%})" if feat.confidence < 1 else ""
                 src = f"src={feat.source}"
@@ -838,7 +865,12 @@ def run(
             "niche_classification": niche_classification,
             "calibration_profile": calibration_profile,
             "profile_source": profile_source,
+            "data_quality": data_quality,
+            "data_sources": data_sources,
             "composite_score": brand_score.composite_score,
+            "composite_reliable": data_quality != "insufficient",
+            "partial_score": data_quality == "insufficient",
+            "partial_dimensions": partial_dimensions,
             "dimensions": brand_score.breakdown,
             "llm_used": use_llm and llm is not None,
             "social_scraped": social_data is not None and len(social_data.platforms) > 0,

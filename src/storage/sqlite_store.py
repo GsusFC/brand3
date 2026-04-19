@@ -555,6 +555,8 @@ class SQLiteStore:
         rows = []
         now = datetime.now().isoformat()
         for dimension_name, dimension_score in brand_score.dimensions.items():
+            if dimension_score.score is None:
+                continue
             rows.append(
                 (
                     run_id,
@@ -565,19 +567,20 @@ class SQLiteStore:
                     now,
                 )
             )
-        self.conn.executemany(
-            """
-            INSERT INTO scores (run_id, dimension_name, score, insights_json, rules_json, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
-            """,
-            rows,
-        )
+        if rows:
+            self.conn.executemany(
+                """
+                INSERT INTO scores (run_id, dimension_name, score, insights_json, rules_json, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                rows,
+            )
         self.conn.commit()
 
     def finalize_run(
         self,
         run_id: int,
-        composite_score: float,
+        composite_score: float | None,
         llm_used: bool,
         social_scraped: bool,
         result_path: str,
@@ -598,7 +601,7 @@ class SQLiteStore:
                 datetime.now().isoformat(),
                 int(llm_used),
                 int(social_scraped),
-                float(composite_score),
+                float(composite_score) if composite_score is not None else None,
                 result_path,
                 summary,
                 run_id,

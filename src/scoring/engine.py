@@ -146,9 +146,19 @@ class ScoringEngine:
 
     def score_dimension(
         self, dim_name: str, features: dict[str, FeatureValue],
-        all_features: dict[str, dict[str, FeatureValue]] = None
+        all_features: dict[str, dict[str, FeatureValue]] = None,
+        unavailable: bool = False,
     ) -> DimensionScore:
         """Score a single dimension from its features."""
+        if unavailable:
+            return DimensionScore(
+                name=dim_name,
+                score=None,
+                features=features,
+                insights=["Datos insuficientes para evaluar esta dimensión"],
+                rules_applied=[],
+            )
+
         dim = self.dimensions[dim_name]
         dim_features = dim["features"]
 
@@ -201,22 +211,32 @@ class ScoringEngine:
         url: str,
         brand_name: str,
         features_by_dim: dict[str, dict[str, FeatureValue]],
+        unavailable_dimensions: set[str] | None = None,
     ) -> BrandScore:
         """Score a complete brand across all dimensions."""
         brand = BrandScore(url=url, brand_name=brand_name)
+        unavailable_dimensions = unavailable_dimensions or set()
 
         for dim_name, dim_def in self.dimensions.items():
             dim_features = features_by_dim.get(dim_name, {})
             brand.dimensions[dim_name] = self.score_dimension(
-                dim_name, dim_features, all_features=features_by_dim
+                dim_name,
+                dim_features,
+                all_features=features_by_dim,
+                unavailable=dim_name in unavailable_dimensions,
             )
 
         # Composite: weighted average of dimension scores
         composite = 0.0
+        weight_total = 0.0
         for dim_name, dim_def in self.dimensions.items():
-            composite += brand.dimensions[dim_name].score * dim_def["weight"]
+            score = brand.dimensions[dim_name].score
+            if score is None:
+                continue
+            composite += score * dim_def["weight"]
+            weight_total += dim_def["weight"]
 
-        brand.composite_score = round(composite, 1)
+        brand.composite_score = round(composite / weight_total, 1) if weight_total else None
 
         return brand
 
@@ -225,26 +245,38 @@ class ScoringEngine:
         lines = []
         lines.append(f"=== {brand.brand_name} ===")
         lines.append(f"URL: {brand.url}")
-        lines.append(f"Score Global: {brand.composite_score}/100")
+        if brand.composite_score is None:
+            lines.append("Score Global: n/a")
+        else:
+            lines.append(f"Score Global: {brand.composite_score}/100")
         lines.append("")
 
         # Sort dimensions by score (weakest first — what needs work)
-        sorted_dims = sorted(brand.dimensions.items(), key=lambda x: x[1].score)
+        sorted_dims = sorted(
+            brand.dimensions.items(),
+            key=lambda x: (x[1].score is None, x[1].score if x[1].score is not None else 999.0),
+        )
 
         for dim_name, dim in sorted_dims:
-            bar = "█" * int(dim.score / 5) + "░" * (20 - int(dim.score / 5))
-            lines.append(f"  {dim_name:15s} {bar} {dim.score:5.1f}")
+            if dim.score is None:
+                lines.append(f"  {dim_name:15s} {'n/a':>25}")
+            else:
+                bar = "█" * int(dim.score / 5) + "░" * (20 - int(dim.score / 5))
+                lines.append(f"  {dim_name:15s} {bar} {dim.score:5.1f}")
             for insight in dim.insights:
                 lines.append(f"    ⚠ {insight}")
 
         lines.append("")
 
         # Top weakness
-        weakest = sorted_dims[0]
-        lines.append(f"Punto débil: {weakest[0]} ({weakest[1].score}/100)")
-
-        # Top strength
-        strongest = sorted_dims[-1]
-        lines.append(f"Punto fuerte: {strongest[0]} ({strongest[1].score}/100)")
+        scored_dims = [(name, dim) for name, dim in sorted_dims if dim.score is not None]
+        if scored_dims:
+            weakest = scored_dims[0]
+            strongest = scored_dims[-1]
+            lines.append(f"Punto débil: {weakest[0]} ({weakest[1].score}/100)")
+            lines.append(f"Punto fuerte: {strongest[0]} ({strongest[1].score}/100)")
+        else:
+            lines.append("Punto débil: n/a")
+            lines.append("Punto fuerte: n/a")
 
         return "\n".join(lines)

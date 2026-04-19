@@ -43,7 +43,12 @@ class AnalyzeResponse(BaseModel):
     niche_classification: dict[str, Any]
     calibration_profile: str
     profile_source: str
-    composite_score: float
+    data_quality: str
+    data_sources: dict[str, Any]
+    composite_score: float | None
+    composite_reliable: bool
+    partial_score: bool
+    partial_dimensions: list[str]
     dimensions: dict[str, Any]
     llm_used: bool
     social_scraped: bool

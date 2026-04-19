@@ -82,6 +82,41 @@ class SQLiteStoreTests(unittest.TestCase):
 
             store.close()
 
+    def test_store_allows_null_dimension_and_composite_scores(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+
+            store.save_scores(
+                run_id,
+                BrandScore(
+                    url="https://example.com",
+                    brand_name="Example",
+                    dimensions={
+                        "coherencia": DimensionScore(
+                            name="coherencia",
+                            score=None,
+                            insights=["Datos insuficientes para evaluar esta dimensión"],
+                            rules_applied=[],
+                            features={},
+                        )
+                    },
+                    composite_score=None,
+                ),
+            )
+            store.finalize_run(run_id, None, True, False, "/tmp/example.json", "summary")
+            store.close()
+
+            conn = sqlite3.connect(db_path)
+            run_row = conn.execute("SELECT composite_score FROM runs WHERE id=?", (run_id,)).fetchone()
+            score_row = conn.execute("SELECT score FROM scores WHERE run_id=? AND dimension_name='coherencia'", (run_id,)).fetchone()
+            conn.close()
+
+            self.assertIsNone(run_row[0])
+            self.assertIsNone(score_row)
+
     def test_list_runs_and_snapshot_include_persisted_state(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

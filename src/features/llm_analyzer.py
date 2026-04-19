@@ -44,11 +44,6 @@ class LLMAnalyzer:
             "max_tokens": max_tokens,
             "temperature": 0.1,
         }
-        if "gemini-3" in self.model.lower():
-            body["thinking_config"] = {
-                "include_thoughts": False,
-                "thinking_level": "MEDIUM",
-            }
         payload = json.dumps(body).encode()
 
         req = urllib.request.Request(
@@ -69,6 +64,10 @@ class LLMAnalyzer:
                 if not content:
                     content = msg.get("reasoning") or ""
                 return content
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode("utf-8", errors="replace")[:500]
+            print(f"  LLM call failed: HTTP {e.code}: {error_body}")
+            return ""
         except Exception as e:
             print(f"  LLM call failed: {e}")
             return ""
@@ -92,11 +91,6 @@ class LLMAnalyzer:
             "temperature": 0.1,
             "response_format": {"type": "json_object"},
         }
-        if "gemini-3" in self.model.lower():
-            body["thinking_config"] = {
-                "include_thoughts": False,
-                "thinking_level": "MEDIUM",
-            }
 
         payload = json.dumps(body).encode()
         req = urllib.request.Request(
@@ -113,6 +107,10 @@ class LLMAnalyzer:
                 data = json.loads(resp.read())
                 msg = data["choices"][0]["message"]
                 content = msg.get("content") or msg.get("reasoning") or ""
+        except urllib.error.HTTPError as e:
+            error_body = e.read().decode("utf-8", errors="replace")[:500]
+            print(f"  LLM JSON call failed: HTTP {e.code}: {error_body}")
+            return {}
         except Exception as e:
             print(f"  LLM JSON call failed: {e}")
             return {}

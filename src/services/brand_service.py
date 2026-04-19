@@ -49,6 +49,10 @@ from src.storage.sqlite_store import SQLiteStore
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DIMENSIONS_PATH = (PROJECT_ROOT / "src" / "dimensions.py").resolve()
 ENGINE_PATH = (PROJECT_ROOT / "src" / "scoring" / "engine.py").resolve()
+_MIN_USABLE_WEB_CHARS = 200
+_MIN_EXA_FALLBACK_MENTIONS = 3
+_MIN_EXA_FALLBACK_CHARS = 300
+_MAX_EXA_FALLBACK_ITEMS = 8
 
 
 class AnalysisJobCancelled(Exception):
@@ -153,6 +157,113 @@ def _effective_brand_url(original_url: str, web_data: WebData | None) -> str:
     if web_data and getattr(web_data, "canonical_url", ""):
         return web_data.canonical_url
     return original_url
+
+
+def _has_usable_web_content(web_data: WebData | None) -> bool:
+    if not web_data or getattr(web_data, "error", ""):
+        return False
+    return len((web_data.markdown_content or "").strip()) >= _MIN_USABLE_WEB_CHARS
+
+
+def _aggregate_exa_content(exa_data: ExaData | None) -> tuple[str, int]:
+    if not exa_data or len(exa_data.mentions) < _MIN_EXA_FALLBACK_MENTIONS:
+        return "", 0
+
+    aggregate_parts: list[str] = []
+    used = 0
+    for item in exa_data.mentions[:_MAX_EXA_FALLBACK_ITEMS]:
+        title = (item.title or "").strip()
+        snippet = (
+            (item.text or "").strip()
+            or (item.summary or "").strip()
+            or " ".join(str(highlight).strip() for highlight in (item.highlights or []) if str(highlight).strip())
+        )
+        snippet = snippet[:500]
+        if not title and not snippet:
+            continue
+        used += 1
+        aggregate_parts.append("\n".join(part for part in [title, snippet] if part))
+
+    aggregate = "\n\n---\n\n".join(aggregate_parts).strip()
+    if len(aggregate) < _MIN_EXA_FALLBACK_CHARS:
+        return "", 0
+    return aggregate, used
+
+
+def _build_content_web(
+    url: str,
+    brand_name: str | None,
+    web_data: WebData | None,
+    exa_data: ExaData | None,
+) -> tuple[WebData | None, str, dict[str, object]]:
+    if _has_usable_web_content(web_data):
+        return web_data, "firecrawl", {
+            "web_scrape": "firecrawl",
+            "exa_mentions": len(exa_data.mentions) if exa_data else 0,
+            "content_source": "firecrawl",
+            "exa_fallback_mentions_used": 0,
+        }
+
+    aggregate, mentions_used = _aggregate_exa_content(exa_data)
+    if aggregate:
+        base = web_data or WebData(url=url)
+        fallback_title = (
+            (base.title or "").strip()
+            or (exa_data.mentions[0].title.strip() if exa_data and exa_data.mentions and exa_data.mentions[0].title else "")
+            or (brand_name or "")
+        )
+        fallback_web = WebData(
+            url=base.url or url,
+            title=fallback_title,
+            meta_description=base.meta_description,
+            markdown_content=aggregate,
+            html=base.html,
+            canonical_url=base.canonical_url,
+            alternate_domains=list(base.alternate_domains or []),
+            links=list(base.links or []),
+            images=list(base.images or []),
+            screenshot_path=base.screenshot_path,
+            tech_stack=list(base.tech_stack or []),
+            load_time_ms=base.load_time_ms,
+            error="",
+        )
+        return fallback_web, "exa_fallback", {
+            "web_scrape": "failed",
+            "exa_mentions": len(exa_data.mentions) if exa_data else 0,
+            "content_source": "exa_fallback",
+            "exa_fallback_mentions_used": mentions_used,
+        }
+
+    return None, "none", {
+        "web_scrape": "failed",
+        "exa_mentions": len(exa_data.mentions) if exa_data else 0,
+        "content_source": "none",
+        "exa_fallback_mentions_used": 0,
+    }
+
+
+def _annotate_content_source(features_by_dim: dict[str, dict], content_source: str) -> None:
+    feature_names = {
+        "coherencia": {
+            "visual_consistency",
+            "messaging_consistency",
+            "tone_consistency",
+            "cross_channel_coherence",
+        },
+        "diferenciacion": {
+            "positioning_clarity",
+            "uniqueness",
+            "content_authenticity",
+            "brand_personality",
+        },
+    }
+    for dim_name, names in feature_names.items():
+        for feature_name, feature in features_by_dim.get(dim_name, {}).items():
+            if feature_name not in names:
+                continue
+            if not isinstance(feature.raw_value, dict):
+                continue
+            feature.raw_value["content_source"] = content_source
 
 
 def _from_exa_payload(payload: dict | None) -> ExaData | None:
@@ -629,6 +740,21 @@ def run(
                 print("  LLM: disabled (no key found)")
                 llm = None
 
+        content_web, content_source, data_sources = _build_content_web(
+            url,
+            brand_name,
+            web_data,
+            exa_data,
+        )
+        if content_source == "exa_fallback" and content_web:
+            print(
+                "  Web fallback:"
+                f" using {data_sources['exa_fallback_mentions_used']} Exa mentions"
+                f" as content source ({len(content_web.markdown_content)} chars aggregate)"
+            )
+        elif content_source == "none":
+            print("  Web fallback: no usable Firecrawl or Exa content available")
+
         _emit_progress(progress_cb, "extracting")
         _check_cancel(cancel_check)
         print("[2/4] Extracting features...")
@@ -664,11 +790,12 @@ def run(
             if use_llm:
                 print("  LLM: disabled (no API key)")
 
-        features_by_dim["coherencia"] = coherencia_ext.extract(web=web_data, exa=exa_data)
+        features_by_dim["coherencia"] = coherencia_ext.extract(web=content_web, exa=exa_data)
         features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
-            web=web_data, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url
+            web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url
         )
         features_by_dim["percepcion"] = percepcion_ext.extract(web=web_data, exa=exa_data)
+        _annotate_content_source(features_by_dim, content_source)
 
         for dim, feats in features_by_dim.items():
             llm_feats = sum(1 for f in feats.values() if f.source == "llm")
@@ -699,7 +826,8 @@ def run(
                 src = f"src={feat.source}"
                 print(f"  {feat_name:30s} {feat.value:6.1f}  {conf}  {src}")
                 if feat.raw_value:
-                    raw = feat.raw_value[:120] + "..." if len(str(feat.raw_value)) > 120 else feat.raw_value
+                    raw_str = str(feat.raw_value)
+                    raw = raw_str[:120] + "..." if len(raw_str) > 120 else raw_str
                     print(f"    raw: {raw}")
 
         result = {

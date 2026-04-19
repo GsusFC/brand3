@@ -29,6 +29,12 @@ _DATE_FORMATS = ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%B %d, %Y")
 
 _VALID_VERDICTS = frozenset({"building", "maintaining", "declining", "unclear"})
 _VALID_SIGNALS = frozenset({"positive", "negative", "neutral"})
+_VERDICT_SCORES = {
+    "building": 85.0,
+    "maintaining": 60.0,
+    "declining": 30.0,
+    "unclear": 50.0,
+}
 
 
 def _clean_momentum_evidence(raw_evidence) -> tuple[list[dict], bool]:
@@ -295,6 +301,7 @@ class VitalidadExtractor:
             )
 
         score = max(0.0, min(score, 100.0))
+        score = _reconcile_momentum_score(score, verdict)
         evidence, dropped_any_evidence = _clean_momentum_evidence(result.get("evidence"))
         partial_evidence = dropped_any_evidence or not evidence
 
@@ -319,3 +326,14 @@ class VitalidadExtractor:
 def _days(n: int):
     from datetime import timedelta
     return timedelta(days=n)
+
+
+def _reconcile_momentum_score(raw_score: float, verdict: str) -> float:
+    target = _VERDICT_SCORES[verdict]
+    if verdict == "unclear":
+        return target
+    if raw_score <= 10:
+        return target
+    if target >= 50 and raw_score < 25:
+        return target
+    return raw_score

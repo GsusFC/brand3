@@ -78,6 +78,21 @@ UNIQUENESS_VERDICTS = {
     "unclear",
 }
 
+POSITIONING_VERDICT_SCORES = {
+    "clear": 85.0,
+    "diffuse": 55.0,
+    "generic": 25.0,
+    "unclear": 50.0,
+}
+
+UNIQUENESS_VERDICT_SCORES = {
+    "highly_unique": 90.0,
+    "moderately_unique": 65.0,
+    "derivative": 40.0,
+    "generic": 25.0,
+    "unclear": 50.0,
+}
+
 
 class DiferenciacionExtractor:
     """Extract diferenciacion features."""
@@ -118,6 +133,24 @@ class DiferenciacionExtractor:
         chunks = re.split(r"[.!?\n]+", content)
         substantial = [chunk for chunk in chunks if len(chunk.split()) >= 3]
         return max(len(substantial), 1)
+
+    @staticmethod
+    def _reconcile_verdict_score(
+        raw_score: float,
+        verdict: str,
+        mapping: dict[str, float],
+    ) -> float:
+        target = mapping[verdict]
+        # LLM verdicts are semantically more stable than the scalar the model emits.
+        # Preserve reasonable scores, but neutralise `unclear` and correct
+        # pathological low values like clear→8 or unclear→0.
+        if verdict == "unclear":
+            return target
+        if raw_score <= 10:
+            return target
+        if target >= 50 and raw_score < 25:
+            return target
+        return raw_score
 
     @staticmethod
     def _tokenize_terms(text: str) -> list[str]:
@@ -234,9 +267,15 @@ class DiferenciacionExtractor:
         if not isinstance(score, (int, float)):
             return self._positioning_fallback(web, reason="llm_invalid_score")
 
+        score = self._reconcile_verdict_score(
+            max(0.0, min(float(score), 100.0)),
+            verdict,
+            POSITIONING_VERDICT_SCORES,
+        )
+
         return FeatureValue(
             "positioning_clarity",
-            max(0.0, min(float(score), 100.0)),
+            score,
             raw_value=raw_value,
             confidence=confidence,
             source="llm",
@@ -313,9 +352,15 @@ class DiferenciacionExtractor:
             confidence = 0.5
             raw_value["reason"] = "llm_partial_evidence"
 
+        score = self._reconcile_verdict_score(
+            max(0.0, min(float(score), 100.0)),
+            verdict,
+            UNIQUENESS_VERDICT_SCORES,
+        )
+
         return FeatureValue(
             "uniqueness",
-            max(0.0, min(float(score), 100.0)),
+            score,
             raw_value=raw_value,
             confidence=confidence,
             source="llm",

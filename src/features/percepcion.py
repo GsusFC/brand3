@@ -30,6 +30,12 @@ from .llm_analyzer import LLMAnalyzer
 _VALID_SENTIMENT_VERDICTS = frozenset({"positive", "mixed", "negative", "unclear"})
 _VALID_SENTIMENT_SIGNALS = frozenset({"positive", "negative", "neutral"})
 _CONTROVERSY_CAP = 35.0
+_SENTIMENT_VERDICT_SCORES = {
+    "positive": 80.0,
+    "mixed": 55.0,
+    "negative": 25.0,
+    "unclear": 50.0,
+}
 
 POSITIVE_WORDS = frozenset({
     "excellent", "amazing", "outstanding", "great", "fantastic", "wonderful",
@@ -121,6 +127,17 @@ def _extract_domain(url: str | None) -> str | None:
     return host or None
 
 
+def _reconcile_verdict_score(raw_score: float, verdict: str) -> float:
+    target = _SENTIMENT_VERDICT_SCORES[verdict]
+    if verdict == "unclear":
+        return target
+    if raw_score <= 10:
+        return target
+    if target >= 50 and raw_score < 25:
+        return target
+    return raw_score
+
+
 def _parse_published_date(value: str) -> datetime | None:
     if not value or value == "None":
         return None
@@ -209,6 +226,7 @@ class PercepcionExtractor:
                     extra={"got": type(result.get("sentiment_score")).__name__},
                 )
             score = max(0.0, min(score, 100.0))
+            score = _reconcile_verdict_score(score, verdict)
 
             controversy_raw = result.get("controversy_detected")
             if isinstance(controversy_raw, bool):
@@ -405,12 +423,18 @@ class PercepcionExtractor:
                 )
 
             delta = newer_score - older_score
-            score = max(0.0, min(50.0 + delta, 100.0))
+            raw_score = max(0.0, min(50.0 + delta, 100.0))
             trend = (
                 "improving" if delta > 5
                 else "declining" if delta < -5
                 else "stable"
             )
+            trend_score = {
+                "improving": 75.0,
+                "stable": 55.0,
+                "declining": 30.0,
+            }[trend]
+            score = trend_score if raw_score <= 10 else raw_score
             return FeatureValue(
                 "sentiment_trend", score,
                 raw_value={

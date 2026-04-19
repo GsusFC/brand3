@@ -30,6 +30,19 @@ from .visual_analyzer import VisualAnalyzer
 _VALID_MESSAGING_VERDICTS = frozenset({"aligned", "partial_gap", "divergent", "unclear"})
 _VALID_TONE_GAPS = frozenset({"none", "mild", "strong"})
 
+_MESSAGING_VERDICT_SCORES = {
+    "aligned": 80.0,
+    "partial_gap": 55.0,
+    "divergent": 30.0,
+    "unclear": 50.0,
+}
+
+_TONE_GAP_SCORES = {
+    "none": 80.0,
+    "mild": 60.0,
+    "strong": 30.0,
+}
+
 CATEGORY_SUFFIXES = (
     "platform", "tool", "service", "solution", "app", "software",
     "infrastructure", "model", "models", "system", "systems",
@@ -108,6 +121,17 @@ def _clean_tone_examples(raw_examples) -> tuple[list[dict], bool]:
             continue
         cleaned.append({"source": source, "quote": quote, "tone_marker": marker})
     return cleaned, dropped_any
+
+
+def _reconcile_llm_score(raw_score: float, label: str, mapping: dict[str, float]) -> float:
+    target = mapping[label]
+    if label == "unclear":
+        return target
+    if raw_score <= 10:
+        return target
+    if target >= 50 and raw_score < 25:
+        return target
+    return raw_score
 
 
 def _extract_domains_from_web(web: WebData) -> set[str]:
@@ -324,6 +348,8 @@ class CoherenciaExtractor:
             if partial_evidence:
                 raw_payload["reason"] = "llm_partial_evidence"
 
+            score = _reconcile_llm_score(score, verdict, _MESSAGING_VERDICT_SCORES)
+
             return FeatureValue(
                 "messaging_consistency", score,
                 raw_value=raw_payload,
@@ -451,6 +477,8 @@ class CoherenciaExtractor:
             }
             if partial_evidence:
                 raw_payload["reason"] = "llm_partial_evidence"
+
+            score = _reconcile_llm_score(score, gap_signal, _TONE_GAP_SCORES)
 
             return FeatureValue(
                 "tone_consistency", score,

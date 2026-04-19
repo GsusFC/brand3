@@ -25,12 +25,17 @@ class LLMAnalyzer:
         self.base_url = base_url or LLM_BASE_URL
         self.model = model or LLM_MODEL
 
-    def _call(self, system: str, user: str, max_tokens: int = 1000) -> str:
-        """Make an LLM call via Nous API."""
+    def _call(self, system: str, user: str, max_tokens: int = 8000) -> str:
+        """Make an LLM call via the OpenAI-compatible endpoint.
+
+        Default `max_tokens` is wide enough to accommodate thinking models
+        (Gemini 3.x) that consume part of the budget on internal reasoning
+        before emitting content.
+        """
         if not self.api_key:
             return ""
 
-        payload = json.dumps({
+        body: dict = {
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system},
@@ -38,7 +43,13 @@ class LLMAnalyzer:
             ],
             "max_tokens": max_tokens,
             "temperature": 0.1,
-        }).encode()
+        }
+        if "gemini-3" in self.model.lower():
+            body["thinking_config"] = {
+                "include_thoughts": False,
+                "thinking_level": "MEDIUM",
+            }
+        payload = json.dumps(body).encode()
 
         req = urllib.request.Request(
             f"{self.base_url}/chat/completions",
@@ -50,7 +61,7 @@ class LLMAnalyzer:
         )
 
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
+            with urllib.request.urlopen(req, timeout=120) as resp:
                 data = json.loads(resp.read())
                 msg = data["choices"][0]["message"]
                 content = msg.get("content") or ""
@@ -62,23 +73,65 @@ class LLMAnalyzer:
             print(f"  LLM call failed: {e}")
             return ""
 
-    def _call_json(self, system: str, user: str) -> dict:
-        """Make an LLM call expecting JSON response."""
-        response = self._call(system, user, max_tokens=800)
-        if not response:
+    def _call_json(self, system: str, user: str, max_tokens: int = 8000) -> dict:
+        """Make an LLM call expecting strict JSON response.
+
+        Uses `response_format={"type": "json_object"}` so the endpoint
+        forces JSON output. Thinking-compatible budget by default.
+        """
+        if not self.api_key:
             return {}
 
-        # Try to extract JSON from response (might have markdown wrapping)
-        response = response.strip()
-        if response.startswith("```"):
-            response = response.split("\n", 1)[1]
-            if response.endswith("```"):
-                response = response[:-3]
-            response = response.strip()
+        body: dict = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": system},
+                {"role": "user", "content": user},
+            ],
+            "max_tokens": max_tokens,
+            "temperature": 0.1,
+            "response_format": {"type": "json_object"},
+        }
+        if "gemini-3" in self.model.lower():
+            body["thinking_config"] = {
+                "include_thoughts": False,
+                "thinking_level": "MEDIUM",
+            }
+
+        payload = json.dumps(body).encode()
+        req = urllib.request.Request(
+            f"{self.base_url}/chat/completions",
+            data=payload,
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {self.api_key}",
+            },
+        )
 
         try:
-            return json.loads(response)
-        except json.JSONDecodeError:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                data = json.loads(resp.read())
+                msg = data["choices"][0]["message"]
+                content = msg.get("content") or msg.get("reasoning") or ""
+        except Exception as e:
+            print(f"  LLM JSON call failed: {e}")
+            return {}
+
+        if not content:
+            return {}
+
+        # Belt-and-suspenders: strip markdown fencing if the model still added it.
+        content = content.strip()
+        if content.startswith("```"):
+            content = content.split("\n", 1)[1]
+            if content.endswith("```"):
+                content = content[:-3]
+            content = content.strip()
+
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError as e:
+            print(f"  LLM JSON parse failed: {e}; got: {content[:200]}")
             return {}
 
     def analyze_positioning(self, web_content: str, brand_name: str) -> dict:

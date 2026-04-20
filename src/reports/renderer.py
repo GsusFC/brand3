@@ -7,6 +7,7 @@ conmutated inside a single Jinja2 template.
 
 from __future__ import annotations
 
+import logging
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
@@ -14,7 +15,22 @@ from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from .derivation import build_report_context, slugify
+from .derivation import (
+    Evidence,
+    build_report_context,
+    collect_evidences,
+    derive_data_quality,
+    group_by_dimension,
+    slugify,
+)
+from .narrative import (
+    SynthesisContext,
+    generate_all_findings,
+    generate_synthesis,
+    generate_tensions,
+)
+
+log = logging.getLogger("brand3.reports.renderer")
 
 
 def _chip_label(url: str) -> str:
@@ -61,8 +77,20 @@ class ReportRenderer:
         )
         self.env.filters["chip_label"] = _chip_label
 
-    def render(self, snapshot: dict, theme: Theme = "dark") -> str:
+    def render(
+        self,
+        snapshot: dict,
+        theme: Theme = "dark",
+        analyzer=None,
+    ) -> str:
+        """Render the report HTML.
+
+        If `analyzer` is None, the narrative layer tries to instantiate
+        an LLM client from env (src.config). Without an API key the
+        narrative falls back to deterministic text for every section.
+        """
         context = build_report_context(snapshot, theme=theme)
+        _apply_narrative(context, snapshot, analyzer)
         template = self.env.get_template("report.html.j2")
         return template.render(**context)
 
@@ -77,6 +105,87 @@ class ReportRenderer:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(html, encoding="utf-8")
         return path
+
+
+def _pick_top_evidences(evidences: list[Evidence], limit: int = 4) -> list[Evidence]:
+    """Pick up to `limit` evidences with a non-empty quote, maximizing diversity
+    of source_type. Fills the remainder with whatever is left once every bucket
+    has been represented once.
+    """
+    with_quote = [ev for ev in evidences if ev.quote]
+    if not with_quote:
+        return []
+    seen_types: set[str] = set()
+    picked: list[Evidence] = []
+    # First pass: one per source_type.
+    for ev in with_quote:
+        if ev.source_type in seen_types:
+            continue
+        seen_types.add(ev.source_type)
+        picked.append(ev)
+        if len(picked) >= limit:
+            return picked
+    # Second pass: top-up with anything else, preserving order.
+    for ev in with_quote:
+        if ev in picked:
+            continue
+        picked.append(ev)
+        if len(picked) >= limit:
+            break
+    return picked
+
+
+def _apply_narrative(context: dict, snapshot: dict, analyzer) -> None:
+    """Mutate `context` with LLM-generated narrative overlays.
+
+    On any failure the relevant slot keeps the deterministic placeholder
+    already populated by `build_report_context`.
+    """
+    run = snapshot.get("run") or {}
+    brand = context["brand"]["name"]
+    run_id = run.get("id")
+    composite = run.get("composite_score") or 0.0
+
+    evidences = collect_evidences(snapshot)
+    dim_evs = group_by_dimension(evidences, snapshot)
+    data_quality = derive_data_quality(snapshot)
+
+    # §1 Synthesis (sequential).
+    synth_ctx = SynthesisContext(
+        brand=brand,
+        url=context["brand"].get("url") or "",
+        composite_score=composite,
+        dimensions=dim_evs,
+        data_quality=data_quality,
+        top_evidences=_pick_top_evidences(evidences, limit=4),
+    )
+    try:
+        synthesis = generate_synthesis(synth_ctx, analyzer=analyzer, run_id=run_id)
+    except Exception as exc:
+        log.warning("narrative.generate_synthesis failed: %s", exc)
+        synthesis = None
+    if synthesis:
+        context["synthesis_prose"] = synthesis
+        context["summary"] = synthesis  # keep backward-compat key in sync
+
+    # §3 Findings — 5 parallel LLM calls with individual fallback.
+    try:
+        findings_by_dim = generate_all_findings(
+            dim_evs, brand, analyzer=analyzer, run_id=run_id
+        )
+    except Exception as exc:
+        log.warning("narrative.generate_all_findings failed: %s", exc)
+        findings_by_dim = {}
+    for dim in context["dimensions"]:
+        dim["findings"] = findings_by_dim.get(dim["name"], [])
+
+    # §4 Tensions (sequential, can be None → section omitted by template).
+    try:
+        tensions = generate_tensions(dim_evs, brand, analyzer=analyzer, run_id=run_id)
+    except Exception as exc:
+        log.warning("narrative.generate_tensions failed: %s", exc)
+        tensions = None
+    context["tensions_prose"] = tensions
 
 
 def _resolve_output_path(snapshot: dict, theme: str, output_dir: Path | None) -> Path:

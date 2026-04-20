@@ -193,26 +193,26 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§1  síntesis</span>
-  <span class="tag">// panorama general</span>
+  <span class="label">§1  synthesis</span>
+  <span class="tag">// overview</span>
 </div>
 <div class="prose">{{ synthesis_prose }}</div>
 
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§2  scores por dimensión</span>
-  <span class="tag">// 0-100 · barras = 5%/bloque</span>
+  <span class="label">§2  scores by dimension</span>
+  <span class="tag">// 0-100 · bars = 5%/block</span>
 </div>
 
 <table>
   <thead>
     <tr>
-      <th style="width: 24%">dimensión</th>
+      <th style="width: 24%">dimension</th>
       <th style="width: 8%" class="num">score</th>
-      <th style="width: 32%">barra</th>
+      <th style="width: 32%">bar</th>
       <th style="width: 16%">verdict</th>
-      <th>matiz</th>
+      <th>tone</th>
     </tr>
   </thead>
   <tbody>
@@ -231,8 +231,8 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§3  hallazgos por dimensión</span>
-  <span class="tag">// evidencias consolidadas</span>
+  <span class="label">§3  findings by dimension</span>
+  <span class="tag">// consolidated evidence</span>
 </div>
 
 {%- for dim in dimensions %}
@@ -253,7 +253,7 @@
     </div>
     {%- endfor %}
   {%- else %}
-    <p class="empty">datos insuficientes para generar hallazgos en esta dimensión.</p>
+    <p class="empty">insufficient data to generate findings for this dimension.</p>
   {%- endif %}
 </section>
 {%- if not loop.last %}
@@ -265,8 +265,8 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§4  tensiones transversales</span>
-  <span class="tag">// cross-dim</span>
+  <span class="label">§4  cross-dimension tensions</span>
+  <span class="tag">// one observation</span>
 </div>
 <div class="prose">{{ tensions_prose }}</div>
 {%- endif %}
@@ -274,13 +274,13 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§5  fuentes consultadas</span>
-  <span class="tag">// {{ all_sources | length }} en total</span>
+  <span class="label">§5  sources consulted</span>
+  <span class="tag">// {{ all_sources | length }} total</span>
 </div>
 
 {%- if all_sources %}
 <details class="sources">
-  <summary>ver todas las fuentes ({{ all_sources | length }})</summary>
+  <summary>show all sources ({{ all_sources | length }})</summary>
   {%- for group_label, urls in sources_grouped.items() %}
   <h3>{{ group_label }}</h3>
   <ul>
@@ -291,7 +291,7 @@
   {%- endfor %}
 </details>
 {%- else %}
-<p class="empty">no se recogieron URLs citables en este análisis.</p>
+<p class="empty">no citable URLs were collected in this run.</p>
 {%- endif %}
 
 <hr class="rule">

@@ -359,22 +359,22 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         term_lines.append({"level": level, "text": f"data_quality: {data_quality}"})
     term_lines.append({"level": "ok", "text": "rendering report ..."})
 
-    # Synthesis fallback — Phase 3 uses deterministic prose; Phase 4 will
-    # replace this with LLM-generated narrative when the renderer is wired.
+    # Deterministic synthesis fallback — overridden by LLM output in the
+    # renderer when an analyzer is configured.
     scored_dims = [d for d in dimensions_ctx if d["score"] is not None]
     if scored_dims:
         top = max(scored_dims, key=lambda d: d["score"])
         bottom = min(scored_dims, key=lambda d: d["score"])
         synthesis_prose = (
-            f"{brand_name} obtiene {'n/a' if composite is None else f'{composite:.0f}'}/100 "
-            f"(banda {band_letter}). "
-            f"Punto fuerte: {top['name']} ({top['score']:.0f}/100). "
-            f"Punto débil: {bottom['name']} ({bottom['score']:.0f}/100). "
+            f"{brand_name} scores {'n/a' if composite is None else f'{composite:.0f}'}/100 "
+            f"(band {band_letter}). "
+            f"Strongest dimension: {top['name']} ({top['score']:.0f}/100). "
+            f"Weakest dimension: {bottom['name']} ({bottom['score']:.0f}/100). "
             f"Data quality: {data_quality}."
         )
     else:
         synthesis_prose = (
-            f"{brand_name}: scores por dimensión no disponibles en este run. "
+            f"{brand_name}: per-dimension scores unavailable for this run. "
             f"Data quality: {data_quality}."
         )
 
@@ -426,13 +426,13 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
 # standalone narrative pipeline.
 
 _SOURCE_GROUP_ORDER: tuple[tuple[str, str], ...] = (
-    ("owned", "Propias"),
-    ("encyclopedic", "Enciclopédicas"),
-    ("news", "Medios"),
-    ("social", "Redes sociales"),
+    ("owned", "Owned"),
+    ("encyclopedic", "Encyclopedic"),
+    ("news", "News"),
+    ("social", "Social"),
     ("review", "Reviews"),
     ("changelog", "Changelog"),
-    ("other", "Otras"),
+    ("other", "Other"),
 )
 
 
@@ -646,25 +646,25 @@ def collect_evidences(snapshot: dict) -> list[Evidence]:
 def derive_verdict(score: float | None) -> tuple[str, str]:
     """Map a dimension score to (short_verdict, adjective) for narrative UI.
 
-    Thresholds (from spec, fix/report-narrative):
-      >= 80  solido      · cohesive
-      >= 65  mixed       · mostly-solid
-      >= 50  mixed       · uneven
-      >= 35  debil       · fragmented
-      <  35  muy debil   · broken
-      None   n/a         · unknown
+    Thresholds:
+      >= 80  solid     · cohesive
+      >= 65  mixed     · mostly-solid
+      >= 50  mixed     · uneven
+      >= 35  weak      · fragmented
+      <  35  very weak · broken
+      None   n/a       · unknown
     """
     if score is None:
         return ("n/a", "unknown")
     if score >= 80:
-        return ("solido", "cohesive")
+        return ("solid", "cohesive")
     if score >= 65:
         return ("mixed", "mostly-solid")
     if score >= 50:
         return ("mixed", "uneven")
     if score >= 35:
-        return ("debil", "fragmented")
-    return ("muy debil", "broken")
+        return ("weak", "fragmented")
+    return ("very weak", "broken")
 
 
 def group_by_dimension(

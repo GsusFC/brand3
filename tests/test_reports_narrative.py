@@ -36,7 +36,7 @@ def _dim(name: str, score: float, evidences: list[Evidence] | None = None) -> Di
     return DimensionEvidences(
         dimension=name,
         score=score,
-        verdict="solido" if score >= 80 else "mixed",
+        verdict="solid" if score >= 80 else "mixed",
         verdict_adjective="cohesive" if score >= 80 else "uneven",
         evidences=evidences or [],
     )
@@ -88,9 +88,9 @@ class SynthesisTests(unittest.TestCase):
         mock = MagicMock()
         mock._call.return_value = ""
         out = generate_synthesis(_synthesis_ctx(), analyzer=mock)
-        self.assertIn("Netlify obtiene 72/100", out)
-        self.assertIn("Punto fuerte: presencia", out)
-        self.assertIn("Punto débil: diferenciacion", out)
+        self.assertIn("Netlify scores 72/100", out)
+        self.assertIn("Strongest dimension: presencia", out)
+        self.assertIn("Weakest dimension: diferenciacion", out)
 
     def test_fallback_when_llm_raises(self):
         mock = MagicMock()
@@ -151,8 +151,8 @@ class DimensionFindingsTests(unittest.TestCase):
         ])
         findings = generate_dimension_findings(dim, "Netlify", analyzer=mock)
         self.assertEqual(len(findings), 1)
-        self.assertEqual(findings[0].title, "Evidencia disponible")
-        self.assertIn("síntesis automática no disponible", findings[0].prose)
+        self.assertEqual(findings[0].title, "Available evidence")
+        self.assertIn("automatic synthesis unavailable", findings[0].prose)
         self.assertEqual(len(findings[0].evidence_urls), 2)
 
     def test_filters_urls_not_in_input_evidences(self):
@@ -181,7 +181,7 @@ class DimensionFindingsTests(unittest.TestCase):
         ])
         findings = generate_dimension_findings(dim, "Netlify", analyzer=mock)
         self.assertEqual(len(findings), 1)
-        self.assertEqual(findings[0].title, "Evidencia disponible")
+        self.assertEqual(findings[0].title, "Available evidence")
 
 
 class TensionsTests(unittest.TestCase):
@@ -274,7 +274,7 @@ class ParallelFindingsTests(unittest.TestCase):
         result = generate_all_findings(dims, "Netlify", analyzer=mock, max_workers=5)
 
         self.assertEqual(len(result["percepcion"]), 1)
-        self.assertEqual(result["percepcion"][0].title, "Evidencia disponible")
+        self.assertEqual(result["percepcion"][0].title, "Available evidence")
         for name in ("coherencia", "presencia", "diferenciacion", "vitalidad"):
             self.assertEqual(result[name][0].title, "ok")
 

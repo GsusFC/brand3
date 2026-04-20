@@ -254,14 +254,14 @@ class CollectEvidencesTests(unittest.TestCase):
 
 class DeriveVerdictTests(unittest.TestCase):
     def test_boundaries(self):
-        self.assertEqual(derive_verdict(80.0), ("solido", "cohesive"))
+        self.assertEqual(derive_verdict(80.0), ("solid", "cohesive"))
         self.assertEqual(derive_verdict(79.9), ("mixed", "mostly-solid"))
         self.assertEqual(derive_verdict(65.0), ("mixed", "mostly-solid"))
         self.assertEqual(derive_verdict(64.9), ("mixed", "uneven"))
         self.assertEqual(derive_verdict(50.0), ("mixed", "uneven"))
-        self.assertEqual(derive_verdict(49.9), ("debil", "fragmented"))
-        self.assertEqual(derive_verdict(35.0), ("debil", "fragmented"))
-        self.assertEqual(derive_verdict(34.9), ("muy debil", "broken"))
+        self.assertEqual(derive_verdict(49.9), ("weak", "fragmented"))
+        self.assertEqual(derive_verdict(35.0), ("weak", "fragmented"))
+        self.assertEqual(derive_verdict(34.9), ("very weak", "broken"))
 
     def test_none_score(self):
         self.assertEqual(derive_verdict(None), ("n/a", "unknown"))
@@ -281,7 +281,7 @@ class GroupByDimensionTests(unittest.TestCase):
         grouped = group_by_dimension(evidences, NETLIFY_SNAPSHOT)
         pres = next(d for d in grouped if d.dimension == "presencia")
         self.assertEqual(pres.score, 82.0)
-        self.assertEqual(pres.verdict, "solido")
+        self.assertEqual(pres.verdict, "solid")
         self.assertEqual(pres.verdict_adjective, "cohesive")
 
     def test_dimension_without_evidences_still_present(self):

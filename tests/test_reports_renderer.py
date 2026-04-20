@@ -187,7 +187,7 @@ class ReportRendererTests(unittest.TestCase):
             }
         ]
         html = ReportRenderer().render(snapshot, theme="dark")
-        self.assertIn("datos insuficientes para generar hallazgos", html)
+        self.assertIn("insufficient data to generate findings", html)
 
     # Structural invariants that blindly protect against regressions on the
     # 9 report bugs the narrative refactor was meant to fix.
@@ -218,15 +218,15 @@ class ReportRendererTests(unittest.TestCase):
         """Bug 3 — verdict never rendered twice on the same line."""
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")
         # In the scores table, verdict+adjective appear in separate <td>s.
-        # A literal duplication like 'solido\nsolido' or 'mixed\nmixed' means
+        # A literal duplication like 'solid\nsolid' or 'mixed\nmixed' means
         # a regression.
         self.assertNotIn("mixed\nmixed", html)
-        self.assertNotIn("solido\nsolido", html)
+        self.assertNotIn("solid\nsolid", html)
 
     def test_tensions_section_omitted_when_none(self):
         """Bug 8 — §4 disappears when tensions_prose is None (default)."""
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")
-        self.assertNotIn("§4  tensiones transversales", html)
+        self.assertNotIn("§4  cross-dimension tensions", html)
         self.assertNotIn("(reservado — sin reglas", html)
 
     def test_tensions_section_appears_when_prose_present(self):
@@ -234,11 +234,11 @@ class ReportRendererTests(unittest.TestCase):
         from src.reports.derivation import build_report_context
         from src.reports.renderer import ReportRenderer as _R
         ctx = build_report_context(_sample_snapshot(), theme="dark")
-        ctx["tensions_prose"] = "Tensión transversal detectada en el análisis."
+        ctx["tensions_prose"] = "Cross-dimensional tension detected in the analysis."
         renderer = _R()
         html = renderer.env.get_template("report.html.j2").render(**ctx)
-        self.assertIn("§4  tensiones transversales", html)
-        self.assertIn("Tensión transversal detectada", html)
+        self.assertIn("§4  cross-dimension tensions", html)
+        self.assertIn("Cross-dimensional tension detected", html)
 
     def test_sources_section_is_collapsible(self):
         """§5 uses <details> + <summary> so it's closed by default."""

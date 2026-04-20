@@ -158,9 +158,9 @@ def clear_cache() -> None:
 
 
 _SYNTHESIS_SYSTEM = (
-    "Eres un analista de marcas que escribe para un CMO o fundador. "
-    "Tu output se inserta tal cual en un reporte profesional. "
-    "Responde siempre en español, en prosa, sin markdown ni bullets."
+    "You are a brand analyst writing for a CMO or founder. "
+    "Your output is inserted verbatim into a professional report. "
+    "Always respond in English, in continuous prose, no markdown or bullets."
 )
 
 
@@ -174,23 +174,23 @@ def _build_synthesis_user_prompt(ctx: SynthesisContext) -> str:
     band = _band_letter(ctx.composite_score)
     composite = "n/a" if ctx.composite_score is None else f"{ctx.composite_score:.0f}"
 
-    return f"""Genera un PÁRRAFO DE SÍNTESIS sobre la marca {ctx.brand} ({ctx.url}) en español, de 4 a 6 líneas.
+    return f"""Write a SYNTHESIS PARAGRAPH about the brand {ctx.brand} ({ctx.url}) in English, 4 to 6 lines long.
 
-Contexto:
-- Score global: {composite}/100 (banda {band})
+Context:
+- Global score: {composite}/100 (band {band})
 {chr(10).join(dim_lines)}
 - Data quality: {ctx.data_quality}
 
-Evidencias seleccionadas:
-{evidences or "(sin evidencias relevantes)"}
+Selected evidence:
+{evidences or "(no relevant evidence)"}
 
-Reglas:
-1. NO uses bullet points ni tablas. Prosa corrida.
-2. NO cites números salvo el score global si te ayuda.
-3. NO digas "esta marca tiene". Habla de lo que hace, dice o consigue.
-4. La última frase debe identificar la tensión principal si existe (ej. "presencia fuerte pero percepción genérica"), o una conclusión ejecutable si no hay tensión clara.
-5. Registro: profesional, directo. Nada de marketing-speak.
-6. Devuelve SOLO el párrafo, sin título ni metadata."""
+Rules:
+1. DO NOT use bullet points or tables. Continuous prose only.
+2. DO NOT cite numbers except the global score if it helps.
+3. DO NOT say "this brand has". Talk about what the brand does, says, or achieves.
+4. The last sentence must identify the main tension if one exists (e.g. "strong presence but generic perception") or an actionable takeaway when no clear tension is visible.
+5. Register: professional, direct. No marketing-speak.
+6. Return ONLY the paragraph, no title, no metadata."""
 
 
 def _try_synthesis(ctx: SynthesisContext, analyzer) -> str | None:
@@ -225,16 +225,16 @@ def _fallback_synthesis(ctx: SynthesisContext) -> str:
         top = max(scored, key=lambda d: d.score)
         bottom = min(scored, key=lambda d: d.score)
         lines = [
-            f"{ctx.brand} obtiene {composite}/100 (banda {band}).",
-            f"Punto fuerte: {top.dimension} ({top.score:.0f}/100).",
-            f"Punto débil: {bottom.dimension} ({bottom.score:.0f}/100).",
-            f"Data quality del análisis: {ctx.data_quality}.",
+            f"{ctx.brand} scores {composite}/100 (band {band}).",
+            f"Strongest dimension: {top.dimension} ({top.score:.0f}/100).",
+            f"Weakest dimension: {bottom.dimension} ({bottom.score:.0f}/100).",
+            f"Analysis data quality: {ctx.data_quality}.",
         ]
     else:
         lines = [
-            f"{ctx.brand} obtiene {composite}/100 (banda {band}).",
-            "Scores por dimensión no disponibles en este run.",
-            "Revisar logs del engine para entender el fallo de scoring.",
+            f"{ctx.brand} scores {composite}/100 (band {band}).",
+            "Per-dimension scores unavailable for this run.",
+            "Check engine logs to understand the scoring failure.",
             f"Data quality: {ctx.data_quality}.",
         ]
     return " ".join(lines)
@@ -246,38 +246,38 @@ def _fallback_synthesis(ctx: SynthesisContext) -> str:
 
 
 _FINDINGS_SYSTEM = (
-    "Eres un analista de marca. "
-    "Devuelves SIEMPRE JSON válido con la forma exacta pedida. "
-    "El texto dentro del JSON va en español."
+    "You are a brand analyst. "
+    "You ALWAYS return valid JSON with the exact shape requested. "
+    "Text inside the JSON is written in English."
 )
 
 
 def _build_findings_user_prompt(dim: DimensionEvidences, brand: str) -> str:
     score = "n/a" if dim.score is None else f"{dim.score:.0f}"
     evidences = _format_evidences_for_prompt(dim.evidences, limit=12)
-    return f"""Dimensión: {dim.dimension}
+    return f"""Dimension: {dim.dimension}
 Score: {score}/100
 Verdict: {dim.verdict} · {dim.verdict_adjective}
-Marca: {brand}
+Brand: {brand}
 
-Evidencias disponibles para esta dimensión:
-{evidences or "(ninguna)"}
-(Formato: [TIPO_FUENTE · DOMINIO · sentiment?] "quote si existe" → url)
+Evidence available for this dimension:
+{evidences or "(none)"}
+(Format: [SOURCE_TYPE · DOMAIN · sentiment?] "quote if present" → url)
 
-Identifica entre 1 y 3 HALLAZGOS temáticos distintos dentro de esta dimensión. Un hallazgo agrupa evidencias que cuentan la misma cosa.
+Identify between 1 and 3 distinct thematic FINDINGS within this dimension. A finding groups evidence items that tell the same story.
 
-Para cada hallazgo devuelve:
-- title: frase descriptiva de 3-6 palabras en español, sin punto final.
-- prose: 2-3 líneas en español (máximo 350 caracteres) tejiendo las evidencias relevantes. Menciona al menos un detalle concreto.
-- evidence_urls: lista de URLs (2-4) que soportan este hallazgo. Solo URLs que realmente aparezcan en las evidencias de entrada.
+For each finding return:
+- title: descriptive phrase of 3-6 words in English, no trailing period.
+- prose: 2-3 lines in English (max 350 characters) weaving the relevant evidence. Mention at least one concrete detail.
+- evidence_urls: list of URLs (2-4) that support this finding. Only URLs that actually appear in the input evidence.
 
-Reglas:
-1. NO cites números.
-2. NO uses bullets en la prosa.
-3. Si solo hay evidencias de UNA fuente (ej. solo la propia marca), devuelve un único hallazgo que lo haga explícito (\"solo autodescripción disponible\").
-4. Si detectas contradicción entre fuentes, dedícale un hallazgo propio titulado con la contradicción.
+Rules:
+1. DO NOT cite numbers.
+2. DO NOT use bullets inside the prose.
+3. If evidence comes from ONE source only (e.g. only the brand's own site), return a single finding that makes it explicit ("self-description only").
+4. If you detect a contradiction between sources, dedicate a finding to it titled with the contradiction.
 
-Devuelve JSON con esta estructura exacta:
+Return JSON with exactly this shape:
 {{"findings": [{{"title": "...", "prose": "...", "evidence_urls": ["...", "..."]}}]}}"""
 
 
@@ -327,12 +327,12 @@ def _fallback_findings(dim: DimensionEvidences) -> list[Finding]:
         return []
     urls = _unique_preserve([ev.url for ev in dim.evidences if ev.url])
     prose = (
-        f"{len(dim.evidences)} fuentes consultadas, síntesis automática no "
-        "disponible en este run."
+        f"{len(dim.evidences)} sources consulted; automatic synthesis "
+        "unavailable for this run."
     )
     return [
         Finding(
-            title="Evidencia disponible",
+            title="Available evidence",
             prose=prose,
             evidence_urls=urls[:4],
         )
@@ -345,8 +345,8 @@ def _fallback_findings(dim: DimensionEvidences) -> list[Finding]:
 
 
 _TENSIONS_SYSTEM = (
-    "Eres un analista de marca. "
-    "Respondes en JSON estricto con una sola tensión transversal en prosa, o null."
+    "You are a brand analyst. "
+    "You answer with strict JSON: a single cross-dimensional tension in prose, or null."
 )
 
 
@@ -359,25 +359,25 @@ def _build_tensions_user_prompt(
         score = "n/a" if d.score is None else f"{d.score:.0f}"
         score_lines.append(f"- {d.dimension}: {score}/100 ({d.verdict} · {d.verdict_adjective})")
         top = _format_evidences_for_prompt(d.evidences, limit=2)
-        evidence_lines.append(f"* {d.dimension}:\n{top or '  (sin evidencias)'}")
+        evidence_lines.append(f"* {d.dimension}:\n{top or '  (no evidence)'}")
 
-    return f"""Marca: {brand}
+    return f"""Brand: {brand}
 
-Scores y verdicts:
+Scores and verdicts:
 {chr(10).join(score_lines)}
 
-Evidencias destacadas por dimensión:
+Top evidence per dimension:
 {chr(10).join(evidence_lines)}
 
-Identifica si existe UNA tensión transversal significativa entre dimensiones. Ejemplos de tensiones:
-- Autodescripción vs categorización externa distintas.
-- Alta frecuencia de publicación con baja resonancia externa.
-- Fuerte identidad visual con mensaje confuso.
-- Diferenciación clara en copy pero percepción genérica.
+Decide whether ONE significant cross-dimensional tension exists. Examples of tensions:
+- Self-description versus external categorization diverge.
+- High publishing frequency paired with low external resonance.
+- Strong visual identity paired with a confusing message.
+- Clear differentiation in copy but generic market perception.
 
-Si detectas una tensión real, devuelve 3-4 líneas de prosa en español describiéndola. Si no hay tensión relevante, devuelve null.
+If you find a real tension, return 3-4 lines of prose in English describing it. If no meaningful tension exists, return null.
 
-Devuelve JSON: {{"tension": "texto en prosa"}} o {{"tension": null}}"""
+Return JSON: {{"tension": "prose text"}} or {{"tension": null}}"""
 
 
 def _try_tensions(

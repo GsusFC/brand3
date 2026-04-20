@@ -309,6 +309,7 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         for rule in rules_applied:
             all_rules_applied.append({"dimension": dim_name, "rule": rule})
 
+        short_verdict, verdict_adjective = derive_verdict(score)
         dimensions_ctx.append({
             "name": dim_name,
             "score": score,
@@ -318,9 +319,13 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
             "band_label": label,
             "badge_type": _badge_type_from_band(letter),
             "verdict": verdict_text,
+            "short_verdict": short_verdict,
+            "verdict_adjective": verdict_adjective,
             "observations": insights,
             "features": dim_features,
             "evidence": evidence_collected,
+            # Phase 3 placeholder — filled in by narrative pipeline in phase 4.
+            "findings": [],
             "has_data": score is not None,
         })
 
@@ -339,10 +344,9 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
     fingerprint = audit.get("scoring_state_fingerprint") or ""
 
     runtime_seconds = run.get("run_duration_seconds")
-    data_quality = _first_nonempty(
-        run.get("data_quality"),
-        audit.get("data_quality"),
-    )
+
+    # Defensive data_quality — replaces the legacy "unknown" sentinel.
+    data_quality = derive_data_quality(snapshot)
 
     # Terminal-head lines
     term_lines: list[dict] = []
@@ -351,19 +355,34 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         "text": f"loaded run_id={run.get('id')} · profile={profile} · source={profile_source or 'unknown'}",
     })
     if data_quality:
-        level = "warn" if data_quality in ("partial", "insufficient") else "ok"
+        level = "warn" if data_quality in ("degraded", "insufficient") else "ok"
         term_lines.append({"level": level, "text": f"data_quality: {data_quality}"})
     term_lines.append({"level": "ok", "text": "rendering report ..."})
 
-    summary_text = _first_nonempty(
-        run.get("summary"),
-        # Fallback to concatenated top insights
-        " ".join(
-            d["observations"][0]
-            for d in dimensions_ctx
-            if d["observations"] and d["score"] is not None
-        ),
-    )
+    # Synthesis fallback — Phase 3 uses deterministic prose; Phase 4 will
+    # replace this with LLM-generated narrative when the renderer is wired.
+    scored_dims = [d for d in dimensions_ctx if d["score"] is not None]
+    if scored_dims:
+        top = max(scored_dims, key=lambda d: d["score"])
+        bottom = min(scored_dims, key=lambda d: d["score"])
+        synthesis_prose = (
+            f"{brand_name} obtiene {'n/a' if composite is None else f'{composite:.0f}'}/100 "
+            f"(banda {band_letter}). "
+            f"Punto fuerte: {top['name']} ({top['score']:.0f}/100). "
+            f"Punto débil: {bottom['name']} ({bottom['score']:.0f}/100). "
+            f"Data quality: {data_quality}."
+        )
+    else:
+        synthesis_prose = (
+            f"{brand_name}: scores por dimensión no disponibles en este run. "
+            f"Data quality: {data_quality}."
+        )
+
+    # Sources grouped for §5 collapsible list.
+    sources_grouped, all_sources = _group_sources(snapshot)
+
+    # Global band verdict.
+    _, band_adjective = derive_verdict(composite)
 
     context = {
         "theme": theme,
@@ -374,15 +393,20 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
             "analysis_date": analysis_date,
             "profile": profile,
             "profile_source": profile_source,
-            "data_quality": data_quality or "unknown",
+            "data_quality": data_quality,
         },
         "score": {
             "global": composite,
             "global_display": "n/a" if composite is None else f"{composite:.0f}",
             "band_letter": band_letter,
             "band_label": band_label,
+            "band_adjective": band_adjective,
         },
-        "summary": summary_text,
+        "summary": synthesis_prose,  # kept for backward compat
+        "synthesis_prose": synthesis_prose,
+        "tensions_prose": None,  # Phase 4 wires this in
+        "sources_grouped": sources_grouped,
+        "all_sources": all_sources,
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
         "footer": {
@@ -396,6 +420,42 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         },
     }
     return context
+
+
+# Source grouping helpers — consumed by both build_report_context and the
+# standalone narrative pipeline.
+
+_SOURCE_GROUP_ORDER: tuple[tuple[str, str], ...] = (
+    ("owned", "Propias"),
+    ("encyclopedic", "Enciclopédicas"),
+    ("news", "Medios"),
+    ("social", "Redes sociales"),
+    ("review", "Reviews"),
+    ("changelog", "Changelog"),
+    ("other", "Otras"),
+)
+
+
+def _group_sources(snapshot: dict) -> tuple[dict[str, list[str]], list[str]]:
+    """Group unique evidence URLs by source_type, preserving spec order."""
+    evidences = collect_evidences(snapshot)
+    buckets: dict[str, list[str]] = {key: [] for key, _ in _SOURCE_GROUP_ORDER}
+    seen: set[str] = set()
+    all_urls: list[str] = []
+    for ev in evidences:
+        if not ev.url or ev.url in seen:
+            continue
+        seen.add(ev.url)
+        all_urls.append(ev.url)
+        buckets.setdefault(ev.source_type, []).append(ev.url)
+
+    # Return labelled dict in spec order, dropping empty buckets.
+    grouped: dict[str, list[str]] = {}
+    for key, label in _SOURCE_GROUP_ORDER:
+        urls = buckets.get(key) or []
+        if urls:
+            grouped[label] = urls
+    return grouped, all_urls
 
 
 # ---------------------------------------------------------------------------

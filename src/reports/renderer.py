@@ -10,10 +10,33 @@ from __future__ import annotations
 from datetime import datetime
 from pathlib import Path
 from typing import Literal
+from urllib.parse import urlparse
 
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from .derivation import build_report_context, slugify
+
+
+def _chip_label(url: str) -> str:
+    """Compact display label for a URL used inside a chip.
+
+    Rules: hostname without "www.", plus path if the path is not "/". Truncate
+    the whole label to 25 chars with an ellipsis when longer.
+    """
+    if not url or not isinstance(url, str):
+        return ""
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return url
+    host = (parsed.hostname or "").lower().lstrip(".")
+    if host.startswith("www."):
+        host = host[4:]
+    path = (parsed.path or "").rstrip("/")
+    label = f"{host}{path}" if path else host
+    if len(label) > 25:
+        label = label[:24] + "…"
+    return label or url
 
 
 _MODULE_DIR = Path(__file__).resolve().parent
@@ -36,6 +59,7 @@ class ReportRenderer:
             trim_blocks=False,
             lstrip_blocks=False,
         )
+        self.env.filters["chip_label"] = _chip_label
 
     def render(self, snapshot: dict, theme: Theme = "dark") -> str:
         context = build_report_context(snapshot, theme=theme)

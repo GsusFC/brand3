@@ -7,12 +7,100 @@ from __future__ import annotations
 
 import ast
 import json
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
+from urllib.parse import urlparse
 
 # REVIEW: D2 — evidence lives in features.raw_value, parsed defensively because
 # SQLite stores it via str(dict) (see sqlite_store.py:536), not JSON.
 _EVIDENCE_KEYS = ("evidence", "quotes", "examples", "messaging_gaps", "tone_examples")
+
+# Narrative pipeline types (phase 1 of fix/report-narrative).
+SourceType = Literal[
+    "owned",
+    "encyclopedic",
+    "social",
+    "news",
+    "changelog",
+    "review",
+    "other",
+]
+
+_DIMENSION_ORDER: tuple[str, ...] = (
+    "coherencia",
+    "presencia",
+    "percepcion",
+    "diferenciacion",
+    "vitalidad",
+)
+
+_ENCYCLOPEDIC_HOSTS = {"wikipedia.org", "crunchbase.com", "pitchbook.com"}
+_SOCIAL_HOSTS = {
+    "linkedin.com",
+    "x.com",
+    "twitter.com",
+    "instagram.com",
+    "youtube.com",
+    "tiktok.com",
+    "facebook.com",
+    "github.com",
+}
+_REVIEW_HOSTS = {"g2.com", "capterra.com", "trustpilot.com", "producthunt.com"}
+_NEWS_HOSTS = {
+    "techcrunch.com",
+    "theverge.com",
+    "wired.com",
+    "forbes.com",
+    "bloomberg.com",
+    "reuters.com",
+    "nytimes.com",
+    "washingtonpost.com",
+    "ft.com",
+    "economist.com",
+    "bbc.com",
+    "bbc.co.uk",
+    "cnn.com",
+    "wsj.com",
+    "theguardian.com",
+    "axios.com",
+    "businessinsider.com",
+    "venturebeat.com",
+    "arstechnica.com",
+    "fastcompany.com",
+    "elpais.com",
+    "elmundo.es",
+    "expansion.com",
+    "cincodias.elpais.com",
+    "eleconomista.es",
+    "lavanguardia.com",
+}
+_CHANGELOG_PATH_MARKERS = ("/changelog", "/releases", "/blog/release", "/release-notes")
+
+
+@dataclass(frozen=True)
+class Evidence:
+    """Normalized evidence item extracted from any feature's raw_value."""
+
+    dimension: str
+    quote: str | None
+    url: str | None
+    source_type: SourceType
+    source_domain: str | None
+    sentiment: str | None
+    feature_name: str | None
+    extra: dict = field(default_factory=dict)
+
+
+@dataclass
+class DimensionEvidences:
+    """One dimension's score + verdict + all evidences belonging to it."""
+
+    dimension: str
+    score: float | None
+    verdict: str
+    verdict_adjective: str
+    evidences: list[Evidence] = field(default_factory=list)
 
 
 _BANDS = (
@@ -308,3 +396,294 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         },
     }
     return context
+
+
+# ---------------------------------------------------------------------------
+# Narrative pipeline (phase 1 of fix/report-narrative)
+# ---------------------------------------------------------------------------
+
+
+def _extract_domain(url: str | None) -> str | None:
+    if not url or not isinstance(url, str):
+        return None
+    try:
+        host = urlparse(url).hostname or ""
+    except ValueError:
+        return None
+    host = host.lower().lstrip(".")
+    if host.startswith("www."):
+        host = host[4:]
+    return host or None
+
+
+def _host_suffix_match(host: str, needle: str) -> bool:
+    return host == needle or host.endswith("." + needle)
+
+
+def _infer_source_type(url: str | None, brand_domain: str | None) -> SourceType:
+    """Classify a URL into SourceType. Brand-owned check wins over all others."""
+    host = _extract_domain(url)
+    if not host:
+        return "other"
+    if brand_domain and (host == brand_domain or host.endswith("." + brand_domain)):
+        path = (urlparse(url).path or "").lower() if url else ""
+        if any(marker in path for marker in _CHANGELOG_PATH_MARKERS):
+            return "changelog"
+        return "owned"
+    for candidate in _ENCYCLOPEDIC_HOSTS:
+        if _host_suffix_match(host, candidate):
+            return "encyclopedic"
+    for candidate in _SOCIAL_HOSTS:
+        if _host_suffix_match(host, candidate):
+            return "social"
+    for candidate in _REVIEW_HOSTS:
+        if _host_suffix_match(host, candidate):
+            return "review"
+    path = (urlparse(url).path or "").lower() if url else ""
+    if any(marker in path for marker in _CHANGELOG_PATH_MARKERS):
+        return "changelog"
+    for candidate in _NEWS_HOSTS:
+        if _host_suffix_match(host, candidate):
+            return "news"
+    return "other"
+
+
+def _build_evidence(
+    dimension: str,
+    feature_name: str | None,
+    quote: str | None,
+    url: str | None,
+    sentiment: str | None,
+    brand_domain: str | None,
+    extra: dict | None = None,
+) -> Evidence | None:
+    """Build an Evidence, enforcing "must have quote or url" gate."""
+    q = (quote or "").strip() or None
+    u = (url or "").strip() or None
+    if u and not (u.startswith("http://") or u.startswith("https://")):
+        u = None
+    if not q and not u:
+        return None
+    source_type = _infer_source_type(u, brand_domain)
+    return Evidence(
+        dimension=dimension,
+        quote=q,
+        url=u,
+        source_type=source_type,
+        source_domain=_extract_domain(u),
+        sentiment=(sentiment or None),
+        feature_name=feature_name,
+        extra=extra or {},
+    )
+
+
+def _iter_feature_evidences(
+    dimension: str,
+    feature_name: str | None,
+    raw: Any,
+    brand_domain: str | None,
+) -> list[Evidence]:
+    """Walk a parsed raw_value and emit Evidence objects.
+
+    Handles the observed shapes across the 20 features:
+      - evidence: [{quote, source_url, signal}]         (brand_sentiment)
+      - evidence: [{quote, signal}]                      (positioning_clarity)
+      - evidence: [{url, title, snippet}]                (search_visibility)
+      - evidence: [{date, url}]                          (publication_cadence)
+      - examples: [{source, quote}]                      (tone_consistency)
+      - evidence_url: "https://..."                      (content_recency)
+      - evidence_snippet: "..."                          (web_presence)
+      - evidence_snippets: ["...", "..."]                (content_authenticity)
+    Dicts without a quote AND without a URL are dropped.
+    """
+    if not isinstance(raw, dict):
+        return []
+
+    out: list[Evidence] = []
+
+    def add(
+        quote: str | None = None,
+        url: str | None = None,
+        sentiment: str | None = None,
+        extra: dict | None = None,
+    ) -> None:
+        ev = _build_evidence(
+            dimension=dimension,
+            feature_name=feature_name,
+            quote=quote,
+            url=url,
+            sentiment=sentiment,
+            brand_domain=brand_domain,
+            extra=extra,
+        )
+        if ev is not None:
+            out.append(ev)
+
+    for key in _EVIDENCE_KEYS:
+        items = raw.get(key)
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if isinstance(item, dict):
+                quote = item.get("quote") or item.get("snippet") or item.get("text") or item.get("example")
+                url = item.get("source_url") or item.get("url")
+                sentiment = item.get("signal") or item.get("sentiment") or item.get("tone")
+                extra = {k: v for k, v in item.items() if k in ("title", "date", "source")}
+                add(quote=quote, url=url, sentiment=sentiment, extra=extra)
+            elif isinstance(item, str) and item.strip():
+                add(quote=item)
+
+    single_url = raw.get("evidence_url")
+    if isinstance(single_url, str):
+        add(url=single_url)
+
+    single_quote = raw.get("evidence_snippet")
+    if isinstance(single_quote, str):
+        add(quote=single_quote)
+
+    snippets = raw.get("evidence_snippets")
+    if isinstance(snippets, list):
+        for s in snippets:
+            if isinstance(s, str) and s.strip():
+                add(quote=s)
+
+    insights = raw.get("evidence_insights")
+    if isinstance(insights, list):
+        for s in insights:
+            if isinstance(s, str) and s.strip():
+                add(quote=s)
+
+    return out
+
+
+def collect_evidences(snapshot: dict) -> list[Evidence]:
+    """Extract normalized Evidence items from every feature in a run snapshot.
+
+    Input: the dict returned by `SQLiteStore.get_run_snapshot(run_id)` —
+    the same shape consumed by `build_report_context`.
+    """
+    run = snapshot.get("run") or {}
+    brand_url = run.get("url") or (run.get("brand_profile") or {}).get("url") or ""
+    brand_domain = _extract_domain(brand_url) if brand_url else None
+
+    evidences: list[Evidence] = []
+    for feat in snapshot.get("features") or []:
+        dim = feat.get("dimension_name") or ""
+        if not dim:
+            continue
+        parsed = parse_raw_value(feat.get("raw_value"))
+        evidences.extend(
+            _iter_feature_evidences(
+                dimension=dim,
+                feature_name=feat.get("feature_name"),
+                raw=parsed,
+                brand_domain=brand_domain,
+            )
+        )
+    return evidences
+
+
+def derive_verdict(score: float | None) -> tuple[str, str]:
+    """Map a dimension score to (short_verdict, adjective) for narrative UI.
+
+    Thresholds (from spec, fix/report-narrative):
+      >= 80  solido      · cohesive
+      >= 65  mixed       · mostly-solid
+      >= 50  mixed       · uneven
+      >= 35  debil       · fragmented
+      <  35  muy debil   · broken
+      None   n/a         · unknown
+    """
+    if score is None:
+        return ("n/a", "unknown")
+    if score >= 80:
+        return ("solido", "cohesive")
+    if score >= 65:
+        return ("mixed", "mostly-solid")
+    if score >= 50:
+        return ("mixed", "uneven")
+    if score >= 35:
+        return ("debil", "fragmented")
+    return ("muy debil", "broken")
+
+
+def group_by_dimension(
+    evidences: list[Evidence],
+    snapshot: dict,
+) -> list[DimensionEvidences]:
+    """Bucket evidences by dimension and attach score + verdict.
+
+    Output is a list of 5 DimensionEvidences in fixed order
+    (coherencia, presencia, percepcion, diferenciacion, vitalidad).
+    Dimensions with no evidences still appear with `evidences=[]`.
+    """
+    by_dim: dict[str, list[Evidence]] = {d: [] for d in _DIMENSION_ORDER}
+    for ev in evidences:
+        if ev.dimension in by_dim:
+            by_dim[ev.dimension].append(ev)
+
+    score_by_dim: dict[str, float | None] = {}
+    for row in snapshot.get("scores") or []:
+        name = row.get("dimension_name")
+        if name in by_dim:
+            score_by_dim[name] = row.get("score")
+
+    result: list[DimensionEvidences] = []
+    for name in _DIMENSION_ORDER:
+        score = score_by_dim.get(name)
+        short, adj = derive_verdict(score)
+        result.append(
+            DimensionEvidences(
+                dimension=name,
+                score=score,
+                verdict=short,
+                verdict_adjective=adj,
+                evidences=by_dim[name],
+            )
+        )
+    return result
+
+
+def derive_data_quality(snapshot: dict) -> str:
+    """Defensive data_quality calculator — never returns 'unknown'.
+
+    Order of checks:
+      1. Run-level field already set to a valid value → use it.
+      2. llm_used=False in the run → insufficient.
+      3. >40% features marked heuristic/fallback → degraded.
+      4. web_presence evidence_snippet under 200 chars → degraded.
+      5. otherwise → good.
+    """
+    run = snapshot.get("run") or {}
+    explicit = run.get("data_quality")
+    if isinstance(explicit, str) and explicit in ("good", "degraded", "insufficient"):
+        return explicit
+
+    llm_used = run.get("llm_used")
+    if llm_used in (0, False):
+        return "insufficient"
+
+    features = snapshot.get("features") or []
+    if not features:
+        return "insufficient"
+
+    heuristic_like = 0
+    web_presence_snippet_len: int | None = None
+    for feat in features:
+        source = (feat.get("source") or "").lower()
+        if "heuristic" in source or "fallback" in source:
+            heuristic_like += 1
+        if feat.get("feature_name") == "web_presence":
+            parsed = parse_raw_value(feat.get("raw_value"))
+            if isinstance(parsed, dict):
+                snippet = parsed.get("evidence_snippet") or ""
+                if isinstance(snippet, str):
+                    web_presence_snippet_len = len(snippet)
+
+    if heuristic_like / len(features) > 0.4:
+        return "degraded"
+
+    if web_presence_snippet_len is not None and web_presence_snippet_len < 200:
+        return "degraded"
+
+    return "good"

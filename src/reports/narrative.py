@@ -38,7 +38,7 @@ class SynthesisContext:
 
     brand: str
     url: str
-    composite_score: float
+    composite_score: float | None
     dimensions: list[DimensionEvidences]
     data_quality: str
     top_evidences: list[Evidence]
@@ -119,30 +119,51 @@ def generate_all_findings(
     run_id: int | None = None,
     max_workers: int = 5,
 ) -> dict[str, list[Finding]]:
-    """Run generate_dimension_findings for all 5 dimensions in parallel.
+    """Run generate_dimension_findings for all dimensions in parallel.
 
-    Any single dimension that fails falls back to its own fallback; the
-    other dimensions are unaffected.
+    Applies a hard timeout via `concurrent.futures.wait(timeout=...)` so a
+    hung LLM call can never block the report render past that window. Any
+    dimension that fails or times out falls back to `_fallback_findings`;
+    the rest are unaffected.
     """
     out: dict[str, list[Finding]] = {}
     if not dimensions:
         return out
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+    dim_by_name = {d.dimension: d for d in dimensions}
+    # NOTE: do NOT use a `with` block — on timeout we must return without
+    # waiting for hung workers. `pool.shutdown(wait=False)` lets stuck LLM
+    # calls finish in the background while the report still renders.
+    pool = concurrent.futures.ThreadPoolExecutor(max_workers=max_workers)
+    try:
         future_to_name = {
             pool.submit(
                 generate_dimension_findings, d, brand, analyzer, run_id
             ): d.dimension
             for d in dimensions
         }
-        for fut in concurrent.futures.as_completed(future_to_name):
+        done, not_done = concurrent.futures.wait(
+            future_to_name.keys(),
+            timeout=_FINDINGS_CALL_TIMEOUT_S,
+            return_when=concurrent.futures.ALL_COMPLETED,
+        )
+        for fut in done:
             name = future_to_name[fut]
             try:
-                out[name] = fut.result(timeout=_FINDINGS_CALL_TIMEOUT_S)
+                out[name] = fut.result()
             except Exception as exc:
-                log.warning("findings call for %s timed out/failed: %s", name, exc)
-                dim = next(d for d in dimensions if d.dimension == name)
-                out[name] = _fallback_findings(dim)
+                log.warning("findings call for %s failed: %s", name, exc)
+                out[name] = _fallback_findings(dim_by_name[name])
+        for fut in not_done:
+            name = future_to_name[fut]
+            log.warning(
+                "findings call for %s exceeded %ss timeout — using fallback",
+                name, _FINDINGS_CALL_TIMEOUT_S,
+            )
+            fut.cancel()
+            out[name] = _fallback_findings(dim_by_name[name])
+    finally:
+        pool.shutdown(wait=False)
 
     return out
 
@@ -171,13 +192,16 @@ def _build_synthesis_user_prompt(ctx: SynthesisContext) -> str:
         dim_lines.append(f"- {d.dimension}: {score}/100 ({d.verdict})")
 
     evidences = _format_evidences_for_prompt(ctx.top_evidences, limit=5)
-    band = _band_letter(ctx.composite_score)
-    composite = "n/a" if ctx.composite_score is None else f"{ctx.composite_score:.0f}"
+    if ctx.composite_score is None:
+        composite_line = "- Global score: n/a (not computed for this run)"
+    else:
+        band = _band_letter(ctx.composite_score)
+        composite_line = f"- Global score: {ctx.composite_score:.0f}/100 (band {band})"
 
     return f"""Write a SYNTHESIS PARAGRAPH about the brand {ctx.brand} ({ctx.url}) in English, 4 to 6 lines long.
 
 Context:
-- Global score: {composite}/100 (band {band})
+{composite_line}
 {chr(10).join(dim_lines)}
 - Data quality: {ctx.data_quality}
 
@@ -217,22 +241,30 @@ def _try_synthesis(ctx: SynthesisContext, analyzer) -> str | None:
 
 
 def _fallback_synthesis(ctx: SynthesisContext) -> str:
-    """Deterministic 4-line fallback. Used when LLM is unavailable."""
+    """Deterministic 4-line fallback. Used when LLM is unavailable.
+
+    When `composite_score` is None the header line intentionally avoids
+    fabricating a "0/100" score — the UI must honestly reflect that the
+    run was not scorable end-to-end.
+    """
     scored = [d for d in ctx.dimensions if d.score is not None]
-    composite = "n/a" if ctx.composite_score is None else f"{ctx.composite_score:.0f}"
-    band = _band_letter(ctx.composite_score)
+    if ctx.composite_score is None:
+        header = f"{ctx.brand}: global score unavailable for this run."
+    else:
+        band = _band_letter(ctx.composite_score)
+        header = f"{ctx.brand} scores {ctx.composite_score:.0f}/100 (band {band})."
     if scored:
         top = max(scored, key=lambda d: d.score)
         bottom = min(scored, key=lambda d: d.score)
         lines = [
-            f"{ctx.brand} scores {composite}/100 (band {band}).",
+            header,
             f"Strongest dimension: {top.dimension} ({top.score:.0f}/100).",
             f"Weakest dimension: {bottom.dimension} ({bottom.score:.0f}/100).",
             f"Analysis data quality: {ctx.data_quality}.",
         ]
     else:
         lines = [
-            f"{ctx.brand} scores {composite}/100 (band {band}).",
+            header,
             "Per-dimension scores unavailable for this run.",
             "Check engine logs to understand the scoring failure.",
             f"Data quality: {ctx.data_quality}.",

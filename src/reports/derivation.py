@@ -360,21 +360,27 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
     term_lines.append({"level": "ok", "text": "rendering report ..."})
 
     # Deterministic synthesis fallback — overridden by LLM output in the
-    # renderer when an analyzer is configured.
+    # renderer when an analyzer is configured. Honest about missing score.
     scored_dims = [d for d in dimensions_ctx if d["score"] is not None]
+    if composite is None:
+        synthesis_head = f"{brand_name}: global score unavailable for this run."
+    else:
+        synthesis_head = (
+            f"{brand_name} scores {composite:.0f}/100 (band {band_letter})."
+        )
     if scored_dims:
         top = max(scored_dims, key=lambda d: d["score"])
         bottom = min(scored_dims, key=lambda d: d["score"])
         synthesis_prose = (
-            f"{brand_name} scores {'n/a' if composite is None else f'{composite:.0f}'}/100 "
-            f"(band {band_letter}). "
+            f"{synthesis_head} "
             f"Strongest dimension: {top['name']} ({top['score']:.0f}/100). "
             f"Weakest dimension: {bottom['name']} ({bottom['score']:.0f}/100). "
             f"Data quality: {data_quality}."
         )
     else:
         synthesis_prose = (
-            f"{brand_name}: per-dimension scores unavailable for this run. "
+            f"{synthesis_head} "
+            f"Per-dimension scores unavailable for this run. "
             f"Data quality: {data_quality}."
         )
 

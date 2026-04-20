@@ -253,6 +253,18 @@ class ReportRendererTests(unittest.TestCase):
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")
         self.assertNotIn("(sin cita literal)", html)
 
+    def test_none_composite_is_rendered_as_na(self):
+        """Finding 2 — composite_score=None must propagate as n/a, not 0."""
+        snapshot = _sample_snapshot()
+        snapshot["run"]["composite_score"] = None
+        snapshot["scores"] = [dict(row, score=None) for row in snapshot["scores"]]
+        html = ReportRenderer().render(snapshot, theme="dark")
+        self.assertIn(">n/a<", html.replace(" ", ""))
+        self.assertIn("global score unavailable", html)
+        # Must NOT fabricate 0/100 or pretend it's an F.
+        self.assertNotIn("0/100", html)
+        self.assertNotIn("band: F", html)
+
     def test_score_never_has_decimal(self):
         """Bug 2 — composite score displayed with 0 decimals consistently."""
         snapshot = _sample_snapshot()  # composite_score = 74.3

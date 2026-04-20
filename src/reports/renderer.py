@@ -144,7 +144,10 @@ def _apply_narrative(context: dict, snapshot: dict, analyzer) -> None:
     run = snapshot.get("run") or {}
     brand = context["brand"]["name"]
     run_id = run.get("id")
-    composite = run.get("composite_score") or 0.0
+    # Preserve None when the run wasn't scorable — never fabricate a 0/100.
+    composite = run.get("composite_score")
+    if composite is not None and not isinstance(composite, (int, float)):
+        composite = None
 
     evidences = collect_evidences(snapshot)
     dim_evs = group_by_dimension(evidences, snapshot)

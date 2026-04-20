@@ -216,6 +216,51 @@ class TensionsTests(unittest.TestCase):
         self.assertIsNone(out)
 
 
+class NoneCompositeScoreTests(unittest.TestCase):
+    """Finding 2 — composite_score=None must not become 0/100 or band F."""
+
+    def setUp(self):
+        clear_cache()
+
+    def _ctx(self, score: float | None) -> SynthesisContext:
+        return SynthesisContext(
+            brand="Acme",
+            url="https://acme.example",
+            composite_score=score,
+            dimensions=[_dim("coherencia", 70.0), _dim("presencia", 55.0)],
+            data_quality="insufficient",
+            top_evidences=[],
+        )
+
+    def test_fallback_does_not_fabricate_zero_score(self):
+        """Without LLM and without composite, fallback stays honest."""
+        mock = MagicMock()
+        mock._call.return_value = ""  # force fallback
+        out = generate_synthesis(self._ctx(None), analyzer=mock)
+        self.assertIn("global score unavailable", out)
+        # The composite score slot must not read "scores 0/100" or similar;
+        # per-dimension scores (e.g. "70/100") are fine.
+        self.assertNotIn("scores 0/100", out)
+        self.assertNotIn("(band F)", out)
+
+    def test_fallback_keeps_numeric_score_when_present(self):
+        mock = MagicMock()
+        mock._call.return_value = ""
+        out = generate_synthesis(self._ctx(72.0), analyzer=mock)
+        self.assertIn("72/100", out)
+        self.assertNotIn("global score unavailable", out)
+
+    def test_prompt_does_not_lie_when_composite_is_none(self):
+        """The LLM prompt must not state 'n/a/100' or a fabricated band."""
+        from src.reports.narrative import _build_synthesis_user_prompt
+
+        prompt = _build_synthesis_user_prompt(self._ctx(None))
+        self.assertIn("n/a", prompt)
+        self.assertNotIn("n/a/100", prompt)
+        self.assertNotIn("(band F)", prompt)
+        self.assertNotIn("(band ?)", prompt)
+
+
 class ParallelFindingsTests(unittest.TestCase):
     def setUp(self):
         clear_cache()
@@ -253,6 +298,55 @@ class ParallelFindingsTests(unittest.TestCase):
         # timeout. Concurrent calls all arrive within a few ms.
         span = max(start_times) - min(start_times)
         self.assertLess(span, 1.0, f"calls not concurrent (span={span:.2f}s)")
+
+    def test_timeout_does_not_block_other_dimensions(self):
+        """Finding 1 — a hung dimension must not block the render.
+
+        Patch `_FINDINGS_CALL_TIMEOUT_S` to a short window and have the
+        `percepcion` mock sleep past it. The other 4 must still return
+        their LLM output; percepcion must fall back.
+        """
+        from src.reports import narrative as narr_mod
+
+        hung = threading.Event()
+
+        def slow_or_fast(system, user, max_tokens=2000):
+            if "Dimension: percepcion" in user:
+                hung.wait(timeout=10)  # blocks past the patched timeout
+                return {"findings": [{
+                    "title": "late", "prose": "too late", "evidence_urls": [],
+                }]}
+            return {"findings": [{
+                "title": "ok",
+                "prose": "ok",
+                "evidence_urls": ["https://example.com/a"],
+            }]}
+
+        mock = MagicMock()
+        mock._call_json.side_effect = slow_or_fast
+
+        dims = [
+            _dim(d, 70.0, evidences=[_ev(d, "q", "https://example.com/a")])
+            for d in ("coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad")
+        ]
+
+        started = time.monotonic()
+        original_timeout = narr_mod._FINDINGS_CALL_TIMEOUT_S
+        narr_mod._FINDINGS_CALL_TIMEOUT_S = 0.5
+        try:
+            result = generate_all_findings(
+                dims, "Netlify", analyzer=mock, max_workers=5,
+            )
+        finally:
+            narr_mod._FINDINGS_CALL_TIMEOUT_S = original_timeout
+            hung.set()  # release the hung thread so test shuts down cleanly
+
+        elapsed = time.monotonic() - started
+        # Must not have waited for the 10s sleep inside the hung thread.
+        self.assertLess(elapsed, 3.0, f"generate_all_findings blocked for {elapsed:.2f}s")
+        self.assertEqual(result["percepcion"][0].title, "Available evidence")
+        for name in ("coherencia", "presencia", "diferenciacion", "vitalidad"):
+            self.assertEqual(result[name][0].title, "ok")
 
     def test_one_failing_dim_does_not_break_others(self):
         def side_effect(system, user, max_tokens=2000):

@@ -245,6 +245,20 @@ class SQLiteStore:
             CREATE INDEX IF NOT EXISTS idx_evidence_items_run ON evidence_items(run_id);
             CREATE INDEX IF NOT EXISTS idx_evidence_items_dimension ON evidence_items(run_id, dimension_name);
 
+            CREATE TABLE IF NOT EXISTS llm_cache (
+                cache_key TEXT PRIMARY KEY,
+                prompt_version TEXT NOT NULL,
+                model TEXT NOT NULL,
+                response_type TEXT NOT NULL,
+                response_json TEXT,
+                response_text TEXT,
+                created_at TEXT NOT NULL,
+                hit_count INTEGER NOT NULL DEFAULT 0,
+                last_hit_at TEXT
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_llm_cache_model ON llm_cache(model, prompt_version);
+
             CREATE TABLE IF NOT EXISTS calibration_candidates (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 brand_name TEXT,
@@ -597,6 +611,70 @@ class SQLiteStore:
             (run_id,),
         ).fetchall()
         return [dict(row) for row in rows]
+
+    def get_llm_cache(self, cache_key: str) -> dict[str, Any] | None:
+        row = self.conn.execute(
+            """
+            SELECT cache_key, prompt_version, model, response_type, response_json,
+                   response_text, created_at, hit_count, last_hit_at
+            FROM llm_cache
+            WHERE cache_key = ?
+            """,
+            (cache_key,),
+        ).fetchone()
+        if not row:
+            return None
+        now = datetime.now().isoformat()
+        self.conn.execute(
+            """
+            UPDATE llm_cache
+            SET hit_count = hit_count + 1,
+                last_hit_at = ?
+            WHERE cache_key = ?
+            """,
+            (now, cache_key),
+        )
+        self.conn.commit()
+        payload = dict(row)
+        if payload.get("response_json"):
+            payload["response_json"] = json.loads(payload["response_json"])
+        return payload
+
+    def save_llm_cache(
+        self,
+        *,
+        cache_key: str,
+        prompt_version: str,
+        model: str,
+        response_type: str,
+        response_json: Any | None = None,
+        response_text: str | None = None,
+    ) -> None:
+        self.conn.execute(
+            """
+            INSERT INTO llm_cache (
+                cache_key, prompt_version, model, response_type,
+                response_json, response_text, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(cache_key) DO UPDATE SET
+                prompt_version=excluded.prompt_version,
+                model=excluded.model,
+                response_type=excluded.response_type,
+                response_json=excluded.response_json,
+                response_text=excluded.response_text
+            """,
+            (
+                cache_key,
+                prompt_version,
+                model,
+                response_type,
+                _json_dumps(response_json) if response_json is not None else None,
+                response_text,
+                datetime.now().isoformat(),
+            ),
+        )
+        self.conn.commit()
 
     def save_features(self, run_id: int, features_by_dim: dict[str, dict[str, FeatureValue]]) -> None:
         rows = []

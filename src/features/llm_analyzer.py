@@ -11,10 +11,14 @@ Provider is configured via src.config (OpenAI-compatible API).
 """
 
 import json
+import hashlib
 import urllib.request
 import urllib.error
 
-from src.config import BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MODEL
+from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MODEL
+
+
+PROMPT_VERSION = "brand3-llm-v1"
 
 
 class LLMAnalyzer:
@@ -24,6 +28,60 @@ class LLMAnalyzer:
         self.api_key = api_key or BRAND3_LLM_API_KEY
         self.base_url = base_url or LLM_BASE_URL
         self.model = model or LLM_MODEL
+        self.cache_hits = 0
+        self.cache_misses = 0
+        self.cache_writes = 0
+
+    def _cache_key(self, response_type: str, system: str, user: str, max_tokens: int) -> str:
+        payload = {
+            "prompt_version": PROMPT_VERSION,
+            "model": self.model,
+            "response_type": response_type,
+            "system": system,
+            "user": user,
+            "max_tokens": max_tokens,
+            "temperature": 0.1,
+        }
+        digest = hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
+        return digest
+
+    def _cache_get(self, cache_key: str, response_type: str):
+        try:
+            from src.storage.sqlite_store import SQLiteStore
+            store = SQLiteStore(BRAND3_DB_PATH)
+            try:
+                cached = store.get_llm_cache(cache_key)
+            finally:
+                store.close()
+        except Exception:
+            return None
+        if not cached or cached.get("response_type") != response_type:
+            return None
+        self.cache_hits += 1
+        if response_type == "json":
+            return cached.get("response_json") or {}
+        return cached.get("response_text") or ""
+
+    def _cache_save(self, cache_key: str, response_type: str, value) -> None:
+        if value in ("", None, {}):
+            return
+        try:
+            from src.storage.sqlite_store import SQLiteStore
+            store = SQLiteStore(BRAND3_DB_PATH)
+            try:
+                store.save_llm_cache(
+                    cache_key=cache_key,
+                    prompt_version=PROMPT_VERSION,
+                    model=self.model,
+                    response_type=response_type,
+                    response_json=value if response_type == "json" else None,
+                    response_text=value if response_type == "text" else None,
+                )
+            finally:
+                store.close()
+            self.cache_writes += 1
+        except Exception:
+            return
 
     def _call(self, system: str, user: str, max_tokens: int = 8000) -> str:
         """Make an LLM call via the OpenAI-compatible endpoint.
@@ -34,6 +92,12 @@ class LLMAnalyzer:
         """
         if not self.api_key:
             return ""
+
+        cache_key = self._cache_key("text", system, user, max_tokens)
+        cached = self._cache_get(cache_key, "text")
+        if cached is not None:
+            return cached
+        self.cache_misses += 1
 
         body: dict = {
             "model": self.model,
@@ -63,6 +127,7 @@ class LLMAnalyzer:
                 # Some reasoning models put response in reasoning field when content is null
                 if not content:
                     content = msg.get("reasoning") or ""
+                self._cache_save(cache_key, "text", content)
                 return content
         except urllib.error.HTTPError as e:
             error_body = e.read().decode("utf-8", errors="replace")[:500]
@@ -80,6 +145,12 @@ class LLMAnalyzer:
         """
         if not self.api_key:
             return {}
+
+        cache_key = self._cache_key("json", system, user, max_tokens)
+        cached = self._cache_get(cache_key, "json")
+        if cached is not None:
+            return cached
+        self.cache_misses += 1
 
         body: dict = {
             "model": self.model,
@@ -127,7 +198,9 @@ class LLMAnalyzer:
             content = content.strip()
 
         try:
-            return json.loads(content)
+            parsed = json.loads(content)
+            self._cache_save(cache_key, "json", parsed)
+            return parsed
         except json.JSONDecodeError as e:
             print(f"  LLM JSON parse failed: {e}; got: {content[:200]}")
             return {}

@@ -33,10 +33,10 @@ def _snapshot_analyzer() -> MagicMock:
 
     def _synth(system: str, user: str, max_tokens: int = 1200) -> str:
         return (
-            "Netlify presenta un mensaje claro respaldado por cobertura externa consistente. "
-            "La cobertura en prensa y enciclopedias confirma el posicionamiento del servicio serverless. "
-            "La identidad propia enfatiza la experiencia del developer sin marketing-speak. "
-            "Tensión principal: presencia fuerte pero diferenciación aún limitada frente a alternativas."
+            "Netlify presents a clear message backed by consistent external coverage. "
+            "Press and encyclopedic sources reinforce its serverless positioning. "
+            "Its owned messaging emphasizes the builder experience without marketing-speak. "
+            "Main tension: strong presence but still-limited differentiation versus alternatives."
         )
 
     def _json(system: str, user: str, max_tokens: int = 2000) -> dict:
@@ -48,8 +48,8 @@ def _snapshot_analyzer() -> MagicMock:
         return {
             "findings": [
                 {
-                    "title": "Evidencia consolidada",
-                    "prose": "Las fuentes disponibles cuentan una misma historia.",
+                    "title": "Consolidated evidence",
+                    "prose": "The available sources point in the same direction.",
                     "evidence_urls": urls,
                 }
             ]

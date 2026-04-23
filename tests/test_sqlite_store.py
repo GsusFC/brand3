@@ -82,6 +82,36 @@ class SQLiteStoreTests(unittest.TestCase):
 
             store.close()
 
+    def test_store_persists_evidence_items(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+
+            store.save_evidence_items(
+                run_id,
+                [
+                    {
+                        "source": "context",
+                        "url": "https://example.com/sitemap.xml",
+                        "quote": "sitemap.xml found with 12 URLs",
+                        "feature_name": "site_structure",
+                        "dimension_name": "presencia",
+                        "confidence": 0.8,
+                        "freshness_days": 0,
+                    }
+                ],
+            )
+            evidence = store.get_run_evidence(run_id)
+            snapshot = store.get_run_snapshot(run_id)
+            store.close()
+
+            self.assertEqual(len(evidence), 1)
+            self.assertEqual(evidence[0]["source"], "context")
+            self.assertEqual(evidence[0]["dimension_name"], "presencia")
+            self.assertEqual(snapshot["evidence_items"][0]["quote"], "sitemap.xml found with 12 URLs")
+
     def test_store_allows_null_dimension_and_composite_scores(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

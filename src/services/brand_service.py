@@ -16,6 +16,7 @@ from src.collectors.competitor_collector import (
     CompetitorData,
     CompetitorInfo,
 )
+from src.collectors.context_collector import ContextCollector, ContextData
 from src.collectors.exa_collector import ExaCollector, ExaData, ExaResult
 from src.collectors.social_collector import PlatformMetrics, SocialCollector, SocialData
 from src.collectors.web_collector import WebCollector, WebData
@@ -328,6 +329,12 @@ def _from_competitor_payload(payload: dict | None) -> CompetitorData | None:
     )
 
 
+def _from_context_payload(payload: dict | None) -> ContextData | None:
+    if not payload:
+        return None
+    return ContextData(**payload)
+
+
 def _load_cached(store, brand_name: str, url: str, source: str, ttl_hours: int, decoder):
     if not store:
         return None
@@ -368,6 +375,89 @@ def _emit_progress(progress_cb, phase: str) -> None:
 def _check_cancel(cancel_check) -> None:
     if cancel_check is not None and cancel_check():
         raise AnalysisJobCancelled("Cancelled by user")
+
+
+def _confidence_status(context_data: ContextData | None) -> str:
+    if not context_data or context_data.coverage < 0.3:
+        return "insufficient_data"
+    if context_data.confidence < 0.6:
+        return "degraded"
+    return "good"
+
+
+def _context_confidence_summary(context_data: ContextData | None) -> dict[str, object]:
+    if not context_data:
+        return {
+            "coverage": 0.0,
+            "confidence": 0.0,
+            "confidence_reason": ["context_scan_unavailable"],
+            "status": "insufficient_data",
+        }
+    return {
+        "coverage": context_data.coverage,
+        "confidence": context_data.confidence,
+        "confidence_reason": list(context_data.confidence_reason or []),
+        "status": _confidence_status(context_data),
+    }
+
+
+def _context_evidence_items(context_data: ContextData | None) -> list[dict[str, object]]:
+    if not context_data:
+        return []
+    base = context_data.url.rstrip("/")
+    items: list[dict[str, object]] = []
+    if context_data.sitemap_found:
+        items.append({
+            "source": "context",
+            "url": f"{base}/sitemap.xml",
+            "quote": f"sitemap.xml found with {context_data.sitemap_url_count} URLs",
+            "feature_name": "site_structure",
+            "dimension_name": "presencia",
+            "confidence": 0.8,
+            "freshness_days": 0,
+        })
+    if context_data.robots_found:
+        items.append({
+            "source": "context",
+            "url": f"{base}/robots.txt",
+            "quote": "robots.txt found",
+            "feature_name": "site_structure",
+            "dimension_name": "presencia",
+            "confidence": 0.75,
+            "freshness_days": 0,
+        })
+    if context_data.llms_txt_found:
+        items.append({
+            "source": "context",
+            "url": f"{base}/llms.txt",
+            "quote": "llms.txt found",
+            "feature_name": "ai_discoverability",
+            "dimension_name": "presencia",
+            "confidence": 0.7,
+            "freshness_days": 0,
+        })
+    if context_data.schema_types:
+        items.append({
+            "source": "context",
+            "url": base,
+            "quote": "Schema detected: " + ", ".join(context_data.schema_types[:8]),
+            "feature_name": "structured_identity",
+            "dimension_name": "coherencia",
+            "confidence": 0.75,
+            "freshness_days": 0,
+        })
+    found_pages = [name for name, exists in context_data.key_pages.items() if exists]
+    if found_pages:
+        items.append({
+            "source": "context",
+            "url": base,
+            "quote": "Key pages found: " + ", ".join(found_pages),
+            "feature_name": "content_depth",
+            "dimension_name": "diferenciacion",
+            "confidence": 0.65,
+            "freshness_days": 0,
+        })
+    return items
 
 
 def _score_map(snapshot: dict) -> dict[str, float]:
@@ -622,6 +712,35 @@ def run(
         _check_cancel(cancel_check)
         print(f"[1/4] Collecting data for {brand_name}...")
 
+        context_data = _load_cached(store, brand_name, url, "context", 24, _from_context_payload)
+        if context_data:
+            print(
+                "  Context: cache hit"
+                f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
+            )
+            if run_id:
+                _store_safely(store, "context cache save", lambda: store.save_raw_input(run_id, "context", context_data))
+                _store_safely(
+                    store,
+                    "context cache evidence save",
+                    lambda: store.save_evidence_items(run_id, _context_evidence_items(context_data)),
+                )
+        else:
+            context_data = ContextCollector().scan(url)
+            print(
+                "  Context:"
+                f" score={context_data.context_score:.0f}"
+                f" coverage={context_data.coverage:.2f}"
+                f" confidence={context_data.confidence:.2f}"
+            )
+            if run_id:
+                _store_safely(store, "context save", lambda: store.save_raw_input(run_id, "context", context_data))
+                _store_safely(
+                    store,
+                    "context evidence save",
+                    lambda: store.save_evidence_items(run_id, _context_evidence_items(context_data)),
+                )
+
         web_collector = WebCollector(api_key=FIRECRAWL_API_KEY)
         web_data = _load_cached(store, brand_name, url, "web", BRAND3_CACHE_TTL_HOURS, _from_web_payload)
         if web_data:
@@ -742,13 +861,16 @@ def run(
             )
 
         llm = None
-        if use_llm:
+        skip_llm_for_low_context = bool(context_data and context_data.coverage < 0.3)
+        if use_llm and not skip_llm_for_low_context:
             llm = LLMAnalyzer()
             if llm.api_key:
                 print(f"  LLM: {llm.model} via Nous")
             else:
                 print("  LLM: disabled (no key found)")
                 llm = None
+        elif use_llm and skip_llm_for_low_context:
+            print("  LLM: skipped (insufficient context coverage)")
 
         content_web, content_source, data_sources = _build_content_web(
             url,
@@ -787,10 +909,15 @@ def run(
 
         features_by_dim = {}
         presencia_ext = PresenciaExtractor()
-        features_by_dim["presencia"] = presencia_ext.extract(web=web_data, exa=exa_data, social=social_data)
+        features_by_dim["presencia"] = presencia_ext.extract(
+            web=web_data,
+            exa=exa_data,
+            social=social_data,
+            context=context_data,
+        )
 
         vitalidad_ext = VitalidadExtractor(llm=llm)
-        features_by_dim["vitalidad"] = vitalidad_ext.extract(web=web_data, exa=exa_data)
+        features_by_dim["vitalidad"] = vitalidad_ext.extract(web=web_data, exa=exa_data, context=context_data)
 
         if llm:
             coherencia_ext = CoherenciaExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)
@@ -807,11 +934,11 @@ def run(
             features_by_dim["coherencia"] = {}
             features_by_dim["diferenciacion"] = {}
         else:
-            features_by_dim["coherencia"] = coherencia_ext.extract(web=content_web, exa=exa_data)
+            features_by_dim["coherencia"] = coherencia_ext.extract(web=content_web, exa=exa_data, context=context_data)
             features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
-                web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url
+                web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url, context=context_data
             )
-        features_by_dim["percepcion"] = percepcion_ext.extract(web=web_data, exa=exa_data)
+        features_by_dim["percepcion"] = percepcion_ext.extract(web=web_data, exa=exa_data, context=context_data)
         _annotate_content_source(features_by_dim, content_source)
 
         for dim, feats in features_by_dim.items():
@@ -867,6 +994,8 @@ def run(
             "profile_source": profile_source,
             "data_quality": data_quality,
             "data_sources": data_sources,
+            "context_readiness": _to_jsonable(context_data),
+            "confidence_summary": _context_confidence_summary(context_data),
             "composite_score": brand_score.composite_score,
             "composite_reliable": data_quality != "insufficient",
             "partial_score": data_quality == "insufficient",

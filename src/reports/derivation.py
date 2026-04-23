@@ -97,6 +97,7 @@ class DimensionEvidences:
     """One dimension's score + verdict + all evidences belonging to it."""
 
     dimension: str
+    display_name: str
     score: float | None
     verdict: str
     verdict_adjective: str
@@ -239,14 +240,18 @@ def _format_analysis_date(iso: str | None) -> str:
 
 
 def _load_dimension_labels() -> dict[str, str]:
-    from ..dimensions import DIMENSIONS
+    return {
+        "coherencia": "Coherence",
+        "presencia": "Presence",
+        "percepcion": "Perception",
+        "diferenciacion": "Differentiation",
+        "vitalidad": "Vitality",
+    }
 
-    return {name: name for name in DIMENSIONS}
 
-
-def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
-    """Turn the snapshot returned by SQLiteStore.get_run_snapshot into a flat
-    template-friendly dict.
+def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
+    """Turn the snapshot returned by SQLiteStore.get_run_snapshot into a
+    structured base dossier for report rendering.
 
     Expected snapshot shape:
       {
@@ -312,6 +317,7 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         short_verdict, verdict_adjective = derive_verdict(score)
         dimensions_ctx.append({
             "name": dim_name,
+            "display_name": _load_dimension_labels().get(dim_name, dim_name),
             "score": score,
             "score_display": "n/a" if score is None else f"{score:.0f}",
             "bar": ascii_bar(score),
@@ -328,6 +334,8 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
             "findings": [],
             "has_data": score is not None,
         })
+
+    context_readiness = _context_readiness_from_snapshot(snapshot)
 
     # Header + footer
     composite = run.get("composite_score")
@@ -373,8 +381,8 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
         bottom = min(scored_dims, key=lambda d: d["score"])
         synthesis_prose = (
             f"{synthesis_head} "
-            f"Strongest dimension: {top['name']} ({top['score']:.0f}/100). "
-            f"Weakest dimension: {bottom['name']} ({bottom['score']:.0f}/100). "
+            f"Strongest dimension: {top['display_name']} ({top['score']:.0f}/100). "
+            f"Weakest dimension: {bottom['display_name']} ({bottom['score']:.0f}/100). "
             f"Data quality: {data_quality}."
         )
     else:
@@ -390,32 +398,41 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
     # Global band verdict.
     _, band_adjective = derive_verdict(composite)
 
-    context = {
+    return {
         "theme": theme,
-        "term_lines": term_lines,
         "brand": {
             "name": brand_name,
             "url": url,
+            "domain": _extract_domain(url),
             "analysis_date": analysis_date,
             "profile": profile,
             "profile_source": profile_source,
             "data_quality": data_quality,
         },
-        "score": {
-            "global": composite,
-            "global_display": "n/a" if composite is None else f"{composite:.0f}",
+        "evaluation": {
+            "composite_score": composite,
+            "composite_display": "n/a" if composite is None else f"{composite:.0f}",
             "band_letter": band_letter,
             "band_label": band_label,
             "band_adjective": band_adjective,
+            "data_quality": data_quality,
+            "composite_reliable": data_quality == "good" and composite is not None,
+            "partial_score": composite is None or data_quality != "good",
+            "context_readiness": context_readiness,
         },
-        "summary": synthesis_prose,  # kept for backward compat
-        "synthesis_prose": synthesis_prose,
-        "tensions_prose": None,  # Phase 4 wires this in
-        "sources_grouped": sources_grouped,
-        "all_sources": all_sources,
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
-        "footer": {
+        "narrative": {
+            "legacy_summary": synthesis_prose,
+            "summary": synthesis_prose,
+            "synthesis_prose": synthesis_prose,
+            "tensions_prose": None,  # Narrative layer wires this in later.
+        },
+        "sources": {
+            "grouped": sources_grouped,
+            "all": all_sources,
+        },
+        "audit": {
             "engine": "brand3 v0.1.0",
             "profile": f"{profile}" + (f" · source={profile_source}" if profile_source else ""),
             "fingerprint": fingerprint or "n/a",
@@ -424,8 +441,114 @@ def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
             ),
             "report_id": f"rpt_{run.get('id') or 0:06d}",
         },
+        "ui": {
+            "theme": theme,
+            "term_lines": term_lines,
+        },
     }
-    return context
+
+
+def build_report_context_from_base(base: dict) -> dict:
+    """Adapt the structured base dossier into the legacy flat template context.
+
+    This preserves template compatibility while letting the app/report stack
+    converge on a single dossier contract.
+    """
+    brand = base["brand"]
+    evaluation = base["evaluation"]
+    narrative = base["narrative"]
+    sources = base["sources"]
+    audit = base["audit"]
+    ui = base["ui"]
+    return {
+        "theme": ui["theme"],
+        "term_lines": ui["term_lines"],
+        "brand": brand,
+        "score": {
+            "global": evaluation["composite_score"],
+            "global_display": evaluation["composite_display"],
+            "band_letter": evaluation["band_letter"],
+            "band_label": evaluation["band_label"],
+            "band_adjective": evaluation["band_adjective"],
+        },
+        "summary": narrative["summary"],
+        "legacy_summary": narrative["legacy_summary"],
+        "synthesis_prose": narrative["synthesis_prose"],
+        "tensions_prose": narrative["tensions_prose"],
+        "sources_grouped": sources["grouped"],
+        "all_sources": sources["all"],
+        "dimensions": base["dimensions"],
+        "rules_applied": base["rules_applied"],
+        "footer": audit,
+        # Expose the richer dossier parts too so non-template consumers can
+        # reuse the same object without reconstructing them.
+        "evaluation": evaluation,
+        "context_readiness": evaluation.get("context_readiness") or {},
+        "narrative": narrative,
+        "sources": sources,
+        "audit": audit,
+        "ui": ui,
+    }
+
+
+def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
+    """Backward-compatible wrapper used by existing tests and callers."""
+    return build_report_context_from_base(build_report_base(snapshot, theme=theme))
+
+
+def _context_readiness_from_snapshot(snapshot: dict) -> dict:
+    raw_inputs = snapshot.get("raw_inputs") or []
+    payload = None
+    for item in reversed(raw_inputs):
+        if item.get("source") == "context":
+            payload = item.get("payload") or {}
+            break
+    if not isinstance(payload, dict):
+        return {
+            "available": False,
+            "status": "insufficient_data",
+            "coverage_label": "baja",
+            "confidence_label": "baja",
+            "message": "No context pre-scan was stored for this run.",
+        }
+
+    coverage = float(payload.get("coverage") or 0.0)
+    confidence = float(payload.get("confidence") or 0.0)
+    if coverage < 0.3:
+        status = "insufficient_data"
+    elif confidence < 0.6:
+        status = "degraded"
+    else:
+        status = "good"
+    return {
+        "available": True,
+        "status": status,
+        "context_score": payload.get("context_score"),
+        "coverage": coverage,
+        "confidence": confidence,
+        "coverage_label": _quality_label(coverage),
+        "confidence_label": _quality_label(confidence),
+        "robots_found": bool(payload.get("robots_found")),
+        "sitemap_found": bool(payload.get("sitemap_found")),
+        "sitemap_url_count": int(payload.get("sitemap_url_count") or 0),
+        "llms_txt_found": bool(payload.get("llms_txt_found")),
+        "llms_full_found": bool(payload.get("llms_full_found")),
+        "ai_plugin_found": bool(payload.get("ai_plugin_found")),
+        "schema_types": payload.get("schema_types") or [],
+        "key_pages": payload.get("key_pages") or {},
+        "avg_words": int(payload.get("avg_words") or 0),
+        "avg_internal_links": int(payload.get("avg_internal_links") or 0),
+        "confidence_reason": payload.get("confidence_reason") or [],
+        "opportunities": payload.get("opportunities") or [],
+    }
+
+
+def _quality_label(value: float) -> str:
+    if value >= 0.75:
+        return "alta"
+    if value >= 0.45:
+        return "media"
+    return "baja"
 
 
 # Source grouping helpers — consumed by both build_report_context and the
@@ -701,6 +824,7 @@ def group_by_dimension(
         result.append(
             DimensionEvidences(
                 dimension=name,
+                display_name=_load_dimension_labels().get(name, name),
                 score=score,
                 verdict=short,
                 verdict_adjective=adj,

@@ -63,7 +63,7 @@ def generate_synthesis(
     analyzer=None,
     run_id: int | None = None,
 ) -> str:
-    """§1 prose (4-6 lines in Spanish). Falls back to a deterministic summary."""
+    """§1 prose (4-6 lines in English). Falls back to a deterministic summary."""
     cache_key = ("synthesis", run_id) if run_id is not None else None
     if cache_key and cache_key in _CACHE:
         return _CACHE[cache_key]
@@ -189,7 +189,7 @@ def _build_synthesis_user_prompt(ctx: SynthesisContext) -> str:
     dim_lines = []
     for d in ctx.dimensions:
         score = "n/a" if d.score is None else f"{d.score:.0f}"
-        dim_lines.append(f"- {d.dimension}: {score}/100 ({d.verdict})")
+        dim_lines.append(f"- {d.display_name}: {score}/100 ({d.verdict})")
 
     evidences = _format_evidences_for_prompt(ctx.top_evidences, limit=5)
     if ctx.composite_score is None:
@@ -258,8 +258,8 @@ def _fallback_synthesis(ctx: SynthesisContext) -> str:
         bottom = min(scored, key=lambda d: d.score)
         lines = [
             header,
-            f"Strongest dimension: {top.dimension} ({top.score:.0f}/100).",
-            f"Weakest dimension: {bottom.dimension} ({bottom.score:.0f}/100).",
+            f"Strongest dimension: {top.display_name} ({top.score:.0f}/100).",
+            f"Weakest dimension: {bottom.display_name} ({bottom.score:.0f}/100).",
             f"Analysis data quality: {ctx.data_quality}.",
         ]
     else:
@@ -287,7 +287,7 @@ _FINDINGS_SYSTEM = (
 def _build_findings_user_prompt(dim: DimensionEvidences, brand: str) -> str:
     score = "n/a" if dim.score is None else f"{dim.score:.0f}"
     evidences = _format_evidences_for_prompt(dim.evidences, limit=12)
-    return f"""Dimension: {dim.dimension}
+    return f"""Dimension: {dim.display_name}
 Score: {score}/100
 Verdict: {dim.verdict} · {dim.verdict_adjective}
 Brand: {brand}
@@ -389,9 +389,9 @@ def _build_tensions_user_prompt(
     evidence_lines = []
     for d in dimensions:
         score = "n/a" if d.score is None else f"{d.score:.0f}"
-        score_lines.append(f"- {d.dimension}: {score}/100 ({d.verdict} · {d.verdict_adjective})")
+        score_lines.append(f"- {d.display_name}: {score}/100 ({d.verdict} · {d.verdict_adjective})")
         top = _format_evidences_for_prompt(d.evidences, limit=2)
-        evidence_lines.append(f"* {d.dimension}:\n{top or '  (no evidence)'}")
+        evidence_lines.append(f"* {d.display_name}:\n{top or '  (no evidence)'}")
 
     return f"""Brand: {brand}
 
@@ -464,7 +464,7 @@ def _format_evidences_for_prompt(evidences: list[Evidence], limit: int) -> str:
         quote = (ev.quote or "").strip()
         if len(quote) > 240:
             quote = quote[:237] + "…"
-        quote_part = f'"{quote}"' if quote else "(sin quote)"
+        quote_part = f'"{quote}"' if quote else "(no quote)"
         src_bits = [ev.source_type]
         if ev.source_domain:
             src_bits.append(ev.source_domain)

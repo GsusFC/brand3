@@ -6,6 +6,7 @@ import re
 from collections import Counter
 
 from ..collectors.competitor_collector import CompetitorData
+from ..collectors.context_collector import ContextData
 from ..collectors.exa_collector import ExaData
 from ..collectors.web_collector import WebData
 from ..models.brand import FeatureValue
@@ -107,6 +108,7 @@ class DiferenciacionExtractor:
         competitor_webs: list[WebData] = None,
         competitor_data: CompetitorData = None,
         screenshot_url: str = None,
+        context: ContextData = None,
     ) -> dict[str, FeatureValue]:
         return {
             "positioning_clarity": self._positioning_clarity(web, competitor_data),
@@ -116,7 +118,31 @@ class DiferenciacionExtractor:
             ),
             "content_authenticity": self._content_authenticity(web, exa, screenshot_url),
             "brand_personality": self._brand_personality(web, exa, screenshot_url),
+            "content_depth_signal": self._content_depth_signal(context),
         }
+
+    def _content_depth_signal(self, context: ContextData = None) -> FeatureValue:
+        if not context:
+            return FeatureValue("content_depth_signal", 0.0, raw_value={"reason": "no_context_scan"}, confidence=0.0, source="context")
+        depth_pages = [
+            name for name in ("blog", "docs", "faq", "case_studies", "changelog")
+            if context.key_pages.get(name)
+        ]
+        score = min(100.0, 35.0 + len(depth_pages) * 10.0 + (10.0 if context.avg_words >= 500 else 0.0))
+        return FeatureValue(
+            "content_depth_signal",
+            score,
+            raw_value={
+                "depth_pages": depth_pages,
+                "avg_words": context.avg_words,
+                "missing_signals": [
+                    name for name in ("blog", "docs", "faq", "case_studies", "changelog")
+                    if not context.key_pages.get(name)
+                ],
+            },
+            confidence=context.confidence,
+            source="context",
+        )
 
     @staticmethod
     def _content(web: WebData = None) -> str:

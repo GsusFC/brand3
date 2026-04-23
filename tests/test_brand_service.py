@@ -1,11 +1,14 @@
 import unittest
 
+from src.collectors.context_collector import ContextData
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.web_collector import WebData
 from src.services.brand_service import (
     _aggregate_exa_content,
     _build_content_web,
     _compute_data_quality,
+    _context_confidence_summary,
+    _context_evidence_items,
 )
 
 
@@ -90,6 +93,39 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(_compute_data_quality(rich_exa, "firecrawl"), "good")
         self.assertEqual(_compute_data_quality(degraded_exa, "exa_fallback"), "degraded")
         self.assertEqual(_compute_data_quality(empty_exa, "none"), "insufficient")
+
+    def test_context_confidence_summary_marks_low_coverage_insufficient(self):
+        context = ContextData(
+            url="https://example.com",
+            coverage=0.2,
+            confidence=0.5,
+            confidence_reason=["low_coverage"],
+        )
+
+        summary = _context_confidence_summary(context)
+
+        self.assertEqual(summary["status"], "insufficient_data")
+        self.assertEqual(summary["coverage"], 0.2)
+        self.assertIn("low_coverage", summary["confidence_reason"])
+
+    def test_context_evidence_items_are_generated_from_context_signals(self):
+        context = ContextData(
+            url="https://example.com",
+            robots_found=True,
+            sitemap_found=True,
+            sitemap_url_count=12,
+            llms_txt_found=True,
+            schema_types=["Organization", "WebSite"],
+            key_pages={"about": True, "blog": True},
+            coverage=0.8,
+            confidence=0.85,
+        )
+
+        items = _context_evidence_items(context)
+
+        self.assertGreaterEqual(len(items), 4)
+        self.assertIn("sitemap.xml found with 12 URLs", [item["quote"] for item in items])
+        self.assertIn("coherencia", {item["dimension_name"] for item in items})
 
 
 if __name__ == "__main__":

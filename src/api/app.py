@@ -8,6 +8,9 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from src.services import brand_service
+from src.storage.sqlite_store import SQLiteStore
+from src.config import BRAND3_DB_PATH
+from web.workers.url_validator import validate_url
 
 
 class AnalyzeRequest(BaseModel):
@@ -45,6 +48,8 @@ class AnalyzeResponse(BaseModel):
     profile_source: str
     data_quality: str
     data_sources: dict[str, Any]
+    context_readiness: dict[str, Any] | None = None
+    confidence_summary: dict[str, Any] | None = None
     composite_score: float | None
     composite_reliable: bool
     partial_score: bool
@@ -109,9 +114,12 @@ def build_app() -> FastAPI:
 
     @app.post("/api/analyze", response_model=AnalyzeResponse)
     def analyze_brand(payload: AnalyzeRequest) -> dict[str, Any]:
+        valid, normalized_or_error = validate_url(payload.url)
+        if not valid:
+            raise HTTPException(status_code=400, detail=f"URL rejected: {normalized_or_error}")
         try:
             return brand_service.run(
-                payload.url,
+                normalized_or_error,
                 brand_name=payload.brand_name,
                 use_llm=payload.use_llm,
                 use_social=payload.use_social,
@@ -121,9 +129,12 @@ def build_app() -> FastAPI:
 
     @app.post("/api/analyze/jobs", response_model=AnalysisJobResponse, status_code=202)
     def analyze_brand_async(payload: AnalyzeRequest) -> dict[str, Any]:
+        valid, normalized_or_error = validate_url(payload.url)
+        if not valid:
+            raise HTTPException(status_code=400, detail=f"URL rejected: {normalized_or_error}")
         try:
             return brand_service.enqueue_analysis_job(
-                payload.url,
+                normalized_or_error,
                 brand_name=payload.brand_name,
                 use_llm=payload.use_llm,
                 use_social=payload.use_social,
@@ -186,6 +197,16 @@ def build_app() -> FastAPI:
             return brand_service.show_run(run_id)
         except ValueError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    @app.get("/api/runs/{run_id}/evidence")
+    def get_run_evidence(run_id: int) -> list[dict[str, Any]]:
+        store = SQLiteStore(BRAND3_DB_PATH)
+        try:
+            if not store.get_run_snapshot(run_id):
+                raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
+            return store.get_run_evidence(run_id)
+        finally:
+            store.close()
 
     @app.get("/api/brands/{brand_name}/report")
     def get_brand_report(brand_name: str, limit: int = 10) -> dict[str, Any]:

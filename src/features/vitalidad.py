@@ -20,6 +20,7 @@ Unified single-file design: heuristic features + LLM feature live together.
 import statistics
 from datetime import datetime, timezone
 from ..models.brand import FeatureValue
+from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
 from .llm_analyzer import LLMAnalyzer
@@ -105,13 +106,29 @@ class VitalidadExtractor:
         # fallback heurístico (score 50). Decisión D3 en REVIEW_NOTES.md.
         self.llm = llm
 
-    def extract(self, web: WebData = None, exa: ExaData = None) -> dict[str, FeatureValue]:
+    def extract(self, web: WebData = None, exa: ExaData = None, context: ContextData = None) -> dict[str, FeatureValue]:
         dated = _collect_dated_mentions(exa)
-        return {
+        features = {
             "content_recency": self._content_recency(dated),
             "publication_cadence": self._publication_cadence(dated),
             "momentum": self._momentum(exa, dated),
         }
+        if context is not None:
+            features["activity_surface"] = self._activity_surface(context)
+        return features
+
+    def _activity_surface(self, context: ContextData = None) -> FeatureValue:
+        if not context:
+            return FeatureValue("activity_surface", 0.0, raw_value={"reason": "no_context_scan"}, confidence=0.0, source="context")
+        active_pages = [name for name in ("blog", "changelog") if context.key_pages.get(name)]
+        missing = [name for name in ("blog", "changelog") if not context.key_pages.get(name)]
+        return FeatureValue(
+            "activity_surface",
+            65.0 if active_pages else 35.0,
+            raw_value={"active_pages": active_pages, "missing_signals": missing},
+            confidence=context.confidence,
+            source="context",
+        )
 
     # ── content_recency ────────────────────────────────────────────────
 

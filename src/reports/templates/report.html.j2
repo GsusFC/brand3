@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>brand-audit :: {{ brand.url or brand.name }}{% if theme == 'dark' %} · night{% endif %}</title>
@@ -85,6 +85,51 @@
 
   .prose { max-width: 78ch; }
   .num-inline { font-variant-numeric: tabular-nums; }
+
+  .quality-note {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    background: var(--chip-bg);
+    color: var(--fg);
+  }
+  .quality-note strong { color: var(--fg-bright); }
+  .quality-note.warn { border-color: var(--warn); }
+  .quality-note.alert { border-color: var(--alert); }
+
+  .tabs {
+    margin-top: 24px;
+  }
+  .tab-list {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .tab-button {
+    appearance: none;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--chip-border);
+    padding: 6px 12px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .tab-button[aria-selected="true"] {
+    color: var(--fg-bright);
+    border-color: var(--accent);
+    background: var(--chip-bg);
+  }
+  .tab-panel[hidden] { display: none; }
+
+  .legacy-section { margin: 18px 0; }
+  .legacy-block { margin: 10px 0 14px; }
+  .legacy-block p { margin: 4px 0 6px; }
+  .quote-list { list-style: none; padding: 0; margin: 6px 0 0; }
+  .quote-list li { margin: 0 0 8px; }
+  .quote { color: var(--fg); }
+  .quote-meta { color: var(--muted); font-size: 12px; }
+  .source-list { list-style: none; padding: 0; margin: 0; }
+  .source-list li { margin: 0 0 6px; word-break: break-all; }
 
   /* Findings (§3) */
   .dimension { margin: 18px 0; }
@@ -193,14 +238,6 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§1  synthesis</span>
-  <span class="tag">// overview</span>
-</div>
-<div class="prose">{{ synthesis_prose }}</div>
-
-<hr class="rule">
-
-<div class="section-head">
   <span class="label">§2  scores by dimension</span>
   <span class="tag">// 0-100 · bars = 5%/block</span>
 </div>
@@ -218,7 +255,7 @@
   <tbody>
   {%- for dim in dimensions %}
     <tr>
-      <td>{{ dim.name }}</td>
+      <td>{{ dim.display_name }}</td>
       <td class="num num-inline">{% if dim.badge_type == 'warn' %}<span class="hl-alert">{{ dim.score_display }}</span>{% else %}{{ dim.score_display }}{% endif %}</td>
       <td class="bar">{% if dim.badge_type == 'warn' %}<span class="hl-alert">{{ dim.bar }}</span>{% else %}{{ dim.bar }}{% endif %}</td>
       <td class="verdict">{{ dim.short_verdict }}</td>
@@ -230,69 +267,230 @@
 
 <hr class="rule">
 
+{%- if context_readiness.available %}
 <div class="section-head">
-  <span class="label">§3  findings by dimension</span>
-  <span class="tag">// consolidated evidence</span>
+  <span class="label">§2B  legibilidad IA/buscadores</span>
+  <span class="tag">// context readiness</span>
 </div>
 
-{%- for dim in dimensions %}
-<section class="dimension">
-  <h3>3.{{ loop.index }}  {{ dim.name }} <span class="dim">· {{ dim.score_display }}/100 · {{ dim.short_verdict }} · {{ dim.verdict_adjective }}</span></h3>
-  {%- if dim.findings %}
-    {%- for finding in dim.findings %}
-    <div class="finding">
-      <h4>{{ finding.title }}</h4>
-      <p>{{ finding.prose }}</p>
-      {%- if finding.evidence_urls %}
-      <ul class="chips">
-        {%- for url in finding.evidence_urls %}
-        <li><a href="{{ url }}" target="_blank" rel="noopener">{{ url | chip_label }}</a></li>
+  {%- if context_readiness.status == 'insufficient_data' %}
+  <div class="quality-note alert">
+    <strong>Datos insuficientes para una puntuación defendible.</strong>
+    El pre-scan encontró muy poca cobertura contextual; las conclusiones deben tratarse como parciales.
+  </div>
+  {%- elif context_readiness.confidence < 0.6 %}
+  <div class="quality-note warn">
+    <strong>Lectura contextual limitada.</strong>
+    Las señales existen, pero la confianza es baja/media.
+  </div>
+  {%- endif %}
+  <table>
+    <tbody>
+      <tr>
+        <th style="width:28%">sitemap</th>
+        <td>{% if context_readiness.sitemap_found %}encontrado · {{ context_readiness.sitemap_url_count }} URLs{% else %}<span class="hl-alert">no encontrado</span>{% endif %}</td>
+      </tr>
+      <tr>
+        <th>robots</th>
+        <td>{% if context_readiness.robots_found %}encontrado{% else %}<span class="hl-alert">no encontrado</span>{% endif %}</td>
+      </tr>
+      <tr>
+        <th>llms.txt</th>
+        <td>{% if context_readiness.llms_txt_found %}encontrado{% else %}<span class="dim">no encontrado</span>{% endif %}</td>
+      </tr>
+      <tr>
+        <th>schema</th>
+        <td>{% if context_readiness.schema_types %}{{ context_readiness.schema_types[:8] | join(', ') }}{% else %}<span class="dim">sin schema detectado</span>{% endif %}</td>
+      </tr>
+      <tr>
+        <th>páginas clave</th>
+        <td>
+          {%- set found_pages = [] -%}
+          {%- for name, found in context_readiness.key_pages.items() -%}
+            {%- if found -%}{%- set _ = found_pages.append(name) -%}{%- endif -%}
+          {%- endfor -%}
+          {% if found_pages %}{{ found_pages | join(', ') }}{% else %}<span class="dim">ninguna detectada</span>{% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>cobertura / confianza</th>
+        <td>{{ context_readiness.coverage_label }} / {{ context_readiness.confidence_label }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+<hr class="rule">
+{%- endif %}
+
+{%- if evaluation.data_quality == 'degraded' %}
+<div class="quality-note warn">
+  <strong>Evaluation degraded.</strong> Some primary inputs were incomplete, so parts of this analysis rely on fallback evidence or partial coverage.
+</div>
+{%- elif evaluation.data_quality == 'insufficient' %}
+<div class="quality-note alert">
+  <strong>Insufficient data.</strong> This run could not evaluate the full brand surface reliably. Read any conclusions as partial.
+</div>
+{%- endif %}
+
+<div class="tabs" data-tabs>
+  <div class="tab-list" role="tablist" aria-label="Analysis views">
+    <button class="tab-button" type="button" role="tab" id="tab-actual" aria-controls="panel-actual" aria-selected="false" data-tab-target="actual">Actual</button>
+    <button class="tab-button" type="button" role="tab" id="tab-new" aria-controls="panel-new" aria-selected="true" data-tab-target="new">Nueva</button>
+  </div>
+
+  <section class="tab-panel" id="panel-actual" role="tabpanel" aria-labelledby="tab-actual" hidden>
+    <div class="section-head">
+      <span class="label">§3A  current reading</span>
+      <span class="tag">// analytical view</span>
+    </div>
+    <div class="prose">{{ legacy_summary }}</div>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§4A  observations by dimension</span>
+      <span class="tag">// direct signals</span>
+    </div>
+    {%- for dim in dimensions %}
+    <section class="legacy-section">
+      <h3>{{ loop.index }}. {{ dim.display_name }} <span class="dim">· {{ dim.score_display }}/100 · {{ dim.short_verdict }}</span></h3>
+      {%- if dim.observations %}
+        <ul class="quote-list">
+          {%- for observation in dim.observations %}
+          <li><span class="quote">{{ observation }}</span></li>
+          {%- endfor %}
+        </ul>
+      {%- else %}
+        <p class="empty">no derived observations for this dimension.</p>
+      {%- endif %}
+    </section>
+    {%- if not loop.last %}
+    <hr class="rule-thin">
+    {%- endif %}
+    {%- endfor %}
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§5A  evidence by dimension</span>
+      <span class="tag">// raw support</span>
+    </div>
+    {%- for dim in dimensions %}
+    <section class="legacy-section">
+      <h3>{{ loop.index }}. {{ dim.display_name }}</h3>
+      {%- if dim.evidence %}
+        <ul class="quote-list">
+          {%- for item in dim.evidence %}
+          <li>
+            {%- if item.quote %}
+            <div class="quote">{{ item.quote }}</div>
+            {%- endif %}
+            {%- if item.source_url %}
+            <div class="quote-meta"><a href="{{ item.source_url }}" target="_blank" rel="noopener">{{ item.source_url }}</a></div>
+            {%- endif %}
+          </li>
+          {%- endfor %}
+        </ul>
+      {%- else %}
+        <p class="empty">no direct evidence collected for this dimension.</p>
+      {%- endif %}
+    </section>
+    {%- if not loop.last %}
+    <hr class="rule-thin">
+    {%- endif %}
+    {%- endfor %}
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§6A  all consulted sources</span>
+      <span class="tag">// {{ all_sources | length }} total</span>
+    </div>
+    {%- if all_sources %}
+    <ul class="source-list">
+      {%- for url in all_sources %}
+      <li><a href="{{ url }}" target="_blank" rel="noopener">{{ url }}</a></li>
+      {%- endfor %}
+    </ul>
+    {%- else %}
+    <p class="empty">no citable URLs were collected in this run.</p>
+    {%- endif %}
+  </section>
+
+  <section class="tab-panel" id="panel-new" role="tabpanel" aria-labelledby="tab-new">
+    <div class="section-head">
+      <span class="label">§3N  synthesis</span>
+      <span class="tag">// overview</span>
+    </div>
+    <div class="prose">{{ synthesis_prose }}</div>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§4N  findings by dimension</span>
+      <span class="tag">// consolidated evidence</span>
+    </div>
+
+    {%- for dim in dimensions %}
+    <section class="dimension">
+      <h3>4.{{ loop.index }}  {{ dim.display_name }} <span class="dim">· {{ dim.score_display }}/100 · {{ dim.short_verdict }} · {{ dim.verdict_adjective }}</span></h3>
+      {%- if dim.findings %}
+        {%- for finding in dim.findings %}
+        <div class="finding">
+          <h4>{{ finding.title }}</h4>
+          <p>{{ finding.prose }}</p>
+          {%- if finding.evidence_urls %}
+          <ul class="chips">
+            {%- for url in finding.evidence_urls %}
+            <li><a href="{{ url }}" target="_blank" rel="noopener">{{ url | chip_label }}</a></li>
+            {%- endfor %}
+          </ul>
+          {%- endif %}
+        </div>
+        {%- endfor %}
+      {%- else %}
+        <p class="empty">insufficient data to generate findings for this dimension.</p>
+      {%- endif %}
+    </section>
+    {%- if not loop.last %}
+    <hr class="rule-thin">
+    {%- endif %}
+    {%- endfor %}
+
+    {%- if tensions_prose %}
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§5N  cross-dimension tensions</span>
+      <span class="tag">// one observation</span>
+    </div>
+    <div class="prose">{{ tensions_prose }}</div>
+    {%- endif %}
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§6N  grouped sources</span>
+      <span class="tag">// {{ all_sources | length }} total</span>
+    </div>
+
+    {%- if all_sources %}
+    <details class="sources">
+      <summary>show all sources ({{ all_sources | length }})</summary>
+      {%- for group_label, urls in sources_grouped.items() %}
+      <h3>{{ group_label }}</h3>
+      <ul>
+        {%- for url in urls %}
+        <li><a href="{{ url }}" target="_blank" rel="noopener">{{ url }}</a></li>
         {%- endfor %}
       </ul>
-      {%- endif %}
-    </div>
-    {%- endfor %}
-  {%- else %}
-    <p class="empty">insufficient data to generate findings for this dimension.</p>
-  {%- endif %}
-</section>
-{%- if not loop.last %}
-<hr class="rule-thin">
-{%- endif %}
-{%- endfor %}
-
-{%- if tensions_prose %}
-<hr class="rule">
-
-<div class="section-head">
-  <span class="label">§4  cross-dimension tensions</span>
-  <span class="tag">// one observation</span>
+      {%- endfor %}
+    </details>
+    {%- else %}
+    <p class="empty">no citable URLs were collected in this run.</p>
+    {%- endif %}
+  </section>
 </div>
-<div class="prose">{{ tensions_prose }}</div>
-{%- endif %}
-
-<hr class="rule">
-
-<div class="section-head">
-  <span class="label">§5  sources consulted</span>
-  <span class="tag">// {{ all_sources | length }} total</span>
-</div>
-
-{%- if all_sources %}
-<details class="sources">
-  <summary>show all sources ({{ all_sources | length }})</summary>
-  {%- for group_label, urls in sources_grouped.items() %}
-  <h3>{{ group_label }}</h3>
-  <ul>
-    {%- for url in urls %}
-    <li><a href="{{ url }}" target="_blank" rel="noopener">{{ url }}</a></li>
-    {%- endfor %}
-  </ul>
-  {%- endfor %}
-</details>
-{%- else %}
-<p class="empty">no citable URLs were collected in this run.</p>
-{%- endif %}
 
 <hr class="rule">
 
@@ -318,5 +516,30 @@
 </div>
 
 </div>
+<script>
+(() => {
+  const root = document.querySelector('[data-tabs]');
+  if (!root) return;
+  const buttons = Array.from(root.querySelectorAll('[data-tab-target]'));
+  const panels = {
+    actual: root.querySelector('#panel-actual'),
+    new: root.querySelector('#panel-new'),
+  };
+  function activate(name) {
+    buttons.forEach((button) => {
+      const active = button.dataset.tabTarget === name;
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    Object.entries(panels).forEach(([key, panel]) => {
+      if (!panel) return;
+      panel.hidden = key !== name;
+    });
+  }
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => activate(button.dataset.tabTarget));
+  });
+  activate('new');
+})();
+</script>
 </body>
 </html>

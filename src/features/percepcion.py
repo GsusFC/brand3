@@ -22,6 +22,7 @@ from datetime import datetime
 from urllib.parse import urlparse
 
 from ..models.brand import FeatureValue
+from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
 from .llm_analyzer import LLMAnalyzer
@@ -176,13 +177,38 @@ class PercepcionExtractor:
         # caen en heurística normalizada por total de palabras.
         self.llm = llm
 
-    def extract(self, web: WebData = None, exa: ExaData = None) -> dict[str, FeatureValue]:
-        return {
+    def extract(self, web: WebData = None, exa: ExaData = None, context: ContextData = None) -> dict[str, FeatureValue]:
+        features = {
             "brand_sentiment": self._brand_sentiment(exa),
             "mention_volume": self._mention_volume(exa),
             "sentiment_trend": self._sentiment_trend(exa),
             "review_quality": self._review_quality(exa),
         }
+        if context is not None:
+            features["review_surface"] = self._review_surface(context)
+        return features
+
+    def _review_surface(self, context: ContextData = None) -> FeatureValue:
+        if not context:
+            return FeatureValue("review_surface", 0.0, raw_value={"reason": "no_context_scan"}, confidence=0.0, source="context")
+        has_review_schema = "Review" in context.schema_types or "AggregateRating" in context.schema_types
+        has_reviews_page = bool(context.key_pages.get("reviews"))
+        missing = []
+        if not has_reviews_page:
+            missing.append("reviews_page")
+        if not has_review_schema:
+            missing.append("review_schema")
+        return FeatureValue(
+            "review_surface",
+            65.0 if (has_review_schema or has_reviews_page) else 35.0,
+            raw_value={
+                "reviews_page": has_reviews_page,
+                "review_schema": has_review_schema,
+                "missing_signals": missing,
+            },
+            confidence=context.confidence,
+            source="context",
+        )
 
     # ── brand_sentiment (LLM-first, absorbs controversy) ───────────────
 

@@ -14,6 +14,7 @@ from collections import Counter
 from datetime import datetime
 from urllib.parse import urlparse
 
+from ..collectors.context_collector import ContextData
 from ..collectors.exa_collector import ExaData
 from ..collectors.social_collector import SocialData
 from ..collectors.web_collector import WebData
@@ -153,15 +154,17 @@ class PresenciaExtractor:
         web: WebData = None,
         exa: ExaData = None,
         social: SocialData = None,
+        context: ContextData = None,
     ) -> dict[str, FeatureValue]:
         return {
-            "web_presence": self._web_presence(web),
+            "web_presence": self._web_presence(web, context=context),
             "social_footprint": self._social_footprint(social),
             "search_visibility": self._search_visibility(exa),
             "directory_presence": self._directory_presence(exa),
+            "context_readiness": self._context_readiness(context),
         }
 
-    def _web_presence(self, web: WebData = None) -> FeatureValue:
+    def _web_presence(self, web: WebData = None, context: ContextData = None) -> FeatureValue:
         """Does the brand have a real owned web presence with basic structure?"""
         if not web or web.error:
             return FeatureValue(
@@ -243,6 +246,19 @@ class PresenciaExtractor:
         if web.meta_description:
             structure_score += 5.0
             signals_detected.append("meta_description")
+        if context:
+            if context.sitemap_found:
+                structure_score += 3.0
+                signals_detected.append("sitemap")
+            if context.robots_found:
+                structure_score += 2.0
+                signals_detected.append("robots")
+            if context.schema_types:
+                structure_score += 3.0
+                signals_detected.append("schema")
+            if context.key_pages.get("about"):
+                structure_score += 2.0
+                signals_detected.append("about_page")
         score += structure_score
 
         identity_bonus = 0.0
@@ -265,9 +281,44 @@ class PresenciaExtractor:
                 "title": web.title or "",
                 "evidence_snippet": self._snippet(meaningful),
                 "signals_detected": signals_detected,
+                "context_readiness": {
+                    "context_score": context.context_score,
+                    "coverage": context.coverage,
+                    "confidence": context.confidence,
+                    "schema_types": context.schema_types,
+                    "key_pages": context.key_pages,
+                } if context else None,
             },
             confidence=0.9 if len(meaningful) >= 100 else 0.6,
             source="web_scrape",
+        )
+
+    def _context_readiness(self, context: ContextData = None) -> FeatureValue:
+        if not context:
+            return FeatureValue(
+                "context_readiness",
+                0.0,
+                raw_value={"reason": "no_context_scan"},
+                confidence=0.0,
+                source="context",
+            )
+        return FeatureValue(
+            "context_readiness",
+            float(context.context_score),
+            raw_value={
+                "robots_found": context.robots_found,
+                "sitemap_found": context.sitemap_found,
+                "sitemap_url_count": context.sitemap_url_count,
+                "llms_txt_found": context.llms_txt_found,
+                "schema_types": context.schema_types,
+                "key_pages": context.key_pages,
+                "avg_words": context.avg_words,
+                "avg_internal_links": context.avg_internal_links,
+                "opportunities": context.opportunities,
+                "confidence_reason": context.confidence_reason,
+            },
+            confidence=float(context.confidence),
+            source="context",
         )
 
     def _social_footprint(self, social: SocialData = None) -> FeatureValue:

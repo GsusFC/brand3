@@ -92,6 +92,32 @@ class DerivationHelperTests(unittest.TestCase):
         self.assertIsNone(parse_raw_value(None))
         self.assertIsNone(parse_raw_value(""))
 
+    def test_context_readiness_from_raw_inputs_is_exposed(self):
+        snapshot = _sample_snapshot()
+        snapshot["raw_inputs"] = [
+            {
+                "source": "context",
+                "payload": {
+                    "sitemap_found": True,
+                    "sitemap_url_count": 42,
+                    "robots_found": True,
+                    "llms_txt_found": False,
+                    "schema_types": ["Organization", "WebSite"],
+                    "key_pages": {"about": True, "blog": True},
+                    "coverage": 0.75,
+                    "confidence": 0.82,
+                    "context_score": 78,
+                },
+                "created_at": "2026-04-19T09:40:39",
+            }
+        ]
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertTrue(ctx["context_readiness"]["available"])
+        self.assertEqual(ctx["context_readiness"]["sitemap_url_count"], 42)
+        self.assertEqual(ctx["context_readiness"]["confidence_label"], "alta")
+
     def test_parse_raw_value_handles_json(self):
         result = parse_raw_value('{"verdict": "declining"}')
         self.assertEqual(result, {"verdict": "declining"})
@@ -189,6 +215,31 @@ class ReportRendererTests(unittest.TestCase):
         html = ReportRenderer().render(snapshot, theme="dark")
         self.assertIn("insufficient data to generate findings", html)
 
+    def test_renders_actual_and_new_tabs(self):
+        html = ReportRenderer().render(_sample_snapshot(), theme="dark")
+        self.assertIn('id="tab-actual"', html)
+        self.assertIn('id="tab-new"', html)
+        self.assertIn('id="panel-actual"', html)
+        self.assertIn('id="panel-new"', html)
+        self.assertIn("§3A  current reading", html)
+        self.assertIn("§3N  synthesis", html)
+
+    def test_header_and_score_strip_live_outside_tabs(self):
+        html = ReportRenderer().render(_sample_snapshot(), theme="dark")
+        self.assertEqual(html.count("SCORE_GLOBAL"), 1)
+        self.assertEqual(html.count("§2  scores by dimension"), 1)
+        self.assertEqual(html.count("analysis_date"), 1)
+
+    def test_insufficient_data_quality_message_renders(self):
+        snapshot = _sample_snapshot()
+        snapshot["run"]["data_quality"] = "insufficient"
+        snapshot["run"]["composite_score"] = None
+        snapshot["scores"] = [dict(row, score=None) for row in snapshot["scores"]]
+        html = ReportRenderer().render(snapshot, theme="dark")
+        self.assertIn("Insufficient data.", html)
+        self.assertIn("could not evaluate the full brand surface reliably", html)
+        self.assertIn(">n/a<", html.replace(" ", ""))
+
     # Structural invariants that blindly protect against regressions on the
     # 9 report bugs the narrative refactor was meant to fix.
 
@@ -235,9 +286,10 @@ class ReportRendererTests(unittest.TestCase):
         from src.reports.renderer import ReportRenderer as _R
         ctx = build_report_context(_sample_snapshot(), theme="dark")
         ctx["tensions_prose"] = "Cross-dimensional tension detected in the analysis."
+        ctx["narrative"]["tensions_prose"] = "Cross-dimensional tension detected in the analysis."
         renderer = _R()
         html = renderer.env.get_template("report.html.j2").render(**ctx)
-        self.assertIn("§4  cross-dimension tensions", html)
+        self.assertIn("§5N  cross-dimension tensions", html)
         self.assertIn("Cross-dimensional tension detected", html)
 
     def test_sources_section_is_collapsible(self):

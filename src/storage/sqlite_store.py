@@ -228,6 +228,23 @@ class SQLiteStore:
                 FOREIGN KEY (run_id) REFERENCES runs(id)
             );
 
+            CREATE TABLE IF NOT EXISTS evidence_items (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                run_id INTEGER NOT NULL,
+                source TEXT NOT NULL,
+                url TEXT,
+                quote TEXT,
+                feature_name TEXT,
+                dimension_name TEXT,
+                confidence REAL NOT NULL DEFAULT 0,
+                freshness_days REAL,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY (run_id) REFERENCES runs(id)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_evidence_items_run ON evidence_items(run_id);
+            CREATE INDEX IF NOT EXISTS idx_evidence_items_dimension ON evidence_items(run_id, dimension_name);
+
             CREATE TABLE IF NOT EXISTS calibration_candidates (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 brand_name TEXT,
@@ -537,6 +554,49 @@ class SQLiteStore:
         if not row:
             return None
         return json.loads(row["payload_json"])
+
+    def save_evidence_items(self, run_id: int, items: list[dict[str, Any]]) -> None:
+        if not items:
+            return
+        now = datetime.now().isoformat()
+        rows = [
+            (
+                run_id,
+                item.get("source") or "",
+                item.get("url"),
+                item.get("quote"),
+                item.get("feature_name"),
+                item.get("dimension_name"),
+                float(item.get("confidence") or 0.0),
+                item.get("freshness_days"),
+                item.get("created_at") or now,
+            )
+            for item in items
+        ]
+        self.conn.executemany(
+            """
+            INSERT INTO evidence_items (
+                run_id, source, url, quote, feature_name, dimension_name,
+                confidence, freshness_days, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            rows,
+        )
+        self.conn.commit()
+
+    def get_run_evidence(self, run_id: int) -> list[dict[str, Any]]:
+        rows = self.conn.execute(
+            """
+            SELECT id, run_id, source, url, quote, feature_name, dimension_name,
+                   confidence, freshness_days, created_at
+            FROM evidence_items
+            WHERE run_id = ?
+            ORDER BY id ASC
+            """,
+            (run_id,),
+        ).fetchall()
+        return [dict(row) for row in rows]
 
     def save_features(self, run_id: int, features_by_dim: dict[str, dict[str, FeatureValue]]) -> None:
         rows = []
@@ -1078,6 +1138,25 @@ class SQLiteStore:
             """,
             (run_id,),
         ).fetchall()
+        raw_inputs = self.conn.execute(
+            """
+            SELECT source, payload_json, created_at
+            FROM raw_inputs
+            WHERE run_id = ?
+            ORDER BY created_at ASC
+            """,
+            (run_id,),
+        ).fetchall()
+        evidence_items = self.conn.execute(
+            """
+            SELECT id, run_id, source, url, quote, feature_name, dimension_name,
+                   confidence, freshness_days, created_at
+            FROM evidence_items
+            WHERE run_id = ?
+            ORDER BY id ASC
+            """,
+            (run_id,),
+        ).fetchall()
 
         run_payload = dict(run)
         audit_json = run_payload.pop("audit_json", None)
@@ -1096,6 +1175,15 @@ class SQLiteStore:
             "scores": [dict(row) for row in scores],
             "features": [dict(row) for row in features],
             "annotations": [dict(row) for row in annotations],
+            "raw_inputs": [
+                {
+                    "source": row["source"],
+                    "payload": json.loads(row["payload_json"]),
+                    "created_at": row["created_at"],
+                }
+                for row in raw_inputs
+            ],
+            "evidence_items": [dict(row) for row in evidence_items],
         }
 
     def list_annotations(self, brand_name: str | None = None) -> list[dict[str, Any]]:

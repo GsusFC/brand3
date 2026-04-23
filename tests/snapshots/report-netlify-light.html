@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>brand-audit :: https://www.netlify.com</title>
@@ -69,6 +69,51 @@
 
   .prose { max-width: 78ch; }
   .num-inline { font-variant-numeric: tabular-nums; }
+
+  .quality-note {
+    margin-top: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--rule);
+    background: var(--chip-bg);
+    color: var(--fg);
+  }
+  .quality-note strong { color: var(--fg-bright); }
+  .quality-note.warn { border-color: var(--warn); }
+  .quality-note.alert { border-color: var(--alert); }
+
+  .tabs {
+    margin-top: 24px;
+  }
+  .tab-list {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .tab-button {
+    appearance: none;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--chip-border);
+    padding: 6px 12px;
+    font: inherit;
+    cursor: pointer;
+  }
+  .tab-button[aria-selected="true"] {
+    color: var(--fg-bright);
+    border-color: var(--accent);
+    background: var(--chip-bg);
+  }
+  .tab-panel[hidden] { display: none; }
+
+  .legacy-section { margin: 18px 0; }
+  .legacy-block { margin: 10px 0 14px; }
+  .legacy-block p { margin: 4px 0 6px; }
+  .quote-list { list-style: none; padding: 0; margin: 6px 0 0; }
+  .quote-list li { margin: 0 0 8px; }
+  .quote { color: var(--fg); }
+  .quote-meta { color: var(--muted); font-size: 12px; }
+  .source-list { list-style: none; padding: 0; margin: 0; }
+  .source-list li { margin: 0 0 6px; word-break: break-all; }
 
   /* Findings (§3) */
   .dimension { margin: 18px 0; }
@@ -177,14 +222,6 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§1  synthesis</span>
-  <span class="tag">// overview</span>
-</div>
-<div class="prose">Netlify presenta un mensaje claro respaldado por cobertura externa consistente. La cobertura en prensa y enciclopedias confirma el posicionamiento del servicio serverless. La identidad propia enfatiza la experiencia del developer sin marketing-speak. Tensión principal: presencia fuerte pero diferenciación aún limitada frente a alternativas.</div>
-
-<hr class="rule">
-
-<div class="section-head">
   <span class="label">§2  scores by dimension</span>
   <span class="tag">// 0-100 · bars = 5%/block</span>
 </div>
@@ -201,35 +238,35 @@
   </thead>
   <tbody>
     <tr>
-      <td>coherencia</td>
+      <td>Coherence</td>
       <td class="num num-inline">78</td>
       <td class="bar">[████████████████░░░░]</td>
       <td class="verdict">mixed</td>
       <td class="verdict">mostly-solid</td>
     </tr>
     <tr>
-      <td>presencia</td>
+      <td>Presence</td>
       <td class="num num-inline">82</td>
       <td class="bar">[████████████████░░░░]</td>
       <td class="verdict">solid</td>
       <td class="verdict">cohesive</td>
     </tr>
     <tr>
-      <td>percepcion</td>
+      <td>Perception</td>
       <td class="num num-inline">66</td>
       <td class="bar">[█████████████░░░░░░░]</td>
       <td class="verdict">mixed</td>
       <td class="verdict">mostly-solid</td>
     </tr>
     <tr>
-      <td>diferenciacion</td>
+      <td>Differentiation</td>
       <td class="num num-inline">54</td>
       <td class="bar">[███████████░░░░░░░░░]</td>
       <td class="verdict">mixed</td>
       <td class="verdict">uneven</td>
     </tr>
     <tr>
-      <td>vitalidad</td>
+      <td>Vitality</td>
       <td class="num num-inline">71</td>
       <td class="bar">[██████████████░░░░░░]</td>
       <td class="verdict">mixed</td>
@@ -239,83 +276,212 @@
 </table>
 
 <hr class="rule">
-
-<div class="section-head">
-  <span class="label">§3  findings by dimension</span>
-  <span class="tag">// consolidated evidence</span>
+<div class="quality-note warn">
+  <strong>Evaluation degraded.</strong> Some primary inputs were incomplete, so parts of this analysis rely on fallback evidence or partial coverage.
 </div>
-<section class="dimension">
-  <h3>3.1  coherencia <span class="dim">· 78/100 · mixed · mostly-solid</span></h3>
-    <div class="finding">
-      <h4>Evidencia consolidada</h4>
-      <p>Las fuentes disponibles cuentan una misma historia.</p>
-    </div>
-</section>
-<hr class="rule-thin">
-<section class="dimension">
-  <h3>3.2  presencia <span class="dim">· 82/100 · solid · cohesive</span></h3>
-    <div class="finding">
-      <h4>Evidencia consolidada</h4>
-      <p>Las fuentes disponibles cuentan una misma historia.</p>
-      <ul class="chips">
-        <li><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">en.wikipedia.org/wiki/Ne…</a></li>
-      </ul>
-    </div>
-</section>
-<hr class="rule-thin">
-<section class="dimension">
-  <h3>3.3  percepcion <span class="dim">· 66/100 · mixed · mostly-solid</span></h3>
-    <div class="finding">
-      <h4>Evidencia consolidada</h4>
-      <p>Las fuentes disponibles cuentan una misma historia.</p>
-      <ul class="chips">
-        <li><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">techcrunch.com/2025/netl…</a></li>
-        <li><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">netlify.com/blog/enterpr…</a></li>
-      </ul>
-    </div>
-</section>
-<hr class="rule-thin">
-<section class="dimension">
-  <h3>3.4  diferenciacion <span class="dim">· 54/100 · mixed · uneven</span></h3>
-    <div class="finding">
-      <h4>Evidencia consolidada</h4>
-      <p>Las fuentes disponibles cuentan una misma historia.</p>
-    </div>
-</section>
-<hr class="rule-thin">
-<section class="dimension">
-  <h3>3.5  vitalidad <span class="dim">· 71/100 · mixed · mostly-solid</span></h3>
-    <div class="finding">
-      <h4>Evidencia consolidada</h4>
-      <p>Las fuentes disponibles cuentan una misma historia.</p>
-      <ul class="chips">
-        <li><a href="https://www.netlify.com/blog/2026-04-01-release/" target="_blank" rel="noopener">netlify.com/blog/2026-04…</a></li>
-      </ul>
-    </div>
-</section>
 
-<hr class="rule">
+<div class="tabs" data-tabs>
+  <div class="tab-list" role="tablist" aria-label="Analysis views">
+    <button class="tab-button" type="button" role="tab" id="tab-actual" aria-controls="panel-actual" aria-selected="false" data-tab-target="actual">Actual</button>
+    <button class="tab-button" type="button" role="tab" id="tab-new" aria-controls="panel-new" aria-selected="true" data-tab-target="new">Nueva</button>
+  </div>
 
-<div class="section-head">
-  <span class="label">§5  sources consulted</span>
-  <span class="tag">// 4 total</span>
+  <section class="tab-panel" id="panel-actual" role="tabpanel" aria-labelledby="tab-actual" hidden>
+    <div class="section-head">
+      <span class="label">§3A  current reading</span>
+      <span class="tag">// analytical view</span>
+    </div>
+    <div class="prose">Example scores 72/100 (band B). Strongest dimension: Presence (82/100). Weakest dimension: Differentiation (54/100). Data quality: degraded.</div>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§4A  observations by dimension</span>
+      <span class="tag">// direct signals</span>
+    </div>
+    <section class="legacy-section">
+      <h3>1. Coherence <span class="dim">· 78/100 · mixed</span></h3>
+        <p class="empty">no derived observations for this dimension.</p>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>2. Presence <span class="dim">· 82/100 · solid</span></h3>
+        <p class="empty">no derived observations for this dimension.</p>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>3. Perception <span class="dim">· 66/100 · mixed</span></h3>
+        <p class="empty">no derived observations for this dimension.</p>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>4. Differentiation <span class="dim">· 54/100 · mixed</span></h3>
+        <p class="empty">no derived observations for this dimension.</p>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>5. Vitality <span class="dim">· 71/100 · mixed</span></h3>
+        <p class="empty">no derived observations for this dimension.</p>
+    </section>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§5A  evidence by dimension</span>
+      <span class="tag">// raw support</span>
+    </div>
+    <section class="legacy-section">
+      <h3>1. Coherence</h3>
+        <ul class="quote-list">
+          <li>
+            <div class="quote">Build the best web experiences.</div>
+            <div class="quote-meta"><a href="web" target="_blank" rel="noopener">web</a></div>
+          </li>
+          <li>
+            <div class="quote">Netlify powers the Jamstack.</div>
+            <div class="quote-meta"><a href="external" target="_blank" rel="noopener">external</a></div>
+          </li>
+        </ul>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>2. Presence</h3>
+        <ul class="quote-list">
+          <li>
+            <div class="quote-meta"><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Netlify</a></div>
+          </li>
+        </ul>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>3. Perception</h3>
+        <ul class="quote-list">
+          <li>
+            <div class="quote">Netlify redefines modern web development.</div>
+            <div class="quote-meta"><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">https://techcrunch.com/2025/netlify-series-d</a></div>
+          </li>
+          <li>
+            <div class="quote">Serverless deployments at scale.</div>
+            <div class="quote-meta"><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">https://www.netlify.com/blog/enterprise/</a></div>
+          </li>
+        </ul>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>4. Differentiation</h3>
+        <ul class="quote-list">
+          <li>
+            <div class="quote">Ship faster with serverless.</div>
+          </li>
+        </ul>
+    </section>
+    <hr class="rule-thin">
+    <section class="legacy-section">
+      <h3>5. Vitality</h3>
+        <p class="empty">no direct evidence collected for this dimension.</p>
+    </section>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§6A  all consulted sources</span>
+      <span class="tag">// 4 total</span>
+    </div>
+    <ul class="source-list">
+      <li><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">https://techcrunch.com/2025/netlify-series-d</a></li>
+      <li><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">https://www.netlify.com/blog/enterprise/</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Netlify</a></li>
+      <li><a href="https://www.netlify.com/blog/2026-04-01-release/" target="_blank" rel="noopener">https://www.netlify.com/blog/2026-04-01-release/</a></li>
+    </ul>
+  </section>
+
+  <section class="tab-panel" id="panel-new" role="tabpanel" aria-labelledby="tab-new">
+    <div class="section-head">
+      <span class="label">§3N  synthesis</span>
+      <span class="tag">// overview</span>
+    </div>
+    <div class="prose">Netlify presents a clear message backed by consistent external coverage. Press and encyclopedic sources reinforce its serverless positioning. Its owned messaging emphasizes the builder experience without marketing-speak. Main tension: strong presence but still-limited differentiation versus alternatives.</div>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§4N  findings by dimension</span>
+      <span class="tag">// consolidated evidence</span>
+    </div>
+    <section class="dimension">
+      <h3>4.1  Coherence <span class="dim">· 78/100 · mixed · mostly-solid</span></h3>
+        <div class="finding">
+          <h4>Consolidated evidence</h4>
+          <p>The available sources point in the same direction.</p>
+        </div>
+    </section>
+    <hr class="rule-thin">
+    <section class="dimension">
+      <h3>4.2  Presence <span class="dim">· 82/100 · solid · cohesive</span></h3>
+        <div class="finding">
+          <h4>Consolidated evidence</h4>
+          <p>The available sources point in the same direction.</p>
+          <ul class="chips">
+            <li><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">en.wikipedia.org/wiki/Ne…</a></li>
+          </ul>
+        </div>
+    </section>
+    <hr class="rule-thin">
+    <section class="dimension">
+      <h3>4.3  Perception <span class="dim">· 66/100 · mixed · mostly-solid</span></h3>
+        <div class="finding">
+          <h4>Consolidated evidence</h4>
+          <p>The available sources point in the same direction.</p>
+          <ul class="chips">
+            <li><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">techcrunch.com/2025/netl…</a></li>
+            <li><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">netlify.com/blog/enterpr…</a></li>
+          </ul>
+        </div>
+    </section>
+    <hr class="rule-thin">
+    <section class="dimension">
+      <h3>4.4  Differentiation <span class="dim">· 54/100 · mixed · uneven</span></h3>
+        <div class="finding">
+          <h4>Consolidated evidence</h4>
+          <p>The available sources point in the same direction.</p>
+        </div>
+    </section>
+    <hr class="rule-thin">
+    <section class="dimension">
+      <h3>4.5  Vitality <span class="dim">· 71/100 · mixed · mostly-solid</span></h3>
+        <div class="finding">
+          <h4>Consolidated evidence</h4>
+          <p>The available sources point in the same direction.</p>
+          <ul class="chips">
+            <li><a href="https://www.netlify.com/blog/2026-04-01-release/" target="_blank" rel="noopener">netlify.com/blog/2026-04…</a></li>
+          </ul>
+        </div>
+    </section>
+
+    <hr class="rule">
+
+    <div class="section-head">
+      <span class="label">§6N  grouped sources</span>
+      <span class="tag">// 4 total</span>
+    </div>
+    <details class="sources">
+      <summary>show all sources (4)</summary>
+      <h3>Owned</h3>
+      <ul>
+        <li><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">https://www.netlify.com/blog/enterprise/</a></li>
+        <li><a href="https://www.netlify.com/blog/2026-04-01-release/" target="_blank" rel="noopener">https://www.netlify.com/blog/2026-04-01-release/</a></li>
+      </ul>
+      <h3>Encyclopedic</h3>
+      <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Netlify</a></li>
+      </ul>
+      <h3>News</h3>
+      <ul>
+        <li><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">https://techcrunch.com/2025/netlify-series-d</a></li>
+      </ul>
+    </details>
+  </section>
 </div>
-<details class="sources">
-  <summary>show all sources (4)</summary>
-  <h3>Owned</h3>
-  <ul>
-    <li><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">https://www.netlify.com/blog/enterprise/</a></li>
-    <li><a href="https://www.netlify.com/blog/2026-04-01-release/" target="_blank" rel="noopener">https://www.netlify.com/blog/2026-04-01-release/</a></li>
-  </ul>
-  <h3>Encyclopedic</h3>
-  <ul>
-    <li><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">https://en.wikipedia.org/wiki/Netlify</a></li>
-  </ul>
-  <h3>News</h3>
-  <ul>
-    <li><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">https://techcrunch.com/2025/netlify-series-d</a></li>
-  </ul>
-</details>
 
 <hr class="rule">
 
@@ -341,5 +507,30 @@
 </div>
 
 </div>
+<script>
+(() => {
+  const root = document.querySelector('[data-tabs]');
+  if (!root) return;
+  const buttons = Array.from(root.querySelectorAll('[data-tab-target]'));
+  const panels = {
+    actual: root.querySelector('#panel-actual'),
+    new: root.querySelector('#panel-new'),
+  };
+  function activate(name) {
+    buttons.forEach((button) => {
+      const active = button.dataset.tabTarget === name;
+      button.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    Object.entries(panels).forEach(([key, panel]) => {
+      if (!panel) return;
+      panel.hidden = key !== name;
+    });
+  }
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => activate(button.dataset.tabTarget));
+  });
+  activate('new');
+})();
+</script>
 </body>
 </html>

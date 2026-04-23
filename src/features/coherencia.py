@@ -21,6 +21,7 @@ import re
 from urllib.parse import urlparse
 
 from ..models.brand import FeatureValue
+from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
 from .llm_analyzer import LLMAnalyzer
@@ -170,13 +171,35 @@ class CoherenciaExtractor:
         self.visual_analyzer = visual_analyzer or VisualAnalyzer()
         self.skip_visual_analysis = skip_visual_analysis
 
-    def extract(self, web: WebData = None, exa: ExaData = None) -> dict[str, FeatureValue]:
-        return {
+    def extract(self, web: WebData = None, exa: ExaData = None, context: ContextData = None) -> dict[str, FeatureValue]:
+        features = {
             "visual_consistency": self._visual_consistency(web),
             "messaging_consistency": self._messaging_consistency(web, exa),
             "tone_consistency": self._tone_consistency(web, exa),
             "cross_channel_coherence": self._cross_channel_coherence(web, exa),
         }
+        if context is not None:
+            features["structured_identity"] = self._structured_identity(context)
+        return features
+
+    def _structured_identity(self, context: ContextData = None) -> FeatureValue:
+        if not context:
+            return FeatureValue("structured_identity", 0.0, raw_value={"reason": "no_context_scan"}, confidence=0.0, source="context")
+        signals = []
+        if "Organization" in context.schema_types:
+            signals.append("organization_schema")
+        if "Person" in context.schema_types:
+            signals.append("person_schema")
+        if context.key_pages.get("about"):
+            signals.append("about_page")
+        score = min(100.0, 30.0 + len(signals) * 20.0)
+        return FeatureValue(
+            "structured_identity",
+            score,
+            raw_value={"signals_detected": signals, "schema_types": context.schema_types, "key_pages": context.key_pages},
+            confidence=context.confidence,
+            source="context",
+        )
 
     # ── visual_consistency ─────────────────────────────────────────────
 

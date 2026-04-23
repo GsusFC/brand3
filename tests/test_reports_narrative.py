@@ -19,6 +19,14 @@ from src.reports.narrative import (
     generate_tensions,
 )
 
+_DISPLAY = {
+    "coherencia": "Coherence",
+    "presencia": "Presence",
+    "percepcion": "Perception",
+    "diferenciacion": "Differentiation",
+    "vitalidad": "Vitality",
+}
+
 
 def _ev(dim: str, quote: str = "", url: str | None = None, sentiment: str | None = None) -> Evidence:
     return Evidence(
@@ -35,6 +43,7 @@ def _ev(dim: str, quote: str = "", url: str | None = None, sentiment: str | None
 def _dim(name: str, score: float, evidences: list[Evidence] | None = None) -> DimensionEvidences:
     return DimensionEvidences(
         dimension=name,
+        display_name=_DISPLAY.get(name, name),
         score=score,
         verdict="solid" if score >= 80 else "mixed",
         verdict_adjective="cohesive" if score >= 80 else "uneven",
@@ -46,7 +55,7 @@ def _synthesis_ctx(evidences: list[Evidence] | None = None, score: float | None 
     return SynthesisContext(
         brand="Netlify",
         url="https://www.netlify.com",
-        composite_score=score if score is not None else 0.0,
+        composite_score=score,
         dimensions=[
             _dim("coherencia", 78.0),
             _dim("presencia", 82.0),
@@ -89,8 +98,8 @@ class SynthesisTests(unittest.TestCase):
         mock._call.return_value = ""
         out = generate_synthesis(_synthesis_ctx(), analyzer=mock)
         self.assertIn("Netlify scores 72/100", out)
-        self.assertIn("Strongest dimension: presencia", out)
-        self.assertIn("Weakest dimension: diferenciacion", out)
+        self.assertIn("Strongest dimension: Presence", out)
+        self.assertIn("Weakest dimension: Differentiation", out)
 
     def test_fallback_when_llm_raises(self):
         mock = MagicMock()
@@ -303,15 +312,15 @@ class ParallelFindingsTests(unittest.TestCase):
         """Finding 1 — a hung dimension must not block the render.
 
         Patch `_FINDINGS_CALL_TIMEOUT_S` to a short window and have the
-        `percepcion` mock sleep past it. The other 4 must still return
-        their LLM output; percepcion must fall back.
+        `Perception` mock sleep past it. The other 4 must still return
+        their LLM output; Perception must fall back.
         """
         from src.reports import narrative as narr_mod
 
         hung = threading.Event()
 
         def slow_or_fast(system, user, max_tokens=2000):
-            if "Dimension: percepcion" in user:
+            if "Dimension: Perception" in user:
                 hung.wait(timeout=10)  # blocks past the patched timeout
                 return {"findings": [{
                     "title": "late", "prose": "too late", "evidence_urls": [],
@@ -350,7 +359,7 @@ class ParallelFindingsTests(unittest.TestCase):
 
     def test_one_failing_dim_does_not_break_others(self):
         def side_effect(system, user, max_tokens=2000):
-            if "percepcion" in user.lower():
+            if "perception" in user.lower():
                 raise RuntimeError("upstream 500")
             return {"findings": [{
                 "title": "ok",

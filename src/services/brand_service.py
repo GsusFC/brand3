@@ -401,6 +401,26 @@ def _context_confidence_summary(context_data: ContextData | None) -> dict[str, o
     }
 
 
+def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = None) -> dict[str, object]:
+    if llm is None:
+        return {
+            "cache_hits": 0,
+            "cache_misses": 0,
+            "cache_writes": 0,
+            "skipped_reason": skipped_reason,
+        }
+    hits = int(getattr(llm, "cache_hits", 0) or 0)
+    misses = int(getattr(llm, "cache_misses", 0) or 0)
+    writes = int(getattr(llm, "cache_writes", 0) or 0)
+    return {
+        "cache_hits": hits,
+        "cache_misses": misses,
+        "cache_writes": writes,
+        "skipped_reason": skipped_reason,
+        "estimated_cost_saved_units": hits,
+    }
+
+
 def _context_evidence_items(context_data: ContextData | None) -> list[dict[str, object]]:
     if not context_data:
         return []
@@ -862,15 +882,18 @@ def run(
 
         llm = None
         skip_llm_for_low_context = bool(context_data and context_data.coverage < 0.3)
+        llm_skipped_reason = None
         if use_llm and not skip_llm_for_low_context:
             llm = LLMAnalyzer()
             if llm.api_key:
                 print(f"  LLM: {llm.model} via Nous")
             else:
                 print("  LLM: disabled (no key found)")
+                llm_skipped_reason = "missing_api_key"
                 llm = None
         elif use_llm and skip_llm_for_low_context:
             print("  LLM: skipped (insufficient context coverage)")
+            llm_skipped_reason = "insufficient_context_coverage"
 
         content_web, content_source, data_sources = _build_content_web(
             url,
@@ -993,7 +1016,10 @@ def run(
             "calibration_profile": calibration_profile,
             "profile_source": profile_source,
             "data_quality": data_quality,
-            "data_sources": data_sources,
+            "data_sources": {
+                **data_sources,
+                "llm_cache": _llm_cache_summary(llm, llm_skipped_reason),
+            },
             "context_readiness": _to_jsonable(context_data),
             "confidence_summary": _context_confidence_summary(context_data),
             "composite_score": brand_score.composite_score,

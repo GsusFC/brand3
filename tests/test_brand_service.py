@@ -9,6 +9,7 @@ from src.services.brand_service import (
     _compute_data_quality,
     _context_confidence_summary,
     _context_evidence_items,
+    _llm_cache_summary,
 )
 
 
@@ -126,6 +127,19 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertGreaterEqual(len(items), 4)
         self.assertIn("sitemap.xml found with 12 URLs", [item["quote"] for item in items])
         self.assertIn("coherencia", {item["dimension_name"] for item in items})
+
+    def test_llm_cache_summary_reports_hits_and_skip_reason(self):
+        class FakeLLM:
+            cache_hits = 2
+            cache_misses = 1
+            cache_writes = 1
+
+        summary = _llm_cache_summary(FakeLLM())
+        skipped = _llm_cache_summary(None, "insufficient_context_coverage")
+
+        self.assertEqual(summary["cache_hits"], 2)
+        self.assertEqual(summary["estimated_cost_saved_units"], 2)
+        self.assertEqual(skipped["skipped_reason"], "insufficient_context_coverage")
 
 
 if __name__ == "__main__":

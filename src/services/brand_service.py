@@ -43,6 +43,7 @@ from src.features.presencia import PresenciaExtractor
 from src.features.vitalidad import VitalidadExtractor
 from src.learning.applier import CandidateApplyError, apply_candidate
 from src.learning.calibration import CalibrationAnalyzer
+from src.quality.dimension_confidence import dimension_confidence_from_features
 from src.scoring.engine import ScoringEngine
 from src.storage.sqlite_store import SQLiteStore
 
@@ -399,6 +400,21 @@ def _context_confidence_summary(context_data: ContextData | None) -> dict[str, o
         "confidence_reason": list(context_data.confidence_reason or []),
         "status": _confidence_status(context_data),
     }
+
+
+def _dimension_confidence_summary(
+    features_by_dim: dict[str, dict],
+    *,
+    evidence_items: list[dict[str, object]] | None = None,
+    data_quality: str | None = None,
+    context_data: ContextData | None = None,
+) -> dict[str, dict[str, object]]:
+    return dimension_confidence_from_features(
+        features_by_dim,
+        evidence_items=evidence_items,
+        data_quality=data_quality,
+        context_summary=_context_confidence_summary(context_data),
+    )
 
 
 def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = None) -> dict[str, object]:
@@ -1007,6 +1023,13 @@ def run(
                     raw = raw_str[:120] + "..." if len(raw_str) > 120 else raw_str
                     print(f"    raw: {raw}")
 
+        dimension_confidence = _dimension_confidence_summary(
+            features_by_dim,
+            evidence_items=_context_evidence_items(context_data),
+            data_quality=data_quality,
+            context_data=context_data,
+        )
+
         result = {
             "brand": brand_score.brand_name,
             "brand_profile": _build_brand_profile(brand_score.brand_name, brand_score.url, store),
@@ -1022,6 +1045,7 @@ def run(
             },
             "context_readiness": _to_jsonable(context_data),
             "confidence_summary": _context_confidence_summary(context_data),
+            "dimension_confidence": dimension_confidence,
             "composite_score": brand_score.composite_score,
             "composite_reliable": data_quality != "insufficient",
             "partial_score": data_quality == "insufficient",

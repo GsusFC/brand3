@@ -9,8 +9,10 @@ from src.services.brand_service import (
     _compute_data_quality,
     _context_confidence_summary,
     _context_evidence_items,
+    _dimension_confidence_summary,
     _llm_cache_summary,
 )
+from src.models.brand import FeatureValue
 
 
 class BrandServiceContentFallbackTests(unittest.TestCase):
@@ -140,6 +142,27 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["cache_hits"], 2)
         self.assertEqual(summary["estimated_cost_saved_units"], 2)
         self.assertEqual(skipped["skipped_reason"], "insufficient_context_coverage")
+
+    def test_dimension_confidence_marks_sparse_dimension_insufficient(self):
+        summary = _dimension_confidence_summary(
+            {
+                "presencia": {
+                    "web_presence": FeatureValue(
+                        "web_presence",
+                        80.0,
+                        raw_value={"evidence_snippet": "homepage reachable"},
+                        confidence=0.9,
+                        source="web_scrape",
+                    )
+                }
+            },
+            data_quality="good",
+            context_data=ContextData(url="https://example.com", coverage=0.8, confidence=0.8),
+        )
+
+        self.assertEqual(summary["presencia"]["status"], "insufficient_data")
+        self.assertIn("social_footprint", summary["presencia"]["missing_signals"])
+        self.assertLess(summary["presencia"]["coverage"], 0.3)
 
 
 if __name__ == "__main__":

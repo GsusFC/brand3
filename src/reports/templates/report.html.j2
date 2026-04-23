@@ -245,11 +245,12 @@
 <table>
   <thead>
     <tr>
-      <th style="width: 24%">dimension</th>
+      <th style="width: 20%">dimension</th>
       <th style="width: 8%" class="num">score</th>
-      <th style="width: 32%">bar</th>
-      <th style="width: 16%">verdict</th>
-      <th>tone</th>
+      <th style="width: 28%">bar</th>
+      <th style="width: 12%">confianza</th>
+      <th style="width: 12%">cobertura</th>
+      <th>verdict</th>
     </tr>
   </thead>
   <tbody>
@@ -258,8 +259,9 @@
       <td>{{ dim.display_name }}</td>
       <td class="num num-inline">{% if dim.badge_type == 'warn' %}<span class="hl-alert">{{ dim.score_display }}</span>{% else %}{{ dim.score_display }}{% endif %}</td>
       <td class="bar">{% if dim.badge_type == 'warn' %}<span class="hl-alert">{{ dim.bar }}</span>{% else %}{{ dim.bar }}{% endif %}</td>
+      <td class="verdict">{% if dim.confidence_status == 'insufficient_data' %}<span class="hl-alert">{{ dim.confidence_label }}</span>{% else %}{{ dim.confidence_label }}{% endif %}</td>
+      <td class="verdict">{{ dim.coverage_label }}</td>
       <td class="verdict">{{ dim.short_verdict }}</td>
-      <td class="verdict">{{ dim.verdict_adjective }}</td>
     </tr>
   {%- endfor %}
   </tbody>

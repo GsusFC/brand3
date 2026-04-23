@@ -165,6 +165,8 @@ class BuildReportContextTests(unittest.TestCase):
         coherencia = next(d for d in ctx["dimensions"] if d["name"] == "coherencia")
         self.assertEqual(len(coherencia["evidence"]), 1)
         self.assertEqual(coherencia["evidence"][0]["quote"], "Software is eating the world")
+        self.assertIn(coherencia["confidence_status"], {"degraded", "good", "insufficient_data"})
+        self.assertEqual(coherencia["coverage_label"], "baja")
         # footer populated
         self.assertEqual(ctx["footer"]["fingerprint"], "abc123")
         self.assertEqual(ctx["footer"]["report_id"], "rpt_000042")
@@ -176,6 +178,8 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("<html", html)
         self.assertIn("</html>", html)
         self.assertIn("A16Z", html)
+        self.assertIn("confianza", html)
+        self.assertIn("cobertura", html)
         self.assertIn("74", html)  # composite score display
         self.assertIn("a16z.com", html)  # URL chip / source list
         self.assertIn("#0e0f10", html)  # dark bg token

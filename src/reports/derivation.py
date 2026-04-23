@@ -12,6 +12,8 @@ from datetime import datetime
 from typing import Any, Literal
 from urllib.parse import urlparse
 
+from src.quality.dimension_confidence import dimension_confidence_from_snapshot
+
 # REVIEW: D2 — evidence lives in features.raw_value, parsed defensively because
 # SQLite stores it via str(dict) (see sqlite_store.py:536), not JSON.
 _EVIDENCE_KEYS = ("evidence", "quotes", "examples", "messaging_gaps", "tone_examples")
@@ -287,6 +289,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
     # Build per-dimension blocks
     known_dim_order = list(_load_dimension_labels().keys())
     score_by_dim = {row.get("dimension_name"): row for row in scores}
+    confidence_by_dim = dimension_confidence_from_snapshot(snapshot)
 
     dimensions_ctx: list[dict] = []
     all_rules_applied: list[dict] = []
@@ -298,6 +301,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         rules_applied = _parse_json_list(score_row.get("rules_json"))
         letter, label = band_from_score(score)
         dim_features = features_by_dim.get(dim_name, [])
+        dim_confidence = confidence_by_dim.get(dim_name) or {}
 
         # Pull evidence from all features, capped for visual budget
         evidence_collected: list[dict] = []
@@ -330,6 +334,13 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "observations": insights,
             "features": dim_features,
             "evidence": evidence_collected,
+            "coverage": dim_confidence.get("coverage", 0.0),
+            "coverage_label": _quality_label(float(dim_confidence.get("coverage") or 0.0)),
+            "confidence": dim_confidence.get("confidence", 0.0),
+            "confidence_label": _quality_label(float(dim_confidence.get("confidence") or 0.0)),
+            "confidence_status": dim_confidence.get("status", "insufficient_data"),
+            "confidence_reason": dim_confidence.get("confidence_reason", []),
+            "missing_signals": dim_confidence.get("missing_signals", []),
             # Phase 3 placeholder — filled in by narrative pipeline in phase 4.
             "findings": [],
             "has_data": score is not None,

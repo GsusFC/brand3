@@ -368,6 +368,18 @@
       </td>
     </tr>
     <tr>
+      <th>calidad</th>
+      <td>
+        {%- if evidence_summary.by_quality -%}
+          {%- for quality, count in evidence_summary.by_quality.items() -%}
+            {{ quality }}: {{ count }}{% if not loop.last %}, {% endif %}
+          {%- endfor -%}
+        {%- else -%}
+          <span class="dim">sin clasificar</span>
+        {%- endif -%}
+      </td>
+    </tr>
+    <tr>
       <th>sin evidencia</th>
       <td>{% if evidence_summary.dimensions_without_evidence %}<span class="hl-alert">{{ evidence_summary.dimensions_without_evidence | join(', ') }}</span>{% else %}ninguna dimensión{% endif %}</td>
     </tr>

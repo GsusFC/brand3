@@ -198,6 +198,7 @@ class BuildReportContextTests(unittest.TestCase):
         self.assertEqual(presencia["evidence"][0]["quote"], "sitemap.xml found with 20 URLs")
         self.assertEqual(presencia["evidence"][0]["source_url"], "https://a16z.com/sitemap.xml")
         self.assertEqual(ctx["evidence_summary"]["by_source"]["context"], 1)
+        self.assertEqual(ctx["evidence_summary"]["by_quality"]["direct"], 2)
         self.assertEqual(ctx["trust_summary"]["evidence"]["by_source"]["context"], 1)
         self.assertEqual(ctx["trust_summary"]["limited_dimensions"][0]["display_name"], "Coherence")
         self.assertEqual(ctx["evaluation"]["trust_summary"]["overall_status_label"], "datos insuficientes")
@@ -227,6 +228,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("pre-scan contextual insuficiente", html)
         self.assertIn("siguiente:", html)
         self.assertIn("resumen de evidencia", html)
+        self.assertIn("calidad", html)
         self.assertIn("faltan", html)
         self.assertIn("74", html)  # composite score display
         self.assertIn("a16z.com", html)  # URL chip / source list

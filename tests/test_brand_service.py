@@ -217,6 +217,8 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
 
         self.assertEqual(summary["total"], 2)
         self.assertEqual(summary["by_dimension"]["presencia"], 2)
+        self.assertEqual(summary["by_quality"]["indirect"], 1)
+        self.assertEqual(summary["by_quality"]["weak"], 1)
         self.assertIn("coherencia", summary["dimensions_without_evidence"])
 
     def test_trust_summary_payload_includes_aggregate_status_and_labels(self):

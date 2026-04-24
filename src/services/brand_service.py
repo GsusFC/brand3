@@ -43,7 +43,7 @@ from src.features.presencia import PresenciaExtractor
 from src.features.vitalidad import VitalidadExtractor
 from src.learning.applier import CandidateApplyError, apply_candidate
 from src.learning.calibration import CalibrationAnalyzer
-from src.quality.dimension_confidence import dimension_confidence_from_features
+from src.quality.dimension_confidence import dimension_confidence_from_features, dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_from_features, summarize_evidence_records
 from src.scoring.engine import ScoringEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -1512,6 +1512,19 @@ def run_evidence_summary(run_id: int) -> dict:
             snapshot.get("features") or [],
             evidence_items=snapshot.get("evidence_items") or [],
         )
+        print(json.dumps(summary, indent=2))
+        return summary
+    finally:
+        store.close()
+
+
+def run_dimension_confidence(run_id: int) -> dict:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        if not snapshot:
+            raise ValueError(f"Run {run_id} not found")
+        summary = dimension_confidence_from_snapshot(snapshot)
         print(json.dumps(summary, indent=2))
         return summary
     finally:

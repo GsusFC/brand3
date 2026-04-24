@@ -217,6 +217,13 @@ def build_app() -> FastAPI:
         except ValueError as exc:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
+    @app.get("/api/runs/{run_id}/dimension-confidence")
+    def get_run_dimension_confidence(run_id: int) -> dict[str, Any]:
+        try:
+            return brand_service.run_dimension_confidence(run_id)
+        except ValueError as exc:
+            raise HTTPException(status_code=404, detail=str(exc)) from exc
+
     @app.get("/api/brands/{brand_name}/report")
     def get_brand_report(brand_name: str, limit: int = 10) -> dict[str, Any]:
         return brand_service.brand_report(brand_name, limit=limit)

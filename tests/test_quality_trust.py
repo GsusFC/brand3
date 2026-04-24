@@ -42,6 +42,15 @@ class TrustQualityTests(unittest.TestCase):
             ),
             "multiple_dimensions_insufficient",
         )
+        self.assertEqual(
+            trust_overall_reason(
+                data_quality="good",
+                context_status="good",
+                dimension_status_counts=counts,
+                locale="es",
+            ),
+            "multiples dimensiones con datos insuficientes",
+        )
 
 
 if __name__ == "__main__":

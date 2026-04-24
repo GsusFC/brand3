@@ -1561,11 +1561,18 @@ def run_trust_summary(run_id: int) -> dict:
             context_status=context_summary.get("status"),
             dimension_status_counts=dimension_status_counts,
         )
+        overall_reason_label = trust_overall_reason(
+            data_quality=run_payload.get("data_quality") or "unknown",
+            context_status=context_summary.get("status"),
+            dimension_status_counts=dimension_status_counts,
+            locale="es",
+        )
         payload = {
             "run_id": run_id,
             "data_quality": run_payload.get("data_quality") or "unknown",
             "overall_status": overall_status,
             "overall_reason": overall_reason,
+            "overall_reason_label": overall_reason_label,
             "context_readiness": context_summary,
             "evidence_summary": evidence_summary,
             "dimension_confidence": dimension_confidence,

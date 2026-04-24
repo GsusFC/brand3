@@ -301,6 +301,8 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(payload["trust_summary"]["overall_status"], "insufficient_data")
         self.assertEqual(payload["trust_summary"]["context"]["status"], "good")
         self.assertEqual(payload["trust_summary"]["evidence"]["total"], 2)
+        limited_names = [item["name"] for item in payload["trust_summary"]["limited_dimensions"]]
+        self.assertIn("presencia", limited_names)
         self.assertEqual(payload["context_readiness"]["status"], "good")
         self.assertEqual(payload["context_readiness"]["coverage_label"], "alta")
         self.assertEqual(payload["context_readiness"]["confidence_label"], "alta")

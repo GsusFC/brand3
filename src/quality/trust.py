@@ -29,12 +29,55 @@ def dimension_status_counts_from_report_dimensions(dimensions: list[dict]) -> di
     return counts
 
 
+def limited_dimensions_from_confidence(dimension_confidence: dict) -> list[dict[str, object]]:
+    limited: list[dict[str, object]] = []
+    for name, item in (dimension_confidence or {}).items():
+        if not isinstance(item, dict):
+            continue
+        status = item.get("status") or "insufficient_data"
+        missing_signals = item.get("missing_signals") or []
+        if status == "good" and not missing_signals:
+            continue
+        limited.append({
+            "name": name,
+            "status": status,
+            "coverage": item.get("coverage", 0.0),
+            "confidence": item.get("confidence", 0.0),
+            "confidence_reason": item.get("confidence_reason") or [],
+            "missing_signals": missing_signals,
+        })
+    return limited
+
+
+def limited_dimensions_from_report_dimensions(dimensions: list[dict]) -> list[dict[str, object]]:
+    limited: list[dict[str, object]] = []
+    for item in dimensions or []:
+        status = item.get("confidence_status") or "insufficient_data"
+        missing_signals = item.get("missing_signals") or []
+        if status == "good" and not missing_signals:
+            continue
+        limited.append({
+            "name": item.get("name"),
+            "display_name": item.get("display_name") or item.get("name"),
+            "status": status,
+            "coverage": item.get("coverage", 0.0),
+            "coverage_label": item.get("coverage_label"),
+            "confidence": item.get("confidence", 0.0),
+            "confidence_label": item.get("confidence_label"),
+            "confidence_reason": item.get("confidence_reason") or [],
+            "confidence_reason_labels": item.get("confidence_reason_labels") or [],
+            "missing_signals": missing_signals,
+        })
+    return limited
+
+
 def build_trust_summary(
     *,
     data_quality: str,
     context_summary: dict[str, object],
     evidence_summary: dict[str, object],
     dimension_status_counts: dict[str, int],
+    limited_dimensions: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     context_status = context_summary.get("status") if isinstance(context_summary, dict) else None
     overall_status = trust_overall_status(
@@ -60,6 +103,7 @@ def build_trust_summary(
         "context": context_summary,
         "evidence": evidence_summary,
         "dimension_status_counts": dimension_status_counts,
+        "limited_dimensions": limited_dimensions or [],
     }
 
 

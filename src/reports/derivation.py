@@ -17,6 +17,7 @@ from src.quality.evidence_summary import summarize_evidence_records
 from src.quality.trust import (
     build_trust_summary,
     dimension_status_counts_from_report_dimensions,
+    limited_dimensions_from_report_dimensions,
     quality_label,
 )
 
@@ -462,6 +463,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         context_summary=context_readiness,
         evidence_summary=evidence_summary,
         dimension_status_counts=dimension_status_counts,
+        limited_dimensions=limited_dimensions_from_report_dimensions(dimensions_ctx),
     )
 
     return {

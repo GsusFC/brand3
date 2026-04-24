@@ -3,6 +3,8 @@ import unittest
 from src.quality.trust import (
     build_trust_summary,
     dimension_status_counts_from_confidence,
+    limited_dimensions_from_confidence,
+    limited_dimensions_from_report_dimensions,
     quality_label,
     trust_status_label,
     trust_overall_reason,
@@ -65,6 +67,7 @@ class TrustQualityTests(unittest.TestCase):
             context_summary={"status": "good", "coverage": 0.8},
             evidence_summary={"total": 4},
             dimension_status_counts={"good": 5, "degraded": 0, "insufficient_data": 0},
+            limited_dimensions=[{"name": "presencia", "status": "degraded"}],
         )
 
         self.assertEqual(summary["overall_status"], "good")
@@ -73,6 +76,45 @@ class TrustQualityTests(unittest.TestCase):
         self.assertEqual(summary["overall_reason_label"], "todas las comprobaciones de confianza pasaron")
         self.assertEqual(summary["context"]["coverage"], 0.8)
         self.assertEqual(summary["evidence"]["total"], 4)
+        self.assertEqual(summary["limited_dimensions"][0]["name"], "presencia")
+
+    def test_limited_dimensions_from_confidence_keeps_only_weak_dimensions(self):
+        limited = limited_dimensions_from_confidence({
+            "presencia": {
+                "status": "good",
+                "coverage": 0.9,
+                "confidence": 0.8,
+                "missing_signals": [],
+            },
+            "percepcion": {
+                "status": "insufficient_data",
+                "coverage": 0.2,
+                "confidence": 0.3,
+                "confidence_reason": ["low_coverage"],
+                "missing_signals": ["reviews"],
+            },
+        })
+
+        self.assertEqual(len(limited), 1)
+        self.assertEqual(limited[0]["name"], "percepcion")
+        self.assertEqual(limited[0]["missing_signals"], ["reviews"])
+
+    def test_limited_dimensions_from_report_dimensions_keeps_labels(self):
+        limited = limited_dimensions_from_report_dimensions([
+            {"name": "presencia", "display_name": "Presence", "confidence_status": "good"},
+            {
+                "name": "vitalidad",
+                "display_name": "Vitality",
+                "confidence_status": "degraded",
+                "coverage_label": "media",
+                "confidence_label": "baja",
+                "missing_signals": ["changelog"],
+            },
+        ])
+
+        self.assertEqual(len(limited), 1)
+        self.assertEqual(limited[0]["display_name"], "Vitality")
+        self.assertEqual(limited[0]["confidence_label"], "baja")
 
 
 if __name__ == "__main__":

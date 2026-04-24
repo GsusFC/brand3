@@ -181,6 +181,7 @@ class BuildReportContextTests(unittest.TestCase):
         self.assertEqual(presencia["evidence"][0]["source_url"], "https://a16z.com/sitemap.xml")
         self.assertEqual(ctx["evidence_summary"]["by_source"]["context"], 1)
         self.assertEqual(ctx["trust_summary"]["evidence"]["by_source"]["context"], 1)
+        self.assertEqual(ctx["trust_summary"]["limited_dimensions"][0]["display_name"], "Coherence")
         self.assertEqual(ctx["evaluation"]["trust_summary"]["overall_status_label"], "datos insuficientes")
         self.assertEqual(
             ctx["evaluation"]["overall_reason_label"],

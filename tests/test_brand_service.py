@@ -203,7 +203,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             context_summary={"status": "good", "coverage": 0.8},
             evidence_summary={"total": 2},
             dimension_confidence={
-                "presencia": {"status": "insufficient_data"},
+                "presencia": {"status": "insufficient_data", "missing_signals": ["schema"]},
                 "coherencia": {"status": "insufficient_data"},
                 "percepcion": {"status": "insufficient_data"},
             },
@@ -213,6 +213,8 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["overall_status_label"], "datos insuficientes")
         self.assertEqual(summary["overall_reason"], "multiple_dimensions_insufficient")
         self.assertEqual(summary["evidence"]["total"], 2)
+        self.assertEqual(summary["limited_dimensions"][0]["name"], "presencia")
+        self.assertEqual(summary["limited_dimensions"][0]["missing_signals"], ["schema"])
 
     def test_run_reuses_raw_input_cache_and_copies_payloads_to_current_run(self):
         with TemporaryDirectory() as tmpdir:

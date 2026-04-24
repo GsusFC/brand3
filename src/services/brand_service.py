@@ -48,6 +48,7 @@ from src.quality.evidence_summary import summarize_evidence_from_features, summa
 from src.quality.trust import (
     build_trust_summary,
     dimension_status_counts_from_confidence,
+    limited_dimensions_from_confidence,
     quality_label,
 )
 from src.scoring.engine import ScoringEngine
@@ -436,6 +437,7 @@ def _trust_summary_payload(
         context_summary=context_summary,
         evidence_summary=evidence_summary,
         dimension_status_counts=dimension_status_counts,
+        limited_dimensions=limited_dimensions_from_confidence(dimension_confidence),
     )
 
 

@@ -100,16 +100,32 @@ class SQLiteStoreTests(unittest.TestCase):
                         "dimension_name": "presencia",
                         "confidence": 0.8,
                         "freshness_days": 0,
-                    }
+                    },
+                    {
+                        "source": "exa",
+                        "url": "https://news.example.com/article",
+                        "quote": "Example mentioned in press",
+                        "feature_name": "mentions",
+                        "dimension_name": "percepcion",
+                        "confidence": 0.6,
+                    },
                 ],
             )
             evidence = store.get_run_evidence(run_id)
+            context_evidence = store.get_run_evidence(run_id, source="context")
+            presencia_evidence = store.get_run_evidence(run_id, dimension_name="presencia")
+            missing_evidence = store.get_run_evidence(run_id, dimension_name="vitalidad")
             snapshot = store.get_run_snapshot(run_id)
             store.close()
 
-            self.assertEqual(len(evidence), 1)
+            self.assertEqual(len(evidence), 2)
             self.assertEqual(evidence[0]["source"], "context")
             self.assertEqual(evidence[0]["dimension_name"], "presencia")
+            self.assertEqual(len(context_evidence), 1)
+            self.assertEqual(context_evidence[0]["quote"], "sitemap.xml found with 12 URLs")
+            self.assertEqual(len(presencia_evidence), 1)
+            self.assertEqual(presencia_evidence[0]["source"], "context")
+            self.assertEqual(missing_evidence, [])
             self.assertEqual(snapshot["evidence_items"][0]["quote"], "sitemap.xml found with 12 URLs")
 
     def test_store_allows_null_dimension_and_composite_scores(self):

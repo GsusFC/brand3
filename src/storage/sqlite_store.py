@@ -599,16 +599,30 @@ class SQLiteStore:
         )
         self.conn.commit()
 
-    def get_run_evidence(self, run_id: int) -> list[dict[str, Any]]:
+    def get_run_evidence(
+        self,
+        run_id: int,
+        *,
+        dimension_name: str | None = None,
+        source: str | None = None,
+    ) -> list[dict[str, Any]]:
+        filters = ["run_id = ?"]
+        params: list[Any] = [run_id]
+        if dimension_name:
+            filters.append("dimension_name = ?")
+            params.append(dimension_name)
+        if source:
+            filters.append("source = ?")
+            params.append(source)
         rows = self.conn.execute(
-            """
+            f"""
             SELECT id, run_id, source, url, quote, feature_name, dimension_name,
                    confidence, freshness_days, created_at
             FROM evidence_items
-            WHERE run_id = ?
+            WHERE {" AND ".join(filters)}
             ORDER BY id ASC
             """,
-            (run_id,),
+            params,
         ).fetchall()
         return [dict(row) for row in rows]
 

@@ -202,12 +202,20 @@ def build_app() -> FastAPI:
             raise HTTPException(status_code=404, detail=str(exc)) from exc
 
     @app.get("/api/runs/{run_id}/evidence")
-    def get_run_evidence(run_id: int) -> list[dict[str, Any]]:
+    def get_run_evidence(
+        run_id: int,
+        dimension: str | None = None,
+        source: str | None = None,
+    ) -> list[dict[str, Any]]:
         store = SQLiteStore(BRAND3_DB_PATH)
         try:
             if not store.get_run_snapshot(run_id):
                 raise HTTPException(status_code=404, detail=f"Run {run_id} not found")
-            return store.get_run_evidence(run_id)
+            return store.get_run_evidence(
+                run_id,
+                dimension_name=(dimension or "").strip() or None,
+                source=(source or "").strip() or None,
+            )
         finally:
             store.close()
 

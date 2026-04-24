@@ -121,16 +121,35 @@ class ApiTests(unittest.TestCase):
             run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
             store.save_evidence_items(
                 run_id,
-                [{"source": "context", "quote": "robots.txt found", "confidence": 0.7}],
+                [
+                    {
+                        "source": "context",
+                        "quote": "robots.txt found",
+                        "dimension_name": "presencia",
+                        "confidence": 0.7,
+                    },
+                    {
+                        "source": "exa",
+                        "quote": "positive mention found",
+                        "dimension_name": "percepcion",
+                        "confidence": 0.6,
+                    },
+                ],
             )
             store.close()
 
             client = TestClient(app)
             with patch("src.api.app.BRAND3_DB_PATH", str(db_path)):
                 response = client.get(f"/api/runs/{run_id}/evidence")
+                filtered = client.get(f"/api/runs/{run_id}/evidence?dimension=presencia&source=context")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()[0]["quote"], "robots.txt found")
+        self.assertEqual(len(response.json()), 2)
+        self.assertEqual(filtered.status_code, 200)
+        self.assertEqual(len(filtered.json()), 1)
+        self.assertEqual(filtered.json()[0]["dimension_name"], "presencia")
+        self.assertEqual(filtered.json()[0]["source"], "context")
 
     def test_run_evidence_summary_endpoint_returns_snapshot_summary(self):
         from fastapi.testclient import TestClient

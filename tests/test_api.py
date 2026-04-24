@@ -274,8 +274,11 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload["run_id"], run_id)
         self.assertEqual(payload["context_readiness"]["status"], "good")
+        self.assertEqual(payload["context_readiness"]["coverage_label"], "alta")
+        self.assertEqual(payload["context_readiness"]["confidence_label"], "alta")
         self.assertEqual(payload["evidence_summary"]["total"], 2)
         self.assertEqual(payload["dimension_confidence"]["presencia"]["status"], "insufficient_data")
+        self.assertEqual(payload["dimension_status_counts"]["insufficient_data"], 5)
 
     def test_run_trust_summary_endpoint_404s_for_missing_run(self):
         from fastapi.testclient import TestClient

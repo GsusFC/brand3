@@ -1544,12 +1544,14 @@ def run_trust_summary(run_id: int) -> dict:
             evidence_items=snapshot.get("evidence_items") or [],
         )
         dimension_confidence = dimension_confidence_from_snapshot(snapshot)
+        dimension_status_counts = _dimension_status_counts(dimension_confidence)
         payload = {
             "run_id": run_id,
             "data_quality": run_payload.get("data_quality") or "unknown",
             "context_readiness": context_summary,
             "evidence_summary": evidence_summary,
             "dimension_confidence": dimension_confidence,
+            "dimension_status_counts": dimension_status_counts,
         }
         print(json.dumps(payload, indent=2))
         return payload
@@ -1574,6 +1576,8 @@ def _context_readiness_from_snapshot(snapshot: dict) -> dict:
             "available": True,
             "coverage": coverage,
             "confidence": confidence,
+            "coverage_label": _quality_label(coverage),
+            "confidence_label": _quality_label(confidence),
             "status": status,
             "confidence_reason": payload.get("confidence_reason") or [],
             "context_score": payload.get("context_score"),
@@ -1582,9 +1586,28 @@ def _context_readiness_from_snapshot(snapshot: dict) -> dict:
         "available": False,
         "coverage": 0.0,
         "confidence": 0.0,
+        "coverage_label": "baja",
+        "confidence_label": "baja",
         "status": "insufficient_data",
         "confidence_reason": ["context_scan_unavailable"],
     }
+
+
+def _dimension_status_counts(dimension_confidence: dict) -> dict[str, int]:
+    counts = {"good": 0, "degraded": 0, "insufficient_data": 0}
+    for item in (dimension_confidence or {}).values():
+        status = item.get("status") if isinstance(item, dict) else None
+        if status in counts:
+            counts[status] += 1
+    return counts
+
+
+def _quality_label(value: float) -> str:
+    if value >= 0.75:
+        return "alta"
+    if value >= 0.45:
+        return "media"
+    return "baja"
 
 
 def brand_report(brand_name: str, limit: int = 10) -> dict:

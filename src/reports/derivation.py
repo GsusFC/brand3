@@ -397,6 +397,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         snapshot.get("features") or [],
         evidence_items=snapshot.get("evidence_items") or [],
     )
+    cost_policy = _cost_policy_from_snapshot(snapshot)
     dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
     # Header + footer
@@ -489,6 +490,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "partial_score": composite is None or data_quality != "good",
             "context_readiness": context_readiness,
             "evidence_summary": evidence_summary,
+            "cost_policy": cost_policy,
             "dimension_status_counts": dimension_status_counts,
             "overall_status": trust_summary["overall_status"],
             "overall_status_label": trust_summary["overall_status_label"],
@@ -561,6 +563,7 @@ def build_report_context_from_base(base: dict) -> dict:
         "evaluation": evaluation,
         "context_readiness": evaluation.get("context_readiness") or {},
         "evidence_summary": evaluation.get("evidence_summary") or {},
+        "cost_policy": evaluation.get("cost_policy") or {},
         "trust_summary": evaluation.get("trust_summary") or {},
         "narrative": narrative,
         "sources": sources,
@@ -618,6 +621,31 @@ def _context_readiness_from_snapshot(snapshot: dict) -> dict:
         "avg_internal_links": int(payload.get("avg_internal_links") or 0),
         "confidence_reason": payload.get("confidence_reason") or [],
         "opportunities": payload.get("opportunities") or [],
+    }
+
+
+def _cost_policy_from_snapshot(snapshot: dict) -> dict:
+    run = snapshot.get("run") or {}
+    raw_inputs = snapshot.get("raw_inputs") or []
+    raw_sources = sorted({
+        item.get("source")
+        for item in raw_inputs
+        if isinstance(item, dict) and item.get("source")
+    })
+    skipped: dict[str, str] = {}
+    if run.get("use_llm") in (0, False):
+        skipped["llm"] = "disabled_by_request"
+    elif run.get("llm_used") in (0, False):
+        skipped["llm"] = "not_used"
+    if run.get("use_social") in (0, False):
+        skipped["social"] = "disabled_by_request"
+    elif run.get("social_scraped") in (0, False):
+        skipped["social"] = "not_scraped"
+    return {
+        "available": bool(raw_sources or skipped),
+        "raw_input_sources": raw_sources,
+        "persisted_raw_inputs": len(raw_inputs),
+        "skipped": skipped,
     }
 
 

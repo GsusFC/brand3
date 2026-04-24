@@ -118,6 +118,24 @@ class DerivationHelperTests(unittest.TestCase):
         self.assertEqual(ctx["context_readiness"]["sitemap_url_count"], 42)
         self.assertEqual(ctx["context_readiness"]["confidence_label"], "alta")
 
+    def test_cost_policy_from_snapshot_is_exposed(self):
+        snapshot = _sample_snapshot()
+        snapshot["run"]["use_llm"] = 0
+        snapshot["run"]["use_social"] = 0
+        snapshot["raw_inputs"] = [
+            {"source": "context", "payload": {"coverage": 0.8, "confidence": 0.8}},
+            {"source": "web", "payload": {"title": "Example"}},
+            {"source": "exa", "payload": {"mentions": []}},
+        ]
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertTrue(ctx["cost_policy"]["available"])
+        self.assertEqual(ctx["cost_policy"]["persisted_raw_inputs"], 3)
+        self.assertEqual(ctx["cost_policy"]["raw_input_sources"], ["context", "exa", "web"])
+        self.assertEqual(ctx["cost_policy"]["skipped"]["llm"], "disabled_by_request")
+        self.assertEqual(ctx["cost_policy"]["skipped"]["social"], "disabled_by_request")
+
     def test_parse_raw_value_handles_json(self):
         result = parse_raw_value('{"verdict": "declining"}')
         self.assertEqual(result, {"verdict": "declining"})
@@ -213,6 +231,20 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("74", html)  # composite score display
         self.assertIn("a16z.com", html)  # URL chip / source list
         self.assertIn("#0e0f10", html)  # dark bg token
+
+    def test_render_shows_cost_policy_when_available(self):
+        snapshot = _sample_snapshot()
+        snapshot["run"]["use_llm"] = 0
+        snapshot["raw_inputs"] = [
+            {"source": "context", "payload": {"coverage": 0.8, "confidence": 0.8}},
+            {"source": "web", "payload": {"title": "Example"}},
+        ]
+
+        html = ReportRenderer().render(snapshot, theme="dark")
+
+        self.assertIn("coste / ejecución", html)
+        self.assertIn("inputs: context, web", html)
+        self.assertIn("llm=disabled_by_request", html)
 
     def test_render_light_uses_different_palette(self):
         html_dark = ReportRenderer().render(_sample_snapshot(), theme="dark")

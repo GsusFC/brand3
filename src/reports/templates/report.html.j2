@@ -277,6 +277,20 @@
       </td>
     </tr>
     {%- endif %}
+    {%- if cost_policy.available %}
+    <tr>
+      <th>coste / ejecución</th>
+      <td>
+        inputs: {% if cost_policy.raw_input_sources %}{{ cost_policy.raw_input_sources | join(', ') }}{% else %}<span class="dim">no persistidos</span>{% endif %}
+        {%- if cost_policy.skipped -%}
+          ; omitido:
+          {%- for name, reason in cost_policy.skipped.items() -%}
+            {{ name }}={{ reason }}{% if not loop.last %}, {% endif %}
+          {%- endfor -%}
+        {%- endif -%}
+      </td>
+    </tr>
+    {%- endif %}
   </tbody>
 </table>
 

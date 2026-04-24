@@ -130,6 +130,56 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()[0]["quote"], "robots.txt found")
 
+    def test_run_evidence_summary_endpoint_returns_snapshot_summary(self):
+        from fastapi.testclient import TestClient
+        from src.api.app import app
+        from src.storage.sqlite_store import SQLiteStore
+        from src.models.brand import FeatureValue
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+            store.save_features(
+                run_id,
+                {
+                    "presencia": {
+                        "web_presence": FeatureValue(
+                            "web_presence",
+                            80.0,
+                            raw_value={"evidence_snippet": "homepage reachable"},
+                            confidence=0.9,
+                            source="web_scrape",
+                        )
+                    }
+                },
+            )
+            store.save_evidence_items(
+                run_id,
+                [{"source": "context", "quote": "robots.txt found", "dimension_name": "presencia", "confidence": 0.7}],
+            )
+            store.close()
+
+            client = TestClient(app)
+            with patch("src.services.brand_service.BRAND3_DB_PATH", str(db_path)):
+                response = client.get(f"/api/runs/{run_id}/evidence-summary")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()["total"], 2)
+        self.assertEqual(response.json()["by_dimension"]["presencia"], 2)
+        self.assertEqual(response.json()["by_source"]["context"], 1)
+
+    def test_run_evidence_summary_endpoint_404s_for_missing_run(self):
+        from fastapi.testclient import TestClient
+        from src.api.app import app
+
+        client = TestClient(app)
+        with patch("src.api.app.brand_service.run_evidence_summary", side_effect=ValueError("Run 999 not found")):
+            response = client.get("/api/runs/999/evidence-summary")
+
+        self.assertEqual(response.status_code, 404)
+
 
 if __name__ == "__main__":
     unittest.main()

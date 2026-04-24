@@ -267,6 +267,16 @@
       <th>motivo</th>
       <td>{{ evaluation.overall_reason_label }}</td>
     </tr>
+    {%- if trust_summary.limited_dimensions %}
+    <tr>
+      <th>dimensiones limitadas</th>
+      <td>
+        {%- for dim in trust_summary.limited_dimensions[:5] -%}
+          {{ dim.display_name or dim.name }}{% if not loop.last %}, {% endif %}
+        {%- endfor -%}
+      </td>
+    </tr>
+    {%- endif %}
   </tbody>
 </table>
 
@@ -302,18 +312,13 @@
   </tbody>
 </table>
 
-{%- set limited_dimensions = [] -%}
-{%- for dim in dimensions -%}
-  {%- if dim.confidence_status != 'good' or dim.missing_signals -%}
-    {%- set _ = limited_dimensions.append(dim) -%}
-  {%- endif -%}
-{%- endfor -%}
+{%- set limited_dimensions = trust_summary.limited_dimensions or [] -%}
 {%- if limited_dimensions %}
 <div class="quality-note warn">
   <strong>Lectura condicionada por evidencia incompleta.</strong>
   {%- for dim in limited_dimensions[:3] %}
     <div class="quote-meta">
-      {{ dim.display_name }}:
+      {{ dim.display_name or dim.name }}:
       confianza {{ dim.confidence_label }}, cobertura {{ dim.coverage_label }}
       {%- if dim.confidence_reason_labels %}; {{ dim.confidence_reason_labels[:2] | join(', ') }}{% endif -%}
       {%- if dim.missing_signals %}; faltan {{ dim.missing_signals[:3] | join(', ') }}{% endif -%}

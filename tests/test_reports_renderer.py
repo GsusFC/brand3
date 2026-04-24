@@ -205,6 +205,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("Lectura condicionada por evidencia incompleta", html)
         self.assertIn("estado de confianza", html)
         self.assertIn("motivo", html)
+        self.assertIn("dimensiones limitadas", html)
         self.assertIn("pre-scan contextual insuficiente", html)
         self.assertIn("resumen de evidencia", html)
         self.assertIn("faltan", html)

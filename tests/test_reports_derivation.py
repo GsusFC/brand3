@@ -33,6 +33,7 @@ def _snapshot(
     llm_used: int = 1,
     features: list[dict] | None = None,
     scores: list[dict] | None = None,
+    evidence_items: list[dict] | None = None,
 ) -> dict:
     return {
         "run": {
@@ -44,6 +45,7 @@ def _snapshot(
         },
         "scores": scores or [],
         "features": features or [],
+        "evidence_items": evidence_items or [],
         "annotations": [],
     }
 
@@ -250,6 +252,29 @@ class CollectEvidencesTests(unittest.TestCase):
         owned = [ev for ev in evidences if ev.source_type == "owned"]
         for ev in owned:
             self.assertEqual(ev.source_domain, "netlify.com")
+
+    def test_collects_persisted_evidence_items(self):
+        snap = _snapshot(
+            evidence_items=[
+                {
+                    "source": "context",
+                    "url": "https://example.com/sitemap.xml",
+                    "quote": "sitemap.xml found with 12 URLs",
+                    "feature_name": "site_structure",
+                    "dimension_name": "presencia",
+                    "confidence": 0.8,
+                    "freshness_days": 0,
+                }
+            ]
+        )
+
+        evidences = collect_evidences(snap)
+
+        self.assertEqual(len(evidences), 1)
+        self.assertEqual(evidences[0].dimension, "presencia")
+        self.assertEqual(evidences[0].feature_name, "site_structure")
+        self.assertEqual(evidences[0].quote, "sitemap.xml found with 12 URLs")
+        self.assertEqual(evidences[0].extra["source"], "context")
 
 
 class DeriveVerdictTests(unittest.TestCase):

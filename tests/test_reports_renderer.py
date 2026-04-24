@@ -151,7 +151,18 @@ class DerivationHelperTests(unittest.TestCase):
 
 class BuildReportContextTests(unittest.TestCase):
     def test_context_contains_all_dimensions_and_evidence(self):
-        ctx = build_report_context(_sample_snapshot(), theme="dark")
+        snapshot = _sample_snapshot()
+        snapshot["evidence_items"] = [
+            {
+                "source": "context",
+                "url": "https://a16z.com/sitemap.xml",
+                "quote": "sitemap.xml found with 20 URLs",
+                "feature_name": "site_structure",
+                "dimension_name": "presencia",
+                "confidence": 0.8,
+            }
+        ]
+        ctx = build_report_context(snapshot, theme="dark")
         self.assertEqual(ctx["theme"], "dark")
         self.assertEqual(ctx["brand"]["name"], "A16Z")
         self.assertEqual(ctx["score"]["global"], 74.3)
@@ -165,6 +176,9 @@ class BuildReportContextTests(unittest.TestCase):
         coherencia = next(d for d in ctx["dimensions"] if d["name"] == "coherencia")
         self.assertEqual(len(coherencia["evidence"]), 1)
         self.assertEqual(coherencia["evidence"][0]["quote"], "Software is eating the world")
+        presencia = next(d for d in ctx["dimensions"] if d["name"] == "presencia")
+        self.assertEqual(presencia["evidence"][0]["quote"], "sitemap.xml found with 20 URLs")
+        self.assertEqual(presencia["evidence"][0]["source_url"], "https://a16z.com/sitemap.xml")
         self.assertIn(coherencia["confidence_status"], {"degraded", "good", "insufficient_data"})
         self.assertEqual(coherencia["coverage_label"], "baja")
         # footer populated

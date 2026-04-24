@@ -195,6 +195,39 @@ def extract_evidence(feature_raw: Any) -> list[dict]:
     return collected
 
 
+def _report_evidence_items_by_dimension(snapshot: dict) -> dict[str, list[dict]]:
+    by_dim: dict[str, list[dict]] = {}
+    for item in snapshot.get("evidence_items") or []:
+        dimension = item.get("dimension_name") or ""
+        quote = _as_str(item.get("quote")).strip()
+        source_url = _as_str(item.get("url")).strip()
+        if not dimension or not (quote or source_url):
+            continue
+        by_dim.setdefault(dimension, []).append({
+            "quote": quote,
+            "source_url": source_url,
+            "signal": item.get("source") or None,
+        })
+    return by_dim
+
+
+def _dedupe_report_evidence(items: list[dict]) -> list[dict]:
+    seen: set[tuple[str, str]] = set()
+    deduped: list[dict] = []
+    for item in items:
+        key = (
+            _as_str(item.get("quote")).strip(),
+            _as_str(item.get("source_url")).strip(),
+        )
+        if not key[0] and not key[1]:
+            continue
+        if key in seen:
+            continue
+        seen.add(key)
+        deduped.append(item)
+    return deduped
+
+
 def _verdict_from(feature_raw: Any, band_label: str) -> str:
     if isinstance(feature_raw, dict):
         for key in ("verdict", "summary", "reasoning"):
@@ -290,6 +323,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
     known_dim_order = list(_load_dimension_labels().keys())
     score_by_dim = {row.get("dimension_name"): row for row in scores}
     confidence_by_dim = dimension_confidence_from_snapshot(snapshot)
+    persisted_evidence_by_dim = _report_evidence_items_by_dimension(snapshot)
 
     dimensions_ctx: list[dict] = []
     all_rules_applied: list[dict] = []
@@ -307,7 +341,8 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         evidence_collected: list[dict] = []
         for feat in dim_features:
             evidence_collected.extend(feat["evidence"])
-        evidence_collected = evidence_collected[:4]
+        evidence_collected.extend(persisted_evidence_by_dim.get(dim_name, []))
+        evidence_collected = _dedupe_report_evidence(evidence_collected)[:6]
 
         # Verdict fallback: first insight; else band label
         verdict_text = _first_nonempty(
@@ -799,6 +834,25 @@ def collect_evidences(snapshot: dict) -> list[Evidence]:
                 brand_domain=brand_domain,
             )
         )
+    for item in snapshot.get("evidence_items") or []:
+        dimension = item.get("dimension_name") or ""
+        if not dimension:
+            continue
+        ev = _build_evidence(
+            dimension=dimension,
+            feature_name=item.get("feature_name"),
+            quote=item.get("quote"),
+            url=item.get("url"),
+            sentiment=None,
+            brand_domain=brand_domain,
+            extra={
+                "source": item.get("source"),
+                "confidence": item.get("confidence"),
+                "freshness_days": item.get("freshness_days"),
+            },
+        )
+        if ev is not None:
+            evidences.append(ev)
     return evidences
 
 

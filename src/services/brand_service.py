@@ -1550,10 +1550,16 @@ def run_trust_summary(run_id: int) -> dict:
             context_status=context_summary.get("status"),
             dimension_status_counts=dimension_status_counts,
         )
+        overall_reason = _trust_overall_reason(
+            data_quality=run_payload.get("data_quality") or "unknown",
+            context_status=context_summary.get("status"),
+            dimension_status_counts=dimension_status_counts,
+        )
         payload = {
             "run_id": run_id,
             "data_quality": run_payload.get("data_quality") or "unknown",
             "overall_status": overall_status,
+            "overall_reason": overall_reason,
             "context_readiness": context_summary,
             "evidence_summary": evidence_summary,
             "dimension_confidence": dimension_confidence,
@@ -1626,6 +1632,29 @@ def _trust_overall_status(
     ):
         return "degraded"
     return "good"
+
+
+def _trust_overall_reason(
+    *,
+    data_quality: str,
+    context_status: str | None,
+    dimension_status_counts: dict[str, int],
+) -> str:
+    if data_quality == "insufficient":
+        return "data_quality_insufficient"
+    if context_status == "insufficient_data":
+        return "context_insufficient"
+    if dimension_status_counts.get("insufficient_data", 0) >= 3:
+        return "multiple_dimensions_insufficient"
+    if data_quality == "degraded":
+        return "data_quality_degraded"
+    if context_status == "degraded":
+        return "context_degraded"
+    if dimension_status_counts.get("degraded", 0) > 0:
+        return "dimension_degraded"
+    if dimension_status_counts.get("insufficient_data", 0) > 0:
+        return "some_dimensions_insufficient"
+    return "all_trust_checks_passed"
 
 
 def _quality_label(value: float) -> str:

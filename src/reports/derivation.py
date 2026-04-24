@@ -481,6 +481,11 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
                 context_status=context_readiness.get("status"),
                 dimension_status_counts=dimension_status_counts,
             ),
+            "overall_reason": _trust_overall_reason(
+                data_quality=data_quality,
+                context_status=context_readiness.get("status"),
+                dimension_status_counts=dimension_status_counts,
+            ),
         },
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
@@ -641,6 +646,29 @@ def _trust_overall_status(
     ):
         return "degraded"
     return "good"
+
+
+def _trust_overall_reason(
+    *,
+    data_quality: str,
+    context_status: str | None,
+    dimension_status_counts: dict[str, int],
+) -> str:
+    if data_quality == "insufficient":
+        return "calidad de datos insuficiente"
+    if context_status == "insufficient_data":
+        return "pre-scan contextual insuficiente"
+    if dimension_status_counts.get("insufficient_data", 0) >= 3:
+        return "múltiples dimensiones con datos insuficientes"
+    if data_quality == "degraded":
+        return "calidad de datos degradada"
+    if context_status == "degraded":
+        return "pre-scan contextual degradado"
+    if dimension_status_counts.get("degraded", 0) > 0:
+        return "alguna dimensión degradada"
+    if dimension_status_counts.get("insufficient_data", 0) > 0:
+        return "alguna dimensión con datos insuficientes"
+    return "todas las comprobaciones de confianza pasaron"
 
 
 def _confidence_reason_labels(reasons: list[str]) -> list[str]:

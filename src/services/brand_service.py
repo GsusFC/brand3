@@ -46,11 +46,9 @@ from src.learning.calibration import CalibrationAnalyzer
 from src.quality.dimension_confidence import dimension_confidence_from_features, dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_from_features, summarize_evidence_records
 from src.quality.trust import (
+    build_trust_summary,
     dimension_status_counts_from_confidence,
     quality_label,
-    trust_status_label,
-    trust_overall_reason,
-    trust_overall_status,
 )
 from src.scoring.engine import ScoringEngine
 from src.storage.sqlite_store import SQLiteStore
@@ -433,32 +431,12 @@ def _trust_summary_payload(
     dimension_confidence: dict[str, dict[str, object]],
 ) -> dict[str, object]:
     dimension_status_counts = dimension_status_counts_from_confidence(dimension_confidence)
-    context_status = context_summary.get("status") if isinstance(context_summary, dict) else None
-    overall_status = trust_overall_status(
+    return build_trust_summary(
         data_quality=data_quality,
-        context_status=context_status,
+        context_summary=context_summary,
+        evidence_summary=evidence_summary,
         dimension_status_counts=dimension_status_counts,
     )
-    overall_reason = trust_overall_reason(
-        data_quality=data_quality,
-        context_status=context_status,
-        dimension_status_counts=dimension_status_counts,
-    )
-    return {
-        "data_quality": data_quality,
-        "overall_status": overall_status,
-        "overall_status_label": trust_status_label(overall_status),
-        "overall_reason": overall_reason,
-        "overall_reason_label": trust_overall_reason(
-            data_quality=data_quality,
-            context_status=context_status,
-            dimension_status_counts=dimension_status_counts,
-            locale="es",
-        ),
-        "context": context_summary,
-        "evidence": evidence_summary,
-        "dimension_status_counts": dimension_status_counts,
-    }
 
 
 def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = None) -> dict[str, object]:

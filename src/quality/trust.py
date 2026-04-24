@@ -29,6 +29,40 @@ def dimension_status_counts_from_report_dimensions(dimensions: list[dict]) -> di
     return counts
 
 
+def build_trust_summary(
+    *,
+    data_quality: str,
+    context_summary: dict[str, object],
+    evidence_summary: dict[str, object],
+    dimension_status_counts: dict[str, int],
+) -> dict[str, object]:
+    context_status = context_summary.get("status") if isinstance(context_summary, dict) else None
+    overall_status = trust_overall_status(
+        data_quality=data_quality,
+        context_status=context_status,
+        dimension_status_counts=dimension_status_counts,
+    )
+    return {
+        "data_quality": data_quality,
+        "overall_status": overall_status,
+        "overall_status_label": trust_status_label(overall_status),
+        "overall_reason": trust_overall_reason(
+            data_quality=data_quality,
+            context_status=context_status,
+            dimension_status_counts=dimension_status_counts,
+        ),
+        "overall_reason_label": trust_overall_reason(
+            data_quality=data_quality,
+            context_status=context_status,
+            dimension_status_counts=dimension_status_counts,
+            locale="es",
+        ),
+        "context": context_summary,
+        "evidence": evidence_summary,
+        "dimension_status_counts": dimension_status_counts,
+    }
+
+
 def trust_overall_status(
     *,
     data_quality: str,

@@ -247,11 +247,11 @@
       <th style="width:28%">estado agregado</th>
       <td>
         {%- if evaluation.overall_status == 'insufficient_data' -%}
-          <span class="hl-alert">datos insuficientes</span>
+          <span class="hl-alert">{{ evaluation.overall_status_label }}</span>
         {%- elif evaluation.overall_status == 'degraded' -%}
-          <span class="hl-warn">degradado</span>
+          <span class="hl-warn">{{ evaluation.overall_status_label }}</span>
         {%- else -%}
-          <span class="hl-ok">bueno</span>
+          <span class="hl-ok">{{ evaluation.overall_status_label }}</span>
         {%- endif -%}
       </td>
     </tr>
@@ -265,7 +265,7 @@
     </tr>
     <tr>
       <th>motivo</th>
-      <td>{{ evaluation.overall_reason }}</td>
+      <td>{{ evaluation.overall_reason_label }}</td>
     </tr>
   </tbody>
 </table>

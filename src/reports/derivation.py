@@ -15,10 +15,9 @@ from urllib.parse import urlparse
 from src.quality.dimension_confidence import dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_records
 from src.quality.trust import (
+    build_trust_summary,
     dimension_status_counts_from_report_dimensions,
     quality_label,
-    trust_overall_reason,
-    trust_overall_status,
 )
 
 # REVIEW: D2 — evidence lives in features.raw_value, parsed defensively because
@@ -458,6 +457,12 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
 
     # Global band verdict.
     _, band_adjective = derive_verdict(composite)
+    trust_summary = build_trust_summary(
+        data_quality=data_quality,
+        context_summary=context_readiness,
+        evidence_summary=evidence_summary,
+        dimension_status_counts=dimension_status_counts,
+    )
 
     return {
         "theme": theme,
@@ -482,17 +487,11 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "context_readiness": context_readiness,
             "evidence_summary": evidence_summary,
             "dimension_status_counts": dimension_status_counts,
-            "overall_status": trust_overall_status(
-                data_quality=data_quality,
-                context_status=context_readiness.get("status"),
-                dimension_status_counts=dimension_status_counts,
-            ),
-            "overall_reason": trust_overall_reason(
-                data_quality=data_quality,
-                context_status=context_readiness.get("status"),
-                dimension_status_counts=dimension_status_counts,
-                locale="es",
-            ),
+            "overall_status": trust_summary["overall_status"],
+            "overall_status_label": trust_summary["overall_status_label"],
+            "overall_reason": trust_summary["overall_reason"],
+            "overall_reason_label": trust_summary["overall_reason_label"],
+            "trust_summary": trust_summary,
         },
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
@@ -559,6 +558,7 @@ def build_report_context_from_base(base: dict) -> dict:
         "evaluation": evaluation,
         "context_readiness": evaluation.get("context_readiness") or {},
         "evidence_summary": evaluation.get("evidence_summary") or {},
+        "trust_summary": evaluation.get("trust_summary") or {},
         "narrative": narrative,
         "sources": sources,
         "audit": audit,

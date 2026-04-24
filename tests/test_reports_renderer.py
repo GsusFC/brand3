@@ -180,6 +180,12 @@ class BuildReportContextTests(unittest.TestCase):
         self.assertEqual(presencia["evidence"][0]["quote"], "sitemap.xml found with 20 URLs")
         self.assertEqual(presencia["evidence"][0]["source_url"], "https://a16z.com/sitemap.xml")
         self.assertEqual(ctx["evidence_summary"]["by_source"]["context"], 1)
+        self.assertEqual(ctx["trust_summary"]["evidence"]["by_source"]["context"], 1)
+        self.assertEqual(ctx["evaluation"]["trust_summary"]["overall_status_label"], "datos insuficientes")
+        self.assertEqual(
+            ctx["evaluation"]["overall_reason_label"],
+            "pre-scan contextual insuficiente",
+        )
         self.assertIn(coherencia["confidence_status"], {"degraded", "good", "insufficient_data"})
         self.assertEqual(coherencia["coverage_label"], "baja")
         # footer populated
@@ -198,6 +204,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("Lectura condicionada por evidencia incompleta", html)
         self.assertIn("estado de confianza", html)
         self.assertIn("motivo", html)
+        self.assertIn("pre-scan contextual insuficiente", html)
         self.assertIn("resumen de evidencia", html)
         self.assertIn("faltan", html)
         self.assertIn("74", html)  # composite score display

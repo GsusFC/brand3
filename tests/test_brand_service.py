@@ -1,8 +1,12 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from src.collectors.context_collector import ContextData
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.web_collector import WebData
+from src.services import brand_service
 from src.services.brand_service import (
     _aggregate_exa_content,
     _build_content_web,
@@ -13,6 +17,7 @@ from src.services.brand_service import (
     _llm_cache_summary,
 )
 from src.models.brand import FeatureValue
+from src.storage.sqlite_store import SQLiteStore
 
 
 class BrandServiceContentFallbackTests(unittest.TestCase):
@@ -163,6 +168,67 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["presencia"]["status"], "insufficient_data")
         self.assertIn("social_footprint", summary["presencia"]["missing_signals"])
         self.assertLess(summary["presencia"]["coverage"], 0.3)
+
+    def test_run_reuses_raw_input_cache_and_copies_payloads_to_current_run(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(
+                url="https://example.com",
+                robots_found=True,
+                sitemap_found=True,
+                sitemap_url_count=3,
+                coverage=0.8,
+                confidence=0.8,
+            )
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Example brand builds reliable software. " * 12,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
+                    for i in range(5)
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context) as context_scan:
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web) as web_scrape:
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa) as exa_collect:
+                            brand_service.run(
+                                "https://example.com",
+                                "Example",
+                                use_llm=False,
+                                use_social=False,
+                                use_competitors=False,
+                                skip_visual_analysis=True,
+                            )
+                            second = brand_service.run(
+                                "https://example.com",
+                                "Example",
+                                use_llm=False,
+                                use_social=False,
+                                use_competitors=False,
+                                skip_visual_analysis=True,
+                            )
+
+            self.assertEqual(context_scan.call_count, 1)
+            self.assertEqual(web_scrape.call_count, 1)
+            self.assertEqual(exa_collect.call_count, 1)
+            self.assertEqual(second["data_sources"]["raw_input_cache"]["context"], "hit")
+            self.assertEqual(second["data_sources"]["raw_input_cache"]["web"], "hit")
+            self.assertEqual(second["data_sources"]["raw_input_cache"]["exa"], "hit")
+            self.assertEqual(second["data_sources"]["raw_input_cache"]["social"], "skipped")
+
+            store = SQLiteStore(str(db_path))
+            try:
+                snapshot = store.get_run_snapshot(second["run_id"])
+            finally:
+                store.close()
+            raw_sources = {item["source"] for item in snapshot["raw_inputs"]}
+            self.assertTrue({"context", "web", "exa"}.issubset(raw_sources))
 
 
 if __name__ == "__main__":

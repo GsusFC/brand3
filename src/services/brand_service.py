@@ -748,8 +748,11 @@ def run(
         _check_cancel(cancel_check)
         print(f"[1/4] Collecting data for {brand_name}...")
 
+        raw_input_cache: dict[str, str] = {}
+
         context_data = _load_cached(store, brand_name, url, "context", 24, _from_context_payload)
         if context_data:
+            raw_input_cache["context"] = "hit"
             print(
                 "  Context: cache hit"
                 f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
@@ -762,6 +765,7 @@ def run(
                     lambda: store.save_evidence_items(run_id, _context_evidence_items(context_data)),
                 )
         else:
+            raw_input_cache["context"] = "miss"
             context_data = ContextCollector().scan(url)
             print(
                 "  Context:"
@@ -780,8 +784,12 @@ def run(
         web_collector = WebCollector(api_key=FIRECRAWL_API_KEY)
         web_data = _load_cached(store, brand_name, url, "web", BRAND3_CACHE_TTL_HOURS, _from_web_payload)
         if web_data:
+            raw_input_cache["web"] = "hit"
             print(f"  Web: cache hit ({len(web_data.markdown_content)} chars)")
+            if run_id:
+                _store_safely(store, "web cache save", lambda: store.save_raw_input(run_id, "web", web_data))
         else:
+            raw_input_cache["web"] = "miss"
             web_data = web_collector.scrape(url)
             print(f"  Web: {len(web_data.markdown_content)} chars scraped")
             if run_id:
@@ -791,8 +799,12 @@ def run(
         exa_collector = ExaCollector(api_key=EXA_API_KEY)
         exa_data = _load_cached(store, brand_name, url, "exa", BRAND3_CACHE_TTL_HOURS, _from_exa_payload)
         if exa_data:
+            raw_input_cache["exa"] = "hit"
             print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
+            if run_id:
+                _store_safely(store, "exa cache save", lambda: store.save_raw_input(run_id, "exa", exa_data))
         else:
+            raw_input_cache["exa"] = "miss"
             exa_data = exa_collector.collect_brand_data(brand_name, effective_brand_url)
             print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
             if run_id:
@@ -802,8 +814,12 @@ def run(
         if use_social:
             social_data = _load_cached(store, brand_name, url, "social", BRAND3_CACHE_TTL_HOURS, _from_social_payload)
             if social_data:
+                raw_input_cache["social"] = "hit"
                 print(f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)")
+                if run_id:
+                    _store_safely(store, "social cache save", lambda: store.save_raw_input(run_id, "social", social_data))
             else:
+                raw_input_cache["social"] = "miss"
                 try:
                     social_collector = SocialCollector(api_key=FIRECRAWL_API_KEY)
                     social_data = social_collector.collect(brand_name, web_data.markdown_content)
@@ -814,6 +830,8 @@ def run(
                 except Exception as e:
                     print(f"  Social: error - {e}")
                     social_data = None
+        else:
+            raw_input_cache["social"] = "skipped"
 
         competitor_data = None
         if use_competitors:
@@ -826,8 +844,16 @@ def run(
                 store, brand_name, url, "competitors", BRAND3_CACHE_TTL_HOURS, _from_competitor_payload
             )
             if competitor_data:
+                raw_input_cache["competitors"] = "hit"
                 print(f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)")
+                if run_id:
+                    _store_safely(
+                        store,
+                        "competitor cache save",
+                        lambda: store.save_raw_input(run_id, "competitors", competitor_data),
+                    )
             else:
+                raw_input_cache["competitors"] = "miss"
                 competitor_data = competitor_collector.collect(
                     brand_name=brand_name,
                     brand_url=effective_brand_url,
@@ -841,6 +867,7 @@ def run(
                         lambda: store.save_raw_input(run_id, "competitors", competitor_data),
                     )
         else:
+            raw_input_cache["competitors"] = "skipped"
             print("  Competitors: skipped (--fast mode)")
 
         exa_texts = []
@@ -1041,6 +1068,7 @@ def run(
             "data_quality": data_quality,
             "data_sources": {
                 **data_sources,
+                "raw_input_cache": raw_input_cache,
                 "llm_cache": _llm_cache_summary(llm, llm_skipped_reason),
             },
             "context_readiness": _to_jsonable(context_data),

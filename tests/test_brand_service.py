@@ -13,6 +13,7 @@ from src.services.brand_service import (
     _compute_data_quality,
     _context_confidence_summary,
     _context_evidence_items,
+    _cost_policy_summary,
     _dimension_confidence_summary,
     _llm_cache_summary,
     _trust_summary_payload,
@@ -150,6 +151,26 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["estimated_cost_saved_units"], 2)
         self.assertEqual(skipped["skipped_reason"], "insufficient_context_coverage")
 
+    def test_cost_policy_summary_exposes_skips_and_cache_savings(self):
+        summary = _cost_policy_summary(
+            raw_input_cache={"context": "hit", "web": "miss", "social": "skipped"},
+            llm_cache={"cache_hits": 2, "cache_misses": 1, "skipped_reason": "missing_api_key"},
+            use_llm=True,
+            use_social=False,
+            use_competitors=False,
+            skip_visual_analysis=True,
+            context_data=ContextData(url="https://example.com", coverage=0.2, confidence=0.4),
+            data_quality="insufficient",
+        )
+
+        self.assertEqual(summary["cache_hits"], 1)
+        self.assertEqual(summary["cache_misses"], 1)
+        self.assertEqual(summary["llm_cache_hits"], 2)
+        self.assertEqual(summary["skipped"]["llm"], "missing_api_key")
+        self.assertEqual(summary["skipped"]["social"], "disabled_by_request")
+        self.assertEqual(summary["skipped"]["deep_llm_narrative"], "insufficient_context_coverage")
+        self.assertGreaterEqual(summary["estimated_saved_operations"], 3)
+
     def test_dimension_confidence_marks_sparse_dimension_insufficient(self):
         summary = _dimension_confidence_summary(
             {
@@ -269,6 +290,9 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             self.assertEqual(second["data_sources"]["raw_input_cache"]["web"], "hit")
             self.assertEqual(second["data_sources"]["raw_input_cache"]["exa"], "hit")
             self.assertEqual(second["data_sources"]["raw_input_cache"]["social"], "skipped")
+            self.assertEqual(second["data_sources"]["cost_policy"]["cache_hits"], 3)
+            self.assertEqual(second["data_sources"]["cost_policy"]["skipped"]["llm"], "disabled_by_request")
+            self.assertEqual(second["data_sources"]["cost_policy"]["skipped"]["social"], "disabled_by_request")
 
             store = SQLiteStore(str(db_path))
             try:

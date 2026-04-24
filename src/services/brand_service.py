@@ -461,6 +461,47 @@ def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = Non
     }
 
 
+def _cost_policy_summary(
+    *,
+    raw_input_cache: dict[str, str],
+    llm_cache: dict[str, object],
+    use_llm: bool,
+    use_social: bool,
+    use_competitors: bool,
+    skip_visual_analysis: bool,
+    context_data: ContextData | None,
+    data_quality: str,
+) -> dict[str, object]:
+    skipped: dict[str, str] = {}
+    if not use_llm:
+        skipped["llm"] = "disabled_by_request"
+    elif llm_cache.get("skipped_reason"):
+        skipped["llm"] = str(llm_cache["skipped_reason"])
+    if not use_social:
+        skipped["social"] = "disabled_by_request"
+    if not use_competitors:
+        skipped["competitors"] = "disabled_by_request"
+    if skip_visual_analysis:
+        skipped["visual_analysis"] = "disabled_by_request"
+    if context_data and context_data.coverage < 0.3:
+        skipped.setdefault("deep_llm_narrative", "insufficient_context_coverage")
+    if data_quality == "insufficient":
+        skipped.setdefault("coherencia_deep_analysis", "insufficient_primary_data")
+        skipped.setdefault("diferenciacion_deep_analysis", "insufficient_primary_data")
+
+    cache_hits = sum(1 for state in raw_input_cache.values() if state == "hit")
+    cache_misses = sum(1 for state in raw_input_cache.values() if state == "miss")
+    return {
+        "raw_input_cache": dict(raw_input_cache),
+        "cache_hits": cache_hits,
+        "cache_misses": cache_misses,
+        "llm_cache_hits": int(llm_cache.get("cache_hits") or 0),
+        "llm_cache_misses": int(llm_cache.get("cache_misses") or 0),
+        "skipped": skipped,
+        "estimated_saved_operations": cache_hits + int(llm_cache.get("cache_hits") or 0) + len(skipped),
+    }
+
+
 def _context_evidence_items(context_data: ContextData | None) -> list[dict[str, object]]:
     if not context_data:
         return []
@@ -1091,6 +1132,7 @@ def run(
             evidence_summary=evidence_summary,
             dimension_confidence=dimension_confidence,
         )
+        llm_cache = _llm_cache_summary(llm, llm_skipped_reason)
 
         result = {
             "brand": brand_score.brand_name,
@@ -1104,7 +1146,17 @@ def run(
             "data_sources": {
                 **data_sources,
                 "raw_input_cache": raw_input_cache,
-                "llm_cache": _llm_cache_summary(llm, llm_skipped_reason),
+                "llm_cache": llm_cache,
+                "cost_policy": _cost_policy_summary(
+                    raw_input_cache=raw_input_cache,
+                    llm_cache=llm_cache,
+                    use_llm=use_llm,
+                    use_social=use_social,
+                    use_competitors=use_competitors,
+                    skip_visual_analysis=skip_visual_analysis,
+                    context_data=context_data,
+                    data_quality=data_quality,
+                ),
             },
             "context_readiness": _to_jsonable(context_data),
             "confidence_summary": confidence_summary,

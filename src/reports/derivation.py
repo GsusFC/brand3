@@ -340,6 +340,9 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "confidence_label": _quality_label(float(dim_confidence.get("confidence") or 0.0)),
             "confidence_status": dim_confidence.get("status", "insufficient_data"),
             "confidence_reason": dim_confidence.get("confidence_reason", []),
+            "confidence_reason_labels": _confidence_reason_labels(
+                dim_confidence.get("confidence_reason", [])
+            ),
             "missing_signals": dim_confidence.get("missing_signals", []),
             # Phase 3 placeholder — filled in by narrative pipeline in phase 4.
             "findings": [],
@@ -560,6 +563,22 @@ def _quality_label(value: float) -> str:
     if value >= 0.45:
         return "media"
     return "baja"
+
+
+def _confidence_reason_labels(reasons: list[str]) -> list[str]:
+    labels = [_confidence_reason_label(reason) for reason in reasons]
+    return [label for label in labels if label]
+
+
+def _confidence_reason_label(reason: str) -> str:
+    labels = {
+        "low_coverage": "",
+        "low_feature_confidence": "confianza baja en señales",
+        "no_evidence": "sin evidencia directa",
+        "insufficient_data_quality": "calidad de datos insuficiente",
+        "context_low_coverage": "pre-scan contextual limitado",
+    }
+    return labels.get(reason, reason.replace("_", " "))
 
 
 # Source grouping helpers — consumed by both build_report_context and the

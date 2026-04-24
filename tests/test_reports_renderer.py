@@ -180,6 +180,8 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("A16Z", html)
         self.assertIn("confianza", html)
         self.assertIn("cobertura", html)
+        self.assertIn("Lectura condicionada por evidencia incompleta", html)
+        self.assertIn("faltan", html)
         self.assertIn("74", html)  # composite score display
         self.assertIn("a16z.com", html)  # URL chip / source list
         self.assertIn("#0e0f10", html)  # dark bg token

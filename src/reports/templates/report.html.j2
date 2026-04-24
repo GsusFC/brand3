@@ -267,6 +267,26 @@
   </tbody>
 </table>
 
+{%- set limited_dimensions = [] -%}
+{%- for dim in dimensions -%}
+  {%- if dim.confidence_status != 'good' or dim.missing_signals -%}
+    {%- set _ = limited_dimensions.append(dim) -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- if limited_dimensions %}
+<div class="quality-note warn">
+  <strong>Lectura condicionada por evidencia incompleta.</strong>
+  {%- for dim in limited_dimensions[:3] %}
+    <div class="quote-meta">
+      {{ dim.display_name }}:
+      confianza {{ dim.confidence_label }}, cobertura {{ dim.coverage_label }}
+      {%- if dim.confidence_reason_labels %}; {{ dim.confidence_reason_labels[:2] | join(', ') }}{% endif -%}
+      {%- if dim.missing_signals %}; faltan {{ dim.missing_signals[:3] | join(', ') }}{% endif -%}
+    </div>
+  {%- endfor %}
+</div>
+{%- endif %}
+
 <hr class="rule">
 
 {%- if context_readiness.available %}

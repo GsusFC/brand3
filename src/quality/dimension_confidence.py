@@ -149,10 +149,24 @@ def dimension_confidence_from_records(
             "status": status,
             "confidence_reason": reasons,
             "missing_signals": missing_signals,
+            "recommended_next_steps": _recommended_next_steps(missing_signals, reasons),
             "feature_confidence": avg_feature_confidence,
             "evidence_coverage": evidence_coverage,
         }
     return result
+
+
+def _recommended_next_steps(missing_signals: list[str], reasons: list[str]) -> list[str]:
+    steps: list[str] = []
+    for reason in reasons:
+        step = _REASON_STEPS.get(reason)
+        if step and step not in steps:
+            steps.append(step)
+    for signal in missing_signals:
+        step = _SIGNAL_STEPS.get(signal)
+        if step and step not in steps:
+            steps.append(step)
+    return steps[:4]
 
 
 def _context_summary_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
@@ -200,3 +214,35 @@ def _as_float(value: Any) -> float:
         return float(value)
     except (TypeError, ValueError):
         return 0.0
+
+
+_REASON_STEPS = {
+    "low_coverage": "Ampliar cobertura de fuentes antes de interpretar la dimension.",
+    "low_feature_confidence": "Revisar senales debiles o sustituir heuristicas por evidencia directa.",
+    "no_evidence": "Anadir evidencia trazable con cita o URL para soportar la lectura.",
+    "insufficient_data_quality": "Repetir el analisis con inputs primarios completos.",
+    "context_low_coverage": "Mejorar el pre-scan contextual del sitio antes del analisis profundo.",
+}
+
+_SIGNAL_STEPS = {
+    "visual_consistency": "Capturar screenshots y validar consistencia visual entre paginas clave.",
+    "messaging_consistency": "Comparar claims principales de la web con menciones externas.",
+    "tone_consistency": "Contrastar tono propio con citas de terceros.",
+    "cross_channel_coherence": "Detectar enlaces oficiales a redes, contacto y touchpoints externos.",
+    "web_presence": "Verificar que la web sea accesible, segura y con identidad clara.",
+    "social_footprint": "Conectar senales sociales relevantes para la categoria.",
+    "search_visibility": "Medir resultados de busqueda y menciones indexadas de la marca.",
+    "directory_presence": "Buscar presencia en directorios, marketplaces o listings del sector.",
+    "brand_sentiment": "Recolectar menciones externas suficientes para estimar sentimiento.",
+    "mention_volume": "Aumentar cobertura de noticias, blogs y menciones publicas.",
+    "sentiment_trend": "Comparar menciones recientes contra historicas para detectar tendencia.",
+    "review_quality": "Incorporar reviews verificables o ratings agregados cuando existan.",
+    "positioning_clarity": "Extraer el posicionamiento principal y contrastarlo con competidores.",
+    "uniqueness": "Medir lenguaje propio frente a frases genericas del sector.",
+    "competitor_distance": "Definir competidores comparables y calcular distancia de posicionamiento.",
+    "content_authenticity": "Auditar profundidad y originalidad del contenido clave.",
+    "brand_personality": "Evaluar voz de marca en paginas owned y menciones externas.",
+    "content_recency": "Detectar fechas de publicaciones recientes en blog, changelog o noticias.",
+    "publication_cadence": "Medir cadencia de publicacion en los ultimos 12 meses.",
+    "momentum": "Buscar senales recientes de lanzamientos, actividad o crecimiento.",
+}

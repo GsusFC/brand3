@@ -45,6 +45,7 @@ def limited_dimensions_from_confidence(dimension_confidence: dict) -> list[dict[
             "confidence": item.get("confidence", 0.0),
             "confidence_reason": item.get("confidence_reason") or [],
             "missing_signals": missing_signals,
+            "recommended_next_steps": item.get("recommended_next_steps") or [],
         })
     return limited
 
@@ -67,6 +68,7 @@ def limited_dimensions_from_report_dimensions(dimensions: list[dict]) -> list[di
             "confidence_reason": item.get("confidence_reason") or [],
             "confidence_reason_labels": item.get("confidence_reason_labels") or [],
             "missing_signals": missing_signals,
+            "recommended_next_steps": item.get("recommended_next_steps") or [],
         })
     return limited
 

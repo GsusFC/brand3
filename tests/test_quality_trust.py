@@ -92,12 +92,14 @@ class TrustQualityTests(unittest.TestCase):
                 "confidence": 0.3,
                 "confidence_reason": ["low_coverage"],
                 "missing_signals": ["reviews"],
+                "recommended_next_steps": ["Recolectar reviews verificables."],
             },
         })
 
         self.assertEqual(len(limited), 1)
         self.assertEqual(limited[0]["name"], "percepcion")
         self.assertEqual(limited[0]["missing_signals"], ["reviews"])
+        self.assertEqual(limited[0]["recommended_next_steps"], ["Recolectar reviews verificables."])
 
     def test_limited_dimensions_from_report_dimensions_keeps_labels(self):
         limited = limited_dimensions_from_report_dimensions([
@@ -109,12 +111,14 @@ class TrustQualityTests(unittest.TestCase):
                 "coverage_label": "media",
                 "confidence_label": "baja",
                 "missing_signals": ["changelog"],
+                "recommended_next_steps": ["Detectar changelog reciente."],
             },
         ])
 
         self.assertEqual(len(limited), 1)
         self.assertEqual(limited[0]["display_name"], "Vitality")
         self.assertEqual(limited[0]["confidence_label"], "baja")
+        self.assertEqual(limited[0]["recommended_next_steps"], ["Detectar changelog reciente."])
 
 
 if __name__ == "__main__":

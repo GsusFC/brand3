@@ -322,6 +322,7 @@
       confianza {{ dim.confidence_label }}, cobertura {{ dim.coverage_label }}
       {%- if dim.confidence_reason_labels %}; {{ dim.confidence_reason_labels[:2] | join(', ') }}{% endif -%}
       {%- if dim.missing_signals %}; faltan {{ dim.missing_signals[:3] | join(', ') }}{% endif -%}
+      {%- if dim.recommended_next_steps %}; siguiente: {{ dim.recommended_next_steps[0] }}{% endif -%}
     </div>
   {%- endfor %}
 </div>

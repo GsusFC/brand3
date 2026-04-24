@@ -169,6 +169,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
 
         self.assertEqual(summary["presencia"]["status"], "insufficient_data")
         self.assertIn("social_footprint", summary["presencia"]["missing_signals"])
+        self.assertIn("Conectar senales sociales relevantes", " ".join(summary["presencia"]["recommended_next_steps"]))
         self.assertLess(summary["presencia"]["coverage"], 0.3)
 
     def test_evidence_summary_counts_feature_and_persisted_evidence(self):

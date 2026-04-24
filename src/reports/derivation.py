@@ -386,6 +386,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
                 dim_confidence.get("confidence_reason", [])
             ),
             "missing_signals": dim_confidence.get("missing_signals", []),
+            "recommended_next_steps": dim_confidence.get("recommended_next_steps", []),
             # Phase 3 placeholder — filled in by narrative pipeline in phase 4.
             "findings": [],
             "has_data": score is not None,

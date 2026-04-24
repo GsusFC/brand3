@@ -207,6 +207,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("motivo", html)
         self.assertIn("dimensiones limitadas", html)
         self.assertIn("pre-scan contextual insuficiente", html)
+        self.assertIn("siguiente:", html)
         self.assertIn("resumen de evidencia", html)
         self.assertIn("faltan", html)
         self.assertIn("74", html)  # composite score display

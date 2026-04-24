@@ -1595,34 +1595,19 @@ def run_trust_summary(run_id: int) -> dict:
             evidence_items=snapshot.get("evidence_items") or [],
         )
         dimension_confidence = dimension_confidence_from_snapshot(snapshot)
-        dimension_status_counts = dimension_status_counts_from_confidence(dimension_confidence)
-        overall_status = trust_overall_status(
+        trust_summary = _trust_summary_payload(
             data_quality=run_payload.get("data_quality") or "unknown",
-            context_status=context_summary.get("status"),
-            dimension_status_counts=dimension_status_counts,
-        )
-        overall_reason = trust_overall_reason(
-            data_quality=run_payload.get("data_quality") or "unknown",
-            context_status=context_summary.get("status"),
-            dimension_status_counts=dimension_status_counts,
-        )
-        overall_reason_label = trust_overall_reason(
-            data_quality=run_payload.get("data_quality") or "unknown",
-            context_status=context_summary.get("status"),
-            dimension_status_counts=dimension_status_counts,
-            locale="es",
+            context_summary=context_summary,
+            evidence_summary=evidence_summary,
+            dimension_confidence=dimension_confidence,
         )
         payload = {
             "run_id": run_id,
-            "data_quality": run_payload.get("data_quality") or "unknown",
-            "overall_status": overall_status,
-            "overall_status_label": trust_status_label(overall_status),
-            "overall_reason": overall_reason,
-            "overall_reason_label": overall_reason_label,
+            **trust_summary,
+            "trust_summary": trust_summary,
             "context_readiness": context_summary,
             "evidence_summary": evidence_summary,
             "dimension_confidence": dimension_confidence,
-            "dimension_status_counts": dimension_status_counts,
         }
         print(json.dumps(payload, indent=2))
         return payload

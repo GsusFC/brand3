@@ -51,6 +51,7 @@ class AnalyzeResponse(BaseModel):
     context_readiness: dict[str, Any] | None = None
     confidence_summary: dict[str, Any] | None = None
     dimension_confidence: dict[str, Any] | None = None
+    evidence_summary: dict[str, Any] | None = None
     composite_score: float | None
     composite_reliable: bool
     partial_score: bool

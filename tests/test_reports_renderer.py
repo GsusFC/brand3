@@ -179,6 +179,7 @@ class BuildReportContextTests(unittest.TestCase):
         presencia = next(d for d in ctx["dimensions"] if d["name"] == "presencia")
         self.assertEqual(presencia["evidence"][0]["quote"], "sitemap.xml found with 20 URLs")
         self.assertEqual(presencia["evidence"][0]["source_url"], "https://a16z.com/sitemap.xml")
+        self.assertEqual(ctx["evidence_summary"]["by_source"]["context"], 1)
         self.assertIn(coherencia["confidence_status"], {"degraded", "good", "insufficient_data"})
         self.assertEqual(coherencia["coverage_label"], "baja")
         # footer populated
@@ -195,6 +196,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("confianza", html)
         self.assertIn("cobertura", html)
         self.assertIn("Lectura condicionada por evidencia incompleta", html)
+        self.assertIn("resumen de evidencia", html)
         self.assertIn("faltan", html)
         self.assertIn("74", html)  # composite score display
         self.assertIn("a16z.com", html)  # URL chip / source list

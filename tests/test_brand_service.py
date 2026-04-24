@@ -17,6 +17,7 @@ from src.services.brand_service import (
     _llm_cache_summary,
 )
 from src.models.brand import FeatureValue
+from src.quality.evidence_summary import summarize_evidence_from_features
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -168,6 +169,32 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["presencia"]["status"], "insufficient_data")
         self.assertIn("social_footprint", summary["presencia"]["missing_signals"])
         self.assertLess(summary["presencia"]["coverage"], 0.3)
+
+    def test_evidence_summary_counts_feature_and_persisted_evidence(self):
+        summary = summarize_evidence_from_features(
+            {
+                "presencia": {
+                    "web_presence": FeatureValue(
+                        "web_presence",
+                        80.0,
+                        raw_value={"evidence_snippet": "homepage reachable"},
+                        confidence=0.9,
+                        source="web_scrape",
+                    )
+                }
+            },
+            evidence_items=[
+                {
+                    "source": "context",
+                    "quote": "robots.txt found",
+                    "dimension_name": "presencia",
+                }
+            ],
+        )
+
+        self.assertEqual(summary["total"], 2)
+        self.assertEqual(summary["by_dimension"]["presencia"], 2)
+        self.assertIn("coherencia", summary["dimensions_without_evidence"])
 
     def test_run_reuses_raw_input_cache_and_copies_payloads_to_current_run(self):
         with TemporaryDirectory() as tmpdir:

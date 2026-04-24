@@ -44,6 +44,7 @@ from src.features.vitalidad import VitalidadExtractor
 from src.learning.applier import CandidateApplyError, apply_candidate
 from src.learning.calibration import CalibrationAnalyzer
 from src.quality.dimension_confidence import dimension_confidence_from_features
+from src.quality.evidence_summary import summarize_evidence_from_features
 from src.scoring.engine import ScoringEngine
 from src.storage.sqlite_store import SQLiteStore
 
@@ -1056,6 +1057,10 @@ def run(
             data_quality=data_quality,
             context_data=context_data,
         )
+        evidence_summary = summarize_evidence_from_features(
+            features_by_dim,
+            evidence_items=_context_evidence_items(context_data),
+        )
 
         result = {
             "brand": brand_score.brand_name,
@@ -1074,6 +1079,7 @@ def run(
             "context_readiness": _to_jsonable(context_data),
             "confidence_summary": _context_confidence_summary(context_data),
             "dimension_confidence": dimension_confidence,
+            "evidence_summary": evidence_summary,
             "composite_score": brand_score.composite_score,
             "composite_reliable": data_quality != "insufficient",
             "partial_score": data_quality == "insufficient",

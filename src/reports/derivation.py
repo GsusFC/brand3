@@ -13,6 +13,7 @@ from typing import Any, Literal
 from urllib.parse import urlparse
 
 from src.quality.dimension_confidence import dimension_confidence_from_snapshot
+from src.quality.evidence_summary import summarize_evidence_records
 
 # REVIEW: D2 — evidence lives in features.raw_value, parsed defensively because
 # SQLite stores it via str(dict) (see sqlite_store.py:536), not JSON.
@@ -385,6 +386,10 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         })
 
     context_readiness = _context_readiness_from_snapshot(snapshot)
+    evidence_summary = summarize_evidence_records(
+        snapshot.get("features") or [],
+        evidence_items=snapshot.get("evidence_items") or [],
+    )
 
     # Header + footer
     composite = run.get("composite_score")
@@ -468,6 +473,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "composite_reliable": data_quality == "good" and composite is not None,
             "partial_score": composite is None or data_quality != "good",
             "context_readiness": context_readiness,
+            "evidence_summary": evidence_summary,
         },
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
@@ -533,6 +539,7 @@ def build_report_context_from_base(base: dict) -> dict:
         # reuse the same object without reconstructing them.
         "evaluation": evaluation,
         "context_readiness": evaluation.get("context_readiness") or {},
+        "evidence_summary": evaluation.get("evidence_summary") or {},
         "narrative": narrative,
         "sources": sources,
         "audit": audit,

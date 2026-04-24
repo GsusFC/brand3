@@ -289,6 +289,38 @@
 
 <hr class="rule">
 
+{%- if evidence_summary %}
+<div class="section-head">
+  <span class="label">§2C  resumen de evidencia</span>
+  <span class="tag">// {{ evidence_summary.total }} items</span>
+</div>
+<table>
+  <tbody>
+    <tr>
+      <th style="width:28%">evidencia total</th>
+      <td>{{ evidence_summary.total }}</td>
+    </tr>
+    <tr>
+      <th>fuentes</th>
+      <td>
+        {%- if evidence_summary.by_source -%}
+          {%- for source, count in evidence_summary.by_source.items() -%}
+            {{ source }}: {{ count }}{% if not loop.last %}, {% endif %}
+          {%- endfor -%}
+        {%- else -%}
+          <span class="dim">sin evidencia trazable</span>
+        {%- endif -%}
+      </td>
+    </tr>
+    <tr>
+      <th>sin evidencia</th>
+      <td>{% if evidence_summary.dimensions_without_evidence %}<span class="hl-alert">{{ evidence_summary.dimensions_without_evidence | join(', ') }}</span>{% else %}ninguna dimensión{% endif %}</td>
+    </tr>
+  </tbody>
+</table>
+<hr class="rule">
+{%- endif %}
+
 {%- if context_readiness.available %}
 <div class="section-head">
   <span class="label">§2B  legibilidad IA/buscadores</span>

@@ -196,6 +196,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("confianza", html)
         self.assertIn("cobertura", html)
         self.assertIn("Lectura condicionada por evidencia incompleta", html)
+        self.assertIn("estado de confianza", html)
         self.assertIn("resumen de evidencia", html)
         self.assertIn("faltan", html)
         self.assertIn("74", html)  # composite score display

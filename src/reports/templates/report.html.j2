@@ -238,6 +238,37 @@
 <hr class="rule">
 
 <div class="section-head">
+  <span class="label">§1B  estado de confianza</span>
+  <span class="tag">// {{ evaluation.overall_status }}</span>
+</div>
+<table>
+  <tbody>
+    <tr>
+      <th style="width:28%">estado agregado</th>
+      <td>
+        {%- if evaluation.overall_status == 'insufficient_data' -%}
+          <span class="hl-alert">datos insuficientes</span>
+        {%- elif evaluation.overall_status == 'degraded' -%}
+          <span class="hl-warn">degradado</span>
+        {%- else -%}
+          <span class="hl-ok">bueno</span>
+        {%- endif -%}
+      </td>
+    </tr>
+    <tr>
+      <th>dimensiones</th>
+      <td>
+        good: {{ evaluation.dimension_status_counts.good }},
+        degraded: {{ evaluation.dimension_status_counts.degraded }},
+        insufficient: {{ evaluation.dimension_status_counts.insufficient_data }}
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<hr class="rule">
+
+<div class="section-head">
   <span class="label">§2  scores by dimension</span>
   <span class="tag">// 0-100 · bars = 5%/block</span>
 </div>

@@ -390,6 +390,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         snapshot.get("features") or [],
         evidence_items=snapshot.get("evidence_items") or [],
     )
+    dimension_status_counts = _dimension_status_counts(dimensions_ctx)
 
     # Header + footer
     composite = run.get("composite_score")
@@ -474,6 +475,12 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "partial_score": composite is None or data_quality != "good",
             "context_readiness": context_readiness,
             "evidence_summary": evidence_summary,
+            "dimension_status_counts": dimension_status_counts,
+            "overall_status": _trust_overall_status(
+                data_quality=data_quality,
+                context_status=context_readiness.get("status"),
+                dimension_status_counts=dimension_status_counts,
+            ),
         },
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
@@ -605,6 +612,35 @@ def _quality_label(value: float) -> str:
     if value >= 0.45:
         return "media"
     return "baja"
+
+
+def _dimension_status_counts(dimensions_ctx: list[dict]) -> dict[str, int]:
+    counts = {"good": 0, "degraded": 0, "insufficient_data": 0}
+    for item in dimensions_ctx:
+        status = item.get("confidence_status")
+        if status in counts:
+            counts[status] += 1
+    return counts
+
+
+def _trust_overall_status(
+    *,
+    data_quality: str,
+    context_status: str | None,
+    dimension_status_counts: dict[str, int],
+) -> str:
+    if data_quality == "insufficient" or context_status == "insufficient_data":
+        return "insufficient_data"
+    if dimension_status_counts.get("insufficient_data", 0) >= 3:
+        return "insufficient_data"
+    if (
+        data_quality == "degraded"
+        or context_status == "degraded"
+        or dimension_status_counts.get("degraded", 0) > 0
+        or dimension_status_counts.get("insufficient_data", 0) > 0
+    ):
+        return "degraded"
+    return "good"
 
 
 def _confidence_reason_labels(reasons: list[str]) -> list[str]:

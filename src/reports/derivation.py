@@ -14,6 +14,12 @@ from urllib.parse import urlparse
 
 from src.quality.dimension_confidence import dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_records
+from src.quality.trust import (
+    dimension_status_counts_from_report_dimensions,
+    quality_label,
+    trust_overall_reason,
+    trust_overall_status,
+)
 
 # REVIEW: D2 — evidence lives in features.raw_value, parsed defensively because
 # SQLite stores it via str(dict) (see sqlite_store.py:536), not JSON.
@@ -371,9 +377,9 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "features": dim_features,
             "evidence": evidence_collected,
             "coverage": dim_confidence.get("coverage", 0.0),
-            "coverage_label": _quality_label(float(dim_confidence.get("coverage") or 0.0)),
+            "coverage_label": quality_label(float(dim_confidence.get("coverage") or 0.0)),
             "confidence": dim_confidence.get("confidence", 0.0),
-            "confidence_label": _quality_label(float(dim_confidence.get("confidence") or 0.0)),
+            "confidence_label": quality_label(float(dim_confidence.get("confidence") or 0.0)),
             "confidence_status": dim_confidence.get("status", "insufficient_data"),
             "confidence_reason": dim_confidence.get("confidence_reason", []),
             "confidence_reason_labels": _confidence_reason_labels(
@@ -390,7 +396,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         snapshot.get("features") or [],
         evidence_items=snapshot.get("evidence_items") or [],
     )
-    dimension_status_counts = _dimension_status_counts(dimensions_ctx)
+    dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
     # Header + footer
     composite = run.get("composite_score")
@@ -476,15 +482,16 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "context_readiness": context_readiness,
             "evidence_summary": evidence_summary,
             "dimension_status_counts": dimension_status_counts,
-            "overall_status": _trust_overall_status(
+            "overall_status": trust_overall_status(
                 data_quality=data_quality,
                 context_status=context_readiness.get("status"),
                 dimension_status_counts=dimension_status_counts,
             ),
-            "overall_reason": _trust_overall_reason(
+            "overall_reason": trust_overall_reason(
                 data_quality=data_quality,
                 context_status=context_readiness.get("status"),
                 dimension_status_counts=dimension_status_counts,
+                locale="es",
             ),
         },
         "dimensions": dimensions_ctx,
@@ -594,8 +601,8 @@ def _context_readiness_from_snapshot(snapshot: dict) -> dict:
         "context_score": payload.get("context_score"),
         "coverage": coverage,
         "confidence": confidence,
-        "coverage_label": _quality_label(coverage),
-        "confidence_label": _quality_label(confidence),
+        "coverage_label": quality_label(coverage),
+        "confidence_label": quality_label(confidence),
         "robots_found": bool(payload.get("robots_found")),
         "sitemap_found": bool(payload.get("sitemap_found")),
         "sitemap_url_count": int(payload.get("sitemap_url_count") or 0),
@@ -609,66 +616,6 @@ def _context_readiness_from_snapshot(snapshot: dict) -> dict:
         "confidence_reason": payload.get("confidence_reason") or [],
         "opportunities": payload.get("opportunities") or [],
     }
-
-
-def _quality_label(value: float) -> str:
-    if value >= 0.75:
-        return "alta"
-    if value >= 0.45:
-        return "media"
-    return "baja"
-
-
-def _dimension_status_counts(dimensions_ctx: list[dict]) -> dict[str, int]:
-    counts = {"good": 0, "degraded": 0, "insufficient_data": 0}
-    for item in dimensions_ctx:
-        status = item.get("confidence_status")
-        if status in counts:
-            counts[status] += 1
-    return counts
-
-
-def _trust_overall_status(
-    *,
-    data_quality: str,
-    context_status: str | None,
-    dimension_status_counts: dict[str, int],
-) -> str:
-    if data_quality == "insufficient" or context_status == "insufficient_data":
-        return "insufficient_data"
-    if dimension_status_counts.get("insufficient_data", 0) >= 3:
-        return "insufficient_data"
-    if (
-        data_quality == "degraded"
-        or context_status == "degraded"
-        or dimension_status_counts.get("degraded", 0) > 0
-        or dimension_status_counts.get("insufficient_data", 0) > 0
-    ):
-        return "degraded"
-    return "good"
-
-
-def _trust_overall_reason(
-    *,
-    data_quality: str,
-    context_status: str | None,
-    dimension_status_counts: dict[str, int],
-) -> str:
-    if data_quality == "insufficient":
-        return "calidad de datos insuficiente"
-    if context_status == "insufficient_data":
-        return "pre-scan contextual insuficiente"
-    if dimension_status_counts.get("insufficient_data", 0) >= 3:
-        return "múltiples dimensiones con datos insuficientes"
-    if data_quality == "degraded":
-        return "calidad de datos degradada"
-    if context_status == "degraded":
-        return "pre-scan contextual degradado"
-    if dimension_status_counts.get("degraded", 0) > 0:
-        return "alguna dimensión degradada"
-    if dimension_status_counts.get("insufficient_data", 0) > 0:
-        return "alguna dimensión con datos insuficientes"
-    return "todas las comprobaciones de confianza pasaron"
 
 
 def _confidence_reason_labels(reasons: list[str]) -> list[str]:

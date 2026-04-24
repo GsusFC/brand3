@@ -1531,6 +1531,62 @@ def run_dimension_confidence(run_id: int) -> dict:
         store.close()
 
 
+def run_trust_summary(run_id: int) -> dict:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        if not snapshot:
+            raise ValueError(f"Run {run_id} not found")
+        run_payload = snapshot.get("run") or {}
+        context_summary = _context_readiness_from_snapshot(snapshot)
+        evidence_summary = summarize_evidence_records(
+            snapshot.get("features") or [],
+            evidence_items=snapshot.get("evidence_items") or [],
+        )
+        dimension_confidence = dimension_confidence_from_snapshot(snapshot)
+        payload = {
+            "run_id": run_id,
+            "data_quality": run_payload.get("data_quality") or "unknown",
+            "context_readiness": context_summary,
+            "evidence_summary": evidence_summary,
+            "dimension_confidence": dimension_confidence,
+        }
+        print(json.dumps(payload, indent=2))
+        return payload
+    finally:
+        store.close()
+
+
+def _context_readiness_from_snapshot(snapshot: dict) -> dict:
+    for item in reversed(snapshot.get("raw_inputs") or []):
+        if item.get("source") != "context" or not isinstance(item.get("payload"), dict):
+            continue
+        payload = item["payload"]
+        coverage = float(payload.get("coverage") or 0.0)
+        confidence = float(payload.get("confidence") or 0.0)
+        if coverage < 0.3:
+            status = "insufficient_data"
+        elif confidence < 0.6:
+            status = "degraded"
+        else:
+            status = "good"
+        return {
+            "available": True,
+            "coverage": coverage,
+            "confidence": confidence,
+            "status": status,
+            "confidence_reason": payload.get("confidence_reason") or [],
+            "context_score": payload.get("context_score"),
+        }
+    return {
+        "available": False,
+        "coverage": 0.0,
+        "confidence": 0.0,
+        "status": "insufficient_data",
+        "confidence_reason": ["context_scan_unavailable"],
+    }
+
+
 def brand_report(brand_name: str, limit: int = 10) -> dict:
     store = SQLiteStore(BRAND3_DB_PATH)
     try:

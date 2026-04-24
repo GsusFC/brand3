@@ -66,6 +66,12 @@ def trust_overall_reason(
     return code
 
 
+def trust_status_label(status: str, locale: str = "es") -> str:
+    if locale == "es":
+        return _STATUS_LABELS_ES.get(status, status)
+    return status
+
+
 def _trust_overall_reason_code(
     *,
     data_quality: str,
@@ -102,4 +108,10 @@ _REASON_LABELS_ES = {
     "dimension_degraded": "alguna dimension degradada",
     "some_dimensions_insufficient": "alguna dimension con datos insuficientes",
     "all_trust_checks_passed": "todas las comprobaciones de confianza pasaron",
+}
+
+_STATUS_LABELS_ES = {
+    "good": "bueno",
+    "degraded": "degradado",
+    "insufficient_data": "datos insuficientes",
 }

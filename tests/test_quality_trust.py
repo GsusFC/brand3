@@ -3,6 +3,7 @@ import unittest
 from src.quality.trust import (
     dimension_status_counts_from_confidence,
     quality_label,
+    trust_status_label,
     trust_overall_reason,
     trust_overall_status,
 )
@@ -13,6 +14,11 @@ class TrustQualityTests(unittest.TestCase):
         self.assertEqual(quality_label(0.75), "alta")
         self.assertEqual(quality_label(0.45), "media")
         self.assertEqual(quality_label(0.44), "baja")
+
+    def test_status_label(self):
+        self.assertEqual(trust_status_label("good"), "bueno")
+        self.assertEqual(trust_status_label("degraded"), "degradado")
+        self.assertEqual(trust_status_label("insufficient_data"), "datos insuficientes")
 
     def test_dimension_status_counts_from_confidence(self):
         counts = dimension_status_counts_from_confidence({

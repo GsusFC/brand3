@@ -48,6 +48,7 @@ from src.quality.evidence_summary import summarize_evidence_from_features, summa
 from src.quality.trust import (
     dimension_status_counts_from_confidence,
     quality_label,
+    trust_status_label,
     trust_overall_reason,
     trust_overall_status,
 )
@@ -1571,6 +1572,7 @@ def run_trust_summary(run_id: int) -> dict:
             "run_id": run_id,
             "data_quality": run_payload.get("data_quality") or "unknown",
             "overall_status": overall_status,
+            "overall_status_label": trust_status_label(overall_status),
             "overall_reason": overall_reason,
             "overall_reason_label": overall_reason_label,
             "context_readiness": context_summary,

@@ -274,6 +274,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(payload["run_id"], run_id)
         self.assertEqual(payload["overall_status"], "insufficient_data")
+        self.assertEqual(payload["overall_status_label"], "datos insuficientes")
         self.assertEqual(payload["overall_reason"], "multiple_dimensions_insufficient")
         self.assertEqual(payload["overall_reason_label"], "multiples dimensiones con datos insuficientes")
         self.assertEqual(payload["context_readiness"]["status"], "good")

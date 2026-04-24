@@ -85,6 +85,7 @@ class ApiTests(unittest.TestCase):
             "confidence_summary": {"status": "good", "coverage": 0.8},
             "dimension_confidence": {"presencia": {"status": "good", "confidence": 0.8}},
             "evidence_summary": {"total": 3},
+            "trust_summary": {"overall_status": "good", "overall_status_label": "bueno"},
             "composite_score": 70.0,
             "composite_reliable": True,
             "partial_score": False,
@@ -106,6 +107,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.json()["confidence_summary"]["status"], "good")
         self.assertEqual(response.json()["dimension_confidence"]["presencia"]["status"], "good")
         self.assertEqual(response.json()["evidence_summary"]["total"], 3)
+        self.assertEqual(response.json()["trust_summary"]["overall_status"], "good")
 
     def test_run_evidence_endpoint_returns_persisted_evidence(self):
         from fastapi.testclient import TestClient

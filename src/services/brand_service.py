@@ -425,6 +425,42 @@ def _dimension_confidence_summary(
     )
 
 
+def _trust_summary_payload(
+    *,
+    data_quality: str,
+    context_summary: dict[str, object],
+    evidence_summary: dict[str, object],
+    dimension_confidence: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    dimension_status_counts = dimension_status_counts_from_confidence(dimension_confidence)
+    context_status = context_summary.get("status") if isinstance(context_summary, dict) else None
+    overall_status = trust_overall_status(
+        data_quality=data_quality,
+        context_status=context_status,
+        dimension_status_counts=dimension_status_counts,
+    )
+    overall_reason = trust_overall_reason(
+        data_quality=data_quality,
+        context_status=context_status,
+        dimension_status_counts=dimension_status_counts,
+    )
+    return {
+        "data_quality": data_quality,
+        "overall_status": overall_status,
+        "overall_status_label": trust_status_label(overall_status),
+        "overall_reason": overall_reason,
+        "overall_reason_label": trust_overall_reason(
+            data_quality=data_quality,
+            context_status=context_status,
+            dimension_status_counts=dimension_status_counts,
+            locale="es",
+        ),
+        "context": context_summary,
+        "evidence": evidence_summary,
+        "dimension_status_counts": dimension_status_counts,
+    }
+
+
 def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = None) -> dict[str, object]:
     if llm is None:
         return {
@@ -1068,6 +1104,13 @@ def run(
             features_by_dim,
             evidence_items=_context_evidence_items(context_data),
         )
+        confidence_summary = _context_confidence_summary(context_data)
+        trust_summary = _trust_summary_payload(
+            data_quality=data_quality,
+            context_summary=confidence_summary,
+            evidence_summary=evidence_summary,
+            dimension_confidence=dimension_confidence,
+        )
 
         result = {
             "brand": brand_score.brand_name,
@@ -1084,9 +1127,10 @@ def run(
                 "llm_cache": _llm_cache_summary(llm, llm_skipped_reason),
             },
             "context_readiness": _to_jsonable(context_data),
-            "confidence_summary": _context_confidence_summary(context_data),
+            "confidence_summary": confidence_summary,
             "dimension_confidence": dimension_confidence,
             "evidence_summary": evidence_summary,
+            "trust_summary": trust_summary,
             "composite_score": brand_score.composite_score,
             "composite_reliable": data_quality != "insufficient",
             "partial_score": data_quality == "insufficient",

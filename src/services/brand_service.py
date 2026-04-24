@@ -1545,9 +1545,15 @@ def run_trust_summary(run_id: int) -> dict:
         )
         dimension_confidence = dimension_confidence_from_snapshot(snapshot)
         dimension_status_counts = _dimension_status_counts(dimension_confidence)
+        overall_status = _trust_overall_status(
+            data_quality=run_payload.get("data_quality") or "unknown",
+            context_status=context_summary.get("status"),
+            dimension_status_counts=dimension_status_counts,
+        )
         payload = {
             "run_id": run_id,
             "data_quality": run_payload.get("data_quality") or "unknown",
+            "overall_status": overall_status,
             "context_readiness": context_summary,
             "evidence_summary": evidence_summary,
             "dimension_confidence": dimension_confidence,
@@ -1600,6 +1606,26 @@ def _dimension_status_counts(dimension_confidence: dict) -> dict[str, int]:
         if status in counts:
             counts[status] += 1
     return counts
+
+
+def _trust_overall_status(
+    *,
+    data_quality: str,
+    context_status: str | None,
+    dimension_status_counts: dict[str, int],
+) -> str:
+    if data_quality == "insufficient" or context_status == "insufficient_data":
+        return "insufficient_data"
+    if dimension_status_counts.get("insufficient_data", 0) >= 3:
+        return "insufficient_data"
+    if (
+        data_quality == "degraded"
+        or context_status == "degraded"
+        or dimension_status_counts.get("degraded", 0) > 0
+        or dimension_status_counts.get("insufficient_data", 0) > 0
+    ):
+        return "degraded"
+    return "good"
 
 
 def _quality_label(value: float) -> str:

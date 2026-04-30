@@ -154,6 +154,23 @@ def _processed_output_snapshot() -> dict:
     }
 
 
+def _legacy_score_only_snapshot() -> dict:
+    return {
+        "brand": "Legacy Brand",
+        "url": "https://legacy.example",
+        "composite_score": 73.0,
+        "dimensions": {
+            "coherencia": 80.0,
+            "presencia": 75.0,
+            "percepcion": 70.0,
+            "diferenciacion": 78.0,
+            "vitalidad": 62.0,
+        },
+        "partial_dimensions": [],
+        "audit": {},
+    }
+
+
 NETLIFY_SNAPSHOT = _snapshot(
     url="https://www.netlify.com",
     features=[
@@ -634,6 +651,45 @@ class BuildReportReadinessContextTests(unittest.TestCase):
 
         self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
         self.assertEqual(ctx["readiness"]["evidence_summary_used"]["total"], 13)
+
+    def test_legacy_score_only_snapshot_is_detected_as_input_limitation(self):
+        ctx = build_report_context(_legacy_score_only_snapshot(), theme="dark")
+
+        self.assertIn(
+            "legacy_score_only_snapshot",
+            ctx["readiness"].get("input_limitations", []),
+        )
+
+    def test_legacy_score_only_snapshot_does_not_become_publishable(self):
+        ctx = build_report_context(_legacy_score_only_snapshot(), theme="dark")
+
+        self.assertNotEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
+
+    def test_legacy_score_only_snapshot_warns_metadata_required(self):
+        ctx = build_report_context(_legacy_score_only_snapshot(), theme="dark")
+
+        self.assertIn(
+            "readiness_requires_evidence_and_confidence_metadata",
+            ctx["readiness"]["warnings"],
+        )
+
+    def test_newer_processed_snapshot_keeps_current_readiness_behavior(self):
+        ctx = build_report_context(_processed_output_snapshot(), theme="dark")
+
+        self.assertNotIn(
+            "legacy_score_only_snapshot",
+            ctx["readiness"].get("input_limitations", []),
+        )
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
+
+    def test_db_like_snapshot_has_no_legacy_score_only_limitation(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+
+        self.assertNotIn(
+            "legacy_score_only_snapshot",
+            ctx["readiness"].get("input_limitations", []),
+        )
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
 
 
 if __name__ == "__main__":

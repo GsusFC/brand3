@@ -411,6 +411,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         evidence_summary=evidence_summary,
         confidence_summary=confidence_by_dim,
     ))
+    readiness = _annotate_readiness_input_limitations(snapshot, readiness)
     cost_policy = _cost_policy_from_snapshot(snapshot)
     dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
@@ -662,6 +663,43 @@ def _readiness_inputs_from_snapshot(
         ),
         "features_by_dimension": _readiness_features_from_snapshot(snapshot),
     }
+
+
+def _annotate_readiness_input_limitations(snapshot: dict, readiness: dict) -> dict:
+    if not _is_legacy_score_only_snapshot(snapshot):
+        return readiness
+
+    annotated = dict(readiness)
+    input_limitations = list(annotated.get("input_limitations") or [])
+    if "legacy_score_only_snapshot" not in input_limitations:
+        input_limitations.append("legacy_score_only_snapshot")
+    warnings = list(annotated.get("warnings") or [])
+    warning = "readiness_requires_evidence_and_confidence_metadata"
+    if warning not in warnings:
+        warnings.append(warning)
+    annotated["input_limitations"] = input_limitations
+    annotated["warnings"] = warnings
+    return annotated
+
+
+def _is_legacy_score_only_snapshot(snapshot: dict) -> bool:
+    dimensions = snapshot.get("dimensions")
+    has_dimension_scores = isinstance(dimensions, dict) and any(
+        name in dimensions for name in _DIMENSION_ORDER
+    )
+    if not has_dimension_scores:
+        return False
+    if snapshot.get("run") or snapshot.get("scores"):
+        return False
+    if snapshot.get("features") or snapshot.get("evidence_items"):
+        return False
+    if isinstance(snapshot.get("evidence_summary"), dict):
+        return False
+    if _looks_dimension_keyed(snapshot.get("confidence_summary")):
+        return False
+    if _looks_dimension_keyed(snapshot.get("dimension_confidence")):
+        return False
+    return True
 
 
 def _readiness_scores_from_snapshot(snapshot: dict) -> dict[str, Any]:

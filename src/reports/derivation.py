@@ -398,16 +398,11 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         snapshot.get("features") or [],
         evidence_items=snapshot.get("evidence_items") or [],
     )
-    readiness = evaluate_report_readiness(
-        scores={
-            row.get("dimension_name"): row.get("score")
-            for row in scores
-            if row.get("dimension_name")
-        },
+    readiness = evaluate_report_readiness(**_readiness_inputs_from_snapshot(
+        snapshot,
         evidence_summary=evidence_summary,
         confidence_summary=confidence_by_dim,
-        features_by_dimension=_readiness_features_from_snapshot(snapshot),
-    )
+    ))
     cost_policy = _cost_policy_from_snapshot(snapshot)
     dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
@@ -604,6 +599,101 @@ def _readiness_features_from_snapshot(snapshot: dict) -> dict[str, list[dict]]:
             "raw_value": feature.get("raw_value"),
         })
     return by_dimension
+
+
+def _readiness_inputs_from_snapshot(
+    snapshot: dict,
+    *,
+    evidence_summary: dict,
+    confidence_summary: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Build evaluator inputs from DB-like or processed report snapshots."""
+    return {
+        "scores": _readiness_scores_from_snapshot(snapshot),
+        "evidence_summary": _readiness_evidence_summary_from_snapshot(
+            snapshot,
+            fallback=evidence_summary,
+        ),
+        "confidence_summary": _readiness_confidence_from_snapshot(
+            snapshot,
+            fallback=confidence_summary,
+        ),
+        "features_by_dimension": _readiness_features_from_snapshot(snapshot),
+    }
+
+
+def _readiness_scores_from_snapshot(snapshot: dict) -> dict[str, Any]:
+    rows = snapshot.get("scores") or []
+    if rows:
+        return {
+            row.get("dimension_name"): row.get("score")
+            for row in rows
+            if isinstance(row, dict) and row.get("dimension_name")
+        }
+
+    dimensions = snapshot.get("dimensions")
+    if isinstance(dimensions, dict):
+        return {
+            dimension_name: score
+            for dimension_name, score in dimensions.items()
+            if dimension_name in _DIMENSION_ORDER
+        }
+    if isinstance(dimensions, list):
+        scores: dict[str, Any] = {}
+        for dimension in dimensions:
+            if not isinstance(dimension, dict):
+                continue
+            name = dimension.get("name") or dimension.get("id") or dimension.get("dimension_name")
+            if name:
+                scores[name] = dimension.get("score")
+        return scores
+    return {}
+
+
+def _readiness_evidence_summary_from_snapshot(snapshot: dict, *, fallback: dict) -> dict:
+    existing = snapshot.get("evidence_summary")
+    if isinstance(existing, dict):
+        return existing
+    return fallback
+
+
+def _readiness_confidence_from_snapshot(
+    snapshot: dict,
+    *,
+    fallback: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    confidence = snapshot.get("confidence_summary")
+    if _looks_dimension_keyed(confidence):
+        return _readiness_confidence_without_feature_penalty(snapshot, confidence)
+
+    dimension_confidence = snapshot.get("dimension_confidence")
+    if _looks_dimension_keyed(dimension_confidence):
+        return _readiness_confidence_without_feature_penalty(snapshot, dimension_confidence)
+
+    return fallback
+
+
+def _readiness_confidence_without_feature_penalty(
+    snapshot: dict,
+    confidence: dict[str, dict[str, Any]],
+) -> dict[str, dict[str, Any]]:
+    if snapshot.get("features") or "dimensions" not in snapshot:
+        return confidence
+
+    sanitized: dict[str, dict[str, Any]] = {}
+    for dimension_name, value in confidence.items():
+        if isinstance(value, dict):
+            sanitized[dimension_name] = dict(value)
+            sanitized[dimension_name]["missing_signals"] = []
+        else:
+            sanitized[dimension_name] = value
+    return sanitized
+
+
+def _looks_dimension_keyed(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    return any(key in value and isinstance(value.get(key), dict) for key in _DIMENSION_ORDER)
 
 
 def _context_readiness_from_snapshot(snapshot: dict) -> dict:

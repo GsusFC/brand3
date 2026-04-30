@@ -101,6 +101,59 @@ def _publishable_snapshot() -> dict:
     )
 
 
+def _processed_output_snapshot() -> dict:
+    return {
+        "brand": "Processed",
+        "url": "https://processed.example",
+        "composite_score": 81.0,
+        "dimensions": {
+            "coherencia": 82.0,
+            "presencia": 79.0,
+            "percepcion": 40.0,
+            "diferenciacion": 84.0,
+            "vitalidad": 35.0,
+        },
+        "evidence_summary": {
+            "total": 9,
+            "by_dimension": {
+                "coherencia": 2,
+                "presencia": 3,
+                "percepcion": 0,
+                "diferenciacion": 2,
+                "vitalidad": 0,
+            },
+            "by_source": {"web_scrape": 4, "context": 3, "exa": 2},
+            "by_quality": {"direct": 9},
+            "entity_relevance_available": True,
+        },
+        "confidence_summary": {
+            "coverage": 0.9,
+            "confidence": 0.8,
+            "status": "good",
+        },
+        "dimension_confidence": {
+            "coherencia": {"status": "good", "confidence": 0.82, "missing_signals": []},
+            "presencia": {"status": "good", "confidence": 0.78, "missing_signals": []},
+            "percepcion": {
+                "status": "insufficient_data",
+                "confidence": 0.2,
+                "missing_signals": ["review_quality"],
+                "confidence_reason": ["no_evidence"],
+            },
+            "diferenciacion": {"status": "good", "confidence": 0.84, "missing_signals": []},
+            "vitalidad": {
+                "status": "insufficient_data",
+                "confidence": 0.2,
+                "missing_signals": ["momentum"],
+                "confidence_reason": ["no_evidence"],
+            },
+        },
+        "trust_summary": {},
+        "context_readiness": {},
+        "audit": {},
+    }
+
+
 NETLIFY_SNAPSHOT = _snapshot(
     url="https://www.netlify.com",
     features=[
@@ -507,6 +560,33 @@ class BuildReportReadinessContextTests(unittest.TestCase):
         self.assertEqual(ctx["readiness"]["dimension_states"]["coherencia"], "ready")
         self.assertEqual(ctx["readiness"]["dimension_states"]["presencia"], "ready")
         self.assertEqual(ctx["readiness"]["dimension_states"]["diferenciacion"], "ready")
+
+    def test_processed_output_snapshot_produces_non_empty_readiness(self):
+        ctx = build_report_context(_processed_output_snapshot(), theme="dark")
+
+        self.assertIn("readiness", ctx)
+        self.assertEqual(ctx["readiness"]["evidence_summary_used"]["total"], 9)
+        self.assertEqual(
+            ctx["readiness"]["confidence_summary_used"]["coherencia"]["status"],
+            "good",
+        )
+        self.assertEqual(ctx["readiness"]["dimension_states"]["coherencia"], "ready")
+
+    def test_processed_output_snapshot_without_raw_features_does_not_mark_every_dimension_not_evaluable(self):
+        ctx = build_report_context(_processed_output_snapshot(), theme="dark")
+
+        states = ctx["readiness"]["dimension_states"]
+        self.assertNotEqual(set(states.values()), {"not_evaluable"})
+        self.assertEqual(states["coherencia"], "ready")
+        self.assertEqual(states["presencia"], "ready")
+        self.assertEqual(states["diferenciacion"], "ready")
+        self.assertEqual(ctx["readiness"]["missing_high_weight_features"], {})
+
+    def test_db_like_snapshot_readiness_behavior_still_works(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
+        self.assertEqual(ctx["readiness"]["evidence_summary_used"]["total"], 13)
 
 
 if __name__ == "__main__":

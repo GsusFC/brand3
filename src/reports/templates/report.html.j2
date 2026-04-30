@@ -96,6 +96,33 @@
   .quality-note strong { color: var(--fg-bright); }
   .quality-note.warn { border-color: var(--warn); }
   .quality-note.alert { border-color: var(--alert); }
+  {%- if ui.show_readiness_diagnostic %}
+  .diagnostic-block {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border: 1px dashed var(--rule);
+    background: transparent;
+    color: var(--fg);
+  }
+  .diagnostic-block .section-head {
+    margin: 0 0 8px;
+  }
+  .diagnostic-block table th {
+    border-bottom: 0;
+    color: var(--muted);
+  }
+  .diagnostic-block table td {
+    color: var(--fg);
+  }
+  .state-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .state-list span {
+    white-space: nowrap;
+  }
+  {%- endif %}
 
   .tabs {
     margin-top: 24px;
@@ -293,6 +320,78 @@
     {%- endif %}
   </tbody>
 </table>
+
+{%- if ui.show_readiness_diagnostic and readiness and readiness.report_mode %}
+{%- set report_mode_labels = {
+  'publishable_brand_report': 'Publishable brand report',
+  'technical_diagnostic': 'Technical diagnostic',
+  'insufficient_evidence': 'Insufficient evidence'
+} -%}
+{%- set readiness_state_labels = {
+  'ready': 'Ready',
+  'observation_only': 'Observation only',
+  'technical_only': 'Technical only',
+  'not_evaluable': 'Not evaluable'
+} -%}
+<div class="diagnostic-block">
+  <div class="section-head">
+    <span class="label">Report readiness</span>
+    <span class="tag">// diagnostic</span>
+  </div>
+  <table>
+    <tbody>
+      <tr>
+        <th style="width:28%">mode</th>
+        <td>{{ report_mode_labels.get(readiness.report_mode, readiness.report_mode) }}</td>
+      </tr>
+      {%- if readiness.blockers %}
+      <tr>
+        <th>blockers</th>
+        <td><span class="hl-warn">{{ readiness.blockers | join(', ') }}</span></td>
+      </tr>
+      {%- endif %}
+      {%- if readiness.warnings %}
+      <tr>
+        <th>warnings</th>
+        <td><span class="dim">{{ readiness.warnings | join(', ') }}</span></td>
+      </tr>
+      {%- endif %}
+      {%- if readiness.dimension_states %}
+      <tr>
+        <th>dimensions</th>
+        <td>
+          <div class="state-list">
+            {%- for name, state in readiness.dimension_states.items() %}
+            <span>{{ name }}: {{ readiness_state_labels.get(state, state) }}</span>
+            {%- endfor %}
+          </div>
+        </td>
+      </tr>
+      {%- endif %}
+      {%- if readiness.fallback_detected %}
+      <tr>
+        <th>fallback</th>
+        <td>
+          {%- for name, detected in readiness.fallback_detected.items() -%}
+            {{ name }}{% if not loop.last %}, {% endif %}
+          {%- endfor -%}
+        </td>
+      </tr>
+      {%- endif %}
+      {%- if readiness.missing_high_weight_features %}
+      <tr>
+        <th>missing high-weight</th>
+        <td>
+          {%- for name, features in readiness.missing_high_weight_features.items() -%}
+            {{ name }}: {{ features | join(', ') }}{% if not loop.last %}; {% endif %}
+          {%- endfor -%}
+        </td>
+      </tr>
+      {%- endif %}
+    </tbody>
+  </table>
+</div>
+{%- endif %}
 
 <hr class="rule">
 

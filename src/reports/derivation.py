@@ -529,6 +529,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         "ui": {
             "theme": theme,
             "term_lines": term_lines,
+            "show_readiness_diagnostic": False,
         },
     }
 

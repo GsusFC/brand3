@@ -292,6 +292,32 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("§3A  current reading", html)
         self.assertIn("§3N  synthesis", html)
 
+    def test_readiness_diagnostic_does_not_render_by_default(self):
+        html = ReportRenderer().render(_sample_snapshot(), theme="dark")
+
+        self.assertNotIn("Report readiness", html)
+
+    def test_readiness_diagnostic_renders_when_flag_enabled(self):
+        ctx = build_report_context(_sample_snapshot(), theme="dark")
+        ctx["ui"]["show_readiness_diagnostic"] = True
+        renderer = ReportRenderer()
+
+        html = renderer.env.get_template("report.html.j2").render(**ctx)
+
+        self.assertIn("Report readiness", html)
+        self.assertIn("Insufficient evidence", html)
+        self.assertIn("dimensions", html)
+        self.assertIn("Not evaluable", html)
+
+    def test_readiness_diagnostic_omitted_when_missing(self):
+        ctx = build_report_context(_sample_snapshot(), theme="dark")
+        ctx.pop("readiness", None)
+        renderer = ReportRenderer()
+
+        html = renderer.env.get_template("report.html.j2").render(**ctx)
+
+        self.assertNotIn("Report readiness", html)
+
     def test_header_and_score_strip_live_outside_tabs(self):
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")
         self.assertEqual(html.count("SCORE_GLOBAL"), 1)

@@ -561,6 +561,7 @@ def build_report_context_from_base(base: dict) -> dict:
     ui = base["ui"]
     readiness = evaluation.get("readiness") or {}
     editorial_policy = _editorial_policy_from_readiness(readiness)
+    presentation_policy = _presentation_policy_from_readiness(readiness)
     return {
         "theme": ui["theme"],
         "term_lines": ui["term_lines"],
@@ -588,12 +589,87 @@ def build_report_context_from_base(base: dict) -> dict:
         "evidence_summary": evaluation.get("evidence_summary") or {},
         "readiness": readiness,
         "editorial_policy": editorial_policy,
+        "presentation_policy": presentation_policy,
         "cost_policy": evaluation.get("cost_policy") or {},
         "trust_summary": evaluation.get("trust_summary") or {},
         "narrative": narrative,
         "sources": sources,
         "audit": audit,
         "ui": ui,
+    }
+
+
+def _presentation_policy_from_readiness(readiness: dict) -> dict:
+    mode = readiness.get("report_mode") or ""
+    dimension_states = readiness.get("dimension_states") or {}
+    is_publishable = mode == "publishable_brand_report"
+    is_technical_diagnostic = mode == "technical_diagnostic"
+    is_insufficient_evidence = mode == "insufficient_evidence"
+
+    if is_publishable:
+        headline = "Publishable brand report"
+        allow_editorial_conclusions = True
+        allow_strategic_recommendations = True
+    elif is_technical_diagnostic:
+        headline = "Technical diagnostic"
+        allow_editorial_conclusions = False
+        allow_strategic_recommendations = False
+    elif is_insufficient_evidence:
+        headline = "Insufficient evidence"
+        allow_editorial_conclusions = False
+        allow_strategic_recommendations = False
+    else:
+        headline = "Unclassified report"
+        allow_editorial_conclusions = False
+        allow_strategic_recommendations = False
+
+    return {
+        "report_mode": mode,
+        "is_publishable": is_publishable,
+        "is_technical_diagnostic": is_technical_diagnostic,
+        "is_insufficient_evidence": is_insufficient_evidence,
+        "headline": headline,
+        "summary": readiness.get("diagnostic_summary") or "",
+        "allow_editorial_conclusions": allow_editorial_conclusions,
+        "allow_strategic_recommendations": allow_strategic_recommendations,
+        "dimension_presentation": {
+            name: _dimension_presentation_policy(
+                state,
+                report_mode=mode,
+                allow_editorial_conclusions=allow_editorial_conclusions,
+            )
+            for name, state in dimension_states.items()
+        },
+    }
+
+
+def _dimension_presentation_policy(
+    state: str,
+    *,
+    report_mode: str,
+    allow_editorial_conclusions: bool,
+) -> dict:
+    if state == "not_evaluable":
+        language_mode = "blocked"
+    elif state == "observation_only":
+        language_mode = "observational"
+    elif report_mode == "technical_diagnostic" or state == "technical_only":
+        language_mode = "technical_only"
+    elif state == "ready" and allow_editorial_conclusions:
+        language_mode = "editorial"
+    elif state == "ready":
+        language_mode = "technical_only"
+    else:
+        language_mode = "blocked"
+
+    return {
+        "state": state,
+        "allow_strong_claims": (
+            allow_editorial_conclusions
+            and state == "ready"
+            and language_mode == "editorial"
+        ),
+        "language_mode": language_mode,
     }
 
 

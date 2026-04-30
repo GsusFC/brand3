@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import unittest
 
 from src.reports.derivation import (
@@ -535,6 +536,7 @@ class BuildReportReadinessContextTests(unittest.TestCase):
         self.assertIn("readiness", ctx["evaluation"])
         self.assertEqual(ctx["readiness"], ctx["evaluation"]["readiness"])
         self.assertIn("editorial_policy", ctx)
+        self.assertIn("presentation_policy", ctx)
 
     def test_readiness_does_not_change_scores(self):
         snapshot = _publishable_snapshot()
@@ -595,6 +597,98 @@ class BuildReportReadinessContextTests(unittest.TestCase):
         self.assertEqual(
             [dimension["name"] for dimension in ctx["dimensions"]],
             ["coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad"],
+        )
+
+    def test_presentation_policy_publishable_allows_editorial_conclusions(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+        policy = ctx["presentation_policy"]
+
+        self.assertEqual(policy["report_mode"], REPORT_MODE_PUBLISHABLE)
+        self.assertTrue(policy["is_publishable"])
+        self.assertFalse(policy["is_technical_diagnostic"])
+        self.assertFalse(policy["is_insufficient_evidence"])
+        self.assertEqual(policy["headline"], "Publishable brand report")
+        self.assertEqual(policy["summary"], ctx["readiness"]["diagnostic_summary"])
+        self.assertTrue(policy["allow_editorial_conclusions"])
+        self.assertTrue(policy["allow_strategic_recommendations"])
+        self.assertEqual(
+            policy["dimension_presentation"]["coherencia"]["language_mode"],
+            "editorial",
+        )
+        self.assertTrue(
+            policy["dimension_presentation"]["coherencia"]["allow_strong_claims"]
+        )
+
+    def test_presentation_policy_observation_only_dimension_is_observational(self):
+        snapshot = copy.deepcopy(_processed_output_snapshot())
+        snapshot["dimension_confidence"]["coherencia"] = {
+            "status": "degraded",
+            "confidence": 0.52,
+            "missing_signals": [],
+            "confidence_reason": ["low_feature_confidence"],
+        }
+
+        ctx = build_report_context(snapshot, theme="dark")
+        policy = ctx["presentation_policy"]
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
+        self.assertEqual(ctx["readiness"]["dimension_states"]["coherencia"], "observation_only")
+        coherencia = policy["dimension_presentation"]["coherencia"]
+        self.assertEqual(coherencia["state"], "observation_only")
+        self.assertEqual(coherencia["language_mode"], "observational")
+        self.assertFalse(coherencia["allow_strong_claims"])
+
+    def test_presentation_policy_technical_diagnostic_disables_editorial_output(self):
+        snapshot = _publishable_snapshot()
+        snapshot["features"] = list(snapshot["features"]) + [
+            {
+                "dimension_name": "presencia",
+                "feature_name": "web_presence",
+                "value": 50.0,
+                "raw_value": repr({"fallback": True, "reason": "no data"}),
+                "confidence": 0.2,
+                "source": "fallback",
+            }
+        ]
+
+        ctx = build_report_context(snapshot, theme="dark")
+        policy = ctx["presentation_policy"]
+
+        self.assertEqual(policy["report_mode"], REPORT_MODE_TECHNICAL)
+        self.assertFalse(policy["is_publishable"])
+        self.assertTrue(policy["is_technical_diagnostic"])
+        self.assertEqual(policy["headline"], "Technical diagnostic")
+        self.assertFalse(policy["allow_editorial_conclusions"])
+        self.assertFalse(policy["allow_strategic_recommendations"])
+        self.assertEqual(
+            policy["dimension_presentation"]["coherencia"]["language_mode"],
+            "technical_only",
+        )
+
+    def test_presentation_policy_insufficient_legacy_snapshot_is_not_publishable(self):
+        ctx = build_report_context(_legacy_score_only_snapshot(), theme="dark")
+        policy = ctx["presentation_policy"]
+
+        self.assertEqual(policy["report_mode"], REPORT_MODE_INSUFFICIENT)
+        self.assertFalse(policy["is_publishable"])
+        self.assertTrue(policy["is_insufficient_evidence"])
+        self.assertEqual(policy["headline"], "Insufficient evidence")
+        self.assertFalse(policy["allow_editorial_conclusions"])
+        self.assertFalse(policy["allow_strategic_recommendations"])
+        self.assertEqual(
+            policy["dimension_presentation"]["coherencia"]["language_mode"],
+            "blocked",
+        )
+
+    def test_presentation_policy_does_not_change_scores_or_dimensions(self):
+        snapshot = copy.deepcopy(_publishable_snapshot())
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertIn("presentation_policy", ctx)
+        self.assertEqual(ctx["score"]["global"], snapshot["run"]["composite_score"])
+        self.assertEqual(
+            {dimension["name"]: dimension["score"] for dimension in ctx["dimensions"]},
+            {row["dimension_name"]: row["score"] for row in snapshot["scores"]},
         )
 
     def test_weak_fallback_like_context_produces_non_publishable_readiness(self):

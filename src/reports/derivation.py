@@ -411,6 +411,11 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         evidence_summary=evidence_summary,
         confidence_summary=confidence_by_dim,
     ))
+    readiness = _annotate_readiness_diagnostics(
+        snapshot,
+        readiness,
+        context_readiness=context_readiness,
+    )
     cost_policy = _cost_policy_from_snapshot(snapshot)
     dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
@@ -662,6 +667,114 @@ def _readiness_inputs_from_snapshot(
         ),
         "features_by_dimension": _readiness_features_from_snapshot(snapshot),
     }
+
+
+def _annotate_readiness_diagnostics(
+    snapshot: dict,
+    readiness: dict,
+    *,
+    context_readiness: dict,
+) -> dict:
+    annotated = dict(readiness)
+    input_limitations = list(annotated.get("input_limitations") or [])
+    warnings = list(annotated.get("warnings") or [])
+
+    if _is_legacy_score_only_snapshot(snapshot):
+        if "legacy_score_only_snapshot" not in input_limitations:
+            input_limitations.append("legacy_score_only_snapshot")
+        warning = "readiness_requires_evidence_and_confidence_metadata"
+        if warning not in warnings:
+            warnings.append(warning)
+
+    annotated["input_limitations"] = input_limitations
+    annotated["warnings"] = warnings
+    annotated["diagnostic_summary"] = _readiness_diagnostic_summary(
+        annotated,
+        context_readiness=context_readiness,
+    )
+    return annotated
+
+
+def _readiness_diagnostic_summary(readiness: dict, *, context_readiness: dict) -> str:
+    mode = readiness.get("report_mode") or "unknown"
+    dimension_states = readiness.get("dimension_states") or {}
+    not_evaluable = _dimensions_with_state(dimension_states, "not_evaluable")
+    technical_only = _dimensions_with_state(dimension_states, "technical_only")
+    observation_only = _dimensions_with_state(dimension_states, "observation_only")
+    blockers = readiness.get("blockers") or []
+    input_limitations = readiness.get("input_limitations") or []
+
+    if "legacy_score_only_snapshot" in input_limitations:
+        return (
+            "This is a legacy score-only snapshot. Readiness cannot be evaluated "
+            "because the file lacks evidence and confidence metadata."
+        )
+
+    if mode == "publishable_brand_report":
+        if observation_only:
+            return (
+                "This report has enough evidence and confidence for editorial use. "
+                f"Some dimensions remain observation-only: {', '.join(observation_only)}."
+            )
+        return "This report has enough evidence and confidence for editorial use."
+
+    if mode == "technical_diagnostic":
+        reasons: list[str] = []
+        if "unsupported_editorial_synthesis" in blockers:
+            reasons.append("unsupported editorial synthesis is blocked")
+        if technical_only:
+            reasons.append(f"technical-only dimensions: {', '.join(technical_only)}")
+        if not_evaluable:
+            reasons.append(f"not-evaluable dimensions: {', '.join(not_evaluable)}")
+        if _context_is_limited(context_readiness):
+            reasons.append("context readiness is limited")
+        if not reasons:
+            reasons.append("core dimensions lack enough supported evidence or confidence")
+        return "Technical diagnostic: " + "; ".join(reasons) + "."
+
+    if mode == "insufficient_evidence":
+        if not_evaluable:
+            return (
+                "Insufficient evidence: multiple dimensions are not evaluable "
+                f"({', '.join(not_evaluable)})."
+            )
+        if _context_is_limited(context_readiness):
+            return "Insufficient evidence: context readiness is limited."
+        return "Insufficient evidence: required evidence or confidence metadata is missing."
+
+    return "Readiness could not be classified from the available metadata."
+
+
+def _dimensions_with_state(dimension_states: dict, state: str) -> list[str]:
+    return [
+        name
+        for name, value in dimension_states.items()
+        if value == state
+    ]
+
+
+def _context_is_limited(context_readiness: dict) -> bool:
+    return (context_readiness or {}).get("status") in {"degraded", "insufficient_data"}
+
+
+def _is_legacy_score_only_snapshot(snapshot: dict) -> bool:
+    dimensions = snapshot.get("dimensions")
+    has_dimension_scores = isinstance(dimensions, dict) and any(
+        name in dimensions for name in _DIMENSION_ORDER
+    )
+    if not has_dimension_scores:
+        return False
+    if snapshot.get("run") or snapshot.get("scores"):
+        return False
+    if snapshot.get("features") or snapshot.get("evidence_items"):
+        return False
+    if isinstance(snapshot.get("evidence_summary"), dict):
+        return False
+    if _looks_dimension_keyed(snapshot.get("confidence_summary")):
+        return False
+    if _looks_dimension_keyed(snapshot.get("dimension_confidence")):
+        return False
+    return True
 
 
 def _readiness_scores_from_snapshot(snapshot: dict) -> dict[str, Any]:

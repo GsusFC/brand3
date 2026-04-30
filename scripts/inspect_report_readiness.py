@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import sys
 import importlib.util
+import types
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +15,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 def _load_build_report_context():
+    _load_reports_submodule_without_package_init("editorial_policy")
     module_path = ROOT / "src" / "reports" / "derivation.py"
     spec = importlib.util.spec_from_file_location("brand3_report_derivation", module_path)
     if spec is None or spec.loader is None:
@@ -22,6 +24,25 @@ def _load_build_report_context():
     sys.modules[spec.name] = module
     spec.loader.exec_module(module)
     return module.build_report_context
+
+
+def _load_reports_submodule_without_package_init(name: str) -> None:
+    package_name = "src.reports"
+    if package_name not in sys.modules:
+        package = types.ModuleType(package_name)
+        package.__path__ = [str(ROOT / "src" / "reports")]
+        sys.modules[package_name] = package
+
+    full_name = f"{package_name}.{name}"
+    if full_name in sys.modules:
+        return
+    module_path = ROOT / "src" / "reports" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(full_name, module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load {full_name} from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[full_name] = module
+    spec.loader.exec_module(module)
 
 
 build_report_context = _load_build_report_context()
@@ -68,6 +89,7 @@ def inspect_path(path: Path) -> dict[str, Any]:
         "path": str(path),
         "brand": _brand_name(snapshot, context),
         "report_mode": readiness.get("report_mode"),
+        "diagnostic_summary": readiness.get("diagnostic_summary") or "",
         "blockers": readiness.get("blockers") or [],
         "warnings": readiness.get("warnings") or [],
         "dimension_states": readiness.get("dimension_states") or {},
@@ -100,6 +122,7 @@ def print_result(result: dict[str, Any]) -> None:
 
     print(f"brand: {result['brand']}")
     print(f"report_mode: {result['report_mode']}")
+    print(f"diagnostic_summary: {result['diagnostic_summary'] or '(none)'}")
     print(f"blockers: {_format_value(result['blockers'])}")
     print(f"warnings: {_format_value(result['warnings'])}")
     print("dimension_states:")

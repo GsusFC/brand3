@@ -15,6 +15,7 @@ from src.reports.derivation import (
     _infer_source_type,
 )
 from src.quality.report_readiness import (
+    REPORT_MODE_INSUFFICIENT,
     REPORT_MODE_PUBLISHABLE,
     REPORT_MODE_TECHNICAL,
 )
@@ -150,6 +151,23 @@ def _processed_output_snapshot() -> dict:
         },
         "trust_summary": {},
         "context_readiness": {},
+        "audit": {},
+    }
+
+
+def _legacy_score_only_snapshot() -> dict:
+    return {
+        "brand": "Legacy Brand",
+        "url": "https://legacy.example",
+        "composite_score": 73.0,
+        "dimensions": {
+            "coherencia": 80.0,
+            "presencia": 75.0,
+            "percepcion": 70.0,
+            "diferenciacion": 78.0,
+            "vitalidad": 62.0,
+        },
+        "partial_dimensions": [],
         "audit": {},
     }
 
@@ -634,6 +652,49 @@ class BuildReportReadinessContextTests(unittest.TestCase):
 
         self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
         self.assertEqual(ctx["readiness"]["evidence_summary_used"]["total"], 13)
+
+    def test_publishable_readiness_has_diagnostic_summary(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+
+        self.assertIn("diagnostic_summary", ctx["readiness"])
+        self.assertIn("enough evidence and confidence", ctx["readiness"]["diagnostic_summary"])
+
+    def test_technical_readiness_has_plain_language_diagnostic_summary(self):
+        snapshot = _publishable_snapshot()
+        snapshot["features"] = list(snapshot["features"]) + [
+            {
+                "dimension_name": "presencia",
+                "feature_name": "web_presence",
+                "value": 50.0,
+                "raw_value": repr({"fallback": True, "reason": "no data"}),
+                "confidence": 0.2,
+                "source": "fallback",
+            }
+        ]
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_TECHNICAL)
+        self.assertIn("Technical diagnostic", ctx["readiness"]["diagnostic_summary"])
+        self.assertIn("technical-only dimensions", ctx["readiness"]["diagnostic_summary"])
+
+    def test_insufficient_readiness_has_diagnostic_summary(self):
+        ctx = build_report_context(_legacy_score_only_snapshot(), theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_INSUFFICIENT)
+        self.assertIn("diagnostic_summary", ctx["readiness"])
+        self.assertIn("legacy score-only snapshot", ctx["readiness"]["diagnostic_summary"])
+        self.assertIn("evidence and confidence metadata", ctx["readiness"]["diagnostic_summary"])
+        self.assertIn(
+            "readiness_requires_evidence_and_confidence_metadata",
+            ctx["readiness"]["warnings"],
+        )
+
+    def test_newer_processed_snapshot_diagnostic_summary_keeps_current_behavior(self):
+        ctx = build_report_context(_processed_output_snapshot(), theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
+        self.assertNotIn("legacy score-only snapshot", ctx["readiness"]["diagnostic_summary"])
 
 
 if __name__ == "__main__":

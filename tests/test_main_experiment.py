@@ -12,6 +12,72 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 class MainExperimentTests(unittest.TestCase):
+    def test_render_report_without_diagnostic_flag_uses_existing_render_path(self):
+        stdout = io.StringIO()
+
+        with patch("src.reports.renderer.render_run", return_value=Path("/tmp/report.html")) as render_run:
+            with patch.object(main, "_render_report_with_readiness_diagnostic") as debug_render:
+                with redirect_stdout(stdout):
+                    main.main(["brand3", "render-report", "--run-id", "7"])
+
+        render_run.assert_called_once_with(7, theme="dark")
+        debug_render.assert_not_called()
+        self.assertIn("Rendered HTML report: /tmp/report.html", stdout.getvalue())
+
+    def test_render_report_diagnostic_flag_sets_context_ui_flag(self):
+        captured = {}
+
+        class FakeStore:
+            def get_latest_run_id(self):
+                return 99
+
+            def get_run_snapshot(self, run_id):
+                captured["run_id"] = run_id
+                return {
+                    "run": {
+                        "id": run_id,
+                        "brand_name": "Example",
+                        "url": "https://example.com",
+                    }
+                }
+
+            def close(self):
+                captured["closed"] = True
+
+        class FakeTemplate:
+            def render(self, **context):
+                captured["context"] = context
+                return "<html>debug</html>"
+
+        class FakeEnv:
+            def get_template(self, name):
+                captured["template"] = name
+                return FakeTemplate()
+
+        class FakeRenderer:
+            env = FakeEnv()
+
+        context = {"ui": {}, "brand": {"name": "Example"}}
+        with tempfile.TemporaryDirectory() as tmpdir:
+            output_path = Path(tmpdir) / "report.html"
+            with patch("src.storage.sqlite_store.SQLiteStore", return_value=FakeStore()):
+                with patch("src.reports.dossier.build_brand_dossier", return_value=context):
+                    with patch("src.reports.renderer.ReportRenderer", return_value=FakeRenderer()):
+                        with patch("src.reports.renderer._resolve_output_path", return_value=output_path):
+                            path = main._render_report_with_readiness_diagnostic(
+                                run_id=7,
+                                latest=False,
+                                theme="dark",
+                            )
+
+            self.assertEqual(path, output_path)
+            self.assertEqual(output_path.read_text(encoding="utf-8"), "<html>debug</html>")
+
+        self.assertEqual(captured["run_id"], 7)
+        self.assertTrue(captured["closed"])
+        self.assertEqual(captured["template"], "report.html.j2")
+        self.assertTrue(captured["context"]["ui"]["show_readiness_diagnostic"])
+
     def test_readiness_command_prints_processed_json_readiness(self):
         snapshot = {
             "brand": "Legacy Brand",

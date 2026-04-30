@@ -395,6 +395,39 @@
         </td>
       </tr>
       {%- endif %}
+      {%- if presentation_policy %}
+      <tr>
+        <th>Presentation policy</th>
+        <td>
+          <strong>{{ presentation_policy.headline }}</strong>
+          {%- if presentation_policy.summary %}
+          <br><span class="dim">{{ presentation_policy.summary }}</span>
+          {%- endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Editorial conclusions</th>
+        <td>{% if presentation_policy.allow_editorial_conclusions %}allowed{% else %}blocked{% endif %}</td>
+      </tr>
+      <tr>
+        <th>Strategic recommendations</th>
+        <td>{% if presentation_policy.allow_strategic_recommendations %}allowed{% else %}blocked{% endif %}</td>
+      </tr>
+        {%- if presentation_policy.dimension_presentation %}
+      <tr>
+        <th>Dimension language modes</th>
+        <td>
+          <div class="state-list">
+            {%- for name, policy in presentation_policy.dimension_presentation.items() %}
+              {%- if policy.language_mode != 'editorial' %}
+            <span>{{ name }}: {{ policy.language_mode }}</span>
+              {%- endif %}
+            {%- endfor %}
+          </div>
+        </td>
+      </tr>
+        {%- endif %}
+      {%- endif %}
     </tbody>
   </table>
 </div>

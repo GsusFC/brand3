@@ -296,6 +296,7 @@ class ReportRendererTests(unittest.TestCase):
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")
 
         self.assertNotIn("Report readiness", html)
+        self.assertNotIn("Presentation policy", html)
 
     def test_readiness_diagnostic_renders_when_flag_enabled(self):
         ctx = build_report_context(_sample_snapshot(), theme="dark")
@@ -310,6 +311,22 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn(ctx["readiness"]["diagnostic_summary"], html)
         self.assertIn("dimensions", html)
         self.assertIn("Not evaluable", html)
+
+    def test_presentation_policy_renders_inside_readiness_diagnostic(self):
+        ctx = build_report_context(_sample_snapshot(), theme="dark")
+        ctx["ui"]["show_readiness_diagnostic"] = True
+        renderer = ReportRenderer()
+
+        html = renderer.env.get_template("report.html.j2").render(**ctx)
+
+        self.assertIn("Presentation policy", html)
+        self.assertIn(ctx["presentation_policy"]["headline"], html)
+        self.assertIn(ctx["presentation_policy"]["summary"], html)
+        self.assertIn("Editorial conclusions", html)
+        self.assertIn("blocked", html)
+        self.assertIn("Strategic recommendations", html)
+        self.assertIn("Dimension language modes", html)
+        self.assertIn("coherencia: blocked", html)
 
     def test_readiness_diagnostic_omitted_when_missing(self):
         ctx = build_report_context(_sample_snapshot(), theme="dark")

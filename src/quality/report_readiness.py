@@ -88,10 +88,20 @@ def evaluate_report_readiness(
         for dim in core_dimensions
         if dimension_states.get(dim) == DIMENSION_NOT_EVALUABLE
     ]
-    core_not_editorial = [
+    core_technical_only = [
         dim
         for dim in core_dimensions
-        if dimension_states.get(dim) != DIMENSION_READY
+        if dimension_states.get(dim) == DIMENSION_TECHNICAL_ONLY
+    ]
+    core_ready = [
+        dim
+        for dim in core_dimensions
+        if dimension_states.get(dim) == DIMENSION_READY
+    ]
+    core_below_observation = [
+        dim
+        for dim in core_dimensions
+        if dimension_states.get(dim) not in (DIMENSION_READY, DIMENSION_OBSERVATION_ONLY)
     ]
     unsupported_editorial = _unsupported_editorial_synthesis(narrative_input)
 
@@ -101,9 +111,18 @@ def evaluate_report_readiness(
     elif unsupported_editorial:
         report_mode = REPORT_MODE_TECHNICAL
         blockers.append("unsupported_editorial_synthesis")
-    elif core_not_editorial:
+    elif core_technical_only:
         report_mode = REPORT_MODE_TECHNICAL
-        blockers.append("core_dimensions_not_editorial_ready")
+        blockers.append("core_dimensions_technical_only")
+    elif core_not_evaluable:
+        report_mode = REPORT_MODE_TECHNICAL
+        blockers.append("core_dimensions_not_evaluable")
+    elif core_below_observation:
+        report_mode = REPORT_MODE_TECHNICAL
+        blockers.append("core_dimensions_below_observation_only")
+    elif len(core_ready) < 2:
+        report_mode = REPORT_MODE_TECHNICAL
+        blockers.append("insufficient_ready_core_dimensions")
     else:
         report_mode = REPORT_MODE_PUBLISHABLE
 

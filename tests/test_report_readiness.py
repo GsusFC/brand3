@@ -50,7 +50,86 @@ class ReportReadinessTests(unittest.TestCase):
         )
 
         self.assertEqual(result["report_mode"], REPORT_MODE_TECHNICAL)
-        self.assertIn("core_dimensions_not_editorial_ready", result["blockers"])
+        self.assertIn("insufficient_ready_core_dimensions", result["blockers"])
+
+    def test_two_ready_core_and_one_observation_only_core_is_publishable(self):
+        confidence = _confidence()
+        confidence["coherencia"] = {
+            "status": "degraded",
+            "confidence": 0.52,
+            "missing_signals": [],
+            "confidence_reason": ["low_feature_confidence"],
+        }
+
+        result = evaluate_report_readiness(
+            scores=_scores(82),
+            evidence_summary=_evidence(count=3),
+            confidence_summary=confidence,
+        )
+
+        self.assertEqual(result["report_mode"], REPORT_MODE_PUBLISHABLE)
+
+    def test_one_ready_core_and_two_observation_only_core_is_technical_diagnostic(self):
+        confidence = _confidence()
+        for dimension in ("coherencia", "presencia"):
+            confidence[dimension] = {
+                "status": "degraded",
+                "confidence": 0.52,
+                "missing_signals": [],
+                "confidence_reason": ["low_feature_confidence"],
+            }
+
+        result = evaluate_report_readiness(
+            scores=_scores(82),
+            evidence_summary=_evidence(count=3),
+            confidence_summary=confidence,
+        )
+
+        self.assertEqual(result["report_mode"], REPORT_MODE_TECHNICAL)
+        self.assertIn("insufficient_ready_core_dimensions", result["blockers"])
+
+    def test_any_core_technical_only_is_technical_diagnostic(self):
+        features = {
+            "presencia": {
+                "web_presence": {
+                    "value": 50,
+                    "source": "fallback",
+                    "raw_value": {"fallback": True, "reason": "no data"},
+                },
+                "social_footprint": {"value": 75, "source": "social_media"},
+                "search_visibility": {"value": 70, "source": "exa"},
+                "directory_presence": {"value": 70, "source": "exa"},
+            }
+        }
+
+        result = evaluate_report_readiness(
+            scores=_scores(82),
+            evidence_summary=_evidence(count=3),
+            confidence_summary=_confidence(),
+            features_by_dimension=features,
+        )
+
+        self.assertEqual(result["dimension_states"]["presencia"], DIMENSION_TECHNICAL_ONLY)
+        self.assertEqual(result["report_mode"], REPORT_MODE_TECHNICAL)
+        self.assertIn("core_dimensions_technical_only", result["blockers"])
+
+    def test_one_core_not_evaluable_is_technical_diagnostic(self):
+        evidence = _evidence(count=3)
+        evidence["by_dimension"]["presencia"] = 0
+        scores = _scores(70)
+        scores["presencia"] = None
+        confidence = _confidence()
+        confidence["presencia"] = {"status": "insufficient_data", "confidence": 0.1}
+
+        result = evaluate_report_readiness(
+            scores=scores,
+            evidence_summary=evidence,
+            confidence_summary=confidence,
+        )
+
+        self.assertEqual(result["dimension_states"]["presencia"], DIMENSION_NOT_EVALUABLE)
+        self.assertEqual(result["report_mode"], REPORT_MODE_TECHNICAL)
+        self.assertIn("core_dimensions_not_evaluable", result["blockers"])
 
     def test_missing_perception_does_not_automatically_block_publication(self):
         evidence = _evidence(count=3)

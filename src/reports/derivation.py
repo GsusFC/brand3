@@ -726,11 +726,18 @@ def _readiness_diagnostic_summary(readiness: dict, *, context_readiness: dict) -
             reasons.append(f"technical-only dimensions: {', '.join(technical_only)}")
         if not_evaluable:
             reasons.append(f"not-evaluable dimensions: {', '.join(not_evaluable)}")
+        if observation_only:
+            reasons.append(f"observation-only dimensions: {', '.join(observation_only)}")
         if _context_is_limited(context_readiness):
             reasons.append("context readiness is limited")
         if not reasons:
             reasons.append("core dimensions lack enough supported evidence or confidence")
-        return "Technical diagnostic: " + "; ".join(reasons) + "."
+        return (
+            "Technical diagnostic: the report can show scores and technical signals, "
+            "but should not be treated as a publishable brand report because "
+            + "; ".join(reasons)
+            + "."
+        )
 
     if mode == "insufficient_evidence":
         if not_evaluable:

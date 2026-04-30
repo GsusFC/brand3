@@ -9,32 +9,46 @@ tests and local tooling can keep importing `main.py`.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import sys
+import types
+from pathlib import Path
 
 from src.config import (
     BRAND3_DB_PATH,
     BRAND3_PROMOTION_MAX_COMPOSITE_DROP,
     BRAND3_PROMOTION_MAX_DIMENSION_DROPS,
 )
-from src.services import brand_service
 
 
-DIMENSIONS_PATH = brand_service.DIMENSIONS_PATH
-ENGINE_PATH = brand_service.ENGINE_PATH
+PROJECT_ROOT = Path(__file__).resolve().parent
+DIMENSIONS_PATH = (PROJECT_ROOT / "src" / "dimensions.py").resolve()
+ENGINE_PATH = (PROJECT_ROOT / "src" / "scoring" / "engine.py").resolve()
+_BRAND_SERVICE = None
+
+
+def _brand_service():
+    global _BRAND_SERVICE
+    if _BRAND_SERVICE is None:
+        from src.services import brand_service as service
+
+        _BRAND_SERVICE = service
+    return _BRAND_SERVICE
 
 
 def _sync_service_config() -> None:
-    brand_service.BRAND3_DB_PATH = BRAND3_DB_PATH
-    brand_service.BRAND3_PROMOTION_MAX_COMPOSITE_DROP = BRAND3_PROMOTION_MAX_COMPOSITE_DROP
-    brand_service.BRAND3_PROMOTION_MAX_DIMENSION_DROPS = BRAND3_PROMOTION_MAX_DIMENSION_DROPS
-    brand_service.DIMENSIONS_PATH = DIMENSIONS_PATH
-    brand_service.ENGINE_PATH = ENGINE_PATH
+    service = _brand_service()
+    service.BRAND3_DB_PATH = BRAND3_DB_PATH
+    service.BRAND3_PROMOTION_MAX_COMPOSITE_DROP = BRAND3_PROMOTION_MAX_COMPOSITE_DROP
+    service.BRAND3_PROMOTION_MAX_DIMENSION_DROPS = BRAND3_PROMOTION_MAX_DIMENSION_DROPS
+    service.DIMENSIONS_PATH = DIMENSIONS_PATH
+    service.ENGINE_PATH = ENGINE_PATH
 
 
 def _delegate(fn_name: str, *args, **kwargs):
     _sync_service_config()
-    return getattr(brand_service, fn_name)(*args, **kwargs)
+    return getattr(_brand_service(), fn_name)(*args, **kwargs)
 
 
 def _build_run_audit_context(*args, **kwargs):
@@ -116,11 +130,12 @@ def apply_candidates(*args, **kwargs):
 
 def run_experiment(*args, **kwargs):
     _sync_service_config()
+    service = _brand_service()
     brand_name = kwargs.get("brand_name")
     candidate_ids = kwargs.get("candidate_ids")
     if args:
         brand_name = args[0]
-    store = brand_service.SQLiteStore(BRAND3_DB_PATH)
+    store = service.SQLiteStore(BRAND3_DB_PATH)
     try:
         before_run_id = store.get_latest_run_id(brand_name=brand_name)
         if not before_run_id:
@@ -155,12 +170,12 @@ def run_experiment(*args, **kwargs):
     if not after_run_id:
         raise ValueError("Rerun did not produce a persisted run_id")
 
-    store = brand_service.SQLiteStore(BRAND3_DB_PATH)
+    store = service.SQLiteStore(BRAND3_DB_PATH)
     try:
         after_snapshot = store.get_run_snapshot(after_run_id)
         if not after_snapshot:
             raise ValueError(f"Run {after_run_id} not found after rerun")
-        summary = brand_service._build_experiment_summary(before_snapshot, after_snapshot, applied_results)
+        summary = service._build_experiment_summary(before_snapshot, after_snapshot, applied_results)
         experiment_id = store.save_experiment(
             brand_name=baseline["brand_name"],
             url=baseline["url"],
@@ -325,6 +340,158 @@ def _cmd_render_report(a: argparse.Namespace) -> None:
     else:
         path = render_run(a.run_id, theme=a.theme)
     print(f"Rendered HTML report: {path}")
+
+
+def _cmd_readiness(a: argparse.Namespace) -> None:
+    path = Path(a.path)
+    snapshot = _load_readiness_snapshot(path)
+    context = _load_build_report_context()(snapshot, theme="dark")
+    print(_format_readiness_context(path, snapshot, context))
+
+
+def _cmd_readiness_batch(a: argparse.Namespace) -> None:
+    build_report_context = _load_build_report_context()
+    print(_format_readiness_batch_header())
+    for raw_path in a.paths:
+        path = Path(raw_path)
+        snapshot = _load_readiness_snapshot(path)
+        context = build_report_context(snapshot, theme="dark")
+        print(_format_readiness_batch_row(path, snapshot, context))
+
+
+def _load_readiness_snapshot(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        print(f"error: missing file: {path}", file=sys.stderr)
+        raise SystemExit(1)
+    except json.JSONDecodeError as exc:
+        print(f"error: invalid JSON in {path}: {exc}", file=sys.stderr)
+        raise SystemExit(1)
+
+
+def _format_readiness_context(path: Path, snapshot: dict, context: dict) -> str:
+    readiness = context.get("readiness") or {}
+    lines = [
+        f"path: {path}",
+        f"brand: {_readiness_brand_name(snapshot, context)}",
+        f"report_mode: {readiness.get('report_mode')}",
+        f"diagnostic_summary: {readiness.get('diagnostic_summary') or '(none)'}",
+        f"input_limitations: {_format_readiness_value(readiness.get('input_limitations') or [])}",
+        f"blockers: {_format_readiness_value(readiness.get('blockers') or [])}",
+        f"warnings: {_format_readiness_value(readiness.get('warnings') or [])}",
+        "dimension_states:",
+    ]
+    for name, state in sorted((readiness.get("dimension_states") or {}).items()):
+        lines.append(f"  {name}: {state}")
+    lines.extend([
+        f"fallback_detected: {_format_readiness_value(readiness.get('fallback_detected') or {})}",
+        "missing_high_weight_features: "
+        f"{_format_readiness_value(readiness.get('missing_high_weight_features') or {})}",
+    ])
+    return "\n".join(lines)
+
+
+def _format_readiness_batch_header() -> str:
+    return "\t".join([
+        "brand",
+        "report_mode",
+        "blockers",
+        "not_evaluable_dimensions",
+        "observation_only_dimensions",
+        "input_limitations",
+    ])
+
+
+def _format_readiness_batch_row(path: Path, snapshot: dict, context: dict) -> str:
+    readiness = context.get("readiness") or {}
+    dimension_states = readiness.get("dimension_states") or {}
+    not_evaluable = [
+        name for name, state in sorted(dimension_states.items())
+        if state == "not_evaluable"
+    ]
+    observation_only = [
+        name for name, state in sorted(dimension_states.items())
+        if state == "observation_only"
+    ]
+    return "\t".join([
+        _readiness_brand_name(snapshot, context),
+        readiness.get("report_mode") or "(unknown)",
+        _format_readiness_cell(readiness.get("blockers") or []),
+        _format_readiness_cell(not_evaluable),
+        _format_readiness_cell(observation_only),
+        _format_readiness_cell(readiness.get("input_limitations") or []),
+    ])
+
+
+def _readiness_brand_name(snapshot: dict, context: dict) -> str:
+    snapshot_brand = snapshot.get("brand")
+    if isinstance(snapshot_brand, str) and snapshot_brand.strip():
+        return snapshot_brand.strip()
+
+    context_brand = context.get("brand")
+    if isinstance(context_brand, dict):
+        name = context_brand.get("name")
+        if isinstance(name, str) and name.strip():
+            return name.strip()
+    if isinstance(context_brand, str) and context_brand.strip():
+        return context_brand.strip()
+
+    return "(unknown)"
+
+
+def _format_readiness_value(value) -> str:
+    if value in ({}, []):
+        return "none"
+    return json.dumps(value, ensure_ascii=False, sort_keys=True)
+
+
+def _format_readiness_cell(value) -> str:
+    if value in ({}, []):
+        return "-"
+    if isinstance(value, list):
+        return ",".join(str(item) for item in value)
+    if isinstance(value, dict):
+        return json.dumps(value, ensure_ascii=False, sort_keys=True)
+    return str(value)
+
+
+def _load_build_report_context():
+    created_package = _load_reports_submodule_without_package_init("editorial_policy")
+    module_path = Path(__file__).resolve().parent / "src" / "reports" / "derivation.py"
+    spec = importlib.util.spec_from_file_location("brand3_report_derivation_cli", module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load derivation module from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    try:
+        spec.loader.exec_module(module)
+    finally:
+        if created_package:
+            sys.modules.pop("src.reports", None)
+    return module.build_report_context
+
+
+def _load_reports_submodule_without_package_init(name: str) -> bool:
+    package_name = "src.reports"
+    created_package = False
+    if package_name not in sys.modules:
+        package = types.ModuleType(package_name)
+        package.__path__ = [str(Path(__file__).resolve().parent / "src" / "reports")]
+        sys.modules[package_name] = package
+        created_package = True
+
+    full_name = f"{package_name}.{name}"
+    if full_name in sys.modules:
+        return created_package
+    module_path = Path(__file__).resolve().parent / "src" / "reports" / f"{name}.py"
+    spec = importlib.util.spec_from_file_location(full_name, module_path)
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load {full_name} from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[full_name] = module
+    spec.loader.exec_module(module)
+    return created_package
 
 
 def _cmd_propose(a: argparse.Namespace) -> None:
@@ -493,6 +660,14 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("--theme", choices=["dark", "light"], default="dark")
     p.set_defaults(func=_cmd_render_report)
 
+    p = sub.add_parser("readiness", help="Inspect report readiness from an output JSON")
+    p.add_argument("path")
+    p.set_defaults(func=_cmd_readiness)
+
+    p = sub.add_parser("readiness-batch", help="Inspect report readiness for multiple output JSON files")
+    p.add_argument("paths", nargs="+")
+    p.set_defaults(func=_cmd_readiness_batch)
+
     p = sub.add_parser("propose")
     p.add_argument("--brand", dest="brand_name", required=True)
     p.add_argument("--limit", type=int, default=20)
@@ -587,7 +762,7 @@ def _build_parser() -> argparse.ArgumentParser:
 _KNOWN_COMMANDS = {
     "analyze", "feedback", "learn", "runs", "brands", "profiles", "benchmark",
     "benchmark-compare", "annotations", "show-run", "report", "render-report",
-    "propose", "candidates", "review-candidate", "apply-candidates", "experiment",
+    "readiness", "readiness-batch", "propose", "candidates", "review-candidate", "apply-candidates", "experiment",
     "experiments", "versions", "rollback-version", "promote-baseline",
     "baselines", "compare-version", "gate-config", "set-gate-config", "jobs",
     "job", "enqueue-job", "retry-job", "cancel-job",

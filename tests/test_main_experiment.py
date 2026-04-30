@@ -1,5 +1,8 @@
+import io
+import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -9,6 +12,100 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 class MainExperimentTests(unittest.TestCase):
+    def test_readiness_command_prints_processed_json_readiness(self):
+        snapshot = {
+            "brand": "Legacy Brand",
+            "url": "https://legacy.example",
+            "composite_score": 73.0,
+            "dimensions": {
+                "coherencia": 80.0,
+                "presencia": 75.0,
+                "percepcion": 70.0,
+                "diferenciacion": 78.0,
+                "vitalidad": 62.0,
+            },
+            "partial_dimensions": [],
+            "audit": {},
+        }
+        with tempfile.TemporaryDirectory() as tmpdir:
+            path = Path(tmpdir) / "legacy.json"
+            path.write_text(json.dumps(snapshot), encoding="utf-8")
+            stdout = io.StringIO()
+
+            with redirect_stdout(stdout):
+                main.main(["brand3", "readiness", str(path)])
+
+        output = stdout.getvalue()
+        self.assertIn(f"path: {path}", output)
+        self.assertIn("brand: Legacy Brand", output)
+        self.assertIn("report_mode: insufficient_evidence", output)
+        self.assertIn("diagnostic_summary:", output)
+        self.assertIn("input_limitations:", output)
+        self.assertIn("blockers:", output)
+        self.assertIn("warnings:", output)
+        self.assertIn("dimension_states:", output)
+        self.assertIn("fallback_detected:", output)
+        self.assertIn("missing_high_weight_features:", output)
+
+    def test_readiness_batch_command_prints_one_row_per_snapshot(self):
+        snapshots = [
+            {"brand": "Alpha", "readiness_fixture": "alpha"},
+            {"brand": "Beta", "readiness_fixture": "beta"},
+        ]
+
+        def fake_build_report_context(snapshot, theme="dark"):
+            if snapshot["readiness_fixture"] == "alpha":
+                readiness = {
+                    "report_mode": "technical_diagnostic",
+                    "blockers": ["core_dimensions_not_evaluable"],
+                    "dimension_states": {
+                        "coherencia": "not_evaluable",
+                        "diferenciacion": "observation_only",
+                        "presencia": "ready",
+                    },
+                    "input_limitations": ["legacy_score_only_snapshot"],
+                }
+            else:
+                readiness = {
+                    "report_mode": "publishable_brand_report",
+                    "blockers": [],
+                    "dimension_states": {
+                        "coherencia": "ready",
+                        "diferenciacion": "ready",
+                        "presencia": "ready",
+                    },
+                    "input_limitations": [],
+                }
+            return {"brand": snapshot["brand"], "readiness": readiness}
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            paths = []
+            for index, snapshot in enumerate(snapshots):
+                path = Path(tmpdir) / f"snapshot-{index}.json"
+                path.write_text(json.dumps(snapshot), encoding="utf-8")
+                paths.append(path)
+
+            stdout = io.StringIO()
+            with patch.object(main, "_load_build_report_context", return_value=fake_build_report_context):
+                with redirect_stdout(stdout):
+                    main.main(["brand3", "readiness-batch", *(str(path) for path in paths)])
+
+        lines = stdout.getvalue().splitlines()
+        self.assertEqual(
+            lines[0],
+            "brand\treport_mode\tblockers\tnot_evaluable_dimensions\t"
+            "observation_only_dimensions\tinput_limitations",
+        )
+        self.assertEqual(
+            lines[1],
+            "Alpha\ttechnical_diagnostic\tcore_dimensions_not_evaluable\t"
+            "coherencia\tdiferenciacion\tlegacy_score_only_snapshot",
+        )
+        self.assertEqual(
+            lines[2],
+            "Beta\tpublishable_brand_report\t-\t-\t-\t-",
+        )
+
     def test_run_experiment_applies_candidates_reruns_and_persists_delta(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

@@ -12,6 +12,14 @@ from datetime import datetime
 from typing import Any, Literal
 from urllib.parse import urlparse
 
+from src.reports.editorial_policy import (
+    allowed_language_for_dimension_state,
+    evidence_language_hint,
+    label_dimension_state,
+    label_report_mode,
+    tone_for_dimension_state,
+    tone_for_report_mode,
+)
 from src.quality.dimension_confidence import dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_records
 from src.quality.report_readiness import evaluate_report_readiness
@@ -546,6 +554,8 @@ def build_report_context_from_base(base: dict) -> dict:
     sources = base["sources"]
     audit = base["audit"]
     ui = base["ui"]
+    readiness = evaluation.get("readiness") or {}
+    editorial_policy = _editorial_policy_from_readiness(readiness)
     return {
         "theme": ui["theme"],
         "term_lines": ui["term_lines"],
@@ -571,7 +581,8 @@ def build_report_context_from_base(base: dict) -> dict:
         "evaluation": evaluation,
         "context_readiness": evaluation.get("context_readiness") or {},
         "evidence_summary": evaluation.get("evidence_summary") or {},
-        "readiness": evaluation.get("readiness") or {},
+        "readiness": readiness,
+        "editorial_policy": editorial_policy,
         "cost_policy": evaluation.get("cost_policy") or {},
         "trust_summary": evaluation.get("trust_summary") or {},
         "narrative": narrative,
@@ -584,6 +595,36 @@ def build_report_context_from_base(base: dict) -> dict:
 def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
     """Backward-compatible wrapper used by existing tests and callers."""
     return build_report_context_from_base(build_report_base(snapshot, theme=theme))
+
+
+def _editorial_policy_from_readiness(readiness: dict) -> dict:
+    mode = readiness.get("report_mode") or ""
+    dimension_states = readiness.get("dimension_states") or {}
+    return {
+        "report_mode": mode,
+        "report_mode_label": label_report_mode(mode),
+        "report_tone": tone_for_report_mode(mode),
+        "dimension_policies": {
+            name: {
+                "state": state,
+                "state_label": label_dimension_state(state),
+                "tone": tone_for_dimension_state(state),
+                "allowed_language": allowed_language_for_dimension_state(state),
+            }
+            for name, state in dimension_states.items()
+        },
+        "evidence_policy": {
+            evidence_type: evidence_language_hint(evidence_type)
+            for evidence_type in (
+                "direct",
+                "indirect",
+                "weak",
+                "off_entity",
+                "analysis_note",
+                "fallback",
+            )
+        },
+    }
 
 
 def _readiness_features_from_snapshot(snapshot: dict) -> dict[str, list[dict]]:

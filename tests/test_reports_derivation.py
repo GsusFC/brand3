@@ -516,6 +516,7 @@ class BuildReportReadinessContextTests(unittest.TestCase):
         self.assertIn("readiness", ctx)
         self.assertIn("readiness", ctx["evaluation"])
         self.assertEqual(ctx["readiness"], ctx["evaluation"]["readiness"])
+        self.assertIn("editorial_policy", ctx)
 
     def test_readiness_does_not_change_scores(self):
         snapshot = _publishable_snapshot()
@@ -531,6 +532,52 @@ class BuildReportReadinessContextTests(unittest.TestCase):
             for dimension in ctx["dimensions"]
         }
         self.assertEqual(context_score_by_dim, score_by_dim)
+
+    def test_editorial_policy_contains_report_mode_label_and_tone(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+        policy = ctx["editorial_policy"]
+
+        self.assertEqual(policy["report_mode"], ctx["readiness"]["report_mode"])
+        self.assertEqual(policy["report_mode_label"], "Publishable brand report")
+        self.assertEqual(policy["report_tone"]["tone"], "editorial")
+        self.assertTrue(policy["report_tone"]["allows_strategic_implications"])
+
+    def test_editorial_policy_contains_per_dimension_state_policy(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+        policy = ctx["editorial_policy"]
+
+        self.assertEqual(
+            set(policy["dimension_policies"]),
+            set(ctx["readiness"]["dimension_states"]),
+        )
+        coherencia = policy["dimension_policies"]["coherencia"]
+        self.assertEqual(coherencia["state"], "ready")
+        self.assertEqual(coherencia["state_label"], "Ready")
+        self.assertEqual(coherencia["tone"]["language_level"], "editorial")
+        self.assertTrue(coherencia["allowed_language"]["may_state_findings"])
+
+    def test_editorial_policy_contains_evidence_policy(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+        evidence_policy = ctx["editorial_policy"]["evidence_policy"]
+
+        self.assertTrue(evidence_policy["direct"]["can_support_editorial_claims"])
+        self.assertFalse(evidence_policy["weak"]["can_support_editorial_claims"])
+        self.assertFalse(evidence_policy["off_entity"]["can_support_editorial_claims"])
+        self.assertEqual(
+            evidence_policy["fallback"]["language"],
+            "not evidence, only technical explanation",
+        )
+
+    def test_editorial_policy_does_not_change_scores_or_dimensions(self):
+        snapshot = _publishable_snapshot()
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertIn("editorial_policy", ctx)
+        self.assertEqual(ctx["score"]["global"], snapshot["run"]["composite_score"])
+        self.assertEqual(
+            [dimension["name"] for dimension in ctx["dimensions"]],
+            ["coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad"],
+        )
 
     def test_weak_fallback_like_context_produces_non_publishable_readiness(self):
         snapshot = _publishable_snapshot()

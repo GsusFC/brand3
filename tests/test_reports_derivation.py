@@ -6,12 +6,17 @@ import unittest
 
 from src.reports.derivation import (
     Evidence,
+    build_report_context,
     collect_evidences,
     derive_data_quality,
     derive_verdict,
     group_by_dimension,
     _extract_domain,
     _infer_source_type,
+)
+from src.quality.report_readiness import (
+    REPORT_MODE_PUBLISHABLE,
+    REPORT_MODE_TECHNICAL,
 )
 
 
@@ -48,6 +53,52 @@ def _snapshot(
         "evidence_items": evidence_items or [],
         "annotations": [],
     }
+
+
+def _score_rows(value: float = 80.0) -> list[dict]:
+    return [
+        {"dimension_name": dimension, "score": value, "insights_json": "[]", "rules_json": "[]"}
+        for dimension in ("coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad")
+    ]
+
+
+def _supported_feature(dimension: str, feature_name: str, source: str = "web_scrape") -> dict:
+    return {
+        "dimension_name": dimension,
+        "feature_name": feature_name,
+        "value": 82.0,
+        "raw_value": repr({
+            "evidence": [
+                {
+                    "quote": f"{dimension} {feature_name} supported.",
+                    "source_url": "https://example.com",
+                }
+            ]
+        }),
+        "confidence": 0.9,
+        "source": source,
+    }
+
+
+def _publishable_snapshot() -> dict:
+    return _snapshot(
+        features=[
+            _supported_feature("coherencia", "visual_consistency"),
+            _supported_feature("coherencia", "messaging_consistency", "llm"),
+            _supported_feature("coherencia", "tone_consistency", "llm"),
+            _supported_feature("coherencia", "cross_channel_coherence", "exa"),
+            _supported_feature("presencia", "web_presence"),
+            _supported_feature("presencia", "social_footprint", "social_media"),
+            _supported_feature("presencia", "search_visibility", "exa"),
+            _supported_feature("presencia", "directory_presence", "exa"),
+            _supported_feature("diferenciacion", "positioning_clarity", "llm"),
+            _supported_feature("diferenciacion", "uniqueness", "llm"),
+            _supported_feature("diferenciacion", "competitor_distance", "exa"),
+            _supported_feature("diferenciacion", "content_authenticity", "content_analysis"),
+            _supported_feature("diferenciacion", "brand_personality", "content_analysis"),
+        ],
+        scores=_score_rows(82.0),
+    )
 
 
 NETLIFY_SNAPSHOT = _snapshot(
@@ -377,6 +428,85 @@ class DeriveDataQualityTests(unittest.TestCase):
             _feat("diferenciacion", "uniqueness", "llm", {"x": 1}),
         ])
         self.assertEqual(derive_data_quality(snap), "good")
+
+
+class BuildReportReadinessContextTests(unittest.TestCase):
+    def test_readiness_exists_without_removing_existing_context_keys(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+
+        for key in (
+            "theme",
+            "term_lines",
+            "brand",
+            "score",
+            "summary",
+            "legacy_summary",
+            "synthesis_prose",
+            "tensions_prose",
+            "sources_grouped",
+            "all_sources",
+            "dimensions",
+            "rules_applied",
+            "footer",
+            "evaluation",
+            "context_readiness",
+            "evidence_summary",
+            "cost_policy",
+            "trust_summary",
+            "narrative",
+            "sources",
+            "audit",
+            "ui",
+        ):
+            self.assertIn(key, ctx)
+
+        self.assertIn("readiness", ctx)
+        self.assertIn("readiness", ctx["evaluation"])
+        self.assertEqual(ctx["readiness"], ctx["evaluation"]["readiness"])
+
+    def test_readiness_does_not_change_scores(self):
+        snapshot = _publishable_snapshot()
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["score"]["global"], snapshot["run"]["composite_score"])
+        score_by_dim = {
+            row["dimension_name"]: row["score"]
+            for row in snapshot["scores"]
+        }
+        context_score_by_dim = {
+            dimension["name"]: dimension["score"]
+            for dimension in ctx["dimensions"]
+        }
+        self.assertEqual(context_score_by_dim, score_by_dim)
+
+    def test_weak_fallback_like_context_produces_non_publishable_readiness(self):
+        snapshot = _publishable_snapshot()
+        snapshot["features"] = list(snapshot["features"]) + [
+            {
+                "dimension_name": "presencia",
+                "feature_name": "web_presence",
+                "value": 50.0,
+                "raw_value": repr({"fallback": True, "reason": "no data"}),
+                "confidence": 0.2,
+                "source": "fallback",
+            }
+        ]
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_TECHNICAL)
+        self.assertEqual(
+            ctx["readiness"]["dimension_states"]["presencia"],
+            "technical_only",
+        )
+
+    def test_strong_context_can_produce_publishable_readiness(self):
+        ctx = build_report_context(_publishable_snapshot(), theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
+        self.assertEqual(ctx["readiness"]["dimension_states"]["coherencia"], "ready")
+        self.assertEqual(ctx["readiness"]["dimension_states"]["presencia"], "ready")
+        self.assertEqual(ctx["readiness"]["dimension_states"]["diferenciacion"], "ready")
 
 
 if __name__ == "__main__":

@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 from src.quality.dimension_confidence import dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_records
+from src.quality.report_readiness import evaluate_report_readiness
 from src.quality.trust import (
     build_trust_summary,
     dimension_status_counts_from_report_dimensions,
@@ -397,6 +398,16 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         snapshot.get("features") or [],
         evidence_items=snapshot.get("evidence_items") or [],
     )
+    readiness = evaluate_report_readiness(
+        scores={
+            row.get("dimension_name"): row.get("score")
+            for row in scores
+            if row.get("dimension_name")
+        },
+        evidence_summary=evidence_summary,
+        confidence_summary=confidence_by_dim,
+        features_by_dimension=_readiness_features_from_snapshot(snapshot),
+    )
     cost_policy = _cost_policy_from_snapshot(snapshot)
     dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
@@ -497,6 +508,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "overall_reason": trust_summary["overall_reason"],
             "overall_reason_label": trust_summary["overall_reason_label"],
             "trust_summary": trust_summary,
+            "readiness": readiness,
         },
         "dimensions": dimensions_ctx,
         "rules_applied": all_rules_applied,
@@ -563,6 +575,7 @@ def build_report_context_from_base(base: dict) -> dict:
         "evaluation": evaluation,
         "context_readiness": evaluation.get("context_readiness") or {},
         "evidence_summary": evaluation.get("evidence_summary") or {},
+        "readiness": evaluation.get("readiness") or {},
         "cost_policy": evaluation.get("cost_policy") or {},
         "trust_summary": evaluation.get("trust_summary") or {},
         "narrative": narrative,
@@ -575,6 +588,22 @@ def build_report_context_from_base(base: dict) -> dict:
 def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
     """Backward-compatible wrapper used by existing tests and callers."""
     return build_report_context_from_base(build_report_base(snapshot, theme=theme))
+
+
+def _readiness_features_from_snapshot(snapshot: dict) -> dict[str, list[dict]]:
+    by_dimension: dict[str, list[dict]] = {}
+    for feature in snapshot.get("features") or []:
+        dimension_name = feature.get("dimension_name") or ""
+        if not dimension_name:
+            continue
+        by_dimension.setdefault(dimension_name, []).append({
+            "feature_name": feature.get("feature_name"),
+            "value": feature.get("value"),
+            "confidence": feature.get("confidence"),
+            "source": feature.get("source") or "",
+            "raw_value": feature.get("raw_value"),
+        })
+    return by_dimension
 
 
 def _context_readiness_from_snapshot(snapshot: dict) -> dict:

@@ -107,6 +107,10 @@
   .diagnostic-block .section-head {
     margin: 0 0 8px;
   }
+  .diagnostic-summary {
+    margin: 0 0 10px;
+    color: var(--fg);
+  }
   .diagnostic-block table th {
     border-bottom: 0;
     color: var(--muted);
@@ -338,6 +342,9 @@
     <span class="label">Report readiness</span>
     <span class="tag">// diagnostic</span>
   </div>
+  {%- if readiness.diagnostic_summary %}
+  <p class="diagnostic-summary">{{ readiness.diagnostic_summary }}</p>
+  {%- endif %}
   <table>
     <tbody>
       <tr>

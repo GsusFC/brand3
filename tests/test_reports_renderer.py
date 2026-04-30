@@ -306,6 +306,8 @@ class ReportRendererTests(unittest.TestCase):
 
         self.assertIn("Report readiness", html)
         self.assertIn("Insufficient evidence", html)
+        self.assertIn("diagnostic-summary", html)
+        self.assertIn(ctx["readiness"]["diagnostic_summary"], html)
         self.assertIn("dimensions", html)
         self.assertIn("Not evaluable", html)
 

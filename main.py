@@ -335,11 +335,49 @@ def _cmd_report(a: argparse.Namespace) -> None:
 def _cmd_render_report(a: argparse.Namespace) -> None:
     from src.reports.renderer import render_latest, render_run
 
-    if a.latest:
+    if a.show_readiness_diagnostic:
+        path = _render_report_with_readiness_diagnostic(
+            run_id=a.run_id,
+            latest=a.latest,
+            theme=a.theme,
+        )
+    elif a.latest:
         path = render_latest(theme=a.theme)
     else:
         path = render_run(a.run_id, theme=a.theme)
     print(f"Rendered HTML report: {path}")
+
+
+def _render_report_with_readiness_diagnostic(
+    *,
+    run_id: int | None,
+    latest: bool,
+    theme: str,
+) -> Path:
+    from src.reports.dossier import build_brand_dossier
+    from src.reports.renderer import ReportRenderer, _resolve_output_path
+    from src.storage.sqlite_store import SQLiteStore
+
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        resolved_run_id = store.get_latest_run_id() if latest else run_id
+        if not resolved_run_id:
+            raise ValueError("no runs found" if latest else f"run_id={run_id} not found")
+        snapshot = store.get_run_snapshot(int(resolved_run_id))
+        if snapshot is None:
+            raise ValueError(f"run_id={resolved_run_id} not found")
+    finally:
+        store.close()
+
+    context = build_brand_dossier(snapshot, theme=theme)
+    context.setdefault("ui", {})["show_readiness_diagnostic"] = True
+
+    renderer = ReportRenderer()
+    html = renderer.env.get_template("report.html.j2").render(**context)
+    path = _resolve_output_path(snapshot, theme, None)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(html, encoding="utf-8")
+    return path
 
 
 def _cmd_readiness(a: argparse.Namespace) -> None:
@@ -658,6 +696,7 @@ def _build_parser() -> argparse.ArgumentParser:
     group.add_argument("--run-id", type=int)
     group.add_argument("--latest", action="store_true")
     p.add_argument("--theme", choices=["dark", "light"], default="dark")
+    p.add_argument("--show-readiness-diagnostic", action="store_true")
     p.set_defaults(func=_cmd_render_report)
 
     p = sub.add_parser("readiness", help="Inspect report readiness from an output JSON")

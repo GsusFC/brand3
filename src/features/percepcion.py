@@ -25,7 +25,7 @@ from ..models.brand import FeatureValue
 from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
-from .llm_analyzer import LLMAnalyzer
+from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 
 
 _VALID_SENTIMENT_VERDICTS = frozenset({"positive", "mixed", "negative", "unclear"})
@@ -233,7 +233,7 @@ class PercepcionExtractor:
 
             if not isinstance(result, dict) or "sentiment_score" not in result:
                 return self._sentiment_heuristic(
-                    exa, reason="llm_invalid_response",
+                    exa, reason=llm_failure_reason(self.llm, "llm_invalid_response"),
                     extra={"got": type(result).__name__},
                 )
 
@@ -445,7 +445,7 @@ class PercepcionExtractor:
             if older_score is None or newer_score is None:
                 return self._trend_heuristic(
                     older, newer, dated_count=len(dated),
-                    reason="llm_invalid_response",
+                    reason=llm_failure_reason(self.llm, "llm_invalid_response"),
                 )
 
             delta = newer_score - older_score

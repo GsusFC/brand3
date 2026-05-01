@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 from src.collectors.context_collector import ContextData
 from src.collectors.exa_collector import ExaData, ExaResult
+from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebData
 from src.services import brand_service
 from src.services.brand_service import (
@@ -494,6 +495,326 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 store.close()
             raw_sources = {item["source"] for item in snapshot["raw_inputs"]}
             self.assertTrue({"context", "web", "exa"}.issubset(raw_sources))
+
+    def test_run_refresh_bypasses_raw_input_cache_reads_but_writes_fresh_inputs(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(
+                url="https://example.com",
+                robots_found=True,
+                sitemap_found=True,
+                sitemap_url_count=3,
+                coverage=0.8,
+                confidence=0.8,
+            )
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Example brand builds reliable software. " * 12,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
+                    for i in range(5)
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context) as context_scan:
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web) as web_scrape:
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa) as exa_collect:
+                            brand_service.run(
+                                "https://example.com",
+                                "Example",
+                                use_llm=False,
+                                use_social=False,
+                                use_competitors=False,
+                                skip_visual_analysis=True,
+                            )
+                            refreshed = brand_service.run(
+                                "https://example.com",
+                                "Example",
+                                use_llm=False,
+                                use_social=False,
+                                use_competitors=False,
+                                skip_visual_analysis=True,
+                                refresh=True,
+                            )
+
+            self.assertEqual(context_scan.call_count, 2)
+            self.assertEqual(web_scrape.call_count, 2)
+            self.assertEqual(exa_collect.call_count, 2)
+            self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["context"], "miss")
+            self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["web"], "miss")
+            self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["exa"], "miss")
+            self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["social"], "skipped")
+
+            store = SQLiteStore(str(db_path))
+            try:
+                snapshot = store.get_run_snapshot(refreshed["run_id"])
+            finally:
+                store.close()
+            raw_sources = {item["source"] for item in snapshot["raw_inputs"]}
+            self.assertTrue({"context", "web", "exa"}.issubset(raw_sources))
+
+    def test_run_social_timeout_continues_and_records_limitation(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(
+                url="https://example.com",
+                robots_found=True,
+                sitemap_found=True,
+                sitemap_url_count=3,
+                coverage=0.8,
+                confidence=0.8,
+            )
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Example brand builds reliable software. " * 12,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
+                    for i in range(5)
+                ],
+            )
+            social = SocialData(brand_name="Example", error="social_collection_timeout_after_1s")
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            with patch(
+                                "src.services.brand_service._collect_social_with_budget",
+                                return_value=(social, "timeout"),
+                            ):
+                                result = brand_service.run(
+                                    "https://example.com",
+                                    "Example",
+                                    use_llm=False,
+                                    use_social=True,
+                                    use_competitors=False,
+                                    skip_visual_analysis=True,
+                                    refresh=True,
+                                )
+
+            self.assertEqual(result["brand"], "Example")
+            self.assertFalse(result["social_scraped"])
+            self.assertEqual(result["data_sources"]["social_limitation"], "timeout")
+            self.assertEqual(result["data_sources"]["raw_input_cache"]["social"], "timeout")
+            self.assertEqual(result["data_sources"]["cost_policy"]["skipped"]["social"], "collection_timeout")
+
+            store = SQLiteStore(str(db_path))
+            try:
+                snapshot = store.get_run_snapshot(result["run_id"])
+            finally:
+                store.close()
+            social_inputs = [item for item in snapshot["raw_inputs"] if item["source"] == "social"]
+            self.assertEqual(len(social_inputs), 1)
+            self.assertEqual(social_inputs[0]["payload"]["error"], "social_collection_timeout_after_1s")
+
+    def test_run_social_error_continues_and_records_limitation(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(url="https://example.com", coverage=0.8, confidence=0.8)
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Example brand builds reliable software. " * 12,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
+                    for i in range(5)
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            with patch(
+                                "src.services.brand_service._collect_social_with_budget",
+                                side_effect=RuntimeError("firebase/firecrawl unavailable"),
+                            ):
+                                result = brand_service.run(
+                                    "https://example.com",
+                                    "Example",
+                                    use_llm=False,
+                                    use_social=True,
+                                    use_competitors=False,
+                                    skip_visual_analysis=True,
+                                    refresh=True,
+                                )
+
+            self.assertEqual(result["brand"], "Example")
+            self.assertFalse(result["social_scraped"])
+            self.assertEqual(result["data_sources"]["social_limitation"], "error")
+            self.assertEqual(result["data_sources"]["raw_input_cache"]["social"], "error")
+            self.assertEqual(result["data_sources"]["cost_policy"]["skipped"]["social"], "collection_error")
+
+    def test_run_social_success_preserves_normal_behavior(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(url="https://example.com", coverage=0.8, confidence=0.8)
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Example brand builds reliable software. " * 12,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
+                    for i in range(5)
+                ],
+            )
+            social = SocialData(
+                brand_name="Example",
+                platforms={
+                    "linkedin": PlatformMetrics(
+                        platform="linkedin",
+                        profile_url="https://linkedin.com/company/example",
+                        followers_count=1200,
+                    )
+                },
+                profiles_found=["https://linkedin.com/company/example"],
+                total_followers=1200,
+                most_active_platform="linkedin",
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            with patch(
+                                "src.services.brand_service._collect_social_with_budget",
+                                return_value=(social, None),
+                            ):
+                                result = brand_service.run(
+                                    "https://example.com",
+                                    "Example",
+                                    use_llm=False,
+                                    use_social=True,
+                                    use_competitors=False,
+                                    skip_visual_analysis=True,
+                                    refresh=True,
+                                )
+
+            self.assertTrue(result["social_scraped"])
+            self.assertIsNone(result["data_sources"]["social_limitation"])
+            self.assertEqual(result["data_sources"]["raw_input_cache"]["social"], "miss")
+            self.assertNotIn("social", result["data_sources"]["cost_policy"]["skipped"])
+
+    def test_run_llm_feature_timeout_continues_and_records_limitation(self):
+        class FakeLLM:
+            api_key = "key"
+            model = "fake-model"
+            cache_hits = 0
+            cache_misses = 1
+            cache_writes = 0
+
+            def __init__(self):
+                self.last_failure_reason = None
+                self.call_failures = []
+
+            def analyze_momentum(self, mentions, brand_name):
+                return {"momentum_score": 60, "verdict": "maintaining", "signals": [], "evidence": []}
+
+            def analyze_messaging_consistency(self, web_content, mentions, brand_name):
+                self.last_failure_reason = None
+                return {
+                    "consistency_score": 80,
+                    "verdict": "aligned",
+                    "self_category": "software",
+                    "third_party_category": "software",
+                    "aligned_themes": ["software"],
+                    "gaps": [],
+                }
+
+            def analyze_tone_consistency(self, web_content, snippets, brand_name):
+                self.last_failure_reason = None
+                return {
+                    "tone_consistency_score": 75,
+                    "gap_signal": "none",
+                    "self_tone": "clear",
+                    "external_tone": "clear",
+                    "examples": [],
+                }
+
+            def analyze_positioning_clarity(self, content, brand_name, competitor_snippets):
+                self.last_failure_reason = None
+                return {
+                    "clarity_score": 82,
+                    "verdict": "clear",
+                    "stated_position": "Reliable software for teams.",
+                    "target_audience": "Teams",
+                    "differentiator_claimed": "Reliability",
+                    "evidence": [{"quote": "Reliable software for teams.", "signal": "clear"}],
+                }
+
+            def analyze_uniqueness(self, content, brand_name, competitor_snippets):
+                self.last_failure_reason = "llm_timeout"
+                self.call_failures.append({"reason": "llm_timeout", "error": "llm_call_timeout_after_1s"})
+                return {}
+
+            def analyze_brand_sentiment(self, mentions, brand_name):
+                self.last_failure_reason = None
+                return {
+                    "sentiment_score": 72,
+                    "verdict": "positive",
+                    "controversy": False,
+                    "signals": [],
+                    "evidence": [],
+                }
+
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(url="https://example.com", coverage=0.8, confidence=0.8)
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Reliable software for teams. " * 40,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Positive Example mention", text="Example is reliable.")
+                    for i in range(5)
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            with patch("src.services.brand_service.LLMAnalyzer", FakeLLM):
+                                with patch("src.services.brand_service._take_screenshot_with_budget", return_value=({}, "timeout")):
+                                    result = brand_service.run(
+                                        "https://example.com",
+                                        "Example",
+                                        use_llm=True,
+                                        use_social=False,
+                                        use_competitors=False,
+                                        skip_visual_analysis=False,
+                                        refresh=True,
+                                    )
+
+        self.assertEqual(result["brand"], "Example")
+        self.assertIn("diferenciacion", result["dimensions"])
+        self.assertIn("percepcion", result["dimensions"])
+        self.assertEqual(
+            result["data_sources"]["llm_cache"]["call_failures"][0]["reason"],
+            "llm_timeout",
+        )
+        self.assertEqual(
+            result["data_sources"]["cost_policy"]["skipped"]["llm_feature_calls"],
+            "partial_timeout_or_error",
+        )
 
 
 if __name__ == "__main__":

@@ -12,6 +12,10 @@ Provider is configured via src.config (OpenAI-compatible API).
 
 import json
 import hashlib
+import multiprocessing as mp
+import os
+import queue
+import socket
 import urllib.request
 import urllib.error
 
@@ -19,6 +23,76 @@ from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MOD
 
 
 PROMPT_VERSION = "brand3-llm-v1"
+LLM_CALL_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_LLM_CALL_TIMEOUT_SECONDS", "35"))
+
+
+def _looks_like_timeout(exc: BaseException) -> bool:
+    if isinstance(exc, (TimeoutError, socket.timeout)):
+        return True
+    reason = getattr(exc, "reason", None)
+    if isinstance(reason, (TimeoutError, socket.timeout)):
+        return True
+    return "timed out" in str(exc).lower() or "timeout" in str(exc).lower()
+
+
+def _llm_http_worker(output_queue, url: str, payload: bytes, headers: dict[str, str], timeout_seconds: int) -> None:
+    req = urllib.request.Request(url, data=payload, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
+            data = json.loads(resp.read())
+            msg = data["choices"][0]["message"]
+            content = msg.get("content") or msg.get("reasoning") or ""
+            output_queue.put(("ok", content))
+    except urllib.error.HTTPError as exc:
+        error_body = exc.read().decode("utf-8", errors="replace")[:500]
+        output_queue.put(("error", f"HTTP {exc.code}: {error_body}"))
+    except Exception as exc:
+        reason = "timeout" if _looks_like_timeout(exc) else "error"
+        output_queue.put((reason, str(exc)))
+
+
+def _run_llm_http_call(
+    *,
+    url: str,
+    payload: bytes,
+    headers: dict[str, str],
+    timeout_seconds: int,
+) -> tuple[str, str]:
+    if timeout_seconds <= 0:
+        req = urllib.request.Request(url, data=payload, headers=headers)
+        with urllib.request.urlopen(req, timeout=None) as resp:
+            data = json.loads(resp.read())
+            msg = data["choices"][0]["message"]
+            return "ok", msg.get("content") or msg.get("reasoning") or ""
+
+    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    output_queue = ctx.Queue(maxsize=1)
+    process = ctx.Process(
+        target=_llm_http_worker,
+        args=(output_queue, url, payload, headers, timeout_seconds),
+    )
+    process.start()
+    process.join(timeout_seconds + 2)
+    if process.is_alive():
+        process.terminate()
+        process.join(2)
+        if process.is_alive():
+            process.kill()
+            process.join(2)
+        return "timeout", f"llm_call_timeout_after_{timeout_seconds}s"
+
+    try:
+        status, content = output_queue.get_nowait()
+    except queue.Empty:
+        return "error", "llm_call_no_result"
+    return str(status), str(content or "")
+
+
+def llm_failure_reason(llm, default: str) -> str:
+    reason = getattr(llm, "last_failure_reason", None)
+    if reason in {"llm_timeout", "llm_error"}:
+        return reason
+    return default
 
 
 class LLMAnalyzer:
@@ -31,6 +105,16 @@ class LLMAnalyzer:
         self.cache_hits = 0
         self.cache_misses = 0
         self.cache_writes = 0
+        self.timeout_seconds = LLM_CALL_TIMEOUT_SECONDS
+        self.last_failure_reason: str | None = None
+        self.call_failures: list[dict[str, str]] = []
+
+    def _record_failure(self, reason: str, error: str) -> None:
+        self.last_failure_reason = reason
+        self.call_failures.append({"reason": reason, "error": error[:200]})
+
+    def _clear_failure(self) -> None:
+        self.last_failure_reason = None
 
     def _cache_key(self, response_type: str, system: str, user: str, max_tokens: int) -> str:
         payload = {
@@ -96,6 +180,7 @@ class LLMAnalyzer:
         cache_key = self._cache_key("text", system, user, max_tokens)
         cached = self._cache_get(cache_key, "text")
         if cached is not None:
+            self._clear_failure()
             return cached
         self.cache_misses += 1
 
@@ -110,32 +195,24 @@ class LLMAnalyzer:
         }
         payload = json.dumps(body).encode()
 
-        req = urllib.request.Request(
-            f"{self.base_url}/chat/completions",
-            data=payload,
+        status, content = _run_llm_http_call(
+            url=f"{self.base_url}/chat/completions",
+            payload=payload,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",
             },
+            timeout_seconds=self.timeout_seconds,
         )
+        if status == "ok":
+            self._clear_failure()
+            self._cache_save(cache_key, "text", content)
+            return content
 
-        try:
-            with urllib.request.urlopen(req, timeout=120) as resp:
-                data = json.loads(resp.read())
-                msg = data["choices"][0]["message"]
-                content = msg.get("content") or ""
-                # Some reasoning models put response in reasoning field when content is null
-                if not content:
-                    content = msg.get("reasoning") or ""
-                self._cache_save(cache_key, "text", content)
-                return content
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode("utf-8", errors="replace")[:500]
-            print(f"  LLM call failed: HTTP {e.code}: {error_body}")
-            return ""
-        except Exception as e:
-            print(f"  LLM call failed: {e}")
-            return ""
+        reason = "llm_timeout" if status == "timeout" else "llm_error"
+        self._record_failure(reason, content)
+        print(f"  LLM call failed: {content}")
+        return ""
 
     def _call_json(self, system: str, user: str, max_tokens: int = 8000) -> dict:
         """Make an LLM call expecting strict JSON response.
@@ -149,6 +226,7 @@ class LLMAnalyzer:
         cache_key = self._cache_key("json", system, user, max_tokens)
         cached = self._cache_get(cache_key, "json")
         if cached is not None:
+            self._clear_failure()
             return cached
         self.cache_misses += 1
 
@@ -164,27 +242,21 @@ class LLMAnalyzer:
         }
 
         payload = json.dumps(body).encode()
-        req = urllib.request.Request(
-            f"{self.base_url}/chat/completions",
-            data=payload,
+        status, content = _run_llm_http_call(
+            url=f"{self.base_url}/chat/completions",
+            payload=payload,
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",
             },
+            timeout_seconds=self.timeout_seconds,
         )
-
-        try:
-            with urllib.request.urlopen(req, timeout=120) as resp:
-                data = json.loads(resp.read())
-                msg = data["choices"][0]["message"]
-                content = msg.get("content") or msg.get("reasoning") or ""
-        except urllib.error.HTTPError as e:
-            error_body = e.read().decode("utf-8", errors="replace")[:500]
-            print(f"  LLM JSON call failed: HTTP {e.code}: {error_body}")
+        if status != "ok":
+            reason = "llm_timeout" if status == "timeout" else "llm_error"
+            self._record_failure(reason, content)
+            print(f"  LLM JSON call failed: {content}")
             return {}
-        except Exception as e:
-            print(f"  LLM JSON call failed: {e}")
-            return {}
+        self._clear_failure()
 
         if not content:
             return {}

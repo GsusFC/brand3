@@ -406,6 +406,25 @@ class DiferenciacionExtractorTests(unittest.TestCase):
         self.assertGreater(feature.raw_value["ratio"], 0.0)
         self.assertGreater(feature.raw_value["sentence_count"], 0)
 
+    def test_uniqueness_llm_timeout_uses_fallback_with_timeout_reason(self):
+        web = WebData(
+            url="https://generic.example",
+            title="Generic SaaS",
+            markdown_content=(
+                "# Generic SaaS\n\n"
+                "We help businesses grow and improve efficiency.\n"
+                "Save time. Save money. Better results. Cutting edge workflows.\n"
+            ),
+        )
+        llm = self._make_llm(uniqueness={})
+        llm.last_failure_reason = "llm_timeout"
+
+        feature = DiferenciacionExtractor(llm=llm)._uniqueness(web)
+
+        self.assertEqual(feature.source, "heuristic_fallback")
+        self.assertEqual(feature.raw_value["reason"], "llm_timeout")
+        self.assertGreater(feature.raw_value["sentence_count"], 0)
+
     def test_uniqueness_with_llm_uses_structured_output(self):
         web = WebData(
             url="https://example.com",

@@ -23,7 +23,7 @@ from ..models.brand import FeatureValue
 from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
-from .llm_analyzer import LLMAnalyzer
+from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 
 
 _DATE_FORMATS = ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%B %d, %Y")
@@ -286,7 +286,7 @@ class VitalidadExtractor:
             return FeatureValue(
                 "momentum", 50.0,
                 raw_value={
-                    "reason": "llm_invalid_response",
+                    "reason": llm_failure_reason(self.llm, "llm_invalid_response"),
                     "got": type(result).__name__,
                 },
                 confidence=0.3, source="heuristic_fallback",

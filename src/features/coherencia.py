@@ -24,7 +24,7 @@ from ..models.brand import FeatureValue
 from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
-from .llm_analyzer import LLMAnalyzer
+from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 from .visual_analyzer import VisualAnalyzer
 
 
@@ -326,7 +326,7 @@ class CoherenciaExtractor:
             if not isinstance(result, dict) or "consistency_score" not in result:
                 return self._messaging_heuristic(
                     web, exa,
-                    reason="llm_invalid_response",
+                    reason=llm_failure_reason(self.llm, "llm_invalid_response"),
                     extra={"got": type(result).__name__},
                 )
 
@@ -469,7 +469,7 @@ class CoherenciaExtractor:
                                             extra={"error": str(exc)[:200]})
 
             if not isinstance(result, dict) or "tone_consistency_score" not in result:
-                return self._tone_heuristic(web, reason="llm_invalid_response",
+                return self._tone_heuristic(web, reason=llm_failure_reason(self.llm, "llm_invalid_response"),
                                             extra={"got": type(result).__name__})
 
             gap_signal = result.get("gap_signal", "none")

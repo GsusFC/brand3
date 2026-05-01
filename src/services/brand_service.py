@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import multiprocessing as mp
+import os
+import queue
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
@@ -62,6 +65,8 @@ _MIN_USABLE_WEB_CHARS = 200
 _MIN_EXA_FALLBACK_MENTIONS = 3
 _MIN_EXA_FALLBACK_CHARS = 300
 _MAX_EXA_FALLBACK_ITEMS = 8
+_SOCIAL_COLLECTION_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_SOCIAL_TIMEOUT_SECONDS", "25"))
+_VISUAL_SCREENSHOT_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_VISUAL_SCREENSHOT_TIMEOUT_SECONDS", "20"))
 _OWNED_FALLBACK_PATHS = (
     "/about",
     "/pricing",
@@ -416,6 +421,107 @@ def _from_social_payload(payload: dict | None) -> SocialData | None:
     )
 
 
+def _social_collect_worker(
+    output_queue,
+    api_key: str | None,
+    brand_name: str,
+    web_content: str,
+) -> None:
+    try:
+        data = SocialCollector(api_key=api_key).collect(brand_name, web_content)
+        output_queue.put(("ok", data))
+    except Exception as exc:
+        output_queue.put(("error", str(exc)))
+
+
+def _collect_social_with_budget(
+    brand_name: str,
+    web_content: str,
+    *,
+    api_key: str | None = None,
+    timeout_seconds: int = _SOCIAL_COLLECTION_TIMEOUT_SECONDS,
+) -> tuple[SocialData, str | None]:
+    if timeout_seconds <= 0:
+        try:
+            return SocialCollector(api_key=api_key).collect(brand_name, web_content), None
+        except Exception as exc:
+            return SocialData(brand_name=brand_name, error=str(exc)), "error"
+
+    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    output_queue = ctx.Queue(maxsize=1)
+    process = ctx.Process(
+        target=_social_collect_worker,
+        args=(output_queue, api_key, brand_name, web_content),
+    )
+    process.start()
+    process.join(timeout_seconds)
+    if process.is_alive():
+        process.terminate()
+        process.join(2)
+        if process.is_alive():
+            process.kill()
+            process.join(2)
+        error = f"social_collection_timeout_after_{timeout_seconds}s"
+        return SocialData(brand_name=brand_name, error=error), "timeout"
+
+    try:
+        status, payload = output_queue.get_nowait()
+    except queue.Empty:
+        error = "social_collection_no_result"
+        return SocialData(brand_name=brand_name, error=error), "error"
+
+    if status == "ok" and isinstance(payload, SocialData):
+        return payload, None
+
+    error = str(payload or "social_collection_error")
+    return SocialData(brand_name=brand_name, error=error), "error"
+
+
+def _screenshot_capture_worker(output_queue, url: str) -> None:
+    try:
+        from src.features.visual_analyzer import VisualAnalyzer
+
+        output_queue.put(("ok", VisualAnalyzer().take_screenshot(url)))
+    except Exception as exc:
+        output_queue.put(("error", str(exc)))
+
+
+def _take_screenshot_with_budget(
+    url: str,
+    *,
+    timeout_seconds: int = _VISUAL_SCREENSHOT_TIMEOUT_SECONDS,
+) -> tuple[dict[str, object], str | None]:
+    if timeout_seconds <= 0:
+        try:
+            from src.features.visual_analyzer import VisualAnalyzer
+
+            return VisualAnalyzer().take_screenshot(url), None
+        except Exception as exc:
+            return {"error": str(exc)}, "error"
+
+    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    output_queue = ctx.Queue(maxsize=1)
+    process = ctx.Process(target=_screenshot_capture_worker, args=(output_queue, url))
+    process.start()
+    process.join(timeout_seconds)
+    if process.is_alive():
+        process.terminate()
+        process.join(2)
+        if process.is_alive():
+            process.kill()
+            process.join(2)
+        return {"error": f"visual_screenshot_timeout_after_{timeout_seconds}s"}, "timeout"
+
+    try:
+        status, payload = output_queue.get_nowait()
+    except queue.Empty:
+        return {"error": "visual_screenshot_no_result"}, "error"
+
+    if status == "ok" and isinstance(payload, dict):
+        return payload, None
+    return {"error": str(payload or "visual_screenshot_error")}, "error"
+
+
 def _from_competitor_payload(payload: dict | None) -> CompetitorData | None:
     if not payload:
         return None
@@ -549,15 +655,18 @@ def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = Non
             "cache_misses": 0,
             "cache_writes": 0,
             "skipped_reason": skipped_reason,
+            "call_failures": [],
         }
     hits = int(getattr(llm, "cache_hits", 0) or 0)
     misses = int(getattr(llm, "cache_misses", 0) or 0)
     writes = int(getattr(llm, "cache_writes", 0) or 0)
+    failures = list(getattr(llm, "call_failures", []) or [])
     return {
         "cache_hits": hits,
         "cache_misses": misses,
         "cache_writes": writes,
         "skipped_reason": skipped_reason,
+        "call_failures": failures,
         "estimated_cost_saved_units": hits,
     }
 
@@ -568,6 +677,7 @@ def _cost_policy_summary(
     llm_cache: dict[str, object],
     use_llm: bool,
     use_social: bool,
+    social_limitation: str | None = None,
     use_competitors: bool,
     skip_visual_analysis: bool,
     context_data: ContextData | None,
@@ -578,8 +688,12 @@ def _cost_policy_summary(
         skipped["llm"] = "disabled_by_request"
     elif llm_cache.get("skipped_reason"):
         skipped["llm"] = str(llm_cache["skipped_reason"])
+    elif llm_cache.get("call_failures"):
+        skipped["llm_feature_calls"] = "partial_timeout_or_error"
     if not use_social:
         skipped["social"] = "disabled_by_request"
+    elif social_limitation:
+        skipped["social"] = f"collection_{social_limitation}"
     if not use_competitors:
         skipped["competitors"] = "disabled_by_request"
     if skip_visual_analysis:
@@ -895,6 +1009,7 @@ def run(
     use_competitors: bool = True,
     calibration_profile_override: str | None = None,
     skip_visual_analysis: bool = False,
+    refresh: bool = False,
     progress_cb=None,
     cancel_check=None,
 ) -> dict:
@@ -916,7 +1031,12 @@ def run(
 
         raw_input_cache: dict[str, str] = {}
 
-        context_data = _load_cached(store, brand_name, url, "context", 24, _from_context_payload)
+        def cache_read(source: str, ttl_hours: int, decoder):
+            if refresh:
+                return None
+            return _load_cached(store, brand_name, url, source, ttl_hours, decoder)
+
+        context_data = cache_read("context", 24, _from_context_payload)
         if context_data:
             raw_input_cache["context"] = "hit"
             print(
@@ -948,7 +1068,7 @@ def run(
                 )
 
         web_collector = WebCollector(api_key=FIRECRAWL_API_KEY)
-        web_data = _load_cached(store, brand_name, url, "web", BRAND3_CACHE_TTL_HOURS, _from_web_payload)
+        web_data = cache_read("web", BRAND3_CACHE_TTL_HOURS, _from_web_payload)
         if web_data:
             raw_input_cache["web"] = "hit"
             print(f"  Web: cache hit ({len(web_data.markdown_content)} chars)")
@@ -963,7 +1083,7 @@ def run(
         effective_brand_url = _effective_brand_url(url, web_data)
 
         exa_collector = ExaCollector(api_key=EXA_API_KEY)
-        exa_data = _load_cached(store, brand_name, url, "exa", BRAND3_CACHE_TTL_HOURS, _from_exa_payload)
+        exa_data = cache_read("exa", BRAND3_CACHE_TTL_HOURS, _from_exa_payload)
         if exa_data:
             raw_input_cache["exa"] = "hit"
             print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
@@ -977,8 +1097,9 @@ def run(
                 _store_safely(store, "exa save", lambda: store.save_raw_input(run_id, "exa", exa_data))
 
         social_data = None
+        social_limitation = None
         if use_social:
-            social_data = _load_cached(store, brand_name, url, "social", BRAND3_CACHE_TTL_HOURS, _from_social_payload)
+            social_data = cache_read("social", BRAND3_CACHE_TTL_HOURS, _from_social_payload)
             if social_data:
                 raw_input_cache["social"] = "hit"
                 print(f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)")
@@ -987,15 +1108,26 @@ def run(
             else:
                 raw_input_cache["social"] = "miss"
                 try:
-                    social_collector = SocialCollector(api_key=FIRECRAWL_API_KEY)
-                    social_data = social_collector.collect(brand_name, web_data.markdown_content)
+                    social_data, social_limitation = _collect_social_with_budget(
+                        brand_name,
+                        web_data.markdown_content,
+                        api_key=FIRECRAWL_API_KEY,
+                    )
                     platforms_count = len(social_data.platforms)
-                    print(f"  Social: {platforms_count} platforms, {social_data.total_followers:,} total followers")
+                    if social_limitation:
+                        raw_input_cache["social"] = social_limitation
+                        print(f"  Social: {social_limitation} - continuing without blocking analysis")
+                    else:
+                        print(f"  Social: {platforms_count} platforms, {social_data.total_followers:,} total followers")
                     if run_id:
                         _store_safely(store, "social save", lambda: store.save_raw_input(run_id, "social", social_data))
                 except Exception as e:
+                    social_limitation = "error"
+                    raw_input_cache["social"] = "error"
                     print(f"  Social: error - {e}")
-                    social_data = None
+                    social_data = SocialData(brand_name=brand_name, error=str(e))
+                    if run_id:
+                        _store_safely(store, "social error save", lambda: store.save_raw_input(run_id, "social", social_data))
         else:
             raw_input_cache["social"] = "skipped"
 
@@ -1006,9 +1138,7 @@ def run(
                 web_collector=web_collector,
                 max_competitors=5,
             )
-            competitor_data = _load_cached(
-                store, brand_name, url, "competitors", BRAND3_CACHE_TTL_HOURS, _from_competitor_payload
-            )
+            competitor_data = cache_read("competitors", BRAND3_CACHE_TTL_HOURS, _from_competitor_payload)
             if competitor_data:
                 raw_input_cache["competitors"] = "hit"
                 print(f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)")
@@ -1137,13 +1267,15 @@ def run(
         print("[2/4] Extracting features...")
 
         screenshot_url = None
+        screenshot_limitation = None
         if not skip_visual_analysis:
             try:
-                from src.features.visual_analyzer import VisualAnalyzer
-                visual = VisualAnalyzer()
-                screenshot_url = visual.take_screenshot(url).get("screenshot_url")
+                screenshot_data, screenshot_limitation = _take_screenshot_with_budget(url)
+                screenshot_url = screenshot_data.get("screenshot_url")
                 if screenshot_url:
                     print("  Screenshot: captured")
+                elif screenshot_limitation:
+                    print(f"  Screenshot: skipped ({screenshot_limitation})")
             except Exception as e:
                 print(f"  Screenshot: skipped ({e})")
         else:
@@ -1162,11 +1294,16 @@ def run(
         features_by_dim["vitalidad"] = vitalidad_ext.extract(web=web_data, exa=exa_data, context=context_data)
 
         if llm:
-            coherencia_ext = CoherenciaExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)
+            coherencia_ext = CoherenciaExtractor(
+                llm=llm,
+                skip_visual_analysis=skip_visual_analysis or bool(screenshot_limitation),
+            )
             diferenciacion_ext = DiferenciacionExtractor(llm=llm)
             percepcion_ext = PercepcionExtractor(llm=llm)
         else:
-            coherencia_ext = CoherenciaExtractor(skip_visual_analysis=skip_visual_analysis)
+            coherencia_ext = CoherenciaExtractor(
+                skip_visual_analysis=skip_visual_analysis or bool(screenshot_limitation),
+            )
             diferenciacion_ext = DiferenciacionExtractor()
             percepcion_ext = PercepcionExtractor()
             if use_llm:
@@ -1256,6 +1393,7 @@ def run(
             "data_quality": data_quality,
             "data_sources": {
                 **data_sources,
+                "social_limitation": social_limitation,
                 "raw_input_cache": raw_input_cache,
                 "llm_cache": llm_cache,
                 "cost_policy": _cost_policy_summary(
@@ -1263,6 +1401,7 @@ def run(
                     llm_cache=llm_cache,
                     use_llm=use_llm,
                     use_social=use_social,
+                    social_limitation=social_limitation,
                     use_competitors=use_competitors,
                     skip_visual_analysis=skip_visual_analysis,
                     context_data=context_data,

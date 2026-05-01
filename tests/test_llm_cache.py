@@ -46,18 +46,15 @@ class LLMCacheTests(unittest.TestCase):
             db_path = str(Path(tmpdir) / "brand3.sqlite3")
             first = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
             second = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
-            response = {
-                "choices": [
-                    {"message": {"content": json.dumps({"score": 88})}}
-                ]
-            }
-
             with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
-                with patch("src.features.llm_analyzer.urllib.request.urlopen", return_value=_FakeResponse(response)) as urlopen:
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", json.dumps({"score": 88})),
+                ) as llm_http:
                     self.assertEqual(first._call_json("system", "user"), {"score": 88})
                     self.assertEqual(second._call_json("system", "user"), {"score": 88})
 
-            self.assertEqual(urlopen.call_count, 1)
+            self.assertEqual(llm_http.call_count, 1)
             self.assertEqual(second.cache_hits, 1)
             self.assertEqual(first.cache_writes, 1)
 
@@ -66,15 +63,48 @@ class LLMCacheTests(unittest.TestCase):
             db_path = str(Path(tmpdir) / "brand3.sqlite3")
             first = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
             second = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
-            response = {"choices": [{"message": {"content": "cached prose"}}]}
-
             with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
-                with patch("src.features.llm_analyzer.urllib.request.urlopen", return_value=_FakeResponse(response)) as urlopen:
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", "cached prose"),
+                ) as llm_http:
                     self.assertEqual(first._call("system", "user"), "cached prose")
                     self.assertEqual(second._call("system", "user"), "cached prose")
 
-            self.assertEqual(urlopen.call_count, 1)
+            self.assertEqual(llm_http.call_count, 1)
             self.assertEqual(second.cache_hits, 1)
+
+    def test_call_json_timeout_returns_empty_and_records_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("timeout", "llm_call_timeout_after_1s"),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {})
+        self.assertEqual(llm.last_failure_reason, "llm_timeout")
+        self.assertEqual(llm.call_failures[0]["reason"], "llm_timeout")
+
+    def test_call_json_success_path_unchanged(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", json.dumps({"score": 88})),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {"score": 88})
+        self.assertIsNone(llm.last_failure_reason)
+        self.assertEqual(llm.call_failures, [])
 
 
 if __name__ == "__main__":

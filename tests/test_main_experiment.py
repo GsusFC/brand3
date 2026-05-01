@@ -12,6 +12,18 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 class MainExperimentTests(unittest.TestCase):
+    def test_analyze_refresh_flag_is_passed_to_service(self):
+        with patch.object(main, "run", return_value={}) as run_mock:
+            main.main(["brand3", "analyze", "https://claude.ai", "Claude", "--refresh"])
+
+        run_mock.assert_called_once_with(
+            "https://claude.ai",
+            "Claude",
+            True,
+            True,
+            refresh=True,
+        )
+
     def test_render_report_without_diagnostic_flag_uses_existing_render_path(self):
         stdout = io.StringIO()
 

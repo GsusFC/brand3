@@ -11,7 +11,7 @@ from ..collectors.exa_collector import ExaData
 from ..collectors.web_collector import WebData
 from ..models.brand import FeatureValue
 from .authenticity import AI_PHRASES, AI_STRUCTURAL_PATTERNS, AuthenticityAnalyzer
-from .llm_analyzer import LLMAnalyzer
+from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 
 
 GENERIC_FALLBACK_PHRASES = [
@@ -273,7 +273,10 @@ class DiferenciacionExtractor:
         )
         verdict = result.get("verdict")
         if verdict not in POSITIONING_VERDICTS:
-            return self._positioning_fallback(web, reason="llm_invalid_verdict")
+            return self._positioning_fallback(
+                web,
+                reason=llm_failure_reason(self.llm, "llm_invalid_verdict"),
+            )
 
         confidence = 0.5 if verdict == "unclear" else 0.85
         cleaned_evidence = self._clean_positioning_evidence(result.get("evidence"))
@@ -350,7 +353,10 @@ class DiferenciacionExtractor:
         )
         verdict = result.get("verdict")
         if verdict not in UNIQUENESS_VERDICTS:
-            return self._uniqueness_fallback(web, reason="llm_invalid_verdict")
+            return self._uniqueness_fallback(
+                web,
+                reason=llm_failure_reason(self.llm, "llm_invalid_verdict"),
+            )
 
         score = result.get("uniqueness_score")
         if not isinstance(score, (int, float)):

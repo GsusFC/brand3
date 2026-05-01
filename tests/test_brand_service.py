@@ -16,6 +16,8 @@ from src.services.brand_service import (
     _cost_policy_summary,
     _dimension_confidence_summary,
     _llm_cache_summary,
+    _recover_owned_web_content,
+    _should_skip_llm_for_low_context,
     _trust_summary_payload,
 )
 from src.models.brand import FeatureValue
@@ -24,6 +26,195 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 class BrandServiceContentFallbackTests(unittest.TestCase):
+    def test_owned_fallback_recovers_same_domain_pages_before_exa_fallback(self):
+        initial = WebData(url="https://example.com", title="Example", markdown_content="", error="blocked")
+        about = WebData(
+            url="https://example.com/about",
+            title="About Example",
+            markdown_content="About Example builds reliable brand intelligence. " * 8,
+        )
+        pricing = WebData(
+            url="https://example.com/pricing",
+            title="Pricing",
+            markdown_content="Pricing information for teams and enterprise customers. " * 8,
+        )
+        exa = ExaData(
+            brand_name="Example",
+            mentions=[
+                ExaResult(url=f"https://external{i}.com", title=f"Mention {i}", text="External mention. " * 30)
+                for i in range(4)
+            ],
+        )
+
+        class FakeCollector:
+            def __init__(self):
+                self.urls = []
+
+            def scrape_multiple(self, urls):
+                self.urls = urls
+                return [about, WebData(url="https://example.com/docs", error="404"), pricing]
+
+        collector = FakeCollector()
+        recovered = _recover_owned_web_content("https://example.com", initial, collector)
+        content_web, content_source, data_sources = _build_content_web(
+            "https://example.com",
+            "Example",
+            recovered or initial,
+            exa,
+        )
+
+        self.assertEqual(
+            collector.urls,
+            [
+                "https://example.com/about",
+                "https://example.com/pricing",
+                "https://example.com/docs",
+                "https://example.com/blog",
+                "https://example.com/news",
+                "https://example.com/help",
+                "https://example.com/support",
+                "https://example.com/trust",
+                "https://example.com/security",
+            ],
+        )
+        self.assertIsNotNone(content_web)
+        self.assertEqual(content_source, "owned_fallback")
+        self.assertEqual(data_sources["web_scrape"], "owned_fallback")
+        self.assertEqual(data_sources["content_source"], "owned_fallback")
+        self.assertEqual(data_sources["exa_fallback_mentions_used"], 0)
+        self.assertEqual(
+            data_sources["owned_fallback_urls"],
+            ["https://example.com/about", "https://example.com/pricing"],
+        )
+        self.assertIn("About Example builds reliable brand intelligence", content_web.markdown_content)
+        self.assertIn("Pricing information for teams", content_web.markdown_content)
+
+    def test_owned_fallback_failure_keeps_exa_fallback_behavior(self):
+        initial = WebData(url="https://uber.com", title="", markdown_content="", error="")
+        exa = ExaData(
+            brand_name="Uber",
+            mentions=[
+                ExaResult(url=f"https://example{i}.com", title=f"Mention {i}", text="Uber is a mobility platform. " * 30)
+                for i in range(4)
+            ],
+        )
+
+        class FakeCollector:
+            def scrape_multiple(self, urls):
+                return [WebData(url=url, markdown_content="", error="404") for url in urls]
+
+        recovered = _recover_owned_web_content("https://uber.com", initial, FakeCollector())
+        content_web, content_source, data_sources = _build_content_web(
+            "https://uber.com",
+            "Uber",
+            recovered or initial,
+            exa,
+        )
+
+        self.assertIsNone(recovered)
+        self.assertIsNotNone(content_web)
+        self.assertEqual(content_source, "exa_fallback")
+        self.assertEqual(data_sources["content_source"], "exa_fallback")
+        self.assertEqual(data_sources["exa_fallback_mentions_used"], 4)
+
+    def test_owned_fallback_is_not_attempted_when_initial_web_data_is_usable(self):
+        initial = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content="Usable homepage content. " * 12,
+        )
+
+        class FakeCollector:
+            def scrape_multiple(self, urls):
+                raise AssertionError("fallback URLs should not be scraped")
+
+        recovered = _recover_owned_web_content("https://example.com", initial, FakeCollector())
+
+        self.assertIsNone(recovered)
+
+    def test_owned_fallback_uses_same_scheme_and_host_only(self):
+        initial = WebData(url="https://www.example.com/start", markdown_content="", error="blocked")
+
+        class FakeCollector:
+            def __init__(self):
+                self.urls = []
+
+            def scrape_multiple(self, urls):
+                self.urls = urls
+                return []
+
+        collector = FakeCollector()
+        recovered = _recover_owned_web_content("https://www.example.com/start?x=1", initial, collector)
+
+        self.assertIsNone(recovered)
+        self.assertTrue(all(url.startswith("https://www.example.com/") for url in collector.urls))
+        self.assertNotIn("https://example.com/about", collector.urls)
+
+    def test_owned_fallback_data_quality_follows_owned_content_path(self):
+        exa = ExaData(
+            brand_name="Example",
+            mentions=[ExaResult(url=f"https://e{i}.com", title="x") for i in range(5)],
+        )
+
+        self.assertEqual(_compute_data_quality(exa, "owned_fallback"), "good")
+
+    def test_build_content_web_reports_browser_fallback_as_owned_content_source(self):
+        web = WebData(
+            url="https://claude.ai",
+            title="Claude",
+            markdown_content="Claude browser-rendered product and pricing content. " * 8,
+            content_source="browser_fallback",
+            browser_status=200,
+        )
+        exa = ExaData(
+            brand_name="Claude",
+            mentions=[ExaResult(url=f"https://e{i}.com", title="x") for i in range(5)],
+        )
+
+        content_web, content_source, data_sources = _build_content_web(
+            "https://claude.ai",
+            "Claude",
+            web,
+            exa,
+        )
+
+        self.assertIs(content_web, web)
+        self.assertEqual(content_source, "browser_fallback")
+        self.assertEqual(data_sources["web_scrape"], "browser_fallback")
+        self.assertEqual(data_sources["content_source"], "browser_fallback")
+        self.assertEqual(data_sources["exa_fallback_mentions_used"], 0)
+        self.assertEqual(_compute_data_quality(exa, content_source), "good")
+
+    def test_low_context_does_not_skip_llm_when_browser_fallback_has_usable_owned_content(self):
+        context = ContextData(url="https://claude.ai", coverage=0.0)
+        content_web = WebData(
+            url="https://claude.ai",
+            markdown_content="Claude browser-rendered product content. " * 8,
+            content_source="browser_fallback",
+        )
+
+        self.assertFalse(
+            _should_skip_llm_for_low_context(context, content_web, "browser_fallback")
+        )
+
+    def test_low_context_still_skips_llm_when_only_exa_fallback_exists(self):
+        context = ContextData(url="https://claude.ai", coverage=0.0)
+        content_web = WebData(
+            url="https://claude.ai",
+            markdown_content="External Exa aggregate content. " * 12,
+        )
+
+        self.assertTrue(
+            _should_skip_llm_for_low_context(context, content_web, "exa_fallback")
+        )
+
+    def test_good_context_keeps_llm_allowed_without_owned_content(self):
+        context = ContextData(url="https://example.com", coverage=0.8)
+
+        self.assertFalse(
+            _should_skip_llm_for_low_context(context, None, "none")
+        )
+
     def test_build_content_web_prefers_usable_firecrawl_content(self):
         web = WebData(
             url="https://example.com",

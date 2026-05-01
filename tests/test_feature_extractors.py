@@ -1238,19 +1238,93 @@ Tabular foundation models for real-world data.
   </head>
   <body>
     <h1>The fastest path to safe super intelligence</h1>
-    <p>Better reasoning systems for aligned advanced AI.</p>
+    <p>Better reasoning systems for aligned advanced AI. Better reasoning systems for aligned advanced AI.
+    Better reasoning systems for aligned advanced AI. Better reasoning systems for aligned advanced AI.
+    Better reasoning systems for aligned advanced AI.</p>
   </body>
 </html>
 """
 
         with patch.object(WebCollector, "_run_firecrawl", return_value={"content": ""}):
             with patch.object(WebCollector, "_fetch_html_fallback", return_value=(html, "")):
-                data = collector.scrape("https://poetiq.ai/")
+                with patch.object(WebCollector, "_fetch_browser_fallback") as browser_fallback:
+                    data = collector.scrape("https://poetiq.ai/")
 
         self.assertEqual(data.title, "Poetiq")
         self.assertIn("safe super intelligence", data.markdown_content.lower())
         self.assertEqual(data.meta_description, "The fastest path to safe super intelligence.")
         self.assertEqual(data.error, "")
+        browser_fallback.assert_not_called()
+
+    def test_scrape_uses_browser_fallback_when_firecrawl_and_html_are_unusable(self):
+        collector = WebCollector()
+        browser_text = (
+            "Meet Claude. Claude is an AI assistant for problem solving, coding, writing, "
+            "analysis, enterprise workflows, team collaboration, and safe deployment. "
+            "Choose Pro, Team, or Enterprise plans for advanced usage. "
+        ) * 4
+        payload = {
+            "status": 200,
+            "title": "Claude",
+            "meta_description": "Claude is an AI assistant from Anthropic.",
+            "canonical_url": "https://claude.ai/",
+            "body_text": browser_text,
+            "html": "<html><body>Claude</body></html>",
+            "links": ["https://claude.ai/pricing", "https://claude.ai/security"],
+        }
+
+        with patch.object(WebCollector, "_run_firecrawl", return_value={"error": "blocked"}):
+            with patch.object(WebCollector, "_fetch_html_fallback", return_value=("", "403")):
+                with patch.object(WebCollector, "_fetch_browser_fallback", return_value=(payload, "")):
+                    data = collector.scrape("https://claude.ai/")
+
+        self.assertEqual(data.title, "Claude")
+        self.assertEqual(data.content_source, "browser_fallback")
+        self.assertEqual(data.browser_status, 200)
+        self.assertEqual(data.canonical_url, "https://claude.ai/")
+        self.assertIn("Claude is an AI assistant", data.markdown_content)
+        self.assertIn("https://claude.ai/pricing", data.links)
+        self.assertEqual(data.error, "")
+
+    def test_scrape_does_not_crash_when_browser_fallback_is_unavailable(self):
+        collector = WebCollector()
+
+        with patch.object(WebCollector, "_run_firecrawl", return_value={"error": "blocked"}):
+            with patch.object(WebCollector, "_fetch_html_fallback", return_value=("", "403")):
+                with patch.object(WebCollector, "_fetch_browser_fallback", return_value=({}, "playwright unavailable")):
+                    data = collector.scrape("https://blocked.example/")
+
+        self.assertEqual(data.markdown_content, "")
+        self.assertEqual(data.content_source, "")
+        self.assertIn(data.error, {"blocked", "playwright unavailable"})
+
+    def test_scrape_does_not_call_browser_when_firecrawl_is_usable(self):
+        collector = WebCollector()
+        content = "# Claude\n\nClaude helps people solve problems with AI. " * 8
+
+        with patch.object(WebCollector, "_run_firecrawl", return_value={"content": content}):
+            with patch.object(WebCollector, "_fetch_html_fallback") as html_fallback:
+                with patch.object(WebCollector, "_fetch_browser_fallback") as browser_fallback:
+                    data = collector.scrape("https://claude.ai/")
+
+        self.assertIn("Claude helps people solve problems", data.markdown_content)
+        html_fallback.assert_not_called()
+        browser_fallback.assert_not_called()
+
+    def test_claude_like_browser_text_is_not_treated_as_cookie_banner(self):
+        collector = WebCollector()
+        content = collector._body_text_to_markdown(
+            (
+                "Claude\n"
+                "Claude is an AI assistant for coding, writing, analysis, and business workflows.\n"
+                "Explore Pro, Team, Enterprise, pricing, security, docs, and support for Claude.\n"
+            ) * 5,
+            title="Claude",
+            meta_description="Claude is an AI assistant from Anthropic.",
+        )
+
+        self.assertGreaterEqual(len(content), 200)
+        self.assertFalse(collector._looks_like_cookie_banner("Claude", content))
 
 
 class ExaCollectorTests(unittest.TestCase):

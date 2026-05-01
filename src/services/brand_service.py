@@ -8,7 +8,7 @@ from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
 from statistics import mean
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 from src.collectors.competitor_collector import (
     ComparisonResult,
@@ -62,6 +62,23 @@ _MIN_USABLE_WEB_CHARS = 200
 _MIN_EXA_FALLBACK_MENTIONS = 3
 _MIN_EXA_FALLBACK_CHARS = 300
 _MAX_EXA_FALLBACK_ITEMS = 8
+_OWNED_FALLBACK_PATHS = (
+    "/about",
+    "/pricing",
+    "/docs",
+    "/blog",
+    "/news",
+    "/help",
+    "/support",
+    "/trust",
+    "/security",
+)
+_LLM_ALLOWED_CONTENT_SOURCES = {
+    "firecrawl",
+    "browser_fallback",
+    "owned_fallback",
+    "official_related",
+}
 _PARTIAL_DIMENSIONS = ("coherencia", "diferenciacion")
 
 
@@ -200,6 +217,65 @@ def _aggregate_exa_content(exa_data: ExaData | None) -> tuple[str, int]:
     return aggregate, used
 
 
+def _owned_fallback_urls(url: str) -> list[str]:
+    parsed = urlparse(url if "://" in url else f"https://{url}")
+    if not parsed.netloc:
+        return []
+    scheme = parsed.scheme or "https"
+    return [
+        urlunparse((scheme, parsed.netloc, path, "", "", ""))
+        for path in _OWNED_FALLBACK_PATHS
+    ]
+
+
+def _recover_owned_web_content(
+    url: str,
+    web_data: WebData | None,
+    web_collector: WebCollector,
+) -> WebData | None:
+    if _has_usable_web_content(web_data):
+        return None
+
+    candidates = _owned_fallback_urls(url)
+    if not candidates:
+        return None
+
+    recovered_pages = [
+        page for page in web_collector.scrape_multiple(candidates)
+        if _has_usable_web_content(page)
+    ]
+    if not recovered_pages:
+        return None
+
+    aggregate = "\n\n---\n\n".join(
+        f"Source: {page.url}\n\n{(page.markdown_content or '').strip()}"
+        for page in recovered_pages
+    ).strip()
+    if len(aggregate) < _MIN_USABLE_WEB_CHARS:
+        return None
+
+    base = web_data or WebData(url=url)
+    first = recovered_pages[0]
+    recovered = WebData(
+        url=base.url or url,
+        title=(base.title or first.title or "").strip(),
+        meta_description=(base.meta_description or first.meta_description or "").strip(),
+        markdown_content=aggregate,
+        html=base.html or first.html,
+        canonical_url=base.canonical_url or first.canonical_url,
+        alternate_domains=list(base.alternate_domains or first.alternate_domains or []),
+        links=list(base.links or []) + [link for page in recovered_pages for link in (page.links or [])],
+        images=list(base.images or []) + [image for page in recovered_pages for image in (page.images or [])],
+        screenshot_path=base.screenshot_path or first.screenshot_path,
+        tech_stack=list(base.tech_stack or first.tech_stack or []),
+        load_time_ms=base.load_time_ms or first.load_time_ms,
+        error="",
+    )
+    recovered.owned_fallback_urls = [page.url for page in recovered_pages]
+    recovered.content_source = "owned_fallback"
+    return recovered
+
+
 def _build_content_web(
     url: str,
     brand_name: str | None,
@@ -207,11 +283,14 @@ def _build_content_web(
     exa_data: ExaData | None,
 ) -> tuple[WebData | None, str, dict[str, object]]:
     if _has_usable_web_content(web_data):
-        return web_data, "firecrawl", {
-            "web_scrape": "firecrawl",
+        content_source = getattr(web_data, "content_source", "") or "firecrawl"
+        web_scrape = content_source if content_source in ("browser_fallback", "owned_fallback") else "firecrawl"
+        return web_data, content_source, {
+            "web_scrape": web_scrape,
             "exa_mentions": len(exa_data.mentions) if exa_data else 0,
-            "content_source": "firecrawl",
+            "content_source": content_source,
             "exa_fallback_mentions_used": 0,
+            "owned_fallback_urls": list(getattr(web_data, "owned_fallback_urls", []) or []),
         }
 
     aggregate, mentions_used = _aggregate_exa_content(exa_data)
@@ -242,6 +321,7 @@ def _build_content_web(
             "exa_mentions": len(exa_data.mentions) if exa_data else 0,
             "content_source": "exa_fallback",
             "exa_fallback_mentions_used": mentions_used,
+            "owned_fallback_urls": [],
         }
 
     return None, "none", {
@@ -249,6 +329,7 @@ def _build_content_web(
         "exa_mentions": len(exa_data.mentions) if exa_data else 0,
         "content_source": "none",
         "exa_fallback_mentions_used": 0,
+        "owned_fallback_urls": [],
     }
 
 
@@ -278,11 +359,31 @@ def _annotate_content_source(features_by_dim: dict[str, dict], content_source: s
 
 def _compute_data_quality(exa_data: ExaData | None, content_source: str) -> str:
     mentions_count = len(exa_data.mentions) if exa_data else 0
-    if content_source == "firecrawl" and mentions_count >= 5:
+    if content_source in ("firecrawl", "browser_fallback", "owned_fallback") and mentions_count >= 5:
         return "good"
     if content_source == "exa_fallback" and mentions_count >= 3:
         return "degraded"
     return "insufficient"
+
+
+def _has_effective_owned_content_for_llm(
+    content_web: WebData | None,
+    content_source: str,
+) -> bool:
+    return (
+        content_source in _LLM_ALLOWED_CONTENT_SOURCES
+        and _has_usable_web_content(content_web)
+    )
+
+
+def _should_skip_llm_for_low_context(
+    context_data: ContextData | None,
+    content_web: WebData | None,
+    content_source: str,
+) -> bool:
+    if _has_effective_owned_content_for_llm(content_web, content_source):
+        return False
+    return bool(context_data and context_data.coverage < 0.3)
 
 
 def _from_exa_payload(payload: dict | None) -> ExaData | None:
@@ -988,8 +1089,36 @@ def run(
                 ),
             )
 
+        content_web, content_source, data_sources = _build_content_web(
+            url,
+            brand_name,
+            _recover_owned_web_content(url, web_data, web_collector) or web_data,
+            exa_data,
+        )
+        data_quality = _compute_data_quality(exa_data, content_source)
+        partial_dimensions = list(_PARTIAL_DIMENSIONS) if data_quality == "insufficient" else []
+        if content_source == "owned_fallback" and content_web:
+            print(
+                "  Web fallback:"
+                f" using {len(data_sources.get('owned_fallback_urls') or [])} owned same-domain pages"
+                f" as content source ({len(content_web.markdown_content)} chars aggregate)"
+            )
+        elif content_source == "exa_fallback" and content_web:
+            print(
+                "  Web fallback:"
+                f" using {data_sources['exa_fallback_mentions_used']} Exa mentions"
+                f" as content source ({len(content_web.markdown_content)} chars aggregate)"
+            )
+        elif content_source == "none":
+            print("  Web fallback: no usable Firecrawl, owned fallback, or Exa content available")
+        print(f"  Data quality: {data_quality}")
+
         llm = None
-        skip_llm_for_low_context = bool(context_data and context_data.coverage < 0.3)
+        skip_llm_for_low_context = _should_skip_llm_for_low_context(
+            context_data,
+            content_web,
+            content_source,
+        )
         llm_skipped_reason = None
         if use_llm and not skip_llm_for_low_context:
             llm = LLMAnalyzer()
@@ -1002,24 +1131,6 @@ def run(
         elif use_llm and skip_llm_for_low_context:
             print("  LLM: skipped (insufficient context coverage)")
             llm_skipped_reason = "insufficient_context_coverage"
-
-        content_web, content_source, data_sources = _build_content_web(
-            url,
-            brand_name,
-            web_data,
-            exa_data,
-        )
-        data_quality = _compute_data_quality(exa_data, content_source)
-        partial_dimensions = list(_PARTIAL_DIMENSIONS) if data_quality == "insufficient" else []
-        if content_source == "exa_fallback" and content_web:
-            print(
-                "  Web fallback:"
-                f" using {data_sources['exa_fallback_mentions_used']} Exa mentions"
-                f" as content source ({len(content_web.markdown_content)} chars aggregate)"
-            )
-        elif content_source == "none":
-            print("  Web fallback: no usable Firecrawl or Exa content available")
-        print(f"  Data quality: {data_quality}")
 
         _emit_progress(progress_cb, "extracting")
         _check_cancel(cancel_check)

@@ -78,9 +78,10 @@ class InventoryRow:
     text_chars: int = 0
     usable_for_brand_evidence: bool = False
     usable_for_perception_evidence: bool = False
+    enriched: bool = False
 
     def as_output(self) -> dict[str, object]:
-        return asdict(self)
+        return {field: getattr(self, field) for field in OUTPUT_FIELDS}
 
 
 def normalize_url(url: str) -> str:
@@ -227,7 +228,14 @@ def make_row(
     )
 
 
-def collect_inventory(brand: str, url: str, *, max_page_links: int = 20) -> list[InventoryRow]:
+def collect_inventory(
+    brand: str,
+    url: str,
+    *,
+    max_page_links: int = 20,
+    enrich_official: bool = False,
+    max_enrich: int = 12,
+) -> list[InventoryRow]:
     input_url = normalize_url(url)
     collector = WebCollector(api_key=FIRECRAWL_API_KEY)
     rows: list[InventoryRow] = []
@@ -250,7 +258,10 @@ def collect_inventory(brand: str, url: str, *, max_page_links: int = 20) -> list
 
     rows.extend(_context_rows(brand, input_url))
     rows.extend(_exa_rows(brand, input_url))
-    return dedupe_rows(rows)
+    rows = dedupe_rows(rows)
+    if enrich_official:
+        enrich_official_rows(rows, collector=collector, max_enrich=max_enrich)
+    return rows
 
 
 def _collect_primary(
@@ -411,6 +422,84 @@ def _collection_method_from_web_data(data) -> str:
     return "existing_web_collector"
 
 
+def enrich_official_rows(
+    rows: list[InventoryRow],
+    *,
+    collector: WebCollector | None = None,
+    max_enrich: int = 12,
+) -> int:
+    if max_enrich <= 0:
+        return 0
+    collector = collector or WebCollector(api_key=FIRECRAWL_API_KEY)
+    enriched = 0
+    for row in sorted(_enrichment_candidates(rows), key=_enrichment_priority):
+        if enriched >= max_enrich:
+            break
+        _enrich_row(row, collector)
+        enriched += 1
+    return enriched
+
+
+def _enrichment_candidates(rows: list[InventoryRow]) -> list[InventoryRow]:
+    return [
+        row for row in rows
+        if row.relation_to_brand in {"primary_domain", "same_domain", "official_related"}
+        and row.page_type in {
+            "primary",
+            "same_domain_page",
+            "official_related",
+            "docs",
+            "support",
+            "news_or_blog",
+            "trust_or_safety",
+        }
+    ]
+
+
+def _enrichment_priority(row: InventoryRow) -> tuple[int, str]:
+    if row.page_type == "primary":
+        priority = 0
+    elif row.page_type == "official_related":
+        priority = 1
+    elif row.page_type == "docs":
+        priority = 2
+    elif row.page_type == "support":
+        priority = 3
+    elif row.page_type == "news_or_blog":
+        priority = 4
+    elif row.page_type == "trust_or_safety":
+        priority = 5
+    else:
+        priority = 6
+    return priority, row.candidate_url
+
+
+def _enrich_row(row: InventoryRow, collector: WebCollector) -> None:
+    try:
+        data = collector.scrape(row.candidate_url)
+        row.collection_method = _collection_method_from_web_data(data)
+        row.status = str(data.browser_status or ("ok" if _has_usable_web_content(data) else "thin"))
+        row.error = data.error or ""
+        row.text_chars = len(data.markdown_content or "")
+        if data.title or data.meta_description:
+            row.title_or_snippet = (data.title or data.meta_description)[:500]
+        row.usable_for_brand_evidence = (
+            row.relation_to_brand in {"primary_domain", "same_domain", "official_related"}
+            and row.text_chars >= 200
+        )
+        row.usable_for_perception_evidence = row.relation_to_brand == "third_party" and bool(
+            row.title_or_snippet or row.text_chars
+        )
+        row.enriched = True
+    except Exception as exc:
+        row.collection_method = "existing_web_collector"
+        row.status = "error"
+        row.error = str(exc)
+        row.text_chars = 0
+        row.usable_for_brand_evidence = False
+        row.enriched = True
+
+
 def dedupe_rows(rows: list[InventoryRow]) -> list[InventoryRow]:
     merged: dict[str, InventoryRow] = {}
     order: list[str] = []
@@ -453,6 +542,36 @@ def _is_public_http_url(url: str) -> bool:
     return not re.search(r"\.(css|js|png|jpg|jpeg|gif|svg|ico|pdf|zip)$", parsed.path, re.I)
 
 
+def summarize_inventory(rows: list[InventoryRow]) -> dict[str, object]:
+    owned_or_official = [
+        row for row in rows
+        if row.relation_to_brand in {"primary_domain", "same_domain", "official_related"}
+    ]
+    enriched = [row for row in rows if row.enriched]
+    usable_brand = [row for row in rows if row.usable_for_brand_evidence]
+    usable_perception = [row for row in rows if row.usable_for_perception_evidence]
+    has_primary_base = any(
+        row.page_type == "primary" and row.usable_for_brand_evidence and row.text_chars >= 1500
+        for row in rows
+    )
+    recommended = len(usable_brand) >= 2 or has_primary_base
+    return {
+        "total_candidates": len(rows),
+        "owned_or_official_candidates": len(owned_or_official),
+        "enriched_candidates": len(enriched),
+        "usable_brand_evidence_pages": len(usable_brand),
+        "usable_perception_evidence_pages": len(usable_perception),
+        "recommended_brand_evidence_base": bool(recommended),
+    }
+
+
+def format_summary(summary: dict[str, object]) -> str:
+    lines = ["summary"]
+    for key, value in summary.items():
+        lines.append(f"{key}\t{_format_value(value)}")
+    return "\n".join(lines)
+
+
 def format_table(rows: list[InventoryRow]) -> str:
     widths = {field: len(field) for field in OUTPUT_FIELDS}
     rendered: list[dict[str, str]] = []
@@ -483,11 +602,24 @@ def _format_value(value: object) -> str:
     return "" if value is None else str(value)
 
 
-def write_outputs(rows: list[InventoryRow], *, json_out: Path | None, tsv_out: Path | None) -> None:
+def write_outputs(
+    rows: list[InventoryRow],
+    *,
+    json_out: Path | None,
+    tsv_out: Path | None,
+    summary: dict[str, object] | None = None,
+) -> None:
+    summary = summary or summarize_inventory(rows)
     if json_out:
         json_out.parent.mkdir(parents=True, exist_ok=True)
         json_out.write_text(
-            json.dumps([row.as_output() for row in rows], indent=2) + "\n",
+            json.dumps(
+                {
+                    "summary": summary,
+                    "rows": [row.as_output() for row in rows],
+                },
+                indent=2,
+            ) + "\n",
             encoding="utf-8",
         )
     if tsv_out:
@@ -497,12 +629,18 @@ def write_outputs(rows: list[InventoryRow], *, json_out: Path | None, tsv_out: P
             writer.writeheader()
             for row in rows:
                 writer.writerow(row.as_output())
+            fh.write("\n")
+            fh.write("summary_key\tsummary_value\n")
+            for key, value in summary.items():
+                fh.write(f"{key}\t{_format_value(value)}\n")
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Experimental Brand3 online presence inventory")
     parser.add_argument("url")
     parser.add_argument("--brand", required=True)
+    parser.add_argument("--enrich-official", action="store_true")
+    parser.add_argument("--max-enrich", type=int, default=12)
     parser.add_argument("--json-out", default="")
     parser.add_argument("--tsv-out", default="")
     return parser
@@ -511,13 +649,22 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
-    rows = collect_inventory(args.brand, args.url)
+    rows = collect_inventory(
+        args.brand,
+        args.url,
+        enrich_official=args.enrich_official,
+        max_enrich=args.max_enrich,
+    )
+    summary = summarize_inventory(rows)
     write_outputs(
         rows,
         json_out=Path(args.json_out) if args.json_out else None,
         tsv_out=Path(args.tsv_out) if args.tsv_out else None,
+        summary=summary,
     )
     print(format_table(rows))
+    print()
+    print(format_summary(summary))
     return 0
 
 

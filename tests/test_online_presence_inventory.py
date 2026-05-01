@@ -7,13 +7,33 @@ from pathlib import Path
 from experiments.online_presence_inventory import (
     OUTPUT_FIELDS,
     common_path_candidates,
+    enrich_official_rows,
     format_table,
     make_row,
+    summarize_inventory,
     write_outputs,
 )
+from src.collectors.web_collector import WebData
 
 
 class OnlinePresenceInventoryTests(unittest.TestCase):
+    class FakeCollector:
+        def __init__(self, text_by_url=None):
+            self.text_by_url = text_by_url or {}
+            self.urls = []
+
+        def scrape(self, url):
+            self.urls.append(url)
+            text = self.text_by_url.get(url, "")
+            return WebData(
+                url=url,
+                title=f"Title for {url}",
+                markdown_content=text,
+                content_source="browser_fallback",
+                browser_status=200 if text else 404,
+                error="" if text else "not found",
+            )
+
     def test_claude_primary_is_primary(self):
         row = make_row(
             brand="Claude",
@@ -114,13 +134,140 @@ class OnlinePresenceInventoryTests(unittest.TestCase):
             write_outputs([row], json_out=json_path, tsv_out=tsv_path)
 
             payload = json.loads(json_path.read_text(encoding="utf-8"))
-            self.assertEqual(set(OUTPUT_FIELDS), set(payload[0]))
+            self.assertEqual(set(OUTPUT_FIELDS), set(payload["rows"][0]))
+            self.assertIn("summary", payload)
 
             with tsv_path.open("r", encoding="utf-8", newline="") as fh:
                 reader = csv.DictReader(fh, delimiter="\t")
                 self.assertEqual(reader.fieldnames, list(OUTPUT_FIELDS))
                 first = next(reader)
             self.assertEqual(first["candidate_url"], "https://claude.ai")
+
+    def test_enrich_official_enriches_owned_public_candidates(self):
+        official = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://docs.anthropic.com/en/docs/claude-code",
+            source="exa",
+            title_or_snippet="Claude documentation by Anthropic",
+            collection_method="exa_metadata",
+            snippet_is_search_metadata=True,
+        )
+        collector = self.FakeCollector({
+            official.candidate_url: "Claude docs public content. " * 20,
+        })
+
+        count = enrich_official_rows([official], collector=collector, max_enrich=12)
+
+        self.assertEqual(count, 1)
+        self.assertEqual(collector.urls, [official.candidate_url])
+        self.assertEqual(official.collection_method, "browser_fallback")
+        self.assertEqual(official.status, "200")
+        self.assertGreaterEqual(official.text_chars, 200)
+        self.assertTrue(official.usable_for_brand_evidence)
+
+    def test_max_enrich_limits_collection_count(self):
+        rows = [
+            make_row(
+                brand="Claude",
+                input_url="https://claude.ai",
+                candidate_url=f"https://claude.ai/{path}",
+                source="common_path",
+            )
+            for path in ("pricing", "docs", "support")
+        ]
+        collector = self.FakeCollector({
+            row.candidate_url: "Public content. " * 20 for row in rows
+        })
+
+        count = enrich_official_rows(rows, collector=collector, max_enrich=2)
+
+        self.assertEqual(count, 2)
+        self.assertEqual(len(collector.urls), 2)
+        self.assertEqual(sum(1 for row in rows if row.enriched), 2)
+
+    def test_third_party_is_not_enriched_by_default(self):
+        third_party = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://example-news.com/ai/claude",
+            source="exa",
+            title_or_snippet="Press article about Claude",
+            collection_method="exa_metadata",
+            snippet_is_search_metadata=True,
+        )
+        official = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://claude.ai/pricing",
+            source="common_path",
+        )
+        collector = self.FakeCollector({
+            third_party.candidate_url: "Third party text. " * 20,
+            official.candidate_url: "Official public text. " * 20,
+        })
+
+        enrich_official_rows([third_party, official], collector=collector, max_enrich=12)
+
+        self.assertEqual(collector.urls, [official.candidate_url])
+        self.assertFalse(third_party.enriched)
+        self.assertFalse(third_party.usable_for_brand_evidence)
+        self.assertTrue(third_party.usable_for_perception_evidence)
+
+    def test_summary_counts_and_recommendation_for_two_owned_pages(self):
+        primary = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://claude.ai",
+            source="input",
+            text_chars=300,
+        )
+        docs = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://docs.anthropic.com/en/docs/claude-code",
+            source="exa",
+            title_or_snippet="Claude docs by Anthropic",
+            text_chars=300,
+        )
+        third_party = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://example.com/claude",
+            source="exa",
+            title_or_snippet="Article about Claude",
+            snippet_is_search_metadata=True,
+        )
+        primary.enriched = True
+        docs.enriched = True
+
+        summary = summarize_inventory([primary, docs, third_party])
+
+        self.assertEqual(summary["total_candidates"], 3)
+        self.assertEqual(summary["owned_or_official_candidates"], 2)
+        self.assertEqual(summary["enriched_candidates"], 2)
+        self.assertEqual(summary["usable_brand_evidence_pages"], 2)
+        self.assertEqual(summary["usable_perception_evidence_pages"], 1)
+        self.assertTrue(summary["recommended_brand_evidence_base"])
+
+    def test_recommended_brand_evidence_base_requires_enough_owned_content(self):
+        thin_primary = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://claude.ai",
+            source="input",
+            text_chars=1000,
+        )
+        strong_primary = make_row(
+            brand="Claude",
+            input_url="https://claude.ai",
+            candidate_url="https://claude.ai",
+            source="input",
+            text_chars=1500,
+        )
+
+        self.assertFalse(summarize_inventory([thin_primary])["recommended_brand_evidence_base"])
+        self.assertTrue(summarize_inventory([strong_primary])["recommended_brand_evidence_base"])
 
 
 if __name__ == "__main__":

@@ -61,6 +61,7 @@ def run(
     use_llm: bool = True,
     use_social: bool = True,
     use_competitors: bool = True,
+    refresh: bool = False,
 ) -> dict:
     return _delegate(
         "run",
@@ -69,6 +70,7 @@ def run(
         use_llm=use_llm,
         use_social=use_social,
         use_competitors=use_competitors,
+        refresh=refresh,
     )
 
 
@@ -256,7 +258,7 @@ def retry_analysis_job(*args, **kwargs):
 
 
 def _cmd_analyze(a: argparse.Namespace) -> None:
-    run(a.url, a.brand_name, a.use_llm, a.use_social)
+    run(a.url, a.brand_name, a.use_llm, a.use_social, refresh=a.refresh)
 
 
 def _cmd_feedback(a: argparse.Namespace) -> None:
@@ -631,6 +633,7 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("brand_name", nargs="?", default=None)
     p.add_argument("--no-llm", dest="use_llm", action="store_false")
     p.add_argument("--no-social", dest="use_social", action="store_false")
+    p.add_argument("--refresh", action="store_true")
     p.set_defaults(func=_cmd_analyze)
 
     p = sub.add_parser("feedback", help="Record a feedback note")

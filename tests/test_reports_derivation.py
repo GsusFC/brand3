@@ -173,6 +173,32 @@ def _legacy_score_only_snapshot() -> dict:
     }
 
 
+def _low_context_raw_inputs(*, web_content_source: str = "browser_fallback") -> list[dict]:
+    return [
+        {
+            "source": "context",
+            "payload": {
+                "homepage_status": 403,
+                "pages_crawled": 0,
+                "context_score": 0,
+                "coverage": 0.0,
+                "confidence": 0.0,
+                "confidence_reason": ["homepage_unavailable", "low_coverage"],
+            },
+        },
+        {
+            "source": "web",
+            "payload": {
+                "url": "https://claude.ai",
+                "title": "Claude",
+                "markdown_content": "Claude browser-rendered product content. " * 12,
+                "content_source": web_content_source,
+                "browser_status": 200,
+            },
+        },
+    ]
+
+
 NETLIFY_SNAPSHOT = _snapshot(
     url="https://www.netlify.com",
     features=[
@@ -789,6 +815,74 @@ class BuildReportReadinessContextTests(unittest.TestCase):
 
         self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_PUBLISHABLE)
         self.assertNotIn("legacy score-only snapshot", ctx["readiness"]["diagnostic_summary"])
+
+    def test_browser_fallback_owned_content_prevents_context_only_insufficient_trust(self):
+        snapshot = _publishable_snapshot()
+        snapshot["run"]["data_quality"] = "good"
+        snapshot["run"]["llm_used"] = 1
+        snapshot["raw_inputs"] = _low_context_raw_inputs(web_content_source="browser_fallback")
+        snapshot["evidence_items"] = [
+            {
+                "source": "web",
+                "url": "https://claude.ai/reviews",
+                "quote": "Claude customer evidence.",
+                "feature_name": "brand_sentiment",
+                "dimension_name": "percepcion",
+            },
+            {
+                "source": "web",
+                "url": "https://claude.ai/news",
+                "quote": "Claude release evidence.",
+                "feature_name": "momentum",
+                "dimension_name": "vitalidad",
+            },
+        ]
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["context_readiness"]["status"], "insufficient_data")
+        self.assertEqual(
+            ctx["owned_content_capture"]["content_source"],
+            "browser_fallback",
+        )
+        self.assertTrue(ctx["owned_content_capture"]["usable_owned_content"])
+        self.assertNotEqual(ctx["trust_summary"]["overall_status"], "insufficient_data")
+        self.assertNotEqual(ctx["trust_summary"]["overall_reason"], "context_insufficient")
+        self.assertEqual(
+            ctx["trust_summary"]["context"]["raw_status"],
+            "insufficient_data",
+        )
+        self.assertIn(
+            "Context pre-scan failed, but usable owned content was captured via browser_fallback.",
+            ctx["readiness"]["diagnostic_summary"],
+        )
+
+    def test_exa_fallback_with_insufficient_context_stays_insufficient_trust(self):
+        snapshot = _publishable_snapshot()
+        snapshot["run"]["data_quality"] = "good"
+        snapshot["run"]["llm_used"] = 1
+        snapshot["data_sources"] = {"content_source": "exa_fallback"}
+        snapshot["raw_inputs"] = _low_context_raw_inputs(web_content_source="")
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["context_readiness"]["status"], "insufficient_data")
+        self.assertFalse(ctx["owned_content_capture"]["usable_owned_content"])
+        self.assertEqual(ctx["trust_summary"]["overall_status"], "insufficient_data")
+        self.assertEqual(ctx["trust_summary"]["overall_reason"], "context_insufficient")
+
+    def test_owned_context_adjustment_does_not_change_scores_or_dimensions(self):
+        snapshot = _publishable_snapshot()
+        snapshot["run"]["data_quality"] = "good"
+        snapshot["raw_inputs"] = _low_context_raw_inputs(web_content_source="browser_fallback")
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["score"]["global"], snapshot["run"]["composite_score"])
+        self.assertEqual(
+            {dimension["name"]: dimension["score"] for dimension in ctx["dimensions"]},
+            {row["dimension_name"]: row["score"] for row in snapshot["scores"]},
+        )
 
 
 if __name__ == "__main__":

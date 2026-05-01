@@ -94,6 +94,13 @@ _NEWS_HOSTS = {
     "lavanguardia.com",
 }
 _CHANGELOG_PATH_MARKERS = ("/changelog", "/releases", "/blog/release", "/release-notes")
+_OWNED_CONTENT_SOURCES = {
+    "firecrawl",
+    "browser_fallback",
+    "owned_fallback",
+    "official_related",
+}
+_CORE_DIMENSIONS = ("coherencia", "diferenciacion", "presencia")
 
 
 @dataclass(frozen=True)
@@ -406,6 +413,18 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         snapshot.get("features") or [],
         evidence_items=snapshot.get("evidence_items") or [],
     )
+    owned_content_capture = _owned_content_capture_from_snapshot(
+        snapshot,
+        evidence_summary=evidence_summary,
+    )
+    context_readiness = {
+        **context_readiness,
+        "owned_content_capture": owned_content_capture,
+    }
+    effective_context_readiness = _effective_context_readiness_for_trust(
+        context_readiness,
+        owned_content_capture=owned_content_capture,
+    )
     readiness = evaluate_report_readiness(**_readiness_inputs_from_snapshot(
         snapshot,
         evidence_summary=evidence_summary,
@@ -481,7 +500,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
     _, band_adjective = derive_verdict(composite)
     trust_summary = build_trust_summary(
         data_quality=data_quality,
-        context_summary=context_readiness,
+        context_summary=effective_context_readiness,
         evidence_summary=evidence_summary,
         dimension_status_counts=dimension_status_counts,
         limited_dimensions=limited_dimensions_from_report_dimensions(dimensions_ctx),
@@ -508,6 +527,8 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "composite_reliable": data_quality == "good" and composite is not None,
             "partial_score": composite is None or data_quality != "good",
             "context_readiness": context_readiness,
+            "owned_content_capture": owned_content_capture,
+            "effective_context_readiness": effective_context_readiness,
             "evidence_summary": evidence_summary,
             "cost_policy": cost_policy,
             "dimension_status_counts": dimension_status_counts,
@@ -586,6 +607,8 @@ def build_report_context_from_base(base: dict) -> dict:
         # reuse the same object without reconstructing them.
         "evaluation": evaluation,
         "context_readiness": evaluation.get("context_readiness") or {},
+        "owned_content_capture": evaluation.get("owned_content_capture") or {},
+        "effective_context_readiness": evaluation.get("effective_context_readiness") or {},
         "evidence_summary": evaluation.get("evidence_summary") or {},
         "readiness": readiness,
         "editorial_policy": editorial_policy,
@@ -787,12 +810,24 @@ def _readiness_diagnostic_summary(readiness: dict, *, context_readiness: dict) -
         )
 
     if mode == "publishable_brand_report":
+        owned_capture = (context_readiness or {}).get("owned_content_capture") or {}
+        context_note = ""
+        if (
+            (context_readiness or {}).get("raw_status", (context_readiness or {}).get("status"))
+            == "insufficient_data"
+            and owned_capture.get("usable_owned_content")
+        ):
+            context_note = " " + (
+                owned_capture.get("message")
+                or "Context pre-scan failed, but usable owned content was captured."
+            )
         if observation_only:
             return (
                 "This report has enough evidence and confidence for editorial use. "
                 f"Some dimensions remain observation-only: {', '.join(observation_only)}."
+                + context_note
             )
-        return "This report has enough evidence and confidence for editorial use."
+        return "This report has enough evidence and confidence for editorial use." + context_note
 
     if mode == "technical_diagnostic":
         reasons: list[str] = []
@@ -837,6 +872,9 @@ def _dimensions_with_state(dimension_states: dict, state: str) -> list[str]:
 
 
 def _context_is_limited(context_readiness: dict) -> bool:
+    owned_capture = (context_readiness or {}).get("owned_content_capture") or {}
+    if owned_capture.get("usable_owned_content"):
+        return False
     return (context_readiness or {}).get("status") in {"degraded", "insufficient_data"}
 
 
@@ -932,6 +970,83 @@ def _looks_dimension_keyed(value: Any) -> bool:
     if not isinstance(value, dict):
         return False
     return any(key in value and isinstance(value.get(key), dict) for key in _DIMENSION_ORDER)
+
+
+def _owned_content_capture_from_snapshot(snapshot: dict, *, evidence_summary: dict) -> dict:
+    content_source = _content_source_from_snapshot(snapshot)
+    dimensions_without_evidence = set(evidence_summary.get("dimensions_without_evidence") or [])
+    core_dimensions_missing = sorted(
+        dimension for dimension in _CORE_DIMENSIONS if dimension in dimensions_without_evidence
+    )
+    web_chars = _web_markdown_chars_from_snapshot(snapshot)
+    usable_web_content = web_chars >= 200
+    usable_owned_content = (
+        content_source in _OWNED_CONTENT_SOURCES
+        and not core_dimensions_missing
+        and (usable_web_content or int(evidence_summary.get("total") or 0) > 0)
+    )
+    return {
+        "available": bool(content_source),
+        "content_source": content_source,
+        "owned_like": content_source in _OWNED_CONTENT_SOURCES,
+        "usable_web_content": usable_web_content,
+        "web_text_chars": web_chars,
+        "core_dimensions_missing_evidence": core_dimensions_missing,
+        "usable_owned_content": usable_owned_content,
+        "message": (
+            f"Context pre-scan failed, but usable owned content was captured via {content_source}."
+            if usable_owned_content and content_source
+            else ""
+        ),
+    }
+
+
+def _content_source_from_snapshot(snapshot: dict) -> str:
+    data_sources = snapshot.get("data_sources")
+    if isinstance(data_sources, dict) and data_sources.get("content_source"):
+        return _as_str(data_sources.get("content_source")).strip()
+
+    for item in reversed(snapshot.get("raw_inputs") or []):
+        if item.get("source") != "web":
+            continue
+        payload = item.get("payload") or {}
+        if isinstance(payload, dict) and payload.get("content_source"):
+            return _as_str(payload.get("content_source")).strip()
+
+    for feature in snapshot.get("features") or []:
+        parsed = parse_raw_value(feature.get("raw_value"))
+        if isinstance(parsed, dict) and parsed.get("content_source"):
+            return _as_str(parsed.get("content_source")).strip()
+
+    return ""
+
+
+def _web_markdown_chars_from_snapshot(snapshot: dict) -> int:
+    for item in reversed(snapshot.get("raw_inputs") or []):
+        if item.get("source") != "web":
+            continue
+        payload = item.get("payload") or {}
+        if isinstance(payload, dict):
+            return len(_as_str(payload.get("markdown_content")).strip())
+    return 0
+
+
+def _effective_context_readiness_for_trust(
+    context_readiness: dict,
+    *,
+    owned_content_capture: dict,
+) -> dict:
+    effective = dict(context_readiness or {})
+    effective["raw_status"] = (context_readiness or {}).get("status")
+    effective["owned_content_capture"] = owned_content_capture
+    if (
+        effective.get("status") == "insufficient_data"
+        and owned_content_capture.get("usable_owned_content")
+    ):
+        effective["status"] = "good"
+        effective["effective_status"] = "good"
+        effective["message"] = owned_content_capture.get("message") or effective.get("message")
+    return effective
 
 
 def _context_readiness_from_snapshot(snapshot: dict) -> dict:

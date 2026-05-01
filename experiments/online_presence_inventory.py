@@ -13,6 +13,7 @@ import json
 import re
 import sys
 from dataclasses import asdict, dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin, urlparse
 
@@ -58,6 +59,24 @@ OUTPUT_FIELDS = (
     "text_chars",
     "usable_for_brand_evidence",
     "usable_for_perception_evidence",
+)
+
+BENCHMARK_SUMMARY_FIELDS = (
+    "brand",
+    "input_url",
+    "total_public_pages_found",
+    "official_pages_found",
+    "official_pages_read",
+    "usable_brand_evidence_pages",
+    "usable_public_perception_pages",
+    "primary_page_read_method",
+    "primary_page_text_chars",
+    "official_related_usable_count",
+    "docs_usable_count",
+    "news_or_blog_usable_count",
+    "support_usable_count",
+    "recommended_evidence_base",
+    "recommended_analysis_mode",
 )
 
 
@@ -565,6 +584,77 @@ def summarize_inventory(rows: list[InventoryRow]) -> dict[str, object]:
     }
 
 
+def summarize_brand(rows: list[InventoryRow], *, brand: str, input_url: str) -> dict[str, object]:
+    primary = next((row for row in rows if row.page_type == "primary"), None)
+    official_rows = [
+        row for row in rows
+        if row.relation_to_brand in {"primary_domain", "same_domain", "official_related"}
+    ]
+    official_read = [
+        row for row in official_rows
+        if row.collection_method not in {"not_attempted", "exa_metadata"}
+    ]
+    usable_brand = [row for row in rows if row.usable_for_brand_evidence]
+    usable_perception = [row for row in rows if row.usable_for_perception_evidence]
+    summary = {
+        "brand": brand,
+        "input_url": normalize_url(input_url),
+        "total_public_pages_found": len(rows),
+        "official_pages_found": len(official_rows),
+        "official_pages_read": len(official_read),
+        "usable_brand_evidence_pages": len(usable_brand),
+        "usable_public_perception_pages": len(usable_perception),
+        "primary_page_read_method": primary.collection_method if primary else "",
+        "primary_page_text_chars": int(primary.text_chars if primary else 0),
+        "official_related_usable_count": sum(
+            1 for row in rows
+            if row.relation_to_brand == "official_related" and row.usable_for_brand_evidence
+        ),
+        "docs_usable_count": sum(1 for row in rows if row.page_type == "docs" and row.usable_for_brand_evidence),
+        "news_or_blog_usable_count": sum(
+            1 for row in rows if row.page_type == "news_or_blog" and row.usable_for_brand_evidence
+        ),
+        "support_usable_count": sum(1 for row in rows if row.page_type == "support" and row.usable_for_brand_evidence),
+    }
+    summary["recommended_evidence_base"] = _recommended_evidence_base(rows)
+    summary["recommended_analysis_mode"] = recommended_analysis_mode(rows)
+    return summary
+
+
+def _recommended_evidence_base(rows: list[InventoryRow]) -> bool:
+    usable_brand = [row for row in rows if row.usable_for_brand_evidence]
+    has_primary_base = any(
+        row.page_type == "primary" and row.usable_for_brand_evidence and row.text_chars >= 1500
+        for row in rows
+    )
+    return len(usable_brand) >= 2 or has_primary_base
+
+
+def recommended_analysis_mode(rows: list[InventoryRow]) -> str:
+    primary = next((row for row in rows if row.page_type == "primary"), None)
+    primary_usable = bool(primary and primary.usable_for_brand_evidence)
+    primary_chars = int(primary.text_chars if primary else 0)
+    usable_brand = [row for row in rows if row.usable_for_brand_evidence]
+    usable_non_primary = [row for row in usable_brand if row.page_type != "primary"]
+    related_usable = [
+        row for row in usable_brand
+        if row.relation_to_brand == "official_related"
+    ]
+    usable_perception = [row for row in rows if row.usable_for_perception_evidence]
+
+    if primary_usable:
+        if len(usable_non_primary) >= 2:
+            return "official_pages_bundle"
+        return "primary_page_only"
+    if related_usable:
+        return "related_official_pages_bundle"
+    if usable_perception:
+        return "public_perception_only"
+    if primary and primary_chars >= 1500:
+        return "primary_page_only"
+    return "not_enough_evidence"
+
+
 def format_summary(summary: dict[str, object]) -> str:
     lines = ["summary"]
     for key, value in summary.items():
@@ -635,25 +725,141 @@ def write_outputs(
                 fh.write(f"{key}\t{_format_value(value)}\n")
 
 
+def load_targets(path: Path) -> list[dict[str, str]]:
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(payload, list):
+        raise SystemExit("benchmark targets must be a JSON list")
+    targets: list[dict[str, str]] = []
+    for item in payload:
+        if not isinstance(item, dict):
+            continue
+        brand = str(item.get("brand") or "").strip()
+        url = str(item.get("url") or item.get("input_url") or "").strip()
+        if not url:
+            continue
+        targets.append({"brand": brand or host_for(url), "url": normalize_url(url)})
+    return targets
+
+
+def run_benchmark(
+    targets: list[dict[str, str]],
+    *,
+    include_official_pages: bool = False,
+    max_pages_per_brand: int = 12,
+) -> dict[str, object]:
+    all_rows: list[InventoryRow] = []
+    summaries: list[dict[str, object]] = []
+    for target in targets:
+        brand = target["brand"]
+        url = normalize_url(target["url"])
+        rows = collect_inventory(
+            brand,
+            url,
+            enrich_official=include_official_pages,
+            max_enrich=max_pages_per_brand,
+        )
+        all_rows.extend(rows)
+        summaries.append(summarize_brand(rows, brand=brand, input_url=url))
+    return {
+        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "brand_count": len(targets),
+        "rows": [row.as_output() for row in all_rows],
+        "summary_by_brand": summaries,
+    }
+
+
+def write_benchmark_outputs(result: dict[str, object], *, json_out: Path | None, tsv_out: Path | None) -> None:
+    if json_out:
+        json_out.parent.mkdir(parents=True, exist_ok=True)
+        json_out.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+    if tsv_out:
+        tsv_out.parent.mkdir(parents=True, exist_ok=True)
+        with tsv_out.open("w", encoding="utf-8", newline="") as fh:
+            writer = csv.DictWriter(fh, fieldnames=BENCHMARK_SUMMARY_FIELDS, delimiter="\t")
+            writer.writeheader()
+            for row in result.get("summary_by_brand", []):
+                writer.writerow({field: row.get(field, "") for field in BENCHMARK_SUMMARY_FIELDS})
+
+
+def format_benchmark_table(summary_rows: list[dict[str, object]]) -> str:
+    widths = {field: len(field) for field in BENCHMARK_SUMMARY_FIELDS}
+    rendered: list[dict[str, str]] = []
+    for row in summary_rows:
+        item = {field: _format_value(row.get(field, "")) for field in BENCHMARK_SUMMARY_FIELDS}
+        rendered.append(item)
+        for field, value in item.items():
+            widths[field] = min(max(widths[field], len(value)), 34)
+
+    def clip(field: str, value: str) -> str:
+        width = widths[field]
+        return value if len(value) <= width else value[: width - 1] + "…"
+
+    header = "  ".join(field.ljust(widths[field]) for field in BENCHMARK_SUMMARY_FIELDS)
+    rule = "  ".join("-" * widths[field] for field in BENCHMARK_SUMMARY_FIELDS)
+    body = [
+        "  ".join(clip(field, item[field]).ljust(widths[field]) for field in BENCHMARK_SUMMARY_FIELDS)
+        for item in rendered
+    ]
+    return "\n".join([header, rule, *body])
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Experimental Brand3 online presence inventory")
-    parser.add_argument("url")
-    parser.add_argument("--brand", required=True)
+    sub = parser.add_subparsers(dest="command")
+
+    benchmark = sub.add_parser("benchmark", help="Run inventory for multiple brands from JSON")
+    benchmark.add_argument("targets")
+    benchmark.add_argument("--include-official-pages", action="store_true")
+    benchmark.add_argument("--enrich-official", action="store_true")
+    benchmark.add_argument("--max-pages-per-brand", type=int, default=12)
+    benchmark.add_argument("--max-enrich", type=int, default=None)
+    benchmark.add_argument("--json-out", default="")
+    benchmark.add_argument("--tsv-out", default="")
+    return parser
+
+
+def build_single_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="Experimental Brand3 online presence inventory")
+    parser.add_argument("url", nargs="?")
+    parser.add_argument("--brand")
+    parser.add_argument("--include-official-pages", action="store_true")
     parser.add_argument("--enrich-official", action="store_true")
-    parser.add_argument("--max-enrich", type=int, default=12)
+    parser.add_argument("--max-pages-per-brand", type=int, default=12)
+    parser.add_argument("--max-enrich", type=int, default=None)
     parser.add_argument("--json-out", default="")
     parser.add_argument("--tsv-out", default="")
     return parser
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
+    argv = sys.argv[1:] if argv is None else argv
+    if argv and argv[0] == "benchmark":
+        parser = build_parser()
+        args = parser.parse_args(argv)
+        max_pages = args.max_enrich if args.max_enrich is not None else args.max_pages_per_brand
+        result = run_benchmark(
+            load_targets(Path(args.targets)),
+            include_official_pages=args.include_official_pages or args.enrich_official,
+            max_pages_per_brand=max_pages,
+        )
+        write_benchmark_outputs(
+            result,
+            json_out=Path(args.json_out) if args.json_out else None,
+            tsv_out=Path(args.tsv_out) if args.tsv_out else None,
+        )
+        print(format_benchmark_table(result["summary_by_brand"]))
+        return 0
+
+    parser = build_single_parser()
     args = parser.parse_args(argv)
+    if not args.url or not args.brand:
+        parser.error("single-brand mode requires URL and --brand")
+    max_enrich = args.max_enrich if args.max_enrich is not None else args.max_pages_per_brand
     rows = collect_inventory(
         args.brand,
         args.url,
-        enrich_official=args.enrich_official,
-        max_enrich=args.max_enrich,
+        enrich_official=args.enrich_official or args.include_official_pages,
+        max_enrich=max_enrich,
     )
     summary = summarize_inventory(rows)
     write_outputs(

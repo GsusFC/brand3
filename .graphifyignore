@@ -1,0 +1,5 @@
+output/
+tests/snapshots/
+experiments/output/
+web/static/
+graphify-out/

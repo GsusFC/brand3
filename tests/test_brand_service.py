@@ -643,8 +643,8 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(skipped["status"], "skipped")
         self.assertEqual(skipped["reason"], "benchmark_mode")
 
-    def test_default_screenshot_provider_remains_firecrawl(self):
-        self.assertEqual(SCREENSHOT_PROVIDER, "firecrawl")
+    def test_default_screenshot_provider_is_playwright(self):
+        self.assertEqual(SCREENSHOT_PROVIDER, "playwright")
 
     def test_playwright_provider_routes_to_playwright_capture(self):
         with patch(

@@ -14,6 +14,7 @@ from src.config import (
     DEFAULT_LLM_PREMIUM_MODEL,
     DEFAULT_VISION_MODEL,
     LLM_CHEAP_MODEL,
+    SCREENSHOT_PROVIDER,
 )
 from src.services.brand_service import (
     _aggregate_exa_content,
@@ -31,6 +32,8 @@ from src.services.brand_service import (
     _llm_provider_payload,
     _public_presence_inventory_summary,
     _recover_owned_web_content,
+    _screenshot_capture_diagnostic,
+    _take_screenshot_with_budget,
     _should_skip_llm_for_low_context,
     _trust_summary_payload,
 )
@@ -599,6 +602,93 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertNotIn("api_key", roles)
         self.assertNotIn("key", roles)
 
+    def test_screenshot_capture_diagnostic_reports_success_error_and_skip(self):
+        captured = _screenshot_capture_diagnostic(
+            attempted=True,
+            screenshot_data={"screenshot_url": "https://cdn.example/screenshot.png"},
+        )
+        playwright_captured = _screenshot_capture_diagnostic(
+            attempted=True,
+            screenshot_data={
+                "screenshot_url": "file:///tmp/brand3-shot.png",
+                "screenshot_provider": "playwright",
+            },
+        )
+        payment_error = _screenshot_capture_diagnostic(
+            attempted=True,
+            screenshot_data={"error": "Screenshot failed: Payment Required: Insufficient credits"},
+        )
+        playwright_error = _screenshot_capture_diagnostic(
+            attempted=True,
+            screenshot_data={
+                "error": "browser launch failed",
+                "error_type": "browser_error",
+                "screenshot_provider": "playwright",
+            },
+        )
+        skipped = _screenshot_capture_diagnostic(
+            attempted=False,
+            skipped_reason="benchmark_mode",
+        )
+
+        self.assertEqual(captured["status"], "captured")
+        self.assertTrue(captured["success"])
+        self.assertEqual(playwright_captured["source"], "playwright")
+        self.assertIsNone(playwright_captured["error_type"])
+        self.assertEqual(payment_error["status"], "error")
+        self.assertEqual(payment_error["error_type"], "payment_required")
+        self.assertIn("Payment Required", payment_error["error_message"])
+        self.assertEqual(playwright_error["source"], "playwright")
+        self.assertEqual(playwright_error["error_type"], "browser_error")
+        self.assertEqual(skipped["status"], "skipped")
+        self.assertEqual(skipped["reason"], "benchmark_mode")
+
+    def test_default_screenshot_provider_remains_firecrawl(self):
+        self.assertEqual(SCREENSHOT_PROVIDER, "firecrawl")
+
+    def test_playwright_provider_routes_to_playwright_capture(self):
+        with patch(
+            "src.services.brand_service._take_playwright_screenshot",
+            return_value={
+                "screenshot_url": "file:///tmp/brand3-shot.png",
+                "screenshot_provider": "playwright",
+            },
+        ) as capture:
+            data, limitation = _take_screenshot_with_budget(
+                "https://example.com",
+                timeout_seconds=0,
+                provider="playwright",
+            )
+
+        capture.assert_called_once_with("https://example.com")
+        self.assertIsNone(limitation)
+        self.assertEqual(data["screenshot_provider"], "playwright")
+
+    def test_playwright_provider_failure_is_structured_and_non_blocking(self):
+        with patch(
+            "src.services.brand_service._take_playwright_screenshot",
+            return_value={
+                "error": "Playwright not available",
+                "error_type": "missing_dependency",
+                "screenshot_provider": "playwright",
+            },
+        ):
+            data, limitation = _take_screenshot_with_budget(
+                "https://example.com",
+                timeout_seconds=0,
+                provider="playwright",
+            )
+        diagnostic = _screenshot_capture_diagnostic(
+            attempted=True,
+            screenshot_data=data,
+            limitation=limitation,
+        )
+
+        self.assertIsNone(limitation)
+        self.assertEqual(diagnostic["source"], "playwright")
+        self.assertFalse(diagnostic["success"])
+        self.assertEqual(diagnostic["error_type"], "missing_dependency")
+
     def test_cost_policy_summary_exposes_skips_and_cache_savings(self):
         summary = _cost_policy_summary(
             raw_input_cache={"context": "hit", "web": "miss", "social": "skipped"},
@@ -891,6 +981,85 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertIsNotNone(result["composite_score"])
         self.assertEqual(set(result["dimensions"]), {"coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad"})
 
+    def test_run_passes_captured_screenshot_to_coherencia_extraction(self):
+        captured_screenshot_urls = []
+
+        def fake_coherencia_extract(self, web=None, exa=None, context=None, screenshot_url=None):
+            captured_screenshot_urls.append(screenshot_url)
+            return {
+                "visual_consistency": FeatureValue("visual_consistency", 80.0, confidence=0.8, source="visual_analysis"),
+                "messaging_consistency": FeatureValue("messaging_consistency", 80.0, confidence=0.8, source="heuristic"),
+                "tone_consistency": FeatureValue("tone_consistency", 80.0, confidence=0.8, source="heuristic"),
+                "cross_channel_coherence": FeatureValue("cross_channel_coherence", 80.0, confidence=0.8, source="heuristic"),
+                "structured_identity": FeatureValue("structured_identity", 50.0, confidence=0.5, source="context"),
+            }
+
+        def fake_diferenciacion_extract(self, web=None, exa=None, competitor_data=None, screenshot_url=None, context=None):
+            return {
+                "positioning_clarity": FeatureValue("positioning_clarity", 70.0, confidence=0.8, source="heuristic"),
+                "uniqueness": FeatureValue("uniqueness", 70.0, confidence=0.8, source="heuristic"),
+                "competitor_distance": FeatureValue("competitor_distance", 70.0, confidence=0.8, source="heuristic"),
+                "content_authenticity": FeatureValue("content_authenticity", 70.0, confidence=0.8, source="heuristic"),
+                "brand_personality": FeatureValue("brand_personality", 70.0, confidence=0.8, source="heuristic"),
+                "content_depth_signal": FeatureValue("content_depth_signal", 50.0, confidence=0.5, source="context"),
+            }
+
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(url="https://example.com", coverage=0.8, confidence=0.8)
+            web = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Example brand builds reliable software. " * 12,
+            )
+            exa = ExaData(
+                brand_name="Example",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
+                    for i in range(5)
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            with patch(
+                                "src.services.brand_service._take_screenshot_with_budget",
+                                return_value=(
+                                    {
+                                        "screenshot_url": "file:///tmp/brand3-shot.png",
+                                        "screenshot_provider": "playwright",
+                                    },
+                                    None,
+                                ),
+                            ):
+                                with patch.object(
+                                    brand_service.CoherenciaExtractor,
+                                    "extract",
+                                    autospec=True,
+                                    side_effect=fake_coherencia_extract,
+                                ):
+                                    with patch.object(
+                                        brand_service.DiferenciacionExtractor,
+                                        "extract",
+                                        autospec=True,
+                                        side_effect=fake_diferenciacion_extract,
+                                    ):
+                                        result = brand_service.run(
+                                            "https://example.com",
+                                            "Example",
+                                            use_llm=False,
+                                            use_social=False,
+                                            use_competitors=False,
+                                            skip_visual_analysis=False,
+                                            refresh=True,
+                                        )
+
+        self.assertEqual(captured_screenshot_urls, ["file:///tmp/brand3-shot.png"])
+        self.assertTrue(result["data_sources"]["screenshot_capture"]["success"])
+        self.assertEqual(result["data_sources"]["screenshot_capture"]["source"], "playwright")
+
     def test_run_social_timeout_continues_and_records_limitation(self):
         with TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"
@@ -1161,6 +1330,19 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         )
         self.assertEqual(set(result["data_sources"]["llm_model_roles"]), {"default", "cheap", "premium", "vision"})
         self.assertNotIn("api_key", result["data_sources"]["llm_model_roles"])
+        self.assertEqual(
+            result["data_sources"]["screenshot_capture"],
+            {
+                "attempted": True,
+                "success": False,
+                "status": "timeout",
+                "source": "firecrawl_screenshot",
+                "error_type": "timeout",
+                "error_message": "timeout",
+            },
+        )
+        visual_raw = result["dimensions"]  # Dimension scores remain produced by the existing scoring path.
+        self.assertIn("coherencia", visual_raw)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,7 @@ from src.features.diferenciacion import DiferenciacionExtractor
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.percepcion import PercepcionExtractor
 from src.features.presencia import PresenciaExtractor
+from src.features.visual_analyzer import VisualAnalysisResult
 from src.features.vitalidad import VitalidadExtractor
 
 
@@ -1367,6 +1368,62 @@ class ExaCollectorTests(unittest.TestCase):
 class CoherenciaExtractorTests(unittest.TestCase):
     """Covers the 4 coherencia features with dict raw_value."""
 
+    def test_visual_consistency_uses_provided_screenshot_without_recapturing(self):
+        class FakeVisualAnalyzer:
+            def __init__(self):
+                self.screenshot_calls = []
+                self.analyze_url_calls = []
+                self.take_screenshot_calls = []
+
+            def analyze_screenshot(self, screenshot_url, brand_name="", page_metadata=None):
+                self.screenshot_calls.append((screenshot_url, brand_name, page_metadata))
+                return VisualAnalysisResult(
+                    screenshot_url=screenshot_url,
+                    overall_score=88.0,
+                    confidence=0.9,
+                    logo_detected=True,
+                    details={
+                        "dominant_colors": ["#111111", "#ffffff"],
+                        "style": "clean",
+                        "method": "vision",
+                        "typography_consistent": True,
+                        "insights": ["Clear visual hierarchy"],
+                    },
+                )
+
+            def analyze_url(self, url, brand_name=""):
+                self.analyze_url_calls.append((url, brand_name))
+                raise AssertionError("analyze_url should not be called when screenshot_url is provided")
+
+            def take_screenshot(self, url):
+                self.take_screenshot_calls.append(url)
+                raise AssertionError("take_screenshot should not be called when screenshot_url is provided")
+
+        visual = FakeVisualAnalyzer()
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            meta_description="Example description",
+            markdown_content="Brand guidelines and logo usage live here.",
+        )
+
+        feature = CoherenciaExtractor(visual_analyzer=visual)._visual_consistency(
+            web,
+            screenshot_url="file:///tmp/example.png",
+        )
+
+        self.assertEqual(feature.source, "visual_analysis")
+        self.assertEqual(feature.value, 88.0)
+        self.assertTrue(feature.raw_value["has_screenshot"])
+        self.assertEqual(len(visual.screenshot_calls), 1)
+        screenshot_url, brand_name, metadata = visual.screenshot_calls[0]
+        self.assertEqual(screenshot_url, "file:///tmp/example.png")
+        self.assertEqual(brand_name, "Example")
+        self.assertEqual(metadata["title"], "Example")
+        self.assertEqual(metadata["description"], "Example description")
+        self.assertEqual(visual.analyze_url_calls, [])
+        self.assertEqual(visual.take_screenshot_calls, [])
+
     def test_visual_consistency_skip_flag_emits_structured_fallback(self):
         web = WebData(url="https://example.com", title="Example",
                       markdown_content="Brand guidelines and logo usage live here.")
@@ -1376,6 +1433,27 @@ class CoherenciaExtractorTests(unittest.TestCase):
         self.assertEqual(feature.raw_value["reason"], "visual_analysis_skipped")
         self.assertTrue(feature.raw_value["heuristic_score_used"])
         self.assertIn("brand_in_header", feature.raw_value["heuristic_signals"])
+
+    def test_visual_consistency_without_screenshot_keeps_existing_analyze_url_path(self):
+        class FakeVisualAnalyzer:
+            def __init__(self):
+                self.urls = []
+
+            def analyze_screenshot(self, *_args, **_kwargs):
+                raise AssertionError("analyze_screenshot should not be called without screenshot_url")
+
+            def analyze_url(self, url, brand_name=""):
+                self.urls.append((url, brand_name))
+                return VisualAnalysisResult(error="visual unavailable")
+
+        visual = FakeVisualAnalyzer()
+        web = WebData(url="https://example.com", title="Example", markdown_content="Example logo brand content.")
+
+        feature = CoherenciaExtractor(visual_analyzer=visual)._visual_consistency(web)
+
+        self.assertEqual(visual.urls, [("https://example.com", "Example")])
+        self.assertEqual(feature.source, "web_scrape_heuristic")
+        self.assertEqual(feature.raw_value["reason"], "visual_analysis_error")
 
     def test_visual_consistency_without_web_returns_zero_with_reason(self):
         feature = CoherenciaExtractor(skip_visual_analysis=True)._visual_consistency(web=None)

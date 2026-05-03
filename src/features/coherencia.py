@@ -171,9 +171,15 @@ class CoherenciaExtractor:
         self.visual_analyzer = visual_analyzer or VisualAnalyzer()
         self.skip_visual_analysis = skip_visual_analysis
 
-    def extract(self, web: WebData = None, exa: ExaData = None, context: ContextData = None) -> dict[str, FeatureValue]:
+    def extract(
+        self,
+        web: WebData = None,
+        exa: ExaData = None,
+        context: ContextData = None,
+        screenshot_url: str | None = None,
+    ) -> dict[str, FeatureValue]:
         features = {
-            "visual_consistency": self._visual_consistency(web),
+            "visual_consistency": self._visual_consistency(web, screenshot_url=screenshot_url),
             "messaging_consistency": self._messaging_consistency(web, exa),
             "tone_consistency": self._tone_consistency(web, exa),
             "cross_channel_coherence": self._cross_channel_coherence(web, exa),
@@ -203,7 +209,7 @@ class CoherenciaExtractor:
 
     # ── visual_consistency ─────────────────────────────────────────────
 
-    def _visual_consistency(self, web: WebData | None) -> FeatureValue:
+    def _visual_consistency(self, web: WebData | None, screenshot_url: str | None = None) -> FeatureValue:
         if not web or web.error:
             return FeatureValue(
                 "visual_consistency", 0.0,
@@ -237,7 +243,14 @@ class CoherenciaExtractor:
                 confidence=0.25, source="web_scrape_heuristic",
             )
 
-        if web.screenshot_path and web.screenshot_path.startswith("http"):
+        if screenshot_url:
+            metadata = {
+                "title": web.title,
+                "description": getattr(web, "meta_description", ""),
+                "url": web.url,
+            }
+            result = self.visual_analyzer.analyze_screenshot(screenshot_url, brand_name, metadata)
+        elif web.screenshot_path and web.screenshot_path.startswith("http"):
             result = self.visual_analyzer.analyze_screenshot(web.screenshot_path, brand_name)
         else:
             result = self.visual_analyzer.analyze_url(web.url, brand_name)

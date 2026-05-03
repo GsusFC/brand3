@@ -89,6 +89,80 @@ class LLMCacheTests(unittest.TestCase):
         self.assertEqual(result, {})
         self.assertEqual(llm.last_failure_reason, "llm_timeout")
         self.assertEqual(llm.call_failures[0]["reason"], "llm_timeout")
+        self.assertEqual(llm.call_failures[0]["error_type"], "timeout")
+        self.assertEqual(llm.call_failures[0]["model"], "model-a")
+        self.assertEqual(llm.call_failures[0]["base_url"], "https://llm.test")
+
+    def test_call_json_empty_response_records_structured_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="secret-key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", ""),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {})
+        failure = llm.call_failures[0]
+        self.assertEqual(failure["reason"], "llm_error")
+        self.assertEqual(failure["error_type"], "empty_response")
+        self.assertTrue(failure["response_empty"])
+        self.assertFalse(failure["json_parse_error"])
+        self.assertEqual(failure["model"], "model-a")
+        self.assertEqual(failure["base_url"], "https://llm.test")
+        self.assertNotIn("secret-key", json.dumps(failure))
+
+    def test_call_json_http_error_records_provider_details(self):
+        provider_error = json.dumps({
+            "error": {
+                "code": "rate_limit_exceeded",
+                "message": "Too many requests",
+            }
+        })
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="secret-key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("error", f"HTTP 429: {provider_error}"),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {})
+        failure = llm.call_failures[0]
+        self.assertEqual(failure["error_type"], "http_error")
+        self.assertEqual(failure["http_status"], 429)
+        self.assertEqual(failure["provider_error_code"], "rate_limit_exceeded")
+        self.assertEqual(failure["provider_error_message"], "Too many requests")
+        self.assertEqual(failure["model"], "model-a")
+        self.assertEqual(failure["base_url"], "https://llm.test")
+        self.assertNotIn("secret-key", json.dumps(failure))
+
+    def test_call_json_invalid_json_records_parse_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="secret-key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", "not-json"),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {})
+        failure = llm.call_failures[0]
+        self.assertEqual(failure["error_type"], "json_parse_error")
+        self.assertTrue(failure["json_parse_error"])
+        self.assertFalse(failure["response_empty"])
+        self.assertEqual(failure["model"], "model-a")
+        self.assertEqual(failure["base_url"], "https://llm.test")
+        self.assertNotIn("secret-key", json.dumps(failure))
 
     def test_call_json_success_path_unchanged(self):
         with tempfile.TemporaryDirectory() as tmpdir:

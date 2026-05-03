@@ -7,6 +7,7 @@ import json
 import multiprocessing as mp
 import os
 import queue
+import tempfile
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
@@ -34,6 +35,7 @@ from src.config import (
     LLM_CHEAP_MODEL,
     LLM_MODEL,
     LLM_PREMIUM_MODEL,
+    SCREENSHOT_PROVIDER,
     VISION_MODEL,
 )
 from src.niche import (
@@ -833,31 +835,110 @@ def _collect_social_with_budget(
     return SocialData(brand_name=brand_name, error=error), "error"
 
 
-def _screenshot_capture_worker(output_queue, url: str) -> None:
+def _normalized_screenshot_provider(provider: str | None = None) -> str:
+    value = (provider or SCREENSHOT_PROVIDER or "firecrawl").strip().lower()
+    return value if value in {"firecrawl", "playwright"} else "firecrawl"
+
+
+def _screenshot_capture_worker(output_queue, url: str, provider: str) -> None:
     try:
+        if provider == "playwright":
+            output_queue.put(("ok", _take_playwright_screenshot(url)))
+            return
+
         from src.features.visual_analyzer import VisualAnalyzer
 
-        output_queue.put(("ok", VisualAnalyzer().take_screenshot(url)))
+        data = VisualAnalyzer().take_screenshot(url)
+        data.setdefault("screenshot_provider", "firecrawl_screenshot")
+        output_queue.put(("ok", data))
     except Exception as exc:
         output_queue.put(("error", str(exc)))
+
+
+def _take_playwright_screenshot(url: str, *, timeout_ms: int = 15000) -> dict[str, object]:
+    try:
+        from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+        from playwright.sync_api import sync_playwright
+    except Exception as exc:
+        return {
+            "error": f"Playwright not available: {exc}",
+            "error_type": "missing_dependency",
+            "screenshot_provider": "playwright",
+        }
+
+    fd, screenshot_path = tempfile.mkstemp(prefix="brand3-screenshot-", suffix=".png")
+    os.close(fd)
+    browser = None
+    try:
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch(headless=True)
+            context = browser.new_context(
+                viewport={"width": 1440, "height": 1200},
+                user_agent=(
+                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/124.0.0.0 Safari/537.36"
+                ),
+            )
+            page = context.new_page()
+            page.goto(url, wait_until="domcontentloaded", timeout=timeout_ms)
+            try:
+                page.wait_for_load_state("networkidle", timeout=5000)
+            except Exception:
+                pass
+            page.screenshot(path=screenshot_path, full_page=True)
+            title = page.title()
+            browser.close()
+            browser = None
+        return {
+            "screenshot_url": Path(screenshot_path).as_uri(),
+            "screenshot_path": screenshot_path,
+            "metadata": {"title": title},
+            "screenshot_provider": "playwright",
+        }
+    except PlaywrightTimeoutError as exc:
+        return {
+            "error": str(exc),
+            "error_type": "timeout",
+            "screenshot_provider": "playwright",
+        }
+    except Exception as exc:
+        return {
+            "error": str(exc),
+            "error_type": "browser_error",
+            "screenshot_provider": "playwright",
+        }
+    finally:
+        try:
+            if browser is not None:
+                browser.close()
+        except Exception:
+            pass
 
 
 def _take_screenshot_with_budget(
     url: str,
     *,
     timeout_seconds: int = _VISUAL_SCREENSHOT_TIMEOUT_SECONDS,
+    provider: str | None = None,
 ) -> tuple[dict[str, object], str | None]:
+    provider_name = _normalized_screenshot_provider(provider)
     if timeout_seconds <= 0:
+        if provider_name == "playwright":
+            return _take_playwright_screenshot(url), None
+
         try:
             from src.features.visual_analyzer import VisualAnalyzer
 
-            return VisualAnalyzer().take_screenshot(url), None
+            data = VisualAnalyzer().take_screenshot(url)
+            data.setdefault("screenshot_provider", "firecrawl_screenshot")
+            return data, None
         except Exception as exc:
-            return {"error": str(exc)}, "error"
+            return {"error": str(exc), "screenshot_provider": "firecrawl_screenshot"}, "error"
 
     ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
     output_queue = ctx.Queue(maxsize=1)
-    process = ctx.Process(target=_screenshot_capture_worker, args=(output_queue, url))
+    process = ctx.Process(target=_screenshot_capture_worker, args=(output_queue, url, provider_name))
     process.start()
     process.join(timeout_seconds)
     if process.is_alive():
@@ -866,16 +947,82 @@ def _take_screenshot_with_budget(
         if process.is_alive():
             process.kill()
             process.join(2)
-        return {"error": f"visual_screenshot_timeout_after_{timeout_seconds}s"}, "timeout"
+        return {
+            "error": f"visual_screenshot_timeout_after_{timeout_seconds}s",
+            "error_type": "timeout",
+            "screenshot_provider": provider_name if provider_name == "playwright" else "firecrawl_screenshot",
+        }, "timeout"
 
     try:
         status, payload = output_queue.get_nowait()
     except queue.Empty:
-        return {"error": "visual_screenshot_no_result"}, "error"
+        return {
+            "error": "visual_screenshot_no_result",
+            "error_type": "unknown",
+            "screenshot_provider": provider_name if provider_name == "playwright" else "firecrawl_screenshot",
+        }, "error"
 
     if status == "ok" and isinstance(payload, dict):
         return payload, None
-    return {"error": str(payload or "visual_screenshot_error")}, "error"
+    return {
+        "error": str(payload or "visual_screenshot_error"),
+        "error_type": "browser_error" if provider_name == "playwright" else "capture_error",
+        "screenshot_provider": provider_name if provider_name == "playwright" else "firecrawl_screenshot",
+    }, "error"
+
+
+def _screenshot_capture_diagnostic(
+    *,
+    attempted: bool,
+    screenshot_data: dict[str, object] | None = None,
+    limitation: str | None = None,
+    skipped_reason: str | None = None,
+) -> dict[str, object]:
+    if not attempted:
+        return {
+            "attempted": False,
+            "success": False,
+            "status": "skipped",
+            "reason": skipped_reason or "not_attempted",
+        }
+
+    data = screenshot_data or {}
+    screenshot_url = str(data.get("screenshot_url") or "")
+    source = str(data.get("screenshot_provider") or "firecrawl_screenshot")
+    if screenshot_url:
+        return {
+            "attempted": True,
+            "success": True,
+            "status": "captured",
+            "source": source,
+            "error_type": None,
+            "error_message": None,
+            "screenshot_url": screenshot_url,
+        }
+
+    error_message = str(data.get("error") or limitation or "screenshot_capture_failed")
+    error_type = str(data.get("error_type") or limitation or _classify_screenshot_error(error_message))
+    return {
+        "attempted": True,
+        "success": False,
+        "status": "error" if error_type != "timeout" else "timeout",
+        "source": source,
+        "error_type": error_type,
+        "error_message": error_message[:300],
+    }
+
+
+def _classify_screenshot_error(error_message: str) -> str:
+    normalized = (error_message or "").lower()
+    if "timeout" in normalized or "timed out" in normalized:
+        return "timeout"
+    if "payment required" in normalized or "insufficient credit" in normalized:
+        return "payment_required"
+    if "api_key" in normalized or "api key" in normalized or "not set" in normalized:
+        return "missing_api_key"
+    if "no screenshot url" in normalized:
+        return "missing_screenshot_url"
+    return "capture_error"
 
 
 def _from_competitor_payload(payload: dict | None) -> CompetitorData | None:
@@ -1667,18 +1814,39 @@ def run(
 
         screenshot_url = None
         screenshot_limitation = None
+        screenshot_data: dict[str, object] = {}
+        screenshot_capture = _screenshot_capture_diagnostic(
+            attempted=False,
+            skipped_reason="visual_analysis_disabled",
+        )
         if not skip_visual_analysis:
             try:
                 screenshot_data, screenshot_limitation = _take_screenshot_with_budget(url)
                 screenshot_url = screenshot_data.get("screenshot_url")
+                screenshot_capture = _screenshot_capture_diagnostic(
+                    attempted=True,
+                    screenshot_data=screenshot_data,
+                    limitation=screenshot_limitation,
+                )
                 if screenshot_url:
                     print("  Screenshot: captured")
                 elif screenshot_limitation:
                     print(f"  Screenshot: skipped ({screenshot_limitation})")
+                else:
+                    print(f"  Screenshot: skipped ({screenshot_capture['error_type']})")
             except Exception as e:
                 print(f"  Screenshot: skipped ({e})")
+                screenshot_capture = _screenshot_capture_diagnostic(
+                    attempted=True,
+                    screenshot_data={"error": str(e)},
+                    limitation="error",
+                )
         else:
             print("  Screenshot: skipped (benchmark mode)")
+            screenshot_capture = _screenshot_capture_diagnostic(
+                attempted=False,
+                skipped_reason="benchmark_mode",
+            )
 
         features_by_dim = {}
         presencia_ext = PresenciaExtractor()
@@ -1712,7 +1880,12 @@ def run(
             features_by_dim["coherencia"] = {}
             features_by_dim["diferenciacion"] = {}
         else:
-            features_by_dim["coherencia"] = coherencia_ext.extract(web=content_web, exa=exa_data, context=context_data)
+            features_by_dim["coherencia"] = coherencia_ext.extract(
+                web=content_web,
+                exa=exa_data,
+                context=context_data,
+                screenshot_url=screenshot_url,
+            )
             features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
                 web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url, context=context_data
             )
@@ -1812,6 +1985,7 @@ def run(
             "data_sources": {
                 **data_sources,
                 "public_presence_inventory": public_presence_inventory,
+                "screenshot_capture": screenshot_capture,
                 "social_limitation": social_limitation,
                 "raw_input_cache": raw_input_cache,
                 "llm_provider": llm_provider,

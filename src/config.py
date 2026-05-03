@@ -70,3 +70,6 @@ LLM_MODEL = os.environ.get("BRAND3_LLM_MODEL", DEFAULT_LLM_MODEL)
 LLM_CHEAP_MODEL = os.environ.get("BRAND3_LLM_CHEAP_MODEL", DEFAULT_LLM_CHEAP_MODEL)
 LLM_PREMIUM_MODEL = os.environ.get("BRAND3_LLM_PREMIUM_MODEL", DEFAULT_LLM_PREMIUM_MODEL)
 VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)
+
+# Screenshot capture provider. Firecrawl stays the default production path.
+SCREENSHOT_PROVIDER = os.environ.get("SCREENSHOT_PROVIDER", "firecrawl").strip().lower() or "firecrawl"

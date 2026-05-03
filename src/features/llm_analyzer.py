@@ -18,6 +18,7 @@ import queue
 import socket
 import urllib.request
 import urllib.error
+from typing import Any
 
 from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MODEL
 
@@ -95,6 +96,53 @@ def llm_failure_reason(llm, default: str) -> str:
     return default
 
 
+def _provider_error_payload(error: str) -> dict[str, object]:
+    text = error or ""
+    http_status = None
+    body = text
+    if text.startswith("HTTP "):
+        prefix, _, rest = text.partition(":")
+        parts = prefix.split()
+        if len(parts) >= 2:
+            try:
+                http_status = int(parts[1])
+            except ValueError:
+                http_status = None
+        body = rest.strip()
+
+    provider_error_code = None
+    provider_error_message = None
+    try:
+        parsed = json.loads(body) if body else {}
+    except json.JSONDecodeError:
+        parsed = {}
+    if isinstance(parsed, dict):
+        err = parsed.get("error")
+        if isinstance(err, dict):
+            provider_error_code = err.get("code") or err.get("status") or err.get("type")
+            provider_error_message = err.get("message") or err.get("error")
+        else:
+            provider_error_code = parsed.get("code") or parsed.get("status") or parsed.get("type")
+            provider_error_message = parsed.get("message") or parsed.get("error_description")
+
+    return {
+        "http_status": http_status,
+        "provider_error_code": str(provider_error_code) if provider_error_code else None,
+        "provider_error_message": str(provider_error_message)[:500] if provider_error_message else None,
+    }
+
+
+def _llm_error_type(reason: str, error: str) -> str:
+    normalized = (error or "").lower()
+    if reason == "llm_timeout" or "timeout" in normalized or "timed out" in normalized:
+        return "timeout"
+    if (error or "").startswith("HTTP "):
+        return "http_error"
+    if "llm_call_no_result" in normalized:
+        return "no_result"
+    return "provider_error"
+
+
 class LLMAnalyzer:
     """LLM-powered brand content analyzer."""
 
@@ -107,11 +155,31 @@ class LLMAnalyzer:
         self.cache_writes = 0
         self.timeout_seconds = LLM_CALL_TIMEOUT_SECONDS
         self.last_failure_reason: str | None = None
-        self.call_failures: list[dict[str, str]] = []
+        self.call_failures: list[dict[str, Any]] = []
 
-    def _record_failure(self, reason: str, error: str) -> None:
+    def _record_failure(
+        self,
+        reason: str,
+        error: str,
+        *,
+        error_type: str | None = None,
+        response_empty: bool = False,
+        json_parse_error: bool = False,
+    ) -> None:
         self.last_failure_reason = reason
-        self.call_failures.append({"reason": reason, "error": error[:200]})
+        provider_payload = _provider_error_payload(error)
+        self.call_failures.append({
+            "reason": reason,
+            "error": error[:200],
+            "error_type": error_type or _llm_error_type(reason, error),
+            "http_status": provider_payload["http_status"],
+            "provider_error_code": provider_payload["provider_error_code"],
+            "provider_error_message": provider_payload["provider_error_message"],
+            "response_empty": bool(response_empty),
+            "json_parse_error": bool(json_parse_error),
+            "model": self.model,
+            "base_url": self.base_url,
+        })
 
     def _clear_failure(self) -> None:
         self.last_failure_reason = None
@@ -205,6 +273,14 @@ class LLMAnalyzer:
             timeout_seconds=self.timeout_seconds,
         )
         if status == "ok":
+            if not content:
+                self._record_failure(
+                    "llm_error",
+                    "empty_provider_response",
+                    error_type="empty_response",
+                    response_empty=True,
+                )
+                return ""
             self._clear_failure()
             self._cache_save(cache_key, "text", content)
             return content
@@ -256,9 +332,14 @@ class LLMAnalyzer:
             self._record_failure(reason, content)
             print(f"  LLM JSON call failed: {content}")
             return {}
-        self._clear_failure()
 
         if not content:
+            self._record_failure(
+                "llm_error",
+                "empty_provider_response",
+                error_type="empty_response",
+                response_empty=True,
+            )
             return {}
 
         # Belt-and-suspenders: strip markdown fencing if the model still added it.
@@ -272,9 +353,16 @@ class LLMAnalyzer:
         try:
             parsed = json.loads(content)
             self._cache_save(cache_key, "json", parsed)
+            self._clear_failure()
             return parsed
         except json.JSONDecodeError as e:
             print(f"  LLM JSON parse failed: {e}; got: {content[:200]}")
+            self._record_failure(
+                "llm_error",
+                str(e),
+                error_type="json_parse_error",
+                json_parse_error=True,
+            )
             return {}
 
     def analyze_positioning(self, web_content: str, brand_name: str) -> dict:

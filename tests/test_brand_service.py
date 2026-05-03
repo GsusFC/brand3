@@ -19,6 +19,7 @@ from src.services.brand_service import (
     _aggregate_exa_content,
     _build_content_web,
     _compute_data_quality,
+    _context_effective_readiness,
     _context_enrichment_summary,
     _context_confidence_summary,
     _context_evidence_items,
@@ -348,9 +349,53 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(enrichment["reason"], "not_applicable")
         self.assertFalse(missing["applied"])
 
-    def test_trust_summary_includes_context_enrichment_without_changing_raw_context_status(self):
+    def test_context_effective_readiness_compensates_with_usable_public_inventory(self):
+        effective = _context_effective_readiness(
+            public_presence_inventory={
+                "recommended_evidence_base": True,
+                "official_pages_found": 3,
+                "usable_brand_evidence_pages": 2,
+                "usable_public_perception_pages": 1,
+            },
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+        )
+
+        self.assertTrue(effective["applied"])
+        self.assertEqual(effective["status"], "degraded")
+        self.assertGreater(effective["coverage"], 0.0)
+        self.assertEqual(effective["reason"], "homepage_unavailable_but_public_inventory_available")
+        self.assertIn("homepage_pre_scan_unavailable", effective["limitations"])
+        self.assertIn("raw_context_readiness_unchanged", effective["limitations"])
+
+    def test_context_effective_readiness_does_not_apply_without_usable_recommended_inventory(self):
+        not_recommended = _context_effective_readiness(
+            public_presence_inventory={"recommended_evidence_base": False, "usable_brand_evidence_pages": 2},
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+        )
+        no_usable_owned = _context_effective_readiness(
+            public_presence_inventory={"recommended_evidence_base": True, "usable_brand_evidence_pages": 0},
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+        )
+        missing = _context_effective_readiness(
+            public_presence_inventory=None,
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+        )
+
+        self.assertFalse(not_recommended["applied"])
+        self.assertFalse(no_usable_owned["applied"])
+        self.assertFalse(missing["applied"])
+
+    def test_trust_summary_uses_effective_context_without_changing_raw_context_status(self):
         context_summary = {"status": "insufficient_data", "coverage": 0.0}
         enrichment = _context_enrichment_summary(
+            public_presence_inventory={
+                "recommended_evidence_base": True,
+                "official_pages_found": 3,
+                "usable_brand_evidence_pages": 2,
+            },
+            context_summary=context_summary,
+        )
+        effective = _context_effective_readiness(
             public_presence_inventory={
                 "recommended_evidence_base": True,
                 "official_pages_found": 3,
@@ -365,16 +410,30 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             evidence_summary={"total": 4},
             dimension_confidence={"presencia": {"status": "good"}},
             context_enrichment_summary=enrichment,
+            context_effective_readiness=effective,
         )
 
         self.assertEqual(summary["context"]["status"], "insufficient_data")
-        self.assertEqual(summary["overall_status"], "insufficient_data")
+        self.assertEqual(summary["overall_status"], "degraded")
+        self.assertEqual(summary["effective_context"]["status"], "degraded")
         self.assertEqual(
             summary["context_enrichment"]["status"],
             "raw_context_limited_but_public_inventory_available",
         )
         self.assertEqual(summary["context_enrichment"]["official_pages_found"], 3)
         self.assertTrue(summary["context_enrichment"]["recommended_evidence_base"])
+
+    def test_trust_summary_stays_insufficient_without_effective_context(self):
+        summary = _trust_summary_payload(
+            data_quality="good",
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+            evidence_summary={"total": 4},
+            dimension_confidence={"presencia": {"status": "good"}},
+            context_effective_readiness={"applied": False, "reason": "not_applicable"},
+        )
+
+        self.assertEqual(summary["overall_status"], "insufficient_data")
+        self.assertNotIn("effective_context", summary)
 
     def test_build_content_web_prefers_usable_firecrawl_content(self):
         web = WebData(
@@ -815,7 +874,16 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertTrue(result["data_sources"]["public_presence_inventory"]["recommended_evidence_base"])
         self.assertTrue(result["context_enrichment_summary"]["applied"])
         self.assertEqual(result["context_enrichment_summary"]["official_pages_found"], 3)
+        self.assertTrue(result["context_effective_readiness"]["applied"])
+        self.assertEqual(result["context_effective_readiness"]["status"], "degraded")
+        self.assertGreater(result["context_effective_readiness"]["coverage"], 0.0)
+        self.assertEqual(
+            result["context_effective_readiness"]["reason"],
+            "homepage_unavailable_but_public_inventory_available",
+        )
         self.assertEqual(result["trust_summary"]["context"]["status"], "insufficient_data")
+        self.assertEqual(result["trust_summary"]["overall_status"], "degraded")
+        self.assertEqual(result["trust_summary"]["effective_context"]["status"], "degraded")
         self.assertEqual(
             result["trust_summary"]["context_enrichment"]["status"],
             "raw_context_limited_but_public_inventory_available",

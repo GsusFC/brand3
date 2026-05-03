@@ -522,6 +522,47 @@ def _context_enrichment_summary(
     }
 
 
+def _context_effective_readiness(
+    *,
+    public_presence_inventory: dict[str, object] | None,
+    context_summary: dict[str, object] | None,
+) -> dict[str, object]:
+    inventory = public_presence_inventory or {}
+    context = context_summary or {}
+    raw_context_limited = (
+        context.get("status") == "insufficient_data"
+        or float(context.get("coverage") or 0.0) == 0.0
+    )
+    if (
+        not raw_context_limited
+        or not bool(inventory.get("recommended_evidence_base"))
+        or int(inventory.get("usable_brand_evidence_pages") or 0) <= 0
+    ):
+        return {
+            "source": "public_presence_inventory",
+            "applied": False,
+            "reason": "not_applicable",
+        }
+
+    return {
+        "source": "public_presence_inventory",
+        "applied": True,
+        "status": "degraded",
+        "coverage": 0.45,
+        "confidence": 0.45,
+        "confidence_reason": ["homepage_unavailable_but_public_inventory_available"],
+        "reason": "homepage_unavailable_but_public_inventory_available",
+        "official_pages_found": int(inventory.get("official_pages_found") or 0),
+        "usable_brand_evidence_pages": int(inventory.get("usable_brand_evidence_pages") or 0),
+        "usable_public_perception_pages": int(inventory.get("usable_public_perception_pages") or 0),
+        "recommended_evidence_base": True,
+        "limitations": [
+            "homepage_pre_scan_unavailable",
+            "raw_context_readiness_unchanged",
+        ],
+    }
+
+
 def _add_public_presence_candidate(
     candidates: dict[str, dict[str, object]],
     *,
@@ -953,15 +994,20 @@ def _trust_summary_payload(
     evidence_summary: dict[str, object],
     dimension_confidence: dict[str, dict[str, object]],
     context_enrichment_summary: dict[str, object] | None = None,
+    context_effective_readiness: dict[str, object] | None = None,
 ) -> dict[str, object]:
     dimension_status_counts = dimension_status_counts_from_confidence(dimension_confidence)
+    effective_applied = bool(context_effective_readiness and context_effective_readiness.get("applied"))
     summary = build_trust_summary(
         data_quality=data_quality,
-        context_summary=context_summary,
+        context_summary=context_effective_readiness if effective_applied else context_summary,
         evidence_summary=evidence_summary,
         dimension_status_counts=dimension_status_counts,
         limited_dimensions=limited_dimensions_from_confidence(dimension_confidence),
     )
+    if effective_applied:
+        summary["context"] = context_summary
+        summary["effective_context"] = context_effective_readiness
     if context_enrichment_summary and context_enrichment_summary.get("applied"):
         summary["context_enrichment"] = context_enrichment_summary
     return summary
@@ -1741,12 +1787,17 @@ def run(
             public_presence_inventory=public_presence_inventory,
             context_summary=confidence_summary,
         )
+        context_effective_readiness = _context_effective_readiness(
+            public_presence_inventory=public_presence_inventory,
+            context_summary=confidence_summary,
+        )
         trust_summary = _trust_summary_payload(
             data_quality=data_quality,
             context_summary=confidence_summary,
             evidence_summary=evidence_summary,
             dimension_confidence=dimension_confidence,
             context_enrichment_summary=context_enrichment_summary,
+            context_effective_readiness=context_effective_readiness,
         )
 
         result = {
@@ -1780,6 +1831,7 @@ def run(
             },
             "context_readiness": _to_jsonable(context_data),
             "context_enrichment_summary": context_enrichment_summary,
+            "context_effective_readiness": context_effective_readiness,
             "confidence_summary": confidence_summary,
             "dimension_confidence": dimension_confidence,
             "evidence_summary": evidence_summary,

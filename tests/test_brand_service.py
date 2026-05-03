@@ -8,6 +8,12 @@ from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebData
 from src.services import brand_service
+from src.config import (
+    DEFAULT_LLM_CHEAP_MODEL,
+    DEFAULT_LLM_MODEL,
+    DEFAULT_LLM_PREMIUM_MODEL,
+    DEFAULT_VISION_MODEL,
+)
 from src.services.brand_service import (
     _aggregate_exa_content,
     _build_content_web,
@@ -19,6 +25,7 @@ from src.services.brand_service import (
     _dimension_confidence_summary,
     _infer_llm_provider,
     _llm_cache_summary,
+    _llm_model_roles_payload,
     _llm_provider_payload,
     _public_presence_inventory_summary,
     _recover_owned_web_content,
@@ -517,6 +524,20 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(payload["base_url"], "https://generativelanguage.googleapis.com/v1beta/openai")
         self.assertTrue(payload["openai_compatible"])
         self.assertNotIn("api_key", payload)
+
+    def test_llm_model_role_defaults_are_documented(self):
+        self.assertEqual(DEFAULT_LLM_MODEL, "gemini-2.5-flash")
+        self.assertEqual(DEFAULT_LLM_CHEAP_MODEL, "gemini-2.5-flash-lite")
+        self.assertEqual(DEFAULT_LLM_PREMIUM_MODEL, "gemini-2.5-pro")
+        self.assertEqual(DEFAULT_VISION_MODEL, "gemini-2.5-flash")
+
+    def test_llm_model_roles_payload_exposes_models_without_secrets(self):
+        roles = _llm_model_roles_payload()
+
+        self.assertEqual(set(roles), {"default", "cheap", "premium", "vision"})
+        self.assertTrue(all(isinstance(value, str) and value for value in roles.values()))
+        self.assertNotIn("api_key", roles)
+        self.assertNotIn("key", roles)
 
     def test_cost_policy_summary_exposes_skips_and_cache_savings(self):
         summary = _cost_policy_summary(
@@ -1068,6 +1089,8 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 "openai_compatible": True,
             },
         )
+        self.assertEqual(set(result["data_sources"]["llm_model_roles"]), {"default", "cheap", "premium", "vision"})
+        self.assertNotIn("api_key", result["data_sources"]["llm_model_roles"])
 
 
 if __name__ == "__main__":

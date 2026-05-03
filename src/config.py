@@ -58,9 +58,15 @@ if _promotion_dimension_drops:
         pass
 
 # LLM config (text + vision share the same provider by default)
+DEFAULT_LLM_MODEL = "gemini-2.5-flash"
+DEFAULT_LLM_CHEAP_MODEL = "gemini-2.5-flash-lite"
+DEFAULT_LLM_PREMIUM_MODEL = "gemini-2.5-pro"
+DEFAULT_VISION_MODEL = "gemini-2.5-flash"
 LLM_BASE_URL = os.environ.get(
     "BRAND3_LLM_BASE_URL",
     "https://generativelanguage.googleapis.com/v1beta/openai",
 )
-LLM_MODEL = os.environ.get("BRAND3_LLM_MODEL", "gemini-2.5-flash")
-VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", LLM_MODEL)
+LLM_MODEL = os.environ.get("BRAND3_LLM_MODEL", DEFAULT_LLM_MODEL)
+LLM_CHEAP_MODEL = os.environ.get("BRAND3_LLM_CHEAP_MODEL", DEFAULT_LLM_CHEAP_MODEL)
+LLM_PREMIUM_MODEL = os.environ.get("BRAND3_LLM_PREMIUM_MODEL", DEFAULT_LLM_PREMIUM_MODEL)
+VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)

@@ -31,6 +31,10 @@ from src.config import (
     BRAND3_PROMOTION_MAX_DIMENSION_DROPS,
     EXA_API_KEY,
     FIRECRAWL_API_KEY,
+    LLM_CHEAP_MODEL,
+    LLM_MODEL,
+    LLM_PREMIUM_MODEL,
+    VISION_MODEL,
 )
 from src.niche import (
     classify_brand_niche,
@@ -1009,6 +1013,15 @@ def _llm_provider_payload(llm: LLMAnalyzer | None) -> dict[str, object] | None:
     }
 
 
+def _llm_model_roles_payload() -> dict[str, str]:
+    return {
+        "default": LLM_MODEL,
+        "cheap": LLM_CHEAP_MODEL,
+        "premium": LLM_PREMIUM_MODEL,
+        "vision": VISION_MODEL,
+    }
+
+
 def _cost_policy_summary(
     *,
     raw_input_cache: dict[str, str],
@@ -1751,6 +1764,7 @@ def run(
                 "social_limitation": social_limitation,
                 "raw_input_cache": raw_input_cache,
                 "llm_provider": llm_provider,
+                "llm_model_roles": _llm_model_roles_payload(),
                 "llm_cache": llm_cache,
                 "cost_policy": _cost_policy_summary(
                     raw_input_cache=raw_input_cache,

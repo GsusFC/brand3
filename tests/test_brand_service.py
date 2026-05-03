@@ -17,6 +17,7 @@ from src.services.brand_service import (
     _cost_policy_summary,
     _dimension_confidence_summary,
     _llm_cache_summary,
+    _public_presence_inventory_summary,
     _recover_owned_web_content,
     _should_skip_llm_for_low_context,
     _trust_summary_payload,
@@ -215,6 +216,86 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertFalse(
             _should_skip_llm_for_low_context(context, None, "none")
         )
+
+    def test_public_presence_inventory_summarizes_read_only_official_pages(self):
+        web = WebData(
+            url="https://claude.ai",
+            title="Claude",
+            markdown_content="Claude public page content. " * 90,
+            content_source="browser_fallback",
+            links=[
+                "https://docs.anthropic.com/en/docs/claude-code",
+                "https://example-news.com/claude-review",
+            ],
+        )
+        exa = ExaData(
+            brand_name="Claude",
+            mentions=[
+                ExaResult(
+                    url="https://www.anthropic.com/news/claude",
+                    title="Anthropic news about Claude",
+                    text="Claude announcement",
+                ),
+                ExaResult(
+                    url="https://example-news.com/claude-review",
+                    title="Review of Claude",
+                    text="Third-party coverage",
+                ),
+            ],
+        )
+        context = ContextData(
+            url="https://claude.ai",
+            key_pages={"pricing": True, "docs": False},
+            coverage=0.0,
+            confidence=0.0,
+            error="homepage_unavailable",
+        )
+
+        summary = _public_presence_inventory_summary(
+            brand_name="Claude",
+            url="https://claude.ai",
+            web_data=web,
+            content_web=web,
+            content_source="browser_fallback",
+            exa_data=exa,
+            context_data=context,
+        )
+
+        self.assertEqual(summary["mode"], "read_only_public_pages")
+        self.assertGreaterEqual(summary["official_pages_found"], 3)
+        self.assertEqual(summary["primary_page"]["collection_method"], "browser_fallback")
+        self.assertGreaterEqual(summary["primary_page"]["text_chars"], 1500)
+        self.assertTrue(summary["primary_page"]["usable_for_brand_evidence"])
+        self.assertGreaterEqual(summary["news_or_blog_candidates"], 1)
+        self.assertEqual(summary["third_party_candidates"], 1)
+        self.assertTrue(summary["recommended_evidence_base"])
+
+    def test_public_presence_inventory_does_not_treat_exa_snippets_as_owned_evidence(self):
+        web = WebData(url="https://claude.ai", title="Claude", markdown_content="", error="blocked")
+        exa = ExaData(
+            brand_name="Claude",
+            mentions=[
+                ExaResult(
+                    url="https://www.anthropic.com/claude",
+                    title="Claude by Anthropic",
+                    text="Official metadata only",
+                )
+            ],
+        )
+
+        summary = _public_presence_inventory_summary(
+            brand_name="Claude",
+            url="https://claude.ai",
+            web_data=web,
+            content_web=None,
+            content_source="none",
+            exa_data=exa,
+            context_data=ContextData(url="https://claude.ai", error="homepage_unavailable"),
+        )
+
+        self.assertEqual(summary["official_pages_found"], 2)
+        self.assertEqual(summary["usable_brand_evidence_pages"], 0)
+        self.assertFalse(summary["recommended_evidence_base"])
 
     def test_build_content_web_prefers_usable_firecrawl_content(self):
         web = WebData(
@@ -549,6 +630,12 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["web"], "miss")
             self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["exa"], "miss")
             self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["social"], "skipped")
+            self.assertIn("public_presence_inventory", refreshed["data_sources"])
+            self.assertEqual(
+                refreshed["data_sources"]["public_presence_inventory"]["primary_page"]["url"],
+                "https://example.com",
+            )
+            self.assertEqual(refreshed["context_readiness"]["coverage"], 0.8)
 
             store = SQLiteStore(str(db_path))
             try:

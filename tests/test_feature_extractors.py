@@ -1,4 +1,8 @@
+import os
+import struct
+import tempfile
 import unittest
+import zlib
 from unittest.mock import patch
 
 from src.collectors.competitor_collector import ComparisonResult, CompetitorData
@@ -12,8 +16,85 @@ from src.features.diferenciacion import DiferenciacionExtractor
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.percepcion import PercepcionExtractor
 from src.features.presencia import PresenciaExtractor
-from src.features.visual_analyzer import VisualAnalysisResult
+from src.features.visual_analyzer import VisualAnalyzer, VisualAnalysisResult
 from src.features.vitalidad import VitalidadExtractor
+
+
+def _write_test_png(path, width=12, height=8):
+    rows = []
+    for y in range(height):
+        row = bytearray()
+        for x in range(width):
+            if x < width // 3:
+                row.extend((232, 24, 48))
+            elif x < 2 * width // 3:
+                row.extend((20, 120, 220))
+            else:
+                row.extend((245, 245, 245 if y % 2 else 220))
+        rows.append(b"\x00" + bytes(row))
+    raw = zlib.compress(b"".join(rows))
+
+    def chunk(kind, data):
+        return (
+            struct.pack(">I", len(data))
+            + kind
+            + data
+            + struct.pack(">I", zlib.crc32(kind + data) & 0xFFFFFFFF)
+        )
+
+    png = (
+        b"\x89PNG\r\n\x1a\n"
+        + chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0))
+        + chunk(b"IDAT", raw)
+        + chunk(b"IEND", b"")
+    )
+    with open(path, "wb") as f:
+        f.write(png)
+
+
+class VisualAnalyzerTests(unittest.TestCase):
+    def test_local_file_screenshot_analysis_extracts_dominant_colors(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            image_path = os.path.join(tmpdir, "screenshot.png")
+            _write_test_png(image_path)
+            analyzer = VisualAnalyzer(vision_api_key="")
+            analyzer.vision_api_key = ""
+
+            result = analyzer.analyze_screenshot(f"file://{image_path}", brand_name="Example")
+
+        self.assertFalse(result.error)
+        self.assertEqual(result.details["method"], "local_image_analysis")
+        self.assertEqual(result.details["image_dimensions"], {"width": 12, "height": 8})
+        self.assertGreaterEqual(len(result.details["dominant_colors"]), 3)
+        self.assertNotEqual(result.details["style"], "unknown")
+        self.assertGreater(result.confidence, 0.5)
+
+    def test_local_analysis_used_when_vision_call_returns_no_result(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            image_path = os.path.join(tmpdir, "screenshot.png")
+            _write_test_png(image_path)
+            analyzer = VisualAnalyzer(vision_api_key="secret-test-key")
+
+            with patch.object(analyzer, "_call_vision_api", return_value={}):
+                result = analyzer.analyze_screenshot(f"file://{image_path}", brand_name="Example")
+
+        self.assertFalse(result.error)
+        self.assertEqual(result.details["method"], "local_image_analysis")
+        self.assertTrue(result.details["vision_failed"])
+        self.assertNotEqual(result.details["dominant_colors"], [])
+
+    def test_visual_analysis_details_do_not_expose_api_keys(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            image_path = os.path.join(tmpdir, "screenshot.png")
+            _write_test_png(image_path)
+            analyzer = VisualAnalyzer(vision_api_key="sk-secret-visual-key")
+
+            with patch.object(analyzer, "_call_vision_api", return_value={}):
+                result = analyzer.analyze_screenshot(f"file://{image_path}", brand_name="Example")
+
+        serialized = str(result.details)
+        self.assertNotIn("sk-secret-visual-key", serialized)
+        self.assertNotIn("api_key", serialized.lower())
 
 
 class PercepcionExtractorTests(unittest.TestCase):

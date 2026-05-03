@@ -471,6 +471,53 @@ def _public_presence_inventory_summary(
     }
 
 
+def _context_enrichment_summary(
+    *,
+    public_presence_inventory: dict[str, object] | None,
+    context_summary: dict[str, object] | None,
+) -> dict[str, object]:
+    """Derive a read-only context note from the public presence inventory.
+
+    This does not alter raw ContextCollector output or trust status. It only
+    explains when existing observed official pages reduce the apparent
+    contradiction of a failed homepage pre-scan.
+    """
+    inventory = public_presence_inventory or {}
+    context = context_summary or {}
+    raw_context_limited = (
+        context.get("status") == "insufficient_data"
+        or float(context.get("coverage") or 0.0) == 0.0
+    )
+    recommended = bool(inventory.get("recommended_evidence_base"))
+    if not recommended or not raw_context_limited:
+        return {
+            "source": "public_presence_inventory",
+            "applied": False,
+            "reason": "not_applicable",
+        }
+
+    limitations = ["raw_context_readiness_unchanged"]
+    if context.get("status") == "insufficient_data" or float(context.get("coverage") or 0.0) == 0.0:
+        limitations.insert(0, "homepage_pre_scan_unavailable")
+
+    return {
+        "source": "public_presence_inventory",
+        "applied": True,
+        "status": "raw_context_limited_but_public_inventory_available",
+        "reason": "official_public_pages_available",
+        "official_pages_found": int(inventory.get("official_pages_found") or 0),
+        "usable_brand_evidence_pages": int(inventory.get("usable_brand_evidence_pages") or 0),
+        "usable_public_perception_pages": int(inventory.get("usable_public_perception_pages") or 0),
+        "docs_candidates": int(inventory.get("docs_candidates") or 0),
+        "support_candidates": int(inventory.get("support_candidates") or 0),
+        "news_or_blog_candidates": int(inventory.get("news_or_blog_candidates") or 0),
+        "trust_or_safety_candidates": int(inventory.get("trust_or_safety_candidates") or 0),
+        "recommended_evidence_base": recommended,
+        "message": "homepage pre-scan limited, but public official pages were detected through existing collectors",
+        "limitations": limitations,
+    }
+
+
 def _add_public_presence_candidate(
     candidates: dict[str, dict[str, object]],
     *,
@@ -901,15 +948,19 @@ def _trust_summary_payload(
     context_summary: dict[str, object],
     evidence_summary: dict[str, object],
     dimension_confidence: dict[str, dict[str, object]],
+    context_enrichment_summary: dict[str, object] | None = None,
 ) -> dict[str, object]:
     dimension_status_counts = dimension_status_counts_from_confidence(dimension_confidence)
-    return build_trust_summary(
+    summary = build_trust_summary(
         data_quality=data_quality,
         context_summary=context_summary,
         evidence_summary=evidence_summary,
         dimension_status_counts=dimension_status_counts,
         limited_dimensions=limited_dimensions_from_confidence(dimension_confidence),
     )
+    if context_enrichment_summary and context_enrichment_summary.get("applied"):
+        summary["context_enrichment"] = context_enrichment_summary
+    return summary
 
 
 def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = None) -> dict[str, object]:
@@ -1638,12 +1689,6 @@ def run(
             evidence_items=_context_evidence_items(context_data),
         )
         confidence_summary = _context_confidence_summary(context_data)
-        trust_summary = _trust_summary_payload(
-            data_quality=data_quality,
-            context_summary=confidence_summary,
-            evidence_summary=evidence_summary,
-            dimension_confidence=dimension_confidence,
-        )
         llm_cache = _llm_cache_summary(llm, llm_skipped_reason)
         public_presence_inventory = _public_presence_inventory_summary(
             brand_name=brand_score.brand_name,
@@ -1653,6 +1698,17 @@ def run(
             content_source=content_source,
             exa_data=exa_data,
             context_data=context_data,
+        )
+        context_enrichment_summary = _context_enrichment_summary(
+            public_presence_inventory=public_presence_inventory,
+            context_summary=confidence_summary,
+        )
+        trust_summary = _trust_summary_payload(
+            data_quality=data_quality,
+            context_summary=confidence_summary,
+            evidence_summary=evidence_summary,
+            dimension_confidence=dimension_confidence,
+            context_enrichment_summary=context_enrichment_summary,
         )
 
         result = {
@@ -1683,6 +1739,7 @@ def run(
                 ),
             },
             "context_readiness": _to_jsonable(context_data),
+            "context_enrichment_summary": context_enrichment_summary,
             "confidence_summary": confidence_summary,
             "dimension_confidence": dimension_confidence,
             "evidence_summary": evidence_summary,

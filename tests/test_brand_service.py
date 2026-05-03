@@ -12,6 +12,7 @@ from src.services.brand_service import (
     _aggregate_exa_content,
     _build_content_web,
     _compute_data_quality,
+    _context_enrichment_summary,
     _context_confidence_summary,
     _context_evidence_items,
     _cost_policy_summary,
@@ -296,6 +297,74 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["official_pages_found"], 2)
         self.assertEqual(summary["usable_brand_evidence_pages"], 0)
         self.assertFalse(summary["recommended_evidence_base"])
+
+    def test_context_enrichment_applies_for_limited_context_with_public_inventory_base(self):
+        inventory = {
+            "recommended_evidence_base": True,
+            "official_pages_found": 4,
+            "usable_brand_evidence_pages": 2,
+            "usable_public_perception_pages": 1,
+            "docs_candidates": 1,
+            "support_candidates": 1,
+            "news_or_blog_candidates": 1,
+            "trust_or_safety_candidates": 1,
+        }
+        context = {"status": "insufficient_data", "coverage": 0.0}
+
+        enrichment = _context_enrichment_summary(
+            public_presence_inventory=inventory,
+            context_summary=context,
+        )
+
+        self.assertTrue(enrichment["applied"])
+        self.assertEqual(enrichment["source"], "public_presence_inventory")
+        self.assertEqual(enrichment["reason"], "official_public_pages_available")
+        self.assertEqual(enrichment["official_pages_found"], 4)
+        self.assertTrue(enrichment["recommended_evidence_base"])
+        self.assertIn("homepage_pre_scan_unavailable", enrichment["limitations"])
+        self.assertIn("raw_context_readiness_unchanged", enrichment["limitations"])
+
+    def test_context_enrichment_does_not_apply_without_recommended_inventory_base(self):
+        enrichment = _context_enrichment_summary(
+            public_presence_inventory={"recommended_evidence_base": False, "official_pages_found": 4},
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+        )
+        missing = _context_enrichment_summary(
+            public_presence_inventory=None,
+            context_summary={"status": "insufficient_data", "coverage": 0.0},
+        )
+
+        self.assertFalse(enrichment["applied"])
+        self.assertEqual(enrichment["reason"], "not_applicable")
+        self.assertFalse(missing["applied"])
+
+    def test_trust_summary_includes_context_enrichment_without_changing_raw_context_status(self):
+        context_summary = {"status": "insufficient_data", "coverage": 0.0}
+        enrichment = _context_enrichment_summary(
+            public_presence_inventory={
+                "recommended_evidence_base": True,
+                "official_pages_found": 3,
+                "usable_brand_evidence_pages": 2,
+            },
+            context_summary=context_summary,
+        )
+
+        summary = _trust_summary_payload(
+            data_quality="good",
+            context_summary=context_summary,
+            evidence_summary={"total": 4},
+            dimension_confidence={"presencia": {"status": "good"}},
+            context_enrichment_summary=enrichment,
+        )
+
+        self.assertEqual(summary["context"]["status"], "insufficient_data")
+        self.assertEqual(summary["overall_status"], "insufficient_data")
+        self.assertEqual(
+            summary["context_enrichment"]["status"],
+            "raw_context_limited_but_public_inventory_available",
+        )
+        self.assertEqual(summary["context_enrichment"]["official_pages_found"], 3)
+        self.assertTrue(summary["context_enrichment"]["recommended_evidence_base"])
 
     def test_build_content_web_prefers_usable_firecrawl_content(self):
         web = WebData(
@@ -644,6 +713,68 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 store.close()
             raw_sources = {item["source"] for item in snapshot["raw_inputs"]}
             self.assertTrue({"context", "web", "exa"}.issubset(raw_sources))
+
+    def test_run_adds_context_enrichment_for_limited_context_with_public_inventory_base(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(
+                url="https://claude.ai",
+                homepage_status=403,
+                coverage=0.0,
+                confidence=0.0,
+                confidence_reason=["homepage_unavailable", "low_coverage"],
+                error="homepage_unavailable",
+            )
+            web = WebData(
+                url="https://claude.ai",
+                title="Claude",
+                markdown_content="Claude public product and pricing content. " * 90,
+                content_source="browser_fallback",
+                browser_status=200,
+                links=["https://docs.anthropic.com/en/docs/claude-code"],
+            )
+            exa = ExaData(
+                brand_name="Claude",
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title="Claude mention", text="Claude mention.")
+                    for i in range(5)
+                ],
+                news=[
+                    ExaResult(
+                        url="https://www.anthropic.com/news/claude",
+                        title="Anthropic news about Claude",
+                        text="Claude public news",
+                    )
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            result = brand_service.run(
+                                "https://claude.ai",
+                                "Claude",
+                                use_llm=False,
+                                use_social=False,
+                                use_competitors=False,
+                                skip_visual_analysis=True,
+                                refresh=True,
+                            )
+
+        self.assertEqual(result["context_readiness"]["coverage"], 0.0)
+        self.assertEqual(result["context_readiness"]["homepage_status"], 403)
+        self.assertEqual(result["confidence_summary"]["status"], "insufficient_data")
+        self.assertTrue(result["data_sources"]["public_presence_inventory"]["recommended_evidence_base"])
+        self.assertTrue(result["context_enrichment_summary"]["applied"])
+        self.assertEqual(result["context_enrichment_summary"]["official_pages_found"], 3)
+        self.assertEqual(result["trust_summary"]["context"]["status"], "insufficient_data")
+        self.assertEqual(
+            result["trust_summary"]["context_enrichment"]["status"],
+            "raw_context_limited_but_public_inventory_available",
+        )
+        self.assertIsNotNone(result["composite_score"])
+        self.assertEqual(set(result["dimensions"]), {"coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad"})
 
     def test_run_social_timeout_continues_and_records_limitation(self):
         with TemporaryDirectory() as tmpdir:

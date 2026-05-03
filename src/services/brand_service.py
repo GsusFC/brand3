@@ -1603,7 +1603,7 @@ def run(
         llm_skipped_reason = None
         llm_provider = None
         if use_llm and not skip_llm_for_low_context:
-            llm = LLMAnalyzer()
+            llm = LLMAnalyzer(model=LLM_CHEAP_MODEL)
             llm_provider = _llm_provider_payload(llm)
             if llm.api_key:
                 print(f"  LLM: {llm.model} via {llm_provider['provider']}")

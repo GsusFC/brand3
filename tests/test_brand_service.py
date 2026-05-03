@@ -13,6 +13,7 @@ from src.config import (
     DEFAULT_LLM_MODEL,
     DEFAULT_LLM_PREMIUM_MODEL,
     DEFAULT_VISION_MODEL,
+    LLM_CHEAP_MODEL,
 )
 from src.services.brand_service import (
     _aggregate_exa_content,
@@ -983,7 +984,8 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             cache_misses = 1
             cache_writes = 0
 
-            def __init__(self):
+            def __init__(self, *, model=None):
+                self.model = model or self.model
                 self.last_failure_reason = None
                 self.call_failures = []
 
@@ -1084,7 +1086,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             result["data_sources"]["llm_provider"],
             {
                 "provider": "Google AI Studio / Gemini",
-                "model": "fake-model",
+                "model": LLM_CHEAP_MODEL,
                 "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
                 "openai_compatible": True,
             },

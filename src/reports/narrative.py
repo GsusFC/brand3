@@ -449,10 +449,11 @@ def _default_analyzer():
     """Instantiate the shared LLMAnalyzer, returning None if no API key."""
     try:
         from src.features.llm_analyzer import LLMAnalyzer
+        from src.config import LLM_PREMIUM_MODEL
     except Exception as exc:
         log.warning("LLMAnalyzer import failed: %s", exc)
         return None
-    analyzer = LLMAnalyzer()
+    analyzer = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
     if not analyzer.api_key:
         return None
     return analyzer

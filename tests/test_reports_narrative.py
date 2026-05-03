@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 import json
+import importlib
 import threading
 import time
 import unittest
 from unittest.mock import MagicMock
 
+from src.config import LLM_PREMIUM_MODEL
 from src.reports.derivation import DimensionEvidences, Evidence
 from src.reports.narrative import (
     Finding,
@@ -69,6 +71,28 @@ def _synthesis_ctx(evidences: list[Evidence] | None = None, score: float | None 
                 "https://techcrunch.com/2025/netlify-x"),
         ],
     )
+
+
+def test_default_narrative_analyzer_uses_premium_model(monkeypatch):
+    from src.reports import narrative as narr_mod
+
+    narr_mod = importlib.reload(narr_mod)
+    created_models: list[str | None] = []
+
+    class FakeLLMAnalyzer:
+        api_key = "key"
+
+        def __init__(self, *, model=None):
+            self.model = model
+            created_models.append(model)
+
+    monkeypatch.setattr("src.features.llm_analyzer.LLMAnalyzer", FakeLLMAnalyzer)
+
+    analyzer = narr_mod._default_analyzer()
+
+    assert analyzer is not None
+    assert created_models == [LLM_PREMIUM_MODEL]
+    assert analyzer.model == LLM_PREMIUM_MODEL
 
 
 class SynthesisTests(unittest.TestCase):

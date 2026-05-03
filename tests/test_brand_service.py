@@ -17,7 +17,9 @@ from src.services.brand_service import (
     _context_evidence_items,
     _cost_policy_summary,
     _dimension_confidence_summary,
+    _infer_llm_provider,
     _llm_cache_summary,
+    _llm_provider_payload,
     _public_presence_inventory_summary,
     _recover_owned_web_content,
     _should_skip_llm_for_low_context,
@@ -493,6 +495,29 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["estimated_cost_saved_units"], 2)
         self.assertEqual(skipped["skipped_reason"], "insufficient_context_coverage")
 
+    def test_infer_llm_provider_from_base_url(self):
+        self.assertEqual(
+            _infer_llm_provider("https://generativelanguage.googleapis.com/v1beta/openai"),
+            "Google AI Studio / Gemini",
+        )
+        self.assertEqual(_infer_llm_provider("https://openrouter.ai/api/v1"), "OpenRouter")
+        self.assertEqual(_infer_llm_provider("https://inference.nousresearch.com/v1"), "Nous")
+        self.assertEqual(_infer_llm_provider("https://llm.example.com/v1"), "OpenAI-compatible")
+
+    def test_llm_provider_payload_exposes_provider_without_api_key(self):
+        class FakeLLM:
+            api_key = "secret-key"
+            model = "gemini-2.5-pro"
+            base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
+
+        payload = _llm_provider_payload(FakeLLM())
+
+        self.assertEqual(payload["provider"], "Google AI Studio / Gemini")
+        self.assertEqual(payload["model"], "gemini-2.5-pro")
+        self.assertEqual(payload["base_url"], "https://generativelanguage.googleapis.com/v1beta/openai")
+        self.assertTrue(payload["openai_compatible"])
+        self.assertNotIn("api_key", payload)
+
     def test_cost_policy_summary_exposes_skips_and_cache_savings(self):
         summary = _cost_policy_summary(
             raw_input_cache={"context": "hit", "web": "miss", "social": "skipped"},
@@ -932,6 +957,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         class FakeLLM:
             api_key = "key"
             model = "fake-model"
+            base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
             cache_hits = 0
             cache_misses = 1
             cache_writes = 0
@@ -1032,6 +1058,15 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(
             result["data_sources"]["cost_policy"]["skipped"]["llm_feature_calls"],
             "partial_timeout_or_error",
+        )
+        self.assertEqual(
+            result["data_sources"]["llm_provider"],
+            {
+                "provider": "Google AI Studio / Gemini",
+                "model": "fake-model",
+                "base_url": "https://generativelanguage.googleapis.com/v1beta/openai",
+                "openai_compatible": True,
+            },
         )
 
 

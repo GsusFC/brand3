@@ -986,6 +986,29 @@ def _llm_cache_summary(llm: LLMAnalyzer | None, skipped_reason: str | None = Non
     }
 
 
+def _infer_llm_provider(base_url: str | None) -> str:
+    normalized = (base_url or "").lower()
+    if "generativelanguage.googleapis.com" in normalized:
+        return "Google AI Studio / Gemini"
+    if "openrouter.ai" in normalized:
+        return "OpenRouter"
+    if "nous" in normalized:
+        return "Nous"
+    return "OpenAI-compatible"
+
+
+def _llm_provider_payload(llm: LLMAnalyzer | None) -> dict[str, object] | None:
+    if llm is None:
+        return None
+    base_url = getattr(llm, "base_url", "") or ""
+    return {
+        "provider": _infer_llm_provider(base_url),
+        "model": getattr(llm, "model", ""),
+        "base_url": base_url,
+        "openai_compatible": True,
+    }
+
+
 def _cost_policy_summary(
     *,
     raw_input_cache: dict[str, str],
@@ -1565,10 +1588,12 @@ def run(
             content_source,
         )
         llm_skipped_reason = None
+        llm_provider = None
         if use_llm and not skip_llm_for_low_context:
             llm = LLMAnalyzer()
+            llm_provider = _llm_provider_payload(llm)
             if llm.api_key:
-                print(f"  LLM: {llm.model} via Nous")
+                print(f"  LLM: {llm.model} via {llm_provider['provider']}")
             else:
                 print("  LLM: disabled (no key found)")
                 llm_skipped_reason = "missing_api_key"
@@ -1725,6 +1750,7 @@ def run(
                 "public_presence_inventory": public_presence_inventory,
                 "social_limitation": social_limitation,
                 "raw_input_cache": raw_input_cache,
+                "llm_provider": llm_provider,
                 "llm_cache": llm_cache,
                 "cost_policy": _cost_policy_summary(
                     raw_input_cache=raw_input_cache,

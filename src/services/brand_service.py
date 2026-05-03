@@ -55,6 +55,7 @@ from src.learning.calibration import CalibrationAnalyzer
 from src.quality.dimension_confidence import dimension_confidence_from_features, dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_from_features, summarize_evidence_records
 from src.quality.trust import (
+    build_trust_interpretation,
     build_trust_summary,
     dimension_status_counts_from_confidence,
     limited_dimensions_from_confidence,
@@ -1157,6 +1158,15 @@ def _trust_summary_payload(
         summary["effective_context"] = context_effective_readiness
     if context_enrichment_summary and context_enrichment_summary.get("applied"):
         summary["context_enrichment"] = context_enrichment_summary
+    interpretation = build_trust_interpretation(
+        trust_summary=summary,
+        raw_context_summary=context_summary,
+        effective_context_summary=context_effective_readiness,
+        evidence_summary=evidence_summary,
+    )
+    if interpretation:
+        summary["interpretation"] = interpretation
+        summary["user_facing_summary"] = interpretation["user_message"]
     return summary
 
 

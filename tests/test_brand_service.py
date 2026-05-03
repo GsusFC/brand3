@@ -389,7 +389,11 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertFalse(missing["applied"])
 
     def test_trust_summary_uses_effective_context_without_changing_raw_context_status(self):
-        context_summary = {"status": "insufficient_data", "coverage": 0.0}
+        context_summary = {
+            "status": "insufficient_data",
+            "coverage": 0.0,
+            "confidence_reason": ["homepage_unavailable", "low_coverage"],
+        }
         enrichment = _context_enrichment_summary(
             public_presence_inventory={
                 "recommended_evidence_base": True,
@@ -419,6 +423,13 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(summary["context"]["status"], "insufficient_data")
         self.assertEqual(summary["overall_status"], "degraded")
         self.assertEqual(summary["effective_context"]["status"], "degraded")
+        self.assertTrue(summary["interpretation"]["audit_usable"])
+        self.assertEqual(summary["interpretation"]["primary_limitation"], "homepage_pre_scan_unavailable")
+        self.assertEqual(summary["interpretation"]["evidence_base"], "sufficient_with_context_limitation")
+        self.assertIn("pre-scan técnico de contexto", summary["user_facing_summary"])
+        self.assertIn("Todas las dimensiones cuentan con alguna evidencia.", summary["user_facing_summary"])
+        for alarming_word in ("unreliable", "invalid", "failed audit"):
+            self.assertNotIn(alarming_word, summary["user_facing_summary"].lower())
         self.assertEqual(
             summary["context_enrichment"]["status"],
             "raw_context_limited_but_public_inventory_available",
@@ -437,6 +448,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
 
         self.assertEqual(summary["overall_status"], "insufficient_data")
         self.assertNotIn("effective_context", summary)
+        self.assertNotIn("interpretation", summary)
 
     def test_build_content_web_prefers_usable_firecrawl_content(self):
         web = WebData(
@@ -972,8 +984,20 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             "homepage_unavailable_but_public_inventory_available",
         )
         self.assertEqual(result["trust_summary"]["context"]["status"], "insufficient_data")
+        self.assertEqual(result["context_readiness"]["coverage"], 0.0)
+        self.assertEqual(result["context_readiness"]["homepage_status"], 403)
         self.assertEqual(result["trust_summary"]["overall_status"], "degraded")
         self.assertEqual(result["trust_summary"]["effective_context"]["status"], "degraded")
+        interpretation = result["trust_summary"]["interpretation"]
+        self.assertTrue(interpretation["audit_usable"])
+        self.assertEqual(interpretation["primary_limitation"], "homepage_pre_scan_unavailable")
+        self.assertTrue(interpretation["compensated_by_public_inventory"])
+        self.assertEqual(interpretation["evidence_base"], "partial_with_context_limitation")
+        self.assertIn("homepage no pudo analizarse directamente", interpretation["user_message"])
+        self.assertIn("Algunas dimensiones aún tienen evidencia limitada:", interpretation["user_message"])
+        self.assertIn("limitación", interpretation["user_message"])
+        for alarming_word in ("unreliable", "invalid", "failed audit"):
+            self.assertNotIn(alarming_word, interpretation["user_message"].lower())
         self.assertEqual(
             result["trust_summary"]["context_enrichment"]["status"],
             "raw_context_limited_but_public_inventory_available",

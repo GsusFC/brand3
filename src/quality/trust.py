@@ -109,6 +109,64 @@ def build_trust_summary(
     }
 
 
+def build_trust_interpretation(
+    *,
+    trust_summary: dict[str, object],
+    raw_context_summary: dict[str, object] | None = None,
+    effective_context_summary: dict[str, object] | None = None,
+    evidence_summary: dict[str, object] | None = None,
+) -> dict[str, object] | None:
+    """Build deterministic user-facing wording for compensated trust states."""
+    evidence_summary = evidence_summary or {}
+    effective_context_summary = effective_context_summary or {}
+    raw_context_summary = raw_context_summary or {}
+    evidence_total = int(evidence_summary.get("total") or 0)
+    dimensions_without_evidence = list(evidence_summary.get("dimensions_without_evidence") or [])
+
+    compensated_context = (
+        trust_summary.get("overall_status") == "degraded"
+        and bool(effective_context_summary.get("applied"))
+        and effective_context_summary.get("status") == "degraded"
+        and evidence_total > 0
+    )
+    if not compensated_context:
+        return None
+
+    if dimensions_without_evidence:
+        dimensions_text = "Algunas dimensiones aún tienen evidencia limitada: " + ", ".join(
+            str(item) for item in dimensions_without_evidence
+        ) + "."
+        evidence_base = "partial_with_context_limitation"
+    else:
+        dimensions_text = "Todas las dimensiones cuentan con alguna evidencia."
+        evidence_base = "sufficient_with_context_limitation"
+
+    primary_limitation = "homepage_pre_scan_unavailable"
+    raw_reasons = raw_context_summary.get("confidence_reason") or []
+    if isinstance(raw_reasons, list) and "homepage_unavailable" not in raw_reasons:
+        primary_limitation = "raw_context_pre_scan_limited"
+
+    user_message = (
+        "El análisis es utilizable, pero el pre-scan técnico de contexto está degradado: "
+        "la homepage no pudo analizarse directamente. La lectura se ha compensado con "
+        "inventario público, menciones externas, contenido recuperado por fallback y "
+        "evidencias visuales/LLM. "
+        f"{dimensions_text} "
+        "Mantén esta limitación visible al interpretar conclusiones de contexto."
+    )
+
+    return {
+        "audit_usable": True,
+        "primary_limitation": primary_limitation,
+        "compensated_by_public_inventory": True,
+        "evidence_base": evidence_base,
+        "limitations_visible": True,
+        "raw_context_status": raw_context_summary.get("status"),
+        "effective_context_status": effective_context_summary.get("status"),
+        "user_message": user_message,
+    }
+
+
 def trust_overall_status(
     *,
     data_quality: str,

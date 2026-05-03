@@ -1,6 +1,7 @@
 import unittest
 
 from src.quality.trust import (
+    build_trust_interpretation,
     build_trust_summary,
     dimension_status_counts_from_confidence,
     limited_dimensions_from_confidence,
@@ -77,6 +78,53 @@ class TrustQualityTests(unittest.TestCase):
         self.assertEqual(summary["context"]["coverage"], 0.8)
         self.assertEqual(summary["evidence"]["total"], 4)
         self.assertEqual(summary["limited_dimensions"][0]["name"], "presencia")
+
+    def test_build_trust_interpretation_for_compensated_context(self):
+        trust_summary = {"overall_status": "degraded"}
+        interpretation = build_trust_interpretation(
+            trust_summary=trust_summary,
+            raw_context_summary={
+                "status": "insufficient_data",
+                "coverage": 0.0,
+                "confidence_reason": ["homepage_unavailable", "low_coverage"],
+            },
+            effective_context_summary={
+                "applied": True,
+                "status": "degraded",
+                "limitations": ["homepage_pre_scan_unavailable", "raw_context_readiness_unchanged"],
+            },
+            evidence_summary={"total": 12, "dimensions_without_evidence": []},
+        )
+
+        self.assertIsNotNone(interpretation)
+        self.assertTrue(interpretation["audit_usable"])
+        self.assertEqual(interpretation["primary_limitation"], "homepage_pre_scan_unavailable")
+        self.assertTrue(interpretation["compensated_by_public_inventory"])
+        self.assertEqual(interpretation["evidence_base"], "sufficient_with_context_limitation")
+        self.assertIn("Todas las dimensiones cuentan con alguna evidencia.", interpretation["user_message"])
+        for alarming_word in ("unreliable", "invalid", "failed audit"):
+            self.assertNotIn(alarming_word, interpretation["user_message"].lower())
+
+    def test_build_trust_interpretation_mentions_limited_dimensions(self):
+        interpretation = build_trust_interpretation(
+            trust_summary={"overall_status": "degraded"},
+            raw_context_summary={"status": "insufficient_data", "coverage": 0.0},
+            effective_context_summary={"applied": True, "status": "degraded"},
+            evidence_summary={"total": 4, "dimensions_without_evidence": ["percepcion"]},
+        )
+
+        self.assertEqual(interpretation["evidence_base"], "partial_with_context_limitation")
+        self.assertIn("percepcion", interpretation["user_message"])
+
+    def test_build_trust_interpretation_is_absent_without_compensation(self):
+        interpretation = build_trust_interpretation(
+            trust_summary={"overall_status": "insufficient_data"},
+            raw_context_summary={"status": "insufficient_data", "coverage": 0.0},
+            effective_context_summary={"applied": False, "status": "insufficient_data"},
+            evidence_summary={"total": 4},
+        )
+
+        self.assertIsNone(interpretation)
 
     def test_limited_dimensions_from_confidence_keeps_only_weak_dimensions(self):
         limited = limited_dimensions_from_confidence({

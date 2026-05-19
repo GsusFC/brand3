@@ -1,0 +1,2102 @@
+{
+  "version": 0,
+  "case_id": "synthesia",
+  "audit_url": "https://www.synthesia.io",
+  "audited_surface": {
+    "url": "https://www.synthesia.io",
+    "host": "synthesia.io",
+    "root_domain": "synthesia.io",
+    "evidence": [
+      {
+        "text": "# Synthesia (Synthesia Ltd.) Synthesia is a Software Development company. Synthesia 2.0 is an AI video communications platform that allows users to cr",
+        "url": "https://synthesia.io/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+        "limits": ""
+      },
+      {
+        "text": "About Synthesia | Read our story here about us # The All-in-one AI Video Platform for Business Play video Pause video our mission ### Helping people w",
+        "url": "https://www.synthesia.io/about",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.synthesia.io/post/new-security-privacy-and-product-policy-updates-for-synthesia-3-0",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia raises $200 million Series E at $4 billion valuation to change how companies train and upskill their workforce",
+        "url": "https://www.synthesia.io/post/series-e-200-million-4-billion-valuation-future-work",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia accelerates global expansion as enterprise contracts triple",
+        "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia 2.0 is an AI video communications platform that allows users to create AI avatars, voiceovers, video editing, video templates, and custom AI avatars.",
+        "url": "https://synthesia.io/",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+        "limits": ""
+      },
+      {
+        "text": "It's enterprise-ready and makes video creation easy.",
+        "url": "https://www.synthesia.io/?medium=email",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "What used to take 4 hours now takes 30 minutes.",
+        "url": "https://www.synthesia.io/?medium=email",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "synthesia.io",
+    "confidence": "medium",
+    "evidence": [
+      {
+        "text": "# Synthesia (Synthesia Ltd.) Synthesia is a Software Development company. Synthesia 2.0 is an AI video communications platform that allows users to cr",
+        "url": "https://synthesia.io/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+        "limits": ""
+      },
+      {
+        "text": "About Synthesia | Read our story here about us # The All-in-one AI Video Platform for Business Play video Pause video our mission ### Helping people w",
+        "url": "https://www.synthesia.io/about",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.synthesia.io/post/new-security-privacy-and-product-policy-updates-for-synthesia-3-0",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia raises $200 million Series E at $4 billion valuation to change how companies train and upskill their workforce",
+        "url": "https://www.synthesia.io/post/series-e-200-million-4-billion-valuation-future-work",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia accelerates global expansion as enterprise contracts triple",
+        "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia 2.0 is an AI video communications platform that allows users to create AI avatars, voiceovers, video editing, video templates, and custom AI avatars.",
+        "url": "https://synthesia.io/",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+        "limits": ""
+      },
+      {
+        "text": "It's enterprise-ready and makes video creation easy.",
+        "url": "https://www.synthesia.io/?medium=email",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "What used to take 4 hours now takes 30 minutes.",
+        "url": "https://www.synthesia.io/?medium=email",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "related_surfaces": [
+      {
+        "surface": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+        "relation_type": "same_root_surface",
+        "relationship": "explicitly_related",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "text": "What is Synthesia? | Synthesia Knowledge Base Table of contents What is Synthesia? | Synthesia Knowledge Base [Skip to main content](#main-content) [!",
+            "url": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+            "classification_reason": "same_root_or_subdomain_not_external_validation",
+            "eligibility": "observation_only"
+          }
+        ],
+        "requires_human_review": false
+      },
+      {
+        "surface": "https://www.linkedin.com/company/synthesia",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/synthesia",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+            "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/synthesia",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/synthesia",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/synthesia",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@synthesia",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/synthesia",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://synthesia.io/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "owned_usage_or_traction_claim_requires_independent_support"
+    },
+    {
+      "url": "https://www.synthesia.io/about",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "same_root_or_subdomain_surface",
+      "notes": "same_root_or_subdomain_not_external_validation"
+    },
+    {
+      "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://www.synthesia.io/post/new-security-privacy-and-product-policy-updates-for-synthesia-3-0",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://www.synthesia.io/post/series-e-200-million-4-billion-valuation-future-work",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_different_root_not_alias"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "visual_or_internal_signal",
+      "notes": "visual_or_internal_analysis_not_market_evidence"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://www.synthesia.io/?medium=email",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://www.synthesia.io/sitemap.xml",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://www.synthesia.io/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://www.synthesia.io",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://www.synthesia.io",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.synthesia.io",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://synthesia.io/features",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/synthesia",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.synthesia.io",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.synthesia.io",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=4"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "# a5173948275490816.cdn.optimizely.com is blocked This page has been blocked by an extension - Try disabling your extensions. ERR\\_BLOCKED\\_BY\\_CLIENT",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "What is Synthesia? | Synthesia Knowledge Base Table of contents What is Synthesia? | Synthesia Knowledge Base [Skip to main content](#main-content) [!",
+      "url": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "same_root_or_subdomain_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "The All-in-one AI Video Platform for Business",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia is the world's leader in synthetic media since 2017.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "This page has been blocked by an extension",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Our mission is helping people work better",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia is a British multinational artificial intelligence company",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "a5173948275490816.cdn.optimizely.com is blocked",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "This page has been blocked by an extension",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Unscript as the audited brand's closest measured competitor with measured distance 0.961; avg_distance=0.985; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Videofusion as the audited brand's most different measured competitor with measured distance 0.998; avg_distance=0.985; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Britain's largest generative-AI firm, it is used by 70% of FTSE 100 and over 90% of Fortune 100 companies.",
+      "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+      "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "sitemap.xml found with 906 URLs",
+      "url": "https://www.synthesia.io/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://www.synthesia.io/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Schema detected: Organization, SoftwareApplication",
+      "url": "https://www.synthesia.io",
+      "dimension": "coherencia",
+      "feature_name": "structured_identity",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog, pricing, reviews, case_studies",
+      "url": "https://www.synthesia.io",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.77; contrast signal 0.83.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "It is a synthetic media-generation software developer and creator of AI-generated video content, including audio-visual agents and cloned avatars.",
+      "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/synthesia",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+      "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [],
+  "missing_evidence": [
+    {
+      "text": "# a5173948275490816.cdn.optimizely.com is blocked This page has been blocked by an extension - Try disabling your extensions. ERR\\_BLOCKED\\_BY\\_CLIENT",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.77; contrast signal 0.83.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "The All-in-one AI Video Platform for Business",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Synthesia is the world's leader in synthetic media since 2017.",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "This page has been blocked by an extension",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Our mission is helping people work better",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Synthesia is a British multinational artificial intelligence company",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "a5173948275490816.cdn.optimizely.com is blocked",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "This page has been blocked by an extension",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "About Synthesia | Read our story here about us # The All-in-one AI Video Platform for Business Play video Pause video our mission ### Helping people w",
+      "url": "https://www.synthesia.io/about",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia raises $200 million Series E at $4 billion valuation to change how companies train and upskill their workforce",
+      "url": "https://www.synthesia.io/post/series-e-200-million-4-billion-valuation-future-work",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia accelerates global expansion as enterprise contracts triple",
+      "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Unscript as the audited brand's closest measured competitor with measured distance 0.961; avg_distance=0.985; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Videofusion as the audited brand's most different measured competitor with measured distance 0.998; avg_distance=0.985; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "It's enterprise-ready and makes video creation easy.",
+      "url": "https://www.synthesia.io/?medium=email",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "What used to take 4 hours now takes 30 minutes.",
+      "url": "https://www.synthesia.io/?medium=email",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Britain's largest generative-AI firm, it is used by 70% of FTSE 100 and over 90% of Fortune 100 companies.",
+      "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "# a5173948275490816.cdn.optimizely.com is blocked This page has been blocked by an extension - Try disabling your extensions. ERR\\_BLOCKED\\_BY\\_CLIENT",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/synthesia",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "# Synthesia (Synthesia Ltd.) Synthesia is a Software Development company. Synthesia 2.0 is an AI video communications platform that allows users to cr",
+      "url": "https://synthesia.io/",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+      "limits": ""
+    },
+    {
+      "text": "What is Synthesia? | Synthesia Knowledge Base Table of contents What is Synthesia? | Synthesia Knowledge Base [Skip to main content](#main-content) [!",
+      "url": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "same_root_or_subdomain_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.synthesia.io/post/new-security-privacy-and-product-policy-updates-for-synthesia-3-0",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+      "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.77; contrast signal 0.83.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "The All-in-one AI Video Platform for Business",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia 2.0 is an AI video communications platform that allows users to create AI avatars, voiceovers, video editing, video templates, and custom AI avatars.",
+      "url": "https://synthesia.io/",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia is the world's leader in synthetic media since 2017.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "It is a synthetic media-generation software developer and creator of AI-generated video content, including audio-visual agents and cloned avatars.",
+      "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "This page has been blocked by an extension",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Our mission is helping people work better",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Synthesia is a British multinational artificial intelligence company",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "a5173948275490816.cdn.optimizely.com is blocked",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "sitemap.xml found with 906 URLs",
+      "url": "https://www.synthesia.io/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://www.synthesia.io/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Schema detected: Organization, SoftwareApplication",
+      "url": "https://www.synthesia.io",
+      "dimension": "coherencia",
+      "feature_name": "structured_identity",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog, pricing, reviews, case_studies",
+      "url": "https://www.synthesia.io",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/synthesia",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+      "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "# a5173948275490816.cdn.optimizely.com is blocked This page has been blocked by an extension - Try disabling your extensions. ERR\\_BLOCKED\\_BY\\_CLIENT",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/synthesia",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/synthesia",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@synthesia",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/synthesia",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "# Synthesia (Synthesia Ltd.) Synthesia is a Software Development company. Synthesia 2.0 is an AI video communications platform that allows users to cr",
+        "url": "https://synthesia.io/",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+        "limits": ""
+      },
+      {
+        "text": "About Synthesia | Read our story here about us # The All-in-one AI Video Platform for Business Play video Pause video our mission ### Helping people w",
+        "url": "https://www.synthesia.io/about",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "What is Synthesia? | Synthesia Knowledge Base Table of contents What is Synthesia? | Synthesia Knowledge Base [Skip to main content](#main-content) [!",
+        "url": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "same_root_or_subdomain_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "sitemap.xml found with 906 URLs",
+        "url": "https://www.synthesia.io/sitemap.xml",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://www.synthesia.io/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.synthesia.io/post/new-security-privacy-and-product-policy-updates-for-synthesia-3-0",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia raises $200 million Series E at $4 billion valuation to change how companies train and upskill their workforce",
+        "url": "https://www.synthesia.io/post/series-e-200-million-4-billion-valuation-future-work",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia accelerates global expansion as enterprise contracts triple",
+        "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+        "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.77; contrast signal 0.83.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "The All-in-one AI Video Platform for Business",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia 2.0 is an AI video communications platform that allows users to create AI avatars, voiceovers, video editing, video templates, and custom AI avatars.",
+        "url": "https://synthesia.io/",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia is the world's leader in synthetic media since 2017.",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "It is a synthetic media-generation software developer and creator of AI-generated video content, including audio-visual agents and cloned avatars.",
+        "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "This page has been blocked by an extension",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Our mission is helping people work better",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia is a British multinational artificial intelligence company",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Schema detected: Organization, SoftwareApplication",
+        "url": "https://www.synthesia.io",
+        "feature_name": "structured_identity",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "a5173948275490816.cdn.optimizely.com is blocked",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "This page has been blocked by an extension",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Unscript as the audited brand's closest measured competitor with measured distance 0.961; avg_distance=0.985; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Videofusion as the audited brand's most different measured competitor with measured distance 0.998; avg_distance=0.985; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog, pricing, reviews, case_studies",
+        "url": "https://www.synthesia.io",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "It's enterprise-ready and makes video creation easy.",
+        "url": "https://www.synthesia.io/?medium=email",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "What used to take 4 hours now takes 30 minutes.",
+        "url": "https://www.synthesia.io/?medium=email",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Britain's largest generative-AI firm, it is used by 70% of FTSE 100 and over 90% of Fortune 100 companies.",
+        "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "thin",
+      "eligible_count": 0,
+      "blocked_count": 10,
+      "review_required_count": 3,
+      "missing_evidence_count": 7,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "owned_textual_surface_coverage_thin"
+      ],
+      "readiness_reason": "Coherencia has some owned textual evidence, but not enough distinct surfaces for ready status.",
+      "recommended_action": "Collect additional owned textual surfaces before stronger coherence prose."
+    },
+    "presencia": {
+      "status": "thin",
+      "eligible_count": 1,
+      "blocked_count": 9,
+      "review_required_count": 1,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "external_channel_coverage_thin"
+      ],
+      "readiness_reason": "Presencia has owned-surface evidence, but external channel evidence is insufficient.",
+      "recommended_action": "Verify official profiles and collect external channel evidence."
+    },
+    "percepcion": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 0,
+      "review_required_count": 0,
+      "missing_evidence_count": 0,
+      "reason_codes": [],
+      "readiness_reason": "Percepcion has non-empty eligible evidence and at least one external perception source.",
+      "recommended_action": "Proceed only with source-bounded perception language."
+    },
+    "diferenciacion": {
+      "status": "blocked",
+      "eligible_count": 2,
+      "blocked_count": 4,
+      "review_required_count": 2,
+      "missing_evidence_count": 3,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "readiness_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness.",
+      "recommended_action": "Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "status": "thin",
+      "eligible_count": 2,
+      "blocked_count": 5,
+      "review_required_count": 1,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked",
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "temporal_activity_coverage_thin"
+      ],
+      "readiness_reason": "Vitalidad has activity evidence, but the temporal basis is thin.",
+      "recommended_action": "Acquire changelog, release, news, or repository recency evidence."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "# a5173948275490816.cdn.optimizely.com is blocked This page has been blocked by an extension - Try disabling your extensions. ERR\\_BLOCKED\\_BY\\_CLIENT",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "What is Synthesia? | Synthesia Knowledge Base Table of contents What is Synthesia? | Synthesia Knowledge Base [Skip to main content](#main-content) [!",
+        "url": "https://help.synthesia.io/en/articles/9994493-what-is-synthesia",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "same_root_or_subdomain_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "The All-in-one AI Video Platform for Business",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Synthesia is the world's leader in synthetic media since 2017.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "Existing Brand3 competitor comparison identifies Unscript as the audited brand's closest measured competitor with measured distance 0.961; avg_distance=0.985; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Videofusion as the audited brand's most different measured competitor with measured distance 0.998; avg_distance=0.985; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Britain's largest generative-AI firm, it is used by 70% of FTSE 100 and over 90% of Fortune 100 companies.",
+        "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "sitemap.xml found with 906 URLs",
+        "url": "https://www.synthesia.io/sitemap.xml",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://www.synthesia.io/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Schema detected: Organization, SoftwareApplication",
+        "url": "https://www.synthesia.io",
+        "dimension": "coherencia",
+        "feature_name": "structured_identity",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog, pricing, reviews, case_studies",
+        "url": "https://www.synthesia.io",
+        "dimension": "diferenciacion",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.77; contrast signal 0.83.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "It is a synthetic media-generation software developer and creator of AI-generated video content, including audio-visual agents and cloned avatars.",
+        "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [],
+    "excluded_noise": [],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/synthesia",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+        "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/synthesia",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+        "evidence": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "publication_cadence",
+        "owned_evidence": [
+          {
+            "text": "",
+            "url": "https://www.synthesia.io/post/new-security-privacy-and-product-policy-updates-for-synthesia-3-0",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          },
+          {
+            "text": "",
+            "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "",
+            "url": "https://percify.io/blog/synthesia-competitors-find-your-perfect-ai-lip-sync-video-creator",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "momentum",
+        "owned_evidence": [
+          {
+            "text": "Synthesia raises $200 million Series E at $4 billion valuation to change how companies train and upskill their workforce",
+            "url": "https://www.synthesia.io/post/series-e-200-million-4-billion-valuation-future-work",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Synthesia accelerates global expansion as enterprise contracts triple",
+            "url": "https://www.synthesia.io/post/synthesia-global-expansion-austin-berlin-paris-zurich-2026",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "You can now upload an external screen recording (MP4) directly into the Editor — and we’ll automatically: Transcribe the voiceover into an editable script",
+            "url": "https://synthesia.noticeable.news/publications/turn-external-screen-recordings-into-editable-synthesia-videos",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "brand_sentiment",
+        "owned_evidence": [
+          {
+            "text": "It's enterprise-ready and makes video creation easy.",
+            "url": "https://www.synthesia.io/?medium=email",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "What used to take 4 hours now takes 30 minutes.",
+            "url": "https://www.synthesia.io/?medium=email",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Britain's largest generative-AI firm, it is used by 70% of FTSE 100 and over 90% of Fortune 100 companies.",
+            "url": "https://en.wikipedia.org/wiki/Synthesia_(company)",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "count_or_activity_claims_require_support",
+        "surface": "",
+        "evidence": [
+          {
+            "text": "# Synthesia (Synthesia Ltd.) Synthesia is a Software Development company. Synthesia 2.0 is an AI video communications platform that allows users to cr",
+            "url": "https://synthesia.io/",
+            "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Synthesia 2.0 is an AI video communications platform that allows users to create AI avatars, voiceovers, video editing, video templates, and custom AI avatars.",
+            "url": "https://synthesia.io/",
+            "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+            "eligibility": "observation_only"
+          }
+        ],
+        "reason": "Usage, install, follower, contributor, star, fork, and upvote counts require independent support before narrative use.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 34,
+      "owned_claims": 5,
+      "external_evidence": 13,
+      "related_surface_evidence": 2,
+      "technical_signals": 4,
+      "trust_or_security_signals": 0,
+      "visual_or_internal_signals": 3,
+      "entity_ambiguity": 2,
+      "excluded_noise": 0,
+      "missing_evidence": 11,
+      "finding_eligible_evidence": 8,
+      "evidence_not_eligible_for_findings": 26,
+      "requires_human_review": 2
+    }
+  }
+}

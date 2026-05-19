@@ -1,0 +1,1867 @@
+{
+  "version": 0,
+  "case_id": "launchdarkly",
+  "audit_url": "https://launchdarkly.com",
+  "audited_surface": {
+    "url": "https://launchdarkly.com",
+    "host": "launchdarkly.com",
+    "root_domain": "launchdarkly.com",
+    "evidence": [
+      {
+        "text": "# LaunchDarkly (Catamorphic, Co.) LaunchDarkly is a Software Development company. LaunchDarkly is a platform that provides automation and feature mana",
+        "url": "https://launchdarkly.com/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About Us | LaunchDarkly | LaunchDarkly Skip to: About Us | LaunchDarkly | LaunchDarkly Skip to: Company About us # We’re shaping the future of softwar",
+        "url": "https://launchdarkly.com/about-us",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Take control of every feature. | LaunchDarkly Your runtime control plane for features, AI, and everything you release. # Take control of everyfeaturef",
+        "url": "https://launchdarkly.com/platform/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "Online evals in AI Configs is now GA",
+        "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+        "url": "https://launchdarkly.com/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "We help teams launch, control, and measure their digital products more easily than ever.",
+        "url": "https://launchdarkly.com/about-us",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Reliable ### 99.99% uptime",
+        "url": "https://launchdarkly.com/platform/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Scalable ### 45T+ flag evals/day",
+        "url": "https://launchdarkly.com/platform/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "launchdarkly.com",
+    "confidence": "medium",
+    "evidence": [
+      {
+        "text": "# LaunchDarkly (Catamorphic, Co.) LaunchDarkly is a Software Development company. LaunchDarkly is a platform that provides automation and feature mana",
+        "url": "https://launchdarkly.com/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About Us | LaunchDarkly | LaunchDarkly Skip to: About Us | LaunchDarkly | LaunchDarkly Skip to: Company About us # We’re shaping the future of softwar",
+        "url": "https://launchdarkly.com/about-us",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Take control of every feature. | LaunchDarkly Your runtime control plane for features, AI, and everything you release. # Take control of everyfeaturef",
+        "url": "https://launchdarkly.com/platform/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "Online evals in AI Configs is now GA",
+        "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+        "url": "https://launchdarkly.com/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "We help teams launch, control, and measure their digital products more easily than ever.",
+        "url": "https://launchdarkly.com/about-us",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Reliable ### 99.99% uptime",
+        "url": "https://launchdarkly.com/platform/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Scalable ### 45T+ flag evals/day",
+        "url": "https://launchdarkly.com/platform/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "related_surfaces": [
+      {
+        "surface": "https://www.linkedin.com/company/launchdarkly",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/launchdarkly",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/launchdarkly",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/launchdarkly",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/launchdarkly",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@launchdarkly",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/launchdarkly",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://launchdarkly.com/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://launchdarkly.com/about-us",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://launchdarkly.com/platform/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://posthog.com/blog/best-launchdarkly-alternatives",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://releasebot.io/updates/launchdarkly",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://launchdarkly.com/sitemap.xml",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://launchdarkly.com/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://launchdarkly.com/llms.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://launchdarkly.com",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://launchdarkly.com",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://launchdarkly.com",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://launchdarkly.com/platform.ai-configs/",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/launchdarkly",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://launchdarkly.com",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://launchdarkly.com/",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=4"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "# Move at AI speed. Stay in control. The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys requir",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://posthog.com/blog/best-launchdarkly-alternatives",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "LaunchDarkly adds the ability to restore a feature flag to a previous version from change history, with code diffs, previews, and safeguards for identical",
+      "url": "https://releasebot.io/updates/launchdarkly",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds",
+      "url": "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Move at AI speed. Stay in control.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Move at AI speed. Stay in control.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "By supplying my contact information, I authorize LaunchDarkly to contact me with personalized marketing communications about our products and services.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Split (acquired by Harness) as the audited brand's closest measured competitor with measured distance 0.773; avg_distance=0.818; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies FeaturIT as the audited brand's most different measured competitor with measured distance 0.863; avg_distance=0.818; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "sitemap.xml found with 6 URLs",
+      "url": "https://launchdarkly.com/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://launchdarkly.com/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "llms.txt found",
+      "url": "https://launchdarkly.com/llms.txt",
+      "dimension": "presencia",
+      "feature_name": "ai_discoverability",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog, faq, pricing, docs, changelog, case_studies",
+      "url": "https://launchdarkly.com",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.04; contrast signal 0.50.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/launchdarkly",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [],
+  "missing_evidence": [
+    {
+      "text": "# Move at AI speed. Stay in control. The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys requir",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.04; contrast signal 0.50.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Move at AI speed. Stay in control.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Move at AI speed. Stay in control.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "By supplying my contact information, I authorize LaunchDarkly to contact me with personalized marketing communications about our products and services.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "# LaunchDarkly (Catamorphic, Co.) LaunchDarkly is a Software Development company. LaunchDarkly is a platform that provides automation and feature mana",
+      "url": "https://launchdarkly.com/",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "About Us | LaunchDarkly | LaunchDarkly Skip to: About Us | LaunchDarkly | LaunchDarkly Skip to: Company About us # We’re shaping the future of softwar",
+      "url": "https://launchdarkly.com/about-us",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Take control of every feature. | LaunchDarkly Your runtime control plane for features, AI, and everything you release. # Take control of everyfeaturef",
+      "url": "https://launchdarkly.com/platform/",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "LaunchDarkly adds the ability to restore a feature flag to a previous version from change history, with code diffs, previews, and safeguards for identical",
+      "url": "https://releasebot.io/updates/launchdarkly",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Online evals in AI Configs is now GA",
+      "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds",
+      "url": "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Split (acquired by Harness) as the audited brand's closest measured competitor with measured distance 0.773; avg_distance=0.818; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies FeaturIT as the audited brand's most different measured competitor with measured distance 0.863; avg_distance=0.818; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+      "url": "https://launchdarkly.com/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "We help teams launch, control, and measure their digital products more easily than ever.",
+      "url": "https://launchdarkly.com/about-us",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Reliable ### 99.99% uptime",
+      "url": "https://launchdarkly.com/platform/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Scalable ### 45T+ flag evals/day",
+      "url": "https://launchdarkly.com/platform/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "# Move at AI speed. Stay in control. The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys requir",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/launchdarkly",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://posthog.com/blog/best-launchdarkly-alternatives",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.04; contrast signal 0.50.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Move at AI speed. Stay in control.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "By supplying my contact information, I authorize LaunchDarkly to contact me with personalized marketing communications about our products and services.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "sitemap.xml found with 6 URLs",
+      "url": "https://launchdarkly.com/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://launchdarkly.com/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "llms.txt found",
+      "url": "https://launchdarkly.com/llms.txt",
+      "dimension": "presencia",
+      "feature_name": "ai_discoverability",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog, faq, pricing, docs, changelog, case_studies",
+      "url": "https://launchdarkly.com",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/launchdarkly",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "# Move at AI speed. Stay in control. The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys requir",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/launchdarkly",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/launchdarkly",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@launchdarkly",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/launchdarkly",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "# LaunchDarkly (Catamorphic, Co.) LaunchDarkly is a Software Development company. LaunchDarkly is a platform that provides automation and feature mana",
+        "url": "https://launchdarkly.com/",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About Us | LaunchDarkly | LaunchDarkly Skip to: About Us | LaunchDarkly | LaunchDarkly Skip to: Company About us # We’re shaping the future of softwar",
+        "url": "https://launchdarkly.com/about-us",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Take control of every feature. | LaunchDarkly Your runtime control plane for features, AI, and everything you release. # Take control of everyfeaturef",
+        "url": "https://launchdarkly.com/platform/",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "sitemap.xml found with 6 URLs",
+        "url": "https://launchdarkly.com/sitemap.xml",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://launchdarkly.com/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "llms.txt found",
+        "url": "https://launchdarkly.com/llms.txt",
+        "feature_name": "ai_discoverability",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://posthog.com/blog/best-launchdarkly-alternatives",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "LaunchDarkly adds the ability to restore a feature flag to a previous version from change history, with code diffs, previews, and safeguards for identical",
+        "url": "https://releasebot.io/updates/launchdarkly",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Online evals in AI Configs is now GA",
+        "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds",
+        "url": "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.04; contrast signal 0.50.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Move at AI speed. Stay in control.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "Move at AI speed. Stay in control.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys required.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "By supplying my contact information, I authorize LaunchDarkly to contact me with personalized marketing communications about our products and services.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Split (acquired by Harness) as the audited brand's closest measured competitor with measured distance 0.773; avg_distance=0.818; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies FeaturIT as the audited brand's most different measured competitor with measured distance 0.863; avg_distance=0.818; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog, faq, pricing, docs, changelog, case_studies",
+        "url": "https://launchdarkly.com",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "LaunchDarkly is a platform that provides automation and feature management solutions for software teams to build successful products.",
+        "url": "https://launchdarkly.com/",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "We help teams launch, control, and measure their digital products more easily than ever.",
+        "url": "https://launchdarkly.com/about-us",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Reliable ### 99.99% uptime",
+        "url": "https://launchdarkly.com/platform/",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Scalable ### 45T+ flag evals/day",
+        "url": "https://launchdarkly.com/platform/",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "review_required",
+      "eligible_count": 0,
+      "blocked_count": 5,
+      "review_required_count": 3,
+      "missing_evidence_count": 5,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url"
+      ],
+      "readiness_reason": "Coherencia evidence is technical, visual-metric, missing, or review-gated.",
+      "recommended_action": "Resolve review-gated evidence before prompt use."
+    },
+    "presencia": {
+      "status": "thin",
+      "eligible_count": 3,
+      "blocked_count": 8,
+      "review_required_count": 1,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "external_channel_coverage_thin"
+      ],
+      "readiness_reason": "Presencia has owned-surface evidence, but external channel evidence is insufficient.",
+      "recommended_action": "Verify official profiles and collect external channel evidence."
+    },
+    "percepcion": {
+      "status": "thin",
+      "eligible_count": 4,
+      "blocked_count": 0,
+      "review_required_count": 0,
+      "missing_evidence_count": 0,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "insufficient_external_sentiment_evidence"
+      ],
+      "readiness_reason": "Percepcion has usable evidence, but external sentiment coverage is thin.",
+      "recommended_action": "Acquire more independent perception sources or keep prose heavily qualified."
+    },
+    "diferenciacion": {
+      "status": "ready",
+      "eligible_count": 2,
+      "blocked_count": 5,
+      "review_required_count": 3,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "competitor_corpus_present",
+        "bounded_comparison_evidence",
+        "no_strategy_inference"
+      ],
+      "readiness_reason": "Comparative or category-distinctive evidence is present, but should remain bounded to the cited sources.",
+      "recommended_action": "Use only the cited comparative evidence; do not infer category leadership."
+    },
+    "vitalidad": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 4,
+      "review_required_count": 0,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked"
+      ],
+      "readiness_reason": "Vitalidad has multiple non-empty temporal activity signals.",
+      "recommended_action": "Proceed with activity language without inferring traction or growth."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "# Move at AI speed. Stay in control. The runtime control platform for releases, AI behavior, and customer experience in real time, no redeploys requir",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "LaunchDarkly adds the ability to restore a feature flag to a previous version from change history, with code diffs, previews, and safeguards for identical",
+        "url": "https://releasebot.io/updates/launchdarkly",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds",
+        "url": "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Split (acquired by Harness) as the audited brand's closest measured competitor with measured distance 0.773; avg_distance=0.818; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies FeaturIT as the audited brand's most different measured competitor with measured distance 0.863; avg_distance=0.818; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "sitemap.xml found with 6 URLs",
+        "url": "https://launchdarkly.com/sitemap.xml",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://launchdarkly.com/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "llms.txt found",
+        "url": "https://launchdarkly.com/llms.txt",
+        "dimension": "presencia",
+        "feature_name": "ai_discoverability",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog, faq, pricing, docs, changelog, case_studies",
+        "url": "https://launchdarkly.com",
+        "dimension": "diferenciacion",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.04; contrast signal 0.50.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [],
+    "excluded_noise": [],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/launchdarkly",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/launchdarkly",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "publication_cadence",
+        "owned_evidence": [
+          {
+            "text": "",
+            "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "",
+            "url": "https://posthog.com/blog/best-launchdarkly-alternatives",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          },
+          {
+            "text": "",
+            "url": "https://rollgate.io/blog/rollgate-product-audit-2026",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "momentum",
+        "owned_evidence": [
+          {
+            "text": "Online evals in AI Configs is now GA",
+            "url": "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "LaunchDarkly adds the ability to restore a feature flag to a previous version from change history, with code diffs, previews, and safeguards for identical",
+            "url": "https://releasebot.io/updates/launchdarkly",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds",
+            "url": "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 33,
+      "owned_claims": 2,
+      "external_evidence": 16,
+      "related_surface_evidence": 1,
+      "technical_signals": 4,
+      "trust_or_security_signals": 0,
+      "visual_or_internal_signals": 2,
+      "entity_ambiguity": 1,
+      "excluded_noise": 0,
+      "missing_evidence": 10,
+      "finding_eligible_evidence": 12,
+      "evidence_not_eligible_for_findings": 19,
+      "requires_human_review": 1
+    }
+  }
+}

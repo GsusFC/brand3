@@ -1,0 +1,123 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.title }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.kind }}</span>
+    <span class="tag">// depth classification detail</span>
+  </div>
+  <a class="source-link" href="{{ model.back_href }}">Back to Brand3 Lab</a>
+  <h1 class="page-title">{{ model.title }}</h1>
+  <p class="prose dim intro-copy">{{ model.summary }}</p>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Why It Exists</span>
+    <span class="tag">// classify, do not exclude</span>
+  </div>
+  <div class="lab-detail-block">
+    <p>{{ model.why_it_exists }}</p>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Observable Markers</span>
+    <span class="tag">// evidence required</span>
+  </div>
+  <div class="lab-detail-block">
+    <ul class="lab-detail-list">
+      {% for marker in model.observable_markers %}
+      <li>{{ marker }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">LLM Flow</span>
+    <span class="tag">// how this applies during reading</span>
+  </div>
+  <div class="lab-detail-block">
+    <ol class="lab-detail-list">
+      {% for step in model.flow %}
+      <li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Valid Reading Posture</span>
+    <span class="tag">// what the prose may safely do</span>
+  </div>
+  <div class="lab-detail-block">
+    <ul class="lab-detail-list">
+      {% for posture in model.valid_reading_posture %}
+      <li>{{ posture }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Example Reading</span>
+    <span class="tag">// from the model source</span>
+  </div>
+  <div class="lab-detail-block">
+    <p>{{ model.example_reading }}</p>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Current Cases</span>
+    <span class="tag">// cases classified at this depth</span>
+  </div>
+  <div class="lab-index-list">
+    {% for case in model.related_cases %}
+    <article class="lab-index-row">
+      <div>
+        <h2>{{ case.brand }}</h2>
+        <div class="lab-index-meta">
+          <span class="inline-kv"><span class="k">signal_quality</span>=<span class="v">{{ case.signal_quality }}</span></span>
+          <span class="inline-kv"><span class="k">reading_mode</span>=<span class="v">{{ case.reading_mode }}</span></span>
+        </div>
+      </div>
+      <a class="source-link" href="{{ case.href }}">open case</a>
+    </article>
+    {% else %}
+    <article class="lab-index-row">
+      <div>
+        <h2>No current cases</h2>
+        <p>This depth class is defined, but no current Lab case uses it yet.</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="kv artifact-kv">
+    <span class="k">source</span>    <span class="v mono-token">{{ model.source_path }}</span>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{
+  "document": "brand3_evidence_packet_findings_schema_cv_trial_review",
+  "version": 1,
+  "created_at": "2026-05-18T08:39:59.005063+00:00",
+  "scope": "lab_only_non_runtime",
+  "batch": {
+    "requests_executed": 3,
+    "requests_skipped": 3,
+    "executed_targets": [
+      "linear::coherencia",
+      "vercel::coherencia",
+      "launchdarkly::vitalidad"
+    ],
+    "skipped_targets": [
+      "watermelon::vitalidad",
+      "builtwith_kit_com::coherencia",
+      "launchdarkly::coherencia"
+    ]
+  },
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "blocked_or_review_controls_skipped": true,
+    "thin_case_qualified": true,
+    "evidence_urls_valid": true
+  },
+  "trial_pass": true,
+  "core_findings": {
+    "drift_reduction_preserved": true,
+    "detector_adjustment_applied": "vitalidad factual leadership-language exception",
+    "schema_regression_detected": false
+  },
+  "case_notes": {
+    "linear::coherencia": {
+      "finding_count": 1,
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    },
+    "vercel::coherencia": {
+      "finding_count": 1,
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    },
+    "launchdarkly::vitalidad": {
+      "finding_count": 3,
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    }
+  },
+  "decision_gate": {
+    "result": "pass",
+    "production_effect": "none",
+    "next_step": "continue lab validation; keep runtime unchanged"
+  },
+  "constraints_respected": {
+    "no_runtime_integration": true,
+    "no_production_prompt_edits": true,
+    "no_narrative_py_changes": true,
+    "no_scoring_report_render_storage_contract_changes": true,
+    "no_deep_research_or_exa_firecrawl_calls": true,
+    "one_trial_batch_only": true
+  },
+  "artifacts": {
+    "script": "scripts/evidence_packet_findings_schema_cv_trial.py",
+    "request_manifest": "examples/reports/evidence_packet_findings_schema_trial/coherencia_vitalidad_v0/request_manifest.json",
+    "raw_outputs": "examples/reports/evidence_packet_findings_schema_trial/coherencia_vitalidad_v0/raw_outputs.json",
+    "comparison": "examples/reports/evidence_packet_findings_schema_trial/coherencia_vitalidad_v0/comparison.json",
+    "cost_observation": "examples/reports/evidence_packet_findings_schema_trial/coherencia_vitalidad_v0/cost_observation.json",
+    "trial_notes": "examples/reports/evidence_packet_findings_schema_trial/coherencia_vitalidad_v0/trial_notes.md"
+  },
+  "cost_observation_summary": {
+    "llm_calls_planned": 3,
+    "llm_calls_executed": 3,
+    "cache_hits": 3,
+    "cache_misses": 0,
+    "usage_metadata_available": false,
+    "cost_estimate_available": false
+  }
+}

@@ -1,0 +1,184 @@
+{
+  "document": "brand3_evidence_packet_dimension_readiness_review",
+  "version": 0,
+  "created_at": "2026-05-18T07:50:39.466317+00:00",
+  "scope": "offline_lab_only",
+  "artifacts": {
+    "builder": "src/reports/evidence_packet.py",
+    "tests": "tests/test_evidence_packet.py",
+    "packets": [
+      "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json",
+      "examples/reports/evidence_packet/watermelon.local_evidence_packet.v0.json",
+      "examples/reports/evidence_packet/launchdarkly.local_evidence_packet.v0.json",
+      "examples/reports/evidence_packet/vercel.local_evidence_packet.v0.json"
+    ]
+  },
+  "dimension_readiness_contract": {
+    "statuses": [
+      "ready",
+      "thin",
+      "blocked",
+      "abstain",
+      "review_required"
+    ],
+    "required_fields": [
+      "status",
+      "eligible_count",
+      "blocked_count",
+      "review_required_count",
+      "missing_evidence_count",
+      "reason_codes",
+      "readiness_reason",
+      "recommended_action"
+    ],
+    "key_rules_implemented": [
+      "empty_text_evidence_blocked_from_normal_eligibility",
+      "technical_internal_visual_metrics_do_not_make_dimension_ready",
+      "review_gated_evidence_does_not_count_toward_ready",
+      "owned_claims_do_not_count_as_external_corroboration",
+      "diferenciacion_abstains_without_comparative_or_competitor_corpus_evidence",
+      "percepcion_requires_non_empty_external_perception_evidence_for_ready",
+      "vitalidad_requires_non_empty_temporal_activity_evidence"
+    ]
+  },
+  "status_matrix": {
+    "builtwith_kit_com": {
+      "coherencia": "blocked",
+      "presencia": "blocked",
+      "percepcion": "blocked",
+      "diferenciacion": "blocked",
+      "vitalidad": "blocked"
+    },
+    "watermelon": {
+      "coherencia": "ready",
+      "presencia": "thin",
+      "percepcion": "thin",
+      "diferenciacion": "blocked",
+      "vitalidad": "blocked"
+    },
+    "launchdarkly": {
+      "coherencia": "review_required",
+      "presencia": "thin",
+      "percepcion": "thin",
+      "diferenciacion": "abstain",
+      "vitalidad": "ready"
+    },
+    "vercel": {
+      "coherencia": "thin",
+      "presencia": "thin",
+      "percepcion": "ready",
+      "diferenciacion": "abstain",
+      "vitalidad": "ready"
+    }
+  },
+  "case_findings": {
+    "vercel": {
+      "assessment": "Vercel now shows the intended diagnostic split: percepcion and vitalidad are ready, diferenciacion abstains, and empty-text evidence is blocked from normal eligibility.",
+      "statuses": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "abstain",
+        "vitalidad": "ready"
+      },
+      "important_reason_codes": {
+        "coherencia": [
+          "visual_technical_metric_blocked",
+          "visual_brand_support_only",
+          "review_gated_evidence_not_ready",
+          "missing_evidence_url",
+          "owned_textual_surface_coverage_thin"
+        ],
+        "presencia": [
+          "official_profile_requires_link_verification",
+          "review_gated_evidence_not_ready",
+          "missing_evidence_url"
+        ],
+        "percepcion": [],
+        "diferenciacion": [
+          "owned_claim_without_external_corroboration",
+          "review_gated_evidence_not_ready",
+          "missing_evidence_url",
+          "insufficient_comparative_evidence",
+          "competitor_corpus_required"
+        ],
+        "vitalidad": [
+          "empty_text_evidence_blocked"
+        ]
+      },
+      "interpretation": [
+        "The packet is not globally over-conservative because high-evidence dimensions still pass.",
+        "The packet is still not prompt-ready because diferenciacion exposes an acquisition/input gap rather than a prose problem.",
+        "URL-only evidence is now visible as blocked or missing instead of silently entering eligible evidence."
+      ]
+    },
+    "builtwith_kit_com": {
+      "assessment": "Builtwith/Kit remains blocked across dimensions because the packet sees unresolved entity and surface ambiguity before narrative use.",
+      "statuses": {
+        "coherencia": "blocked",
+        "presencia": "blocked",
+        "percepcion": "blocked",
+        "diferenciacion": "blocked",
+        "vitalidad": "blocked"
+      },
+      "interpretation": [
+        "The classifier prevents builtwith.kit.com, kit.com, and builtwith.com evidence from being smoothed into one entity story.",
+        "This is the desired failure mode for a noisy entity-mixed case."
+      ]
+    },
+    "watermelon": {
+      "assessment": "Watermelon remains mixed: coherencia is marked ready by local owned-surface evidence, but presencia and percepcion are thin while diferenciacion/vitalidad are blocked by review/entity ambiguity.",
+      "statuses": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "blocked",
+        "vitalidad": "blocked"
+      },
+      "interpretation": [
+        "The result is still review-heavy and confirms that local snapshots are weaker than Deep Research for related-surface verification.",
+        "The ready coherencia status should be treated as a narrow intra-entity messaging readiness, not proof that the whole ecosystem is verified."
+      ]
+    },
+    "launchdarkly": {
+      "assessment": "LaunchDarkly stays usable but not fully ready: vitalidad is ready, presencia/percepcion are thin, coherencia requires review, and diferenciacion abstains without comparative evidence.",
+      "statuses": {
+        "coherencia": "review_required",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "abstain",
+        "vitalidad": "ready"
+      },
+      "interpretation": [
+        "This keeps useful evidence available without letting comparison-dependent prose proceed unsupported.",
+        "The case is stable enough for later prompt-input candidate tests, but diferenciacion still needs competitor/category evidence."
+      ]
+    }
+  },
+  "operability_assessment": {
+    "operational_enough_for_later_prompt_input_candidate": true,
+    "not_ready_for_runtime_generation": true,
+    "why": [
+      "The packet can now tell generation which dimensions are ready, thin, blocked, abstain, or review-gated.",
+      "It exposes acquisition gaps before narrative generation rather than asking the LLM to rationalize them.",
+      "It still lacks upstream collection contracts for competitor corpus, official profile verification, and richer source-role metadata."
+    ]
+  },
+  "remaining_acquisition_changes": [
+    "Collect competitor/category evidence for diferenciacion.",
+    "Verify official social/profile links from owned surfaces before using them as channel evidence.",
+    "Separate repository activity from adoption evidence.",
+    "Capture non-empty text for URL evidence before it can support readiness.",
+    "Improve local related-surface verification so Watermelon-like cases do not rely on manual review as heavily."
+  ],
+  "non_goals_preserved": [
+    "no_runtime_integration",
+    "no_prompt_changes",
+    "no_scoring_changes",
+    "no_report_generation_changes",
+    "no_rendering_changes",
+    "no_visual_signature_changes",
+    "no_deep_research_calls",
+    "no_exa_or_firecrawl_calls"
+  ]
+}

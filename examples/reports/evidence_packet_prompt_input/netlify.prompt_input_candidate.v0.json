@@ -1,0 +1,557 @@
+{
+  "version": 0,
+  "case_id": "www_netlify_com",
+  "audit_url": "https://www.netlify.com",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.34; contrast signal 1.00.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Push your ideas to the web | Netlify",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Create with AI or code, deploy instantly on production infrastructure.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Netlify is a Software Development company. Netlify is a platform that helps users build and deploy websites to their global network.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Push your ideas to the web | Netlify",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Create with AI or code, deploy instantly on production infrastructure.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Netlify is a Software Development company. Netlify is a platform that helps users build and deploy websites to their global network.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "Do not generate this dimension.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    },
+    "presencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "About Netlify # About Netlify Netlify is the most popular way to build, deploy and scale modern web applications. Home to millions of developers and t",
+          "url": "https://www.netlify.com/about/",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Netlify Netlify is a cloud computing company that offers a development platform that includes build, deploy, and serverless backend services for web a",
+          "url": "https://en.wikipedia.org/wiki/Netlify",
+          "source_class": "external_third_party",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "# Push your ideas to the web | Netlify Create with AI or code, deploy instantly on production infrastructure. One platform to build and ship. Announci",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/www.netlify.com",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/www.netlify.com",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@www.netlify.com",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/www.netlify.com",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Netlify - Crunchbase Company Profile & Funding [![](https://images.crunchbase.com/image/upload/v1528136300/clientapp/logo_crunchbase_dark.svg)](https:",
+          "url": "https://www.crunchbase.com/organization/netlify",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "llms.txt found",
+          "url": "https://www.netlify.com/llms.txt",
+          "source_class": "technical_internal",
+          "feature_name": "ai_discoverability",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/www.netlify.com",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Netlify - Crunchbase Company Profile & Funding [![](https://images.crunchbase.com/image/upload/v1528136300/clientapp/logo_crunchbase_dark.svg)](https:",
+          "url": "https://www.crunchbase.com/organization/netlify",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "percepcion": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Netlify is the most popular way to build, deploy and scale modern web applications.",
+          "url": "https://www.netlify.com/about/",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Home to millions of developers and thousands of enterprises, Netlify is the platform of choice for running modern composable web applications in production, from global corporate sites to complex e-commerce and SaaS applications.",
+          "url": "https://www.netlify.com/about/",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Netlify is a cloud computing company that offers a development platform that includes build, deploy, and serverless backend services for web applications and dynamic websites.",
+          "url": "https://en.wikipedia.org/wiki/Netlify",
+          "source_class": "external_third_party",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Netlify is an AI-native web development platform built for how software is created, deployed, and run today.",
+          "url": "https://www.linkedin.com/company/netlify",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Netlify is an AI-native web development platform built for how software is created, deployed, and run today.",
+          "url": "https://www.linkedin.com/company/netlify",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "diferenciacion": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "Create with AI or code, deploy instantly on production infrastructure. One platform to build and ship.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Your app, live instantly. From AI tools or Git to global deployment in seconds. Everything included.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Key pages found: about, blog, pricing, docs, changelog",
+          "url": "https://www.netlify.com",
+          "source_class": "technical_internal",
+          "feature_name": "content_depth",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Netlify as the audited brand's closest measured competitor with measured distance 0.25; avg_distance=0.793; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies WordFleet as the audited brand's most different measured competitor with measured distance 0.969; avg_distance=0.793; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Create with AI or code, deploy instantly on production infrastructure. One platform to build and ship.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Your app, live instantly. From AI tools or Git to global deployment in seconds. Everything included.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Netlify Database is now generally available Netlify Database is launching today as a serverless Postgres database that’s deeply integrated into the Netlify workflow and upgraded from the beta experience to a full Netlify primitive.",
+          "url": "https://www.netlify.com/changelog/2026-04-28-netlify-database/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "OpenAI GPT-5.5 Instant now available in AI Gateway OpenAI’s GPT-5.5 Instant model is now available through Netlify’s AI Gateway with zero configuration required.",
+          "url": "https://www.netlify.com/changelog/2026-05-05-gpt-5-5-instant-ai-gateway/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Internal Builder Role & Project Access Controls We’ve updated how you manage who can access what on your Netlify project and created a new role designed for the workflow needs of cross-functional AI-assisted builders.",
+          "url": "https://www.netlify.com/changelog/2026-03-16-internal-builder-role/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://www.netlify.com/changelog/2026-05-05-gpt-5-5-instant-ai-gateway/",
+          "source_class": "audited_surface",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://www.netlify.com/changelog/2026-04-28-netlify-database/",
+          "source_class": "audited_surface",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "Owned claims lack external corroboration; keep attribution visible."
+      ],
+      "abstention_reason": ""
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "coherencia",
+      "status": "blocked",
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    },
+    {
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    }
+  ],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "presencia",
+      "percepcion",
+      "vitalidad"
+    ],
+    "excluded_dimensions": [
+      "coherencia",
+      "diferenciacion"
+    ],
+    "included_evidence_count": 8,
+    "excluded_evidence_count": 21,
+    "review_required_evidence_count": 8,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 5,
+      "presencia": 9,
+      "percepcion": 4,
+      "diferenciacion": 7,
+      "vitalidad": 7
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 0,
+      "presencia": 2,
+      "percepcion": 3,
+      "diferenciacion": 0,
+      "vitalidad": 3
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 5,
+        "candidate_inputs": 0,
+        "excluded_inputs": 5
+      },
+      "presencia": {
+        "current_inputs": 9,
+        "candidate_inputs": 2,
+        "excluded_inputs": 7
+      },
+      "percepcion": {
+        "current_inputs": 4,
+        "candidate_inputs": 3,
+        "excluded_inputs": 1
+      },
+      "diferenciacion": {
+        "current_inputs": 7,
+        "candidate_inputs": 0,
+        "excluded_inputs": 7
+      },
+      "vitalidad": {
+        "current_inputs": 7,
+        "candidate_inputs": 3,
+        "excluded_inputs": 4
+      }
+    }
+  }
+}

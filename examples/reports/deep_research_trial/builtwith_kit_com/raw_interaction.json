@@ -1,0 +1,94 @@
+{
+  "agent": "deep-research-preview-04-2026",
+  "created": "2026-05-17T21:08:48Z",
+  "id": "v1_ChdYeTRLYXB5c0ZhS2d2ZElQa2FLNzRRcxIXWHk0S2FweXNGYUtndmRJUGthSzc0UXM",
+  "object": "interaction",
+  "status": "completed",
+  "steps": [
+    {
+      "content": [
+        {
+          "text": "You are preparing an evidence packet for Brand3.\n\nTarget audit surface:\n- builtwith.kit.com\n- URL: https://builtwith.kit.com\n\nUse ONLY the provided URL context tool and the fixed URL set below.\nDo not use open web search.\nDo not generate Brand Audit findings.\nDo not score.\nDo not recommend strategy.\nDo not write a report.\n\nFixed URL set:\n- https://builtwith.kit.com\n- https://kit.com/\n- https://builtwith.com/\n- https://builtwith.com/about\n- https://blog.builtwith.com/2026/02/25/llms-and-mcp/\n- https://www.scamadviser.com/check-website/builtwith.kit.com\n- https://www.joesandbox.com/analysis/1719754/0/html\n\nReturn a structured evidence packet only. Prefer valid JSON and no Markdown.\n\nRequired top-level JSON shape:\n{\n  \"case_id\": \"builtwith_kit_com\",\n  \"audited_surface\": {\n    \"url\": \"https://builtwith.kit.com\",\n    \"entity_label\": \"...\",\n    \"confidence\": \"high | medium | low\",\n    \"evidence\": []\n  },\n  \"owned_claims\": [],\n  \"external_evidence\": [],\n  \"related_surface_evidence\": [],\n  \"technical_signals\": [],\n  \"trust_or_security_signals\": [],\n  \"entity_ambiguity\": [],\n  \"excluded_noise\": [],\n  \"missing_evidence\": [],\n  \"finding_eligible_evidence\": [],\n  \"evidence_not_eligible_for_findings\": [],\n  \"requires_human_review\": []\n}\n\nRules:\n- Cite every evidence item with a URL from the fixed URL set.\n- Mark uncertainty explicitly.\n- Do not infer ownership between Kit and BuiltWith unless explicitly supported.\n- Do not treat technical artifacts as brand intent.\n- Do not treat visual or technical metrics as market evidence.\n- Do not smooth entity ambiguity.\n- If evidence is weak, mark it weak instead of making it useful.\n- If a provided URL cannot be read, list it under missing_evidence or excluded_noise.\n- finding_eligible_evidence should include only evidence that can safely support a Brand3 narrative finding.\n- evidence_not_eligible_for_findings should include technical, weak, ambiguous, or appendix-only material.\n",
+          "type": "text"
+        }
+      ],
+      "type": "user_input"
+    },
+    {
+      "signature": "",
+      "summary": [
+        {
+          "text": "***Generating research plan***\n\nTo best answer your request, I'm starting by constructing a comprehensive research plan. This will outline the key areas I need to investigate and the strategy I'll use to connect them.",
+          "type": "text"
+        },
+        {
+          "text": "**Establishing Research Parameters**\n\nI am initiating a structured investigation into the relationship between Kit and BuiltWith, specifically focusing on the subdomain associated with their shared digital footprint. My objective is to construct a rigorous evidence packet by examining a predefined set of primary domains, technical reports, and official blog content to verify identity and ownership claims while adhering to strict source constraints.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Addressing Entity Relationships**\n\nA key priority involves resolving potential ambiguity between these distinct entities. I am thinking through how these brands interact on a technical and organizational level, distinguishing between intentional brand associations and mere technical artifacts. By synthesizing data from security analyses and official documentation, I aim to clarify ownership structures and identify any contradictions in how these entities represent their connection.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Analyzing Technical Signals**\n\nTo provide a comprehensive view, I am moving forward with a deep dive into detailed technical reports and security assessments. I will be evaluating hosting data, IP signals, and security profiles to identify relevant insights that support or refute current identity claims. This systematic review ensures that every finding is grounded in specific, verifiable documentation as I build out the evidence structure.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Platform Roles and Technical Signals**\n\nI have identified the distinct roles of the two primary entities: one serves as an automation and marketing hub for creators, while the other is a specialized platform for profiling web technologies. My initial investigation of the specific subdomain reveals a high trust rating and indicates that it likely utilizes framing techniques to integrate technical data. This suggests that the site may be a functional bridge or a dedicated portal for viewing technology analytics within the marketing ecosystem.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Historical Gaps and Brand Alignment**\n\nA significant point of synthesis involves reconciling the domain\u2019s registration history, which dates back to 1995, with the marketing platform's more recent rebranding. There is currently a gap in explicit documentation linking the two companies. I am working to determine if this subdomain represents a formal white-label partnership or a specific feature designed to provide creators with technical insights about their web presence.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Mapping the Integration**\n\nI am moving forward by thinking through the potential cross-platform connections. My next steps involve searching both platforms for any mentions of shared services or integrations. I aim to uncover whether the technology lookup features are being offered as a native component of the creator toolkit or as a specialized intelligence layer for their users.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Identifying Subdomain Purpose**\n\nI have determined that the targeted subdomain serves as a platform for creator tools, focusing on email growth and marketing services. Technical metadata suggests the site utilizes embedding techniques to integrate content across different layers of the platform, and I have verified its high trust standing and association with major hosting and security providers.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Reconciling Branding Overlaps**\n\nA notable point of investigation is the linguistic overlap between the subdomain's name and a prominent external technology lookup service. While there is no explicit documentation of a partnership on either party's primary web properties, I am thinking through whether the naming is purely descriptive for a user directory or represents a deeper technical integration that isn't publicly indexed.",
+          "type": "text"
+        },
+        {
+          "text": "\n\n**Synthesizing Investigation Findings**\n\nI am now moving toward the final phase of this research, where I will consolidate the identity markers and technical signals I have gathered. I will be synthesizing the evidence regarding ownership and service intent to form a comprehensive conclusion about the relationship between these entities and their shared digital infrastructure.",
+          "type": "text"
+        }
+      ],
+      "type": "thought"
+    },
+    {
+      "content": [
+        {
+          "text": "{\n  \"case_id\": \"builtwith_kit_com\",\n  \"audited_surface\": {\n    \"url\": \"https://builtwith.kit.com\",\n    \"entity_label\": \"kit.com subdomain\",\n    \"confidence\": \"medium\",\n    \"evidence\": [\n      {\n        \"description\": \"ScamAdviser scan indicates the site contains text related to an email platform for creators.\",\n        \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n      },\n      {\n        \"description\": \"Site is technically utilizing an iframe to embed content, according to security scanner.\",\n        \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n      }\n    ]\n  },\n  \"owned_claims\": [\n    {\n      \"claim\": \"Website serves as an 'Email Platform for Creators \u2013 Launch & Grow with Kit'.\",\n      \"uncertainty_marker\": \"Uncertain: Claim is extracted indirectly via a third-party security scanner, not from direct surface inspection.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"claim\": \"Website states 'Make email your most valuable channel'.\",\n      \"uncertainty_marker\": \"Uncertain: Indirect extraction.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"claim\": \"Website offers to 'Launch your newsletter this week with a free 7 day guide, level up your business via demo, or try Kit free for 14 days'.\",\n      \"uncertainty_marker\": \"Uncertain: Indirect extraction.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"external_evidence\": [\n    {\n      \"evidence\": \"Website has an average to good trust score (100) and is considered 'Very Likely Safe' by ScamAdviser.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"evidence\": \"DNSFilter rates the website as safe.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"related_surface_evidence\": [\n    {\n      \"evidence\": \"Kit (formerly ConvertKit) is an email marketing automation platform for creators founded by Nathan Barry.\",\n      \"url\": \"https://kit.com/\"\n    },\n    {\n      \"evidence\": \"BuiltWith is a technology lookup tool operated by BuiltWith Pty Ltd in Sydney, Australia.\",\n      \"url\": \"https://builtwith.com/\"\n    },\n    {\n      \"evidence\": \"There is no mention of 'BuiltWith' on the Kit website.\",\n      \"url\": \"https://kit.com/\"\n    },\n    {\n      \"evidence\": \"There is no mention of 'Kit' or 'ConvertKit' on the BuiltWith website.\",\n      \"url\": \"https://builtwith.com/\"\n    },\n    {\n      \"evidence\": \"The BuiltWith blog detailing LLM and MCP integrations does not mention kit.com or builtwith.kit.com.\",\n      \"url\": \"https://blog.builtwith.com/2026/02/25/llms-and-mcp/\"\n    }\n  ],\n  \"technical_signals\": [\n    {\n      \"signal\": \"Website uses an iframe or similar technology to include content and functionalities from another website.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"signal\": \"Domain uses a Domain Validated (DV) SSL certificate issued by Google Trust Services.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"signal\": \"Traffic routed through CloudFlare Inc.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"signal\": \"Website performance rated as 'Very Fast'.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"signal\": \"Website has a low Tranco ranking (low visitor volume).\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"trust_or_security_signals\": [\n    {\n      \"signal\": \"The kit.com root domain is approximately 30 years old (registered 1995-11-29).\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"signal\": \"WHOIS registration utilizes a privacy service ('Withheld for Privacy ehf').\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"entity_ambiguity\": [\n    {\n      \"ambiguity_type\": \"Subdomain Name Collision\",\n      \"description\": \"The subdomain 'builtwith' on kit.com matches the distinct corporate entity BuiltWith Pty Ltd (builtwith.com).\",\n      \"uncertainty_marker\": \"Uncertain. No direct evidence in the provided set confirms a partnership, technical integration, or joint venture between Kit and BuiltWith. 'builtwith' may simply be a grammatical construct for a landing page (e.g., 'Made/Built with Kit'). No ownership or affiliation can be inferred without further explicit evidence.\",\n      \"url\": \"https://builtwith.com/\"\n    },\n    {\n      \"ambiguity_type\": \"Unknown Iframe Source\",\n      \"description\": \"ScamAdviser reports the subdomain uses an iframe to embed content from another website, but the source URL of that iframe is not identified.\",\n      \"uncertainty_marker\": \"Uncertain. It cannot be assumed that the iframe originates from builtwith.com.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"excluded_noise\": [\n    {\n      \"item\": \"NameCheap registrar reputation.\",\n      \"reason\": \"Scanner notes NameCheap facilitates websites with low review scores and is used by scammers. This is a generic registrar-level metric and does not reflect the audited brand's intent or safety.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"missing_evidence\": [\n    {\n      \"item\": \"Direct inspection data from https://builtwith.kit.com is unavailable.\",\n      \"reason\": \"URL was not crawled directly in the provided snippets; reliant on third-party security scanner data for page content.\",\n      \"url\": \"https://builtwith.kit.com\"\n    },\n    {\n      \"item\": \"No data or snippets provided for the JoeSandbox URL.\",\n      \"reason\": \"The URL is in the fixed set but generated no research material.\",\n      \"url\": \"https://www.joesandbox.com/analysis/1719754/0/html\"\n    }\n  ],\n  \"finding_eligible_evidence\": [\n    {\n      \"item\": \"The audited surface contains marketing copy for the Kit platform, promoting a 14-day free trial and a 7-day newsletter launch guide.\",\n      \"narrative_alignment\": \"Validates the subdomain is actively used as a functional marketing or landing page for Kit's creator tools.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"evidence_not_eligible_for_findings\": [\n    {\n      \"item\": \"Use of iframes, DV SSL certificates, and CloudFlare.\",\n      \"reason\": \"Technical infrastructure artifacts; cannot be used as brand intent or strategic evidence.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    },\n    {\n      \"item\": \"Tranco ranking and 'Very Fast' speed assessment.\",\n      \"reason\": \"Visual and technical metrics are excluded from market evidence per rules.\",\n      \"url\": \"https://www.scamadviser.com/check-website/builtwith.kit.com\"\n    }\n  ],\n  \"requires_human_review\": [\n    {\n      \"task\": \"Perform a direct manual load of https://builtwith.kit.com to inspect the network traffic and DOM.\",\n      \"reason\": \"Crucial to identify the source URL of the iframed content. This will resolve the entity ambiguity regarding whether the subdomain embeds a builtwith.com widget or simply hosts native kit.com marketing assets.\"\n    }\n  ]\n}",
+          "type": "text"
+        }
+      ],
+      "type": "model_output"
+    }
+  ],
+  "updated": "2026-05-17T21:08:48Z",
+  "usage": {
+    "input_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 65000
+      }
+    ],
+    "output_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 9385
+      }
+    ],
+    "total_cached_tokens": 4096,
+    "total_input_tokens": 65000,
+    "total_output_tokens": 9385,
+    "total_thought_tokens": 26347,
+    "total_tokens": 100732,
+    "total_tool_use_tokens": 0
+  }
+}

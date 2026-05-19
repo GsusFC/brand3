@@ -1,0 +1,360 @@
+{
+  "document": "brand3_evidence_packet_vercel_operability_test",
+  "version": 0,
+  "target_url": "https://vercel.com/",
+  "run_id": 79,
+  "purpose": "Test whether local Evidence Packet v0 can preserve useful evidence for a stable high-evidence entity while blocking noisy narrative inputs.",
+  "artifacts": {
+    "packet": "examples/reports/evidence_packet/vercel.local_evidence_packet.v0.json",
+    "markdown": "docs/brand3_evidence_packet_vercel_operability_test.md",
+    "json": "docs/brand3_evidence_packet_vercel_operability_test.json"
+  },
+  "snapshot_summary": {
+    "brand_name": "Vercel",
+    "url": "https://vercel.com",
+    "composite_score": 75.9,
+    "scores": {
+      "coherencia": 81.6,
+      "presencia": 82.4,
+      "percepcion": 75.0,
+      "diferenciacion": 67.5,
+      "vitalidad": 72.2
+    },
+    "raw_input_sources": [
+      "context",
+      "web",
+      "exa",
+      "social",
+      "competitors",
+      "report_narrative"
+    ],
+    "persisted_findings_by_dimension": {
+      "coherencia": 2,
+      "diferenciacion": 1,
+      "percepcion": 2,
+      "presencia": 2,
+      "vitalidad": 1
+    }
+  },
+  "current_prompt_input": {
+    "evidence_count_by_dimension": {
+      "coherencia": 5,
+      "presencia": 7,
+      "percepcion": 3,
+      "diferenciacion": 4,
+      "vitalidad": 7
+    },
+    "total_evidence_count": 26,
+    "sample_evidence_by_dimension": {
+      "coherencia": [
+        {
+          "quote": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "visual_consistency"
+        },
+        {
+          "quote": "Whitespace ratio 0.94; contrast signal 0.31.",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "visual_consistency"
+        },
+        {
+          "quote": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "tone_consistency"
+        },
+        {
+          "quote": "Vercel provides developers with frameworks, workflows, and infrastructure to build a faster, more personalized web.",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "tone_consistency"
+        },
+        {
+          "quote": "Schema detected: SoftwareApplication",
+          "url": "https://vercel.com",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "structured_identity"
+        }
+      ],
+      "presencia": [
+        {
+          "quote": "# Build and deploy on the AI Cloud. Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personaliz",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "web_presence"
+        },
+        {
+          "quote": "# Vercel (Vercel Inc.) Vercel is a Software Development company. Vercel provides developers with frameworks, workflows, and infrastructure to build a",
+          "url": "https://vercel.com/",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "search_visibility"
+        },
+        {
+          "quote": "Vercel Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework. Vercel provides",
+          "url": "https://en.wikipedia.org/wiki/Vercel",
+          "source_type": "encyclopedic",
+          "source_domain": "en.wikipedia.org",
+          "feature_name": "search_visibility"
+        },
+        {
+          "quote": "About Us Skip to content # Vercel enables the world to ship the best products. Vercel's Frontend Cloud provides the developer experience and infrastru",
+          "url": "https://vercel.com/about",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "search_visibility"
+        },
+        {
+          "quote": "sitemap.xml found with 6991 URLs",
+          "url": "https://vercel.com/sitemap.xml",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "site_structure"
+        },
+        {
+          "quote": "robots.txt found",
+          "url": "https://vercel.com/robots.txt",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "site_structure"
+        },
+        {
+          "quote": "llms.txt found",
+          "url": "https://vercel.com/llms.txt",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "ai_discoverability"
+        }
+      ],
+      "percepcion": [
+        {
+          "quote": "build times went from 7m to 40s. saw a 95% reduction in page load times.",
+          "url": "https://vercel.com/blog/oss",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "brand_sentiment"
+        },
+        {
+          "quote": "The AI SDK is a free open-source library for building AI-powered applications and agents",
+          "url": "https://togithub.com/vercel/ai",
+          "source_type": "other",
+          "source_domain": "togithub.com",
+          "feature_name": "brand_sentiment"
+        },
+        {
+          "quote": "Vercel enables the world to ship the best products.",
+          "url": "https://vercel.com/about",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "brand_sentiment"
+        }
+      ],
+      "diferenciacion": [
+        {
+          "quote": "Build and deploy on the AI Cloud.",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "positioning_clarity"
+        },
+        {
+          "quote": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "positioning_clarity"
+        },
+        {
+          "quote": "Content feels original and human-written",
+          "url": "",
+          "source_type": "other",
+          "source_domain": "",
+          "feature_name": "content_authenticity"
+        },
+        {
+          "quote": "Key pages found: about, blog, faq, pricing, docs, changelog, reviews, case_studies",
+          "url": "https://vercel.com",
+          "source_type": "owned",
+          "source_domain": "vercel.com",
+          "feature_name": "content_depth"
+        }
+      ],
+      "vitalidad": [
+        {
+          "quote": "",
+          "url": "https://releasebot.io/updates/vercel",
+          "source_type": "other",
+          "source_domain": "releasebot.io",
+          "feature_name": "content_recency"
+        },
+        {
+          "quote": "",
+          "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+          "source_type": "news",
+          "source_domain": "techcrunch.com",
+          "feature_name": "publication_cadence"
+        },
+        {
+          "quote": "",
+          "url": "https://vercel.com/changelog",
+          "source_type": "changelog",
+          "source_domain": "vercel.com",
+          "feature_name": "publication_cadence"
+        },
+        {
+          "quote": "",
+          "url": "https://releasebot.io/updates/vercel",
+          "source_type": "other",
+          "source_domain": "releasebot.io",
+          "feature_name": "publication_cadence"
+        },
+        {
+          "quote": "You can now use native curl syntax with the Vercel CLI.",
+          "url": "https://vercel.com/changelog",
+          "source_type": "changelog",
+          "source_domain": "vercel.com",
+          "feature_name": "momentum"
+        },
+        {
+          "quote": "App host Vercel says it was hacked and customer data stolen",
+          "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+          "source_type": "news",
+          "source_domain": "techcrunch.com",
+          "feature_name": "momentum"
+        },
+        {
+          "quote": "Vercel says some of its customers\u2019 data was stolen prior to its recent hack",
+          "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+          "source_type": "news",
+          "source_domain": "techcrunch.com",
+          "feature_name": "momentum"
+        }
+      ]
+    }
+  },
+  "packet_filtered_input": {
+    "counts": {
+      "finding_eligible_evidence": 13,
+      "evidence_not_eligible_for_findings": 17,
+      "owned_claims": 3,
+      "external_evidence": 15,
+      "technical_signals": 5,
+      "visual_or_internal_signals": 2,
+      "trust_or_security_signals": 0,
+      "related_surface_evidence": 1,
+      "entity_ambiguity": 1,
+      "missing_evidence": 9,
+      "requires_human_review": 1,
+      "source_inventory": 33
+    },
+    "eligible_by_dimension": {
+      "presencia": 3,
+      "vitalidad": 6,
+      "coherencia": 1,
+      "percepcion": 3
+    },
+    "blocked_by_dimension": {
+      "presencia": 8,
+      "coherencia": 6,
+      "diferenciacion": 3
+    },
+    "review_by_dimension": {
+      "": 1
+    },
+    "blocked_reason_counts": {
+      "observation_only": 6,
+      "requires_human_review": 4,
+      "technical_only": 7
+    },
+    "empty_text_eligible_count": 3,
+    "empty_text_eligible_samples": [
+      {
+        "text": "",
+        "url": "https://releasebot.io/updates/vercel",
+        "dimension": "vitalidad",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate"
+      },
+      {
+        "text": "",
+        "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate"
+      },
+      {
+        "text": "",
+        "url": "https://vercel.com/changelog",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence"
+      }
+    ]
+  },
+  "evaluation": {
+    "preserves_strong_owned_evidence": "partially",
+    "preserves_strong_external_evidence": "partially",
+    "avoids_docs_technical_as_strategy": true,
+    "avoids_blocking_too_much": "mixed",
+    "creates_cleaner_prompt_input": "partially_but_not_ready",
+    "could_replace_current_evidence_preparation": false,
+    "manual_or_deep_research_escalation_needed_for": [
+      "source role weighting for mirrors/aggregators/comparison pages",
+      "empty-text URL evidence handling",
+      "social profile verification",
+      "distinguishing owned claim evidence from externally validated evidence inside stable entities",
+      "dimension coverage for differentiation"
+    ]
+  },
+  "findings": [
+    {
+      "id": "stable_entity_not_overblocked",
+      "severity": "positive",
+      "summary": "The packet preserved 13 finding-eligible items for Vercel, unlike Builtwith where it blocked almost everything. This indicates the classifier is not simply over-conservative."
+    },
+    {
+      "id": "technical_visual_signals_removed",
+      "severity": "positive",
+      "summary": "Context artifacts such as robots.txt, sitemap.xml, llms.txt, schema, key-page presence, and visual metrics were classified as technical/internal rather than narrative findings."
+    },
+    {
+      "id": "differentiation_gap",
+      "severity": "blocking",
+      "summary": "No differentiation evidence survived as finding-eligible. For a high-evidence platform like Vercel, that means the packet is not yet usable as the sole pre-narrative input."
+    },
+    {
+      "id": "empty_text_url_leak",
+      "severity": "blocking",
+      "summary": "Some URL-only entries with empty text were still classified as eligible. A prompt cannot write responsible findings from URLs alone without evidence text."
+    },
+    {
+      "id": "source_role_too_coarse",
+      "severity": "material",
+      "summary": "External evidence is still too broad: Wikipedia, TechCrunch, Releasebot, togithub mirrors, and owned Vercel pages all pass through similar eligibility paths despite different evidentiary roles."
+    },
+    {
+      "id": "linkedin_over_review_gated",
+      "severity": "minor",
+      "summary": "The LinkedIn company profile was review-gated as same-name external profile. This is safe, but a stable company case needs better official-social verification instead of blanket ambiguity."
+    }
+  ],
+  "root_cause_assessment": "Evidence Packet v0 is operational as a diagnostic filter, but not yet operational as a replacement for finding input preparation. It proves that upstream classification can preserve good evidence while removing technical/internal noise, but it also exposes that eligibility needs evidence-text requirements, source-role weighting, and dimension coverage checks before it can feed prompts.",
+  "recommended_next_step": "Do one narrow hardening pass before any prompt integration: block empty-text URL evidence from normal eligibility, add source-role subtypes, add official-social verification from owned links/raw inputs, and require each dimension to have enough eligible evidence before generation."
+}

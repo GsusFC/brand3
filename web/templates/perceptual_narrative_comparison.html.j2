@@ -1,21 +1,18 @@
 {% extends "base.html.j2" %}
 {% block title %}brand3 :: {{ model.title }}{% endblock %}
-{% block extra_head %}
-<script src="/static/perceptual_narrative_comparison.js?v=brand3-perceptual-comparison-20260515" defer></script>
-{% endblock %}
 {% block content %}
 <section>
   <div class="section-head">
     <span class="label">brand3_lab</span>
-    <span class="tag">// experimental · comparison only · no persistence</span>
+    <span class="tag">// aggregate index · per-brand review lives in cases</span>
   </div>
 
   <h1 class="page-title">{{ model.title }}</h1>
   <p class="prose dim intro-copy">{{ model.intro }}</p>
 
   <div class="guardrail-banner">
-    <strong>Draft-only review surface.</strong>
-    <span class="dim">This route reads static evaluation artifacts, does not persist reviewer choices, and does not alter scoring, prompts, reports, or Visual Signature.</span>
+    <strong>Aggregate overview only.</strong>
+    <span class="dim">Open each Brand Case for the full baseline/perceptual comparison, reviewer decision, notes, and local draft export. Nothing here persists reviewer choices.</span>
   </div>
 
   <div class="badge-line">
@@ -29,25 +26,23 @@
 
 <section>
   <div class="section-head">
-    <span class="label">case_selector</span>
-    <span class="tag">// {{ model.pair_count }} paired examples visible</span>
+    <span class="label">Compared Brand Cases</span>
+    <span class="tag">// {{ model.pair_count }} case-level reviews</span>
   </div>
-
-  <div class="lab-toolbar">
-    <label class="lab-selector">
-      <span>Brand</span>
-      <select data-comparison-brand-selector>
-        <option value="all">All six examples</option>
-        {% for pair in model.pairs %}
-        <option value="{{ pair.id }}">{{ pair.brand }}</option>
-        {% endfor %}
-      </select>
-    </label>
-    <div class="lab-toolbar-meta">
-      <span class="inline-kv"><span class="k">pairs</span>=<span class="v">{{ model.pair_count }}</span></span>
-      <span class="inline-kv"><span class="k">mode</span>=<span class="v">local draft</span></span>
-      <span class="inline-kv"><span class="k">storage</span>=<span class="v">none</span></span>
-    </div>
+  <div class="lab-index-list">
+    {% for case in model.case_links %}
+    <article class="lab-index-row">
+      <div>
+        <h2>{{ case.brand }}</h2>
+        <div class="lab-index-meta">
+          <span class="inline-kv"><span class="k">brand3_confidence</span>=<span class="v">{{ case.brand3_confidence|replace('_', ' ') }}</span></span>
+          <span class="inline-kv"><span class="k">perceptual_gains</span>=<span class="v">{{ case.gain_count }}</span></span>
+          <span class="inline-kv"><span class="k">overreach_risks</span>=<span class="v">{{ case.risk_count }}</span></span>
+        </div>
+      </div>
+      <a class="source-link" href="{{ case.href }}">open case review</a>
+    </article>
+    {% endfor %}
   </div>
 </section>
 
@@ -55,108 +50,39 @@
 
 <section>
   <div class="section-head">
-    <span class="label">paired_narratives</span>
-    <span class="tag">// baseline vs perceptual</span>
+    <span class="label">Aggregate Assessment</span>
+    <span class="tag">// experiment-level context</span>
   </div>
-
-  <form class="comparison-review-form" data-perceptual-comparison-form>
-    <div class="comparison-list">
-      {% for pair in model.pairs %}
-      <article class="comparison-card" id="pair-{{ pair.id }}" data-comparison-pair data-brand-id="{{ pair.id }}" data-brand-name="{{ pair.brand }}">
-        <div class="comparison-card-head">
-          <div>
-            <h2>{{ pair.brand }}</h2>
-            <p class="dim">Brand3/FLOC* confidence: {{ pair.brand3_confidence|replace('_', ' ') }}</p>
-          </div>
-          <span class="badge">case {{ pair.index }}</span>
-        </div>
-
-        <div class="comparison-grid">
-          <div class="narrative-panel baseline-panel">
-            <div class="panel-head">
-              <span class="label">baseline narrative</span>
-              <span class="badge">current</span>
-            </div>
-            <p>{{ pair.baseline_narrative }}</p>
-          </div>
-          <div class="narrative-panel perceptual-panel">
-            <div class="panel-head">
-              <span class="label">perceptual narrative</span>
-              <span class="badge badge-ready">experimental</span>
-            </div>
-            <p>{{ pair.perceptual_augmented_narrative }}</p>
-          </div>
-        </div>
-
-        <div class="highlight-grid">
-          <div class="highlight-box">
-            <h3>Better specificity</h3>
-            <ul>
-              {% for item in pair.better_specificity %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-          <div class="highlight-box">
-            <h3>Perceptual gains</h3>
-            <ul>
-              {% for item in pair.perceptual_gains %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-          <div class="highlight-box risk-box">
-            <h3>Overreach risks</h3>
-            <ul>
-              {% for item in pair.overreach_risks %}
-              <li>{{ item }}</li>
-              {% endfor %}
-            </ul>
-          </div>
-          <div class="highlight-box generic-box">
-            <h3>Generic phrases</h3>
-            {% if pair.generic_phrases %}
-            <div class="phrase-row">
-              {% for phrase in pair.generic_phrases %}
-              <span class="badge">{{ phrase }}</span>
-              {% endfor %}
-            </div>
-            {% else %}
-            <p class="dim">No tracked generic phrase detected.</p>
-            {% endif %}
-          </div>
-        </div>
-
-        <fieldset class="review-control-group">
-          <legend>Reviewer decision</legend>
-          {% for option in model.review_options %}
-          <label class="choice-pill">
-            <input type="radio" name="decision_{{ pair.id }}" value="{{ option }}">
-            <span>{{ option|replace('_', ' ') }}</span>
-          </label>
-          {% endfor %}
-        </fieldset>
-
-        <label class="comparison-notes">
-          <span>Reviewer notes</span>
-          <textarea name="notes_{{ pair.id }}" data-notes-for="{{ pair.id }}" placeholder="Evidence-based note. Do not treat this as an official record."></textarea>
-        </label>
-      </article>
+  <div class="lab-detail-block">
+    <div class="kv artifact-kv">
+      {% for key, value in model.aggregate.items() %}
+      <span class="k">{{ key }}</span>    <span class="v">{{ value }}</span>
       {% endfor %}
     </div>
-
-    <div class="draft-actions comparison-export-actions">
-      <button class="button" type="button" data-export-comparison-draft>Export local draft JSON</button>
-      <span class="draft-export-status" data-comparison-export-status aria-live="polite"></span>
-    </div>
-  </form>
+  </div>
 </section>
 
 <hr class="rule-thin">
 
 <section>
   <div class="section-head">
-    <span class="label">deployment_context</span>
+    <span class="label">Recommendation</span>
+    <span class="tag">// before rollout</span>
+  </div>
+  <div class="lab-detail-block">
+    <div class="kv artifact-kv">
+      {% for key, value in model.recommendation.items() %}
+      <span class="k">{{ key }}</span>    <span class="v">{{ value }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Deployment Context</span>
     <span class="tag">// from stress test and overreach taxonomy</span>
   </div>
 
@@ -184,7 +110,7 @@
 
 <section>
   <div class="section-head">
-    <span class="label">overreach_taxonomy</span>
+    <span class="label">Overreach Taxonomy</span>
     <span class="tag">// warning signs</span>
   </div>
 

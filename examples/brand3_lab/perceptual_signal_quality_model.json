@@ -1,0 +1,250 @@
+{
+  "artifact_id": "brand3_lab_perceptual_signal_quality_model_v0_1",
+  "artifact_type": "brand3_lab_concept_specification",
+  "generated_at": "2026-05-16",
+  "status": "concept_specification",
+  "scope": "brand3_lab_research_only",
+  "guardrails": {
+    "runtime_global_enablement": false,
+    "scoring_changes": false,
+    "report_changes": false,
+    "prompt_changes": false,
+    "renderer_changes": false,
+    "visual_signature_changes": false,
+    "production_rollout": false
+  },
+  "principle": "All brands deserve perceptual analysis. The system should classify perceptual depth and signal quality rather than decide eligibility as yes/no.",
+  "core_shift": {
+    "from": "high-signal eligibility gate as the primary concept",
+    "to": "signal depth, signal quality, interpretive reach, and safe output mode",
+    "rules": [
+      "Every analyzed brand receives a perceptual reading.",
+      "Every reading receives a signal-depth classification.",
+      "Thin, generic, weak, or negative readings remain valid.",
+      "Low signal reduces interpretive reach; it does not remove the brand from analysis.",
+      "Absence of rich signal is still a perceptual finding."
+    ]
+  },
+  "signal_depth_classes": [
+    {
+      "id": "rich_perceptual_signal",
+      "label": "Rich perceptual signal",
+      "definition": "The evidence contains repeated, concrete, surface-level mechanisms that can support a detailed perceptual reading.",
+      "observable_markers": [
+        "multiple distinct surfaces or sections",
+        "repeated visual, structural, motion, copy, or interaction signals",
+        "clear hierarchy, rhythm, density, navigation, imagery, typography, product objects, proof modules, or system behavior",
+        "enough signal to identify patterns and tensions without importing assumptions"
+      ],
+      "valid_reading_posture": [
+        "name surface mechanisms",
+        "identify signal clusters",
+        "connect to perceptual patterns",
+        "name productive tensions",
+        "use medium-to-high confidence for observations",
+        "keep strategic intent conditional unless directly stated"
+      ],
+      "example_reading": "Navigation, code content, and implementation paths make the category legible through use. The tension is how much complexity the surface can expose while still guiding action."
+    },
+    {
+      "id": "moderate_perceptual_signal",
+      "label": "Moderate perceptual signal",
+      "definition": "The evidence contains some concrete mechanisms, but the reading depends on a limited surface area, source copy, or partial corroboration.",
+      "observable_markers": [
+        "one or two useful surfaces",
+        "some concrete visual or structural details",
+        "source-stated claims with partial surface support",
+        "enough to describe direction but not enough for broad pattern confidence"
+      ],
+      "valid_reading_posture": [
+        "describe observed signals",
+        "use conditional pattern language",
+        "keep claims copy-supported where needed",
+        "avoid broad brand conclusions",
+        "name missing evidence when it matters"
+      ],
+      "example_reading": "Product-navigation language and compact UI claims point to guided movement, but interface clarity remains copy-supported until product-surface proof appears."
+    },
+    {
+      "id": "thin_perceptual_signal",
+      "label": "Thin perceptual signal",
+      "definition": "The evidence contains limited, sparse, or weakly corroborated surface material. A reading is still possible, but it should focus on limits, absences, and uncertainty.",
+      "observable_markers": [
+        "one main source",
+        "thin homepage or basic profile",
+        "generic claims with little proof",
+        "few repeated signals",
+        "weak external corroboration",
+        "little visual or interaction evidence"
+      ],
+      "valid_reading_posture": [
+        "name the available signal",
+        "frame thinness as an evidence condition",
+        "avoid personality claims",
+        "avoid strategic failure claims",
+        "use low-to-medium confidence",
+        "keep the reading compact"
+      ],
+      "example_reading": "The evidence pool is thin and mostly self-referential. Low specificity is visible; strategic failure is not."
+    },
+    {
+      "id": "absent_or_generic_signal",
+      "label": "Absent or generic signal",
+      "definition": "The available evidence does not show enough distinctive surface behavior to support a specific perceptual pattern, or it shows mostly category-default language and layout.",
+      "observable_markers": [
+        "generic hero promise",
+        "standard feature cards",
+        "abstract benefit copy",
+        "stock-like imagery",
+        "no distinctive proof modules",
+        "no repeated identity mechanism",
+        "no meaningful surface contrast"
+      ],
+      "valid_reading_posture": [
+        "identify genericity as surface behavior",
+        "avoid turning absence into failure",
+        "describe what is missing in signal terms",
+        "compare only when comparative evidence exists",
+        "use low confidence for interpretation and high confidence for the absence itself"
+      ],
+      "example_reading": "The surface repeats standard SaaS moves: broad hero promise, feature-card grid, and low proof density. That supports a template-like surface reading, not a conclusion about product value."
+    }
+  ],
+  "negative_perceptual_reading": {
+    "definition": "A reading that identifies harmful, incoherent, overloaded, misleading, generic, inaccessible, or low-specificity surface behavior without turning it into a moral or business verdict.",
+    "principle": "Negative perceptual readings are valid when they are evidence-bound.",
+    "valid_negative_signals": [
+      "claim/signal mismatch",
+      "dense surface without guidance",
+      "low specificity",
+      "generic template behavior",
+      "inaccessible or confusing hierarchy",
+      "proof claims without proof structure",
+      "surface contradiction",
+      "excessive abstraction",
+      "category confusion",
+      "weak corroboration",
+      "self-description with no external support"
+    ],
+    "invalid_negative_claims": [
+      "the strategy failed",
+      "the audience does not care",
+      "the brand is irrelevant",
+      "the company lacks ambition",
+      "the product is bad",
+      "the business is weak",
+      "the team does not understand the market"
+    ],
+    "safe_reading_shape": "The surface shows low specificity and weak corroboration. That limits how much Brand3 can infer about differentiation; it does not prove strategic failure."
+  },
+  "template_like_surface": {
+    "definition": "A surface that relies on common category patterns without enough specific language, proof, structure, or visual behavior to distinguish the brand.",
+    "observable_markers": [
+      "interchangeable SaaS or service copy",
+      "generic all-in-one, simple, powerful, or modern claims",
+      "feature-card grid without proof hierarchy",
+      "stock or abstract imagery",
+      "default hero/CTA/testimonial layout",
+      "category language that could fit many competitors"
+    ],
+    "valid_reading_posture": [
+      "name template behavior directly",
+      "identify missing specificity",
+      "avoid inferring product quality",
+      "avoid mocking or punitive tone",
+      "ask what proof or specificity would make the surface more legible"
+    ],
+    "example_reading": "The page uses a familiar hero, feature-card grid, and broad benefit copy. The template behavior is visible; product weakness is not."
+  },
+  "low_specificity_surface": {
+    "definition": "A surface that does not provide enough distinctive details to make the brand, offer, audience, proof, or category behavior legible.",
+    "observable_markers": [
+      "claims without concrete nouns",
+      "few named use cases",
+      "vague value proposition",
+      "absent proof examples",
+      "interchangeable adjectives",
+      "unclear audience or product object",
+      "broad category promises without operating detail"
+    ],
+    "valid_reading_posture": [
+      "separate low specificity from low quality",
+      "identify which specificity is missing",
+      "keep interpretation bounded",
+      "avoid extrapolating to business performance"
+    ],
+    "example_reading": "The surface gives broad benefit language but few concrete use cases or proof examples. The perceptual issue is low specificity, not evidence of low product value."
+  },
+  "lab_classification_model": {
+    "fields": {
+      "signal_depth": ["rich", "moderate", "thin", "absent_or_generic"],
+      "signal_quality": ["distinctive", "mixed", "generic", "low_specificity", "contradictory", "obstructed"],
+      "reading_valence": ["positive", "mixed", "negative", "diagnostic", "insufficient_for_strategy"],
+      "interpretive_reach": ["full_pattern_reading", "bounded_pattern_reading", "limitation_reading", "absence_reading"],
+      "confidence": ["high", "medium", "low"],
+      "required_caution": ["none", "source_boundary", "explicit_low_confidence", "human_review"],
+      "safe_output_mode": ["compressed_perceptual", "raw_perceptual_with_caution", "baseline_summary", "lab_only_review"]
+    }
+  },
+  "reading_modes_by_signal_depth": [
+    {
+      "signal_depth": "rich",
+      "reading_mode": "full_perceptual_reading",
+      "interpretation_allowed": "patterns, tensions, emotional temperature",
+      "caution": "normal evidence boundaries"
+    },
+    {
+      "signal_depth": "moderate",
+      "reading_mode": "bounded_perceptual_reading",
+      "interpretation_allowed": "limited patterns and tensions",
+      "caution": "source/status boundaries"
+    },
+    {
+      "signal_depth": "thin",
+      "reading_mode": "limitation_reading",
+      "interpretation_allowed": "evidence limits, low specificity, weak corroboration",
+      "caution": "explicit low-confidence"
+    },
+    {
+      "signal_depth": "absent_or_generic",
+      "reading_mode": "absence_or_template_reading",
+      "interpretation_allowed": "genericity, missing specificity, template behavior",
+      "caution": "no strategic verdict"
+    }
+  ],
+  "implications_for_runtime_planning": {
+    "avoid_primary_term": "eligible",
+    "preferred_terms": [
+      "depth",
+      "signal quality",
+      "interpretive reach",
+      "safe output mode",
+      "caution requirement"
+    ],
+    "note": "For production runtime, high-signal gating may still be useful as a safety mechanism for compressed automated prose. Brand3 Lab should still show all readings with the correct signal-quality label."
+  },
+  "baseline_only": [
+    "scores",
+    "dimension verdicts",
+    "global report synthesis",
+    "production report rendering",
+    "claims requiring strategic, financial, legal, health, trust, or user outcome evidence"
+  ],
+  "lab_only": [
+    "negative perceptual reading experiments",
+    "thin-signal or absence readings before calibration",
+    "reviewer disagreement around weak/generic cases",
+    "unsafe or rejected compressed outputs",
+    "readings requiring human review"
+  ],
+  "never_automatic": [
+    "equating generic surface with business failure",
+    "equating low specificity with low quality",
+    "inferring strategic intent from thin evidence",
+    "inferring audience irrelevance",
+    "inferring product value from template behavior",
+    "inferring user emotional outcomes from tone alone",
+    "treating absence of evidence as evidence of absence outside the surface"
+  ],
+  "final_principle": "Brand3 Lab should become better at reading every kind of brand surface, not only strong ones. Rich brands get pattern readings. Moderate brands get bounded readings. Thin brands get limitation readings. Generic brands get template readings. Weak brands get negative or absence readings when evidence supports them."
+}

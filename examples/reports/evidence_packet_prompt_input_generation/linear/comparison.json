@@ -1,0 +1,28 @@
+{
+  "case_id": "linear",
+  "dimension": "diferenciacion",
+  "current_input_evidence_count": 5,
+  "candidate_input_evidence_count": 2,
+  "current_output_summary": {
+    "finding_count": 2,
+    "titles": [
+      "Self-Description as Agent Collaborative System",
+      "Contrast Between Product Pitch and Content Tone"
+    ],
+    "risky_terms_detected": [
+      "strategy",
+      "strategic"
+    ]
+  },
+  "candidate_output_summary": {
+    "finding_count": 1,
+    "titles": [
+      "Relative Positioning Distance Among Measured Competitors"
+    ],
+    "risky_terms_detected": [
+      "strategy"
+    ]
+  },
+  "candidate_is_more_constrained": true,
+  "manual_review_required": true
+}

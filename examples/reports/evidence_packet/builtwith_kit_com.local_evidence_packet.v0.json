@@ -1,0 +1,2096 @@
+{
+  "version": 0,
+  "case_id": "builtwith_kit_com",
+  "audit_url": "https://builtwith.kit.com",
+  "audited_surface": {
+    "url": "https://builtwith.kit.com",
+    "host": "builtwith.kit.com",
+    "root_domain": "kit.com",
+    "evidence": [],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "builtwith.kit.com",
+    "confidence": "medium",
+    "evidence": [],
+    "related_surfaces": [
+      {
+        "surface": "https://www.linkedin.com/company/builtwith.kit.com",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/builtwith.kit.com",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "",
+            "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "",
+            "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to introduce three major additions to our API ecosystem: MCP Stream, LLMS.TXT support, and our new WHOAMI endpoints. Together, these features make BuiltWith more powerful, more transparent, and full",
+            "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://builtwith.com/",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "",
+            "url": "https://builtwith.com/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+            "url": "https://builtwith.com/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "They use 20+ years of adoption data to validate investments and spot emerging wi",
+            "url": "https://builtwith.com/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+            "url": "https://builtwith.com/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://builtwith.com/about",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+            "url": "https://builtwith.com/about",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "Founded in 2007, BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+            "url": "https://builtwith.com/about",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/builtwith.kit.com",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://builtwith.com/",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://builtwith.com/about",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/builtwith.kit.com",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/builtwith.kit.com",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@builtwith.kit.com",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/builtwith.kit.com",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "source_type": "trust_security",
+      "source_quality": "medium",
+      "role": "trust_or_security_signal",
+      "notes": "trust_or_security_source_requires_review"
+    },
+    {
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "source_type": "trust_security",
+      "source_quality": "medium",
+      "role": "trust_or_security_signal",
+      "notes": "trust_or_security_source_requires_review"
+    },
+    {
+      "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_different_root_not_alias"
+    },
+    {
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_different_root_not_alias"
+    },
+    {
+      "url": "https://builtwith.com/",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_different_root_not_alias"
+    },
+    {
+      "url": "https://builtwith.com/about",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_different_root_not_alias"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://builtwith.kit.com/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://builtwith.kit.com",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://builtwith.kit.com",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://builtwith.com/artificial-intelligence",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/builtwith.kit.com",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://builtwith.kit.com",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://kit.com/",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=1"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "# Make email your most valuable channel ### Kit is the email-first operating system for creators who mean business ##### Grow Reach your audience and",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Grow",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Sitebulb as the audited brand's closest measured competitor with measured distance 0.872; avg_distance=0.887; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies SpyFu as the audited brand's most different measured competitor with measured distance 0.9; avg_distance=0.887; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://builtwith.com/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to introduce three major additions to our API ecosystem: MCP Stream, LLMS.TXT support, and our new WHOAMI endpoints. Together, these features make BuiltWith more powerful, more transparent, and full",
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "https://builtwith.com/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "They use 20+ years of adoption data to validate investments and spot emerging wi",
+      "url": "https://builtwith.com/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+      "url": "https://builtwith.com/about",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "https://builtwith.com/",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "Founded in 2007, BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+      "url": "https://builtwith.com/about",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "https://builtwith.com/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "robots.txt found",
+      "url": "https://builtwith.kit.com/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [
+    {
+      "text": "Automated Malware Analysis Report for https://builtwith.kit.com/?utm_campaign=poweredby&utm_content=email&utm_medium=referral&utm_source=dynamic - Gen",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0 Last Update: 1 month ago ## Warning This website hasn't been scanned in more than 30 days ago. Pr",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    }
+  ],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.27; contrast signal 0.98.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/builtwith.kit.com",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "text": "",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "text": "",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://builtwith.com/",
+      "text": "",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://builtwith.com/about",
+      "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [],
+  "missing_evidence": [
+    {
+      "text": "# Make email your most valuable channel ### Kit is the email-first operating system for creators who mean business ##### Grow Reach your audience and",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.27; contrast signal 0.98.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Grow",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "Existing Brand3 competitor comparison identifies Sitebulb as the audited brand's closest measured competitor with measured distance 0.872; avg_distance=0.887; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies SpyFu as the audited brand's most different measured competitor with measured distance 0.9; avg_distance=0.887; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "# Make email your most valuable channel ### Kit is the email-first operating system for creators who mean business ##### Grow Reach your audience and",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "Automated Malware Analysis Report for https://builtwith.kit.com/?utm_campaign=poweredby&utm_content=email&utm_medium=referral&utm_source=dynamic - Gen",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://builtwith.com/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to introduce three major additions to our API ecosystem: MCP Stream, LLMS.TXT support, and our new WHOAMI endpoints. Together, these features make BuiltWith more powerful, more transparent, and full",
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "https://builtwith.com/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "They use 20+ years of adoption data to validate investments and spot emerging wi",
+      "url": "https://builtwith.com/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.27; contrast signal 0.98.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Make email your most valuable channel",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+      "url": "https://builtwith.com/about",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Kit is the email-first operating system for creators who mean business",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "https://builtwith.com/",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Grow",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0 Last Update: 1 month ago ## Warning This website hasn't been scanned in more than 30 days ago. Pr",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "trust_security",
+      "eligibility": "trust_security_review_only",
+      "classification_reason": "trust_or_security_source_requires_review",
+      "limits": ""
+    },
+    {
+      "text": "Founded in 2007, BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+      "url": "https://builtwith.com/about",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://builtwith.kit.com/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/builtwith.kit.com",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "Automated Malware Analysis Report for https://builtwith.kit.com/?utm_campaign=poweredby&utm_content=email&utm_medium=referral&utm_source=dynamic - Gen",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+      "reason": "trust_or_security_signal_requires_review",
+      "source_class": "trust_security"
+    },
+    {
+      "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "reason": "trust_or_security_signal_requires_review",
+      "source_class": "trust_security"
+    },
+    {
+      "text": "",
+      "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://builtwith.com/",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+      "url": "https://builtwith.com/about",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "# Make email your most valuable channel ### Kit is the email-first operating system for creators who mean business ##### Grow Reach your audience and",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/builtwith.kit.com",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/builtwith.kit.com",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@builtwith.kit.com",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/builtwith.kit.com",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "Automated Malware Analysis Report for https://builtwith.kit.com/?utm_campaign=poweredby&utm_content=email&utm_medium=referral&utm_source=dynamic - Gen",
+        "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+        "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://builtwith.kit.com/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://builtwith.com/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to introduce three major additions to our API ecosystem: MCP Stream, LLMS.TXT support, and our new WHOAMI endpoints. Together, these features make BuiltWith more powerful, more transparent, and full",
+        "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+        "url": "https://builtwith.com/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "They use 20+ years of adoption data to validate investments and spot emerging wi",
+        "url": "https://builtwith.com/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.27; contrast signal 0.98.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+        "url": "https://builtwith.com/about",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "Kit is the email-first operating system for creators who mean business",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+        "url": "https://builtwith.com/",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+        "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "Kit is the email-first operating system for creators who mean business",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Kit is the email-first operating system for creators who mean business",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Grow",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Sitebulb as the audited brand's closest measured competitor with measured distance 0.872; avg_distance=0.887; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies SpyFu as the audited brand's most different measured competitor with measured distance 0.9; avg_distance=0.887; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+        "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0 Last Update: 1 month ago ## Warning This website hasn't been scanned in more than 30 days ago. Pr",
+        "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "Founded in 2007, BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+        "url": "https://builtwith.com/about",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+        "url": "https://builtwith.com/",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "blocked",
+      "eligible_count": 0,
+      "blocked_count": 11,
+      "review_required_count": 4,
+      "missing_evidence_count": 8,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "readiness_reason": "Evidence is dominated by unresolved entity or surface ambiguity.",
+      "recommended_action": "Resolve entity boundaries before narrative generation."
+    },
+    "presencia": {
+      "status": "blocked",
+      "eligible_count": 0,
+      "blocked_count": 8,
+      "review_required_count": 3,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "readiness_reason": "Evidence is dominated by unresolved entity or surface ambiguity.",
+      "recommended_action": "Resolve entity boundaries before narrative generation."
+    },
+    "percepcion": {
+      "status": "blocked",
+      "eligible_count": 0,
+      "blocked_count": 4,
+      "review_required_count": 4,
+      "missing_evidence_count": 0,
+      "reason_codes": [
+        "review_gated_evidence_not_ready",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "readiness_reason": "Evidence is dominated by unresolved entity or surface ambiguity.",
+      "recommended_action": "Resolve entity boundaries before narrative generation."
+    },
+    "diferenciacion": {
+      "status": "blocked",
+      "eligible_count": 2,
+      "blocked_count": 4,
+      "review_required_count": 1,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "readiness_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness.",
+      "recommended_action": "Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "status": "blocked",
+      "eligible_count": 0,
+      "blocked_count": 7,
+      "review_required_count": 7,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked",
+        "review_gated_evidence_not_ready",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "readiness_reason": "Evidence is dominated by unresolved entity or surface ambiguity.",
+      "recommended_action": "Resolve entity boundaries before narrative generation."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "# Make email your most valuable channel ### Kit is the email-first operating system for creators who mean business ##### Grow Reach your audience and",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Kit is the email-first operating system for creators who mean business",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Kit is the email-first operating system for creators who mean business",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Make email your most valuable channel",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Kit is the email-first operating system for creators who mean business",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "Existing Brand3 competitor comparison identifies Sitebulb as the audited brand's closest measured competitor with measured distance 0.872; avg_distance=0.887; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies SpyFu as the audited brand's most different measured competitor with measured distance 0.9; avg_distance=0.887; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "robots.txt found",
+        "url": "https://builtwith.kit.com/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.27; contrast signal 0.98.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [
+      {
+        "text": "Automated Malware Analysis Report for https://builtwith.kit.com/?utm_campaign=poweredby&utm_content=email&utm_medium=referral&utm_source=dynamic - Gen",
+        "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+        "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+        "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "Automated Malware Analysis Report for https://builtwith.kit.com ...",
+        "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      },
+      {
+        "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0 Last Update: 1 month ago ## Warning This website hasn't been scanned in more than 30 days ago. Pr",
+        "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "trust_security",
+        "eligibility": "trust_security_review_only",
+        "classification_reason": "trust_or_security_source_requires_review",
+        "limits": ""
+      }
+    ],
+    "excluded_noise": [],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/builtwith.kit.com",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "text": "",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+        "text": "",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://builtwith.com/",
+        "text": "",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://builtwith.com/about",
+        "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/builtwith.kit.com",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "evidence": "",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+        "evidence": "",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://builtwith.com/",
+        "evidence": "",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://builtwith.com/about",
+        "evidence": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "messaging_consistency",
+        "owned_evidence": [
+          {
+            "text": "Make email your most valuable channel",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Kit is the email-first operating system for creators who mean business",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Make email your most valuable channel",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform that delivers comprehensive insights into technology adoption, eCommerce activity, and web usage trends across the internet.",
+            "url": "https://builtwith.com/about",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+            "url": "https://builtwith.com/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "tone_consistency",
+        "owned_evidence": [
+          {
+            "text": "Kit is the email-first operating system for creators who mean business",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Make email your most valuable channel",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competitor tools in real-time.",
+            "url": "",
+            "classification_reason": "missing_evidence_url",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "positioning_clarity",
+        "owned_evidence": [
+          {
+            "text": "Make email your most valuable channel",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Kit is the email-first operating system for creators who mean business",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Grow",
+            "url": "",
+            "classification_reason": "missing_evidence_url",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 28,
+      "owned_claims": 8,
+      "external_evidence": 7,
+      "related_surface_evidence": 12,
+      "technical_signals": 1,
+      "trust_or_security_signals": 5,
+      "visual_or_internal_signals": 2,
+      "entity_ambiguity": 5,
+      "excluded_noise": 0,
+      "missing_evidence": 12,
+      "finding_eligible_evidence": 2,
+      "evidence_not_eligible_for_findings": 26,
+      "requires_human_review": 7
+    }
+  }
+}

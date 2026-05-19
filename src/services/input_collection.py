@@ -54,6 +54,7 @@ def from_exa_payload(payload: dict | None) -> ExaData | None:
         ai_visibility_results=[ExaResult(**item) for item in payload.get("ai_visibility_results", [])],
         news=[ExaResult(**item) for item in payload.get("news", [])],
         raw_responses=payload.get("raw_responses", {}),
+        diagnostics=payload.get("diagnostics", {}),
     )
 
 
@@ -258,7 +259,22 @@ def _collect_exa_input(
 
     raw_input_cache["exa"] = "miss"
     exa_data = exa_collector.collect_brand_data(brand_name, effective_brand_url)
-    print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
+    diagnostics = dict(exa_data.diagnostics or {})
+    failed_intents = diagnostics.get("failed_intents") or []
+    no_result_intents = diagnostics.get("no_result_intents") or []
+    if failed_intents:
+        raw_input_cache["exa"] = "partial"
+        print(
+            f"  Exa: partial ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)"
+            f" failed_intents={','.join(failed_intents)}"
+        )
+    elif no_result_intents:
+        print(
+            f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news"
+            f" no_results={','.join(no_result_intents)}"
+        )
+    else:
+        print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
     if run_id:
         store_safely(store, "exa save", lambda: store.save_raw_input(run_id, "exa", exa_data))
     return exa_data, exa_collector

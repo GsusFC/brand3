@@ -219,6 +219,17 @@
   .finding { margin: 10px 0 14px; }
   .finding h4 { color: var(--fg-bright); }
   .finding p { margin: 4px 0 6px; color: var(--fg); }
+  .finding-primary { color: var(--fg); }
+  .finding-decision {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .finding-decision .finding-label {
+    color: var(--key);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
   ul.chips { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
   ul.chips li { margin: 0; }
   ul.chips a {
@@ -298,6 +309,9 @@
 <nav class="report-app-nav" aria-label="Brand3 report navigation">
   <a href="/reports">Reports</a>
   <a href="/brand/{{ brand.domain or brand.name }}">Brand history</a>
+  {%- if footer.lab_href %}
+  <a href="{{ footer.lab_href }}" aria-label="Open read-only Brand3 Lab diagnostics for this audit">Brand3 Lab <span class="dim">diagnostic · no scoring impact</span></a>
+  {%- endif %}
   <span class="spacer"></span>
   <a href="?theme=light">Light</a>
   <a href="?theme=dark">Dark</a>
@@ -810,7 +824,18 @@
         {%- for finding in dim.findings %}
         <div class="finding">
           <h4>{{ finding.title }}</h4>
-          <p>{{ finding.prose }}</p>
+          {%- if finding.observation or finding.implication %}
+          <p class="finding-primary">
+            {%- if finding.observation -%}{{ finding.observation }}{%- endif -%}
+            {%- if finding.observation and finding.implication %} {% endif -%}
+            {%- if finding.implication -%}{{ finding.implication }}{%- endif -%}
+          </p>
+          {%- elif finding.prose %}
+          <p class="finding-primary">{{ finding.prose }}</p>
+          {%- endif %}
+          {%- if finding.typical_decision | should_show_decision_space %}
+          <p class="finding-decision"><span class="finding-label">Decision space</span>{{ finding.typical_decision }}</p>
+          {%- endif %}
           {%- if finding.evidence_urls %}
           <ul class="chips">
             {%- for url in finding.evidence_urls %}

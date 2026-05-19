@@ -123,6 +123,10 @@ class BrandDossierTests(unittest.TestCase):
             payload["findings_by_dimension"]["coherencia"][0]["title"],
             "Persisted finding",
         )
+        self.assertEqual(
+            payload["findings_by_dimension"]["coherencia"][0]["typical_decision"],
+            "Teams typically choose a focus.",
+        )
 
     def test_build_brand_dossier_prefers_persisted_narrative_without_llm(self):
         snapshot = deepcopy(_sample_snapshot())
@@ -160,6 +164,19 @@ class BrandDossierTests(unittest.TestCase):
         presencia = next(dim for dim in dossier["dimensions"] if dim["name"] == "presencia")
         self.assertEqual(presencia["findings"][0].title, "Stored finding")
         self.assertEqual(presencia["findings"][0].prose, "Stored observation. Stored implication. Stored decision space.")
+
+    def test_build_brand_dossier_with_real_packet_does_not_crash(self):
+        snapshot = _sample_snapshot()
+        analyzer = MagicMock()
+        analyzer._call.return_value = "synthesis prose"
+        analyzer._call_json.side_effect = lambda system, user, max_tokens=2000: (
+            {"tension": "One meaningful tension."}
+            if '"tension"' in user
+            else {"findings": [{"title": "f", "observation": "o", "implication": "i", "typical_decision": "d", "evidence_urls": []}]}
+        )
+        dossier = build_brand_dossier(snapshot, analyzer=analyzer)
+        self.assertIsNotNone(dossier)
+        self.assertEqual(len(dossier["dimensions"]), 5)
 
 
 if __name__ == "__main__":

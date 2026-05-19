@@ -45,9 +45,9 @@ These values are safe to commit as placeholders or documented defaults, but not 
 | Variable | Default / Example | Purpose |
 | --- | --- | --- |
 | `BRAND3_LLM_BASE_URL` | `https://generativelanguage.googleapis.com/v1beta/openai` | OpenAI-compatible provider base URL |
-| `BRAND3_LLM_MODEL` | `gemini-2.5-flash` | Default scoring model |
-| `BRAND3_LLM_CHEAP_MODEL` | `gemini-2.5-flash-lite` | High-volume extraction / low-risk checks |
-| `BRAND3_LLM_PREMIUM_MODEL` | `gemini-2.5-pro` | Final narrative / complex validation |
+| `BRAND3_LLM_MODEL` | `gemini-3.1-pro-preview` | Default scoring model |
+| `BRAND3_LLM_CHEAP_MODEL` | `gemini-3.1-flash-lite` | High-volume extraction / low-risk checks |
+| `BRAND3_LLM_PREMIUM_MODEL` | `gemini-3.1-pro-preview` | Final narrative / complex validation |
 | `BRAND3_VISION_MODEL` | `gemini-2.5-flash` | Screenshot/vision analysis |
 | `BRAND3_LLM_CALL_TIMEOUT_SECONDS` | `35` | Per LLM call timeout in `src/features/llm_analyzer.py` |
 

@@ -1,0 +1,114 @@
+{
+  "document": "brand3_exa_acquisition_hardening_v1_review",
+  "version": 1,
+  "scope": {
+    "provider": "exa",
+    "layer": "acquisition_and_pre_narrative_evidence_shaping",
+    "prompt_changes": false,
+    "scoring_changes": false,
+    "narrative_generation_changes": false,
+    "render_changes": false,
+    "visual_signature_changes": false
+  },
+  "changes": {
+    "intent_profiles": [
+      "default",
+      "mentions",
+      "competitors",
+      "news",
+      "ai_visibility",
+      "enrichment"
+    ],
+    "explicit_params": {
+      "search_type_by_intent": {
+        "default": "auto",
+        "mentions": "auto",
+        "competitors": "deep",
+        "news": "fast",
+        "ai_visibility": "deep",
+        "enrichment": "fast"
+      },
+      "num_results_by_intent": {
+        "default": 10,
+        "mentions": 15,
+        "competitors": 10,
+        "news": 10,
+        "ai_visibility": 5,
+        "enrichment": 5
+      },
+      "news_freshness_bound": "start_published_date=now-365d"
+    },
+    "deterministic_source_classification": [
+      "owned",
+      "external",
+      "related_unresolved",
+      "marketplace_listing",
+      "technical_internal",
+      "noise"
+    ],
+    "entity_boundary_guards": [
+      "same_name_different_root_not_alias",
+      "unresolved_relation_review_gated"
+    ],
+    "observability": {
+      "per_intent_status": [
+        "ok",
+        "no_results",
+        "search_failed"
+      ],
+      "diagnostics_persisted": true,
+      "raw_search_events_persisted": true
+    },
+    "enrichment_constraints": {
+      "intent": "enrichment",
+      "per_item_provenance": [
+        "enrichment_query",
+        "enrichment_rationale",
+        "enrichment_inserted"
+      ],
+      "insertion_cap": 15,
+      "diagnostics": [
+        "applied_cap",
+        "truncated",
+        "query_failures"
+      ]
+    },
+    "input_collection_contract": {
+      "cache_state_partial_on_failed_intents": true,
+      "diagnostics_roundtrip_enabled": true
+    }
+  },
+  "tests": {
+    "added": [
+      "tests/test_exa_collector.py",
+      "tests/test_discovery_enrichment.py",
+      "tests/test_input_collection.py"
+    ],
+    "executed": [
+      "./.venv/bin/python -m pytest tests/test_exa_collector.py tests/test_discovery_enrichment.py tests/test_input_collection.py -q",
+      "./.venv/bin/python -m pytest tests/test_entity_discovery.py tests/test_brand_service.py -q",
+      "./.venv/bin/python -m py_compile src/collectors/exa_collector.py src/discovery/search_plan.py src/discovery/enrichment.py src/services/input_collection.py"
+    ],
+    "status": "pass"
+  },
+  "before_after": {
+    "silent_empty_failures": {
+      "before": true,
+      "after": false
+    },
+    "enrichment_provenance": {
+      "before": "implicit_merge",
+      "after": "explicit_per_item_metadata"
+    },
+    "same_name_alias_inference_risk": {
+      "before": "higher",
+      "after": "reduced_with_related_unresolved_class"
+    }
+  },
+  "residual_risks": [
+    "downstream feature extractors do not yet fully use source_class metadata",
+    "missing Exa score values are observable now but scoring normalization behavior remains unchanged",
+    "competitor discovery quality still depends on Exa retrieval quality"
+  ],
+  "next_step_recommendation": "wire Exa source_class metadata into evidence packet candidate inclusion rules before narrative input assembly"
+}

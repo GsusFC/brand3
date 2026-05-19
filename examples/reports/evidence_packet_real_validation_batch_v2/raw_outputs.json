@@ -1,0 +1,261 @@
+{
+  "created_at": "2026-05-18T10:50:16.797493+00:00",
+  "executed": true,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "created_at": "2026-05-18T10:50:26.555576+00:00",
+      "group_id": "group_a",
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Netlify measured as closest competitor",
+            "evidence_anchor": "Netlify as the audited brand's closest measured competitor with measured distance 0.855",
+            "observation": "A snapshot comparison of 5 competitors identifies Netlify as the closest measured competitor to the audited brand, with a distance of 0.855 compared to an average distance of 0.873.",
+            "bounded_interpretation": "The audited brand's positioning shares the most similarities with Netlify among the analyzed set.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "Qoddi measured as most different",
+            "evidence_anchor": "Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887",
+            "observation": "A snapshot comparison of 5 competitors identifies Qoddi App Platform as the most different measured competitor, with a distance of 0.887 compared to an average distance of 0.873.",
+            "bounded_interpretation": "The audited brand's positioning is most distinct from Qoddi App Platform within the analyzed set.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:50:36.495445+00:00",
+      "group_id": "group_a",
+      "case_id": "launchdarkly",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Split shows closest positioning distance",
+            "evidence_anchor": "Split (acquired by Harness) as the audited brand's closest measured competitor with measured distance 0.773; avg_distance=0.818",
+            "observation": "Among five analyzed competitors, Split has the lowest measured positioning distance to the audited brand at 0.773, which is below the 0.818 average.",
+            "bounded_interpretation": "The audited brand's positioning is most similar to Split within the measured set, indicating a narrower relative positioning distance.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "FeaturIT shows greatest positioning distance",
+            "evidence_anchor": "FeaturIT as the audited brand's most different measured competitor with measured distance 0.863; avg_distance=0.818",
+            "observation": "Among five analyzed competitors, FeaturIT has the highest measured positioning distance to the audited brand at 0.863, which is above the 0.818 average.",
+            "bounded_interpretation": "The audited brand's positioning is least similar to FeaturIT within the measured set, indicating a wider relative positioning distance.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:51:00.461205+00:00",
+      "group_id": "group_a",
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Closest measured competitor positioning distance",
+            "evidence_anchor": "Wrike as the audited brand's closest measured competitor with measured distance 0.752; avg_distance=0.821",
+            "observation": "Among 5 analyzed competitors, Wrike is measured as the closest competitor to the audited brand with a distance of 0.752, which is below the average distance of 0.821.",
+            "bounded_interpretation": "The audited brand's positioning is relatively closer to Wrike than to the other measured competitors in the analyzed set.",
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "Most different competitor positioning distance",
+            "evidence_anchor": "ProjectManager as the audited brand's most different measured competitor with measured distance 0.872; avg_distance=0.821",
+            "observation": "Among 5 analyzed competitors, ProjectManager is measured as the most different competitor from the audited brand with a distance of 0.872, which is above the average distance of 0.821.",
+            "bounded_interpretation": "The audited brand's positioning exhibits the greatest relative distance from ProjectManager within the analyzed competitor set.",
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:51:10.884112+00:00",
+      "group_id": "group_b",
+      "case_id": "iris",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "https://irisdesign.dev/",
+        "https://www.irisdigital.design/"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Brand identity creation for indie developers",
+            "evidence_anchor": "\"Iris creates complete brand identities for indie developers in minutes—with the strategic thinking that makes agencies charge $40k.\" (https://irisdesign.dev/)",
+            "observation": "The audited surface states the service creates brand identities for indie developers in minutes and compares its strategic thinking to agencies charging $40k.",
+            "bounded_interpretation": "The messaging positions the service as a rapid alternative to traditional agency brand identity creation, specifically targeting indie developers.",
+            "limits": "Does not prove actual cost, quality of strategic thinking, adoption by indie developers, or actual time taken to create identities.",
+            "evidence_urls": [
+              "https://irisdesign.dev/"
+            ]
+          },
+          {
+            "title": "Existence of Iris Digital Design",
+            "evidence_anchor": "\"Iris Digital Design\" (https://www.irisdigital.design/)",
+            "observation": "An external third-party source uses the name \"Iris Digital Design\".",
+            "bounded_interpretation": "Indicates the existence of an entity or brand named \"Iris Digital Design\" at the specified URL.",
+            "limits": "Does not prove any relationship between this entity and the service at irisdesign.dev, nor does it detail the services offered by Iris Digital Design.",
+            "evidence_urls": [
+              "https://www.irisdigital.design/"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [
+          "strategic"
+        ],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:51:22.667140+00:00",
+      "group_id": "group_b",
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "allowed_evidence_urls": [
+        "https://watermelon.sh/"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Owned design infrastructure positioning",
+            "evidence_anchor": "\"Building the design infrastructure for modern startups.\" (https://watermelon.sh/)",
+            "observation": "The audited surface explicitly describes the entity as building \"design infrastructure for modern startups.\"",
+            "bounded_interpretation": "If this messaging represents their primary market stance, the entity positions its offerings around design infrastructure specifically targeted at startup organizations.",
+            "limits": "This is an owned claim lacking external corroboration; it does not prove external market perception, actual product capabilities, or startup adoption.",
+            "evidence_urls": [
+              "https://watermelon.sh/"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    }
+  ],
+  "skipped": [
+    {
+      "group_id": "group_a",
+      "case_id": "netlify",
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "intent": "segmented_matrix_case",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "controls",
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "controls",
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

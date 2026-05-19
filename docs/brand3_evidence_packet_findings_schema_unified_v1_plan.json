@@ -1,0 +1,44 @@
+{
+  "document": "brand3_evidence_packet_findings_schema_unified_v1_plan",
+  "version": 1,
+  "created_at": "2026-05-18T00:00:00+00:00",
+  "scope": "lab_only_non_runtime",
+  "executable_targets": [
+    "linear::diferenciacion",
+    "vercel::diferenciacion",
+    "launchdarkly::diferenciacion",
+    "linear::coherencia",
+    "vercel::coherencia",
+    "launchdarkly::vitalidad",
+    "watermelon::percepcion"
+  ],
+  "control_targets_expected_skipped": [
+    "watermelon::vitalidad",
+    "builtwith_kit_com::coherencia",
+    "builtwith_kit_com::percepcion",
+    "launchdarkly::coherencia"
+  ],
+  "pass_criteria": [
+    "no_typical_decision",
+    "limits_present",
+    "risky_terms_outside_limits_empty",
+    "blocked_or_review_controls_skipped",
+    "thin_cases_qualified",
+    "evidence_urls_valid"
+  ],
+  "risk_gate_note": {
+    "vitalidad_factual_leadership_exception": true,
+    "strategic_leadership_claims_blocked": true
+  },
+  "artifacts": {
+    "script": "scripts/evidence_packet_findings_schema_unified_v1_trial.py",
+    "output_dir": "examples/reports/evidence_packet_findings_schema_trial/unified_v1"
+  },
+  "constraints": {
+    "no_runtime_integration": true,
+    "no_production_prompt_edits": true,
+    "no_scoring_changes": true,
+    "no_renderer_changes": true,
+    "no_persisted_payload_changes": true
+  }
+}

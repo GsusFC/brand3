@@ -1,0 +1,113 @@
+{
+  "title": "Brand3 Deep Research Evidence Packet Trial",
+  "status": "completed_lab_only",
+  "case_id": "builtwith_kit_com",
+  "target": {
+    "brand": "Builtwith / Kit",
+    "audited_surface": "https://builtwith.kit.com"
+  },
+  "experiment_scope": {
+    "deep_research_agent": "deep-research-preview-04-2026",
+    "deep_research_max": false,
+    "tools": [
+      {
+        "type": "url_context"
+      }
+    ],
+    "open_google_search_enabled": false,
+    "interactions_executed": 1,
+    "retries": 0,
+    "production_integration": false
+  },
+  "artifacts": {
+    "request": "examples/reports/deep_research_trial/builtwith_kit_com/request.json",
+    "raw_interaction": "examples/reports/deep_research_trial/builtwith_kit_com/raw_interaction.json",
+    "evidence_packet": "examples/reports/deep_research_trial/builtwith_kit_com/evidence_packet.json",
+    "cost_observation": "examples/reports/deep_research_trial/builtwith_kit_com/cost_observation.json",
+    "trial_notes": "examples/reports/deep_research_trial/builtwith_kit_com/trial_notes.md",
+    "script": "scripts/deep_research_evidence_packet_trial.py"
+  },
+  "execution_result": {
+    "completed": true,
+    "parseable_evidence_packet": true,
+    "usage_metadata_found": true,
+    "interaction_id": "v1_ChdYeTRLYXB5c0ZhS2d2ZElQa2FLNzRRcxIXWHk0S2FweXNGYUtndmRJUGthSzc0UXM"
+  },
+  "usage": {
+    "total_input_tokens": 65000,
+    "total_output_tokens": 9385,
+    "total_thought_tokens": 26347,
+    "total_tokens": 100732,
+    "total_tool_use_tokens": 0,
+    "estimated_billed_output_tokens": 35732,
+    "estimated_usd": 0.558784,
+    "estimate_basis": "approx_gemini_3_1_pro_preview_standard_rates_counts_thought_tokens_as_output_excludes_search_tool_charges",
+    "cost_observability": "observable"
+  },
+  "packet_quality": {
+    "cleaner_than_current_pipeline": true,
+    "direct_audited_surface_access_complete": false,
+    "entity_separation": "stronger_than_current_pipeline",
+    "owned_vs_external_separation": "stronger_than_current_pipeline",
+    "technical_signal_handling": "stronger_than_current_pipeline",
+    "trust_security_handling": "cleaner_but_reliant_on_scamadviser",
+    "evidence_url_coverage": "structured_but_incomplete",
+    "excluded_noise": "present",
+    "human_review_flag": "present"
+  },
+  "comparison": [
+    {
+      "criterion": "evidence_cleanliness",
+      "current_brand3_pipeline": "Feature raw values double as evidence containers and get flattened by dimension.",
+      "deep_research_trial": "Evidence classes were separated into audited surface, owned claims, external evidence, technical signals, trust/security, ambiguity, excluded noise, and eligibility."
+    },
+    {
+      "criterion": "entity_separation",
+      "current_brand3_pipeline": "Kit and BuiltWith evidence can mix inside the same dimension pool.",
+      "deep_research_trial": "Subdomain name collision was explicitly named and not smoothed into positioning."
+    },
+    {
+      "criterion": "technical_signal_handling",
+      "current_brand3_pipeline": "Technical signals such as robots.txt or visual metrics can become findings.",
+      "deep_research_trial": "Technical infrastructure was marked not eligible for findings."
+    },
+    {
+      "criterion": "direct_acquisition",
+      "current_brand3_pipeline": "Direct web scrape captured audited surface content.",
+      "deep_research_trial": "The packet reported direct inspection data from builtwith.kit.com as unavailable and relied on ScamAdviser."
+    },
+    {
+      "criterion": "cost",
+      "current_brand3_pipeline": "Cost distributed across collectors and LLM calls.",
+      "deep_research_trial": "About USD 0.56 estimated for one URL-context-only task."
+    }
+  ],
+  "root_finding": "Deep Research produced cleaner classification discipline for the Builtwith failure class, but did not prove it can replace acquisition because direct audited-surface evidence was incomplete.",
+  "recommendation": {
+    "do_not_integrate_runtime": true,
+    "do_not_replace_collectors": true,
+    "recommended_next_step": "Specify a Deep Research Evidence Packet Contract and compare it against a deterministic local Information-to-Evidence Contract.",
+    "likely_role": [
+      "manual_or_lab_escalation_for_entity_ambiguity",
+      "benchmark_for_evidence_classification",
+      "optional_high_friction_research_path"
+    ],
+    "not_likely_role_yet": [
+      "default_acquisition_pipeline",
+      "automatic_every_audit_research",
+      "scoring_input_without_review"
+    ]
+  },
+  "non_goals_preserved": [
+    "no_production_collector_changes",
+    "no_scoring_changes",
+    "no_prompt_rollout",
+    "no_report_generation_changes",
+    "no_rendering_changes",
+    "no_persisted_payload_format_changes",
+    "no_Visual_Signature_changes",
+    "no_runtime_integration",
+    "no_open_google_search",
+    "no_repeated_retries"
+  ]
+}

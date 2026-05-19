@@ -1,0 +1,117 @@
+{
+  "document": "brand3_deep_research_vs_local_evidence_packet_comparison",
+  "purpose": "Compare the useful Watermelon Deep Research evidence-packet reference against local Evidence Packet v0 and decide what Brand3 should build cheaply.",
+  "inputs_compared": {
+    "deep_research_reference": {
+      "case_id": "watermelon",
+      "target_url": "https://watermelon.sh",
+      "single_url": true,
+      "search_enabled": true,
+      "url_context_enabled": true,
+      "previous_brand3_evidence": false,
+      "seed_urls": false,
+      "role": "benchmark_and_manual_escalation_reference"
+    },
+    "local_evidence_packet_v0": {
+      "case_id": "builtwith_kit_com",
+      "artifact": "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json",
+      "snapshot_only": true,
+      "network_calls": false,
+      "llm_calls": false,
+      "role": "default_candidate_for_pre_narrative_evidence_order"
+    }
+  },
+  "capability_comparison": {
+    "related_surface_discovery": {
+      "deep_research": "strong",
+      "local_v0": "weak_to_medium",
+      "decision": "requires upstream Exa/Web enrichment or manual escalation"
+    },
+    "entity_resolution": {
+      "deep_research": "strong_but_may_overstate_confidence",
+      "local_v0": "conservative_but_limited",
+      "decision": "add explicit entity_resolution fields locally"
+    },
+    "owned_vs_external_separation": {
+      "deep_research": "strong",
+      "local_v0": "strong_for_existing_items",
+      "decision": "local deterministic classification is sufficient for default path"
+    },
+    "technical_only_handling": {
+      "deep_research": "strong",
+      "local_v0": "strong",
+      "decision": "keep local rule"
+    },
+    "trust_security_gating": {
+      "deep_research": "good",
+      "local_v0": "strong",
+      "decision": "keep local deterministic review gate"
+    },
+    "marketplace_listing_handling": {
+      "deep_research": "nuanced_but_sometimes_too_permissive",
+      "local_v0": "limited",
+      "decision": "classify marketplace listings as observation_only_or_review_gated_by_default"
+    },
+    "finding_eligibility": {
+      "deep_research": "useful_but_sometimes_permissive",
+      "local_v0": "very_conservative",
+      "decision": "prefer local conservative default"
+    },
+    "contradiction_candidates": {
+      "deep_research": "useful",
+      "local_v0": "limited",
+      "decision": "add contradiction candidate bucket locally"
+    },
+    "cost": {
+      "deep_research": "high",
+      "local_v0": "near_zero_runtime_cost",
+      "decision": "Deep Research cannot be default"
+    }
+  },
+  "what_local_v0_already_gets_right": [
+    "technical artifacts are not strategic evidence",
+    "visual/internal metrics are not finding evidence",
+    "URL-less evidence becomes missing evidence",
+    "same-name different-root surfaces are unresolved",
+    "trust/security sources are review-gated",
+    "no network or LLM calls",
+    "stable output shape"
+  ],
+  "what_deep_research_does_better": [
+    "discovers related surfaces not already in snapshot",
+    "finds explicit linking relationships",
+    "finds marketplace and directory listings",
+    "finds third-party category language",
+    "identifies unrelated same-name entities",
+    "exposes source quality differences",
+    "surfaces contradiction candidates"
+  ],
+  "what_deep_research_does_worse": [
+    "expensive",
+    "output control depends on prompt or schema support",
+    "can write narrative instead of packet",
+    "can overstate confidence",
+    "can promote marketplace or repository signals too quickly",
+    "not suitable as default runtime acquisition"
+  ],
+  "local_hardening_targets": [
+    "add source_inventory",
+    "add entity_resolution.related_surfaces",
+    "add relation_type and relationship status",
+    "add contradiction_candidates",
+    "make marketplace evidence observation_only or review-gated by default",
+    "make repository evidence support developer activity but not adoption",
+    "block usage/install claims unless independently verified"
+  ],
+  "recommended_next_step": "Harden local Evidence Packet v0 toward the Deep Research reference shape, then run it on Watermelon and LaunchDarkly snapshots if available. Do not feed it into generation yet.",
+  "non_goals": [
+    "runtime integration",
+    "prompt rollout",
+    "scoring changes",
+    "report generation changes",
+    "rendering changes",
+    "Visual Signature changes",
+    "Deep Research automation",
+    "new provider"
+  ]
+}

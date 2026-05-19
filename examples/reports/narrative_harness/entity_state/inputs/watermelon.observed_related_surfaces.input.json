@@ -1,0 +1,123 @@
+{
+  "version": "observed_related_surfaces.input.v0",
+  "status": {
+    "offline_only": true,
+    "manual_review": true,
+    "runtime_enabled": false,
+    "used_by_scoring": false,
+    "used_by_prompts": false,
+    "used_by_rendering": false,
+    "visual_signature_input": false
+  },
+  "case": {
+    "brand": "Watermelon",
+    "primary_surface": "watermelon.sh",
+    "source_memo": "docs/brand3_watermelon_phase2_findings.md",
+    "input_contract": "docs/brand3_observed_related_surfaces_input_contract.md",
+    "run_id": 78
+  },
+  "observed_related_surfaces": [
+    {
+      "surface": "watermelon.ai",
+      "relation_type": "adjacent_domain",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included watermelon.ai"
+      ],
+      "confidence": "medium",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Reviewed as an adjacent Watermelon-named domain. This does not assert ownership or equivalence with watermelon.sh."
+    },
+    {
+      "surface": "watermelon.market",
+      "relation_type": "adjacent_domain",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included watermelon.market"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as adjacent-domain pressure only. Relation to the audited entity remains unverified."
+    },
+    {
+      "surface": "watermelon.us",
+      "relation_type": "adjacent_domain",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included watermelon.us"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as adjacent-domain pressure only. Relation to the audited entity remains unverified."
+    },
+    {
+      "surface": "developer.watermelon.ai",
+      "relation_type": "developer_surface",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included developer.watermelon.ai"
+      ],
+      "confidence": "medium",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Reviewed as a possible developer surface connected to watermelon.ai, not as verified ownership by watermelon.sh."
+    },
+    {
+      "surface": "github.com/watermelontools",
+      "relation_type": "repository_surface",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included github.com/watermelontools"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as repository-surface pressure. The fixture does not assert official status."
+    },
+    {
+      "surface": "github.com/WatermelonCorp/watermellon-registry",
+      "relation_type": "repository_surface",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included github.com/WatermelonCorp/watermellon-registry"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included because it was explicitly discussed as an observed surface. The spelling variance and ownership are unresolved."
+    },
+    {
+      "surface": "producthunt.com/products/watermelon",
+      "relation_type": "marketplace_profile",
+      "evidence": [
+        "docs/brand3_watermelon_phase2_findings.md: Observed related surfaces included producthunt.com/products/watermelon"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as a marketplace-profile candidate only. Product/entity equivalence requires review."
+    }
+  ],
+  "excluded_surfaces": [
+    {
+      "surface": "drinkwtrmln.com",
+      "reason": "Explicitly described in the Phase 2 memo as unrelated or ambiguous search noise.",
+      "source": "manual_review"
+    },
+    {
+      "surface": "watermelon.co",
+      "reason": "Name similarity alone is disallowed by the input contract.",
+      "source": "manual_review"
+    },
+    {
+      "surface": "honey watermelons brand-refresh article",
+      "reason": "Third-party article/search noise is not a related entity surface.",
+      "source": "manual_review"
+    }
+  ],
+  "guardrails": {
+    "does_not_infer_ownership": true,
+    "does_not_treat_related_surfaces_as_aliases": true,
+    "does_not_use_arbitrary_evidence_urls": true,
+    "does_not_use_name_similarity_alone": true,
+    "does_not_use_search_cooccurrence_alone": true,
+    "requires_human_review_for_all_surfaces": true
+  }
+}

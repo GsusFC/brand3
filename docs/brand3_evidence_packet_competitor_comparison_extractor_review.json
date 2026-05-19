@@ -1,0 +1,123 @@
+{
+  "document": "brand3_evidence_packet_competitor_comparison_extractor_review",
+  "version": 0,
+  "created_at": "2026-05-18T08:02:41.853566+00:00",
+  "scope": "offline_lab_only",
+  "implementation": {
+    "files_changed": [
+      "src/reports/evidence_packet.py",
+      "tests/test_evidence_packet.py"
+    ],
+    "extractor_source": "feature dimension_name=diferenciacion source=competitor_web_comparison",
+    "provenance_when_no_public_url": "snapshot://feature/competitor_web_comparison",
+    "source_class": "competitor_comparison",
+    "eligibility": "eligible_for_narrative_finding",
+    "limits": "relative positioning distance only; no superiority, adoption, customer choice, defensibility, or planning-direction inference"
+  },
+  "status_matrix": {
+    "linear": {
+      "coherencia": "ready",
+      "presencia": "thin",
+      "percepcion": "ready",
+      "diferenciacion": "ready",
+      "vitalidad": "ready"
+    },
+    "builtwith_kit_com": {
+      "coherencia": "blocked",
+      "presencia": "blocked",
+      "percepcion": "blocked",
+      "diferenciacion": "blocked",
+      "vitalidad": "blocked"
+    },
+    "watermelon": {
+      "coherencia": "ready",
+      "presencia": "thin",
+      "percepcion": "thin",
+      "diferenciacion": "blocked",
+      "vitalidad": "blocked"
+    },
+    "launchdarkly": {
+      "coherencia": "review_required",
+      "presencia": "thin",
+      "percepcion": "thin",
+      "diferenciacion": "ready",
+      "vitalidad": "ready"
+    },
+    "vercel": {
+      "coherencia": "thin",
+      "presencia": "thin",
+      "percepcion": "ready",
+      "diferenciacion": "ready",
+      "vitalidad": "ready"
+    }
+  },
+  "competitor_comparison_counts": {
+    "linear": 2,
+    "builtwith_kit_com": 2,
+    "watermelon": 2,
+    "launchdarkly": 2,
+    "vercel": 2
+  },
+  "linear_result": {
+    "before_status": "abstain",
+    "after_status": "ready",
+    "after_reason_codes": [
+      "owned_claim_without_external_corroboration",
+      "review_gated_evidence_not_ready",
+      "missing_evidence_url",
+      "competitor_corpus_present",
+      "bounded_comparison_evidence",
+      "no_strategy_inference"
+    ],
+    "moved_from_abstain_to_ready": true,
+    "caused_only_by_existing_competitor_web_comparison": true
+  },
+  "conservative_case_behavior": {
+    "builtwith_kit_com": "remains blocked; entity ambiguity blocks competitor comparison readiness",
+    "watermelon": "remains blocked on diferenciacion; entity/surface ambiguity blocks comparison use",
+    "launchdarkly": "diferenciacion ready because local snapshot contains competitor comparison and no material entity ambiguity block",
+    "vercel": "diferenciacion ready because local snapshot contains competitor comparison and no material entity ambiguity block"
+  },
+  "strategy_inference_check": {
+    "avoids_strategy_or_leadership_claims": true,
+    "allowed_uses": [
+      "relative positioning distance",
+      "closest measured competitor relation",
+      "most different measured competitor relation"
+    ],
+    "disallowed_uses_preserved": [
+      "category leadership",
+      "market advantage",
+      "better product claim",
+      "moat",
+      "traction",
+      "customer preference",
+      "strategic recommendation"
+    ]
+  },
+  "assessment": {
+    "enough_to_test_prompt_input_candidate_next": true,
+    "why": [
+      "Linear diferenciacion moved from abstain to ready using only existing snapshot comparison data.",
+      "The emitted evidence is bounded and carries explicit limits.",
+      "Ambiguous cases do not become ready merely because competitor comparison exists."
+    ],
+    "still_requires_acquisition_changes": [
+      "better provenance for competitor comparison URLs/content snippets",
+      "explicit competitor corpus metadata in packet output",
+      "entity-resolution gate before comparison evidence is trusted",
+      "prompt-input candidate should consume only status-ready dimensions first"
+    ]
+  },
+  "non_goals_preserved": [
+    "no_runtime_integration",
+    "no_prompt_changes",
+    "no_scoring_changes",
+    "no_report_generation_changes",
+    "no_rendering_changes",
+    "no_visual_signature_changes",
+    "no_deep_research_calls",
+    "no_exa_or_firecrawl_calls",
+    "no_new_provider"
+  ]
+}

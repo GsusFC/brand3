@@ -1,0 +1,21 @@
+{
+  "created_at": "2026-05-18T10:50:16.797499+00:00",
+  "execute_requested": true,
+  "executed": true,
+  "llm_calls_planned": 5,
+  "llm_calls_executed": 5,
+  "model": "gemini-3.1-pro-preview",
+  "usage_metadata_available": false,
+  "cost_estimate_available": false,
+  "json_repair_retries_attempted": 0,
+  "json_repair_retries_succeeded": 0,
+  "parse_failures_unrecovered": 0,
+  "notes": [
+    "Real validation batch v2.",
+    "Provider token usage is not exposed by current LLMAnalyzer interface."
+  ],
+  "cache_hits": 0,
+  "cache_misses": 5,
+  "cache_writes": 5,
+  "call_failures": []
+}

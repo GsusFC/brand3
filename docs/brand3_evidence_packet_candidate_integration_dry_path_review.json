@@ -1,0 +1,81 @@
+{
+  "document": "brand3_evidence_packet_candidate_integration_dry_path_review",
+  "version": 1,
+  "created_at": "2026-05-18T09:29:20.800442+00:00",
+  "scope": "lab_only_non_runtime_compare_only",
+  "batch": {
+    "requests_executed": 5,
+    "requests_skipped": 3,
+    "executed_targets": [
+      "linear::diferenciacion",
+      "vercel::diferenciacion",
+      "launchdarkly::vitalidad",
+      "vercel::coherencia",
+      "watermelon::percepcion"
+    ],
+    "skipped_targets": [
+      "builtwith_kit_com::coherencia",
+      "builtwith_kit_com::percepcion",
+      "launchdarkly::coherencia"
+    ]
+  },
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "evidence_urls_valid": true,
+    "blocked_or_review_controls_skipped": true,
+    "thin_cases_qualified": true,
+    "parse_failures_unrecovered_zero": true
+  },
+  "trial_pass": true,
+  "core_findings": {
+    "bounded_behavior_preserved_from_unified_v1_1": true,
+    "strategic_drift_reintroduced": false,
+    "thin_dimensions_remained_qualified": true,
+    "parse_robustness_failures_unrecovered": false
+  },
+  "parse_robustness": {
+    "parse_error_observed": true,
+    "parse_error_case": "launchdarkly::vitalidad",
+    "retry_attempted": 1,
+    "retry_succeeded": 1,
+    "unrecovered": 0
+  },
+  "cost_observation_summary": {
+    "llm_calls_planned": 5,
+    "llm_calls_executed": 5,
+    "cache_hits": 0,
+    "cache_misses": 6,
+    "cache_writes": 5,
+    "usage_metadata_available": false,
+    "cost_estimate_available": false
+  },
+  "decision_gate": {
+    "result": "pass",
+    "adopt_as_default_lab_dry_path": true,
+    "production_effect": "none",
+    "next_step": "keep this as lab default and use dedicated production-integration goal for any runtime changes"
+  },
+  "constraints_respected": {
+    "no_runtime_integration": true,
+    "no_production_prompt_edits": true,
+    "no_scoring_changes": true,
+    "no_report_generation_runtime_contract_changes": true,
+    "no_renderer_changes": true,
+    "no_payload_rollout": true,
+    "no_visual_signature_changes": true,
+    "no_deep_research_exa_firecrawl_calls": true,
+    "no_new_audits": true,
+    "no_narrative_runtime_behavior_changes": true
+  },
+  "artifacts": {
+    "script": "scripts/evidence_packet_candidate_integration_dry_path.py",
+    "tests": "tests/test_evidence_packet_candidate_integration_dry_path.py",
+    "request_manifest": "examples/reports/evidence_packet_candidate_integration_dry_path/request_manifest.json",
+    "raw_outputs": "examples/reports/evidence_packet_candidate_integration_dry_path/raw_outputs.json",
+    "comparison": "examples/reports/evidence_packet_candidate_integration_dry_path/comparison.json",
+    "cost_observation": "examples/reports/evidence_packet_candidate_integration_dry_path/cost_observation.json",
+    "trial_notes": "examples/reports/evidence_packet_candidate_integration_dry_path/trial_notes.md"
+  }
+}

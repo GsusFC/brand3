@@ -1,0 +1,140 @@
+{
+  "findings_by_dimension": {
+    "coherencia": [
+      {
+        "evidence_urls": [],
+        "implication": "This positioning suggests a focus on rapid, cost-effective brand development, potentially targeting a segment of the market underserved by traditional agencies. It may indicate a strategy to democratize brand creation.",
+        "observation": "The brand describes itself as creating 'complete brand identities for indie developers in minutes' and contrasts this with agencies that 'charge $40k'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Brand Identity Creation Speed",
+        "typical_decision": "Teams in this position typically choose between emphasizing speed and affordability to capture a high-volume market, or investing in demonstrating the strategic depth behind their rapid process to justify value to a more discerning clientele. The optimal path depends on target audience and resource allocation."
+      },
+      {
+        "evidence_urls": [],
+        "implication": "This self-characterization suggests an intent to be perceived as an established and experienced agency, leveraging a history of client work to build credibility. It may indicate a strategy to attract clients seeking proven expertise.",
+        "observation": "The brand describes itself as a 'Design Services company' and a 'branding, packaging, and digital design agency that has been trusted by over 250 brands across the globe for 7+ years'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Design Agency Positioning",
+        "typical_decision": "Teams in this position typically consider either reinforcing their agency identity through case studies and client testimonials, or pivoting to highlight a unique technological or process advantage that differentiates them from traditional agencies. The choice depends on market perception and competitive landscape."
+      },
+      {
+        "evidence_urls": [],
+        "implication": "This suggests a potential expansion or re-framing of the brand's core offering beyond traditional design services, possibly incorporating data-driven insights or ongoing brand management tools. It may indicate a move towards a more comprehensive, technology-enabled brand solution.",
+        "observation": "The brand is identified as 'Iris | Brand Intelligence Platform'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Brand Intelligence Platform",
+        "typical_decision": "Teams in this position typically choose between integrating intelligence features directly into their existing design services to enhance value, or developing a distinct platform offering that operates alongside or independently of their core agency work. The decision hinges on technological capabilities and market demand for integrated solutions."
+      }
+    ],
+    "diferenciacion": [
+      {
+        "evidence_urls": [],
+        "implication": "This positioning may suggest a strategy focused on democratizing brand creation for a segment that perceives traditional agency services as prohibitively expensive and time-consuming. It could indicate a target market prioritizing speed and cost-effectiveness.",
+        "observation": "The brand describes itself as creating 'complete brand identities for indie developers in minutes' and contrasts this with agencies that 'charge $40k'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Brand Identity Speed and Value",
+        "typical_decision": "Teams in this position typically choose between emphasizing the speed and affordability of their solution, or focusing on the quality and strategic depth of the output despite the rapid creation time. The optimal path depends on the brand's core value proposition and target audience's primary needs."
+      },
+      {
+        "evidence_urls": [],
+        "implication": "This language suggests an appeal to creators who aim for market differentiation and may indicate a community-building aspect or a focus on enabling unique brand expressions. It could imply a target audience that values originality and market separation.",
+        "observation": "The brand encourages users to 'Join indie developers building distinctive products'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Distinctive Product Development Focus",
+        "typical_decision": "Teams in this position typically consider whether to lean into the 'distinctive' aspect by showcasing unique user-generated brands, or to broaden the appeal by highlighting the accessibility and ease of creating any type of brand identity. The choice often hinges on whether the brand aims to be a niche enabler or a general-purpose tool."
+      },
+      {
+        "evidence_urls": [],
+        "implication": "This pairing of rapid completion time with a perception of originality and human quality may aim to counter potential skepticism about automated or fast brand creation processes. It suggests a strategy to assure users of a high-caliber, non-generic outcome.",
+        "observation": "The brand highlights an 'Average time to complete brand' of 14 minutes and states that its 'Content feels original and human-written'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Efficiency and Content Quality",
+        "typical_decision": "Teams in this position typically decide whether to prioritize showcasing the efficiency metrics or the perceived quality and originality of the output in their messaging. They may also consider investing in features or processes that further bridge the gap between speed and perceived human touch, or focus on user testimonials to validate claims."
+      }
+    ],
+    "percepcion": [
+      {
+        "evidence_urls": [
+          "https://irisdesign.dev/"
+        ],
+        "implication": "This positioning may suggest a focus on efficiency and accessibility for a specific market segment. It could indicate an attempt to differentiate by emphasizing speed over traditional agency timelines.",
+        "observation": "The brand describes itself on irisdesign.dev as creating 'complete brand identities for indie developers in minutes'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Brand Identity Creation Speed",
+        "typical_decision": "Teams in this position typically choose between emphasizing speed and automation in their marketing, or balancing this with claims of strategic depth and quality. The right approach depends on target audience and competitive landscape."
+      },
+      {
+        "evidence_urls": [
+          "https://irisdesign.dev/",
+          "https://irisdesign.in/"
+        ],
+        "implication": "This suggests a potential tension in how the brand wishes to be perceived: as a direct competitor to agencies by offering similar value at a lower perceived cost, or as a distinct entity like a platform. This duality could confuse potential customers.",
+        "observation": "On irisdesign.dev, the brand claims to offer 'strategic thinking that makes agencies charge $40k', while irisdesign.in describes Iris Design as a 'branding, packaging, and digital design agency'. The domain irisdesign.dev also surfaces the title 'Iris | Brand Intelligence Platform'.",
+        "title": "Agency vs. Platform Positioning",
+        "typical_decision": "Teams in this position typically choose between consolidating their messaging around a single identity (e.g., agency, platform, or tool) or developing distinct sub-brands or messaging streams for different market perceptions. The choice depends on strategic goals and resource allocation."
+      },
+      {
+        "evidence_urls": [
+          "https://irisdesign.in/"
+        ],
+        "implication": "These claims suggest an effort to establish credibility and a track record in the market. It could be intended to signal reliability and experience to potential clients.",
+        "observation": "Iris Design is described on irisdesign.in as having been 'trusted by over 250 brands across the globe for 7+ years'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Experience and Reach Claims",
+        "typical_decision": "Teams in this position typically choose between seeking third-party validation or case studies to support their claims of experience and reach, or focusing marketing efforts on newer, more agile positioning if the historical narrative is less compelling. The decision hinges on the strength of existing proof points."
+      }
+    ],
+    "presencia": [
+      {
+        "evidence_urls": [
+          "https://irisdesign.dev/",
+          "https://irisdesign.in/",
+          "https://www.irisdigital.design/"
+        ],
+        "implication": "The existence of multiple, distinct domains for what appears to be the same brand could suggest a strategy of segmenting offerings or target audiences, or it may indicate a lack of centralized brand management. This may confuse potential customers about the core offering.",
+        "observation": "The brand appears across multiple domains: irisdesign.dev describes itself as a 'brand intelligence platform' for 'indie developers', irisdesign.in describes itself as a 'Design Services company' and a 'branding, packaging, and digital design agency', and irisdigital.design shows a logo for 'Iris Digital Design'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Multiple Domains for Brand Identity",
+        "typical_decision": "Teams in this position typically choose between consolidating all offerings under a single, unified domain and brand identity, or strategically maintaining separate domains to target distinct market segments. The optimal choice depends on the brand's overall strategic intent and resource allocation."
+      },
+      {
+        "evidence_urls": [
+          "https://irisdesign.dev/"
+        ],
+        "implication": "This positioning suggests a focus on efficiency and a value proposition that combines speed with strategic depth, potentially appealing to developers with limited time or resources. It may indicate a strategy to differentiate from slower, more traditional branding services.",
+        "observation": "The brand describes its offering as creating 'complete brand identities for indie developers in minutes—with the strategic thinking that'. This is based only on self-description; no external corroboration in the evidence pool.",
+        "title": "Focus on Speed and Strategy",
+        "typical_decision": "Teams in this position typically consider emphasizing the speed of delivery, highlighting the strategic component as a differentiator, or broadening the appeal by showcasing a wider range of services beyond just speed. The decision hinges on the brand's core competencies and competitive landscape."
+      }
+    ],
+    "vitalidad": [
+      {
+        "evidence_urls": [
+          "https://www.globenewswire.com/news-release/2026/05/01/3286184/0/en/Whitespace-Makes-Iris-AI-Intelligence-Analysis-Agent-Generally-Available-to-Authorized-DoW-and-IC-Users.html",
+          "https://heyiris.ai/blog/expanding-access-iris-now-available-in-slack"
+        ],
+        "implication": "This suggests a strategy of broadening product access and integration across different platforms, potentially to reach a wider user base.",
+        "observation": "The brand appears in a press release stating 'Whitespace Makes Iris AI Intelligence Analysis Agent Generally Available to Authorized DoW and IC Users' on May 1, 2026. Additionally, the brand appears on its own blog announcing 'Iris Now Available in Slack'.",
+        "title": "Product Expansion and Availability",
+        "typical_decision": "Teams in this position typically choose between expanding into new market segments through platform integrations, or focusing on deepening functionality within existing core offerings, or a combination of both, depending on strategic priorities and resource allocation."
+      },
+      {
+        "evidence_urls": [
+          "https://agent-wars.com/news/2026-03-14-iris-open-source-mcp-native-eval-observability-tool-for-ai-agents",
+          "https://dev.to/irparent/what-changed-in-iris-v040-1c0k"
+        ],
+        "implication": "This indicates a focus on providing open-source tools for AI agent development and observability, which could foster community engagement and adoption.",
+        "observation": "The brand appears on agent-wars.com described as 'Iris: Open-Source MCP-Native Eval & Observability Tool for AI Agents'. The brand also appears on dev.to with posts detailing changes in 'iris v0.4.0'.",
+        "title": "Open-Source Tooling and Community",
+        "typical_decision": "Teams in this position typically choose between maintaining a proprietary software model to control development and monetization, or adopting an open-source strategy to encourage community contributions and broader adoption, or a hybrid approach, depending on their business model and competitive landscape."
+      },
+      {
+        "evidence_urls": [
+          "https://irisdesigncollaborative.com/"
+        ],
+        "implication": "This suggests a stable, growing organization with a history dating back to 2017, indicating a degree of established presence in its field.",
+        "observation": "The brand's own website describes 'Iris Design Collaborative employs 8 people (+12.5% YoY, +1 person), founded in 2017.'",
+        "title": "Organizational Growth and Founding",
+        "typical_decision": "Teams in this position typically choose between focusing on organic growth and talent acquisition to scale operations, or pursuing strategic partnerships and acquisitions to accelerate expansion, or maintaining a lean operational structure, depending on market opportunities and financial strategy."
+      }
+    ]
+  },
+  "generated_at": "2026-05-16T23:38:45.515095",
+  "run_id": 77,
+  "source": "report_narrative",
+  "summary": "The brand's self-description on irisdesign.dev highlights rapid brand identity creation for indie developers, stating \"Your code ships fast. Your brand should too.\" This messaging, however, contrasts with external coverage from irisdigital.design and irisdesign.in, which describe a more traditional design services agency focusing on branding, packaging, and digital design. This divergence may indicate a gap between the intended market positioning and the perceived service offering, mirroring the tension between a self-described strategic partner undercutting agency pricing and an external perception of a conventional design firm. The strategic question is whether the brand should refine its messaging to align with its visual and service delivery, or if the current duality serves a specific, albeit less explicit, market segment.",
+  "synthesis_prose": "The brand's self-description on irisdesign.dev highlights rapid brand identity creation for indie developers, stating \"Your code ships fast. Your brand should too.\" This messaging, however, contrasts with external coverage from irisdigital.design and irisdesign.in, which describe a more traditional design services agency focusing on branding, packaging, and digital design. This divergence may indicate a gap between the intended market positioning and the perceived service offering, mirroring the tension between a self-described strategic partner undercutting agency pricing and an external perception of a conventional design firm. The strategic question is whether the brand should refine its messaging to align with its visual and service delivery, or if the current duality serves a specific, albeit less explicit, market segment.",
+  "tensions_prose": "The brand's self-description emphasizes speed and affordability for indie developers, positioning itself as a strategic partner that undercuts agency pricing (Perception, Differentiation). However, external coverage and visual analysis suggest a more traditional agency model, with mentions of branding, packaging, and digital design services, and a focus on color groups and contrast signals (Perception, Coherence). This divergence may indicate a gap between the intended market positioning and the perceived service offering. The strategic question is whether the brand should refine its messaging to align with its visual and service delivery, or if the current duality serves a specific, albeit less explicit, market segment.",
+  "version": 1
+}

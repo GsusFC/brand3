@@ -1,0 +1,251 @@
+{
+  "created_at": "2026-05-18T09:15:47.077538+00:00",
+  "executed": true,
+  "requests_executed": 7,
+  "requests_skipped": 4,
+  "per_case": {
+    "linear::diferenciacion": {
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 2,
+        "titles": [
+          "Closest measured competitor positioning distance",
+          "Furthest measured competitor positioning distance"
+        ],
+        "risky_terms_detected": [
+          "superior",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "finding_count": 1,
+        "titles": [
+          "Relative Positioning Distance Among Measured Competitors"
+        ],
+        "risky_terms_detected": [
+          "strategy"
+        ],
+        "risky_terms_outside_limits": [
+          "strategy"
+        ],
+        "limits_field_present": false,
+        "has_typical_decision": true,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [
+          "strategy"
+        ],
+        "new_outside_limits": []
+      }
+    },
+    "vercel::diferenciacion": {
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 2,
+        "titles": [
+          "Netlify closest measured positioning distance",
+          "Qoddi highest measured positioning distance"
+        ],
+        "risky_terms_detected": [
+          "superior",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "launchdarkly::diferenciacion": {
+      "case_id": "launchdarkly",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Measured competitor relative positioning distance"
+        ],
+        "risky_terms_detected": [
+          "superior",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "linear::coherencia": {
+      "case_id": "linear",
+      "dimension": "coherencia",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Product planning and issue tracking"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://linear.app/",
+          "https://medium.com/linear-app/about"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "vercel::coherencia": {
+      "case_id": "vercel",
+      "dimension": "coherencia",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Vercel Next.js Framework Maintenance"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://en.wikipedia.org/wiki/Vercel"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "launchdarkly::vitalidad": {
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 3,
+        "titles": [
+          "Feature flag version restoration added",
+          "Online evals in AI Configs",
+          "Leadership team expansion announced"
+        ],
+        "risky_terms_detected": [
+          "leadership",
+          "advantage",
+          "adoption",
+          "roadmap"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+          "https://releasebot.io/updates/launchdarkly",
+          "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "watermelon::percepcion": {
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Design infrastructure for modern startups"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://watermelon.sh/"
+        ],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    }
+  },
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "blocked_or_review_controls_skipped": true,
+    "thin_cases_qualified": true,
+    "evidence_urls_valid": true
+  },
+  "trial_pass": true,
+  "manual_review_required": true
+}

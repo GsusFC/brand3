@@ -86,6 +86,23 @@ _PUBLIC_FILTER = (
 )
 
 
+def get_public_request_for_run(run_id: int) -> dict | None:
+    """Return the public web request row for a run, if one exists."""
+    with _connect() as conn:
+        row = conn.execute(
+            f"""
+            SELECT *
+            FROM web_requests
+            WHERE run_id = ?
+              AND {_PUBLIC_FILTER}
+            ORDER BY completed_at DESC
+            LIMIT 1
+            """,
+            (run_id,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
 def _attach_composite(rows: list[dict]) -> list[dict]:
     """Enrich web_requests rows with the engine's composite_score from `runs`."""
     if not rows:

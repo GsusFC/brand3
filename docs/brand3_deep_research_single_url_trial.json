@@ -1,0 +1,81 @@
+{
+  "artifacts": {
+    "cost_observation": "examples/reports/deep_research_trial/builtwith_kit_com_single_url/cost_observation.json",
+    "evidence_packet": "examples/reports/deep_research_trial/builtwith_kit_com_single_url/evidence_packet.json",
+    "raw_interaction": "examples/reports/deep_research_trial/builtwith_kit_com_single_url/raw_interaction.json",
+    "request": "examples/reports/deep_research_trial/builtwith_kit_com_single_url/request.json",
+    "trial_notes": "examples/reports/deep_research_trial/builtwith_kit_com_single_url/trial_notes.md"
+  },
+  "case_id": "builtwith_kit_com_single_url",
+  "comparison": {
+    "current_brand3_pipeline": {
+      "evidence_cleanliness": "weak_mixed_feature_pool",
+      "entity_separation": "weak_kit_and_builtwith_can_mix_by_dimension",
+      "technical_signal_handling": "technical_signals_can_become_findings",
+      "url_coverage": "mixed_url_less_findings_possible"
+    },
+    "single_url_search_deep_research": {
+      "cost": "high_for_default_runtime",
+      "discovery": "stronger_than_seeded_url_context_trial",
+      "entity_separation": "strongest_of_tested_paths",
+      "replacement_readiness": "manual_or_lab_escalation_only",
+      "technical_signal_handling": "classified_as_not_eligible_or_review_material"
+    },
+    "url_context_only_deep_research": {
+      "cost": "lower",
+      "discovery": "limited_to_seeded_urls",
+      "entity_separation": "good_but_seeded",
+      "replacement_readiness": "classification_benchmark_not_acquisition_replacement"
+    }
+  },
+  "cost": {
+    "cost_observability": "observable",
+    "estimated_model_usd": 2.248858,
+    "estimate_basis": "Gemini 3.1 Pro Preview standard long-context rates; thought tokens counted as output; search charges excluded",
+    "google_search_charge_visibility": "not_itemized_in_interaction_output",
+    "input_tokens": 324313,
+    "output_tokens": 21653,
+    "thought_tokens": 31214,
+    "total_tokens": 490571,
+    "tool_use_tokens": 113391
+  },
+  "evidence_packet_summary": {
+    "discovered_sources_count": 10,
+    "entity_ambiguity_count": 1,
+    "external_evidence_count": 3,
+    "finding_eligible_count": 2,
+    "missing_evidence_count": 2,
+    "owned_claim_count": 1,
+    "related_surface_count": 3,
+    "requires_human_review_count": 1,
+    "technical_signal_count": 2,
+    "trust_or_security_signal_count": 2
+  },
+  "execution_result": {
+    "deep_research_max_enabled": false,
+    "input_mode": "single_audit_url_only",
+    "open_google_search_enabled": true,
+    "packet_parsed": true,
+    "previous_brand3_evidence_provided": false,
+    "seed_urls_provided": false,
+    "status": "completed"
+  },
+  "key_findings": [
+    "Search materially improved discovery versus the URL-context-only seeded trial.",
+    "The packet identified Kit's subdomain architecture as central evidence.",
+    "The packet avoided treating BuiltWith.com as an alias or confirmed related surface.",
+    "The packet kept exact ownership of builtwith.kit.com unresolved.",
+    "Security scans were separated into trust/security review rather than broad brand narrative.",
+    "The trial was too expensive and too agentic for default audit runtime."
+  ],
+  "recommendation": {
+    "deep_research_role": "manual_or_lab_escalation_for_hard_entity_ambiguity",
+    "next_step": "design_local_information_to_evidence_contract_inspired_by_packet_categories",
+    "runtime_integration": "do_not_integrate",
+    "use_as_default_acquisition": false
+  },
+  "root_finding": "Single-URL Deep Research with Search can produce a cleaner evidence-discipline packet from one URL than Brand3's current mixing layer, but cost and control make it unsuitable as the default acquisition pipeline.",
+  "status": "completed",
+  "target": "https://builtwith.kit.com",
+  "title": "Brand3 Single-URL Deep Research Evidence Packet Trial"
+}

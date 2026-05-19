@@ -1,0 +1,189 @@
+{
+  "case_id": "watermelon",
+  "target_url": "https://watermelon.sh",
+  "packet_status": "unstructured_model_output_not_parseable_as_requested_packet",
+  "created_from": "examples/reports/deep_research_trial/watermelon_prism/raw_interaction.json",
+  "important_warning": "Deep Research completed, but it did not return the requested JSON evidence packet. It returned a long narrative audit. This file is a minimal normalization of the observable raw output for review, not a faithful parsed model packet.",
+  "contract_compliance": {
+    "completed": true,
+    "parseable_json_packet_returned": false,
+    "generated_report_prose": true,
+    "generated_scores": false,
+    "generated_strategy_or_recommendation_language": true,
+    "used_single_target_url_only": true,
+    "seed_urls_provided": false,
+    "previous_brand3_evidence_provided": false,
+    "google_search_enabled": true,
+    "url_context_enabled": true
+  },
+  "entity_resolution": {
+    "audited_surface": {
+      "url": "https://watermelon.sh",
+      "entity_label_from_raw_output": "Watermelon UI / Watermelon UI Registry",
+      "confidence_from_raw_output": "high",
+      "reviewer_confidence": "medium",
+      "notes": "The raw output treats watermelon.sh as a React UI/component registry and links it to WatermelonCorp / Watermelon Studio. Because the model returned prose rather than structured evidence, this relation still needs review before use as a production evidence packet."
+    },
+    "related_or_similarly_named_surfaces_from_raw_output": [
+      {
+        "surface": "github.com/WatermelonCorp",
+        "relation_claimed_by_raw_output": "explicitly_related",
+        "review_status": "requires_human_review",
+        "notes": "Raw output treats this as source code infrastructure for the audited surface."
+      },
+      {
+        "surface": "studio.watermelon.sh",
+        "relation_claimed_by_raw_output": "explicitly_related",
+        "review_status": "requires_human_review",
+        "notes": "Raw output treats this as the commercial parent/studio surface."
+      },
+      {
+        "surface": "watermelon.ai / watermelon.co",
+        "relation_claimed_by_raw_output": "unrelated_excluded_entity",
+        "review_status": "likely_excluded_noise",
+        "notes": "Raw output separates this as a Dutch/European conversational AI customer-service platform."
+      }
+    ],
+    "ownership_or_relation_status": "partially_supported_but_not_packet_verified",
+    "requires_human_review": true
+  },
+  "source_inventory": [
+    {
+      "source_label": "github.com",
+      "raw_citation_id": 1,
+      "source_type": "developer_surface",
+      "use_status": "review_required"
+    },
+    {
+      "source_label": "medium.com",
+      "raw_citation_id": 2,
+      "source_type": "external_evidence",
+      "use_status": "review_required"
+    },
+    {
+      "source_label": "watermelon.sh",
+      "raw_citation_id": 3,
+      "source_type": "audited_or_same_root_surface",
+      "use_status": "owned_claim_or_same_root_claim"
+    },
+    {
+      "source_label": "watermelon.ai",
+      "raw_citation_id": 5,
+      "source_type": "related_name_collision",
+      "use_status": "excluded_or_entity_ambiguity"
+    },
+    {
+      "source_label": "crunch.id / Product Hunt launch reference",
+      "raw_citation_id": 17,
+      "source_type": "marketplace_or_launch_surface",
+      "use_status": "review_required"
+    },
+    {
+      "source_label": "grepped.dev",
+      "raw_citation_id": 19,
+      "source_type": "technical_indexing",
+      "use_status": "observation_only"
+    }
+  ],
+  "coherencia": {
+    "eligible_evidence": [
+      {
+        "claim": "The audited surface is described as a React UI/component registry with copy-pasteable components.",
+        "source_url": "https://watermelon.sh",
+        "source_type": "audited_surface",
+        "finding_eligibility": "observation_only",
+        "confidence": "medium",
+        "requires_human_review": true,
+        "notes": "Usable as owned-surface observation, not external validation."
+      }
+    ],
+    "observation_only": [
+      "Raw output identifies copy-paste architecture, React, Tailwind CSS, Radix UI, and Framer Motion as the product frame."
+    ],
+    "excluded_or_review_only": [
+      "The raw output's claim of exceptionally high coherence is narrative interpretation, not evidence packet material."
+    ],
+    "evidence_gaps": [
+      "Need structured source URLs for the exact audited-page claims.",
+      "Need verified ownership relation between watermelon.sh, GitHub, and any studio surface."
+    ]
+  },
+  "presencia": {
+    "eligible_evidence": [],
+    "observation_only": [
+      "Raw output names GitHub, Product Hunt, directory listings, and developer curation surfaces as presence vectors."
+    ],
+    "excluded_or_review_only": [
+      "Presence vectors cannot be treated as controlled surfaces until relation is explicit.",
+      "Product Hunt or directory listing evidence should not imply traction by itself."
+    ],
+    "evidence_gaps": [
+      "Need raw structured URLs for each presence surface.",
+      "Need source-quality classification for directory/listing evidence."
+    ]
+  },
+  "percepcion": {
+    "eligible_evidence": [],
+    "observation_only": [
+      "Raw output cites third-party/editorial commentary describing the component library as premium or studio-quality."
+    ],
+    "excluded_or_review_only": [
+      "The raw output turns external perception into strongly positive interpretation; this is not safe without structured source review."
+    ],
+    "evidence_gaps": [
+      "Need direct source URL and quote extraction for any third-party perception claim."
+    ]
+  },
+  "diferenciacion": {
+    "eligible_evidence": [],
+    "observation_only": [
+      "Raw output identifies copy-paste registry distribution and a large component catalog as potential differentiators."
+    ],
+    "excluded_or_review_only": [
+      "Scale claims such as 260 components require direct source verification before findings."
+    ],
+    "evidence_gaps": [
+      "Need source-bound proof for component count, technology stack, and registry protocol claims."
+    ]
+  },
+  "vitalidad": {
+    "eligible_evidence": [],
+    "observation_only": [
+      "Raw output mentions recent Product Hunt and curation activity in 2026."
+    ],
+    "excluded_or_review_only": [
+      "The raw output infers high vitality and market momentum; this should be review-gated.",
+      "GitHub governance files imply project maturity only after direct repository verification."
+    ],
+    "evidence_gaps": [
+      "Need direct dates, repository activity metrics, and launch source URLs."
+    ]
+  },
+  "cross_dimension_evidence": [
+    {
+      "claim": "The raw output separates Watermelon UI from Watermelon AI and unrelated consumer/product noise.",
+      "finding_eligibility": "entity_resolution_support_only",
+      "confidence": "medium",
+      "requires_human_review": true
+    }
+  ],
+  "evidence_gaps": [
+    "No parseable JSON evidence packet was returned.",
+    "Citations were returned as numbered source labels and redirect URLs inside narrative prose, not structured evidence items.",
+    "The model did not provide the requested per-item eligibility fields.",
+    "The model did not provide clean discovered_sources or search_queries_used arrays."
+  ],
+  "source_quality_notes": [
+    "Deep Research discovered useful entity-separation cues, especially Watermelon UI vs Watermelon AI vs unrelated product noise.",
+    "The output is too interpretive for direct use as Brand3 evidence input.",
+    "The raw output must be treated as a research narrative, not as a production evidence packet."
+  ],
+  "cost_risk_notes": [
+    "The interaction used 725,538 total tokens.",
+    "Estimated model cost was USD 2.505606, excluding search charges.",
+    "This is too expensive and too uncontrolled for default runtime acquisition."
+  ],
+  "search_queries_used": [],
+  "discovered_sources": [],
+  "requires_human_review": true
+}

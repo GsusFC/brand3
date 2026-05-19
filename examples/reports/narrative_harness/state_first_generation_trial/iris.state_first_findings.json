@@ -1,0 +1,288 @@
+{
+  "version": "state_first_generation_trial.v0",
+  "created_at": "2026-05-17",
+  "status": {
+    "lab_only": true,
+    "runtime_integration": false,
+    "scoring_integration": false,
+    "prompt_production_change": false,
+    "official_report_mutation": false,
+    "renderer_change": false,
+    "visual_signature_integration": false,
+    "persistence": false,
+    "reusable_generator": false
+  },
+  "selected_case": {
+    "case_id": "iris",
+    "brand": "Iris",
+    "url": "https://irisdesign.dev",
+    "selection_reason": "Iris tests whether state-first generation can handle name-collision ambiguity and strong visual/perceptual claims without converting weak evidence into entity equivalence."
+  },
+  "input_artifacts": [
+    "examples/reports/narrative_harness/iris.payload.json",
+    "examples/reports/narrative_harness/iris.diagnostic.json",
+    "examples/reports/narrative_harness/iris.render_aware.diagnostic.json",
+    "examples/reports/narrative_harness/entity_state/iris.entity_narrative_state.v0.json",
+    "examples/reports/narrative_harness/entity_state/inputs/iris.observed_related_surfaces.input.json",
+    "examples/reports/narrative_harness/state_first_generation_trial/watermelon.state_first_findings.json"
+  ],
+  "baseline": {
+    "synthesis_excerpt": "The baseline contrasts irisdesign.dev speed/affordability positioning with external Iris-named surfaces that describe traditional agency, AI, and collaborative design entities.",
+    "measured_problems": {
+      "payload_warnings": 6,
+      "render_visible_warnings": 7,
+      "findings_count": 14,
+      "findings_without_evidence_urls": 6,
+      "safe_attribution_total": 15,
+      "generic_decision_phrase_count": 14,
+      "external_corroboration_caveat_total": 20,
+      "fallback_evidence_pool_phrase_total": 10
+    },
+    "core_problem": "The baseline notices divergence, but it repeatedly treats Iris-name collisions as if they may belong to one strategic identity."
+  },
+  "shared_entity_state": {
+    "primary_entity_signal": {
+      "label": "Iris",
+      "primary_surface": "irisdesign.dev",
+      "confidence": "medium",
+      "requires_human_review": true
+    },
+    "entity_ambiguity": {
+      "needs_review": true,
+      "observed_related_surfaces": [
+        "irisdesign.in",
+        "irisdigital.design",
+        "byiris.io",
+        "heyiris.ai",
+        "iris-ai.dev",
+        "irisdesigncollaborative.com"
+      ],
+      "relation_type": "ambiguous_name_match",
+      "rule": "These surfaces are name-collision pressure only. They are not aliases, proof of ownership, or evidence of one Iris strategy."
+    },
+    "owned_claim_density": {
+      "level": "high",
+      "safe_attribution_total": 15
+    },
+    "evidence_coverage": {
+      "finding_count": 14,
+      "findings_without_evidence_urls": 6,
+      "coverage_level": "mixed",
+      "affected_dimensions": ["coherencia", "diferenciacion"]
+    },
+    "budgets": {
+      "attribution_budget": "over_budget",
+      "corroboration_caveat_budget": "over_budget",
+      "repeated_opener_budget": "over_budget",
+      "decision_space_mode": "hidden_generic"
+    },
+    "primary_tension": {
+      "summary": "irisdesign.dev claims rapid brand identity creation for indie developers, while the evidence set contains several similarly named design and AI surfaces whose relation is unverified.",
+      "confidence": "low",
+      "requires_human_review": true
+    }
+  },
+  "shared_evidence_map": {
+    "primary_surface": [
+      {
+        "url": "https://irisdesign.dev/",
+        "supports": "Owned claim: complete brand identities for indie developers in minutes, with agency-price contrast.",
+        "boundary": "Supports observation of positioning only, not external adoption or category impact."
+      }
+    ],
+    "ambiguous_design_surfaces": [
+      {
+        "url": "https://irisdesign.in/",
+        "supports": "An Iris Design agency surface with branding, packaging, digital design, experience, and reach claims.",
+        "boundary": "Not safe to treat as the same entity as irisdesign.dev."
+      },
+      {
+        "url": "https://www.irisdigital.design/",
+        "supports": "A distinct Iris Digital Design surface exists.",
+        "boundary": "Name collision only unless manually verified."
+      },
+      {
+        "url": "https://irisdesigncollaborative.com/",
+        "supports": "An Iris Design Collaborative surface with organization/founding claims.",
+        "boundary": "Not entity-safe for irisdesign.dev vitality."
+      }
+    ],
+    "ambiguous_ai_surfaces": [
+      {
+        "url": "https://heyiris.ai/blog/expanding-access-iris-now-available-in-slack",
+        "supports": "An Iris AI surface claims Slack availability.",
+        "boundary": "AI/product vitality signal must not be transferred to irisdesign.dev."
+      },
+      {
+        "url": "https://agent-wars.com/news/2026-03-14-iris-open-source-mcp-native-eval-observability-tool-for-ai-agents",
+        "supports": "A third-party article describes an Iris open-source AI observability tool.",
+        "boundary": "Name collision; do not infer relation to the brand-identity tool."
+      },
+      {
+        "url": "https://dev.to/irparent/what-changed-in-iris-v040-1c0k",
+        "supports": "A dev.to post references Iris v0.4.0.",
+        "boundary": "Not safe as evidence for irisdesign.dev without entity review."
+      }
+    ],
+    "missing_or_uncited": {
+      "findings_without_evidence_urls": 6,
+      "affected_dimensions": ["coherencia", "diferenciacion"],
+      "rule": "Missing URL support blocks strategic prescription."
+    }
+  },
+  "global_uncertainty_model": {
+    "can_state_as_observation": [
+      "irisdesign.dev positions Iris around fast brand identity creation for indie developers.",
+      "The evidence set contains multiple Iris-named surfaces in design, agency, collaborative, and AI contexts.",
+      "The baseline repeatedly uses self-description caveats and generic Decision Space."
+    ],
+    "can_state_as_interpretation": [
+      "Iris is a name-collision case where the main task is to preserve entity boundaries.",
+      "The primary surface has a strong owned speed/value proposition, but weak external evidentiary confidence."
+    ],
+    "must_remain_uncertain": [
+      "Whether irisdesign.dev is related to irisdesign.in, irisdigital.design, heyiris.ai, iris-ai.dev, or irisdesigncollaborative.com.",
+      "Whether speed and agency-price claims are externally validated.",
+      "Whether AI-heavy Iris references belong to the audited entity."
+    ],
+    "requires_human_review": [
+      "Any aliasing or ownership claim across Iris surfaces.",
+      "Any use of visual/perceptual strength as evidence of market confidence.",
+      "Any production recommendation about consolidating or segmenting Iris brands."
+    ],
+    "must_not_infer": [
+      "One unified Iris portfolio.",
+      "A pivot from agency to AI platform.",
+      "Market democratization from speed/price claims alone.",
+      "External validation from owned or name-collision surfaces."
+    ]
+  },
+  "state_first_finding_plan": {
+    "coordination_rules": [
+      "Use one global name-collision caveat.",
+      "Keep irisdesign.dev separate from similarly named Iris surfaces.",
+      "Do not let visual/perceptual strength compensate for weak evidentiary confidence.",
+      "Remove generic Decision Space and strategic prescription.",
+      "Preserve owned claims as owned claims."
+    ],
+    "dimension_plan": {
+      "coherencia": "Separate the primary indie-developer brand-identity claim from unrelated or unverified Iris surfaces.",
+      "diferenciacion": "Assess the speed/value proposition as owned positioning, not market proof.",
+      "percepcion": "Treat external Iris references as name-collision pressure unless entity relation is verified.",
+      "presencia": "Map surfaces without asserting consolidation.",
+      "vitalidad": "Hold AI, organization-growth, and open-source signals outside the audited entity until reviewed."
+    }
+  },
+  "generated_state_first_findings": {
+    "global_caveat": "State-first reading treats irisdesign.dev as the audited primary surface. Other Iris-named domains and AI/design references are ambiguous name matches only until ownership or entity continuity is reviewed.",
+    "findings_by_dimension": {
+      "coherencia": [
+        {
+          "title": "The primary Iris story is narrow and legible",
+          "finding": "irisdesign.dev presents a focused owned claim: complete brand identities for indie developers in minutes, positioned against expensive agency work. That is a coherent primary-surface story. The coherence issue appears when the report imports other Iris-named agency, design, collaborative, and AI surfaces into the same narrative without verified relation.",
+          "evidence": ["https://irisdesign.dev/"],
+          "confidence": "medium for primary-surface observation, low for cross-surface interpretation",
+          "uncertainty": "Do not merge similarly named Iris surfaces into one entity."
+        },
+        {
+          "title": "Agency and platform signals should not be collapsed",
+          "finding": "irisdesign.in and irisdesign.dev describe different offers: a traditional design agency surface on one side, and a fast brand-identity/platform claim on the other. State-first generation treats this as name-collision ambiguity, not as proof of one brand struggling between agency and platform positioning.",
+          "evidence": ["https://irisdesign.dev/", "https://irisdesign.in/"],
+          "confidence": "low",
+          "uncertainty": "Relation between surfaces requires human review."
+        }
+      ],
+      "diferenciacion": [
+        {
+          "title": "The safe differentiator is speed plus price contrast",
+          "finding": "Iris differentiates itself on irisdesign.dev through speed, indie-developer specificity, and contrast with agency pricing. The report can state that this is the owned differentiating frame. It should not claim democratization, category disruption, or proven market demand without external support.",
+          "evidence": ["https://irisdesign.dev/"],
+          "confidence": "medium for claim visibility, low for market validation",
+          "uncertainty": "External proof is needed before treating the differentiator as validated."
+        },
+        {
+          "title": "Visual confidence is not evidentiary confidence",
+          "finding": "The surface may present a strong visual or perceptual identity, but state-first generation keeps that separate from evidence strength. Visual clarity can support a perceptual reading; it cannot prove adoption, trust, quality, or strategic depth.",
+          "evidence": ["https://irisdesign.dev/"],
+          "confidence": "medium for perceptual observation, low for business inference",
+          "uncertainty": "Do not use visual confidence to compensate for weak external corroboration."
+        }
+      ],
+      "percepcion": [
+        {
+          "title": "Perception is dominated by name collision",
+          "finding": "The evidence set shows multiple Iris associations, but that does not prove audience confusion or public perception. It proves that the collection layer found competing Iris-name surfaces. The safer finding is evidence ambiguity, not market perception.",
+          "evidence": ["https://irisdesign.dev/", "https://irisdesign.in/", "https://www.irisdigital.design/"],
+          "confidence": "medium for evidence ambiguity, low for audience-perception claims",
+          "uncertainty": "Audience perception cannot be inferred from domain/name collision alone."
+        }
+      ],
+      "presencia": [
+        {
+          "title": "Presence should be mapped, not unified",
+          "finding": "Iris appears across several design and AI surfaces, but state-first reading maps them as separate observed surfaces. That makes the presence finding clearer: Brand3 has enough evidence to say the Iris-name space is crowded, but not enough to say these surfaces form one brand architecture.",
+          "evidence": [
+            "https://irisdesign.dev/",
+            "https://irisdesign.in/",
+            "https://www.irisdigital.design/",
+            "https://irisdesigncollaborative.com/"
+          ],
+          "confidence": "medium for surface mapping, low for brand-architecture inference",
+          "uncertainty": "Ownership and entity relation are unresolved."
+        }
+      ],
+      "vitalidad": [
+        {
+          "title": "AI and growth signals are not entity-safe",
+          "finding": "The baseline includes AI availability, open-source tooling, and organization-growth signals from Iris-named surfaces. State-first generation holds those as possible related signals only. They should not be used to describe the vitality of irisdesign.dev until the entity relationship is reviewed.",
+          "evidence": [
+            "https://heyiris.ai/blog/expanding-access-iris-now-available-in-slack",
+            "https://agent-wars.com/news/2026-03-14-iris-open-source-mcp-native-eval-observability-tool-for-ai-agents",
+            "https://dev.to/irparent/what-changed-in-iris-v040-1c0k",
+            "https://irisdesigncollaborative.com/"
+          ],
+          "confidence": "low",
+          "uncertainty": "These may be separate Iris entities."
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "against_baseline": {
+      "specificity": "state_first wins by naming name-collision ambiguity instead of converting it into a strategy problem.",
+      "evidence_binding": "state_first wins because each surface is bounded by what it can support.",
+      "caveat_discipline": "state_first wins by centralizing the name-collision caveat.",
+      "overreach_risk": "state_first wins because it blocks visual/perceptual strength from becoming business confidence.",
+      "remaining_gap": "The new version is clearer but remains heavily bounded and not production-ready."
+    },
+    "against_watermelon": {
+      "shared_pattern": "Both cases improve when related surfaces are not treated as aliases.",
+      "difference": "Watermelon is ecosystem ambiguity; Iris is name-collision ambiguity.",
+      "value_level": "State-first helps Iris at least as much as Watermelon because the baseline is more likely to create false equivalence."
+    }
+  },
+  "cross_case_synthesis": {
+    "where_state_first_helps": "It helps when evidence collection contains adjacent or ambiguous surfaces that would otherwise be merged into one narrative.",
+    "where_it_overreaches": "It can become too defensive if every related surface is treated only as danger and no primary-surface reading is allowed.",
+    "where_it_should_stay_inactive": "It should stay light when entity boundaries are clear and evidence already binds cleanly.",
+    "shared_failure_modes": ["surface merging", "repeated caveats", "generic decision framing"],
+    "case_specific_failure_modes": {
+      "watermelon": "ecosystem ambiguity",
+      "iris": "name-collision and visual-confidence overreach",
+      "launchdarkly": "risk of overstructuring a mostly stable entity"
+    }
+  },
+  "verdict": {
+    "better_than_baseline": true,
+    "safer_than_baseline": true,
+    "clearer_than_baseline": true,
+    "worth_continuing": true,
+    "what_failed": [
+      "The trial is manually generated and does not prove automation.",
+      "The result is more diagnostic than polished report prose.",
+      "Name-collision caution can dominate the reading if not balanced with the primary-surface claim."
+    ],
+    "biggest_improvement": "State-first generation prevents Iris-name collisions from becoming false brand architecture.",
+    "biggest_remaining_risk": "A future generator could still turn visual confidence or AI-related surfaces into unsupported strategic certainty."
+  }
+}

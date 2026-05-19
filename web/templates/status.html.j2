@@ -67,9 +67,9 @@
 
   <p class="small dim">Page auto-refreshes every 5 seconds. This checklist reflects pipeline phase, not a percentage estimate.</p>
   {% elif status == "ready" %}
-  <p><a href="/r/{{ token }}">→ open report</a></p>
+  <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">→ open report</a></p>
   {% elif status == "failed" %}
-  <p><a href="/">← back to form</a></p>
+  <p><a href="{{ back_href if back_href else '/' }}">← back to form</a></p>
   {% endif %}
 </section>
 {% endblock %}

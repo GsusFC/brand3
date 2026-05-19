@@ -1,0 +1,113 @@
+{
+  "document": "brand3_evidence_packet_findings_schema_multi_case_review",
+  "version": 0,
+  "created_at": "2026-05-18T08:25:01.351571+00:00",
+  "scope": "lab_only_non_runtime",
+  "batch": {
+    "requests_executed": 4,
+    "requests_skipped": 1,
+    "executed_targets": [
+      "linear::diferenciacion",
+      "vercel::diferenciacion",
+      "launchdarkly::diferenciacion",
+      "watermelon::percepcion"
+    ],
+    "skipped_targets": [
+      "builtwith_kit_com::percepcion"
+    ]
+  },
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "blocked_dimensions_skipped_or_abstained": true,
+    "thin_case_qualified": true,
+    "evidence_urls_valid": true
+  },
+  "trial_pass": true,
+  "core_findings": {
+    "drift_reduction_beyond_linear": true,
+    "useful_interpretation_preserved_ready_cases": true,
+    "useful_interpretation_preserved_thin_case": true,
+    "too_mechanical": "moderate risk: ready differentiation cases often split into two symmetric findings (closest vs most different), which is disciplined but formulaic.",
+    "builtwith_negative_control_behavior": true
+  },
+  "case_notes": {
+    "linear::diferenciacion": {
+      "finding_count": 2,
+      "titles": [
+        "Wrike closest relative positioning distance",
+        "ProjectManager greatest relative positioning distance"
+      ],
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    },
+    "vercel::diferenciacion": {
+      "finding_count": 2,
+      "titles": [
+        "Netlify measured as closest competitor",
+        "Qoddi measured as most different"
+      ],
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    },
+    "launchdarkly::diferenciacion": {
+      "finding_count": 2,
+      "titles": [
+        "Closest measured competitor positioning distance",
+        "Most different competitor positioning distance"
+      ],
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    },
+    "watermelon::percepcion": {
+      "finding_count": 1,
+      "titles": [
+        "Design infrastructure for startups messaging"
+      ],
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "evidence_url_validity": true
+    }
+  },
+  "decision_gate": {
+    "result": "pass",
+    "adopt_as_lab_default": true,
+    "adoption_scope": "Evidence Packet prompt-input findings experiments only (lab).",
+    "if_fail_rule": "keep schema experimental and document failure modes by case/dimension"
+  },
+  "what_remains_before_any_production_redesign": [
+    "multi-dimension expansion beyond diferenciacion/percepcion (include coherencia, presencia, vitalidad cases).",
+    "calibrate anti-formula behavior so outputs remain constrained but not repetitive.",
+    "improve provenance richness where source is snapshot-only.",
+    "define product-side fallback behavior when schema returns zero findings due to hard constraints.",
+    "establish a formal compatibility layer with existing Finding payload before touching runtime prompts."
+  ],
+  "constraints_respected": {
+    "no_runtime_integration": true,
+    "no_production_prompt_edits": true,
+    "no_narrative_py_changes": true,
+    "no_scoring_report_render_storage_contract_changes": true,
+    "no_deep_research_or_exa_firecrawl_calls": true,
+    "one_trial_batch_only": true
+  },
+  "artifacts": {
+    "script": "scripts/evidence_packet_findings_schema_multi_case_trial.py",
+    "request_manifest": "examples/reports/evidence_packet_findings_schema_trial/multi_case_v0/request_manifest.json",
+    "raw_outputs": "examples/reports/evidence_packet_findings_schema_trial/multi_case_v0/raw_outputs.json",
+    "comparison": "examples/reports/evidence_packet_findings_schema_trial/multi_case_v0/comparison.json",
+    "cost_observation": "examples/reports/evidence_packet_findings_schema_trial/multi_case_v0/cost_observation.json",
+    "trial_notes": "examples/reports/evidence_packet_findings_schema_trial/multi_case_v0/trial_notes.md"
+  },
+  "cost_observation_summary": {
+    "llm_calls_planned": 4,
+    "llm_calls_executed": 4,
+    "cache_hits": 0,
+    "cache_misses": 4,
+    "usage_metadata_available": false,
+    "cost_estimate_available": false
+  }
+}

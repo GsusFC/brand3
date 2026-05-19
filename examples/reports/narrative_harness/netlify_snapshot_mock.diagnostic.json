@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "status": "warning",
+  "summary": {
+    "total_checks": 8,
+    "passed": 5,
+    "warnings": 3,
+    "errors": 0
+  },
+  "checks": [
+    {
+      "check_id": "repeated_sentence_openings",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Repeated sentence openings detected across narrative fields.",
+      "evidence": [
+        {
+          "path": "findings_by_dimension.coherencia[0].observation",
+          "excerpt": "The available sources point in the same direction.",
+          "opening": "the available sources"
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].observation",
+          "excerpt": "The available sources point in the same direction.",
+          "opening": "the available sources"
+        },
+        {
+          "path": "findings_by_dimension.percepcion[0].observation",
+          "excerpt": "The available sources point in the same direction.",
+          "opening": "the available sources"
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[0].observation",
+          "excerpt": "The available sources point in the same direction.",
+          "opening": "the available sources"
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[0].observation",
+          "excerpt": "The available sources point in the same direction.",
+          "opening": "the available sources"
+        }
+      ]
+    },
+    {
+      "check_id": "generic_strategic_filler",
+      "severity": "warning",
+      "status": "pass",
+      "message": "No configured generic strategic filler phrases were detected.",
+      "evidence": []
+    },
+    {
+      "check_id": "unsupported_prescription_language",
+      "severity": "warning",
+      "status": "pass",
+      "message": "No configured unsupported prescription phrases were detected.",
+      "evidence": []
+    },
+    {
+      "check_id": "missing_evidence_urls",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Findings with narrative text and no evidence URLs were detected.",
+      "evidence": [
+        {
+          "path": "findings_by_dimension.coherencia[0].evidence_urls",
+          "excerpt": "The available sources point in the same direction."
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[0].evidence_urls",
+          "excerpt": "The available sources point in the same direction."
+        }
+      ]
+    },
+    {
+      "check_id": "self_description_as_validation",
+      "severity": "warning",
+      "status": "pass",
+      "message": "No configured self-description validation patterns were detected.",
+      "evidence": []
+    },
+    {
+      "check_id": "safe_attribution_overuse",
+      "severity": "warning",
+      "status": "pass",
+      "message": "Safe attribution language stayed below the v1 overuse threshold.",
+      "evidence": []
+    },
+    {
+      "check_id": "observation_repetition_families",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Observation-level repetition families exceeded the v1 threshold.",
+      "evidence": [
+        {
+          "family": "fallback_evidence_opening_repetition",
+          "total": 5,
+          "phrase_counts": {
+            "the available sources": 5
+          },
+          "matches": [
+            {
+              "path": "findings_by_dimension.coherencia[0].observation",
+              "excerpt": "The available sources point in the same direction.",
+              "phrase": "the available sources",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.presencia[0].observation",
+              "excerpt": "The available sources point in the same direction.",
+              "phrase": "the available sources",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.percepcion[0].observation",
+              "excerpt": "The available sources point in the same direction.",
+              "phrase": "the available sources",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[0].observation",
+              "excerpt": "The available sources point in the same direction.",
+              "phrase": "the available sources",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[0].observation",
+              "excerpt": "The available sources point in the same direction.",
+              "phrase": "the available sources",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "check_id": "synthesis_tension_lexical_mismatch",
+      "severity": "warning",
+      "status": "pass",
+      "message": "Synthesis/tension comparison skipped because one side is empty.",
+      "evidence": []
+    }
+  ],
+  "metrics": {
+    "findings_count": 5,
+    "findings_without_evidence_urls": 2,
+    "sentence_opening_counts": {
+      "consolidated evidence": 5,
+      "netlify presents a": 1,
+      "the available sources": 5
+    },
+    "generic_phrase_counts": {},
+    "unsupported_prescription_counts": {},
+    "safe_attribution_phrase_counts": {},
+    "safe_attribution_total": 0,
+    "observation_repetition_family_counts": {
+      "fallback_evidence_opening_repetition": {
+        "total": 5,
+        "phrases": {
+          "the available sources": 5
+        }
+      }
+    },
+    "warning_count": 3,
+    "error_count": 0
+  },
+  "input_metadata": {
+    "payload_version": 1,
+    "payload_source": "report_narrative",
+    "run_id": 1,
+    "brand": "Netlify",
+    "has_base_dossier": true,
+    "has_synthesis": true,
+    "has_tension": false,
+    "dimensions_count": 5,
+    "findings_count": 5
+  }
+}

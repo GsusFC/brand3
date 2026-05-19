@@ -1,0 +1,597 @@
+{
+  "version": 1,
+  "status": "warning",
+  "summary": {
+    "total_checks": 8,
+    "passed": 3,
+    "warnings": 5,
+    "errors": 0
+  },
+  "checks": [
+    {
+      "check_id": "repeated_sentence_openings",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Repeated sentence openings detected across narrative fields.",
+      "evidence": [
+        {
+          "path": "findings_by_dimension.coherencia[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+          "opening": "the brand describes"
+        },
+        {
+          "path": "findings_by_dimension.coherencia[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between doubling down on the creator/email niche, expanding to adjacent creator tools, or broadening the platform's app...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+          "opening": "the brand describes"
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between expanding the platform's functionality to encompass broader creator tools, or doubling down on email-specific f...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[1].typical_decision",
+          "excerpt": "Teams in this position typically consider investing in AI or human moderation to ensure content quality, or developing features that highlight the unique voice...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.percepcion[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between focusing on content marketing to showcase data insights, developing partnerships to integrate data with other p...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+          "opening": "the brand describes"
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between emphasizing email marketing tools and integrations, or broadening the platform's functionality to encompass a w...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.presencia[1].typical_decision",
+          "excerpt": "Teams in this position typically consider investing in further third-party security certifications, actively monitoring and responding to user reviews and tech...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.presencia[2].typical_decision",
+          "excerpt": "Teams in this position typically choose between optimizing the robots.txt file for specific SEO goals, implementing more advanced site indexing controls, or fo...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between focusing on marketing existing API features to a wider audience, developing further integrations and partnershi...",
+          "opening": "teams in this"
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[1].observation",
+          "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+          "opening": "the brand describes"
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[2].typical_decision",
+          "excerpt": "Teams in this position typically choose between enhancing the existing knowledge base with more content and interactive features, integrating the knowledge bas...",
+          "opening": "teams in this"
+        }
+      ]
+    },
+    {
+      "check_id": "generic_strategic_filler",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Generic strategic filler phrases were detected.",
+      "evidence": [
+        {
+          "path": "findings_by_dimension.coherencia[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between doubling down on the creator/email niche, expanding to adjacent creator tools, or broadening the platform's app...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between expanding the platform's functionality to encompass broader creator tools, or doubling down on email-specific f...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[1].typical_decision",
+          "excerpt": "Teams in this position typically consider investing in AI or human moderation to ensure content quality, or developing features that highlight the unique voice...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.percepcion[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between focusing on content marketing to showcase data insights, developing partnerships to integrate data with other p...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between emphasizing email marketing tools and integrations, or broadening the platform's functionality to encompass a w...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.presencia[1].typical_decision",
+          "excerpt": "Teams in this position typically consider investing in further third-party security certifications, actively monitoring and responding to user reviews and tech...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.presencia[2].typical_decision",
+          "excerpt": "Teams in this position typically choose between optimizing the robots.txt file for specific SEO goals, implementing more advanced site indexing controls, or fo...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[0].typical_decision",
+          "excerpt": "Teams in this position typically choose between focusing on marketing existing API features to a wider audience, developing further integrations and partnershi...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[2].typical_decision",
+          "excerpt": "Teams in this position typically choose between enhancing the existing knowledge base with more content and interactive features, integrating the knowledge bas...",
+          "phrase": "teams in this position typically",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "check_id": "unsupported_prescription_language",
+      "severity": "warning",
+      "status": "pass",
+      "message": "No configured unsupported prescription phrases were detected.",
+      "evidence": []
+    },
+    {
+      "check_id": "missing_evidence_urls",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Findings with narrative text and no evidence URLs were detected.",
+      "evidence": [
+        {
+          "path": "findings_by_dimension.coherencia[0].evidence_urls",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri..."
+        },
+        {
+          "path": "findings_by_dimension.coherencia[1].evidence_urls",
+          "excerpt": "Third parties describe BuiltWith as 'a Technology, Information and Internet company' that 'provides lead list sales teams, tech signals, spend, and lifecycle e..."
+        },
+        {
+          "path": "findings_by_dimension.coherencia[2].evidence_urls",
+          "excerpt": "The evidence pool includes technical, non-branded observations such as 'Local image analysis found 6 dominant color groups' and 'Whitespace ratio 0.27; contras..."
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].evidence_urls",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac..."
+        }
+      ]
+    },
+    {
+      "check_id": "self_description_as_validation",
+      "severity": "warning",
+      "status": "pass",
+      "message": "No configured self-description validation patterns were detected.",
+      "evidence": []
+    },
+    {
+      "check_id": "safe_attribution_overuse",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Safe attribution language is repeated enough to create a cohesion risk.",
+      "evidence": [
+        {
+          "path": "findings_by_dimension.coherencia[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+          "phrase": "the brand describes itself",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.coherencia[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+          "phrase": "based only on self-description",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+          "phrase": "the brand describes itself",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.diferenciacion[1].observation",
+          "excerpt": "The brand claims that its 'Content feels original and human-written'. This statement is found on its own surfaces, with no external corroboration in the eviden...",
+          "phrase": "the brand claims",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.percepcion[0].observation",
+          "excerpt": "The brand builtwith.com describes itself as a 'website profiling, lead generation, competitive analysis, and business intelligence platform that delivers compr...",
+          "phrase": "based only on self-description",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+          "phrase": "the brand describes itself",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.presencia[0].observation",
+          "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+          "phrase": "based only on self-description",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[0].observation",
+          "excerpt": "The brand blog states, 'At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to ...",
+          "phrase": "based only on self-description",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[1].observation",
+          "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+          "phrase": "the brand describes itself",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[1].observation",
+          "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+          "phrase": "based only on self-description",
+          "count": 1
+        },
+        {
+          "path": "findings_by_dimension.vitalidad[2].observation",
+          "excerpt": "The brand appears on kb.builtwith.com, detailing 'all BuiltWith products' within account management, and also on builtwith.com, which provides general informat...",
+          "phrase": "based only on self-description",
+          "count": 1
+        }
+      ]
+    },
+    {
+      "check_id": "observation_repetition_families",
+      "severity": "warning",
+      "status": "warning",
+      "message": "Observation-level repetition families exceeded the v1 threshold.",
+      "evidence": [
+        {
+          "family": "safe_attribution_repetition",
+          "total": 11,
+          "phrase_counts": {
+            "based only on self-description": 6,
+            "the brand claims": 1,
+            "the brand describes itself": 4
+          },
+          "matches": [
+            {
+              "path": "findings_by_dimension.coherencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "the brand describes itself",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.coherencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "the brand describes itself",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[1].observation",
+              "excerpt": "The brand claims that its 'Content feels original and human-written'. This statement is found on its own surfaces, with no external corroboration in the eviden...",
+              "phrase": "the brand claims",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.percepcion[0].observation",
+              "excerpt": "The brand builtwith.com describes itself as a 'website profiling, lead generation, competitive analysis, and business intelligence platform that delivers compr...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.presencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+              "phrase": "the brand describes itself",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.presencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[0].observation",
+              "excerpt": "The brand blog states, 'At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to ...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[1].observation",
+              "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+              "phrase": "the brand describes itself",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[1].observation",
+              "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[2].observation",
+              "excerpt": "The brand appears on kb.builtwith.com, detailing 'all BuiltWith products' within account management, and also on builtwith.com, which provides general informat...",
+              "phrase": "based only on self-description",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "family": "fallback_evidence_opening_repetition",
+          "total": 9,
+          "phrase_counts": {
+            "the evidence pool": 9
+          },
+          "matches": [
+            {
+              "path": "findings_by_dimension.coherencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.coherencia[2].observation",
+              "excerpt": "The evidence pool includes technical, non-branded observations such as 'Local image analysis found 6 dominant color groups' and 'Whitespace ratio 0.27; contras...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[1].observation",
+              "excerpt": "The brand claims that its 'Content feels original and human-written'. This statement is found on its own surfaces, with no external corroboration in the eviden...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.percepcion[0].observation",
+              "excerpt": "The brand builtwith.com describes itself as a 'website profiling, lead generation, competitive analysis, and business intelligence platform that delivers compr...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.presencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[0].observation",
+              "excerpt": "The brand blog states, 'At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to ...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[1].observation",
+              "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+              "phrase": "the evidence pool",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[2].observation",
+              "excerpt": "The brand appears on kb.builtwith.com, detailing 'all BuiltWith products' within account management, and also on builtwith.com, which provides general informat...",
+              "phrase": "the evidence pool",
+              "count": 1
+            }
+          ]
+        },
+        {
+          "family": "external_corroboration_caveat_repetition",
+          "total": 14,
+          "phrase_counts": {
+            "based only on self-description": 6,
+            "no external corroboration": 8
+          },
+          "matches": [
+            {
+              "path": "findings_by_dimension.coherencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.coherencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' and states 'Make email your most valuable channel'. This descri...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.diferenciacion[1].observation",
+              "excerpt": "The brand claims that its 'Content feels original and human-written'. This statement is found on its own surfaces, with no external corroboration in the eviden...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.percepcion[0].observation",
+              "excerpt": "The brand builtwith.com describes itself as a 'website profiling, lead generation, competitive analysis, and business intelligence platform that delivers compr...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.percepcion[0].observation",
+              "excerpt": "The brand builtwith.com describes itself as a 'website profiling, lead generation, competitive analysis, and business intelligence platform that delivers compr...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.presencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.presencia[0].observation",
+              "excerpt": "The brand describes itself as 'the email-first operating system for creators who mean business' on its own website, specifically in the context of growing reac...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[0].observation",
+              "excerpt": "The brand blog states, 'At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to ...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[0].observation",
+              "excerpt": "The brand blog states, 'At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to ...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[1].observation",
+              "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[1].observation",
+              "excerpt": "The brand describes itself as 'a company that provides lead list sales teams, tech signals, spend, and lifecycle events to identify companies adopting competit...",
+              "phrase": "based only on self-description",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[2].observation",
+              "excerpt": "The brand appears on kb.builtwith.com, detailing 'all BuiltWith products' within account management, and also on builtwith.com, which provides general informat...",
+              "phrase": "no external corroboration",
+              "count": 1
+            },
+            {
+              "path": "findings_by_dimension.vitalidad[2].observation",
+              "excerpt": "The brand appears on kb.builtwith.com, detailing 'all BuiltWith products' within account management, and also on builtwith.com, which provides general informat...",
+              "phrase": "based only on self-description",
+              "count": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "check_id": "synthesis_tension_lexical_mismatch",
+      "severity": "warning",
+      "status": "pass",
+      "message": "Synthesis/tension comparison skipped because one side is empty.",
+      "evidence": []
+    }
+  ],
+  "metrics": {
+    "findings_count": 13,
+    "findings_without_evidence_urls": 4,
+    "sentence_opening_counts": {
+      "api ecosystem expansion": 1,
+      "brand describes itself": 1,
+      "brands facing such": 1,
+      "companies in this": 2,
+      "conflicting external trust": 1,
+      "content originality and": 1,
+      "email first operating": 2,
+      "email first os": 1,
+      "external coverage of": 1,
+      "product and knowledge": 1,
+      "teams in this": 9,
+      "teams with such": 1,
+      "technical site configuration": 1,
+      "technology intelligence provider": 1,
+      "the 'very likely": 1,
+      "the brand appears": 1,
+      "the brand blog": 1,
+      "the brand builtwith": 1,
+      "the brand claims": 1,
+      "the brand describes": 4,
+      "the brand's self": 1,
+      "the domain builtwith": 1,
+      "the evidence pool": 1,
+      "the existence of": 1,
+      "the presence of": 2,
+      "these technical details": 1,
+      "third parties describe": 1,
+      "third party assessments": 1,
+      "this external categorization": 1,
+      "this framing suggests": 1,
+      "this positioning suggests": 2,
+      "this self positioning": 1,
+      "this suggests an": 1,
+      "this suggests the": 1,
+      "visual analysis metrics": 1,
+      "web intelligence provider": 1,
+      "website safety assessment": 1
+    },
+    "generic_phrase_counts": {
+      "teams in this position typically": 9
+    },
+    "unsupported_prescription_counts": {},
+    "safe_attribution_phrase_counts": {
+      "the brand describes itself": 4,
+      "the brand claims": 1,
+      "based only on self-description": 6
+    },
+    "safe_attribution_total": 11,
+    "observation_repetition_family_counts": {
+      "external_corroboration_caveat_repetition": {
+        "total": 14,
+        "phrases": {
+          "based only on self-description": 6,
+          "no external corroboration": 8
+        }
+      },
+      "fallback_evidence_opening_repetition": {
+        "total": 9,
+        "phrases": {
+          "the evidence pool": 9
+        }
+      },
+      "safe_attribution_repetition": {
+        "total": 11,
+        "phrases": {
+          "based only on self-description": 6,
+          "the brand claims": 1,
+          "the brand describes itself": 4
+        }
+      }
+    },
+    "warning_count": 5,
+    "error_count": 0
+  },
+  "input_metadata": {
+    "payload_version": 1,
+    "payload_source": "report_narrative",
+    "run_id": 74,
+    "brand": "builtwith.kit.com",
+    "has_base_dossier": true,
+    "has_synthesis": true,
+    "has_tension": false,
+    "dimensions_count": 5,
+    "findings_count": 13
+  }
+}

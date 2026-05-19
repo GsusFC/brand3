@@ -1,0 +1,44 @@
+{
+  "document": "brand3_lab_strict_mode_fix_review",
+  "date": "2026-05-18",
+  "scope": "lab_only",
+  "target_case": {
+    "domain": "wiocapital.com",
+    "run_id": 105
+  },
+  "changes": [
+    "strict_dimension_gating_in_lab_render_path",
+    "explicit_abstention_finding_for_non_executable_dimensions",
+    "explicit_generation_unavailable_finding_for_empty_or_invalid_llm_output",
+    "low_signal_evidence_filtering_for_prompt_input_candidate",
+    "scope_disclosure_in_lab_synthesis"
+  ],
+  "pass_criteria": {
+    "no_unexplained_insufficient_data_line": true,
+    "non_executable_dimensions_have_explicit_reasoned_output": true,
+    "url_param_only_signal_not_used_as_narrative_finding": true,
+    "single_page_production_like_layout_preserved": true,
+    "fallback_mode_remains_visible_when_triggered": true
+  },
+  "before_after": {
+    "before": {
+      "mixed_semantics_present": true,
+      "generic_insufficient_placeholder_present": true
+    },
+    "after": {
+      "mixed_semantics_reduced": true,
+      "generic_insufficient_placeholder_present": false,
+      "explicit_status_reason_codes_rendered": true,
+      "recommended_action_rendered": true
+    }
+  },
+  "residual_limitations": [
+    "lab_uses_base_scores_from_standard_scoring_pipeline",
+    "legacy_evidence_and_source_sections_still_show_raw_urls_for_traceability",
+    "global_packet_or_candidate_failure_still_triggers_official_fallback_mode"
+  ],
+  "decision": {
+    "status": "usable_lab_only",
+    "reason": "Lab findings output is now explicit, bounded, and human-readable without ambiguous placeholder findings."
+  }
+}

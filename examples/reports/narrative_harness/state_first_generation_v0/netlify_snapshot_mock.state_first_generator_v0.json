@@ -1,0 +1,350 @@
+{
+  "version": "state_first_findings_generator.v0",
+  "created_at": "deterministic_offline_generator_v0",
+  "case_id": "netlify_com",
+  "status": {
+    "lab_only": true,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false,
+    "production_ready": false
+  },
+  "input_artifacts": {
+    "report_narrative_payload": {
+      "available": true,
+      "source_id": "report_narrative"
+    },
+    "payload_diagnostic": {
+      "available": true,
+      "source_id": "warning"
+    },
+    "render_diagnostic": {
+      "available": true,
+      "source_id": "warning"
+    },
+    "entity_narrative_state": {
+      "available": true,
+      "source_id": "entity_narrative_state.v0"
+    },
+    "snapshot_metadata": {
+      "available": false,
+      "source_id": "unknown"
+    }
+  },
+  "generation_decision": {
+    "mode": "light",
+    "candidate_available": true,
+    "reason": "state-first can improve evidence boundaries without heavy rewrite",
+    "blocked_reasons": [],
+    "preconditions_passed": [
+      "report_narrative_payload_exists",
+      "at_least_one_finding_exists",
+      "payload_diagnostic_exists_or_can_be_built_offline",
+      "render_diagnostic_exists_or_can_be_built_offline",
+      "entity_narrative_state_exists",
+      "entity_narrative_state_status_is_offline_lab_only",
+      "meaningful_evidence_map_can_be_built",
+      "unresolved_ambiguity_is_explicit_not_inferred",
+      "related_surfaces_are_explicit_or_reviewed",
+      "every_generated_finding_can_state_an_evidence_boundary"
+    ],
+    "preconditions_failed": [],
+    "intervention_reasons": [
+      "fallback_repetition",
+      "missing_finding_level_evidence",
+      "stable_entity_restraint"
+    ],
+    "pressure_profile": {
+      "entity_boundary": "inactive",
+      "related_surface_pressure": "inactive",
+      "evidence_binding": "medium",
+      "caveat_inflation": "inactive",
+      "fallback_repetition": "medium",
+      "owned_claim_repetition": "inactive",
+      "generic_decision_space": "inactive",
+      "visual_or_perceptual_overreach": "unknown",
+      "healthy_case_restraint": "high"
+    }
+  },
+  "baseline": {
+    "findings_count": 5,
+    "dimensions_present": [
+      "coherencia",
+      "diferenciacion",
+      "percepcion",
+      "presencia",
+      "vitalidad"
+    ],
+    "findings_without_evidence_urls": 2,
+    "safe_attribution_total": 0,
+    "external_corroboration_caveat_total": 0,
+    "fallback_evidence_opening_total": 5,
+    "generic_decision_space_count": 0,
+    "primary_failure": "fallback evidence openings repeat across findings"
+  },
+  "shared_entity_state": {
+    "primary_entity_signal": {
+      "label": "www.netlify.com",
+      "confidence": "medium",
+      "supporting_sources": [
+        "https://www.netlify.com",
+        "netlify.com"
+      ],
+      "uncertainty": "Entity anchor derived from explicit metadata or evidence URL domain only.",
+      "requires_human_review": true
+    },
+    "entity_ambiguity_status": "not_explicit",
+    "observed_related_surfaces": [],
+    "owned_claim_density": {
+      "level": "inactive",
+      "safe_attribution_total": 0,
+      "phrase_counts": {},
+      "source": "payload_diagnostic.metrics.safe_attribution_*"
+    },
+    "evidence_url_coverage": {
+      "finding_count": 5,
+      "findings_without_evidence_urls": 2,
+      "coverage_level": "mixed",
+      "visible_evidence_link_count": 4,
+      "affected_dimensions": [
+        "coherencia",
+        "diferenciacion"
+      ],
+      "source": "payload_and_render_diagnostics"
+    },
+    "active_budgets": {
+      "repeated_opener_budget": {
+        "status": "over_budget",
+        "max_same_opening": 2,
+        "tracked_openings": [
+          "consolidated evidence",
+          "the available sources"
+        ],
+        "observed_counts": {
+          "consolidated evidence": 5,
+          "the available sources": 10
+        },
+        "source": "payload_and_render_diagnostics"
+      },
+      "fallback_language_budget": {
+        "mode": "fallback_like_repetition",
+        "fallback_mode": false,
+        "fallback_like_repetition": true,
+        "phrase_counts": {
+          "the available sources": 5
+        },
+        "source": "observation_repetition_family_metrics"
+      },
+      "decision_space_mode": {
+        "mode": "not_applicable_empty",
+        "generic_decision_count": 0,
+        "visible_decision_space_count": 0,
+        "render_suppression_observed": false,
+        "advisory_only": true
+      }
+    },
+    "primary_tension": null
+  },
+  "shared_evidence_map": {
+    "evidence_urls": [
+      "https://en.wikipedia.org/wiki/Netlify",
+      "https://techcrunch.com/2025/netlify-series-d",
+      "https://www.netlify.com/blog/2026-04-01-release/",
+      "https://www.netlify.com/blog/enterprise/"
+    ],
+    "evidence_domains": {
+      "en.wikipedia.org": 1,
+      "netlify.com": 2,
+      "techcrunch.com": 1
+    },
+    "findings_without_evidence_urls": [
+      {
+        "dimension": "coherencia",
+        "title": "Consolidated evidence"
+      },
+      {
+        "dimension": "diferenciacion",
+        "title": "Consolidated evidence"
+      }
+    ],
+    "evidence_that_must_not_be_overinterpreted": [],
+    "coverage_note": "finding-level evidence gaps are present"
+  },
+  "global_uncertainty_model": {
+    "can_state_as_observation": [
+      "baseline findings and attached evidence URLs can be inspected",
+      "finding-level evidence gaps can be counted",
+      "payload and render diagnostics can identify repetition families"
+    ],
+    "can_state_as_interpretation": [
+      "state-first may classify the case as none, light, or strong intervention",
+      "state-first may centralize global caveats when diagnostics show repetition"
+    ],
+    "must_remain_uncertain": [
+      "whether baseline evidence is sufficient for stronger strategic interpretation",
+      "whether under-evidenced findings should be rewritten or withheld"
+    ],
+    "requires_human_review": [
+      "none explicit in state"
+    ],
+    "must_not_infer": [
+      "ownership from name similarity",
+      "strategic intent from surface signals alone",
+      "market validation from owned claims",
+      "public reputation from isolated external trust pages",
+      "visual confidence as evidentiary confidence"
+    ],
+    "mode_constraint": "improve evidence boundaries without adding artificial tension"
+  },
+  "state_first_finding_plan": {
+    "mode": "light",
+    "pressure_subtype": "fallback_compression",
+    "planning_focus": "centralize fallback evidence language and avoid repeating thin-source openings",
+    "coordination_rules": [
+      "do not use scores as evidence",
+      "do not write generic Decision Space",
+      "keep observation and interpretation separate",
+      "avoid heavy rewrite and preserve stable entity signal",
+      "centralize fallback language and avoid repeating evidence-pool openings"
+    ],
+    "dimension_roles": {
+      "coherencia": "entity coherence and evidence-bound story consistency",
+      "diferenciacion": "owned positioning versus externally supported differentiation",
+      "percepcion": "visible perception signals without reputation inflation",
+      "presencia": "owned and external surface footprint with entity boundaries",
+      "vitalidad": "activity signals without growth or roadmap overclaiming"
+    },
+    "caveat_strategy": "compress fallback evidence openings into one global limitation, do not delete the limitation",
+    "evidence_binding_strategy": "mark missing evidence URLs explicitly and avoid repeating fallback source phrasing in every finding",
+    "overreach_suppression_rules": [
+      "no generic Decision Space",
+      "no inferred ownership",
+      "no inferred category leadership",
+      "no synthetic depth for thin payloads",
+      "no artificial tension for healthy cases",
+      "no synthetic depth for fallback evidence"
+    ]
+  },
+  "generated_state_first_findings": {
+    "generation_type": "deterministic_lab_candidate_skeleton",
+    "global_caveat": "State-first reading keeps the entity stable and centralizes fallback evidence language instead of repeating it across findings.",
+    "findings_by_dimension": {
+      "coherencia": [
+        {
+          "dimension": "coherencia",
+          "title": "Consolidated evidence",
+          "finding": "State-first candidate keeps this finding light and evidence-bound. Baseline signal: Consolidated evidence. Because the baseline lacks a finding-level evidence URL, the candidate should stay compact.",
+          "evidence_urls": [],
+          "missing_evidence_note": "No finding-level evidence URL is attached in the baseline payload.",
+          "confidence": "low_to_medium",
+          "uncertainty_note": "This candidate must remain limited because the baseline finding lacks a local evidence URL.",
+          "requires_human_review": true,
+          "source_baseline_index": 0
+        }
+      ],
+      "diferenciacion": [
+        {
+          "dimension": "diferenciacion",
+          "title": "Consolidated evidence",
+          "finding": "State-first candidate keeps this finding light and evidence-bound. Baseline signal: Consolidated evidence. Because the baseline lacks a finding-level evidence URL, the candidate should stay compact.",
+          "evidence_urls": [],
+          "missing_evidence_note": "No finding-level evidence URL is attached in the baseline payload.",
+          "confidence": "low_to_medium",
+          "uncertainty_note": "This candidate must remain limited because the baseline finding lacks a local evidence URL.",
+          "requires_human_review": true,
+          "source_baseline_index": 0
+        }
+      ],
+      "percepcion": [
+        {
+          "dimension": "percepcion",
+          "title": "Consolidated evidence",
+          "finding": "State-first candidate keeps this finding light and evidence-bound. Baseline signal: Consolidated evidence. The evidence can support observation, but not unsupported strategic expansion.",
+          "evidence_urls": [
+            "https://techcrunch.com/2025/netlify-series-d",
+            "https://www.netlify.com/blog/enterprise/"
+          ],
+          "missing_evidence_note": null,
+          "confidence": "medium",
+          "uncertainty_note": "This candidate should stay light and avoid adding artificial tension.",
+          "requires_human_review": false,
+          "source_baseline_index": 0
+        }
+      ],
+      "presencia": [
+        {
+          "dimension": "presencia",
+          "title": "Consolidated evidence",
+          "finding": "State-first candidate keeps this finding light and evidence-bound. Baseline signal: Consolidated evidence. The evidence can support observation, but not unsupported strategic expansion.",
+          "evidence_urls": [
+            "https://en.wikipedia.org/wiki/Netlify"
+          ],
+          "missing_evidence_note": null,
+          "confidence": "medium",
+          "uncertainty_note": "This candidate should stay light and avoid adding artificial tension.",
+          "requires_human_review": false,
+          "source_baseline_index": 0
+        }
+      ],
+      "vitalidad": [
+        {
+          "dimension": "vitalidad",
+          "title": "Consolidated evidence",
+          "finding": "State-first candidate keeps this finding light and evidence-bound. Baseline signal: Consolidated evidence. The evidence can support observation, but not unsupported strategic expansion.",
+          "evidence_urls": [
+            "https://www.netlify.com/blog/2026-04-01-release/"
+          ],
+          "missing_evidence_note": null,
+          "confidence": "medium",
+          "uncertainty_note": "This candidate should stay light and avoid adding artificial tension.",
+          "requires_human_review": false,
+          "source_baseline_index": 0
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "specificity": {
+      "candidate_improves": true,
+      "notes": "improves only if evidence boundaries become more explicit"
+    },
+    "evidence_binding": {
+      "candidate_improves": true,
+      "notes": "primary expected improvement"
+    },
+    "entity_coherence": {
+      "candidate_improves": false,
+      "notes": "strong mode only; light mode should not invent entity ambiguity"
+    },
+    "caveat_discipline": {
+      "candidate_improves": true,
+      "notes": "caveats may be compressed but must remain visible"
+    },
+    "uncertainty_preservation": {
+      "candidate_improves": true,
+      "notes": "required for any acceptable candidate"
+    },
+    "overreach_risk": {
+      "risk_level": "low_to_medium",
+      "notes": "Fluent prose could hide uncertainty if this skeleton becomes a prose generator too early."
+    },
+    "baseline_primary_failure": "fallback evidence openings repeat across findings",
+    "state_pressure": "fallback repetition pressure"
+  },
+  "verdict": {
+    "better_than_baseline": "candidate_for_review",
+    "safer_than_baseline": "candidate_for_review",
+    "clearer_than_baseline": "candidate_for_review",
+    "worth_continuing": true,
+    "biggest_improvement": "light mode improves evidence discipline without overstructuring",
+    "biggest_remaining_risk": "candidate skeleton is not production prose and still needs human review",
+    "what_failed": [
+      "v0 does not prove automated prose quality",
+      "v0 does not fix missing evidence URLs",
+      "v0 is lab-only and not report-ready"
+    ]
+  }
+}

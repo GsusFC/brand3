@@ -1,0 +1,33 @@
+{
+  "created_at": "2026-05-18T08:17:33.395146+00:00",
+  "model": "gemini-3.1-pro-preview",
+  "case_id": "linear",
+  "dimension": "diferenciacion",
+  "raw_response": {
+    "findings": [
+      {
+        "title": "Competitor relative positioning distance",
+        "evidence_anchor": "Wrike closest measured competitor (0.752); ProjectManager most different (0.872); avg_distance=0.821; competitors_analyzed=5.",
+        "observation": "Among 5 analyzed competitors, Wrike is the closest measured competitor with a distance of 0.752, and ProjectManager is the most different measured competitor with a distance of 0.872, compared to an average distance of 0.821.",
+        "bounded_interpretation": "If the measured distances reflect current market positioning, the audited brand is positioned closer to Wrike and further from ProjectManager relative to the analyzed group.",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+        "evidence_urls": [
+          "snapshot://feature/competitor_web_comparison"
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "finding_count": 1,
+    "titles": [
+      "Competitor relative positioning distance"
+    ],
+    "risky_terms_detected": [
+      "superior",
+      "adoption"
+    ],
+    "risky_terms_outside_limits": [],
+    "limits_field_present": true,
+    "has_typical_decision": false
+  }
+}

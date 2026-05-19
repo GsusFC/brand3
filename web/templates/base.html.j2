@@ -18,7 +18,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="/static/main.css?v=brand3-dark-mode-20260515">
+<link rel="stylesheet" href="/static/main.css?v=brand3-lab-mono-density-20260516">
 {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -28,7 +28,7 @@
     <a class="main-nav-link{% if request.url.path == '/' %} is-active{% endif %}" href="/">Brand Audit</a>
     <a class="main-nav-link{% if request.url.path.startswith('/reports') or request.url.path.startswith('/r/') or request.url.path.startswith('/brand/') %} is-active{% endif %}" href="/reports">Reports</a>
     <a class="main-nav-link{% if request.url.path.startswith('/visual-signature') %} is-active{% endif %}" href="/visual-signature">Visual Signature Lab</a>
-    <a class="main-nav-link{% if request.url.path.startswith('/brand3-lab') %} is-active{% endif %}" href="/brand3-lab/perceptual-narrative-comparison">Brand3 Lab</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/brand3-lab') %} is-active{% endif %}" href="/brand3-lab">Brand3 Lab</a>
     <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
   </nav>
   <hr class="rule">

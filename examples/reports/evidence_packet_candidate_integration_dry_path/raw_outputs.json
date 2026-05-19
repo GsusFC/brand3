@@ -1,0 +1,157 @@
+{
+  "created_at": "2026-05-18T10:32:40.302193+00:00",
+  "executed": false,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 3,
+      "allowed_evidence_urls": [
+        "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "https://releasebot.io/updates/launchdarkly",
+        "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "case_id": "vercel",
+      "dimension": "coherencia",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "allowed_evidence_urls": [
+        "https://en.wikipedia.org/wiki/Vercel"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "allowed_evidence_urls": [
+        "https://watermelon.sh/"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    }
+  ],
+  "skipped": [
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "launchdarkly",
+      "dimension": "coherencia",
+      "status": "review_required",
+      "intent": "review_required_control",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

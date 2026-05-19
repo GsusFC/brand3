@@ -1,0 +1,592 @@
+{
+  "document": "brand3_dimension_evidence_requirements_v0",
+  "version": 0,
+  "purpose": "Define the evidence contract and readiness criteria for each Brand3 dimension",
+  "date_created": "2026-05-18",
+  "dimension_contracts": {
+    "coherencia": {
+      "goal": "Detect consistency of messaging, tone, visual identity, and positioning across owned touchpoints.",
+      "epistemology": "Intra-entity alignment. Owned-surface consistency.",
+      "ready_requires": [
+        "Minimum 2 distinct owned surfaces (homepage, about, docs, social bio, blog)",
+        "Consistent message/positioning/tone across those surfaces",
+        "Brand-level visual consistency can support readiness only alongside owned textual/message surfaces",
+        "Optional: at least 1 external source verifying the owned message claim"
+      ],
+      "thin_is": [
+        "Only 1 owned surface with text",
+        "Multiple surfaces exist but messaging is generic/boilerplate",
+        "Tone varies but limited surfaces make assessment difficult"
+      ],
+      "blocked_is": [
+        "Zero owned surfaces with meaningful text",
+        "Owned surfaces directly contradict each other (homepage says X, about says Y, LinkedIn says Z)",
+        "Evidence is only technical artifacts (robots.txt, schema, visual technical metrics)"
+      ],
+      "allowed_evidence_types": [
+        "owned_page_text",
+        "owned_social_bio",
+        "owned_blog_post",
+        "owned_product_documentation",
+        "external_source_echoing_owned_claim"
+      ],
+      "disallowed_evidence_types": [
+        "technical_artifact",
+        "visual_technical_metric",
+        "schema_markup",
+        "raw_visual_metric_scores",
+        "contrast_ratio"
+      ],
+      "minimum_externality_percent": 0,
+      "owned_only_sufficient": true,
+      "comparative_required": false,
+      "technical_can_contribute": false,
+      "review_gated_can_count": false,
+      "can_score_with_zero": false,
+      "abstain_when": "Zero owned surfaces or all evidence is technical",
+      "collection_must_provide": [
+        "Multiple owned surfaces (not just homepage)",
+        "Text extraction with confidence",
+        "Tone/messaging analysis",
+        "Optional: external corroboration sources"
+      ],
+      "evidence_packet_validates": [
+        "Owned surfaces correctly marked",
+        "Technical artifacts classified as technical, not coherencia",
+        "Visual technical metrics blocked",
+        "Brand-level visual signals treated as support only, not standalone readiness evidence",
+        "Minimum 2 surfaces for ready status",
+        "Empty-text evidence blocked"
+      ]
+    },
+    "presencia": {
+      "goal": "Detect whether brand is discoverable and existent across relevant channels for its market.",
+      "epistemology": "Multi-channel detectability. Requires owned + external.",
+      "ready_requires": [
+        "Owned web domain exists, loads, has content, valid SSL, not 404 or redirect",
+        "Minimum 2 external channels detected (press, social, directory, Wikipedia, etc.)",
+        "Recency: last activity ≤ 90 days (for active brands; enterprise exceptions allowed with justification)",
+        "No evidence of abandonment (not archived, not domain squatter)"
+      ],
+      "thin_is": [
+        "Owned web presence but only 1 external channel detected",
+        "Multiple channels but activity > 120 days old",
+        "Only social presence or directory listing, no owned web"
+      ],
+      "blocked_is": [
+        "No owned web presence (404, no domain, redirect to unrelated site)",
+        "Zero external mentions or profiles",
+        "Last activity > 1 year ago (appears abandoned)"
+      ],
+      "allowed_evidence_types": [
+        "owned_web_domain",
+        "owned_key_pages",
+        "encyclopedic_profile",
+        "news_mention",
+        "official_social_profile",
+        "industry_directory_listing",
+        "github_repository"
+      ],
+      "disallowed_evidence_types": [
+        "historical_presence_only",
+        "unverified_social_profile",
+        "domain_squatter",
+        "technical_artifact",
+        "marketplace_listing_without_owner_link"
+      ],
+      "minimum_externality_percent": 40,
+      "owned_only_sufficient": false,
+      "comparative_required": false,
+      "technical_can_contribute": false,
+      "review_gated_can_count": false,
+      "can_score_with_zero": false,
+      "abstain_when": "Zero owned domain or zero external channels",
+      "collection_must_provide": [
+        "Owned web domain verification (SSL, HTTP status, content length)",
+        "Multi-channel discovery (web, press, social, directories)",
+        "Recency metadata (last update, last post)",
+        "No requirement for deep research; standard search sufficient"
+      ],
+      "evidence_packet_validates": [
+        "Owned domain verified (not 404, not parked)",
+        "Technical signals not counted as presencia",
+        "Related surfaces correctly classified as external",
+        "Minimum 2 channels with recent activity (≤ 90 days)",
+        "At least 40% external evidence"
+      ]
+    },
+    "percepcion": {
+      "goal": "Detect what sentiment and themes emerge when external sources describe or mention the brand.",
+      "epistemology": "External perception only. Self-description is not perception.",
+      "ready_requires": [
+        "Minimum 2 independent external sources mention brand with explicit sentiment/theme",
+        "At minimum 1 source is editorial or review-based (not marketplace listing or auto-aggregator)",
+        "Sentiment is detectable (positive, negative, neutral, mixed)",
+        "Themes are consistent or explicitly conflicted"
+      ],
+      "thin_is": [
+        "Only 1 external source with sentiment",
+        "Multiple sources but all from same publisher/domain",
+        "Weak sentiment signal (mention without clear opinion)"
+      ],
+      "blocked_is": [
+        "Zero independent external sources with sentiment",
+        "Only self-published material (owned blog, press release)"
+      ],
+      "allowed_evidence_types": [
+        "news_article",
+        "customer_review",
+        "analyst_report",
+        "reddit_discussion",
+        "twitter_mention",
+        "hacker_news_thread",
+        "external_blog_post",
+        "podcast_interview_external_media"
+      ],
+      "disallowed_evidence_types": [
+        "owned_blog_post",
+        "owned_press_release",
+        "owned_social_post",
+        "marketplace_listing_without_review",
+        "social_engagement_metric",
+        "trust_security_scanner_signal"
+      ],
+      "minimum_externality_percent": 100,
+      "owned_only_sufficient": false,
+      "comparative_required": false,
+      "technical_can_contribute": false,
+      "review_gated_can_count": false,
+      "can_score_with_zero": false,
+      "abstain_when": "Zero external sources with sentiment unless observable absence conditions are satisfied",
+      "observable_absence_conditions": [
+        "search coverage is documented",
+        "presencia is ready/high",
+        "query/source scope is known",
+        "no external sentiment sources are found"
+      ],
+      "note_on_zero": "Absence of external perception is not sentiment. It may be rendered only as observable absence under documented search coverage; otherwise percepcion remains thin or abstains.",
+      "collection_must_provide": [
+        "External source discovery (news, reviews, social, forums)",
+        "Sentiment extraction",
+        "Source role classification (editorial vs. listing vs. aggregator)",
+        "Author affiliation detection"
+      ],
+      "evidence_packet_validates": [
+        "All percepcion evidence is external (no owned)",
+        "Minimum 2 independent sources",
+        "At least 1 editorial/review source",
+        "Sentiment is explicit",
+        "Trust/security signals are review-gated, not eligible"
+      ]
+    },
+    "diferenciacion": {
+      "goal": "Detect whether brand claims or demonstrates something singular relative to category or direct competitors.",
+      "epistemology": "Relational/comparative. Requires competitor reference or category-distinctive language.",
+      "ready_requires": [
+        "CONDITION 1: Direct comparative evidence exists (explicit competitor name) in owned claim AND echoed in ≥1 external source",
+        "OR CONDITION 2: ≥2 independent external sources use category-distinctive language (not generic) that uniquely positions brand",
+        "OR CONDITION 3: Competitor corpus provided by collection (Evidence Packet run on ≥2 direct competitors)"
+      ],
+      "critical_rule": "Owned claims alone are NEVER sufficient. Must have external corroboration OR competitor comparison.",
+      "thin_is": [
+        "Distinctive owned claims with zero external corroboration",
+        "External sources describe unique capability but brand doesn't claim it",
+        "Weak or single-source differentiation evidence"
+      ],
+      "blocked_is": [
+        "Zero comparative evidence of any kind",
+        "All evidence is owned-only with zero external echo",
+        "All evidence is generic category language ('AI-powered', 'cloud-based', 'mobile-first')",
+        "Evidence is about price/scale/maturity, not positioning"
+      ],
+      "allowed_evidence_types": [
+        "direct_competitor_comparison_owned",
+        "direct_competitor_comparison_external",
+        "category_distinctive_external_language",
+        "competitor_corpus_comparative_matrix",
+        "positioning_language_verified_external"
+      ],
+      "disallowed_evidence_types": [
+        "owned_claim_only",
+        "generic_category_language",
+        "price_comparison",
+        "scale_comparison",
+        "maturity_comparison",
+        "feature_list_without_context"
+      ],
+      "minimum_externality_percent": 50,
+      "owned_only_sufficient": false,
+      "comparative_required": true,
+      "technical_can_contribute": false,
+      "review_gated_can_count": false,
+      "can_score_with_zero": false,
+      "abstain_when": "Zero comparative evidence AND zero distinctive external language AND no competitor corpus available",
+      "competitor_corpus_requirement": "When diferenciacion is blocked/thin and brand is in competitive category: recommend acquiring evidence on ≥2 direct competitors",
+      "collection_must_provide": [
+        "Comparative claims (explicit competitor names)",
+        "External category-distinctive positioning language",
+        "Competitor evidence (if no direct comparative claims found)",
+        "Source-role tagging (news, review, analyst, customer)"
+      ],
+      "evidence_packet_validates": [
+        "Owned claims marked thin/blocked if no external corroboration",
+        "Generic category language not counted as differentiation",
+        "Comparative evidence has both owned AND external sources",
+        "Price/scale claims not treated as differentiation",
+        "Minimum 50% external evidence for ready",
+        "Dimension coverage check: if all blocked, report insufficient_comparative_evidence and abstain"
+      ]
+    },
+    "vitalidad": {
+      "goal": "Detect whether brand is actively evolving, publishing, building, or in stasis/abandoned state.",
+      "epistemology": "Temporal activity. Requires recent signals and evidence of change.",
+      "ready_requires": [
+        "Last owned surface update ≤ 60 days old",
+        "Evidence of evolution (ONE of: changelog ≤90 days, blog post ≤90 days, social post ≤30-90 days, press mention ≤180 days, GitHub activity)",
+        "Activity is consistent (ongoing development, not one-off post then silence)"
+      ],
+      "thin_is": [
+        "Recent activity but inconsistent (months of silence between posts)",
+        "All activity is external (press mentions) with no owned surface updates",
+        "High-frequency but low-substance activity (daily posts, no feature substance)"
+      ],
+      "blocked_is": [
+        "Last activity > 1 year ago",
+        "No evidence of evolution or updates",
+        "Web presence frozen (same content from years ago, no changelog, no new posts)"
+      ],
+      "allowed_evidence_types": [
+        "owned_changelog_recent",
+        "owned_blog_post_recent",
+        "owned_social_post_verified",
+        "founder_public_activity",
+        "external_press_mention_funding",
+        "external_press_mention_feature",
+        "github_commit_activity",
+        "github_release_frequency"
+      ],
+      "disallowed_evidence_types": [
+        "historical_activity_only",
+        "marketing_vanity_activity",
+        "empty_text_changelog_url",
+        "social_follower_count",
+        "social_engagement_metric"
+      ],
+      "minimum_externality_percent": 20,
+      "owned_only_sufficient": true,
+      "comparative_required": false,
+      "technical_can_contribute": false,
+      "review_gated_can_count": false,
+      "can_score_with_zero": false,
+      "abstain_when": "Zero activity evidence AND brand context is unknown (B2B enterprise where activity is private, recommend Deep Research)",
+      "collection_must_provide": [
+        "Owned surface recency (last update date)",
+        "Changelog or version history",
+        "Official social activity",
+        "External press/news (funding, launches, hiring)",
+        "Temporal metadata (dates)"
+      ],
+      "evidence_packet_validates": [
+        "Activity is recent (owned ≤60 days, external press ≤180 days)",
+        "Changelog URLs have text content (no empty URLs)",
+        "Social profiles verified as official",
+        "Evolution evident (not just repeated posts)",
+        "Minimum 20% external evidence for high confidence"
+      ]
+    }
+  },
+  "cross_dimension_rules": {
+    "evidence_packet_v0_status": "diagnostically_useful_not_prompt_ready",
+    "readiness_distinct_from_eligibility": "A dimension may have eligible evidence but still not be ready; readiness must be computed separately from item eligibility.",
+    "url_without_text_blocks_readiness": "URL-only evidence cannot count toward readiness, even if the URL itself is relevant.",
+    "technical_internal_cannot_make_ready": "Technical/internal artifacts cannot make any dimension ready.",
+    "visual_brand_support_only": "Brand-level visual signals can support coherencia but cannot satisfy readiness alone.",
+    "visual_technical_never_ready": "Color count, contrast ratio, whitespace ratio, screenshot metrics, and layout measurements cannot support narrative readiness.",
+    "owned_claims_are_not_external_corroboration": "Owned claims can support owned-surface dimensions but never count as external corroboration.",
+    "official_profile_requires_verification": "Official social/profile evidence requires owned-surface link verification or review gate.",
+    "review_gated_not_ready_without_approval": "Review-gated evidence cannot count toward ready status unless manually approved.",
+    "owned_evidence_sufficient_alone": [
+      "coherencia"
+    ],
+    "requires_external": [
+      "percepcion",
+      "diferenciacion"
+    ],
+    "requires_comparative": [
+      "diferenciacion"
+    ],
+    "can_operate_on_thin_input": [
+      "vitalidad"
+    ],
+    "most_likely_to_fail": [
+      "diferenciacion (requires competitor corpus)"
+    ]
+  },
+  "evidence_packet_output_schema": {
+    "dimension_readiness": {
+      "type": "object",
+      "properties": {
+        "dimension": {
+          "type": "string",
+          "enum": ["coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ready", "thin", "blocked", "abstain", "review_required"],
+          "description": "ready: meets all requirements; thin: has some evidence but missing depth; blocked: fails requirements; abstain: do not render score/finding because evidence contract is unsatisfied; review_required: manual approval required before prompt use"
+        },
+        "evidence_count": {
+          "type": "object",
+          "properties": {
+            "eligible": {
+              "type": "integer",
+              "description": "Evidence eligible for narrative findings"
+            },
+            "review_gated": {
+              "type": "integer",
+              "description": "Evidence requiring manual review before finding use"
+            },
+            "blocked": {
+              "type": "integer",
+              "description": "Evidence not eligible (wrong type, empty text, etc.)"
+            },
+            "total": {
+              "type": "integer",
+              "description": "Total evidence items examined"
+            }
+          }
+        },
+        "ready_coverage_percent": {
+          "type": "number",
+          "description": "Eligible evidence / total evidence; must meet dimension threshold for ready status"
+        },
+        "external_coverage_percent": {
+          "type": "number",
+          "description": "External evidence / total eligible evidence; must meet dimension minimum_externality_percent"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Human-readable explanation of status"
+        },
+        "recommendation": {
+          "type": "string",
+          "description": "Next action if not ready (acquire competitor corpus, deep research, manual review, etc.)"
+        },
+        "gaps": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of specific evidence types or conditions missing for ready status"
+        }
+      }
+    },
+    "scoring_decision": {
+      "type": "object",
+      "properties": {
+        "can_score": {
+          "type": "boolean",
+          "description": "true: enough evidence to score; false: abstain (do not render a number)"
+        },
+        "score_if_ready": {
+          "type": "number",
+          "description": "Placeholder; actual score determination by narrative engine"
+        },
+        "abstain_reason": {
+          "type": "string",
+          "description": "If can_score=false, why abstention is required"
+        }
+      }
+    }
+  },
+  "implementation_contract": {
+    "must_add_dimension_readiness": true,
+    "dimension_statuses": ["ready", "thin", "blocked", "abstain", "review_required"],
+    "required_reason_codes": [
+      "empty_text_evidence_blocked",
+      "technical_internal_only",
+      "visual_technical_metric_blocked",
+      "visual_brand_support_only",
+      "owned_claim_without_external_corroboration",
+      "official_profile_requires_link_verification",
+      "review_gated_evidence_not_ready",
+      "insufficient_comparative_evidence",
+      "competitor_corpus_required",
+      "observable_absence_conditions_not_met"
+    ],
+    "required_source_role_subtypes": [
+      "owned_page",
+      "owned_changelog",
+      "owned_docs",
+      "news_article",
+      "encyclopedic_profile",
+      "review_site",
+      "release_aggregator",
+      "code_repository",
+      "code_mirror",
+      "marketplace_listing",
+      "comparison_page",
+      "official_social",
+      "social_candidate",
+      "technical_artifact",
+      "visual_internal",
+      "unknown"
+    ],
+    "empty_text_evidence": "must be blocked from normal eligibility and cannot count toward readiness",
+    "official_link_verification": "social/profile candidates require owned-surface outbound-link verification or remain review_required",
+    "diferenciacion_competitor_corpus": "if no direct comparative evidence or category-distinctive external evidence exists, diferenciacion must abstain and request competitor corpus",
+    "percepcion_observable_absence": "absence can be rendered only as observable absence when search coverage, high/ready presencia, query scope, and no external sentiment are documented",
+    "not_yet_prompt_ready": true
+  },
+  "test_cases": {
+    "vercel": {
+      "coherencia": {
+        "status": "thin",
+        "reason": "Multiple owned surfaces (homepage, about, blog) with consistent 'AI Cloud' messaging. However, Evidence Packet v0 blocked visual metrics and some surfaces due to technical signal misclassification. Eligible evidence count = 1 but should be higher.",
+        "recommendation": "Re-validate visual coherence evidence handling; should not be technical-only block."
+      },
+      "presencia": {
+        "status": "thin",
+        "reason": "Owned domain clear; 3 external channels detected (Wikipedia, press mentions implied, social profiles). However, 27% coverage suggests some external channels were review-gated. Recency is good (recent TechCrunch mentions).",
+        "recommendation": "Verify social profile official status; may boost coverage."
+      },
+      "percepcion": {
+        "status": "ready",
+        "reason": "100% coverage (3/3 eligible). Multiple external sources with clear sentiment (TechCrunch mentions positive outcomes, blog posts demonstrate customer value). No contradiction.",
+        "recommendation": "Proceed to narrative; good external validation."
+      },
+      "diferenciacion": {
+        "status": "blocked",
+        "reason": "Zero eligible evidence. Vercel owns 'AI Cloud' messaging and 'Frontend Cloud' positioning, but Evidence Packet found zero external comparative language or category-distinctive corroboration. No competitor corpus in input.",
+        "recommendation": "This is primarily an acquisition/input gap. Run Evidence Packet on 2-3 competitors (Netlify, Railway, Fly.io) and create comparative matrix. Then re-evaluate diferenciacion."
+      },
+      "vitalidad": {
+        "status": "ready",
+        "reason": "100% coverage (7/7 eligible). Recent changelog activity, TechCrunch mentions (April 2026, recent security incident news), blog posts showing momentum. Clear evidence of ongoing development.",
+        "recommendation": "Proceed to narrative."
+      },
+      "interpretation": {
+        "not_globally_over_conservative": true,
+        "not_prompt_ready": true,
+        "diferenciacion_failure": "primarily_acquisition_input_gap",
+        "empty_text_eligible_evidence": "packet_defect",
+        "social_profile_over_gating": "packet_source_verification_defect"
+      }
+    },
+    "launchdarkly": {
+      "coherencia": {
+        "status": "thin",
+        "reason": "0% coverage (0/5 eligible). Review-gated evidence suggests related surfaces (possible social profiles) not yet verified. Owned coherencia evidence likely blocked due to visual-only metrics.",
+        "recommendation": "Acquire deeper owned-surface text analysis; unblock visual consistency if it's message-independent (brand color consistency, layout patterns)."
+      },
+      "presencia": {
+        "status": "thin",
+        "reason": "27% coverage (3/11 eligible). Owned domain clear; external channels detected but some review-gated (likely social profile ambiguity). Recency good.",
+        "recommendation": "Verify official social profiles; should improve coverage to ~40%+."
+      },
+      "percepcion": {
+        "status": "ready",
+        "reason": "100% coverage (4/4 eligible). External sources with clear sentiment about LaunchDarkly's role in feature flagging/deployment. Consistent positive external perception.",
+        "recommendation": "Proceed to narrative."
+      },
+      "diferenciacion": {
+        "status": "blocked",
+        "reason": "0% eligible; 3 review-gated, 2 blocked. LaunchDarkly has owned positioning in feature flag space, but no comparative evidence or category-distinctive external corroboration in input. No competitor corpus (e.g., Split.io, Unleash, etc.).",
+        "recommendation": "Acquire competitor corpus (Split.io, Unleash, etc.); run Evidence Packet on 2+ direct competitors in feature flagging space."
+      },
+      "vitalidad": {
+        "status": "ready",
+        "reason": "100% coverage (7/7 eligible). Clear changelog activity, ongoing development signals, external press mentions. Brand is actively maintained.",
+        "recommendation": "Proceed to narrative."
+      }
+    },
+    "builtwith_kit_com": {
+      "coherencia": {
+        "status": "blocked",
+        "reason": "0% coverage (0/10 eligible; 3 review-gated, 7 blocked). Kit entity ambiguity (builtwith.kit.com vs builtwith.com vs Kit owned claims) causes high blockage. Owned coherencia signals likely present but cannot be scored due to relation ambiguity.",
+        "recommendation": "This is ENTITY RESOLUTION FAILURE, not coherencia failure. Recommend Deep Research or manual disambiguation of Kit vs BuiltWith.com relation before retrying."
+      },
+      "presencia": {
+        "status": "blocked",
+        "reason": "0% coverage (0/8 eligible; 1 review-gated, 7 blocked). Owned domain ambiguity (builtwith.kit.com is unclear canonical) and related-surface confusion (BuiltWith.com, Kit.com, builtwith.kit.com) cause universal blockage.",
+        "recommendation": "ACQUISITION GAP: Input selection error. Should have audited kit.com (canonical domain) or explicitly clarified subdomain strategy. Cannot score presencia without clear owned domain."
+      },
+      "percepcion": {
+        "status": "blocked",
+        "reason": "0% coverage (0/4 eligible; 2 review-gated, 2 blocked). Evidence likely exists but is mixed with BuiltWith.com and Kit references without clear relation.",
+        "recommendation": "Resolve entity ambiguity first (Deep Research or manual); then re-acquire percepcion evidence."
+      },
+      "diferenciacion": {
+        "status": "blocked",
+        "reason": "0% eligible (1 review-gated, 3 blocked). Kit positioning unclear due to entity ambiguity; no comparative evidence in input.",
+        "recommendation": "Entity resolution required before diferenciacion evaluation."
+      },
+      "vitalidad": {
+        "status": "blocked",
+        "reason": "0% eligible (7 review-gated, 0 blocked). Activity signals exist but cannot be scored due to entity ambiguity. Kit's changelog and social activity are present but relation to target entity is unresolved.",
+        "recommendation": "Resolve entity (Kit vs BuiltWith) first; likely vitalidad will be ready after."
+      }
+    },
+    "watermelon": {
+      "coherencia": {
+        "status": "thin",
+        "reason": "9% coverage (1/11 eligible; 4 review-gated, 6 blocked). Some coherencia evidence preserved but low coverage suggests visual/technical signals were over-blocked.",
+        "recommendation": "Review visual coherence classification; may be incorrectly flagged as technical."
+      },
+      "presencia": {
+        "status": "thin",
+        "reason": "10% coverage (1/10 eligible; 1 review-gated, 8 blocked). Owned domain likely clear but external channels heavily review-gated or blocked. Suggests low external visibility or ambiguous profile detection.",
+        "recommendation": "Verify social profile status and external channel discovery; currently too conservative blockage."
+      },
+      "percepcion": {
+        "status": "thin",
+        "reason": "25% coverage (1/4 eligible; 1 review-gated, 2 blocked). Low external perception evidence; may indicate low external visibility or perception is mixed/controversial (requiring review).",
+        "recommendation": "Clarify which external sources exist for Watermelon; may need deeper external search (Deep Research) if presencia is higher than perceived."
+      },
+      "diferenciacion": {
+        "status": "blocked",
+        "reason": "0% eligible (3 review-gated, 1 blocked). No comparative evidence or distinctive external language in input.",
+        "recommendation": "Acquire competitor corpus (depends on Watermelon category; e.g., project management tools would need comparison with Linear, Asana, Monday, etc.)."
+      },
+      "vitalidad": {
+        "status": "blocked",
+        "reason": "0% eligible (5 review-gated, 1 blocked). Activity evidence exists but appears review-gated, suggesting ambiguous or unverified social/owned signals. May indicate low public activity or entity ambiguity.",
+        "recommendation": "Verify owned surfaces and official social accounts; may unlock vitalidad evidence if relation is clarified."
+      }
+    }
+  },
+  "acquisition_gaps_exposed": {
+    "diferenciacion_universal_failure": {
+      "finding": "All 4 cases (Vercel, LaunchDarkly, Builtwith/Kit, Watermelon) have zero diferenciacion evidence.",
+      "root_cause": "Input snapshots do not include competitor corpus. Evidence Packet can only classify evidence present; it cannot discover comparative evidence that was not collected.",
+      "recommendation": "Collection process must be updated to include competitor discovery for competitive categories. Evidence Packet alone cannot fix this.",
+      "next_step": "For each case, run Evidence Packet on 2-3 direct competitors and generate comparative matrix before evaluating diferenciacion."
+    },
+    "entity_ambiguity_blockage": {
+      "cases": ["builtwith_kit_com"],
+      "finding": "Entity relation ambiguity (builtwith.kit.com vs builtwith.com vs Kit.com) causes universal evidence blockage across all dimensions.",
+      "root_cause": "Input domain selection error. Subdomain was audited instead of canonical domain.",
+      "recommendation": "Input validation: collection must enforce canonical marketing domain selection, not subdomains or partner-hosted pages."
+    },
+    "social_profile_over_conservatism": {
+      "cases": ["watermelon", "launchdarkly"],
+      "finding": "Official social profiles (LinkedIn, X) are review-gated as 'same-name external profile', reducing external evidence coverage.",
+      "root_cause": "Evidence Packet v0 cannot verify official ownership from snapshot alone.",
+      "recommendation": "Add official-link verification: if social profile URL is linked from owned domain (e.g., LinkedIn link on homepage), mark as verified official, not ambiguous."
+    },
+    "visual_coherence_misclassification": {
+      "cases": ["vercel", "watermelon"],
+      "finding": "Visual coherence signals require support-only semantics. Raw visual technical metrics are correctly blocked, but brand-level visual behavior can support coherencia alongside owned textual/message evidence.",
+      "root_cause": "Current Evidence Packet treats all visual signals as internal/technical and does not distinguish raw metrics from brand-level visual behavior.",
+      "recommendation": "Distinguish between internal visual metrics (contrast ratios, pixel alignment, whitespace ratio) vs. brand-level visual behavior (color palette consistency, logo usage consistency), with brand-level signals used only as support."
+    }
+  },
+  "validation_rules": {
+    "dimension_readiness_must_be_explicit": "Every dimension must output a status (ready/thin/blocked/abstain/review_required). No 'unknown' or 'unscored' values.",
+    "scoring_must_respect_readiness": "If dimension status is blocked or abstain, score must not be rendered. If review_required, evidence cannot enter prompts without approval. If thin, findings must qualify evidence limits. If ready, score normally.",
+    "competitor_corpus_must_be_triggered": "If diferenciacion is blocked and brand is in competitive category, collection must flag that competitor corpus is required.",
+    "abstention_is_not_failure": "A dimension that abstains (zero evidence, blocked status) is a valid and important finding. Do not force a score.",
+    "empty_text_evidence_must_be_blocked": "Any evidence item with text='' or text=null must be classified as blocked, not eligible.",
+    "readiness_is_not_eligibility": "Dimension readiness must be computed separately from item-level evidence eligibility."
+  }
+}

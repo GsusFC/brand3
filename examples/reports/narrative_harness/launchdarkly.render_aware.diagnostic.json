@@ -1,0 +1,260 @@
+{
+  "version": 1,
+  "status": "warning",
+  "summary": {
+    "payload_status": "warning",
+    "visible_render_status": "warning",
+    "suppressed_risk_count": 2,
+    "still_visible_risk_count": 7
+  },
+  "payload_metrics": {
+    "findings_count": 14,
+    "findings_without_evidence_urls": 7,
+    "sentence_opening_counts": {
+      "brands in this": 1,
+      "claims of reliability": 1,
+      "companies highlighting technical": 1,
+      "companies in this": 1,
+      "external market positioning": 1,
+      "feature restoration capability": 1,
+      "highlighting high uptime": 1,
+      "human centric content": 1,
+      "launchdarkly's platform page": 1,
+      "local image analysis": 1,
+      "marketing communication authorization": 1,
+      "on its own": 1,
+      "platform for ai": 1,
+      "product expansion and": 1,
+      "runtime control platform": 2,
+      "self description as": 1,
+      "shaping future of": 1,
+      "software development company": 1,
+      "software team solutions": 1,
+      "teams in this": 11,
+      "the brand describes": 4,
+      "the brand's 'about": 1,
+      "the brand's owned": 3,
+      "the brand's self": 2,
+      "the brand's website": 2,
+      "the presence of": 1,
+      "these technical visual": 1,
+      "third party analysis": 1,
+      "third party update": 1,
+      "this aspirational claim": 1,
+      "this consistent self": 1,
+      "this explicit categorization": 1,
+      "this indicates a": 1,
+      "this indicates the": 1,
+      "this positioning suggests": 2,
+      "this self assessment": 1,
+      "this self description": 1,
+      "this suggests the": 1,
+      "visual design attributes": 1
+    },
+    "generic_phrase_counts": {
+      "successful": 3,
+      "teams in this position typically": 9
+    },
+    "unsupported_prescription_counts": {},
+    "safe_attribution_phrase_counts": {
+      "the brand describes itself": 4,
+      "based only on self-description": 9
+    },
+    "safe_attribution_total": 13,
+    "observation_repetition_family_counts": {
+      "external_corroboration_caveat_repetition": {
+        "total": 18,
+        "phrases": {
+          "based only on self-description": 9,
+          "no external corroboration": 9
+        }
+      },
+      "fallback_evidence_opening_repetition": {
+        "total": 9,
+        "phrases": {
+          "the evidence pool": 9
+        }
+      },
+      "safe_attribution_repetition": {
+        "total": 13,
+        "phrases": {
+          "based only on self-description": 9,
+          "the brand describes itself": 4
+        }
+      }
+    },
+    "warning_count": 5,
+    "error_count": 0
+  },
+  "visible_render_metrics": {
+    "visible_text_chars": 17422,
+    "visible_link_count": 60,
+    "visible_evidence_chip_link_count": 10,
+    "visible_decision_space_count": 4,
+    "visible_teams_in_this_position_typically_count": 0,
+    "visible_the_brand_count": 21,
+    "visible_no_external_corroboration_count": 9,
+    "sentence_opening_counts": {
+      "decision space brands": 1,
+      "decision space companies": 1,
+      "decision space teams": 2,
+      "launchdarkly scores 78": 1,
+      "launchdarkly's platform page": 1,
+      "local image analysis": 1,
+      "on its own": 1,
+      "the brand describes": 4,
+      "the brand's 'about": 1,
+      "the brand's owned": 3,
+      "the brand's self": 1,
+      "the brand's website": 2,
+      "third party analysis": 1,
+      "third party update": 1
+    },
+    "repeated_sentence_opening_counts": {
+      "the brand describes": 4,
+      "the brand's owned": 3
+    },
+    "generic_phrase_counts": {
+      "successful": 5
+    },
+    "safe_attribution_phrase_counts": {
+      "the brand describes itself": 4,
+      "based only on self-description": 9
+    },
+    "safe_attribution_total": 13,
+    "observation_repetition_family_counts": {
+      "external_corroboration_caveat_repetition": {
+        "total": 18,
+        "phrases": {
+          "based only on self-description": 9,
+          "no external corroboration": 9
+        }
+      },
+      "fallback_evidence_opening_repetition": {
+        "total": 9,
+        "phrases": {
+          "the evidence pool": 9
+        }
+      },
+      "safe_attribution_repetition": {
+        "total": 13,
+        "phrases": {
+          "based only on self-description": 9,
+          "the brand describes itself": 4
+        }
+      }
+    },
+    "warning_signals": {
+      "repeated_sentence_openings": {
+        "the brand describes": 4,
+        "the brand's owned": 3
+      },
+      "phrase_matches": [
+        {
+          "path": "visible_render",
+          "excerpt": "brand-audit :: https://launchdarkly.com · night Reports Brand history Light Dark ❯ brand-audit --target https://launchdarkly.com --profile base --engine brand3...",
+          "phrase": "successful",
+          "count": 5
+        },
+        {
+          "path": "visible_render",
+          "excerpt": "brand-audit :: https://launchdarkly.com · night Reports Brand history Light Dark ❯ brand-audit --target https://launchdarkly.com --profile base --engine brand3...",
+          "phrase": "the brand describes itself",
+          "count": 4
+        },
+        {
+          "path": "visible_render",
+          "excerpt": "brand-audit :: https://launchdarkly.com · night Reports Brand history Light Dark ❯ brand-audit --target https://launchdarkly.com --profile base --engine brand3...",
+          "phrase": "based only on self-description",
+          "count": 9
+        }
+      ]
+    }
+  },
+  "suppressed_by_rendering": [
+    {
+      "risk": "generic_strategic_filler",
+      "phrase": "teams in this position typically",
+      "payload_count": 9,
+      "visible_count": 0,
+      "suppressed_count": 9
+    },
+    {
+      "risk": "repeated_sentence_opening",
+      "opening": "teams in this",
+      "payload_count": 11,
+      "visible_count": 0,
+      "suppressed_count": 11
+    }
+  ],
+  "still_visible_risks": [
+    {
+      "risk": "visible_safe_attribution_overuse",
+      "visible_count": 13,
+      "phrase_counts": {
+        "the brand describes itself": 4,
+        "based only on self-description": 9
+      }
+    },
+    {
+      "risk": "visible_repeated_sentence_opening",
+      "opening": "the brand describes",
+      "visible_count": 4
+    },
+    {
+      "risk": "visible_repeated_sentence_opening",
+      "opening": "the brand's owned",
+      "visible_count": 3
+    },
+    {
+      "risk": "visible_external_corroboration_repetition",
+      "phrase": "no external corroboration",
+      "visible_count": 9
+    },
+    {
+      "risk": "visible_observation_repetition_family",
+      "family": "external_corroboration_caveat_repetition",
+      "visible_count": 18,
+      "phrase_counts": {
+        "based only on self-description": 9,
+        "no external corroboration": 9
+      }
+    },
+    {
+      "risk": "visible_observation_repetition_family",
+      "family": "fallback_evidence_opening_repetition",
+      "visible_count": 9,
+      "phrase_counts": {
+        "the evidence pool": 9
+      }
+    },
+    {
+      "risk": "visible_observation_repetition_family",
+      "family": "safe_attribution_repetition",
+      "visible_count": 13,
+      "phrase_counts": {
+        "based only on self-description": 9,
+        "the brand describes itself": 4
+      }
+    }
+  ],
+  "payload_diagnostic_summary": {
+    "total_checks": 8,
+    "passed": 3,
+    "warnings": 5,
+    "errors": 0
+  },
+  "input_metadata": {
+    "payload_version": 1,
+    "payload_source": "report_narrative",
+    "run_id": 76,
+    "brand": null,
+    "has_base_dossier": true,
+    "has_synthesis": true,
+    "has_tension": true,
+    "dimensions_count": 5,
+    "findings_count": 14,
+    "rendered_as_html": true,
+    "visible_text_chars": 17422
+  }
+}

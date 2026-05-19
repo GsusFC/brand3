@@ -1,0 +1,84 @@
+{
+  "document": "brand3_deep_research_evidence_packet_reference",
+  "case_id": "watermelon",
+  "target_url": "https://watermelon.sh",
+  "status": "reference_contract_from_manual_single_url_deep_research_run",
+  "purpose": "Capture the useful evidence-packet shape from a structured Deep Research run so Brand3 can compare it against local Evidence Packet v0.",
+  "not_production_input": true,
+  "reference_contract": {
+    "json_only": true,
+    "no_brand_audit_prose": true,
+    "no_scoring": true,
+    "no_strategy_recommendations": true,
+    "no_findings": true,
+    "entity_resolution_first": true,
+    "source_inventory_required": true,
+    "dimension_buckets_required": true,
+    "item_level_eligibility_required": true,
+    "missing_evidence_required": true,
+    "human_review_required_when_relation_not_explicit": true
+  },
+  "top_level_shape": [
+    "case_id",
+    "target_url",
+    "entity_resolution",
+    "source_inventory",
+    "dimensions",
+    "cross_dimension_evidence",
+    "evidence_gaps",
+    "source_quality_notes",
+    "cost_risk_notes"
+  ],
+  "dimension_buckets": [
+    "owned_claims",
+    "external_evidence",
+    "related_surface_evidence",
+    "technical_signals",
+    "trust_or_security_signals",
+    "finding_eligible_evidence",
+    "evidence_not_eligible_for_findings",
+    "missing_evidence",
+    "requires_human_review"
+  ],
+  "evidence_item_fields": [
+    "claim_or_observation",
+    "url",
+    "source_type",
+    "evidence_strength",
+    "entity_relation",
+    "eligible_for_finding",
+    "why_it_matters",
+    "limits",
+    "requires_human_review"
+  ],
+  "useful_behaviors": [
+    "separates audited surface from related surfaces",
+    "uses explicit links to justify related repository/developer surfaces",
+    "does not treat same-name entities as aliases",
+    "preserves marketplace and directory evidence as bounded evidence",
+    "keeps unsupported usage claims out of finding eligibility",
+    "tracks contradictions as candidates rather than conclusions",
+    "marks missing evidence explicitly"
+  ],
+  "cautions": [
+    "primary entity confidence may still be too high when based mostly on owned links",
+    "marketplace listings should not automatically be finding-eligible",
+    "blog or directory commentary should not prove differentiation superiority",
+    "repository activity should not imply adoption",
+    "usage/install claims require independent verification"
+  ],
+  "recommended_role": [
+    "benchmark for local Evidence Packet v0",
+    "manual/lab escalation reference",
+    "prompt-contract reference for future Deep Research tests",
+    "design target for Exa/Web acquisition ordering"
+  ],
+  "must_not_be_used_as": [
+    "production report input",
+    "scoring input",
+    "runtime dependency",
+    "direct prompt rollout",
+    "generated finding source"
+  ],
+  "recommended_next_step": "Compare the reference contract field-by-field against local Evidence Packet v0 and decide what Brand3 can build cheaply from existing Exa/Web data."
+}

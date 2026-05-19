@@ -274,6 +274,8 @@ class WebCollector:
                 except PlaywrightTimeoutError:
                     pass
 
+                self._dismiss_cookie_banners(page)
+
                 html = page.content()
                 title = page.title() or ""
                 body_text = page.locator("body").inner_text(timeout=5000)
@@ -315,6 +317,20 @@ class WebCollector:
                 except Exception:
                     pass
             return {}, str(exc)
+
+    def _dismiss_cookie_banners(self, page) -> None:
+        """Attempt to click typical cookie consent buttons with short timeouts."""
+        combined_selector = (
+            "button:has-text('Aceptar'), button:has-text('Accept'), button:has-text('Rechazar'), "
+            "button:has-text('Cerrar'), button:has-text('Agree'), button:has-text('Allow all'), "
+            "button:has-text('Accept all'), button:has-text('Close'), button:has-text('OK'), "
+            "a:has-text('Aceptar'), a:has-text('Accept'), a:has-text('Cerrar'), a:has-text('Close'), "
+            "#cookie-accept, #accept-cookies, .cookie-accept, .accept-cookies"
+        )
+        try:
+            page.locator(combined_selector).first.click(timeout=500)
+        except Exception:
+            pass
 
     def _extract_html_title(self, html: str) -> str:
         match = re.search(r"<title[^>]*>(.*?)</title>", html, flags=re.IGNORECASE | re.DOTALL)
@@ -451,8 +467,118 @@ class WebCollector:
         return self._clean_markdown_content(
             "\n\n".join(part for part in content_parts if part).strip()
         )
+    def _extract_internal_links(self, markdown: str, base_url: str) -> list[str]:
+        """Extract absolute internal links from markdown content."""
+        if not markdown or not base_url:
+            return []
+        
+        from urllib.parse import urljoin
+        parsed_base = urlparse(base_url)
+        base_domain = parsed_base.netloc.lower()
+        if base_domain.startswith("www."):
+            base_domain = base_domain[4:]
+            
+        # Regex to find standard Markdown links [text](url)
+        matches = re.findall(r'\[[^\]]*\]\(([^)]+)\)', markdown)
+        
+        internal_links = []
+        seen = set()
+        
+        for link in matches:
+            link = link.strip()
+            if not link or link.startswith("#") or link.startswith("javascript:") or link.startswith("mailto:") or link.startswith("tel:"):
+                continue
+            
+            # Resolve relative URLs to absolute
+            absolute_url = urljoin(base_url, link)
+            
+            try:
+                parsed_link = urlparse(absolute_url)
+                link_domain = parsed_link.netloc.lower()
+                if link_domain.startswith("www."):
+                    link_domain = link_domain[4:]
+                
+                # Check if domains match
+                if link_domain == base_domain:
+                    # Normalize: strip fragments and trailing slashes
+                    normalized = parsed_link._replace(fragment="").geturl()
+                    normalized = normalized.rstrip("/")
+                    base_normalized = base_url.rstrip("/")
+                    if normalized not in seen and normalized != base_normalized:
+                        seen.add(normalized)
+                        internal_links.append(normalized)
+            except Exception:
+                continue
+                
+        return internal_links
 
-    def scrape(self, url: str) -> WebData:
+    def _score_internal_links(self, links: list[str], base_url: str) -> list[str]:
+        """Score and sort internal links based on their relevance keywords."""
+        high_value = {
+            "pricing": 10,
+            "precios": 10,
+            "feature": 8,
+            "product": 8,
+            "producto": 8,
+            "platform": 8,
+            "plataforma": 8,
+            "solution": 7,
+            "solucion": 7,
+            "about": 6,
+            "nosotros": 6,
+            "company": 5,
+            "how": 5,
+            "service": 5,
+            "servicio": 5,
+            "technology": 5,
+            "tecnologia": 5,
+        }
+        
+        low_value = {
+            "blog": -5,
+            "news": -5,
+            "press": -5,
+            "contact": -3,
+            "contacto": -3,
+            "support": -5,
+            "soporte": -5,
+            "help": -5,
+            "faq": -5,
+            "privacy": -10,
+            "terms": -10,
+            "condiciones": -10,
+            "legal": -10,
+            "login": -8,
+            "signin": -8,
+            "signup": -8,
+            "register": -8,
+            "careers": -5,
+            "jobs": -5,
+            "empleo": -5,
+        }
+        
+        scored_links = []
+        for link in links:
+            parsed = urlparse(link)
+            path = parsed.path.lower()
+            query = parsed.query.lower()
+            
+            score = 0
+            for kw, weight in high_value.items():
+                if kw in path or kw in query:
+                    score += weight
+                    
+            for kw, penalty in low_value.items():
+                if kw in path or kw in query:
+                    score += penalty
+                    
+            if score >= -2:
+                scored_links.append((score, link))
+                
+        scored_links.sort(key=lambda x: x[0], reverse=True)
+        return [link for _, link in scored_links]
+
+    def scrape(self, url: str, crawl_subpages: bool = True) -> WebData:
         """Scrape a website and return structured data."""
         data = WebData(url=url)
 
@@ -513,7 +639,24 @@ class WebCollector:
             elif browser_error and not data.error:
                 data.error = browser_error
 
+        if crawl_subpages and self._has_usable_markdown_content(data.markdown_content):
+            internal_links = self._extract_internal_links(data.markdown_content, url)
+            sorted_subpages = self._score_internal_links(internal_links, url)
+            subpages_to_crawl = sorted_subpages[:2]
+            
+            subpage_contents = []
+            for subpage_url in subpages_to_crawl:
+                subpage_data = self.scrape(subpage_url, crawl_subpages=False)
+                if subpage_data.markdown_content:
+                    subpage_contents.append(
+                        f"\n\n---\n## Subpage: {subpage_url}\n{subpage_data.markdown_content}"
+                    )
+            
+            if subpage_contents:
+                data.markdown_content += "".join(subpage_contents)
+
         return data
+
 
     def scrape_multiple(self, urls: list[str]) -> list[WebData]:
         """Scrape multiple URLs."""

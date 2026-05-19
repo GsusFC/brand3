@@ -19,6 +19,9 @@ class DiscoveryEnrichmentResult:
     payload: dict[str, object] = field(default_factory=dict)
 
 
+_MAX_ENRICHMENT_RESULTS = 15
+
+
 def build_discovery_enrichment(search_plan: dict, evidence_preview: dict, *, exa_data=None, web_data=None, web_collector=None, exa_collector=None) -> DiscoveryEnrichmentResult:
     urls = list(search_plan.get("owned_urls") or [])
     queries = list(search_plan.get("queries") or [])
@@ -26,7 +29,7 @@ def build_discovery_enrichment(search_plan: dict, evidence_preview: dict, *, exa
         return DiscoveryEnrichmentResult(exa_data, web_data, _payload(False, [], [], 0, 0))
 
     added_pages = _collect_owned_pages(urls, web_collector)
-    added_results = _collect_exa_results(queries, exa_collector)
+    added_results, diagnostics = _collect_exa_results(queries, exa_collector)
     enriched_web = _merge_web(web_data, added_pages)
     enriched_exa = _merge_exa(exa_data, added_results)
     owned_domains = {_domain(url) for url in urls if url}
@@ -35,17 +38,33 @@ def build_discovery_enrichment(search_plan: dict, evidence_preview: dict, *, exa
     return DiscoveryEnrichmentResult(
         enriched_exa,
         enriched_web,
-        _payload(True, urls, queries, owned_added + len(added_pages), third_added),
+        _payload(
+            True,
+            urls,
+            queries,
+            owned_added + len(added_pages),
+            third_added,
+            diagnostics=diagnostics,
+        ),
     )
 
 
-def _payload(applied: bool, urls: list[str], queries: list[str], owned: int, third_party: int) -> dict[str, object]:
+def _payload(
+    applied: bool,
+    urls: list[str],
+    queries: list[str],
+    owned: int,
+    third_party: int,
+    *,
+    diagnostics: dict | None = None,
+) -> dict[str, object]:
     return {
         "applied": applied,
         "urls_used": urls if applied else [],
         "queries_used": queries if applied else [],
         "added_owned_evidence": owned,
         "added_third_party_evidence": third_party,
+        "diagnostics": diagnostics or {},
     }
 
 
@@ -58,16 +77,33 @@ def _collect_owned_pages(urls: list[str], web_collector) -> list[WebData]:
         return []
 
 
-def _collect_exa_results(queries: list[str], exa_collector) -> list[ExaResult]:
+def _collect_exa_results(queries: list[str], exa_collector) -> tuple[list[ExaResult], dict[str, object]]:
     if not queries or not exa_collector:
-        return []
+        return [], {"applied_cap": False, "cap": _MAX_ENRICHMENT_RESULTS, "truncated": 0}
     results: list[ExaResult] = []
+    failures: list[dict[str, str]] = []
     for query in queries:
         try:
-            results.extend(exa_collector.search(query, num_results=5))
-        except Exception:
+            found = exa_collector.search(query, num_results=5, intent="enrichment")
+            for item in found:
+                item.metadata = {
+                    **(item.metadata or {}),
+                    "enrichment_query": query,
+                    "enrichment_rationale": "discovery_search_plan_query_match",
+                    "enrichment_inserted": True,
+                }
+            results.extend(found)
+        except Exception as exc:
+            failures.append({"query": query, "error": str(exc)})
             continue
-    return _unique_results(results)
+    unique = _unique_results(results)
+    capped = unique[:_MAX_ENRICHMENT_RESULTS]
+    return capped, {
+        "applied_cap": len(unique) > _MAX_ENRICHMENT_RESULTS,
+        "cap": _MAX_ENRICHMENT_RESULTS,
+        "truncated": max(0, len(unique) - _MAX_ENRICHMENT_RESULTS),
+        "query_failures": failures,
+    }
 
 
 def _merge_web(web_data: WebData | None, pages: list[WebData]) -> WebData | None:
@@ -89,7 +125,9 @@ def _merge_exa(exa_data: ExaData | None, results: list[ExaResult]) -> ExaData | 
     if not results:
         return exa_data
     base = exa_data or ExaData(brand_name="")
-    return replace(base, mentions=_unique_results(list(base.mentions or []) + results))
+    diagnostics = dict(base.diagnostics or {})
+    diagnostics["enrichment_insertions"] = len(results)
+    return replace(base, mentions=_unique_results(list(base.mentions or []) + results), diagnostics=diagnostics)
 
 
 def _unique_results(results: list[ExaResult]) -> list[ExaResult]:

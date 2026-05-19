@@ -1,0 +1,495 @@
+{
+  "title": "Brand3 Information Acquisition And Evidence Mixing Flow Audit",
+  "status": "audit_only",
+  "core_question": "What does Brand3 actually collect, how does it classify or lose context, and what does it create from that information before the LLM writes findings?",
+  "answer": "Brand3 collects broad raw signals, then flattens them into dimension-level evidence without enough eligibility metadata before report narrative generation.",
+  "source_map": [
+    {
+      "source": "context_scan",
+      "collector_or_creator": "ContextCollector.scan",
+      "stored_as": [
+        "raw_inputs.source=context",
+        "evidence_items"
+      ],
+      "captures": [
+        "robots_txt",
+        "sitemap",
+        "llms_txt",
+        "schema_types",
+        "key_pages",
+        "avg_words",
+        "internal_links",
+        "context_score"
+      ],
+      "evidence_character": [
+        "technical",
+        "owned_surface_infrastructure"
+      ]
+    },
+    {
+      "source": "web_scrape",
+      "collector_or_creator": "WebCollector.scrape",
+      "stored_as": [
+        "raw_inputs.source=web"
+      ],
+      "captures": [
+        "title",
+        "meta_description",
+        "markdown_content",
+        "html",
+        "links",
+        "images",
+        "tech_stack",
+        "content_source"
+      ],
+      "evidence_character": [
+        "owned_surface",
+        "fallback_possible"
+      ]
+    },
+    {
+      "source": "exa_search",
+      "collector_or_creator": "ExaCollector.collect_brand_data",
+      "stored_as": [
+        "raw_inputs.source=exa"
+      ],
+      "captures": [
+        "mentions",
+        "competitors",
+        "ai_visibility_results",
+        "news",
+        "raw_responses"
+      ],
+      "evidence_character": [
+        "external",
+        "search_derived",
+        "possible_name_collision"
+      ]
+    },
+    {
+      "source": "social_scrape",
+      "collector_or_creator": "social collector",
+      "stored_as": [
+        "raw_inputs.source=social"
+      ],
+      "captures": [
+        "profiles",
+        "followers",
+        "post_frequency",
+        "platform_metrics"
+      ],
+      "evidence_character": [
+        "external_platform_metadata",
+        "often_sparse"
+      ]
+    },
+    {
+      "source": "competitor_collection",
+      "collector_or_creator": "CompetitorCollector.collect",
+      "stored_as": [
+        "raw_inputs.source=competitors"
+      ],
+      "captures": [
+        "competitors",
+        "competitor_web_data",
+        "comparison_results"
+      ],
+      "evidence_character": [
+        "comparative_context"
+      ]
+    },
+    {
+      "source": "visual_analysis",
+      "collector_or_creator": "VisualAnalyzer via CoherenciaExtractor",
+      "stored_as": [
+        "features.visual_consistency.raw_value"
+      ],
+      "captures": [
+        "dominant_colors",
+        "whitespace",
+        "contrast",
+        "style",
+        "method",
+        "evidence_insights"
+      ],
+      "evidence_character": [
+        "internal_analysis",
+        "visual_metric",
+        "not_market_evidence"
+      ]
+    },
+    {
+      "source": "feature_llm_analysis",
+      "collector_or_creator": "LLMAnalyzer used by feature extractors",
+      "stored_as": [
+        "features.raw_value",
+        "llm_cache"
+      ],
+      "captures": [
+        "positioning",
+        "uniqueness",
+        "sentiment",
+        "messaging_consistency",
+        "tone_consistency",
+        "momentum"
+      ],
+      "evidence_character": [
+        "llm_derived_interpretation"
+      ]
+    },
+    {
+      "source": "report_narrative",
+      "collector_or_creator": "build_report_narrative_payload",
+      "stored_as": [
+        "raw_inputs.source=report_narrative"
+      ],
+      "captures": [
+        "synthesis",
+        "tensions",
+        "findings_by_dimension"
+      ],
+      "evidence_character": [
+        "generated_prose"
+      ]
+    }
+  ],
+  "storage_map": {
+    "raw_inputs": [
+      "context",
+      "web",
+      "exa",
+      "social",
+      "competitors",
+      "report_narrative",
+      "visual_signature_when_enabled"
+    ],
+    "features": [
+      "dimension_name",
+      "feature_name",
+      "value",
+      "raw_value",
+      "confidence",
+      "source"
+    ],
+    "scores": [
+      "dimension_name",
+      "score",
+      "insights_json",
+      "rules_json"
+    ],
+    "evidence_items": [
+      "source",
+      "url",
+      "quote",
+      "feature_name",
+      "dimension_name",
+      "confidence",
+      "freshness_days"
+    ],
+    "llm_cache": [
+      "prompt_version",
+      "model",
+      "response_type",
+      "response_json",
+      "response_text"
+    ]
+  },
+  "transformation_map": [
+    {
+      "from": "raw_inputs",
+      "to": "features",
+      "mode": "mixed_deterministic_and_llm",
+      "risk": "raw source provenance becomes feature-level rather than evidence-level"
+    },
+    {
+      "from": "features",
+      "to": "dimension_scores",
+      "mode": "deterministic_scoring",
+      "risk": "LLM-derived feature values can affect deterministic scores"
+    },
+    {
+      "from": "features.raw_value",
+      "to": "display_evidence",
+      "mode": "deterministic_extract_evidence",
+      "risk": "narrow evidence extraction for report display"
+    },
+    {
+      "from": "features.raw_value",
+      "to": "narrative_Evidence_objects",
+      "mode": "deterministic_collect_evidences",
+      "risk": "broad extraction accepts evidence_snippet, evidence_snippets, evidence_url, evidence_insights"
+    },
+    {
+      "from": "narrative_Evidence_objects",
+      "to": "findings_prompt_input",
+      "mode": "dimension_grouping_and_formatting",
+      "risk": "source quality and purpose are compressed"
+    },
+    {
+      "from": "findings_prompt_input",
+      "to": "report_findings",
+      "mode": "LLM_generated",
+      "risk": "prompt requires implication and typical_decision"
+    },
+    {
+      "from": "report_findings",
+      "to": "report_narrative_payload",
+      "mode": "deterministic_serialization",
+      "risk": "source metadata and evidence eligibility are dropped"
+    }
+  ],
+  "evidence_mixing_map": [
+    {
+      "mixing_point": "feature_extraction",
+      "mixes": [
+        "web",
+        "exa",
+        "context",
+        "competitors",
+        "screenshot",
+        "llm_interpretations"
+      ],
+      "risk": "feature outputs become mixed evidence containers"
+    },
+    {
+      "mixing_point": "dimension_grouping",
+      "mixes": [
+        "owned_claims",
+        "third_party_mentions",
+        "technical_signals",
+        "internal_analysis",
+        "weak_search_results"
+      ],
+      "risk": "all evidence in a dimension becomes peer input to findings"
+    },
+    {
+      "mixing_point": "evidence_snippet_extraction",
+      "mixes": [
+        "owned_web_text",
+        "quote_only_evidence"
+      ],
+      "risk": "URL-less owned claims can enter narrative pool"
+    },
+    {
+      "mixing_point": "evidence_insights_extraction",
+      "mixes": [
+        "internal_visual_metrics",
+        "narrative_evidence"
+      ],
+      "risk": "visual metrics can become strategic findings"
+    },
+    {
+      "mixing_point": "context_evidence_items",
+      "mixes": [
+        "robots_txt",
+        "sitemap",
+        "schema",
+        "key_pages",
+        "finding_inputs"
+      ],
+      "risk": "technical readiness facts can become brand intent"
+    },
+    {
+      "mixing_point": "source_type_inference",
+      "mixes": [
+        "same_domain",
+        "subdomain",
+        "external_search_result",
+        "url_less_quote"
+      ],
+      "risk": "URL host is not enough to resolve entity relation"
+    }
+  ],
+  "metadata_loss_map": {
+    "kept_in_Evidence": [
+      "dimension",
+      "quote",
+      "url",
+      "source_type",
+      "source_domain",
+      "sentiment",
+      "feature_name",
+      "extra"
+    ],
+    "shown_to_findings_model": [
+      "source_type",
+      "source_domain",
+      "sentiment",
+      "quote",
+      "url"
+    ],
+    "not_exposed_or_not_preserved": [
+      "feature_confidence",
+      "evidence_item_confidence",
+      "freshness_days",
+      "internal_analysis_flag",
+      "technical_appendix_only_flag",
+      "owned_claim_only_flag",
+      "entity_relation",
+      "related_surface_status",
+      "search_noise_flag",
+      "finding_eligibility",
+      "reject_from_narrative"
+    ]
+  },
+  "creation_points": [
+    {
+      "artifact": "raw_inputs",
+      "creation_mode": "collector_or_external_api",
+      "created_from": "context, web, search, social, competitor collection"
+    },
+    {
+      "artifact": "feature_raw_values",
+      "creation_mode": "mixed_deterministic_and_llm",
+      "created_from": "raw inputs and screenshots"
+    },
+    {
+      "artifact": "feature_scores",
+      "creation_mode": "mixed_deterministic_and_llm_derived",
+      "created_from": "feature extractors"
+    },
+    {
+      "artifact": "dimension_scores",
+      "creation_mode": "deterministic_scoring",
+      "created_from": "feature values"
+    },
+    {
+      "artifact": "narrative_Evidence_objects",
+      "creation_mode": "deterministic_derivation",
+      "created_from": "features.raw_value and evidence_items"
+    },
+    {
+      "artifact": "findings_prompt_input",
+      "creation_mode": "deterministic_formatting",
+      "created_from": "dimension evidence pools"
+    },
+    {
+      "artifact": "findings",
+      "creation_mode": "LLM_generated",
+      "created_from": "findings prompt input"
+    },
+    {
+      "artifact": "report_narrative",
+      "creation_mode": "LLM_plus_serialization",
+      "created_from": "dossier narrative pipeline"
+    },
+    {
+      "artifact": "rendered_report",
+      "creation_mode": "deterministic_rendering",
+      "created_from": "snapshot and persisted narrative"
+    }
+  ],
+  "builtwith_trace": {
+    "run_id": 74,
+    "brand": "builtwith.kit.com",
+    "url": "https://builtwith.kit.com",
+    "raw_sources": [
+      "context",
+      "web",
+      "exa",
+      "social",
+      "competitors",
+      "report_narrative"
+    ],
+    "items": [
+      {
+        "case": "visual_analysis_metrics",
+        "entered_through": "coherencia.visual_consistency",
+        "classified_as": "feature source visual_analysis; later Evidence with quote and no URL",
+        "mixed_at": "collect_evidences via evidence_insights, then coherencia dimension grouping",
+        "later_became": "Visual analysis metrics finding",
+        "justified": false,
+        "recommended_handling": "technical_or_visual_appendix_only"
+      },
+      {
+        "case": "robots_txt_technical_site_configuration",
+        "entered_through": "ContextCollector and _context_evidence_items",
+        "classified_as": "context evidence item with URL and confidence 0.75; later source_type owned",
+        "mixed_at": "presencia evidence pool",
+        "later_became": "Technical site configuration finding",
+        "justified": "weak",
+        "recommended_handling": "technical_readiness_only_unless_supported_by_more_evidence"
+      },
+      {
+        "case": "kit_owned_claims",
+        "entered_through": "web_presence evidence_snippet and LLM positioning/uniqueness features",
+        "classified_as": "owned web text and LLM-derived positioning evidence",
+        "mixed_at": "coherencia, diferenciacion, presencia dimension pools",
+        "later_became": "Email-first OS for creators and related findings",
+        "justified": "observation_only",
+        "recommended_handling": "requires_entity_boundary_review_before_implication"
+      },
+      {
+        "case": "builtwith_intelligence_provider_evidence",
+        "entered_through": "Exa/search and LLM messaging/sentiment/momentum features",
+        "classified_as": "external or owned BuiltWith-related evidence",
+        "mixed_at": "coherencia, percepcion, vitalidad dimension pools",
+        "later_became": "Technology intelligence provider and API ecosystem findings",
+        "justified": "only_as_entity_boundary_issue",
+        "recommended_handling": "do_not_smooth_into_normal_positioning_without_related_surface_contract"
+      },
+      {
+        "case": "trust_security_scan_evidence",
+        "entered_through": "Exa search visibility and perception features",
+        "classified_as": "external trust/security scan evidence",
+        "mixed_at": "presencia and percepcion pools",
+        "later_became": "Conflicting external trust assessments and Website safety assessment",
+        "justified": "partial",
+        "recommended_handling": "allowed_with_source_quality_limits"
+      }
+    ]
+  },
+  "root_cause_assessment": {
+    "primary": "The system lacks an information-to-evidence eligibility contract between feature extraction and narrative generation.",
+    "details": [
+      "Feature raw values double as evidence containers.",
+      "Narrative extraction accepts evidence_insights and other technical/internal fields.",
+      "Context infrastructure facts become evidence items.",
+      "Dimension grouping merges all source types without eligibility.",
+      "Entity discovery exists in the run result but is not a hard narrative boundary.",
+      "Confidence and freshness do not reach the findings prompt.",
+      "The findings prompt then forces implication and typical_decision."
+    ],
+    "not_primary": [
+      "model_quality_alone",
+      "renderer_alone",
+      "scoring_alone",
+      "Visual_Signature"
+    ]
+  },
+  "recommended_next_step": {
+    "name": "Information-to-Evidence Contract",
+    "description": "Define a deterministic eligibility layer between feature extraction and narrative finding generation.",
+    "suggested_classes": [
+      "finding_eligible",
+      "owned_claim_observation_only",
+      "external_validation",
+      "technical_readiness_only",
+      "internal_analysis_only",
+      "trust_or_security_signal",
+      "entity_ambiguous",
+      "related_surface_only",
+      "appendix_only",
+      "reject_from_narrative",
+      "requires_human_review"
+    ],
+    "first_test_case": "builtwith.kit.com run 74",
+    "defer": [
+      "prompt_changes",
+      "collector_changes",
+      "runtime_gate",
+      "new_lab_layer"
+    ]
+  },
+  "non_goals": [
+    "no_collector_changes",
+    "no_scoring_changes",
+    "no_prompt_changes",
+    "no_generation_changes",
+    "no_rendering_changes",
+    "no_payload_format_changes",
+    "no_LLM_calls",
+    "no_new_audits",
+    "no_new_Lab_layers"
+  ]
+}

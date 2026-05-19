@@ -1,0 +1,239 @@
+{
+  "version": "state_first_prose_candidate.v0",
+  "created_at": "manual_offline_lab_artifact",
+  "case_id": "iris",
+  "target": "https://irisdesign.dev",
+  "status": {
+    "lab_only": true,
+    "manual_offline_generation": true,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false,
+    "production_ready": false,
+    "requires_human_review": true
+  },
+  "source_artifacts": {
+    "planning_skeleton": "examples/reports/narrative_harness/state_first_generation_v0/iris.state_first_generator_v0.json",
+    "payload": "examples/reports/narrative_harness/iris.payload.json",
+    "payload_diagnostic": "examples/reports/narrative_harness/iris.diagnostic.json",
+    "render_aware_diagnostic": "examples/reports/narrative_harness/iris.render_aware.diagnostic.json",
+    "entity_state": "examples/reports/narrative_harness/entity_state/iris.entity_narrative_state.v0.json"
+  },
+  "generation_frame": {
+    "mode": "strong",
+    "pressure_subtype": "name_collision",
+    "planning_focus": "separate audited entity evidence from similarly named surfaces and prevent false aliasing",
+    "global_caveat": "This lab reading treats irisdesign.dev as the audited surface. Other Iris-like domains are evidence of name-collision pressure only; they are not treated as aliases, owned surfaces, or proof of one shared strategy.",
+    "evidence_boundary": "Claims about the audited case are bound to irisdesign.dev unless another source is explicitly named as an ambiguous external surface.",
+    "uncertainty_rule": "Visual/perceptual confidence may describe visible surface behavior, but it cannot compensate for weak entity or evidentiary confidence."
+  },
+  "baseline_problem_summary": {
+    "findings_count": 14,
+    "findings_without_evidence_urls": 6,
+    "safe_attribution_total": 15,
+    "external_corroboration_caveat_total": 20,
+    "fallback_evidence_opening_total": 10,
+    "generic_decision_space_count": 14,
+    "visible_repeated_openings": {
+      "the brand describes": 5,
+      "the brand appears": 3
+    },
+    "primary_failure": "The baseline repeatedly treats owned claims and similarly named Iris surfaces as if they can support one coherent strategic reading."
+  },
+  "shared_evidence_map": {
+    "audited_surface": [
+      "https://irisdesign.dev/"
+    ],
+    "ambiguous_name_collision_surfaces": [
+      "https://irisdesign.in/",
+      "https://www.irisdigital.design/",
+      "https://heyiris.ai/blog/expanding-access-iris-now-available-in-slack",
+      "https://agent-wars.com/news/2026-03-14-iris-open-source-mcp-native-eval-observability-tool-for-ai-agents",
+      "https://dev.to/irparent/what-changed-in-iris-v040-1c0k",
+      "https://www.globenewswire.com/news-release/2026/05/01/3286184/0/en/Whitespace-Makes-Iris-AI-Intelligence-Analysis-Agent-Generally-Available-to-Authorized-DoW-and-IC-Users.html",
+      "https://irisdesigncollaborative.com/"
+    ],
+    "missing_finding_level_evidence": [
+      "coherencia: Brand Identity Creation Speed",
+      "coherencia: Design Agency Positioning",
+      "coherencia: Brand Intelligence Platform",
+      "diferenciacion: Brand Identity Speed and Value",
+      "diferenciacion: Distinctive Product Development Focus",
+      "diferenciacion: Efficiency and Content Quality"
+    ],
+    "do_not_overinterpret": [
+      "Do not infer ownership from Iris-like names.",
+      "Do not treat AI-agent Iris evidence as evidence for irisdesign.dev.",
+      "Do not treat agency-positioning surfaces as proof that irisdesign.dev owns or operates them.",
+      "Do not convert visual strength into evidence of market validation."
+    ]
+  },
+  "state_first_findings_by_dimension": {
+    "coherencia": {
+      "baseline_titles": [
+        "Brand Identity Creation Speed",
+        "Design Agency Positioning",
+        "Brand Intelligence Platform"
+      ],
+      "state_first_candidate": "Iris has a coherent owned promise on the audited surface: irisdesign.dev frames brand identity creation as fast, developer-oriented and positioned against expensive agency work. The current evidence does not safely connect that promise to the separate Iris-like agency, digital-design, AI-agent or collaborative domains. Coherence should therefore be read narrowly: the audited page has a clear pitch, but the broader Iris evidence set is entity-ambiguous and should not be collapsed into one brand system.",
+      "evidence_used": [
+        "https://irisdesign.dev/"
+      ],
+      "evidence_boundary": "The candidate uses irisdesign.dev for the audited promise and treats other Iris-like domains as unresolved name-collision context.",
+      "uncertainty_retained": [
+        "Whether irisdesign.in, irisdigital.design, heyiris.ai, iris-ai.dev, byiris.io or irisdesigncollaborative.com are related to irisdesign.dev remains unverified.",
+        "The three baseline coherence findings without evidence URLs remain low-confidence."
+      ],
+      "overreach_avoided": [
+        "Does not claim one integrated Iris brand architecture.",
+        "Does not infer that agency, AI-agent or collaborative surfaces are owned by irisdesign.dev."
+      ],
+      "requires_human_review": true,
+      "confidence": "low_to_medium"
+    },
+    "diferenciacion": {
+      "baseline_titles": [
+        "Brand Identity Speed and Value",
+        "Distinctive Product Development Focus",
+        "Efficiency and Content Quality"
+      ],
+      "state_first_candidate": "The differentiated signal that can be safely attached to irisdesign.dev is the speed/value proposition for indie developers. It is a sharp owned claim, but the baseline evidence does not yet prove that the resulting brand work is distinctive, original or strategically deep. The stronger reading is not that Iris already owns a defensible category position; it is that the audited surface makes a focused promise that still needs external proof or product evidence.",
+      "evidence_used": [
+        "https://irisdesign.dev/"
+      ],
+      "evidence_boundary": "Differentiation is limited to the owned claim on irisdesign.dev because the relevant baseline differentiation findings have no finding-level evidence URLs.",
+      "uncertainty_retained": [
+        "Quality, originality and distinctiveness claims remain owned-positioning signals.",
+        "No third-party corroboration is available in the baseline for the speed/value promise."
+      ],
+      "overreach_avoided": [
+        "Does not describe the product as category-leading.",
+        "Does not convert fast delivery into proven strategic quality."
+      ],
+      "requires_human_review": true,
+      "confidence": "low_to_medium"
+    },
+    "percepcion": {
+      "baseline_titles": [
+        "Brand Identity Creation Speed",
+        "Agency vs. Platform Positioning",
+        "Experience and Reach Claims"
+      ],
+      "state_first_candidate": "Perceptually, the audited Iris surface reads as a fast brand-identity tool for indie developers, not as a fully evidenced agency network or AI-intelligence ecosystem. The confusing part is external to the audited surface: similarly named Iris domains create pressure around what a viewer might think Iris is. That pressure is real as a discoverability and interpretation risk, but it is not proof of shared ownership or one coordinated market story.",
+      "evidence_used": [
+        "https://irisdesign.dev/",
+        "https://irisdesign.in/",
+        "https://www.irisdigital.design/"
+      ],
+      "evidence_boundary": "irisdesign.in and irisdigital.design are used only as name-collision surfaces that may affect perception; they are not treated as owned aliases.",
+      "uncertainty_retained": [
+        "The relationship between the audited surface and the other Iris domains is unknown.",
+        "Perceptual confidence about surface clarity is separate from evidentiary confidence about ownership or market reputation."
+      ],
+      "overreach_avoided": [
+        "Does not say Iris intentionally maintains a dual platform/agency strategy.",
+        "Does not treat name collision as strategic ambiguity."
+      ],
+      "requires_human_review": true,
+      "confidence": "medium"
+    },
+    "presencia": {
+      "baseline_titles": [
+        "Multiple Domains for Brand Identity",
+        "Focus on Speed and Strategy"
+      ],
+      "state_first_candidate": "Presence is the dimension where the name-collision problem should be made explicit. The audit has one primary surface, irisdesign.dev, plus several Iris-like domains in the evidence set. That creates a visibility problem for interpretation, not a verified multi-domain footprint. A safe finding should separate the audited domain from unresolved adjacent names before discussing reach, channel strategy or brand architecture.",
+      "evidence_used": [
+        "https://irisdesign.dev/",
+        "https://irisdesign.in/",
+        "https://www.irisdigital.design/"
+      ],
+      "evidence_boundary": "Multiple domains are observable in the evidence set, but their ownership relation is not established.",
+      "uncertainty_retained": [
+        "Domain adjacency does not establish an official footprint.",
+        "The presence signal may reflect search/discovery collision rather than brand strategy."
+      ],
+      "overreach_avoided": [
+        "Does not recommend consolidation as if ownership were proven.",
+        "Does not frame the surfaces as deliberate segmentation."
+      ],
+      "requires_human_review": true,
+      "confidence": "medium"
+    },
+    "vitalidad": {
+      "baseline_titles": [
+        "Product Expansion and Availability",
+        "Open-Source Tooling and Community",
+        "Organizational Growth and Founding"
+      ],
+      "state_first_candidate": "The vitality evidence is not safe to merge into the irisdesign.dev reading. The cited activity around Iris AI, open-source observability and organizational growth may show active Iris-named projects, but the current state does not verify their relation to the audited brand surface. The disciplined conclusion is that the evidence set contains active Iris signals, while irisdesign.dev itself still needs cleaner activity proof before Brand3 can read that vitality as belonging to the audited case.",
+      "evidence_used": [
+        "https://www.globenewswire.com/news-release/2026/05/01/3286184/0/en/Whitespace-Makes-Iris-AI-Intelligence-Analysis-Agent-Generally-Available-to-Authorized-DoW-and-IC-Users.html",
+        "https://heyiris.ai/blog/expanding-access-iris-now-available-in-slack",
+        "https://agent-wars.com/news/2026-03-14-iris-open-source-mcp-native-eval-observability-tool-for-ai-agents",
+        "https://dev.to/irparent/what-changed-in-iris-v040-1c0k",
+        "https://irisdesigncollaborative.com/"
+      ],
+      "evidence_boundary": "These sources support activity around Iris-named entities, not verified vitality for irisdesign.dev.",
+      "uncertainty_retained": [
+        "The active AI/open-source/organizational signals may belong to different entities.",
+        "The audited domain needs direct activity evidence before the vitality reading can be strengthened."
+      ],
+      "overreach_avoided": [
+        "Does not use Iris AI expansion as proof of irisdesign.dev momentum.",
+        "Does not infer community strength from unrelated or unresolved Iris surfaces."
+      ],
+      "requires_human_review": true,
+      "confidence": "low_to_medium"
+    }
+  },
+  "comparison": {
+    "specificity": {
+      "baseline": "Repeats broad agency/platform/AI interpretations across findings.",
+      "state_first": "Separates audited surface, name-collision surfaces and unsupported claims.",
+      "winner": "state_first"
+    },
+    "evidence_binding": {
+      "baseline": "Uses several Iris-like sources as if they can support one brand reading.",
+      "state_first": "Names which sources support the audited surface and which only create ambiguity pressure.",
+      "winner": "state_first"
+    },
+    "entity_coherence": {
+      "baseline": "Creates false coherence by blending Iris design, Iris AI and other Iris-like surfaces.",
+      "state_first": "Keeps the entity frame unresolved instead of smoothing it into a strategy.",
+      "winner": "state_first"
+    },
+    "caveat_discipline": {
+      "baseline": "Repeats self-description and no-corroboration caveats.",
+      "state_first": "Centralizes the caveat and then applies it by dimension.",
+      "winner": "state_first"
+    },
+    "uncertainty_preservation": {
+      "baseline": "Contains caution, but repeats it while still implying a shared brand system.",
+      "state_first": "Keeps uncertainty visible and prevents the false merge.",
+      "winner": "state_first"
+    },
+    "overreach_risk": {
+      "baseline": "High risk of false aliasing and invented strategic duality.",
+      "state_first": "Lower risk, but still requires human review because the prose is manually generated from lab artifacts.",
+      "winner": "state_first"
+    }
+  },
+  "verdict": {
+    "better_than_baseline": true,
+    "safer_than_baseline": true,
+    "clearer_than_baseline": true,
+    "worth_continuing": true,
+    "biggest_improvement": "The candidate stops collapsing Iris-like surfaces into a single implied entity or strategy.",
+    "biggest_remaining_risk": "The prose is manually generated and still depends on unresolved entity review; it is not production-safe.",
+    "what_still_fails": [
+      "Six baseline findings lack local evidence URLs.",
+      "The candidate cannot verify ownership or relation among Iris-like domains.",
+      "The candidate does not prove automated prose quality.",
+      "The candidate is still a lab artifact and should not replace the official report."
+    ]
+  }
+}

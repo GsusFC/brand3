@@ -1,0 +1,106 @@
+{
+  "document": "brand3_evidence_packet_findings_schema_trial_review",
+  "version": 0,
+  "created_at": "2026-05-18T08:18:16.630593+00:00",
+  "scope": "lab_only_one_case_one_dimension_one_llm_call",
+  "case": {
+    "brand": "Linear",
+    "dimension": "diferenciacion"
+  },
+  "artifacts": {
+    "script": "scripts/evidence_packet_findings_schema_trial.py",
+    "request": "examples/reports/evidence_packet_findings_schema_trial/linear_diferenciacion/request.json",
+    "raw_output": "examples/reports/evidence_packet_findings_schema_trial/linear_diferenciacion/raw_output.json",
+    "comparison": "examples/reports/evidence_packet_findings_schema_trial/linear_diferenciacion/comparison.json",
+    "cost_observation": "examples/reports/evidence_packet_findings_schema_trial/linear_diferenciacion/cost_observation.json",
+    "trial_notes": "examples/reports/evidence_packet_findings_schema_trial/linear_diferenciacion/trial_notes.md"
+  },
+  "schema_tested": {
+    "removed": "typical_decision",
+    "added": [
+      "evidence_anchor",
+      "bounded_interpretation",
+      "limits"
+    ]
+  },
+  "result": {
+    "finding_count": 1,
+    "titles": [
+      "Competitor relative positioning distance"
+    ],
+    "has_typical_decision": false,
+    "limits_field_present": true,
+    "risky_terms_outside_limits": [],
+    "risky_terms_inside_limits_only": [
+      "superior",
+      "adoption"
+    ]
+  },
+  "comparison_to_previous_candidate_schema": {
+    "case_id": "linear",
+    "dimension": "diferenciacion",
+    "previous_schema": "observation_implication_typical_decision",
+    "new_schema": "evidence_anchor_observation_bounded_interpretation_limits",
+    "previous_summary": {
+      "finding_count": 1,
+      "titles": [
+        "Relative Positioning Distance Among Measured Competitors"
+      ],
+      "risky_terms_detected": [
+        "strategy"
+      ],
+      "risky_terms_outside_limits": [
+        "strategy"
+      ],
+      "limits_field_present": false,
+      "has_typical_decision": true
+    },
+    "new_summary": {
+      "finding_count": 1,
+      "titles": [
+        "Competitor relative positioning distance"
+      ],
+      "risky_terms_detected": [
+        "superior",
+        "adoption"
+      ],
+      "risky_terms_outside_limits": [],
+      "limits_field_present": true,
+      "has_typical_decision": false
+    },
+    "reduced_strategic_drift": false,
+    "limits_field_present": true,
+    "manual_review_required": true
+  },
+  "assessment": {
+    "removing_typical_decision_reduced_strategic_drift": true,
+    "model_stayed_closer_to_evidence": true,
+    "preserved_useful_interpretation": true,
+    "too_dry_or_mechanical": "somewhat, but acceptable for evidence-packet mode",
+    "better_for_evidence_packet_inputs": true,
+    "production_candidate_later": true,
+    "keep_lab_only_now": true,
+    "why": [
+      "The output produced one narrow finding from two comparison evidence items.",
+      "No typical_decision field was emitted.",
+      "The interpretation stayed conditional and limited to relative positioning distance.",
+      "Risk terms appear only inside the limits field as explicit non-claims."
+    ]
+  },
+  "remaining_risks": [
+    "The schema is narrower and less editorial than current Brand3 prose.",
+    "It still depends on snapshot-derived competitor comparison provenance.",
+    "Needs multi-case testing before any production redesign."
+  ],
+  "non_goals_preserved": [
+    "no_runtime_integration",
+    "no_production_prompt_change",
+    "no_scoring_change",
+    "no_report_generation_change",
+    "no_rendering_change",
+    "no_persisted_payload_format_change",
+    "no_visual_signature_change",
+    "no_deep_research_call",
+    "no_exa_or_firecrawl_call"
+  ]
+}

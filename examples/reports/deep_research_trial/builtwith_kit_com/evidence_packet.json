@@ -1,0 +1,157 @@
+{
+  "audited_surface": {
+    "confidence": "medium",
+    "entity_label": "kit.com subdomain",
+    "evidence": [
+      {
+        "description": "ScamAdviser scan indicates the site contains text related to an email platform for creators.",
+        "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+      },
+      {
+        "description": "Site is technically utilizing an iframe to embed content, according to security scanner.",
+        "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+      }
+    ],
+    "url": "https://builtwith.kit.com"
+  },
+  "case_id": "builtwith_kit_com",
+  "entity_ambiguity": [
+    {
+      "ambiguity_type": "Subdomain Name Collision",
+      "description": "The subdomain 'builtwith' on kit.com matches the distinct corporate entity BuiltWith Pty Ltd (builtwith.com).",
+      "uncertainty_marker": "Uncertain. No direct evidence in the provided set confirms a partnership, technical integration, or joint venture between Kit and BuiltWith. 'builtwith' may simply be a grammatical construct for a landing page (e.g., 'Made/Built with Kit'). No ownership or affiliation can be inferred without further explicit evidence.",
+      "url": "https://builtwith.com/"
+    },
+    {
+      "ambiguity_type": "Unknown Iframe Source",
+      "description": "ScamAdviser reports the subdomain uses an iframe to embed content from another website, but the source URL of that iframe is not identified.",
+      "uncertainty_marker": "Uncertain. It cannot be assumed that the iframe originates from builtwith.com.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "item": "Use of iframes, DV SSL certificates, and CloudFlare.",
+      "reason": "Technical infrastructure artifacts; cannot be used as brand intent or strategic evidence.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "item": "Tranco ranking and 'Very Fast' speed assessment.",
+      "reason": "Visual and technical metrics are excluded from market evidence per rules.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "excluded_noise": [
+    {
+      "item": "NameCheap registrar reputation.",
+      "reason": "Scanner notes NameCheap facilitates websites with low review scores and is used by scammers. This is a generic registrar-level metric and does not reflect the audited brand's intent or safety.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "external_evidence": [
+    {
+      "evidence": "Website has an average to good trust score (100) and is considered 'Very Likely Safe' by ScamAdviser.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "evidence": "DNSFilter rates the website as safe.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "item": "The audited surface contains marketing copy for the Kit platform, promoting a 14-day free trial and a 7-day newsletter launch guide.",
+      "narrative_alignment": "Validates the subdomain is actively used as a functional marketing or landing page for Kit's creator tools.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "missing_evidence": [
+    {
+      "item": "Direct inspection data from https://builtwith.kit.com is unavailable.",
+      "reason": "URL was not crawled directly in the provided snippets; reliant on third-party security scanner data for page content.",
+      "url": "https://builtwith.kit.com"
+    },
+    {
+      "item": "No data or snippets provided for the JoeSandbox URL.",
+      "reason": "The URL is in the fixed set but generated no research material.",
+      "url": "https://www.joesandbox.com/analysis/1719754/0/html"
+    }
+  ],
+  "owned_claims": [
+    {
+      "claim": "Website serves as an 'Email Platform for Creators \u2013 Launch & Grow with Kit'.",
+      "uncertainty_marker": "Uncertain: Claim is extracted indirectly via a third-party security scanner, not from direct surface inspection.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "claim": "Website states 'Make email your most valuable channel'.",
+      "uncertainty_marker": "Uncertain: Indirect extraction.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "claim": "Website offers to 'Launch your newsletter this week with a free 7 day guide, level up your business via demo, or try Kit free for 14 days'.",
+      "uncertainty_marker": "Uncertain: Indirect extraction.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "evidence": "Kit (formerly ConvertKit) is an email marketing automation platform for creators founded by Nathan Barry.",
+      "url": "https://kit.com/"
+    },
+    {
+      "evidence": "BuiltWith is a technology lookup tool operated by BuiltWith Pty Ltd in Sydney, Australia.",
+      "url": "https://builtwith.com/"
+    },
+    {
+      "evidence": "There is no mention of 'BuiltWith' on the Kit website.",
+      "url": "https://kit.com/"
+    },
+    {
+      "evidence": "There is no mention of 'Kit' or 'ConvertKit' on the BuiltWith website.",
+      "url": "https://builtwith.com/"
+    },
+    {
+      "evidence": "The BuiltWith blog detailing LLM and MCP integrations does not mention kit.com or builtwith.kit.com.",
+      "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/"
+    }
+  ],
+  "requires_human_review": [
+    {
+      "reason": "Crucial to identify the source URL of the iframed content. This will resolve the entity ambiguity regarding whether the subdomain embeds a builtwith.com widget or simply hosts native kit.com marketing assets.",
+      "task": "Perform a direct manual load of https://builtwith.kit.com to inspect the network traffic and DOM."
+    }
+  ],
+  "technical_signals": [
+    {
+      "signal": "Website uses an iframe or similar technology to include content and functionalities from another website.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "signal": "Domain uses a Domain Validated (DV) SSL certificate issued by Google Trust Services.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "signal": "Traffic routed through CloudFlare Inc.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "signal": "Website performance rated as 'Very Fast'.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "signal": "Website has a low Tranco ranking (low visitor volume).",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "trust_or_security_signals": [
+    {
+      "signal": "The kit.com root domain is approximately 30 years old (registered 1995-11-29).",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "signal": "WHOIS registration utilizes a privacy service ('Withheld for Privacy ehf').",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ]
+}

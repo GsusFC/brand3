@@ -1,0 +1,557 @@
+{
+  "version": "entity_narrative_state_builder_contract.v0",
+  "date": "2026-05-17",
+  "scope": {
+    "type": "specification_only",
+    "code_implemented": false,
+    "builder_created": false,
+    "runtime_integration": false,
+    "scoring_changes": false,
+    "prompt_changes": false,
+    "generation_changes": false,
+    "rendering_changes": false,
+    "persisted_payload_changes": false,
+    "visual_signature_changes": false,
+    "new_audits_created": false,
+    "new_fixtures_created": false
+  },
+  "framing": {
+    "builder_role": "deterministic_composition_state_compiler",
+    "not_a": [
+      "prose_generator",
+      "strategist",
+      "scoring_layer",
+      "editorial_judge",
+      "prompt_rewrite",
+      "runtime_gate",
+      "visual_signature_integration"
+    ],
+    "stable_phase_2_pattern": "good evidence collection but uneven finding-level evidence binding plus repeated safe attribution and corroboration caveats"
+  },
+  "input_contract": {
+    "report_narrative": {
+      "required": true,
+      "type": "object",
+      "allowed_uses": [
+        "count findings",
+        "read finding titles",
+        "read observations",
+        "read implications",
+        "read typical_decision values",
+        "read evidence_urls",
+        "read explicit synthesis or tension text when present"
+      ],
+      "forbidden_uses": [
+        "rewrite payload prose",
+        "treat payload prose as strategic truth",
+        "invent intent",
+        "infer entity ownership"
+      ]
+    },
+    "payload_level_diagnostic": {
+      "required": true,
+      "type": "object",
+      "expected_metrics": [
+        "status",
+        "warning_count",
+        "finding_count",
+        "findings_without_evidence_urls",
+        "repeated_sentence_openings",
+        "generic_strategic_filler_count",
+        "unsupported_prescription_count",
+        "missing_evidence_url_metrics",
+        "safe_attribution_phrase_counts",
+        "safe_attribution_total",
+        "observation_repetition_family_counts",
+        "fallback_evidence_opening_repetition",
+        "external_corroboration_caveat_repetition",
+        "generic_teams_in_this_position_typically_count"
+      ]
+    },
+    "render_aware_diagnostic": {
+      "required": true,
+      "type": "object",
+      "expected_metrics": [
+        "visible_render_status",
+        "visible_repeated_sentence_openings",
+        "visible_safe_attribution_total",
+        "visible_generic_filler",
+        "visible_evidence_chip_or_link_count",
+        "visible_decision_space_count",
+        "visible_teams_in_this_position_typically_count",
+        "visible_the_brand_count",
+        "suppressed_by_rendering",
+        "still_visible_risks"
+      ]
+    },
+    "snapshot_or_base_dossier_metadata": {
+      "required": false,
+      "type": "object",
+      "allowed_uses": [
+        "run_id",
+        "url",
+        "brand_name",
+        "data_quality",
+        "score_summary",
+        "evidence_total",
+        "owned_evidence_total",
+        "third_party_evidence_total",
+        "context_coverage",
+        "context_confidence",
+        "explicit_related_domains_or_surfaces"
+      ],
+      "forbidden_uses": [
+        "infer strategic intent",
+        "infer market archetype",
+        "infer audience psychology",
+        "convert score into narrative quality",
+        "treat visual signature as runtime input"
+      ]
+    }
+  },
+  "output_contract": {
+    "top_level_shape": [
+      "version",
+      "status",
+      "metadata",
+      "inputs",
+      "state",
+      "derivation",
+      "limitations"
+    ],
+    "required_fields": {
+      "status": {
+        "required": true,
+        "required_values": {
+          "experimental": true,
+          "offline_only": true,
+          "runtime_enabled": false,
+          "used_by_scoring": false,
+          "used_by_prompts": false,
+          "used_by_rendering": false,
+          "persisted_report_narrative": false,
+          "llm_generated": false
+        }
+      },
+      "metadata": {
+        "required": true,
+        "fields": [
+          "brand",
+          "url",
+          "created_from",
+          "generated_at",
+          "case_family"
+        ],
+        "unknown_policy": "use unknown rather than inventing missing brand or url"
+      },
+      "inputs": {
+        "required": true,
+        "fields": [
+          "report_narrative_payload",
+          "payload_diagnostic",
+          "render_aware_diagnostic",
+          "snapshot_or_base_dossier"
+        ]
+      },
+      "state.primary_entity_signal": {
+        "required": true,
+        "fields": [
+          "label",
+          "confidence",
+          "supporting_sources",
+          "uncertainty",
+          "requires_human_review"
+        ],
+        "allowed_confidence": [
+          "high",
+          "medium",
+          "low",
+          "unknown"
+        ]
+      },
+      "state.entity_aliases": {
+        "required": true,
+        "fields": [
+          "primary",
+          "observed_related_surfaces",
+          "needs_review",
+          "confidence"
+        ],
+        "rule": "observed_related_surfaces must come from explicit URLs, domains, metadata, evidence, or known diagnostics"
+      },
+      "state.owned_claim_density": {
+        "required": true,
+        "fields": [
+          "level",
+          "safe_attribution_total",
+          "phrase_counts",
+          "source"
+        ],
+        "allowed_levels": [
+          "inactive",
+          "low",
+          "moderate",
+          "high",
+          "unknown"
+        ]
+      },
+      "state.repeated_opener_budget": {
+        "required": true,
+        "fields": [
+          "status",
+          "max_same_opening",
+          "tracked_openings",
+          "observed_counts",
+          "source"
+        ],
+        "allowed_status": [
+          "inactive",
+          "within_budget",
+          "over_budget",
+          "unknown"
+        ]
+      },
+      "state.fallback_language_budget": {
+        "required": true,
+        "fields": [
+          "mode",
+          "fallback_mode",
+          "fallback_like_repetition",
+          "phrase_counts",
+          "source"
+        ],
+        "allowed_modes": [
+          "inactive",
+          "fallback_mode",
+          "fallback_like_repetition",
+          "unknown"
+        ]
+      },
+      "state.evidence_url_coverage": {
+        "required": true,
+        "fields": [
+          "finding_count",
+          "findings_without_evidence_urls",
+          "coverage_level",
+          "visible_evidence_link_count",
+          "affected_dimensions",
+          "source"
+        ],
+        "allowed_levels": [
+          "strong",
+          "mixed",
+          "weak",
+          "unknown"
+        ],
+        "rule": "missing evidence URLs are coverage metrics, not absolute editorial failures"
+      },
+      "state.decision_space_mode": {
+        "required": true,
+        "fields": [
+          "mode",
+          "generic_decision_count",
+          "visible_decision_space_count",
+          "render_suppression_observed",
+          "advisory_only"
+        ],
+        "allowed_modes": [
+          "show",
+          "hidden_generic",
+          "compressed_candidate",
+          "not_applicable_empty",
+          "unknown"
+        ],
+        "rule": "advisory only; must not control rendering in v0"
+      }
+    },
+    "optional_fields": {
+      "state.source_ownership_summary": {
+        "required": false,
+        "required_when": "explicit source ownership metadata exists",
+        "fields": [
+          "method",
+          "owned_or_self_description",
+          "third_party_or_external_assessment",
+          "technical_or_configuration",
+          "uncited_or_missing_evidence_url"
+        ],
+        "allowed_methods": [
+          "metrics_from_snapshot",
+          "manual_estimate",
+          "unknown"
+        ]
+      },
+      "state.attribution_budget": {
+        "required": false,
+        "required_when": "safe attribution is moderate or high",
+        "fields": [
+          "status",
+          "max_repeated_safe_attribution",
+          "observed_safe_attribution_total",
+          "global_caveat_preferred",
+          "source"
+        ]
+      },
+      "state.corroboration_caveat_budget": {
+        "required": false,
+        "required_when": "external corroboration caveat repetition exceeds warning threshold",
+        "fields": [
+          "status",
+          "observed_caveat_total",
+          "global_caveat_preferred",
+          "source"
+        ]
+      }
+    },
+    "conditional_review_gated_fields": {
+      "state.primary_tension": {
+        "required": false,
+        "review_gated": true,
+        "fields": [
+          "summary",
+          "source",
+          "confidence",
+          "requires_human_review"
+        ],
+        "rule": "normally unknown or absent unless explicit payload synthesis/tension text exists"
+      },
+      "state.contradiction_candidates": {
+        "required": false,
+        "review_gated": true,
+        "item_fields": [
+          "stated_claim",
+          "observed_signal",
+          "supporting_sources",
+          "confidence",
+          "requires_human_review"
+        ],
+        "rule": "must not be created from aesthetics, scores, or name similarity alone"
+      },
+      "state.compression_candidates": {
+        "required": false,
+        "review_gated": true,
+        "item_fields": [
+          "finding_id",
+          "reason",
+          "suggested_only"
+        ],
+        "rule": "no rewritten prose and no runtime implication"
+      }
+    },
+    "metric_only_fields": [
+      "owned_claim_density.safe_attribution_total",
+      "owned_claim_density.phrase_counts",
+      "repeated_opener_budget.observed_counts",
+      "fallback_language_budget.phrase_counts",
+      "evidence_url_coverage.finding_count",
+      "evidence_url_coverage.findings_without_evidence_urls",
+      "evidence_url_coverage.visible_evidence_link_count",
+      "decision_space_mode.generic_decision_count",
+      "decision_space_mode.visible_decision_space_count",
+      "attribution_budget.observed_safe_attribution_total",
+      "corroboration_caveat_budget.observed_caveat_total"
+    ],
+    "must_remain_unknown_unless_explicit": [
+      "primary_entity_signal.label",
+      "entity_aliases.observed_related_surfaces",
+      "source_ownership_summary counts without source classifier or metadata",
+      "primary_tension.summary",
+      "contradiction_candidates",
+      "relationship between related domains",
+      "ownership of adjacent surfaces",
+      "strategic intent",
+      "market position intent",
+      "audience psychology",
+      "brand archetype",
+      "narrative quality score"
+    ]
+  },
+  "derivation_rules": {
+    "deterministic_counts_allowed": [
+      "findings",
+      "findings_with_evidence_urls",
+      "findings_without_evidence_urls",
+      "evidence_url_totals",
+      "visible_evidence_chip_or_link_totals",
+      "repeated_opener_phrase_counts",
+      "safe_attribution_phrase_counts",
+      "fallback_evidence_phrase_counts",
+      "corroboration_caveat_phrase_counts",
+      "generic_decision_space_phrase_counts",
+      "visible_suppressed_decision_space_counts_when_provided"
+    ],
+    "level_mapping_defaults": {
+      "count_levels": {
+        "0": "inactive",
+        "1-2": "low",
+        "3-7": "moderate",
+        "8+": "high"
+      },
+      "evidence_url_coverage": {
+        "no_finding_count": "unknown",
+        "80_percent_or_more_with_evidence_urls": "strong",
+        "40_to_79_percent_with_evidence_urls": "mixed",
+        "below_40_percent_with_evidence_urls": "weak"
+      }
+    },
+    "estimated_fields_require": [
+      "method",
+      "confidence",
+      "notes"
+    ],
+    "unknown_policy": "preserve uncertainty rather than filling fields for completeness",
+    "never_infer": [
+      "strategic intention",
+      "desired audience psychology",
+      "cultural authority",
+      "premium positioning",
+      "founder intent",
+      "market maturity",
+      "visual confidence as evidentiary confidence",
+      "contradiction from score difference alone",
+      "entity ownership from domain or brand-name similarity alone",
+      "future recommendations",
+      "report prose rewrites"
+    ]
+  },
+  "field_to_metric_mapping": {
+    "owned_claim_density": "payload diagnostic safe attribution totals and phrase counts",
+    "repeated_opener_budget": "payload and render-aware repeated opening metrics",
+    "fallback_language_budget": "observation repetition family fallback evidence-opening counts",
+    "evidence_url_coverage": "payload finding evidence URL metrics and render-aware visible evidence links",
+    "decision_space_mode": "payload generic typical_decision counts and render-aware visible Decision space count",
+    "attribution_budget": "payload diagnostic safe attribution total above threshold",
+    "corroboration_caveat_budget": "external corroboration caveat repetition count",
+    "source_ownership_summary": "snapshot or base dossier source ownership metadata when explicit",
+    "primary_entity_signal": "report metadata, URL, payload explicit entity naming",
+    "entity_aliases.observed_related_surfaces": "explicit evidence URLs, metadata, or related domains",
+    "primary_tension": "explicit payload synthesis or tension text only, otherwise review-gated unknown",
+    "contradiction_candidates": "explicit stated claim plus explicit observed signal with supporting sources",
+    "compression_candidates": "diagnostic repeated generic fields, suggested only"
+  },
+  "target_cases": {
+    "builtwith": {
+      "purpose": [
+        "owned-claim repetition",
+        "entity ambiguity",
+        "corroboration caveat repetition",
+        "missing evidence URLs",
+        "generic decision-space suppression"
+      ],
+      "expected_behavior": [
+        "activate owned_claim_density",
+        "activate attribution_budget",
+        "activate corroboration_caveat_budget",
+        "activate evidence_url_coverage",
+        "mark entity ambiguity as review-needed",
+        "avoid strategic claims about Kit or BuiltWith intent"
+      ]
+    },
+    "netlify": {
+      "purpose": [
+        "fallback evidence-opening repetition",
+        "simpler entity state",
+        "inactive owned-claim pressure",
+        "inactive contradiction pressure"
+      ],
+      "expected_behavior": [
+        "activate fallback_language_budget",
+        "keep attribution_budget inactive",
+        "keep corroboration_caveat_budget inactive if metrics are zero",
+        "keep contradiction_candidates empty",
+        "avoid manufacturing a primary tension"
+      ]
+    },
+    "launchdarkly": {
+      "purpose": [
+        "high-evidence control case",
+        "evidence-binding issue despite good data"
+      ],
+      "expected_behavior": [
+        "show good global evidence context when metadata exists",
+        "show mixed finding-level evidence URL coverage",
+        "activate safe attribution and corroboration caveat budgets",
+        "avoid treating evidence total as proof of coherent findings"
+      ]
+    },
+    "iris": {
+      "purpose": [
+        "strong visual surface pressure",
+        "mixed entity corroboration"
+      ],
+      "expected_behavior": [
+        "activate owned-claim and caveat budgets",
+        "record observed related surfaces only when explicit",
+        "mark related-surface interpretation as review-needed",
+        "keep visual strength separate from evidentiary confidence"
+      ]
+    },
+    "watermelon": {
+      "purpose": [
+        "ecosystem ambiguity",
+        "composition hierarchy pressure"
+      ],
+      "expected_behavior": [
+        "record explicit observed related surfaces",
+        "flag entity/surface review pressure",
+        "activate evidence-binding and caveat budgets",
+        "keep contradiction candidates review-gated",
+        "note lexical diagnostic limits when relevant"
+      ]
+    }
+  },
+  "future_tests": [
+    {
+      "name": "stable_output_shape",
+      "assertion": "minimal valid inputs return version, status, metadata, inputs, state, derivation, and limitations"
+    },
+    {
+      "name": "no_strategic_claims_invented",
+      "assertion": "repeated caveats do not create strategic intent, archetype, audience psychology, market-position interpretation, or contradiction candidates"
+    },
+    {
+      "name": "good_evidence_does_not_force_false_tensions",
+      "assertion": "LaunchDarkly-like inputs show evidence-binding pressure but do not force primary_tension"
+    },
+    {
+      "name": "multi_surface_cases_activate_observed_related_surfaces",
+      "assertion": "explicit Iris-like or Watermelon-like domains populate observed_related_surfaces with needs_review true and no verified-equivalence claim"
+    },
+    {
+      "name": "missing_evidence_urls_become_coverage_metrics",
+      "assertion": "findings without evidence URLs update evidence_url_coverage but do not mark the report invalid"
+    },
+    {
+      "name": "inactive_budgets_remain_inactive",
+      "assertion": "zero safe attribution or caveat counts keep corresponding budgets inactive or absent"
+    },
+    {
+      "name": "review_gated_fields_not_promoted_to_facts",
+      "assertion": "possible tension or contradiction text remains requires_human_review unless explicit source states the relationship"
+    },
+    {
+      "name": "render_aware_suppression_remains_diagnostic",
+      "assertion": "render-aware suppression is recorded but does not mutate rendering or payload content"
+    }
+  ],
+  "explicit_non_goals": [
+    "runtime integration",
+    "scoring changes",
+    "prompt changes",
+    "renderer changes",
+    "Visual Signature integration",
+    "report payload mutation",
+    "LLM calls",
+    "automatic contradiction reasoning",
+    "automatic recommendation generation",
+    "prose rewrites",
+    "narrative quality scoring"
+  ],
+  "readiness_decision": {
+    "offline_builder_v0_contract_ready": true,
+    "runtime_ready": false,
+    "prompt_rewrite_ready": false,
+    "visual_signature_ready": false,
+    "notes": "Start with deterministic metrics and conservative unknowns. Compile composition state from existing diagnostics, not analysis."
+  }
+}

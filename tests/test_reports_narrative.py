@@ -573,6 +573,35 @@ class CacheTests(unittest.TestCase):
 
         self.assertEqual(mock._call_json.call_count, 2)
 
+    def test_findings_prompt_with_contradictions(self):
+        dim = _dim("coherencia", 70.0, evidences=[
+            Evidence(
+                dimension="coherencia",
+                quote="We are absolute leaders",
+                url="https://netlify.com",
+                source_type="owned",
+                source_domain="netlify.com",
+                sentiment=None,
+                feature_name="messaging_consistency",
+            )
+        ])
+        packet = {
+            "contradiction_candidates": [
+                {
+                    "type": "owned_claim_vs_external_source_mismatch",
+                    "feature_name": "messaging_consistency",
+                    "dimension": "coherencia",
+                }
+            ]
+        }
+        prompt = _build_findings_user_prompt(dim, "Netlify", packet=packet)
+        self.assertIn("ACTIVE CONTRADICTIONS / WARNINGS:", prompt)
+        self.assertIn("Warning: Discrepancy detected between owned claims and external sources for feature 'messaging_consistency'", prompt)
+
+        dim_other = _dim("presencia", 70.0, evidences=[])
+        prompt_other = _build_findings_user_prompt(dim_other, "Netlify", packet=packet)
+        self.assertNotIn("ACTIVE CONTRADICTIONS / WARNINGS:", prompt_other)
+
 
 if __name__ == "__main__":
     unittest.main()

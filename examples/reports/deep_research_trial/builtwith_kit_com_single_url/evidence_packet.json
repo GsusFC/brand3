@@ -1,0 +1,185 @@
+{
+  "audited_surface": {
+    "confidence": "medium",
+    "entity_label": "Kit Platform Subdomain / Tracking Endpoint",
+    "evidence": [
+      {
+        "observation": "Technical network captures demonstrate the URL acts as a redirect layer, appending referral tracking metrics, confirming its function as a marketing or affiliate tracking mechanism on the Kit platform.",
+        "url": "https://preview.convertkit-mail2.com/click/dpheh0hzhm/aHR0cHM6Ly9idWlsdHdpdGgua2l0LmNvbT91dG1fY2FtcGFpZ249cG93ZXJlZGJ5JnV0bV9jb250ZW50PWVtYWlsJnV0bV9tZWRpdW09cmVmZXJyYWwmdXRtX3NvdXJjZT1keW5hbWlj"
+      }
+    ],
+    "publisher_or_controller": {
+      "confidence": "unresolved",
+      "evidence": [
+        {
+          "observation": "Kit, Inc. (formerly ConvertKit LLC) controls the root kit.com domain and provides email marketing and creator platform services from this domain.",
+          "url": "https://www.businesswire.com/news/home/20241001564521/en/ConvertKit-Rebrands-to-Kit-Pioneering-a-New-Era-for-the-Creator-Economy-and-Email"
+        },
+        {
+          "observation": "The Kit platform architecture automatically assigns unique subdomains (e.g., [name].kit.com) to host customer opt-ins, landing pages, and forms.",
+          "url": "https://help.kit.com/en/articles/4009903-account-domains-vs-custom-domains"
+        },
+        {
+          "observation": "The specific URL redirects with appended parameters 'utm_campaign=poweredby&utm_content=email', strongly suggesting it functions as an automated tracking endpoint for a 'Powered by Kit' referral badge, but lacking explicit documentation to confirm if this is an internal system domain or a user-registered account.",
+          "url": "https://preview.convertkit-mail2.com/click/dpheh0hzhm/aHR0cHM6Ly9idWlsdHdpdGgua2l0LmNvbT91dG1fY2FtcGFpZ249cG93ZXJlZGJ5JnV0bV9jb250ZW50PWVtYWlsJnV0bV9tZWRpdW09cmVmZXJyYWwmdXRtX3NvdXJjZT1keW5hbWlj"
+        }
+      ],
+      "value": "Kit, Inc. (Platform Host) / Specific Controller Unresolved"
+    },
+    "url": "https://builtwith.kit.com"
+  },
+  "case_id": "builtwith_kit_com_single_url",
+  "cost_risk_notes": [
+    {
+      "risk": "Associating the 'builtwith' subdomain strictly with BuiltWith Pty Ltd without further documented proof poses a high risk of misattribution, given Kit's open custom subdomain registration model and the technical markers suggesting the URL functions as an internal email tracking utility."
+    }
+  ],
+  "discovered_sources": [
+    "https://domainnamewire.com/2024/06/06/convertkit-to-rebrand-as-kit-acquires-kit-com/",
+    "https://help.kit.com/en/articles/3639563-kit-com-domains",
+    "https://help.kit.com/en/articles/4009903-account-domains-vs-custom-domains",
+    "https://www.businesswire.com/news/home/20241001564521/en/ConvertKit-Rebrands-to-Kit-Pioneering-a-New-Era-for-the-Creator-Economy-and-Email",
+    "https://builtwith.com",
+    "https://www.scamadviser.com/check-website/builtwith.kit.com",
+    "https://any.run/report/bb413f21c1031fa28c3dd3469d95178fcc3a93d0a48aa6ef69ed4ea39657af12/f74f93da-bd6a-4da8-b02e-0788805149e1",
+    "https://blacklistchecker.com/check?input=builtwith.kit.com",
+    "https://preview.convertkit-mail2.com/click/dpheh0hzhm/aHR0cHM6Ly9idWlsdHdpdGgua2l0LmNvbT91dG1fY2FtcGFpZ249cG93ZXJlZGJ5JnV0bV9jb250ZW50PWVtYWlsJnV0bV9tZWRpdW09cmVmZXJyYWwmdXRtX3NvdXJjZT1keW5hbWlj",
+    "https://domainnamewire.com/2024/10/01/converkit-officially-becomes-kit-at-kit-com/"
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "Naming collision between BuiltWith Pty Ltd and builtwith.kit.com",
+      "details": "It remains entirely unresolved whether 'builtwith.kit.com' is operated by the actual 'BuiltWith' corporation as a Kit landing page, registered by an unaffiliated squatter exploiting Kit's custom subdomain feature, or deployed internally by Kit, Inc. as a system-wide redirect endpoint for their 'Powered by Kit' email referral footers. Current evidence does not smooth this ambiguity.",
+      "url": "https://help.kit.com/en/articles/4009903-account-domains-vs-custom-domains"
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "data": "Raw ANY.RUN system execution logs (e.g., msedge.exe PID checks, process trees)",
+      "reason": "Technical forensic artifacts are overly granular, lack context, and do not directly support high-level strategic brand narrative findings.",
+      "url": "https://any.run/report/bb413f21c1031fa28c3dd3469d95178fcc3a93d0a48aa6ef69ed4ea39657af12/f74f93da-bd6a-4da8-b02e-0788805149e1"
+    },
+    {
+      "data": "BuiltWith.com SSL adoption statistics and market share figures",
+      "reason": "Broad market intelligence metrics fall completely outside the scope of surface acquisition and classification for a single URL.",
+      "url": "https://trends.builtwith.com/ssl"
+    }
+  ],
+  "excluded_noise": [
+    {
+      "reason": "Market narrative regarding CEO Nathan Barry's $360k domain acquisition and the rebranding from ConvertKit is irrelevant to the technical classification of this specific subdomain.",
+      "topic": "Kit.com domain acquisition cost and executive podcast interviews",
+      "url": "https://domainnamewire.com/2024/06/06/convertkit-to-rebrand-as-kit-acquires-kit-com/"
+    },
+    {
+      "reason": "Extensive corporate details regarding BuiltWith Pty Ltd's API, browser extensions, and broad market tracking statistics do not clarify the ownership or intent of the Kit subdomain.",
+      "topic": "BuiltWith.com internal features, SSL usage statistics, and pricing tiers",
+      "url": "https://builtwith.com/builtwith.com"
+    }
+  ],
+  "external_evidence": [
+    {
+      "observation": "ANY.RUN sandbox analysis flagged the URL as 'MALICIOUS' due to a SURICATA phishing rule detection when the URL was executed.",
+      "url": "https://any.run/report/bb413f21c1031fa28c3dd3469d95178fcc3a93d0a48aa6ef69ed4ea39657af12/f74f93da-bd6a-4da8-b02e-0788805149e1"
+    },
+    {
+      "observation": "ScamAdviser assigns the surface a mixed trust score of 55/100, citing that the site uses iframes or other technologies to include content from another website and hides the owner's identity.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    },
+    {
+      "observation": "BlacklistChecker reports a 100% pass rate for the subdomain across all major email and domain threat intelligence blocklists.",
+      "url": "https://blacklistchecker.com/check?input=builtwith.kit.com"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "finding": "The root domain, Kit.com, is legitimately operated by Kit, Inc. (formerly ConvertKit LLC), an Idaho-based B2B email marketing and creator platform.",
+      "url": "https://www.businesswire.com/news/home/20241001564521/en/ConvertKit-Rebrands-to-Kit-Pioneering-a-New-Era-for-the-Creator-Economy-and-Email"
+    },
+    {
+      "finding": "Kit's architectural policy permits individual platform users to claim '.kit.com' subdomains, establishing that the presence of a trademarked term in a Kit subdomain does not guarantee official affiliation with the brand holding that trademark.",
+      "url": "https://help.kit.com/en/articles/3639563-kit-com-domains"
+    }
+  ],
+  "missing_evidence": [
+    {
+      "gap": "Exact registration logs, Whois-equivalent data, or verifiable ownership claims explicitly linking BuiltWith Pty Ltd to the builtwith.kit.com subdomain."
+    },
+    {
+      "gap": "Official infrastructure documentation from Kit, Inc. confirming if 'builtwith.kit.com' is a reserved internal system endpoint designated for referral tracking rather than a standard user-accessible account domain."
+    }
+  ],
+  "owned_claims": [
+    {
+      "claim": "The surface metadata claims to be an 'Email Platform for Creators \u2013 Launch & Grow with Kit' and invites users to 'Make email your most valuable channel' via a 14-day free trial.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "evidence": "Kit.com is the parent domain. Kit, Inc. manages the root domain and hosts creator landing pages on its subdomains.",
+      "relationship": "explicitly related",
+      "surface": "https://kit.com",
+      "url": "https://help.kit.com/en/articles/3639563-kit-com-domains"
+    },
+    {
+      "evidence": "ConvertKit is the former legal name and branding of the platform prior to its official rebrand and migration to Kit.com.",
+      "relationship": "explicitly related",
+      "surface": "https://convertkit.com",
+      "url": "https://domainnamewire.com/2024/10/01/converkit-officially-becomes-kit-at-kit-com/"
+    },
+    {
+      "evidence": "BuiltWith.com is an independent B2B web technology intelligence platform operated by BuiltWith Pty Ltd in Australia. There is no documented partnership, integration, or official relationship between Kit.com and BuiltWith.com. The shared string 'builtwith' creates an unconfirmed naming collision.",
+      "relationship": "unresolved",
+      "surface": "https://builtwith.com",
+      "url": "https://builtwith.com"
+    }
+  ],
+  "requires_human_review": [
+    {
+      "review_task": "Determine if the SURICATA phishing alert identified by ANY.RUN is a true positive indicating the subdomain is actively abused by threat actors for credential harvesting, or a false positive triggered by normalized email click-tracking redirects inherent to Kit's affiliate architecture.",
+      "url": "https://any.run/report/bb413f21c1031fa28c3dd3469d95178fcc3a93d0a48aa6ef69ed4ea39657af12/f74f93da-bd6a-4da8-b02e-0788805149e1"
+    }
+  ],
+  "search_queries_used": [
+    "who owns kit.com domain",
+    "ConvertKit rebrand to Kit.com official announcement",
+    "builtwith.kit.com purpose and owner",
+    "builtwith.kit.com security and technical info",
+    "kit.com subdomains list",
+    "builtwith.kit.com redirect",
+    "builtwith.kit.com site description",
+    "ConvertKit legal entity name and address",
+    "Kit.com legal company name"
+  ],
+  "source_quality_notes": [
+    {
+      "note": "Provides automated sandbox execution intelligence. Results strongly indicate malicious activity via SURICATA rules, but require expert triage to distinguish between affiliate tracking behavior and genuine phishing payloads.",
+      "source": "https://any.run/report/bb413f21c1031fa28c3dd3469d95178fcc3a93d0a48aa6ef69ed4ea39657af12/f74f93da-bd6a-4da8-b02e-0788805149e1"
+    },
+    {
+      "note": "Primary source for platform architecture documentation, highly reliable for determining the mechanics of Kit's subdomain assignment and establishing the baseline risk of naming collisions.",
+      "source": "https://help.kit.com/en/articles/4009903-account-domains-vs-custom-domains"
+    }
+  ],
+  "technical_signals": [
+    {
+      "signal": "The URL executes an HTTP redirect appending explicit affiliate/tracking UTM parameters (utm_campaign=poweredby&utm_content=email&utm_medium=referral&utm_source=dynamic).",
+      "url": "https://preview.convertkit-mail2.com/click/dpheh0hzhm/aHR0cHM6Ly9idWlsdHdpdGgua2l0LmNvbT91dG1fY2FtcGFpZ249cG93ZXJlZGJ5JnV0bV9jb250ZW50PWVtYWlsJnV0bV9tZWRpdW09cmVmZXJyYWwmdXRtX3NvdXJjZT1keW5hbWlj"
+    },
+    {
+      "signal": "Kit platform architecture allows dynamic configuration of subdomains. User accounts receive randomly generated subdomains by default but can customize them to specific strings, allowing for potential namespace squatting.",
+      "url": "https://help.kit.com/en/articles/4009903-account-domains-vs-custom-domains"
+    }
+  ],
+  "trust_or_security_signals": [
+    {
+      "signal": "High Severity Threat Detection: The URL triggered a SURICATA network intrusion phishing alert during automated sandbox analysis. Because Kit is an email marketing platform, this tracking link could be embedded in malicious outbound campaigns, triggering the alert.",
+      "url": "https://any.run/report/bb413f21c1031fa28c3dd3469d95178fcc3a93d0a48aa6ef69ed4ea39657af12/f74f93da-bd6a-4da8-b02e-0788805149e1"
+    },
+    {
+      "signal": "Medium Severity Trust Warning: The URL obfuscates its controller identity and uses framing/redirection techniques, which depresses its automated trust score on scanner sites.",
+      "url": "https://www.scamadviser.com/check-website/builtwith.kit.com"
+    }
+  ]
+}

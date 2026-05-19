@@ -1,0 +1,141 @@
+{
+  "created_at": "2026-05-18T10:34:52.593270+00:00",
+  "db_path": "/Users/gsus/Antigravity/Brand3/brand3/data/brand3.sqlite3",
+  "cases": [
+    {
+      "case_id": "linear",
+      "run_id": 80,
+      "brand_name": "Linear",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/linear.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/linear.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "case_id": "vercel",
+      "run_id": 79,
+      "brand_name": "Vercel",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/vercel.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/vercel.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "case_id": "launchdarkly",
+      "run_id": 76,
+      "brand_name": "LaunchDarkly",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/launchdarkly.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/launchdarkly.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "review_required",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "case_id": "watermelon",
+      "run_id": 78,
+      "brand_name": "Watermelon",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/watermelon.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/watermelon.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "blocked",
+        "vitalidad": "blocked"
+      }
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "run_id": 74,
+      "brand_name": "builtwith.kit.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/builtwith_kit_com.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "blocked",
+        "presencia": "blocked",
+        "percepcion": "blocked",
+        "diferenciacion": "blocked",
+        "vitalidad": "blocked"
+      }
+    },
+    {
+      "case_id": "notion",
+      "run_id": 82,
+      "brand_name": "Notion",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/notion.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/notion.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "ready",
+        "vitalidad": "thin"
+      }
+    },
+    {
+      "case_id": "stripe",
+      "run_id": 83,
+      "brand_name": "Stripe",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/stripe.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/stripe.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "case_id": "figma",
+      "run_id": 84,
+      "brand_name": "Figma",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/figma.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/figma.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "ready",
+        "vitalidad": "thin"
+      }
+    },
+    {
+      "case_id": "datadog",
+      "run_id": 85,
+      "brand_name": "Datadog",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/datadog.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/datadog.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    }
+  ]
+}

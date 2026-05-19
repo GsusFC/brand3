@@ -1,0 +1,209 @@
+{
+  "version": "state_first_prose_candidate.v0",
+  "created_at": "deterministic_lab_prose_generator_v0",
+  "case_id": "watermelon",
+  "target": "https://watermelon.sh",
+  "status": {
+    "lab_only": true,
+    "deterministic_generation": true,
+    "manual_offline_generation": false,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false,
+    "production_ready": false,
+    "requires_human_review": true
+  },
+  "source_artifacts": {
+    "planning_artifact_version": "state_first_findings_generator.v0",
+    "planning_case_id": "watermelon"
+  },
+  "generation_frame": {
+    "mode": "strong",
+    "pressure_subtype": "ecosystem_surface_pressure",
+    "planning_focus": "separate ecosystem surfaces by relation type before drawing cross-surface conclusions",
+    "global_caveat": "This lab reading treats https://watermelon.sh as the audited surface. Adjacent domains, repositories, developer surfaces and marketplace listings are ecosystem pressure only; they are not proof of shared ownership, roadmap, traction or one controlled brand architecture.",
+    "evidence_boundary": "Claims about the audited brand are bound to https://watermelon.sh; ecosystem surfaces require relation-specific review.",
+    "uncertainty_rule": "Repository, marketplace, and adjacent-domain signals must not become roadmap, traction, or ownership claims."
+  },
+  "baseline_problem_summary": {
+    "findings_count": 14,
+    "findings_without_evidence_urls": 6,
+    "safe_attribution_total": 9,
+    "external_corroboration_caveat_total": 16,
+    "fallback_evidence_opening_total": 8,
+    "generic_decision_space_count": 11,
+    "primary_failure": "repeated owned-claim and corroboration caveats fragment the findings"
+  },
+  "shared_evidence_map": {
+    "audited_surface": [
+      "https://watermelon.sh"
+    ],
+    "ecosystem_context_surfaces": [
+      "https://watermelon.ai/",
+      "https://watermelon.market/",
+      "https://watermelon.us/",
+      "https://developer.watermelon.ai/",
+      "https://github.com/watermelontools",
+      "https://github.com/watermeloncorp/watermellon-registry",
+      "https://producthunt.com/products/watermelon/"
+    ],
+    "missing_finding_level_evidence": [
+      "coherencia: Design infrastructure for startups",
+      "coherencia: Open-source copilot for code",
+      "coherencia: Visual design attributes",
+      "diferenciacion: Unified Design Ecosystem Pitch",
+      "diferenciacion: Problem-Solution Framing",
+      "diferenciacion: Content Quality Claim"
+    ],
+    "do_not_overinterpret": [
+      "Do not infer ownership from adjacent domains.",
+      "Do not infer roadmap from repositories.",
+      "Do not infer traction from marketplace listings.",
+      "Do not treat unrelated mentions as public perception of the audited brand."
+    ]
+  },
+  "state_first_findings_by_dimension": {
+    "coherencia": {
+      "baseline_titles": [
+        "Design infrastructure for startups",
+        "Open-source copilot for code"
+      ],
+      "state_first_candidate": "Coherence should start with the owned story on https://watermelon.sh, then stop before turning adjacent domains or repositories into one verified system. Design infrastructure for startups and Open-source copilot for code can frame the promise, but not prove ecosystem architecture.",
+      "evidence_used": [],
+      "evidence_boundary": "No finding-level evidence URL is attached in the planning artifact; keep this dimension compact.",
+      "uncertainty_retained": [
+        "One or more baseline findings in this dimension lack local evidence URLs.",
+        "Related ecosystem surfaces remain review-gated."
+      ],
+      "overreach_avoided": [
+        "Does not infer ecosystem ownership.",
+        "Does not infer roadmap, traction, or community strength from adjacent surfaces."
+      ],
+      "requires_human_review": true,
+      "confidence": "low"
+    },
+    "diferenciacion": {
+      "baseline_titles": [
+        "Unified Design Ecosystem Pitch",
+        "Problem-Solution Framing"
+      ],
+      "state_first_candidate": "Differentiation should treat https://watermelon.sh's infrastructure claim as an owned claim first. Unified Design Ecosystem Pitch and Problem-Solution Framing can show how the brand wants to compete, but repository or marketplace context cannot verify category advantage.",
+      "evidence_used": [],
+      "evidence_boundary": "No finding-level evidence URL is attached in the planning artifact; keep this dimension compact.",
+      "uncertainty_retained": [
+        "One or more baseline findings in this dimension lack local evidence URLs.",
+        "Related ecosystem surfaces remain review-gated."
+      ],
+      "overreach_avoided": [
+        "Does not infer ecosystem ownership.",
+        "Does not infer roadmap, traction, or community strength from adjacent surfaces."
+      ],
+      "requires_human_review": true,
+      "confidence": "low"
+    },
+    "percepcion": {
+      "baseline_titles": [
+        "Self-description as startup infrastructure",
+        "GitHub presence for tools"
+      ],
+      "state_first_candidate": "Perception should separate surface noise from brand signal: owned page evidence, repository evidence, marketplace evidence and unrelated Watermelon references do different jobs. Self-description as startup infrastructure and GitHub presence for tools should not be smoothed into one public reputation story.",
+      "evidence_used": [
+        "https://watermelon.sh/",
+        "https://github.com/watermelontools",
+        "https://github.com/WatermelonCorp/watermellon-registry"
+      ],
+      "evidence_boundary": "Evidence must be read by surface type before any ecosystem-level statement.",
+      "uncertainty_retained": [
+        "Related ecosystem surfaces remain review-gated.",
+        "Repository, marketplace, or adjacent-domain evidence does not prove official ownership or traction."
+      ],
+      "overreach_avoided": [
+        "Does not infer ecosystem ownership.",
+        "Does not infer roadmap, traction, or community strength from adjacent surfaces."
+      ],
+      "requires_human_review": true,
+      "confidence": "medium"
+    },
+    "presencia": {
+      "baseline_titles": [
+        "Self-description as Design Infrastructure",
+        "GitHub Presence and Activity"
+      ],
+      "state_first_candidate": "Presence should map surfaces by relation type: https://watermelon.sh as audited surface, adjacent Watermelon domains as review-gated, repositories as technical context, and listings as weak external traces. Self-description as Design Infrastructure and GitHub Presence and Activity can show footprint pressure, not controlled channel architecture.",
+      "evidence_used": [
+        "https://watermelon.sh/",
+        "https://github.com/WatermelonCorp/watermellon-registry",
+        "https://github.com/watermelontools"
+      ],
+      "evidence_boundary": "Evidence must be read by surface type before any ecosystem-level statement.",
+      "uncertainty_retained": [
+        "Related ecosystem surfaces remain review-gated.",
+        "Repository, marketplace, or adjacent-domain evidence does not prove official ownership or traction."
+      ],
+      "overreach_avoided": [
+        "Does not infer ecosystem ownership.",
+        "Does not infer roadmap, traction, or community strength from adjacent surfaces."
+      ],
+      "requires_human_review": true,
+      "confidence": "medium"
+    },
+    "vitalidad": {
+      "baseline_titles": [
+        "Recent Founding and Growth",
+        "Limited External Engagement"
+      ],
+      "state_first_candidate": "Vitality should be the strictest read: repository movement, marketplace listings or adjacent-domain activity do not prove audited-brand momentum. Recent Founding and Growth and Limited External Engagement can show unresolved activity around the name, but not roadmap, traction or growth.",
+      "evidence_used": [
+        "https://watermelon.us/",
+        "https://www.softwaresuggest.com/watermelon/alternatives",
+        "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+        "https://github.com/WatermelonCorp/watermellon-registry"
+      ],
+      "evidence_boundary": "Evidence must be read by surface type before any ecosystem-level statement.",
+      "uncertainty_retained": [
+        "Related ecosystem surfaces remain review-gated.",
+        "Repository, marketplace, or adjacent-domain evidence does not prove official ownership or traction."
+      ],
+      "overreach_avoided": [
+        "Does not infer ecosystem ownership.",
+        "Does not infer roadmap, traction, or community strength from adjacent surfaces."
+      ],
+      "requires_human_review": true,
+      "confidence": "medium"
+    }
+  },
+  "comparison": {
+    "specificity": {
+      "winner": "state_first",
+      "notes": "Prevents related ecosystem surfaces from becoming false brand architecture."
+    },
+    "evidence_binding": {
+      "winner": "state_first",
+      "notes": "Evidence families are separated before interpretation."
+    },
+    "entity_coherence": {
+      "winner": "state_first",
+      "notes": "Keeps ambiguity visible instead of smoothing it."
+    },
+    "overreach_risk": {
+      "winner": "state_first",
+      "notes": "Lower risk, but still review-gated."
+    }
+  },
+  "verdict": {
+    "better_than_baseline": true,
+    "safer_than_baseline": true,
+    "clearer_than_baseline": true,
+    "worth_continuing": true,
+    "biggest_improvement": "Prevents ecosystem adjacency from becoming false brand architecture.",
+    "biggest_remaining_risk": "The candidate still depends on unresolved entity review.",
+    "what_still_fails": [
+      "Some findings may still lack local evidence URLs.",
+      "Related-surface ownership remains unresolved.",
+      "This candidate is lab-only and must not replace the official report."
+    ]
+  }
+}

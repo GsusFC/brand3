@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "source": "report_narrative",
+  "run_id": "control-clean",
+  "synthesis_prose": "Owned documentation and external coverage both concentrate on developer workflow clarity. The repeated deployment language may support a cautious read of message continuity.",
+  "summary": "Owned documentation and external coverage both concentrate on developer workflow clarity. The repeated deployment language may support a cautious read of message continuity.",
+  "tensions_prose": "Owned documentation and external coverage share developer workflow language, while proof depth remains the main trade-off.",
+  "findings_by_dimension": {
+    "presencia": [
+      {
+        "title": "Homepage workflow language",
+        "observation": "The homepage copy quotes 'Ship faster' beside developer workflow language.",
+        "implication": "That pattern may indicate a surface built around workflow clarity.",
+        "typical_decision": "Teams may compare proof depth, category focus, or audience specificity before choosing a direction.",
+        "evidence_urls": [
+          "https://example.com/home"
+        ]
+      }
+    ],
+    "percepcion": [
+      {
+        "title": "External language continuity",
+        "observation": "External coverage describes developer workflow adoption using the same deployment language.",
+        "implication": "That repetition could support a cautious read of message continuity.",
+        "typical_decision": "Teams may compare owned proof, third-party proof, or narrower category language before choosing a direction.",
+        "evidence_urls": [
+          "https://example.com/coverage"
+        ]
+      }
+    ]
+  }
+}

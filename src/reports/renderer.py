@@ -43,6 +43,40 @@ def _chip_label(url: str) -> str:
     return label or url
 
 
+_GENERIC_DECISION_SPACE_PREFIXES = (
+    "teams in this position typically",
+    "companies in this position typically",
+    "companies in this situation typically",
+    "brands facing such",
+    "teams with such",
+)
+
+_GENERIC_DECISION_SPACE_PHRASES = (
+    "the optimal path depends on market reception, competitive landscape, and available resources",
+    "the choice depends on strategic priorities and available resources",
+    "the best approach depends on the nature of the concerns and the brand's risk tolerance",
+)
+
+
+def should_show_decision_space(value: str | None) -> bool:
+    """Return whether a finding's decision-space text is worth rendering.
+
+    This is a display-only heuristic. It does not mutate Finding.prose, report
+    narrative payloads, prompts, or generation. The rule is intentionally
+    conservative: only clearly generic framing is hidden.
+    """
+    if not value or not isinstance(value, str):
+        return False
+    normalized = " ".join(value.lower().split())
+    if not normalized:
+        return False
+    if normalized.startswith(_GENERIC_DECISION_SPACE_PREFIXES):
+        return False
+    if any(phrase in normalized for phrase in _GENERIC_DECISION_SPACE_PHRASES):
+        return False
+    return True
+
+
 _MODULE_DIR = Path(__file__).resolve().parent
 _DEFAULT_TEMPLATE_DIR = _MODULE_DIR / "templates"
 _PROJECT_ROOT = _MODULE_DIR.parent.parent  # brand3/
@@ -64,6 +98,7 @@ class ReportRenderer:
             lstrip_blocks=False,
         )
         self.env.filters["chip_label"] = _chip_label
+        self.env.filters["should_show_decision_space"] = should_show_decision_space
 
     def render(
         self,

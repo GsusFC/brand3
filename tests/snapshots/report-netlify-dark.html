@@ -172,6 +172,17 @@
   .finding { margin: 10px 0 14px; }
   .finding h4 { color: var(--fg-bright); }
   .finding p { margin: 4px 0 6px; color: var(--fg); }
+  .finding-primary { color: var(--fg); }
+  .finding-decision {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .finding-decision .finding-label {
+    color: var(--key);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
   ul.chips { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
   ul.chips li { margin: 0; }
   ul.chips a {
@@ -251,6 +262,7 @@
 <nav class="report-app-nav" aria-label="Brand3 report navigation">
   <a href="/reports">Reports</a>
   <a href="/brand/netlify.com">Brand history</a>
+  <a href="/brand3-lab/cases/run/1" aria-label="Open read-only Brand3 Lab diagnostics for this audit">Brand3 Lab <span class="dim">diagnostic · no scoring impact</span></a>
   <span class="spacer"></span>
   <a href="?theme=light">Light</a>
   <a href="?theme=dark">Dark</a>
@@ -591,7 +603,12 @@
       <h3>4.1  Coherence <span class="dim">· 78/100 · mixed · mostly-solid</span></h3>
         <div class="finding">
           <h4>Consolidated evidence</h4>
-          <p>The available sources point in the same direction.</p>
+          <p class="finding-primary">The available sources point in the same direction.</p>
+          <ul class="chips">
+            <li><a href="https://www.netlify.com/about" target="_blank" rel="noopener">netlify.com/about</a></li>
+            <li><a href="https://x.com/netlify" target="_blank" rel="noopener">x.com/netlify</a></li>
+            <li><a href="https://docs.wiocapital.com/api" target="_blank" rel="noopener">docs.wiocapital.com/api</a></li>
+          </ul>
         </div>
     </section>
     <hr class="rule-thin">
@@ -599,7 +616,7 @@
       <h3>4.2  Presence <span class="dim">· 82/100 · solid · cohesive</span></h3>
         <div class="finding">
           <h4>Consolidated evidence</h4>
-          <p>The available sources point in the same direction.</p>
+          <p class="finding-primary">The available sources point in the same direction.</p>
           <ul class="chips">
             <li><a href="https://en.wikipedia.org/wiki/Netlify" target="_blank" rel="noopener">en.wikipedia.org/wiki/Ne…</a></li>
           </ul>
@@ -610,7 +627,7 @@
       <h3>4.3  Perception <span class="dim">· 66/100 · mixed · mostly-solid</span></h3>
         <div class="finding">
           <h4>Consolidated evidence</h4>
-          <p>The available sources point in the same direction.</p>
+          <p class="finding-primary">The available sources point in the same direction.</p>
           <ul class="chips">
             <li><a href="https://techcrunch.com/2025/netlify-series-d" target="_blank" rel="noopener">techcrunch.com/2025/netl…</a></li>
             <li><a href="https://www.netlify.com/blog/enterprise/" target="_blank" rel="noopener">netlify.com/blog/enterpr…</a></li>
@@ -622,7 +639,12 @@
       <h3>4.4  Differentiation <span class="dim">· 54/100 · mixed · uneven</span></h3>
         <div class="finding">
           <h4>Consolidated evidence</h4>
-          <p>The available sources point in the same direction.</p>
+          <p class="finding-primary">The available sources point in the same direction.</p>
+          <ul class="chips">
+            <li><a href="https://www.netlify.com/about" target="_blank" rel="noopener">netlify.com/about</a></li>
+            <li><a href="https://x.com/netlify" target="_blank" rel="noopener">x.com/netlify</a></li>
+            <li><a href="https://docs.wiocapital.com/api" target="_blank" rel="noopener">docs.wiocapital.com/api</a></li>
+          </ul>
         </div>
     </section>
     <hr class="rule-thin">
@@ -630,7 +652,7 @@
       <h3>4.5  Vitality <span class="dim">· 71/100 · mixed · mostly-solid</span></h3>
         <div class="finding">
           <h4>Consolidated evidence</h4>
-          <p>The available sources point in the same direction.</p>
+          <p class="finding-primary">The available sources point in the same direction.</p>
           <ul class="chips">
             <li><a href="https://www.netlify.com/blog/2026-04-01-release/" target="_blank" rel="noopener">netlify.com/blog/2026-04…</a></li>
           </ul>

@@ -1,0 +1,15 @@
+{
+  "agent": "deep-research-preview-04-2026",
+  "agent_config": {
+    "collaborative_planning": false,
+    "thinking_summaries": "auto",
+    "type": "deep-research"
+  },
+  "background": true,
+  "input": "You are preparing an evidence packet for Brand3.\n\nTarget audit surface:\n- builtwith.kit.com\n- URL: https://builtwith.kit.com\n\nUse ONLY the provided URL context tool and the fixed URL set below.\nDo not use open web search.\nDo not generate Brand Audit findings.\nDo not score.\nDo not recommend strategy.\nDo not write a report.\n\nFixed URL set:\n- https://builtwith.kit.com\n- https://kit.com/\n- https://builtwith.com/\n- https://builtwith.com/about\n- https://blog.builtwith.com/2026/02/25/llms-and-mcp/\n- https://www.scamadviser.com/check-website/builtwith.kit.com\n- https://www.joesandbox.com/analysis/1719754/0/html\n\nReturn a structured evidence packet only. Prefer valid JSON and no Markdown.\n\nRequired top-level JSON shape:\n{\n  \"case_id\": \"builtwith_kit_com\",\n  \"audited_surface\": {\n    \"url\": \"https://builtwith.kit.com\",\n    \"entity_label\": \"...\",\n    \"confidence\": \"high | medium | low\",\n    \"evidence\": []\n  },\n  \"owned_claims\": [],\n  \"external_evidence\": [],\n  \"related_surface_evidence\": [],\n  \"technical_signals\": [],\n  \"trust_or_security_signals\": [],\n  \"entity_ambiguity\": [],\n  \"excluded_noise\": [],\n  \"missing_evidence\": [],\n  \"finding_eligible_evidence\": [],\n  \"evidence_not_eligible_for_findings\": [],\n  \"requires_human_review\": []\n}\n\nRules:\n- Cite every evidence item with a URL from the fixed URL set.\n- Mark uncertainty explicitly.\n- Do not infer ownership between Kit and BuiltWith unless explicitly supported.\n- Do not treat technical artifacts as brand intent.\n- Do not treat visual or technical metrics as market evidence.\n- Do not smooth entity ambiguity.\n- If evidence is weak, mark it weak instead of making it useful.\n- If a provided URL cannot be read, list it under missing_evidence or excluded_noise.\n- finding_eligible_evidence should include only evidence that can safely support a Brand3 narrative finding.\n- evidence_not_eligible_for_findings should include technical, weak, ambiguous, or appendix-only material.\n",
+  "tools": [
+    {
+      "type": "url_context"
+    }
+  ]
+}

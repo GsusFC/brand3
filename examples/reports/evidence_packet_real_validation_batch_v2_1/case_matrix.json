@@ -1,0 +1,245 @@
+{
+  "created_at": "2026-05-18T11:40:38.986367+00:00",
+  "db_path": "/Users/gsus/Antigravity/Brand3/brand3/data/brand3.sqlite3",
+  "groups": {
+    "group_a": {
+      "name": "Deeptech / scientific systems",
+      "primary_count": 3,
+      "selected_count": 3,
+      "target_count": 3,
+      "selected_primary_count": 3,
+      "selected_backup_count": 0,
+      "decisions": [
+        {
+          "case_id": "lightmatter",
+          "brand_name": "Lightmatter",
+          "canonical_url": "https://lightmatter.co",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "lightmatter.co",
+          "run_id": 86,
+          "run_url": "https://lightmatter.co",
+          "run_brand_name": "Lightmatter"
+        },
+        {
+          "case_id": "celestial_ai",
+          "brand_name": "Celestial AI",
+          "canonical_url": "https://www.celestial.ai",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "celestial.ai",
+          "run_id": 87,
+          "run_url": "https://www.celestial.ai",
+          "run_brand_name": "Celestial AI"
+        },
+        {
+          "case_id": "synthesia",
+          "brand_name": "Synthesia",
+          "canonical_url": "https://www.synthesia.io",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "synthesia.io",
+          "run_id": 88,
+          "run_url": "https://www.synthesia.io",
+          "run_brand_name": "Synthesia"
+        }
+      ],
+      "selected": [
+        {
+          "case_id": "lightmatter",
+          "brand_name": "Lightmatter",
+          "canonical_url": "https://lightmatter.co",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "lightmatter.co",
+          "run_id": 86,
+          "run_url": "https://lightmatter.co",
+          "run_brand_name": "Lightmatter"
+        },
+        {
+          "case_id": "celestial_ai",
+          "brand_name": "Celestial AI",
+          "canonical_url": "https://www.celestial.ai",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "celestial.ai",
+          "run_id": 87,
+          "run_url": "https://www.celestial.ai",
+          "run_brand_name": "Celestial AI"
+        },
+        {
+          "case_id": "synthesia",
+          "brand_name": "Synthesia",
+          "canonical_url": "https://www.synthesia.io",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "synthesia.io",
+          "run_id": 88,
+          "run_url": "https://www.synthesia.io",
+          "run_brand_name": "Synthesia"
+        }
+      ],
+      "coverage_gap": 0
+    },
+    "group_b": {
+      "name": "Product / system identity",
+      "primary_count": 3,
+      "selected_count": 3,
+      "target_count": 3,
+      "selected_primary_count": 3,
+      "selected_backup_count": 0,
+      "decisions": [
+        {
+          "case_id": "raycast",
+          "brand_name": "Raycast",
+          "canonical_url": "https://www.raycast.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "raycast.com",
+          "run_id": 92,
+          "run_url": "https://www.raycast.com",
+          "run_brand_name": "Raycast"
+        },
+        {
+          "case_id": "retool",
+          "brand_name": "Retool",
+          "canonical_url": "https://retool.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "retool.com",
+          "run_id": 93,
+          "run_url": "https://retool.com",
+          "run_brand_name": "Retool"
+        },
+        {
+          "case_id": "cron",
+          "brand_name": "Cron",
+          "canonical_url": "https://cron.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "cron.com",
+          "run_id": 94,
+          "run_url": "https://cron.com",
+          "run_brand_name": "Cron"
+        }
+      ],
+      "selected": [
+        {
+          "case_id": "raycast",
+          "brand_name": "Raycast",
+          "canonical_url": "https://www.raycast.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "raycast.com",
+          "run_id": 92,
+          "run_url": "https://www.raycast.com",
+          "run_brand_name": "Raycast"
+        },
+        {
+          "case_id": "retool",
+          "brand_name": "Retool",
+          "canonical_url": "https://retool.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "retool.com",
+          "run_id": 93,
+          "run_url": "https://retool.com",
+          "run_brand_name": "Retool"
+        },
+        {
+          "case_id": "cron",
+          "brand_name": "Cron",
+          "canonical_url": "https://cron.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "cron.com",
+          "run_id": 94,
+          "run_url": "https://cron.com",
+          "run_brand_name": "Cron"
+        }
+      ],
+      "coverage_gap": 0
+    },
+    "group_c": {
+      "name": "Expressive / visual language",
+      "primary_count": 3,
+      "selected_count": 3,
+      "target_count": 3,
+      "selected_primary_count": 3,
+      "selected_backup_count": 0,
+      "decisions": [
+        {
+          "case_id": "locomotive",
+          "brand_name": "Locomotive",
+          "canonical_url": "https://locomotive.ca",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "locomotive.ca",
+          "run_id": 95,
+          "run_url": "https://locomotive.ca",
+          "run_brand_name": "Locomotive"
+        },
+        {
+          "case_id": "bakken_baeck",
+          "brand_name": "Bakken & Baeck",
+          "canonical_url": "https://bakkenbaeck.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "bakkenbaeck.com",
+          "run_id": 96,
+          "run_url": "https://bakkenbaeck.com",
+          "run_brand_name": "Bakken & Baeck"
+        },
+        {
+          "case_id": "dogstudio",
+          "brand_name": "Dogstudio",
+          "canonical_url": "https://dogstudio.co",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "dogstudio.co",
+          "run_id": 97,
+          "run_url": "https://dogstudio.co",
+          "run_brand_name": "Dogstudio"
+        }
+      ],
+      "selected": [
+        {
+          "case_id": "locomotive",
+          "brand_name": "Locomotive",
+          "canonical_url": "https://locomotive.ca",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "locomotive.ca",
+          "run_id": 95,
+          "run_url": "https://locomotive.ca",
+          "run_brand_name": "Locomotive"
+        },
+        {
+          "case_id": "bakken_baeck",
+          "brand_name": "Bakken & Baeck",
+          "canonical_url": "https://bakkenbaeck.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "bakkenbaeck.com",
+          "run_id": 96,
+          "run_url": "https://bakkenbaeck.com",
+          "run_brand_name": "Bakken & Baeck"
+        },
+        {
+          "case_id": "dogstudio",
+          "brand_name": "Dogstudio",
+          "canonical_url": "https://dogstudio.co",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "dogstudio.co",
+          "run_id": 97,
+          "run_url": "https://dogstudio.co",
+          "run_brand_name": "Dogstudio"
+        }
+      ],
+      "coverage_gap": 0
+    }
+  },
+  "resolved_total": 9,
+  "unresolved_total": 0
+}

@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-05-18T08:10:58.606447+00:00",
+  "run_id": 80,
+  "dimension": "diferenciacion",
+  "execute_requested": true,
+  "llm_calls_planned": 2,
+  "model": "gemini-3.1-pro-preview",
+  "usage_metadata_available": false,
+  "cost_estimate_available": false,
+  "notes": [
+    "Provider response path used by LLMAnalyzer does not expose token usage metadata.",
+    "Trial is limited to one case and one dimension."
+  ],
+  "executed": true,
+  "cache_hits": 0,
+  "cache_misses": 2,
+  "cache_writes": 2,
+  "call_failures": []
+}

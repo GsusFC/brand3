@@ -1,0 +1,378 @@
+{
+  "created_at": "2026-05-18T10:50:16.470690+00:00",
+  "db_path": "/Users/gsus/Antigravity/Brand3/brand3/data/brand3.sqlite3",
+  "groups": {
+    "group_a": {
+      "name": "High evidence / low ambiguity",
+      "primary_count": 5,
+      "selected_count": 4,
+      "target_count": 5,
+      "selected_primary_count": 2,
+      "selected_backup_count": 2,
+      "decisions": [
+        {
+          "case_id": "supabase",
+          "brand_name": "Supabase",
+          "canonical_url": "https://supabase.com",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "supabase.com"
+        },
+        {
+          "case_id": "vercel",
+          "brand_name": "Vercel",
+          "canonical_url": "https://vercel.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "vercel.com",
+          "run_id": 79,
+          "run_url": "https://vercel.com",
+          "run_brand_name": "Vercel"
+        },
+        {
+          "case_id": "launchdarkly",
+          "brand_name": "LaunchDarkly",
+          "canonical_url": "https://launchdarkly.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "launchdarkly.com",
+          "run_id": 76,
+          "run_url": "https://launchdarkly.com",
+          "run_brand_name": "LaunchDarkly"
+        },
+        {
+          "case_id": "sentry",
+          "brand_name": "Sentry",
+          "canonical_url": "https://sentry.io",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "sentry.io"
+        },
+        {
+          "case_id": "temporal",
+          "brand_name": "Temporal",
+          "canonical_url": "https://temporal.io",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "temporal.io"
+        },
+        {
+          "case_id": "netlify",
+          "brand_name": "Netlify",
+          "canonical_url": "https://netlify.com",
+          "source_type": "backup",
+          "status": "selected",
+          "canonical_host": "netlify.com",
+          "run_id": 68,
+          "run_url": "https://www.netlify.com",
+          "run_brand_name": "www.netlify.com"
+        },
+        {
+          "case_id": "heroku",
+          "brand_name": "Heroku",
+          "canonical_url": "https://heroku.com",
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "heroku.com"
+        },
+        {
+          "case_id": "modal",
+          "brand_name": "Modal",
+          "canonical_url": "https://modal.com",
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "modal.com"
+        },
+        {
+          "case_id": "linear",
+          "brand_name": "Linear",
+          "canonical_url": "https://linear.app",
+          "source_type": "backup",
+          "status": "selected",
+          "canonical_host": "linear.app",
+          "run_id": 80,
+          "run_url": "https://linear.app",
+          "run_brand_name": "Linear"
+        },
+        {
+          "case_id": "asana",
+          "brand_name": "Asana",
+          "canonical_url": "https://asana.com",
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "asana.com"
+        }
+      ],
+      "selected": [
+        {
+          "case_id": "vercel",
+          "brand_name": "Vercel",
+          "canonical_url": "https://vercel.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "vercel.com",
+          "run_id": 79,
+          "run_url": "https://vercel.com",
+          "run_brand_name": "Vercel"
+        },
+        {
+          "case_id": "launchdarkly",
+          "brand_name": "LaunchDarkly",
+          "canonical_url": "https://launchdarkly.com",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "launchdarkly.com",
+          "run_id": 76,
+          "run_url": "https://launchdarkly.com",
+          "run_brand_name": "LaunchDarkly"
+        },
+        {
+          "case_id": "netlify",
+          "brand_name": "Netlify",
+          "canonical_url": "https://netlify.com",
+          "source_type": "backup",
+          "status": "selected",
+          "canonical_host": "netlify.com",
+          "run_id": 68,
+          "run_url": "https://www.netlify.com",
+          "run_brand_name": "www.netlify.com"
+        },
+        {
+          "case_id": "linear",
+          "brand_name": "Linear",
+          "canonical_url": "https://linear.app",
+          "source_type": "backup",
+          "status": "selected",
+          "canonical_host": "linear.app",
+          "run_id": 80,
+          "run_url": "https://linear.app",
+          "run_brand_name": "Linear"
+        }
+      ],
+      "coverage_gap": 1
+    },
+    "group_b": {
+      "name": "Strong visual identity / weak external grounding",
+      "primary_count": 5,
+      "selected_count": 2,
+      "target_count": 5,
+      "selected_primary_count": 2,
+      "selected_backup_count": 0,
+      "decisions": [
+        {
+          "case_id": "spooky",
+          "brand_name": "Spooky",
+          "canonical_url": "https://spooky.design",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "spooky.design"
+        },
+        {
+          "case_id": "stipple",
+          "brand_name": "Stipple",
+          "canonical_url": "https://www.stipple.sh",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "stipple.sh"
+        },
+        {
+          "case_id": "iris",
+          "brand_name": "Iris",
+          "canonical_url": "https://irisdesign.dev",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "irisdesign.dev",
+          "run_id": 77,
+          "run_url": "https://irisdesign.dev",
+          "run_brand_name": "Iris"
+        },
+        {
+          "case_id": "vexture",
+          "brand_name": "Vexture",
+          "canonical_url": "https://www.miva.com/vexture-search",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "miva.com"
+        },
+        {
+          "case_id": "watermelon",
+          "brand_name": "Watermelon",
+          "canonical_url": "https://watermelon.sh",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "watermelon.sh",
+          "run_id": 78,
+          "run_url": "https://watermelon.sh",
+          "run_brand_name": "Watermelon"
+        },
+        {
+          "case_id": "hex_studio",
+          "brand_name": "HEX Studio",
+          "canonical_url": null,
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        },
+        {
+          "case_id": "metabrand",
+          "brand_name": "Metabrand",
+          "canonical_url": null,
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        },
+        {
+          "case_id": "spectra",
+          "brand_name": "Spectra",
+          "canonical_url": null,
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        },
+        {
+          "case_id": "8b",
+          "brand_name": "8B",
+          "canonical_url": null,
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        }
+      ],
+      "selected": [
+        {
+          "case_id": "iris",
+          "brand_name": "Iris",
+          "canonical_url": "https://irisdesign.dev",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "irisdesign.dev",
+          "run_id": 77,
+          "run_url": "https://irisdesign.dev",
+          "run_brand_name": "Iris"
+        },
+        {
+          "case_id": "watermelon",
+          "brand_name": "Watermelon",
+          "canonical_url": "https://watermelon.sh",
+          "source_type": "primary",
+          "status": "selected",
+          "canonical_host": "watermelon.sh",
+          "run_id": 78,
+          "run_url": "https://watermelon.sh",
+          "run_brand_name": "Watermelon"
+        }
+      ],
+      "coverage_gap": 3
+    },
+    "group_c": {
+      "name": "Contradiction-heavy / multi-signal tension",
+      "primary_count": 5,
+      "selected_count": 0,
+      "target_count": 5,
+      "selected_primary_count": 0,
+      "selected_backup_count": 0,
+      "decisions": [
+        {
+          "case_id": "ag2",
+          "brand_name": "AG2",
+          "canonical_url": "https://www.ag2.ai",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "ag2.ai"
+        },
+        {
+          "case_id": "anyforge",
+          "brand_name": "AnyForge",
+          "canonical_url": "https://anyforge.ai",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "anyforge.ai"
+        },
+        {
+          "case_id": "namzu",
+          "brand_name": "Namzu",
+          "canonical_url": null,
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        },
+        {
+          "case_id": "cont3xt",
+          "brand_name": "Cont3xt",
+          "canonical_url": "https://cont3xt.dev",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "cont3xt.dev"
+        },
+        {
+          "case_id": "agentspan",
+          "brand_name": "Agentspan",
+          "canonical_url": "https://agentspan.ai",
+          "source_type": "primary",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "agentspan.ai"
+        },
+        {
+          "case_id": "delimit",
+          "brand_name": "Delimit",
+          "canonical_url": null,
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        },
+        {
+          "case_id": "openclaw",
+          "brand_name": "OpenClaw",
+          "canonical_url": null,
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "canonical_url_unresolved"
+        },
+        {
+          "case_id": "cursor",
+          "brand_name": "Cursor",
+          "canonical_url": "https://cursor.com",
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "cursor.com"
+        },
+        {
+          "case_id": "lovable",
+          "brand_name": "Lovable",
+          "canonical_url": "https://lovable.dev",
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "lovable.dev"
+        },
+        {
+          "case_id": "anthropic",
+          "brand_name": "Anthropic",
+          "canonical_url": "https://www.anthropic.com",
+          "source_type": "backup",
+          "status": "unresolved",
+          "reason": "no_local_snapshot_for_canonical_host",
+          "canonical_host": "anthropic.com"
+        }
+      ],
+      "selected": [],
+      "coverage_gap": 5
+    }
+  },
+  "resolved_total": 6,
+  "unresolved_total": 23
+}

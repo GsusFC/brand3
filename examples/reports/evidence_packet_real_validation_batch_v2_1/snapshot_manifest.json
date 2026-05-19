@@ -1,0 +1,177 @@
+{
+  "created_at": "2026-05-18T11:40:39.477721+00:00",
+  "db_path": "/Users/gsus/Antigravity/Brand3/brand3/data/brand3.sqlite3",
+  "cases": [
+    {
+      "group_id": "group_a",
+      "case_id": "lightmatter",
+      "source_type": "primary",
+      "brand_name": "Lightmatter",
+      "canonical_url": "https://lightmatter.co",
+      "run_id": 86,
+      "run_url": "https://lightmatter.co",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/lightmatter.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/lightmatter.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "celestial_ai",
+      "source_type": "primary",
+      "brand_name": "Celestial AI",
+      "canonical_url": "https://www.celestial.ai",
+      "run_id": 87,
+      "run_url": "https://www.celestial.ai",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/celestial_ai.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/celestial_ai.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "synthesia",
+      "source_type": "primary",
+      "brand_name": "Synthesia",
+      "canonical_url": "https://www.synthesia.io",
+      "run_id": 88,
+      "run_url": "https://www.synthesia.io",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/synthesia.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/synthesia.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "blocked",
+        "vitalidad": "thin"
+      }
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "raycast",
+      "source_type": "primary",
+      "brand_name": "Raycast",
+      "canonical_url": "https://www.raycast.com",
+      "run_id": 92,
+      "run_url": "https://www.raycast.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/raycast.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/raycast.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "blocked",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "retool",
+      "source_type": "primary",
+      "brand_name": "Retool",
+      "canonical_url": "https://retool.com",
+      "run_id": 93,
+      "run_url": "https://retool.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/retool.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/retool.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "cron",
+      "source_type": "primary",
+      "brand_name": "Cron",
+      "canonical_url": "https://cron.com",
+      "run_id": 94,
+      "run_url": "https://cron.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/cron.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/cron.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "thin"
+      }
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "locomotive",
+      "source_type": "primary",
+      "brand_name": "Locomotive",
+      "canonical_url": "https://locomotive.ca",
+      "run_id": 95,
+      "run_url": "https://locomotive.ca",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/locomotive.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/locomotive.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "thin"
+      }
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "bakken_baeck",
+      "source_type": "primary",
+      "brand_name": "Bakken & Baeck",
+      "canonical_url": "https://bakkenbaeck.com",
+      "run_id": 96,
+      "run_url": "https://bakkenbaeck.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/bakken_baeck.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/bakken_baeck.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "thin"
+      }
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "dogstudio",
+      "source_type": "primary",
+      "brand_name": "Dogstudio",
+      "canonical_url": "https://dogstudio.co",
+      "run_id": 97,
+      "run_url": "https://dogstudio.co",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/dogstudio.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/dogstudio.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "blocked",
+        "vitalidad": "blocked"
+      }
+    }
+  ]
+}

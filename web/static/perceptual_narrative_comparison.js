@@ -42,8 +42,20 @@
     });
   }
 
+  function sourceMetadata(form) {
+    var raw = form.dataset.sourceMetadata || "{}";
+    try {
+      return JSON.parse(raw);
+    } catch (_error) {
+      return {};
+    }
+  }
+
   function draftFilename(payload) {
     var stamp = payload.reviewed_at.replace(/[^0-9]/g, "").slice(0, 14);
+    if (payload.case_id) {
+      return "brand3-lab-case-comparison-draft-" + payload.case_id + "-" + stamp + ".json";
+    }
     return "perceptual-narrative-comparison-draft-" + stamp + ".json";
   }
 
@@ -62,11 +74,36 @@
   }
 
   function buildDraft(form) {
+    var caseId = form.dataset.caseId || "";
+    var caseBrand = form.dataset.caseBrand || "";
+    if (caseId) {
+      return {
+        schema_version: "brand3-lab-case-comparison-draft-1",
+        record_type: "brand3_lab_case_comparison_review_draft",
+        draft_status: "draft_only",
+        draft_only: true,
+        not_persisted: true,
+        official_record: false,
+        persistence_status: "not_persisted",
+        reviewed_at: new Date().toISOString(),
+        case_id: caseId,
+        brand: caseBrand,
+        reviewer_decision: byName(form, "decision_" + caseId) || "unreviewed",
+        notes: byName(form, "notes_" + caseId),
+        comparison_source_metadata: sourceMetadata(form),
+        warnings: [
+          "Experimental Brand3 Lab case draft only.",
+          "No review is persisted from this route.",
+          "Do not ingest as an official record without validation."
+        ]
+      };
+    }
     return {
       schema_version: "brand3-perceptual-narrative-comparison-draft-1",
       record_type: "perceptual_narrative_comparison_review_draft",
       draft_status: "draft_only",
       draft_only: true,
+      not_persisted: true,
       official_record: false,
       persistence_status: "not_persisted",
       reviewed_at: new Date().toISOString(),

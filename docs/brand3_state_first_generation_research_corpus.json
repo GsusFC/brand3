@@ -1,0 +1,193 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-17",
+  "status": {
+    "phase": "State-First Narrative Generation Research",
+    "artifact_type": "research_corpus_plan",
+    "lab_only": true,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false,
+    "automated_generator": false
+  },
+  "research_question": "Can entity-state-first generation produce better Brand3 findings than the current dimension-by-dimension pipeline without inventing coherence or hiding uncertainty?",
+  "existing_trials": [
+    {
+      "case_id": "watermelon",
+      "case_name": "Watermelon",
+      "pressure_family": "ecosystem_ambiguity",
+      "trial_status": "complete",
+      "main_learning": "State-first helps when related surfaces must not be collapsed into one platform story.",
+      "reference_files": [
+        "examples/reports/narrative_harness/state_first_generation_trial/watermelon.state_first_findings.md",
+        "examples/reports/narrative_harness/state_first_generation_trial/watermelon.state_first_findings.json"
+      ]
+    },
+    {
+      "case_id": "iris",
+      "case_name": "Iris",
+      "pressure_family": "name_collision_ambiguity",
+      "trial_status": "complete",
+      "main_learning": "State-first helps prevent similarly named surfaces from becoming false aliases or brand architecture.",
+      "reference_files": [
+        "examples/reports/narrative_harness/state_first_generation_trial/iris.state_first_findings.md",
+        "examples/reports/narrative_harness/state_first_generation_trial/iris.state_first_findings.json"
+      ]
+    },
+    {
+      "case_id": "launchdarkly",
+      "case_name": "LaunchDarkly",
+      "pressure_family": "healthy_high_evidence_control",
+      "trial_status": "complete",
+      "main_learning": "State-first can stay light when the entity is stable; overstructuring would be a failure.",
+      "reference_files": [
+        "examples/reports/narrative_harness/state_first_generation_trial/launchdarkly.state_first_findings.md",
+        "examples/reports/narrative_harness/state_first_generation_trial/launchdarkly.state_first_findings.json"
+      ]
+    }
+  ],
+  "ready_cases": [
+    {
+      "case_id": "builtwith_kit_com",
+      "case_name": "Builtwith / Kit",
+      "primary_pressure": "entity_ambiguity_and_caveat_inflation",
+      "artifacts_available": [
+        "payload",
+        "payload_diagnostic",
+        "render_aware_diagnostic",
+        "entity_narrative_state"
+      ],
+      "recommended_next_use": "full_state_first_trial",
+      "success_signals": [
+        "entity ambiguity becomes explicit and review-gated",
+        "owned claims and external signals are separated",
+        "safe attribution is compressed",
+        "missing evidence URLs are handled as a limitation rather than repeated caveats"
+      ],
+      "failure_signals": [
+        "ambiguity becomes confident strategy",
+        "Kit and BuiltWith are treated as one entity without proof",
+        "caveats are hidden instead of governed"
+      ]
+    },
+    {
+      "case_id": "netlify_snapshot_mock",
+      "case_name": "Netlify mock",
+      "primary_pressure": "fallback_repetition_and_weak_evidence_binding",
+      "artifacts_available": [
+        "payload",
+        "payload_diagnostic",
+        "render_aware_diagnostic",
+        "entity_narrative_state"
+      ],
+      "recommended_next_use": "fallback_control_trial",
+      "success_signals": [
+        "fallback openings are not repeated per finding",
+        "weak evidence is named once at the right level",
+        "the result remains modest"
+      ],
+      "failure_signals": [
+        "strategic depth is manufactured from thin evidence",
+        "baseline remains equally good because there is not enough signal"
+      ]
+    }
+  ],
+  "new_candidate_audits": [
+    {
+      "case_id": "supabase",
+      "case_name": "Supabase",
+      "target_type": "high_evidence_low_ambiguity",
+      "primary_research_question": "Does state-first stay light outside LaunchDarkly?",
+      "usefulness": "Strong public footprint and clear developer ecosystem."
+    },
+    {
+      "case_id": "temporal",
+      "case_name": "Temporal",
+      "target_type": "high_evidence_technical_category",
+      "primary_research_question": "Can state-first avoid generic infrastructure prose?",
+      "usefulness": "Technical category can trigger template-like enterprise language."
+    },
+    {
+      "case_id": "vercel",
+      "case_name": "Vercel",
+      "target_type": "ecosystem_multi_surface",
+      "primary_research_question": "Can state-first manage product, platform, and ecosystem hierarchy without flattening?",
+      "usefulness": "Strong ecosystem, many surfaces, many proof types."
+    },
+    {
+      "case_id": "sentry",
+      "case_name": "Sentry",
+      "target_type": "ecosystem_operational_product",
+      "primary_research_question": "Can state-first coordinate evidence across product, docs, community, and category?",
+      "usefulness": "Strong external footprint with possible category familiarity bias."
+    },
+    {
+      "case_id": "spooky",
+      "case_name": "Spooky",
+      "target_type": "visual_perceptual_pressure",
+      "primary_research_question": "Does state-first prevent aesthetic confidence from becoming evidentiary confidence?",
+      "usefulness": "Useful perceptual-pressure candidate if evidence can be collected."
+    },
+    {
+      "case_id": "stipple",
+      "case_name": "Stipple",
+      "target_type": "visual_perceptual_pressure",
+      "primary_research_question": "Can Brand3 read surface behavior without inventing intention?",
+      "usefulness": "Useful if enough evidence can be collected."
+    }
+  ],
+  "recommended_next_batch": [
+    {
+      "case_id": "builtwith_kit_com",
+      "reason": "Strongest unresolved entity ambiguity case.",
+      "expected_win": "Caveats become a global entity-boundary constraint instead of repeated paragraph filler.",
+      "expected_failure": "The rewritten version becomes too fluent and hides unresolved entity boundary review."
+    },
+    {
+      "case_id": "netlify_snapshot_mock",
+      "reason": "Fallback repetition case with weaker evidence binding.",
+      "expected_win": "Fallback openings are centralized and findings stop repeating evidence scarcity.",
+      "expected_failure": "State-first cannot improve because the payload is too thin or synthetic."
+    },
+    {
+      "case_id": "supabase_or_temporal",
+      "reason": "Second high-evidence control beyond LaunchDarkly.",
+      "expected_win": "State-first stays light and only improves evidence discipline.",
+      "expected_failure": "The method invents tension to justify itself."
+    }
+  ],
+  "evaluation_criteria": [
+    "better_than_baseline",
+    "safer_than_baseline",
+    "clearer_than_baseline",
+    "uncertainty_preserved",
+    "defensive_fragmentation_reduced",
+    "evidence_binding_improved",
+    "false_coherence_avoided",
+    "generic_consultancy_language_avoided",
+    "score_first_prose_avoided",
+    "knows_when_to_stay_light"
+  ],
+  "non_goals": [
+    "change production prompts",
+    "replace Brand Audit findings",
+    "modify scoring",
+    "modify report rendering",
+    "add UI",
+    "add persistence",
+    "integrate Visual Signature",
+    "build an automated generator",
+    "claim production readiness"
+  ],
+  "recommended_next_action": {
+    "goal_title": "Run State-First Generation Trials For Builtwith, Netlify, And One High-Evidence Control",
+    "notes": [
+      "Use Supabase or Temporal as the high-evidence control.",
+      "If neither has an existing reliable Brand3 run, create audit artifacts first and stop before generation.",
+      "Continue the phase only if hard cases improve while healthy cases stay light, or if failure clearly defines what should not be automated."
+    ]
+  }
+}

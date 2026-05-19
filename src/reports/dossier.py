@@ -23,6 +23,7 @@ from .derivation import (
     derive_data_quality,
     group_by_dimension,
 )
+from .evidence_packet import build_evidence_packet_v0
 from .narrative import (
     Finding,
     SynthesisContext,
@@ -241,6 +242,12 @@ def _apply_narrative(
         return
 
     try:
+        packet = build_evidence_packet_v0(snapshot)
+    except Exception as exc:
+        log.warning("dossier: failed to build evidence packet: %s", exc)
+        packet = None
+
+    try:
         findings_by_dim = generate_all_findings(
             dim_evs,
             brand,
@@ -248,6 +255,7 @@ def _apply_narrative(
             run_id=run_id,
             analysis_date=analysis_date,
             enable_perceptual_narrative=enable_perceptual_narrative,
+            packet=packet,
         )
     except Exception as exc:
         log.warning("narrative.generate_all_findings failed: %s", exc)

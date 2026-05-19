@@ -10,7 +10,8 @@ from src.reports.derivation import (
     parse_raw_value,
     slugify,
 )
-from src.reports.renderer import ReportRenderer
+from src.reports.narrative import Finding
+from src.reports.renderer import ReportRenderer, should_show_decision_space
 
 
 def _sample_snapshot() -> dict:
@@ -234,6 +235,22 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("a16z.com", html)  # URL chip / source list
         self.assertIn("#0b0d0e", html)  # dark bg token
 
+    def test_render_includes_lab_diagnostic_link_when_run_id_exists(self):
+        html = ReportRenderer().render(_sample_snapshot(), theme="dark")
+
+        self.assertIn('/brand3-lab/cases/run/42', html)
+        self.assertIn("Brand3 Lab", html)
+        self.assertIn("diagnostic · no scoring impact", html)
+
+    def test_render_omits_lab_diagnostic_link_when_run_id_missing(self):
+        snapshot = _sample_snapshot()
+        snapshot["run"].pop("id", None)
+
+        html = ReportRenderer().render(snapshot, theme="dark")
+
+        self.assertNotIn("/brand3-lab/cases/run/", html)
+        self.assertNotIn("diagnostic · no scoring impact", html)
+
     def test_render_shows_cost_policy_when_available(self):
         snapshot = _sample_snapshot()
         snapshot["run"]["use_llm"] = 0
@@ -291,6 +308,100 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn('id="panel-new"', html)
         self.assertIn("§3A  current reading", html)
         self.assertIn("§3N  synthesis", html)
+
+    def test_findings_render_structured_fields_separately(self):
+        ctx = build_report_context(_sample_snapshot(), theme="dark")
+        coherencia = next(dim for dim in ctx["dimensions"] if dim["name"] == "coherencia")
+        finding = Finding(
+            title="Structured finding",
+            observation="Observed surface signal.",
+            implication="May indicate a pattern.",
+            typical_decision="Teams typically choose a focus.",
+            evidence_urls=["https://example.com/evidence"],
+        )
+        coherencia["findings"] = [finding]
+
+        html = ReportRenderer().env.get_template("report.html.j2").render(**ctx)
+        compact = " ".join(html.split())
+
+        self.assertEqual(
+            finding.prose,
+            "Observed surface signal. May indicate a pattern. Teams typically choose a focus.",
+        )
+        self.assertIn("Structured finding", html)
+        self.assertIn("Observed surface signal. May indicate a pattern.", compact)
+        self.assertIn("Decision space", html)
+        self.assertIn("Teams typically choose a focus.", html)
+        self.assertIn('class="finding-decision"', html)
+        self.assertIn("example.com/evidence", html)
+
+    def test_generic_decision_space_is_hidden_without_changing_prose(self):
+        ctx = build_report_context(_sample_snapshot(), theme="dark")
+        coherencia = next(dim for dim in ctx["dimensions"] if dim["name"] == "coherencia")
+        generic_decision = (
+            "Teams in this position typically choose between broadening the platform, "
+            "doubling down on the niche, or waiting for more market feedback."
+        )
+        finding = Finding(
+            title="Generic decision framing",
+            observation="Observed surface signal.",
+            implication="May indicate a pattern.",
+            typical_decision=generic_decision,
+            evidence_urls=["https://example.com/evidence"],
+        )
+        coherencia["findings"] = [finding]
+
+        html = ReportRenderer().env.get_template("report.html.j2").render(**ctx)
+
+        self.assertFalse(should_show_decision_space(generic_decision))
+        self.assertIn(generic_decision, finding.prose)
+        self.assertIn("Observed surface signal. May indicate a pattern.", " ".join(html.split()))
+        self.assertNotIn("Decision space", html)
+        self.assertNotIn(generic_decision, html)
+        self.assertIn("example.com/evidence", html)
+
+    def test_specific_decision_space_remains_visible(self):
+        specific_decision = (
+            "Prioritize the robots.txt indexing tradeoff against crawl coverage "
+            "because the cited technical source is the only external configuration proof."
+        )
+
+        self.assertTrue(should_show_decision_space(specific_decision))
+
+    def test_persisted_narrative_findings_render_without_payload_migration(self):
+        snapshot = _sample_snapshot()
+        snapshot["raw_inputs"] = [
+            {
+                "source": "report_narrative",
+                "created_at": "2026-05-16T00:00:00",
+                "payload": {
+                    "version": 1,
+                    "source": "report_narrative",
+                    "synthesis_prose": "Stored synthesis.",
+                    "tensions_prose": None,
+                    "findings_by_dimension": {
+                        "presencia": [
+                            {
+                                "title": "Stored structured finding",
+                                "observation": "Stored observation.",
+                                "implication": "Stored implication.",
+                                "typical_decision": "Stored decision space.",
+                                "evidence_urls": ["https://example.com/stored"],
+                            }
+                        ]
+                    },
+                },
+            }
+        ]
+
+        html = ReportRenderer().render(snapshot, theme="dark")
+        compact = " ".join(html.split())
+
+        self.assertIn("Stored structured finding", html)
+        self.assertIn("Stored observation. Stored implication.", compact)
+        self.assertIn("Decision space", html)
+        self.assertIn("Stored decision space.", html)
+        self.assertIn("example.com/stored", html)
 
     def test_readiness_diagnostic_does_not_render_by_default(self):
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")

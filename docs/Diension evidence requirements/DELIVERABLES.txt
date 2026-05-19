@@ -1,0 +1,289 @@
+================================================================================
+Brand3 Dimension Evidence Requirements v0 — COMPLETE SPECIFICATION
+================================================================================
+
+DELIVERABLES SUMMARY
+Date: 2026-05-18
+Status: COMPLETE ✓
+
+================================================================================
+ARTIFACTS CREATED
+================================================================================
+
+1. NAVIGATION.md (this file's purpose)
+   └─ Reading guide, decision points, implementation timeline
+
+2. brand3_dimension_evidence_requirements_v0_SUMMARY.md
+   ├─ Key findings (Evidence Packet correct; upstream issues exposed)
+   ├─ Readiness matrix (Vercel 4/5, LaunchDarkly 4/5, Kit 0/5, Watermelon 3/5)
+   ├─ Critical path to production (4 phases, 2-3 weeks)
+   ├─ Decision points (3 key decisions to make)
+   └─ Conclusion: spec-driven, ready for implementation
+
+3. brand3_dimension_evidence_requirements_v0.md
+   ├─ Full specification (479 lines)
+   ├─ Section 1: Overview (epistemologies per dimension)
+   ├─ Section 2: Coherencia contract (owned-only sufficient; 2 surfaces minimum)
+   ├─ Section 3: Presencia contract (40% external minimum; multi-channel)
+   ├─ Section 4: Percepción contract (100% external; no owned claims)
+   ├─ Section 5: Diferenciación contract (50% external; COMPARATIVE REQUIRED)
+   ├─ Section 6: Vitalidad contract (temporal activity; recency ≤60 days)
+   ├─ Section 7: Cross-dimension patterns (which fail most, why)
+   ├─ Section 8: Scoring readiness matrix (ready/thin/blocked/abstain)
+   └─ Section 9: Recommended next steps (phases 1-4)
+
+4. brand3_dimension_evidence_requirements_v0.json
+   ├─ Machine-readable schema (529 lines)
+   ├─ dimension_contracts: full spec per dimension (goal, ready/thin/blocked, rules)
+   ├─ evidence_packet_output_schema: JSON structure packet should emit
+   ├─ test_cases: detailed analysis of Vercel, LaunchDarkly, Builtwith/Kit, Watermelon
+   ├─ acquisition_gaps_exposed: critical findings (diferenciación universal failure, entity ambiguity, etc.)
+   ├─ validation_rules: hardening criteria for Evidence Packet
+   └─ validated ✓ (json.tool passes)
+
+5. brand3_dimension_evidence_requirements_v0_readiness_matrix.md
+   ├─ Readiness summary table (all 4 cases, all dimensions)
+   ├─ Detailed case analysis:
+   │  ├─ VERCEL: 2 Ready, 2 Thin, 1 Blocked (diferenciación needs competitor corpus)
+   │  ├─ LAUNCHDARKLY: 2 Ready, 2 Thin, 1 Blocked (same)
+   │  ├─ BUILTWITH/KIT: 0 Ready, 0 Thin, 5 Blocked (entity validation failure)
+   │  └─ WATERMELON: 0 Ready, 3 Thin, 2 Blocked (low visibility or entity ambiguity)
+   ├─ Cross-case patterns (4 universal insights)
+   ├─ Acquisition gaps (5 critical upstream fixes)
+   ├─ Decision points (should diferenciación be scored? etc.)
+   └─ Recommended next steps (4 phases, concrete actions)
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+1. DIFERENCIACIÓN UNIVERSALLY BLOCKED (CRITICAL)
+   └─ All 4 cases: 0% eligible evidence
+   └─ Root cause: Input snapshots have no competitor corpus
+   └─ This is ACQUISITION FAILURE, not Evidence Packet failure
+   └─ Fix: Collection must include 2-3 competitors per brand
+
+2. EVIDENCE PACKET v0 IS WORKING CORRECTLY
+   └─ Classifies present evidence accurately
+   └─ Exposes upstream gaps (not an Evidence Packet bug)
+   └─ Proven useful as diagnostic filter
+
+3. ENTITY AMBIGUITY CASCADES (BUILTWITH/KIT)
+   └─ Input was audited on subdomain (builtwith.kit.com)
+   └─ This caused universal blockage across all dimensions
+   └─ Input validation needed to prevent this
+
+4. SOCIAL PROFILE OVER-CONSERVATISM (MEDIUM ISSUE)
+   └─ Official LinkedIn profiles marked ambiguous/review-gated
+   └─ Reduces external coverage (27% vs. expected 40%+)
+   └─ Fix: Verify social profiles against outbound links
+
+5. VISUAL COHERENCE MISCLASSIFICATION
+   └─ Brand-level visual consistency (palette, typography) blocked as "technical"
+   └─ This should contribute to coherencia
+   └─ Fix: Refine visual signal classification
+
+================================================================================
+READINESS SUMMARY
+================================================================================
+
+VERCEL:        2 Ready  | 2 Thin  | 1 Blocked (diferenciación)
+LAUNCHDARKLY:  2 Ready  | 2 Thin  | 1 Blocked (diferenciación)
+BUILTWITH/KIT: 0 Ready  | 0 Thin  | 5 Blocked (entity issue)
+WATERMELON:    0 Ready  | 3 Thin  | 2 Blocked
+
+Ready dimensions (can score):
+  ✓ Percepción (external sentiment signals clear)
+  ✓ Vitalidad (activity recency signals clear)
+
+Thin dimensions (explorable but limited):
+  ~ Coherencia (visual classification issue, fixable)
+  ~ Presencia (social profile verification needed)
+
+Blocked dimensions:
+  ✗ Diferenciación (no competitor corpus; this is correct blocking)
+
+================================================================================
+SPECIFICATION DETAILS
+================================================================================
+
+Each dimension has explicit contract:
+  • Evidence goal (what it measures)
+  • Epistemology (owned vs. external, comparative vs. standalone)
+  • Ready requirements (conditions to score)
+  • Thin requirements (has evidence but insufficient)
+  • Blocked conditions (insufficient for narrative)
+  • Allowed/disallowed evidence types
+  • Minimum externality percentage
+  • Can score with zero evidence? (yes/no)
+  • Requires comparative? (yes/no)
+  • Collection must provide (upstream requirements)
+  • Evidence Packet validates (hardening rules)
+
+COHERENCIA
+  ├─ Ready when: 2+ owned surfaces with consistent message/tone/visual
+  ├─ Epistemology: Intra-entity alignment (owned-only sufficient)
+  └─ Critical rule: Visual coherence allowed; schema/robots.txt blocked
+
+PRESENCIA
+  ├─ Ready when: Owned domain + 2+ external channels, 40% external minimum
+  ├─ Epistemology: Multi-channel detectability
+  └─ Critical rule: Requires external corroboration (owned web alone insufficient)
+
+PERCEPCIÓN
+  ├─ Ready when: 2+ independent external sources with sentiment, 100% external
+  ├─ Epistemology: External perception only
+  └─ Critical rule: Owned claims forbidden; absence can be meaningful (special case)
+
+DIFERENCIACIÓN
+  ├─ Ready when: Direct competitor comparison + external echo, OR 2+ external category-distinctive language, OR competitor corpus
+  ├─ Epistemology: Comparative/relational
+  ├─ Blocked when: Zero comparative evidence AND zero distinctive external language
+  ├─ Critical rule: Owned claims NEVER sufficient; must have external validation
+  └─ Most failure-prone dimension (blocks when competitor corpus unavailable)
+
+VITALIDAD
+  ├─ Ready when: Last activity ≤60 days + evidence of evolution + consistency
+  ├─ Epistemology: Temporal activity signals
+  └─ Critical rule: Owned activity sufficient; external press corroborates
+
+================================================================================
+CRITICAL PATH TO PRODUCTION
+================================================================================
+
+PHASE 1 (THIS WEEK) — FIX UPSTREAM
+  ├─ Input validation: Add domain canonicalization (reject subdomains)
+  ├─ Social verification: Add outbound link matching (verify official profiles)
+  ├─ Visual refinement: Distinguish brand-level visual from technical metrics
+  ├─ Effort: ~4 hours development
+  └─ Impact: Vercel/LaunchDarkly coherencia/presencia improve to Ready
+
+PHASE 2 (NEXT 1-2 WEEKS) — ACQUIRE MISSING EVIDENCE
+  ├─ Define competitor selection by category
+  ├─ Create comparison template
+  ├─ Run Evidence Packet on 2-3 competitors per brand
+  ├─ Extract positioning matrix
+  ├─ Effort: ~6-8 hours per brand case
+  └─ Impact: Diferenciación unblocks (can score when competitor corpus exists)
+
+PHASE 3 (WEEK 2-3) — VALIDATE SPEC
+  ├─ Retry 4 cases with fixes
+  ├─ Builtwith/Kit: use correct domain (kit.com)
+  ├─ Vercel/LaunchDarkly: with competitor corpus
+  ├─ Watermelon: Deep Research or manual review
+  ├─ Effort: ~4 hours validation
+  └─ Success criterion: All 4 cases score ≥3 of 5 dimensions OR fail for documented reason
+
+PHASE 4 (WEEK 3) — INTEGRATE INTO GENERATION
+  ├─ Wire Evidence Packet into narrative prompt
+  ├─ Add per-dimension readiness checks
+  ├─ Implement abstention for blocked dimensions
+  ├─ Test report rendering with abstained dimensions
+  ├─ Effort: ~6 hours integration
+  └─ Success criterion: Reports render only backed dimensions; blocked dims explicitly marked
+
+TIMELINE: 2-3 weeks calendar time (3-4 weeks effort, sequential phases)
+
+================================================================================
+DECISION POINTS (YOU MUST DECIDE)
+================================================================================
+
+DECISION 1: How should diferenciación be handled?
+  A) Optional dimension (abstain if no competitor corpus) — RECOMMENDED
+  B) Required (collect competitors for all brands)
+  C) Deferred (score later with competitors)
+
+DECISION 2: Should visual coherence evidence be allowed?
+  A) Yes (brand-level visual consistency is part of coherencia) — RECOMMENDED
+  B) No (exclude all visual evidence)
+
+DECISION 3: When should Evidence Packet go live?
+  A) After Phase 1 (fixes) only — EARLY but acceptable
+  B) After Phase 2 (competitor corpus) — SAFER
+  C) After Phase 3 (full validation) — MOST CAUTIOUS
+
+DECISION 4: What if Watermelon stays unclear?
+  A) Trigger Deep Research to disambiguate
+  B) Accept thin/blocked status as valid (small/niche brand)
+  C) Deprioritize and focus on clear cases (Vercel, LaunchDarkly)
+
+================================================================================
+WHAT'S NEXT
+================================================================================
+
+BEFORE CODING:
+  1. Read: brand3_dimension_evidence_requirements_v0_SUMMARY.md (~15 min)
+  2. Decide: The 4 decision points above
+  3. Confirm: That upstream acquisition is the problem, not Evidence Packet
+
+IMPLEMENTATION ORDER:
+  1. Phase 1: Input validation + social verification + visual refinement (~4h)
+  2. Phase 2: Competitor corpus workflow (~6-8h per brand)
+  3. Phase 3: Validation on all 4 cases (~4h)
+  4. Phase 4: Evidence Packet integration (~6h)
+
+TOTAL EFFORT: ~25-30 hours development, 2-3 weeks calendar
+
+================================================================================
+FILES (ALL VALIDATED)
+================================================================================
+
+brand3_dimension_evidence_requirements_v0.md
+├─ Size: 23 KB
+├─ Lines: 479
+├─ Status: ✓ Complete, human-readable, specification-grade
+
+brand3_dimension_evidence_requirements_v0.json
+├─ Size: 27 KB
+├─ Lines: 529
+├─ Status: ✓ Valid JSON, machine-readable, test cases included
+
+brand3_dimension_evidence_requirements_v0_readiness_matrix.md
+├─ Size: 19 KB
+├─ Lines: 367
+├─ Status: ✓ Complete, case-by-case analysis, actionable recommendations
+
+brand3_dimension_evidence_requirements_v0_SUMMARY.md
+├─ Size: 15 KB
+├─ Lines: 331
+├─ Status: ✓ Complete, executive-friendly, decision-focused
+
+NAVIGATION.md
+├─ Size: Navigation guide
+├─ Purpose: Reading paths, quick references, use cases
+
+Total: 88 KB, 1706 lines of specification
+
+================================================================================
+READING RECOMMENDATIONS
+================================================================================
+
+For decisions only (5 min):
+  → brand3_dimension_evidence_requirements_v0_SUMMARY.md
+
+For full understanding (20 min):
+  → brand3_dimension_evidence_requirements_v0_SUMMARY.md
+  → brand3_dimension_evidence_requirements_v0.md (sections 1-6)
+
+For implementation planning (30 min):
+  → All of above
+  → brand3_dimension_evidence_requirements_v0_readiness_matrix.md
+
+For quick reference:
+  → brand3_dimension_evidence_requirements_v0.json
+
+================================================================================
+FINAL STATUS
+================================================================================
+
+✓ Specification complete
+✓ All 4 test cases analyzed
+✓ Acquisition gaps identified
+✓ Upstream fixes proposed
+✓ Implementation timeline defined
+✓ Decision points documented
+✓ Ready for development
+
+NEXT ACTION: Read SUMMARY, make decisions, schedule Phase 1 start.
+
+================================================================================

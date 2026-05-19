@@ -39,7 +39,7 @@
   --button-text: #f5f5f5;
   --footer-bg: rgba(238, 238, 238, 0.7);
 
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-ui: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "Menlo", "Consolas", ui-monospace, monospace;
   --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "Menlo", "Consolas", ui-monospace, monospace;
 }
 
@@ -1462,6 +1462,649 @@ a:focus-visible {
   gap: 18px;
 }
 
+.lab-research-map,
+.lab-layer-grid,
+.lab-signal-grid,
+.lab-case-list {
+  display: grid;
+  gap: 12px;
+}
+
+.lab-research-map {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.lab-layer-grid,
+.lab-signal-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.lab-case-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.lab-index-list {
+  display: grid;
+  gap: 12px;
+}
+
+.lab-index-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 20px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.lab-index-row h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.lab-index-row p {
+  max-width: 980px;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.lab-index-meta,
+.lab-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.lab-row-actions {
+  justify-content: flex-end;
+  margin-top: 0;
+}
+
+.lab-research-card,
+.lab-layer-card,
+.lab-signal-card,
+.lab-case-card,
+.lab-builder-panel {
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--soft-panel-bg);
+  padding: 14px;
+}
+
+.lab-layer-card,
+.lab-signal-card,
+.lab-case-card {
+  background: var(--surface);
+}
+
+.lab-layer-card,
+.lab-signal-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 18px;
+}
+
+.lab-layer-card .source-link,
+.lab-signal-card .source-link {
+  flex: 0 0 auto;
+}
+
+.lab-builder-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.lab-builder-panel p {
+  max-width: 880px;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.lab-builder-steps {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: lab-step;
+}
+
+.lab-builder-steps li {
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--page-bg);
+  padding: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.45;
+  counter-increment: lab-step;
+}
+
+.lab-builder-steps li::before {
+  content: counter(lab-step, decimal-leading-zero);
+  display: block;
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+.lab-research-card h2,
+.lab-layer-card h2,
+.lab-signal-card h2,
+.lab-case-card h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+}
+
+.lab-research-card p,
+.lab-layer-card p,
+.lab-signal-card p,
+.lab-case-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  line-height: 1.55;
+}
+
+.lab-layer-head,
+.lab-case-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.lab-layer-evidence {
+  display: grid;
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.lab-layer-evidence ul,
+.lab-case-evidence ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 16px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.lab-layer-evidence p,
+.lab-reading-posture p {
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.lab-mini-heading {
+  display: block;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lab-artifact-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab-artifact-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.lab-case-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.lab-reading-posture,
+.lab-case-evidence,
+.lab-active-layer-list {
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
+.lab-active-layer-list {
+  display: grid;
+  gap: 8px;
+}
+
+.lab-active-layer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 10px;
+  border: 1px solid var(--border);
+  background: var(--soft-panel-bg);
+  padding: 9px;
+}
+
+.lab-active-layer > span:first-child {
+  font-family: var(--font-ui);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.lab-active-layer p {
+  grid-column: 1 / -1;
+  font-size: 12px;
+}
+
+.lab-layer-card-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.lab-layer-mini-card,
+.lab-comparison-cta,
+.lab-signal-summary article,
+.lab-narrative-panel {
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.lab-layer-mini-head,
+.lab-narrative-panel-head,
+.lab-comparison-cta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.lab-layer-mini-head h2,
+.lab-comparison-cta h2,
+.lab-signal-summary h2,
+.lab-narrative-panel h2 {
+  margin: 0;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.lab-layer-mini-card p,
+.lab-comparison-cta p {
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.lab-comparison-cta {
+  align-items: center;
+}
+
+.lab-comparison-cta p {
+  max-width: 760px;
+}
+
+.lab-narrative-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lab-narrative-panel {
+  background: var(--soft-panel-bg);
+}
+
+.lab-narrative-panel.is-perceptual {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+.lab-narrative-panel p {
+  margin: 16px 0 0;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.lab-signal-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.lab-signal-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.lab-signal-chip-row .badge {
+  white-space: normal;
+  text-align: left;
+  line-height: 1.35;
+}
+
+.lab-detail-section {
+  display: grid;
+  gap: 14px;
+}
+
+.lab-two-column-brief {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lab-experiment-work-grid,
+.lab-evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.lab-evidence-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px;
+}
+
+.lab-evidence-card h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.lab-evidence-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.lab-detail-block {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.lab-detail-block h2 {
+  margin: 0 0 10px;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.lab-detail-block p {
+  max-width: 920px;
+  margin: 0;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.lab-detail-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.lab-token-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.lab-narrative-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.lab-official-summary,
+.lab-finding-compare,
+.lab-evidence-risk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.lab-score-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.section-head.compact {
+  margin-top: 20px;
+}
+
+.lab-applied-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.lab-applied-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 16px;
+}
+
+.lab-applied-card.is-unavailable {
+  background: var(--soft-panel-bg);
+}
+
+.lab-applied-card h3 {
+  margin: 0 0 8px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.lab-review-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.lab-review-stack,
+.lab-review-findings {
+  display: grid;
+  gap: 16px;
+}
+
+.lab-review-dimension {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.lab-review-dimension h2 {
+  margin: 6px 0 0;
+  font-family: var(--font-ui);
+  font-size: 18px;
+  line-height: 1.3;
+}
+
+.lab-review-finding {
+  display: grid;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.lab-review-input-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.lab-review-note-label {
+  display: block;
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.lab-review-dimension textarea,
+.lab-review-overall-note textarea {
+  width: 100%;
+  margin-top: 8px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--text);
+  padding: 10px;
+  font: inherit;
+  resize: vertical;
+}
+
+/* Brand3 Lab density pass: keep readable type, reduce vertical chrome. */
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) {
+  padding-bottom: 8px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section {
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .page-title {
+  margin-bottom: 10px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .intro-copy {
+  margin-bottom: 14px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ .rule-thin {
+  margin: 14px 0;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .guardrail-banner {
+  margin-top: 12px;
+  padding: 10px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .badge-line,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .badge-line {
+  margin: 10px 0;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .section-head,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .section-head {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-builder-panel,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-builder-panel,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-applied-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-applied-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-index-row,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-index-row,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-detail-block,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-detail-block,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-layer-mini-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-layer-mini-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-signal-summary article,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-signal-summary article,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-narrative-panel,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-narrative-panel {
+  padding: 14px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-layer-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-layer-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-signal-card,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-signal-card {
+  padding: 14px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-detail-section,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-detail-section {
+  gap: 10px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-detail-list,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-detail-list {
+  gap: 6px;
+  line-height: 1.5;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-detail-block h2,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-detail-block h2,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-index-row h2,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-index-row h2 {
+  margin-bottom: 6px;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-narrative-panel p,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-narrative-panel p {
+  margin-top: 12px;
+  line-height: 1.62;
+}
+
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-index-meta,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-index-meta,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section .lab-signal-chip-row,
+.main-nav:has(.main-nav-link[href="/brand3-lab"].is-active) ~ .rule + section ~ section .lab-signal-chip-row {
+  margin-top: 8px;
+}
+
 .comparison-card {
   border: 1px solid var(--border);
   background: var(--soft-panel-bg);
@@ -1873,6 +2516,22 @@ a:hover {
   .highlight-grid,
   .deployment-grid,
   .failure-mode-grid,
+  .lab-index-row,
+  .lab-research-map,
+  .lab-layer-grid,
+  .lab-signal-grid,
+  .lab-case-list,
+  .lab-builder-steps,
+  .lab-layer-evidence,
+  .lab-layer-card-row,
+  .lab-narrative-grid,
+  .lab-signal-summary,
+  .lab-official-summary,
+  .lab-finding-compare,
+  .lab-evidence-risk-grid,
+  .lab-two-column-brief,
+  .lab-experiment-work-grid,
+  .lab-evidence-grid,
   .human-review-queue,
   .human-review-summary,
   .human-review-variants,

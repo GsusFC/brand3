@@ -1,0 +1,127 @@
+{
+  "created_at": "2026-05-18T08:48:47.258528+00:00",
+  "executed": false,
+  "requests_executed": 4,
+  "requests_skipped": 1,
+  "per_case": {
+    "linear::diferenciacion": {
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "finding_count": 1,
+        "titles": [
+          "Relative Positioning Distance Among Measured Competitors"
+        ],
+        "risky_terms_detected": [
+          "strategy"
+        ],
+        "risky_terms_outside_limits": [
+          "strategy"
+        ],
+        "limits_field_present": false,
+        "has_typical_decision": true,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [
+          "strategy"
+        ],
+        "new_outside_limits": []
+      }
+    },
+    "vercel::diferenciacion": {
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "launchdarkly::diferenciacion": {
+      "case_id": "launchdarkly",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    },
+    "watermelon::percepcion": {
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "risky_terms_delta": {
+        "previous_outside_limits": [],
+        "new_outside_limits": []
+      }
+    }
+  },
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": false,
+    "risky_terms_outside_limits_empty": true,
+    "blocked_dimensions_skipped_or_abstained": true,
+    "thin_case_qualified": true,
+    "evidence_urls_valid": true
+  },
+  "trial_pass": false,
+  "manual_review_required": true
+}

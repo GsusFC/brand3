@@ -857,7 +857,9 @@ def _collect_social_with_budget(
         except Exception as exc:
             return SocialData(brand_name=brand_name, error=str(exc)), "error"
 
-    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    import sys
+    method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    ctx = mp.get_context(method)
     output_queue = ctx.Queue(maxsize=1)
     process = ctx.Process(
         target=_social_collect_worker,
@@ -988,7 +990,9 @@ def _take_screenshot_with_budget(
         except Exception as exc:
             return {"error": str(exc), "screenshot_provider": "firecrawl_screenshot"}, "error"
 
-    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    import sys
+    method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    ctx = mp.get_context(method)
     output_queue = ctx.Queue(maxsize=1)
     process = ctx.Process(target=_screenshot_capture_worker, args=(output_queue, url, provider_name))
     process.start()

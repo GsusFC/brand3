@@ -1,0 +1,146 @@
+{
+  "version": "v1.2",
+  "scope": {
+    "layer": "acquisition_only",
+    "provider": "exa",
+    "non_goals": [
+      "scoring_changes",
+      "narrative_prompt_changes",
+      "renderer_changes",
+      "visual_signature_changes",
+      "new_provider"
+    ]
+  },
+  "default_policy": {
+    "mentions": {
+      "search_type": "auto",
+      "freshness": {
+        "start_crawl_date_env": "BRAND3_EXA_MENTIONS_START_CRAWL_DAYS",
+        "default": null
+      }
+    },
+    "news": {
+      "search_type": "fast",
+      "freshness": {
+        "start_published_date_days": 365
+      }
+    },
+    "competitors": {
+      "search_type": "deep"
+    },
+    "ai_visibility": {
+      "search_type": "deep"
+    },
+    "enrichment": {
+      "search_type": "fast",
+      "freshness": {
+        "start_crawl_date_env": "BRAND3_EXA_ENRICHMENT_START_CRAWL_DAYS",
+        "default": null
+      }
+    }
+  },
+  "deep_reasoning_experiment": {
+    "enabled_by_default": false,
+    "enable_flag": "BRAND3_EXA_ENABLE_DEEP_REASONING",
+    "intent_flag": "BRAND3_EXA_DEEP_REASONING_INTENTS",
+    "notes": "Only upgrades deep -> deep-reasoning for listed intents when enabled."
+  },
+  "capability_guard": {
+    "unsupported_filters_by_category": {
+      "company": [
+        "start_published_date",
+        "end_published_date",
+        "start_crawl_date",
+        "end_crawl_date",
+        "exclude_domains"
+      ],
+      "people": [
+        "start_published_date",
+        "end_published_date",
+        "start_crawl_date",
+        "end_crawl_date",
+        "exclude_domains"
+      ]
+    },
+    "people_include_domains_rule": "allow_linkedin_only",
+    "behavior": "strip_and_log"
+  },
+  "diagnostics_contract": {
+    "per_intent_fields": [
+      "status",
+      "result_count",
+      "error",
+      "query",
+      "configured_type",
+      "effective_type",
+      "deep_reasoning_enabled",
+      "deep_reasoning_intents",
+      "deep_reasoning_applied",
+      "applied_filters",
+      "stripped_filters",
+      "elapsed_ms",
+      "latency_bucket",
+      "unresolved_collision_count"
+    ],
+    "aggregate_fields": [
+      "failed_intents",
+      "no_result_intents",
+      "latency_buckets_by_intent",
+      "unresolved_collision_count"
+    ]
+  },
+  "regression_checks": {
+    "cases": [
+      {
+        "brand": "builtwith.kit.com",
+        "url": "https://builtwith.kit.com",
+        "run_id": 111,
+        "status": "ok",
+        "competitors_stripped_filters": [
+          {
+            "param": "exclude_domains",
+            "reason": "unsupported_for_category:company"
+          }
+        ],
+        "effective_types": {
+          "mentions": "auto",
+          "news": "fast",
+          "competitors": "deep",
+          "ai_visibility": "deep"
+        }
+      },
+      {
+        "brand": "Wio Capital",
+        "url": "https://wiocapital.com",
+        "run_id": 112,
+        "status": "ok",
+        "competitors_stripped_filters": [
+          {
+            "param": "exclude_domains",
+            "reason": "unsupported_for_category:company"
+          }
+        ],
+        "effective_types": {
+          "mentions": "auto",
+          "news": "fast",
+          "competitors": "deep",
+          "ai_visibility": "deep"
+        },
+        "unresolved_collision_count": 4
+      }
+    ],
+    "request_shape_errors": 0,
+    "latency_envelope_result": "below_deep_reasoning_trial_envelope"
+  },
+  "pass_criteria": {
+    "no_deep_reasoning_default": true,
+    "no_unsupported_filter_errors": true,
+    "diagnostics_show_effective_config": true,
+    "entity_ambiguity_review_gated": true,
+    "no_scoring_prompt_render_contract_changes": true
+  },
+  "decision": {
+    "result": "pass",
+    "recommendation": "adopt_exa_contract_v1_2_default_acquisition"
+  }
+}

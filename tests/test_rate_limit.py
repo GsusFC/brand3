@@ -15,6 +15,7 @@ def _install_env(db_path: Path) -> None:
     os.environ["BRAND3_DB_PATH"] = str(db_path)
     os.environ["BRAND3_COOKIE_SECRET"] = "t" * 40
     os.environ["BRAND3_TEAM_TOKEN"] = "team-test-token"
+    os.environ["BRAND3_RATE_LIMIT_ENABLED"] = "true"
     os.environ["BRAND3_RATE_LIMIT_PER_IP"] = "5"
     os.environ["BRAND3_RATE_LIMIT_WINDOW_HOURS"] = "24"
 
@@ -62,6 +63,7 @@ class RateLimitTests(unittest.TestCase):
             "BRAND3_DB_PATH",
             "BRAND3_COOKIE_SECRET",
             "BRAND3_TEAM_TOKEN",
+            "BRAND3_RATE_LIMIT_ENABLED",
             "BRAND3_RATE_LIMIT_PER_IP",
             "BRAND3_RATE_LIMIT_WINDOW_HOURS",
             "BRAND3_RATE_LIMIT_BYPASS_IPS",
@@ -101,6 +103,21 @@ class RateLimitTests(unittest.TestCase):
             follow_redirects=False,
         )
         # Valid URL enqueues and 303-redirects to the status page.
+        self.assertEqual(response.status_code, 303)
+
+    def test_disabled_rate_limit_passes_even_when_counter_is_over_limit(self):
+        from web.config import settings
+
+        settings.rate_limit_enabled = False
+        for _ in range(10):
+            self._insert_request("testclient", seconds_ago=1)
+
+        response = self.client.post(
+            "/analyze",
+            data={"url": "https://example.com"},
+            follow_redirects=False,
+        )
+
         self.assertEqual(response.status_code, 303)
 
     def test_team_cookie_bypasses_limit(self):

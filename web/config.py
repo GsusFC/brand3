@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     )
 
     # Rate limit
+    rate_limit_enabled: bool = True
     rate_limit_per_ip: int = 5
     rate_limit_window_hours: int = 24
     rate_limit_bypass_ips: str = ""

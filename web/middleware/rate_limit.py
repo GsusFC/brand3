@@ -47,6 +47,9 @@ async def rate_limit_middleware(
     if not (request.method == "POST" and request.url.path == PROTECTED_PATH):
         return await call_next(request)
 
+    if not settings.rate_limit_enabled:
+        return await call_next(request)
+
     serializer = create_serializer(settings.cookie_secret)
     if is_team_request(request, serializer):
         return await call_next(request)

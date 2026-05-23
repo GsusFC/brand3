@@ -8,6 +8,7 @@ interpretation, and extraction-confidence logic.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
@@ -29,6 +30,8 @@ from src.visual_signature.types import (
     VisualSignatureInput,
 )
 from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
+from src.visual_signature.vision.screenshot_quality import resolve_screenshot_path
+from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics, fallback_semantics
 
 
 def extract_visual_signature(
@@ -85,6 +88,20 @@ def extract_visual_signature(
         assets=assets,
         consistency=consistency,
     )
+    screenshot_path = resolve_screenshot_path(screenshot_payload=screenshot_payload)
+    screenshot_for_semantics = (
+        screenshot_path
+        if screenshot_path and Path(screenshot_path).exists()
+        else None
+    )
+    try:
+        semantics = analyze_visual_semantics(
+            screenshot_path=screenshot_for_semantics,
+            brand_name=brand_name,
+        )
+    except Exception:
+        semantics = fallback_semantics("vision_analysis_exception")
+
     viewport_obstruction = analyze_viewport_obstruction(
         dom_html="\n".join([acquisition.rendered_html or "", acquisition.raw_html or ""]),
     ).to_dict()
@@ -109,6 +126,7 @@ def extract_visual_signature(
         assets=assets,
         consistency=consistency,
         extraction_confidence=extraction_confidence,
+        semantics=semantics,
     )
     return signature.to_dict()
 

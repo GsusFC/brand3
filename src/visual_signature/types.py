@@ -224,6 +224,7 @@ class VisualSignature:
     assets: NormalizedAssetSignals
     consistency: NormalizedConsistencySignals
     extraction_confidence: ExtractionConfidence
+    semantics: dict[str, Any] | None = None
     version: Literal["visual-signature-mvp-1"] = "visual-signature-mvp-1"
 
     def to_dict(self) -> dict[str, Any]:

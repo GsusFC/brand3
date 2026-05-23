@@ -7,16 +7,17 @@ Three public entry points:
   - generate_tensions(dimensions, brand)    → §4 cross-dim tension (or None)
 
 CAPA 1 EDITORIAL (este patch):
-  - Finding ahora tiene estructura formal de 4 partes:
-    observation / implication / typical_decision / evidence_urls.
+  - Finding ahora tiene estructura formal de evidencia:
+    observation / implication / evidence_urls.
   - El prompt de findings prohíbe explícitamente:
       a) echo-chamber: adoptar el discurso self-declared de la marca como
          afirmación propia ("X is the leading platform" → prohibido).
       b) closed evaluative adjectives ("strong", "well-managed", "premier",
          "leading", "successful", etc.) fuera de citas a terceros.
       c) prescripciones singulares ("the brand should X", "needs to Y").
-  - `Finding.prose` se mantiene como property concatenada para retrocompat
-    con templates Jinja que aún no migraron a renderizado 4-part.
+  - `Finding.prose` se mantiene como property concatenada para retrocompat,
+    pero excluye `typical_decision` porque Decision Space está desactivado
+    temporalmente en el reporte oficial.
 
 NO TOCADO en esta capa (pendiente para capas siguientes):
   - Synthesis (§1) — sigue centrando SCORE_GLOBAL como sujeto. Capa 2.
@@ -55,13 +56,13 @@ class Finding:
       Subject must be "the brand says/appears/is described as", never "is/has".
     - implication: editorial inference, conditional language only
       (suggests, may indicate, tends to, likely).
-    - typical_decision: plural space of moves teams in this situation
-      typically consider. Closes by acknowledging that internal variables
-      (intent, strategy, resources) are not observable from outside.
+    - typical_decision: legacy compatibility field for persisted payloads.
+      New report narratives should not populate it.
     - evidence_urls: 2-4 URLs that actually appear in the input evidence pool.
 
     Backwards-compat: `prose` is exposed as a derived property concatenating
-    the three textual fields, so legacy Jinja templates keep rendering.
+    observation and implication, so legacy Jinja templates keep rendering
+    without reintroducing Decision Space prose.
     """
 
     title: str
@@ -72,8 +73,8 @@ class Finding:
 
     @property
     def prose(self) -> str:
-        """Concatenated prose for templates that haven't migrated to 4-part rendering."""
-        parts = [p for p in (self.observation, self.implication, self.typical_decision) if p]
+        """Concatenated prose for templates that haven't migrated to structured rendering."""
+        parts = [p for p in (self.observation, self.implication) if p]
         return " ".join(parts)
 
 
@@ -473,10 +474,9 @@ _FINDINGS_SYSTEM = (
     "Implication = what you editorially infer, in conditional language only "
     "(suggests, tends to, may indicate, likely, could). Mixing the two in a single sentence is a violation.\n"
     "\n"
-    "3. NO SINGULAR PRESCRIPTIONS. Typical decisions describe a PLURAL SPACE of moves "
-    "teams typically consider in this situation. Always at least two distinct directions. "
-    "Always close by acknowledging that internal variables (intent, strategy, resources) "
-    "are not observable from outside the company.\n"
+    "3. NO STRATEGIC PRESCRIPTIONS. Do not include decision-space prose, recommendations, "
+    "resource-allocation speculation, or claims about what founders/management teams "
+    "should weigh. Keep the output to evidence-anchored observation and bounded implication.\n"
     "\n"
     "4. CLOSED EVALUATIVE ADJECTIVES are FORBIDDEN outside of direct quotes from third-party sources. "
     "Banned list: strong, well-managed, leading, premier, essential, successful, robust, "
@@ -564,9 +564,8 @@ Identify between 1 and 3 distinct thematic FINDINGS within this dimension. A fin
 Use this writing model for every finding:
 - Observation: start with a concrete evidence anchor and describe only what is literally present.
 - Implication: state the likely commercial or strategic read in conditional language only.
-- Typical Decision: describe strategic pathways or tradeoffs organically and elegantly.
 
-For each finding return FIVE parts:
+For each finding return FOUR parts:
 
 - title: 3-6 words describing the PATTERN, not its quality. NO closed adjectives. NO trailing period.
   Good: "Self-described as Designer Hub", "Single-Source Self-Description", "External Coverage Mirrors Self-Pitch"
@@ -583,14 +582,10 @@ For each finding return FIVE parts:
   (suggests, tends to, may indicate, likely, could). State what the observation could mean
   commercially or strategically. NEVER assert inferred content as fact. NEVER use closed adjectives.
 
-- typical_decision: 1-2 lines. Describe the PLURAL space of strategic trade-offs or decision pathways teams facing this situation face (at least two distinct pathways or choices). 
-  CRITICAL: Do NOT copy-paste generic disclaimers or templates. NEVER use the exact starting phrase "teams in this position typically choose between..." or "companies in this position...", as this triggers automated report-rendering filters that hide this section entirely. Instead, describe the pathways organically (e.g., "Founders typically navigate between accelerating owned-media publishing to build signal, or consolidating channels around high-impact pages...", "Strategic pathways include expanding regional target messaging to align with X, versus maintaining a unified global domain to prevent signal fragmentation..."). 
-  Close by organically noting that the optimal choice depends on internal variables like specific product focus, growth stage, or resource constraints, woven naturally into the flow rather than repeated verbatim.
-
 - evidence_urls: list of 2-4 URLs that actually appear in the input evidence.
 
 HARD RULES:
-1. SINGLE-SOURCE EVIDENCE: If evidence comes only from the brand's own surface (self-description, no external secondary corroboration in the active pool), clearly state this limitation in the observation using premium, varied phrasing (e.g., "confined exclusively to owned brand channels", "as documented solely in self-published copy with no external validation in the active dataset", "without independent third-party coverage in the evidence pool", "based on owned-media self-description") instead of repeating the same literal disclaimer across findings. The implication and typical_decision must reflect this limitation.
+1. SINGLE-SOURCE EVIDENCE: If evidence comes only from the brand's own surface (self-description, no external secondary corroboration in the active pool), clearly state this limitation in the observation using premium, varied phrasing (e.g., "confined exclusively to owned brand channels", "as documented solely in self-published copy with no external validation in the active dataset", "without independent third-party coverage in the evidence pool", "based on owned-media self-description") instead of repeating the same literal disclaimer across findings. The implication must reflect this limitation.
 2. CONTRADICTION: If evidence contains a contradiction between sources (e.g. brand says
    one thing, third parties say another), dedicate one finding to that contradiction with
    a title that names it.
@@ -599,6 +594,7 @@ HARD RULES:
    anything from the closed-adjective list outside a third-party quote.
 4. DO NOT cite numbers.
 5. DO NOT use bullets inside any field.
+6. DO NOT include typical_decision or Decision space fields.
 
 FEW-SHOT EXAMPLES OF PREMIUM EDITORIAL FINDINGS (Syntactically diverse, rich, organic, not matching hiding filters):
 
@@ -607,7 +603,6 @@ Example 1 (Mixed sources):
   "title": "Social Feeds Mirror Site Messaging",
   "observation": "Owned copy on netlify.com asserts 'Build the best web experiences', which mirrors claims on the Netlify X/Twitter profile describing the service as the standard for frontend developers.",
   "implication": "This alignment suggests an active, consistent distribution of core positioning across major brand-owned surfaces, though it relies heavily on self-published material.",
-  "typical_decision": "Marketing teams in this scenario typically weigh the trade-offs of further amplifying this message across secondary channels, versus introducing independent developer case studies to bolster credibility; the final direction depends on whether current growth priorities demand broader reach or deeper social proof.",
   "evidence_urls": ["https://www.netlify.com/about", "https://x.com/netlify"]
 }}
 
@@ -616,12 +611,11 @@ Example 2 (Single-source):
   "title": "Technical Focus Without Third-Party Press",
   "observation": "Developer documentation at docs.wiocapital.com details a specialized API for 'multi-tenant ledger synchronization', which is confined exclusively to owned channels with no external press coverage in the active dataset.",
   "implication": "The lack of external signal could indicate that the product remains in a pre-launch phase or is addressing a highly specialized developer niche rather than a mainstream audience.",
-  "typical_decision": "Founders must choose between dedicating resources to an active developer relations campaign to secure secondary developer reviews, or keeping documentation private to focus on high-touch direct sales; this decision hinges on the brand's current capital constraints and sales-cycle complexity.",
   "evidence_urls": ["https://docs.wiocapital.com/api"]
 }}
 
 Return JSON with exactly this shape:
-{{"findings": [{{"title": "...", "observation": "...", "implication": "...", "typical_decision": "...", "evidence_urls": ["...", "..."]}}]}}"""
+{{"findings": [{{"title": "...", "observation": "...", "implication": "...", "evidence_urls": ["...", "..."]}}]}}"""
 
 
 def _try_findings(
@@ -671,7 +665,7 @@ def _try_findings(
         title = str(item.get("title") or "").strip()
         observation = str(item.get("observation") or "").strip()
         implication = str(item.get("implication") or "").strip()
-        typical_decision = str(item.get("typical_decision") or "").strip()
+        typical_decision = ""
         # Backwards compat: if a model returns the old single `prose` field
         # (e.g. an older provider not yet rolled to the new prompt), route
         # it to observation so the report still renders something usable.

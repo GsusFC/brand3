@@ -309,7 +309,7 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("§3A  current reading", html)
         self.assertIn("§3N  synthesis", html)
 
-    def test_findings_render_structured_fields_separately(self):
+    def test_findings_render_structured_fields_without_decision_space(self):
         ctx = build_report_context(_sample_snapshot(), theme="dark")
         coherencia = next(dim for dim in ctx["dimensions"] if dim["name"] == "coherencia")
         finding = Finding(
@@ -326,16 +326,17 @@ class ReportRendererTests(unittest.TestCase):
 
         self.assertEqual(
             finding.prose,
-            "Observed surface signal. May indicate a pattern. Teams typically choose a focus.",
+            "Observed surface signal. May indicate a pattern.",
         )
         self.assertIn("Structured finding", html)
         self.assertIn("Observed surface signal. May indicate a pattern.", compact)
-        self.assertIn("Decision space", html)
-        self.assertIn("Teams typically choose a focus.", html)
-        self.assertIn('class="finding-decision"', html)
+        self.assertNotIn("Decision space", html)
+        self.assertNotIn("Teams typically choose a focus.", html)
+        self.assertNotIn("Decision spaceTeams", html)
+        self.assertNotIn('class="finding-decision"', html)
         self.assertIn("example.com/evidence", html)
 
-    def test_generic_decision_space_is_hidden_without_changing_prose(self):
+    def test_generic_decision_space_is_hidden_and_excluded_from_prose(self):
         ctx = build_report_context(_sample_snapshot(), theme="dark")
         coherencia = next(dim for dim in ctx["dimensions"] if dim["name"] == "coherencia")
         generic_decision = (
@@ -354,13 +355,13 @@ class ReportRendererTests(unittest.TestCase):
         html = ReportRenderer().env.get_template("report.html.j2").render(**ctx)
 
         self.assertFalse(should_show_decision_space(generic_decision))
-        self.assertIn(generic_decision, finding.prose)
+        self.assertNotIn(generic_decision, finding.prose)
         self.assertIn("Observed surface signal. May indicate a pattern.", " ".join(html.split()))
         self.assertNotIn("Decision space", html)
         self.assertNotIn(generic_decision, html)
         self.assertIn("example.com/evidence", html)
 
-    def test_specific_decision_space_remains_visible(self):
+    def test_specific_decision_space_heuristic_is_legacy_only(self):
         specific_decision = (
             "Prioritize the robots.txt indexing tradeoff against crawl coverage "
             "because the cited technical source is the only external configuration proof."
@@ -399,8 +400,8 @@ class ReportRendererTests(unittest.TestCase):
 
         self.assertIn("Stored structured finding", html)
         self.assertIn("Stored observation. Stored implication.", compact)
-        self.assertIn("Decision space", html)
-        self.assertIn("Stored decision space.", html)
+        self.assertNotIn("Decision space", html)
+        self.assertNotIn("Stored decision space.", html)
         self.assertIn("example.com/stored", html)
 
     def test_readiness_diagnostic_does_not_render_by_default(self):

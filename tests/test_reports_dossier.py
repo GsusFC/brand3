@@ -106,7 +106,6 @@ class BrandDossierTests(unittest.TestCase):
                         "title": "Persisted finding",
                         "observation": "Observed surface signal.",
                         "implication": "May indicate a pattern.",
-                        "typical_decision": "Teams typically choose a focus.",
                         "evidence_urls": [],
                     }
                 ]
@@ -125,7 +124,7 @@ class BrandDossierTests(unittest.TestCase):
         )
         self.assertEqual(
             payload["findings_by_dimension"]["coherencia"][0]["typical_decision"],
-            "Teams typically choose a focus.",
+            "",
         )
 
     def test_build_brand_dossier_prefers_persisted_narrative_without_llm(self):
@@ -163,7 +162,8 @@ class BrandDossierTests(unittest.TestCase):
         self.assertEqual(dossier["tensions_prose"], "Stored narrative tension.")
         presencia = next(dim for dim in dossier["dimensions"] if dim["name"] == "presencia")
         self.assertEqual(presencia["findings"][0].title, "Stored finding")
-        self.assertEqual(presencia["findings"][0].prose, "Stored observation. Stored implication. Stored decision space.")
+        self.assertEqual(presencia["findings"][0].typical_decision, "Stored decision space.")
+        self.assertEqual(presencia["findings"][0].prose, "Stored observation. Stored implication.")
 
     def test_build_brand_dossier_with_real_packet_does_not_crash(self):
         snapshot = _sample_snapshot()

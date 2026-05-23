@@ -36,7 +36,7 @@
     --chip-bg: #eeeeee;
     --chip-border: #e4e4e4;
   {%- endif %}
-    --font-mono: "JetBrains Mono", "IBM Plex Mono", "SFMono-Regular", "Menlo", "Consolas", ui-monospace, monospace;
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
   html, body {
@@ -832,9 +832,6 @@
           </p>
           {%- elif finding.prose %}
           <p class="finding-primary">{{ finding.prose }}</p>
-          {%- endif %}
-          {%- if finding.typical_decision | should_show_decision_space %}
-          <p class="finding-decision"><span class="finding-label">Decision space</span>{{ finding.typical_decision }}</p>
           {%- endif %}
           {%- if finding.evidence_urls %}
           <ul class="chips">

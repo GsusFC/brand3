@@ -72,6 +72,12 @@ class MagnetismScannerTests(unittest.TestCase):
         )
         self.mock_screenshot_fn = self.screenshot_mock.start()
 
+    def _unlock_team_cookie(self) -> None:
+        from web.middleware.team_cookie import COOKIE_NAME, create_serializer
+
+        token = create_serializer("t" * 40).dumps({"unlocked_at": 1})
+        self.client.cookies.set(COOKIE_NAME, token)
+
     def tearDown(self):
         self.screenshot_mock.stop()
         self.client.__exit__(None, None, None)
@@ -83,6 +89,23 @@ class MagnetismScannerTests(unittest.TestCase):
             "BRAND3_MAX_CONCURRENT_ANALYSES",
         ):
             os.environ.pop(key, None)
+
+    def test_web_routes_require_team_cookie(self):
+        response = self.client.get("/magnetism-scanner")
+        self.assertEqual(response.status_code, 403)
+        self.assertIn("restricted to FLOC team access", response.text)
+
+        response = self.client.post(
+            "/magnetism-scanner/analyze",
+            data={"manual_text": "We build developer tools."},
+        )
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.post("/magnetism-scanner/from-run", data={"run_id": 1})
+        self.assertEqual(response.status_code, 403)
+
+        response = self.client.get("/magnetism-scanner/scan/1")
+        self.assertEqual(response.status_code, 403)
 
     def test_database_helpers(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan, list_magnetism_scans
@@ -176,6 +199,7 @@ class MagnetismScannerTests(unittest.TestCase):
             raw_payload=json.dumps(legacy_payload),
         )
 
+        self._unlock_team_cookie()
         response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
 
         self.assertEqual(response.status_code, 200)
@@ -585,6 +609,7 @@ class MagnetismScannerTests(unittest.TestCase):
     @unittest.mock.patch("web.routes.magnetism_scanner.LLMAnalyzer")
     def test_web_routes_flow(self, mock_llm_class):
         mock_llm_class.return_value.api_key = None
+        self._unlock_team_cookie()
         # GET index page when empty
         r = self.client.get("/magnetism-scanner")
         self.assertEqual(r.status_code, 200)

@@ -6,7 +6,10 @@ import json
 from datetime import datetime
 
 from fastapi import APIRouter, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import RedirectResponse
+
+from ..config import settings
+from ..middleware.team_cookie import create_serializer, is_team_request
 
 from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
@@ -20,9 +23,28 @@ from ..workers.url_validator import validate_url
 router = APIRouter()
 
 
+def _is_unlocked_team_request(request: Request) -> bool:
+    return is_team_request(request, create_serializer(settings.cookie_secret))
+
+
+def _team_only_response(request: Request):
+    return templates.TemplateResponse(
+        request,
+        "error.html.j2",
+        {
+            "status_code": 403,
+            "error": "Magnetism Scanner is currently restricted to FLOC team access. Unlock via /team/unlock?token=...",
+        },
+        status_code=403,
+    )
+
+
 @router.get("/magnetism-scanner")
 async def magnetism_scanner_index(request: Request):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
+    if not _is_unlocked_team_request(request):
+        return _team_only_response(request)
+
     scans = list_magnetism_scans(limit=25)
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
@@ -62,6 +84,9 @@ async def magnetism_scanner_analyze(
     manual_text: str = Form(None),
 ):
     """Run analysis on the provided URL (scraped) or copy-pasted text block."""
+    if not _is_unlocked_team_request(request):
+        return _team_only_response(request)
+
     url_val = (url or "").strip()
     manual_val = (manual_text or "").strip()
 
@@ -128,6 +153,9 @@ async def magnetism_scanner_from_run(
     run_id: int = Form(...),
 ):
     """Create a Magnetism scan from an existing Brand Audit run snapshot."""
+    if not _is_unlocked_team_request(request):
+        return _team_only_response(request)
+
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
         snapshot = store.get_run_snapshot(run_id)
@@ -160,6 +188,9 @@ async def magnetism_scanner_from_run(
 @router.get("/magnetism-scanner/scan/{scan_id}")
 async def magnetism_scanner_detail(request: Request, scan_id: int):
     """Render details sheet of a specific magnetism scan."""
+    if not _is_unlocked_team_request(request):
+        return _team_only_response(request)
+
     row = get_magnetism_scan(scan_id)
     if row is None:
         return templates.TemplateResponse(

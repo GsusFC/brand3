@@ -323,7 +323,7 @@ async def brand3_lab_report(
     # fallback to official report rendering with explicit cause
     snapshot_html = ReportRenderer().render(snapshot, theme="light", analyzer=_WebLabFallbackAnalyzer())
     fallback_banner = (
-        "<section style='padding:12px 20px;border-bottom:1px solid #ddd;font-family:monospace;'>"
+        "<section style='padding:12px 20px;border-bottom:1px solid #ddd;font-family:JetBrains Mono,ui-monospace,monospace;'>"
         f"<strong>Lab fallback active</strong> · cause={lab_error or 'unknown'} · showing official report narrative."
         "</section>"
     )

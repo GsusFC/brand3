@@ -1,6 +1,6 @@
 """HTTP routes for the Brand3 web app."""
 
-from . import analyze, brand, brand3_lab, health, index, report, reports_list, status, takedown, team
+from . import analyze, brand, brand3_lab, health, index, magnetism_scanner, report, reports_list, status, takedown, team, visual_signature
 
 __all__ = [
     "analyze",
@@ -8,9 +8,12 @@ __all__ = [
     "brand3_lab",
     "health",
     "index",
+    "magnetism_scanner",
     "report",
     "reports_list",
     "status",
     "takedown",
     "team",
+    "visual_signature",
 ]
+

@@ -1,0 +1,28 @@
+{
+  "brand_name": "Nike",
+  "url": "https://www.nike.com",
+  "evidence_text": "Just Do It. para inspirar a todo tipo de atletas. ofrece servicios, experiencias y productos innovadores. Zapatillas para maratón.",
+  "expected": {
+    "magnetism": {
+      "min_score": 80,
+      "tier": "Magnetic",
+      "content_contains_any": ["Just Do It"]
+    },
+    "personality": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["Hero", "Creator"]
+    },
+    "brand_idea": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["athletic", "performance", "action"]
+    },
+    "attributes": {
+      "content_contains_any": ["performance", "innovative", "athletic", "action-oriented"]
+    },
+    "values": {
+      "content_contains_any": ["inspiration", "inclusivity", "innovation"]
+    }
+  }
+}

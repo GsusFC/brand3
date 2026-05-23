@@ -162,6 +162,17 @@ class SQLiteStore:
                 },
             )
             self.conn.commit()
+        if "magnetism_scans" in tables:
+            self._ensure_columns(
+                "magnetism_scans",
+                {
+                    "status": "TEXT NOT NULL DEFAULT 'ready'",
+                    "token": "TEXT",
+                    "phase": "TEXT",
+                    "error_message": "TEXT",
+                },
+            )
+            self.conn.commit()
 
     def close(self) -> None:
         self.conn.close()

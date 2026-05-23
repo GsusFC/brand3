@@ -1,0 +1,52 @@
+{
+  "brand_name": "Mediterranean Algae",
+  "url": "https://www.mediterraneanalgae.com",
+  "evidence_text": "Macroalgas mediterráneas para industria y medio ambiente\nSoluciones con macroalgas para cosmética, nutrición y biorremediación\nÚnete al nuevo modelo industrial basado en el potencial de las macroalgas: regenerativo, circular y comprometido con el medio ambiente\nCreamos materias primas funcionales con origen mediterráneo, listas para potenciar formulaciones sostenibles en cosmética, nutrición y salud animal",
+  "expected": {
+    "core_purpose": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["regenerativo", "industrial", "macroalgas"]
+    },
+    "magnetism": {
+      "mode": "compressed",
+      "confidence_any_of": ["low", "medium", "high"],
+      "content_contains_any": ["nuevo modelo", "macroalgas"]
+    },
+    "value_proposition": {
+      "mode": "compressed",
+      "confidence_any_of": ["low", "medium", "high"],
+      "content_contains_any": ["cosmética", "nutrición", "biorremediación"]
+    },
+    "personality": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["Sage", "Caregiver", "Creator"]
+    },
+    "brand_idea": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["Mediterranean", "regenerative", "industrial"]
+    },
+    "attributes": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["regenerativo", "circular", "medio ambiente"]
+    },
+    "values": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["regenerativo", "circular", "medio ambiente"]
+    },
+    "mission": {
+      "mode": "compressed",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["Creamos", "materias primas", "funcionales"]
+    },
+    "vision": {
+      "mode": "interpreted_from_discourse",
+      "confidence_any_of": ["low", "medium"],
+      "content_contains_any": ["industrial", "macroalgae", "macroalgas"]
+    }
+  }
+}

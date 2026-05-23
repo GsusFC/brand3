@@ -1,0 +1,283 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.title }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">magnetism_sheet</span>
+    <span class="tag">// scan_id={{ model.id }} · evidence-bound diagnostic</span>
+  </div>
+  <div class="lab-review-nav" style="margin-bottom: 14px;">
+    <a class="source-link" href="/magnetism-scanner">Back to Magnetism Scanner</a>
+  </div>
+  <h1 class="page-title">{{ model.brand_name }}</h1>
+  <p class="prose dim intro-copy" style="margin-bottom: 18px;">
+    Evidence-bound Magnetism scan across the 7 Magenta Circle layers. Scan completed on {{ model.created_at }}.
+  </p>
+
+  <div class="lab-index-meta" style="margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 14px;">
+    <span class="inline-kv"><span class="k">brand_name</span>=<span class="v">{{ model.brand_name }}</span></span>
+    {% if model.url and model.url != 'manual' and model.url != 'Manual Upload' %}
+    <span class="inline-kv"><span class="k">source_url</span>=<span class="v"><a href="{{ model.url }}" target="_blank" rel="noopener noreferrer">{{ model.url }}</a></span></span>
+    {% else %}
+    <span class="inline-kv"><span class="k">source_url</span>=<span class="v">Manual Copy/Paste</span></span>
+    {% endif %}
+    <span class="inline-kv"><span class="k">quadrant</span>=<span class="v hl-accent" style="font-weight: 600;">{{ model.quadrant }}</span></span>
+    {% if model.source_run_id %}
+    <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ model.source_run_id }}</span></span>
+    {% endif %}
+  </div>
+
+  <div class="badge-line" style="margin-top: 10px;">
+    {% if model.source == 'brand_audit_snapshot' %}
+    <span class="badge badge-ready">Brand Audit Evidence</span>
+    {% elif model.fallback_used %}
+    <span class="badge badge-error">Heuristic Fallback Engine</span>
+    {% else %}
+    <span class="badge badge-ready">AI-Studio Signal Extractor</span>
+    {% endif %}
+    <span class="badge">Magenta Circle v1.0</span>
+    {% if model.evidence_packet_summary and model.evidence_packet_summary.source_label %}
+    <span class="badge">{{ model.evidence_packet_summary.source_label }}</span>
+    {% endif %}
+  </div>
+  {% if model.evidence_packet_summary and model.evidence_packet_summary.evidence_basis %}
+  <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 10px 0 0;">
+    evidence_basis: {{ model.evidence_packet_summary.evidence_basis }}
+  </p>
+  {% endif %}
+  {% if model.content_distillation_summary %}
+  <details style="margin-top: 10px;">
+    <summary class="dim" style="cursor: pointer; font-family: var(--font-mono); font-size: 11px;">
+      content_distillation: selected={{ model.content_distillation_summary.selected_count or 0 }} · rejected={{ model.content_distillation_summary.rejected_count or 0 }} · quality={{ model.content_distillation_summary.quality_score or 0 }}/100
+    </summary>
+    {% if model.content_distillation_summary.warnings %}
+    <div class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.45; margin-top: 8px;">
+      warnings: {{ model.content_distillation_summary.warnings | join('; ') }}
+    </div>
+    {% endif %}
+  </details>
+  {% endif %}
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">scores</span>
+    <span class="tag">// derived from detected signals</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 14px;">
+    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <h2 style="font-family: var(--font-ui); font-size: 14px; text-transform: uppercase; color: var(--accent); font-weight: 700;">Magnetism</h2>
+        <span class="hl-accent" style="font-size: 28px; font-weight: 700; font-family: var(--font-mono);">{{ model.magnetism_score }}<span style="font-size: 13px; color: var(--text-soft); font-weight: 400;">/100</span></span>
+      </div>
+      <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">{{ model.metrics.magnetism_tier }}</div>
+      <div style="background: var(--surface-3); border: 1px solid var(--border); height: 10px; margin: 12px 0; position: relative;">
+        <div style="background: var(--accent); height: 100%; width: {{ model.magnetism_score }}%;"></div>
+      </div>
+      <div style="display: grid; gap: 4px; font-size: 12px; margin-top: 14px;">
+        <span class="inline-kv"><span class="k">originality</span>=<span class="v">{{ model.metrics.magnetism_breakdown.originality }}</span></span>
+        <span class="inline-kv"><span class="k">specificity</span>=<span class="v">{{ model.metrics.magnetism_breakdown.specificity }}</span></span>
+        <span class="inline-kv"><span class="k">memorability</span>=<span class="v">{{ model.metrics.magnetism_breakdown.memorability }}</span></span>
+        <span class="inline-kv"><span class="k">verifiable_promise</span>=<span class="v">{{ model.metrics.magnetism_breakdown.verifiable_promise }}</span></span>
+      </div>
+    </article>
+
+    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline;">
+        <h2 style="font-family: var(--font-ui); font-size: 14px; text-transform: uppercase; color: var(--success); font-weight: 700;">Coherence</h2>
+        <span class="hl-ok" style="font-size: 28px; font-weight: 700; font-family: var(--font-mono);">{{ model.coherence_score }}<span style="font-size: 13px; color: var(--text-soft); font-weight: 400;">/100</span></span>
+      </div>
+      <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">{{ model.metrics.coherence_tier }}</div>
+      <div style="background: var(--surface-3); border: 1px solid var(--border); height: 10px; margin: 12px 0; position: relative;">
+        <div style="background: var(--success); height: 100%; width: {{ model.coherence_score }}%;"></div>
+      </div>
+      <div style="display: grid; gap: 4px; font-size: 12px; margin-top: 14px;">
+        <span class="inline-kv"><span class="k">completeness</span>=<span class="v">{{ model.metrics.coherence_breakdown.completeness }}</span></span>
+        <span class="inline-kv"><span class="k">semantic_alignment</span>=<span class="v">{{ model.metrics.coherence_breakdown.semantic_alignment }}</span></span>
+        <span class="inline-kv"><span class="k">absence_of_contradiction</span>=<span class="v">{{ model.metrics.coherence_breakdown.absence_of_contradiction }}</span></span>
+      </div>
+    </article>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">TLDR Brand3</span>
+    <span class="tag">// 9 strategic blocks derived from 7 Magenta signals</span>
+  </div>
+
+  {% set blocks = [
+    ("core_purpose", "CORE PURPOSE"),
+    ("magnetism", "MAGNETISM"),
+    ("value_proposition", "VALUE PROPOSITION"),
+    ("personality", "PERSONALITY"),
+    ("brand_idea", "BRAND IDEA"),
+    ("attributes", "ATTRIBUTES"),
+    ("values", "VALUES"),
+    ("mission", "MISSION"),
+    ("vision", "VISION")
+  ] %}
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px;">
+    {% for key, label in blocks %}
+    {% set block = model.tldr_brand3[key] %}
+    <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
+      <div>
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom: 8px;">
+          <span class="hl-accent" style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; font-weight: 700; display: block;">{{ label }}</span>
+          <span class="badge">{{ block.claim_type or "absent" }} · {{ block.confidence or "low" }}</span>
+        </div>
+        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; display:block; margin: -2px 0 9px 0;">
+          source signal: {{ block.source_signal_path or block.source_signal or "Magenta signal" }}
+        </span>
+        {% if block.detected %}
+          {% if block.content is iterable and block.content is not string %}
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            {% for item in block.content %}
+            <span class="badge">{{ item }}</span>
+            {% endfor %}
+          </div>
+          {% else %}
+          <p style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.45; color: var(--text);">{{ block.content }}</p>
+          {% endif %}
+        {% else %}
+        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px;">(no detectado)</p>
+        {% endif %}
+      </div>
+      <div style="display:grid; gap:7px;">
+        <span class="dim" style="font-family: var(--font-mono); font-size: 10px;">
+          mode: {{ block.mode or "not_detected" }}
+          {% if block.human_review_recommended %} · needs strategist review{% endif %}
+        </span>
+        {% if block.reasoning or block.rationale %}
+        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
+          reasoning: {{ block.reasoning or block.rationale }}
+        </span>
+        {% endif %}
+        {% if block.evidence_used or block.evidence %}
+        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
+          evidence:
+          {% set evidence_items = block.evidence_used or block.evidence %}
+          {% if evidence_items is iterable and evidence_items is not string %}
+            {{ evidence_items | join("; ") }}
+          {% else %}
+            {{ evidence_items }}
+          {% endif %}
+        </span>
+        {% endif %}
+        {% if block.counter_evidence %}
+        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
+          limitation: {{ block.counter_evidence | join("; ") }}
+        </span>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+{% if model.system_reading and (model.system_reading.strategic_tensions or model.system_reading.validation_questions) %}
+<section>
+  <div class="section-head">
+    <span class="label">TLDR System Reading</span>
+    <span class="tag">// tensions and validation questions inside TLDR Brand3</span>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;">
+    {% if model.system_reading.strategic_tensions %}
+    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
+      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">Strategic tensions</h2>
+      <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
+        {% for tension in model.system_reading.strategic_tensions %}
+        <li style="margin-bottom: 8px;">{{ tension }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endif %}
+    {% if model.system_reading.validation_questions %}
+    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
+      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--success); font-weight: 700; margin: 0 0 10px;">Validation questions</h2>
+      <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
+        {% for question in model.system_reading.validation_questions %}
+        <li style="margin-bottom: 8px;">{{ question }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endif %}
+  </div>
+  {% if model.system_reading.derived_from %}
+  <p class="dim" style="font-family: var(--font-mono); font-size: 10px; margin: 10px 0 0;">derived_from: {{ model.system_reading.derived_from }}</p>
+  {% endif %}
+</section>
+
+<hr class="rule-thin">
+
+{% endif %}
+
+<section>
+  <details>
+    <summary style="cursor: pointer; display: flex; justify-content: space-between; align-items: baseline;">
+      <span class="label">Methodology Details</span>
+      <span class="tag">// 7 technical Magenta signals</span>
+    </summary>
+
+  <div class="lab-applied-stack" style="display: grid; gap: 14px; margin-top: 14px;">
+    {% set layers = [
+      ("mindspace", "1. Emotions → Magnetism", "mindspace"),
+      ("aetherspace", "2. Essence → Core Purpose", "aetherspace"),
+      ("gamespace", "3. Voice → Personality", "gamespace"),
+      ("envispace", "4. Expression → Brand Idea", "envispace"),
+      ("netspace", "5. Exchange → Value Proposition", "netspace"),
+      ("tactispace", "6. Action / Direction → Mission + Vision", "tactispace"),
+      ("ambientspace", "7. Context / Beliefs → Attributes + Values", "ambientspace")
+    ] %}
+
+    {% for key, label, technical_name in layers %}
+    {% set layer = model.magenta_circle[key] %}
+    <article class="lab-applied-card" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+        <h2 style="font-family: var(--font-ui); font-size: 14px; font-weight: 700; color: var(--text);">{{ label }}</h2>
+        <span class="badge {% if layer.detected %}badge-ready{% else %}badge-missing{% endif %}">{{ layer.status }} · {{ layer.confidence }}</span>
+      </div>
+      <span class="dim" style="font-family: var(--font-mono); font-size: 10px;">technical layer: {{ technical_name }}</span>
+      <p class="prose" style="margin: 0 0 12px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; color: var(--text-muted);">
+        {{ layer.finding or "No clear signal detected in the provided sources." }}
+      </p>
+      {% if layer.evidence %}
+      <div style="background: var(--surface-2); border-left: 3px solid var(--accent); padding: 10px 14px; margin-top: 10px;">
+        <span style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 6px;">Evidence:</span>
+        <p style="margin:0; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: var(--text); font-style: italic;">"{{ layer.evidence }}"</p>
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  </details>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">diagnosis</span>
+    <span class="tag">// bounded by observed and missing signals</span>
+  </div>
+  <div style="background: var(--soft-panel-bg); border: 1px solid var(--border); padding: 22px; margin-top: 14px;">
+    <h2 style="font-family: var(--font-mono); font-size: 18px; margin: 0 0 14px; font-weight: 700; color: var(--accent);">{{ model.diagnosis.headline }}</h2>
+    <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: var(--text);">
+      {% for observation in model.diagnosis.key_observations %}
+      <li style="margin-bottom: 8px;">{{ observation }}</li>
+      {% endfor %}
+    </ul>
+    {% if model.limitations %}
+    <hr class="rule" style="margin: 16px 0; border-top: 1px dashed var(--border);">
+    <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">limitations: {{ model.limitations|join('; ') }}</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

@@ -204,3 +204,52 @@ def list_brand_history(domain_or_slug: str) -> list[dict]:
             (slug,),
         ).fetchall()
     return [dict(r) for r in rows]
+
+
+def insert_magnetism_scan(
+    *,
+    brand_name: str,
+    url: str,
+    magnetism_score: int,
+    coherence_score: int,
+    quadrant: str,
+    raw_payload: str,
+) -> int:
+    """Insert a new magnetism scan and return its primary key ID."""
+    with _connect() as conn:
+        cur = conn.execute(
+            """
+            INSERT INTO magnetism_scans
+              (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+            """,
+            (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload),
+        )
+        conn.commit()
+        last_id = cur.lastrowid
+    return last_id
+
+
+def get_magnetism_scan(scan_id: int) -> dict | None:
+    """Retrieve a specific magnetism scan by ID."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM magnetism_scans WHERE id = ?", (scan_id,)
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def list_magnetism_scans(limit: int = 20) -> list[dict]:
+    """List recent magnetism scans."""
+    with _connect() as conn:
+        rows = conn.execute(
+            """
+            SELECT id, brand_name, url, magnetism_score, coherence_score, quadrant, created_at
+            FROM magnetism_scans
+            ORDER BY created_at DESC
+            LIMIT ?
+            """,
+            (limit,),
+        ).fetchall()
+    return [dict(r) for r in rows]
+

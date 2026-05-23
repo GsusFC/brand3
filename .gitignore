@@ -28,6 +28,7 @@ env/
 # Local data and generated outputs
 data/
 output/
+scratch/
 
 # Local SQLite DB files are ignored. If future tests need SQLite fixtures,
 # explicitly allowlist those fixture paths instead of weakening this rule.

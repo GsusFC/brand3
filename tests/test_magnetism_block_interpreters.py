@@ -226,7 +226,6 @@ def test_value_proposition_acceptance_rejects_non_offer_layer_evidence() -> None
     ]
 
 
-
 def test_value_proposition_diagnostics_drive_confidence_and_review() -> None:
     accepted = [
         {
@@ -361,7 +360,6 @@ def test_block_evidence_candidates_select_layer_evidence_when_no_packet() -> Non
     ]
 
 
-
 def test_value_proposition_rejects_strategic_packet_without_offer_candidate() -> None:
     spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
     candidates = [
@@ -384,7 +382,6 @@ def test_value_proposition_rejects_strategic_packet_without_offer_candidate() ->
     assert accepted == []
 
 
-
 def test_value_proposition_answer_does_not_append_weak_labels() -> None:
     from src.features.magnetism.block_interpreters import answer_from_spec
 
@@ -397,3 +394,124 @@ def test_value_proposition_answer_does_not_append_weak_labels() -> None:
     answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
 
     assert answer == "Anthropic's AI assistant for problem solvers."
+
+
+def test_value_proposition_rejects_noisy_offer_candidates_and_uses_clean_offer() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Best Ecommerce Platform with AI-Powered Vexture | Miva ## Built-In AI Search That Understands Meaning, Not Just Keywords Traditional keyword search re",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Vexture interprets shopper intent using vector-based AI to deliver instant, accurate results.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Discover how Vexture's AI-powered search and merchandising improve product discovery, reducing no-result searches and increasing conversions.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+    result = interpret_tldr_block("value_proposition", spec, accepted, {"netspace": {"detected": True}}, "netspace")
+
+    assert [item["text"] for item in accepted][:2] == [
+        "Vexture interprets shopper intent using vector-based AI to deliver instant, accurate results.",
+        "Discover how Vexture's AI-powered search and merchandising improve product discovery, reducing no-result searches and increasing conversions.",
+    ]
+    assert result is not None
+    assert result["content"].startswith("Vexture interprets shopper intent")
+
+
+def test_value_proposition_rejects_navigation_and_metadata_offer_candidates() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Base b a s e b a s e Chain Products Developers Solutions Community About START HERE Get Base App Build on Base",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "FLORA is a Technology, Information and Internet company. Flora AI is an AI creative software company that helps individuals create organically.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "The All-in-one AI Video Platform for Business Play video Pause video our mission Helping people w",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Base is an open stack that empowers builders, creators, and people everywhere to build apps, grow businesses, create what they love, and earn onchain.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "Base is an open stack that empowers builders, creators, and people everywhere to build apps, grow businesses, create what they love, and earn onchain."
+    ]
+
+
+def test_value_proposition_rejects_repeated_service_title_and_cr_truncation() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "FLOC*Services | Moments of activation MOMENTS OF ACTIVATION MOMENTS OF ACTIVATION Every stage demands a di",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Synthesia 2.0 is an AI video communications platform that allows users to cr",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+def test_value_proposition_answer_does_not_append_copyright_navigation() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    accepted = [
+        {"text": "Text, image, and video models in one place.", "group": "product_offer"},
+        {"text": "for free Copyright (c) 2026 All rights reserved. Company Blog Careers Product Updates Pricing Teams Privacy Policy", "group": "audience"},
+    ]
+
+    answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
+
+    assert answer == "Text, image, and video models in one place."
+
+
+def test_value_proposition_rejects_concatenated_copy_as_offer() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Wearemorethanastrategicdesignstudio—weareanopencollectiveoftop-tierfreeleaders,unitedbythepassionandambitionforinnovation,withavisionforamoredecentralizedfuture.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        }
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []

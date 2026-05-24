@@ -34,6 +34,9 @@ KNOWN_NOISE_MARKERS = [
     "rg --files",
 ]
 
+QUALITY_BLOCKS = ("value_proposition", "mission", "vision")
+
+
 EVIDENCE_LEAK_MARKERS = [
     "; evidence=",
     "source_type=",
@@ -164,10 +167,16 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
             key = str(flag).split(":", 1)[0]
             flag_counts[key] = flag_counts.get(key, 0) + 1
 
+    block_quality_counts = {
+        block: count_by(f"{block}_quality")
+        for block in QUALITY_BLOCKS
+    }
+
     return {
         "value_proposition_confidence": count_by("value_proposition_confidence"),
         "mission_confidence": count_by("mission_confidence"),
         "vision_confidence": count_by("vision_confidence"),
+        "block_quality": block_quality_counts,
         "strategic_group_totals": dict(sorted(group_totals.items())),
         "strategic_group_presence": dict(sorted(group_presence.items())),
         "missing_group_presence": missing_group_presence,
@@ -254,6 +263,10 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
     if evidence_leaks:
         review_flags.append("evidence_format_leak:" + ",".join(evidence_leaks))
 
+    value_quality = _block_quality("value_proposition", value_block, noise_hits, evidence_leaks)
+    mission_quality = _block_quality("mission", mission_block, noise_hits, evidence_leaks)
+    vision_quality = _block_quality("vision", vision_block, noise_hits, evidence_leaks)
+
     return {
         "run_id": run.get("id"),
         "brand": run.get("brand_name"),
@@ -267,13 +280,19 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "needs_review_blocks": review_blocks,
         "value_proposition": _block_answer(value_block),
         "value_proposition_confidence": value_block.get("confidence"),
+        "value_proposition_quality": value_quality["status"],
+        "value_proposition_quality_reasons": value_quality["reasons"],
         "value_proposition_gaps": value_block.get("counter_evidence") or [],
         "magnetism": _block_answer(tldr.get("magnetism") or {}),
         "mission": _block_answer(mission_block),
         "mission_confidence": mission_block.get("confidence"),
+        "mission_quality": mission_quality["status"],
+        "mission_quality_reasons": mission_quality["reasons"],
         "mission_gaps": mission_block.get("counter_evidence") or [],
         "vision": _block_answer(vision_block),
         "vision_confidence": vision_block.get("confidence"),
+        "vision_quality": vision_quality["status"],
+        "vision_quality_reasons": vision_quality["reasons"],
         "vision_gaps": vision_block.get("counter_evidence") or [],
         "known_noise_hits": noise_hits,
         "evidence_leak_hits": evidence_leaks,
@@ -305,6 +324,58 @@ def _block_answer(block: dict[str, Any]) -> str:
     if isinstance(value, list):
         return "; ".join(str(item).strip() for item in value if str(item).strip())
     return str(value or "").strip()
+
+
+def _block_quality(
+    block_name: str,
+    block: dict[str, Any],
+    noise_hits: list[str] | None = None,
+    evidence_leaks: list[str] | None = None,
+) -> dict[str, Any]:
+    answer = _block_answer(block)
+    mode = str(block.get("mode") or "")
+    claim_type = str(block.get("claim_type") or "")
+    if not answer or mode == "not_detected" or claim_type == "absent":
+        return {"status": "missing", "reasons": ["no_answer"]}
+
+    confidence = str(block.get("confidence") or "low")
+    reasons: list[str] = []
+    if noise_hits:
+        reasons.append("visible_noise")
+    if evidence_leaks:
+        reasons.append("evidence_format_leak")
+    if block.get("human_review_recommended"):
+        reasons.append("human_review")
+    for gap in block.get("counter_evidence") or []:
+        reason = _quality_gap_reason(str(gap))
+        if reason and reason not in reasons:
+            reasons.append(reason)
+
+    if confidence == "high" and not reasons:
+        status = "strong"
+    elif confidence in {"high", "medium"} and "visible_noise" not in reasons and "evidence_format_leak" not in reasons:
+        status = "usable"
+    else:
+        status = "weak"
+
+    if block_name == "vision" and "human_review" in reasons and status == "strong":
+        status = "usable"
+    return {"status": status, "reasons": reasons}
+
+
+def _quality_gap_reason(gap: str) -> str:
+    low = gap.lower()
+    if "does not clearly name the audience" in low:
+        return "missing_audience"
+    if "does not clearly state the outcome" in low:
+        return "missing_outcome"
+    if "multiple offer" in low or "multiple offer signals" in low:
+        return "multiple_offers"
+    if "not a formal vision" in low:
+        return "interpreted_not_declared"
+    if "no sufficient public evidence" in low:
+        return "insufficient_evidence"
+    return "methodological_gap"
 
 
 def _visible_interpretation_values(
@@ -365,15 +436,18 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Group presence: `{_compact_counts(summary.get('strategic_group_presence'))}`",
         f"- Missing key groups: `{_compact_counts(summary.get('missing_group_presence'))}`",
         f"- Review flags: `{_compact_counts(summary.get('review_flag_counts'))}`",
+        f"- VP quality: `{_compact_counts((summary.get('block_quality') or {}).get('value_proposition'))}`",
+        f"- Mission quality: `{_compact_counts((summary.get('block_quality') or {}).get('mission'))}`",
+        f"- Vision quality: `{_compact_counts((summary.get('block_quality') or {}).get('vision'))}`",
         "",
         "## Rows",
         "",
-        "| run | brand | audit | mag | coh | layers | blocks | review flags | VP conf | VP gaps | Mission conf | Mission gaps | Vision conf | Vision gaps | value proposition | mission | vision |",
-        "|---:|---|---:|---:|---:|---|---:|---|---|---|---|---|---|---|---|---|---|",
+        "| run | brand | audit | mag | coh | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
+        "|---:|---|---:|---:|---:|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(
-            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {layers} | {blocks}/9 | {flags} | {vp_conf} | {vp_gaps} | {mission_conf} | {mission_gaps} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
+            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
                 run_id=row.get("run_id"),
                 brand=_md(row.get("brand")),
                 audit_score=_num(row.get("audit_score")),
@@ -382,10 +456,13 @@ def _render_markdown(payload: dict[str, Any]) -> str:
                 layers=_md(", ".join(row.get("detected_layers") or [])),
                 blocks=row.get("detected_block_count"),
                 flags=_md(", ".join(row.get("review_flags") or []) or "ok"),
+                vp_quality=_md(_quality_cell(row, "value_proposition")),
                 vp_conf=_md(row.get("value_proposition_confidence")),
                 vp_gaps=_md("; ".join(row.get("value_proposition_gaps") or [])),
+                mission_quality=_md(_quality_cell(row, "mission")),
                 mission_conf=_md(row.get("mission_confidence")),
                 mission_gaps=_md("; ".join(row.get("mission_gaps") or [])),
+                vision_quality=_md(_quality_cell(row, "vision")),
                 vision_conf=_md(row.get("vision_confidence")),
                 vision_gaps=_md("; ".join(row.get("vision_gaps") or [])),
                 value=_md(row.get("value_proposition")),
@@ -393,6 +470,10 @@ def _render_markdown(payload: dict[str, Any]) -> str:
                 vision=_md(row.get("vision")),
             )
         )
+
+    lines.extend(["", "## Block Quality Examples", ""])
+    for block in QUALITY_BLOCKS:
+        lines.extend(_render_quality_examples(rows, block))
 
     lines.extend(["", "## Evidence Packet Summary", ""])
     for row in rows:
@@ -410,6 +491,63 @@ def _render_markdown(payload: dict[str, Any]) -> str:
             )
         )
     return "\n".join(lines) + "\n"
+
+
+def _render_quality_examples(rows: list[dict[str, Any]], block: str, limit: int = 12) -> list[str]:
+    title = block.replace("_", " ").title()
+    ranked = _balanced_quality_rows(rows, block, limit=limit)
+    lines = [f"### {title}", "", "| quality | run | brand | confidence | reasons | answer |", "|---|---:|---|---|---|---|"]
+    for row in ranked:
+        lines.append(
+            "| {quality} | {run_id} | {brand} | {confidence} | {reasons} | {answer} |".format(
+                quality=_md(row.get(f"{block}_quality")),
+                run_id=row.get("run_id"),
+                brand=_md(row.get("brand")),
+                confidence=_md(row.get(f"{block}_confidence")),
+                reasons=_md(", ".join(row.get(f"{block}_quality_reasons") or [])),
+                answer=_md(row.get(block)),
+            )
+        )
+    lines.append("")
+    return lines
+
+
+def _balanced_quality_rows(rows: list[dict[str, Any]], block: str, limit: int = 12) -> list[dict[str, Any]]:
+    status_order = ("weak", "missing", "usable", "strong")
+    sorted_rows = sorted(rows, key=lambda row: str(row.get("brand") or ""))
+    selected: list[dict[str, Any]] = []
+    seen: set[int] = set()
+
+    for status in status_order:
+        for row in sorted_rows:
+            if row.get(f"{block}_quality") != status:
+                continue
+            selected.append(row)
+            seen.add(id(row))
+            break
+
+    for row in sorted(
+        rows,
+        key=lambda item: (
+            {status: index for index, status in enumerate(status_order)}.get(str(item.get(f"{block}_quality")), 99),
+            str(item.get("brand") or ""),
+        ),
+    ):
+        if id(row) in seen:
+            continue
+        selected.append(row)
+        seen.add(id(row))
+        if len(selected) >= limit:
+            break
+    return selected[:limit]
+
+
+def _quality_cell(row: dict[str, Any], block: str) -> str:
+    quality = str(row.get(f"{block}_quality") or "")
+    reasons = row.get(f"{block}_quality_reasons") or []
+    if not reasons:
+        return quality
+    return quality + " (" + ", ".join(str(reason) for reason in reasons[:3]) + ")"
 
 
 def _num(value: Any) -> str:

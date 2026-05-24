@@ -61,7 +61,6 @@ def test_strategic_evidence_packet_keeps_third_party_context_separate():
     assert "No owned/social evidence found" in " ".join(packet.warnings)
 
 
-
 def test_strategic_evidence_packet_rejects_navigation_mission_noise():
     snapshot = {
         "run": {"id": 79, "brand_name": "Enginy", "url": "https://www.enginy.ai"},
@@ -83,7 +82,6 @@ def test_strategic_evidence_packet_rejects_navigation_mission_noise():
 
     assert not packet.groups.get("mission_language")
     assert any(item["reason"] == "navigation_or_hiring_noise" for item in packet.rejected)
-
 
 
 def test_strategic_evidence_packet_cleans_repeated_headings_and_trailing_fragments():
@@ -328,7 +326,6 @@ def test_strategic_evidence_packet_keeps_brand_is_offer_copy():
     assert packet.groups["product_offer"][0].text.startswith("Galtea is the Quality Assurance platform")
 
 
-
 def test_strategic_evidence_packet_groups_human_research_product_language():
     snapshot = {
         "run": {"id": 91, "brand_name": "Ethos", "url": "https://agent.askethos.com"},
@@ -403,3 +400,432 @@ def test_owned_raw_duplicate_takes_priority_over_context_copy():
     packet = build_strategic_evidence_packet(snapshot)
 
     assert packet.groups["vision_language"][0].source_type == "owned_raw"
+
+
+def test_strategic_evidence_packet_prioritizes_owned_raw_offer_over_search_visibility():
+    snapshot = {
+        "run": {"id": 126, "brand_name": "Temporal", "url": "https://temporal.io"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Temporal is a durable execution platform for developers building reliable distributed systems.",
+                },
+            }
+        ],
+        "evidence_items": [
+            {
+                "source": "context",
+                "url": "https://temporal.io/events",
+                "quote": "The only Durable Execution conference made for developers | May 5-7",
+                "feature_name": "search_visibility",
+                "dimension_name": "presencia",
+                "confidence": 0.8,
+            },
+        ],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["product_offer"][0].source_type == "owned_raw"
+    assert packet.groups["product_offer"][0].text.startswith("Temporal is a durable execution platform")
+    assert all("conference" not in line.text.lower() for line in packet.groups["product_offer"])
+
+
+def test_strategic_evidence_packet_rejects_promotional_discount_as_product_offer():
+    snapshot = {
+        "run": {"id": 127, "brand_name": "Dribbble", "url": "https://dribbble.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Get 20% off your first payment for design and development services on Dribbble! Use code WELCOME20",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "promotion_or_event_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_classifies_we_make_as_mission_language():
+    snapshot = {
+        "run": {"id": 128, "brand_name": "Raycast", "url": "https://raycast.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "At Raycast, we make developers more productive with a fast command center for macOS.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["mission_language"][0].source_type == "owned_raw"
+    assert "we make developers more productive" in packet.groups["mission_language"][0].text
+
+
+def test_strategic_evidence_packet_rejects_markdown_link_only_product_navigation():
+    snapshot = {
+        "run": {"id": 129, "brand_name": "Datadog", "url": "https://datadoghq.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "[Infrastructure Monitoring](https://www.datadoghq.com/product/infrastructure-monitoring/)",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "markdown_link_only_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_broad_company_profile_offer():
+    snapshot = {
+        "run": {"id": 130, "brand_name": "Apple", "url": "https://apple.com"},
+        "features": [],
+        "raw_inputs": [],
+        "evidence_items": [
+            {
+                "source": "context",
+                "url": "https://apple.com",
+                "quote": "Apple is a Computers and Electronics Manufacturing company. Apple is a company that offers a wide range of products including iPhone, iPad, Apple Watch, Mac, and Apple TV.",
+                "feature_name": "brand_sentiment",
+                "dimension_name": "percepcion",
+                "confidence": 0.8,
+            }
+        ],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "company_profile_metadata" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_classifies_on_a_mission_owned_claim():
+    snapshot = {
+        "run": {"id": 131, "brand_name": "Dribbble", "url": "https://dribbble.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "We're on a mission to help professional designers earn a living doing work they take pride in.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["mission_language"][0].source_type == "owned_raw"
+    assert "on a mission to help professional designers" in packet.groups["mission_language"][0].text
+
+
+def test_strategic_evidence_packet_rejects_section_heading_as_offer():
+    snapshot = {
+        "run": {"id": 132, "brand_name": "Datadog", "url": "https://datadoghq.com"},
+        "features": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"markdown_content": "Platform Capabilities"}}
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "navigation_or_section_heading_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_customer_quote_as_offer():
+    snapshot = {
+        "run": {"id": 133, "brand_name": "Notion", "url": "https://notion.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "“Using the most AI-native tools like Notion is an important competitive advantage for us.”",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "testimonial_quote_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_short_platform_team_label():
+    snapshot = {
+        "run": {"id": 134, "brand_name": "Retool", "url": "https://retool.com"},
+        "features": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"markdown_content": "Eng + platform teams"}}
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "navigation_or_section_heading_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_accepts_ai_powered_search_offer():
+    snapshot = {
+        "run": {"id": 135, "brand_name": "Vexture", "url": "https://miva.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Discover how Vexture’s AI-powered search and merchandising improve product discovery, reducing no-result searches and increasing conversions.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert "product_offer" in packet.groups
+    assert "outcome" in packet.groups
+    assert "AI-powered search" in packet.groups["product_offer"][0].text
+
+
+def test_strategic_evidence_packet_rejects_company_details_metadata():
+    snapshot = {
+        "run": {"id": 136, "brand_name": "ChatGPT", "url": "https://chatgpt.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "## Company Details - Industry: IT Services and IT Consulting - Type: Public Company - Employees: 40",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "company_profile_metadata" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_employee_growth_metadata_fragment():
+    snapshot = {
+        "run": {"id": 137, "brand_name": "ChatGPT", "url": "https://chatgpt.com"},
+        "features": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"markdown_content": "Employees: 40 - Monthly Growth: +29.0%"}}
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("outcome")
+    assert any(item["reason"] == "company_profile_metadata" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_accepts_brand_identities_offer():
+    snapshot = {
+        "run": {"id": 138, "brand_name": "Iris", "url": "https://iris.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Iris creates complete brand identities for indie developers in minutes—with the strategic thinking that makes agencies charge $40k.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert "product_offer" in packet.groups
+    assert "audience" in packet.groups
+    assert "brand identities" in packet.groups["product_offer"][0].text
+
+
+def test_strategic_evidence_packet_cleans_sign_in_prefix_from_ai_assistant_offer():
+    snapshot = {
+        "run": {"id": 139, "brand_name": "Claude", "url": "https://claude.ai"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Sign in to Claude, Anthropic's AI assistant for problem solvers.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["product_offer"][0].text == "Anthropic's AI assistant for problem solvers."
+
+
+def test_strategic_evidence_packet_trims_event_tail_from_useful_agency_search_claim():
+    snapshot = {
+        "run": {"id": 140, "brand_name": "Dribbble", "url": "https://dribbble.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Streamline your search for the next agency. 🚀 See the teams behind this year’s most impactful work in Dribbble Select.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["outcome"][0].text == "Streamline your search for the next agency."
+
+
+def test_strategic_evidence_packet_rejects_image_alt_text_as_offer():
+    snapshot = {
+        "run": {"id": 141, "brand_name": "Apple", "url": "https://apple.com"},
+        "features": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"markdown_content": "![iPad Air models floating, back exterior, single-lens camera](https://apple.com/ipad.jpg)"}}
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "image_alt_text_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_showcase_event_as_offer():
+    snapshot = {
+        "run": {"id": 142, "brand_name": "Celestial AI", "url": "https://celestial.ai"},
+        "features": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"markdown_content": "Celestial AI to Showcase Photonic Fabric Optical Interconnect Platform for AI Computing and Memory Infrastructure at OFC 2024"}}
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("product_offer")
+    assert any(item["reason"] == "promotion_or_event_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_testimonial_as_mission_language():
+    snapshot = {
+        "run": {"id": 143, "brand_name": "Eaship", "url": "https://eaship.io"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "> “Eaship nos ofrece múltiples soluciones mediante las cuales podemos "
+                        "conseguir optimizar la gestión y el coste de transporte, mejorando "
+                        "el servicio al cliente."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("mission_language")
+    assert any(item["reason"] == "testimonial_quote_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_generic_slogan_as_mission_language():
+    snapshot = {
+        "run": {"id": 144, "brand_name": "Dogstudio", "url": "https://dogstudio.co"},
+        "features": [],
+        "raw_inputs": [{"source": "web", "payload": {"markdown_content": "We Make Good Shit"}}],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("mission_language")
+    assert any(item["reason"] == "generic_slogan_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_truncated_mission_and_vision_fragments():
+    snapshot = {
+        "run": {"id": 145, "brand_name": "Truncated", "url": "https://truncated.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "our mission Helping people w\nthe future of softwar",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("mission_language")
+    assert not packet.groups.get("vision_language")
+    assert any(item["reason"] == "truncated_fragment_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_does_not_classify_product_transform_as_vision():
+    snapshot = {
+        "run": {"id": 146, "brand_name": "Product", "url": "https://product.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "Instantly transform a single static image into a dynamic, full-motion video. "
+                        "Connect with our team to see how Lightmatter can transform your AI "
+                        "networking and compute architecture."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("vision_language")

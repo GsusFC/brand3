@@ -141,12 +141,34 @@ def test_mission_acceptance_rejects_ctas_and_future_language() -> None:
             "source": "strategic:mission_language",
             "group": "mission_language",
         },
+        {
+            "text": "We help teams launch, control, and measure their digital products more easily than ever.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "We're on a mission to help professional designers earn a living doing work they take pride in.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "We Make Good Shit",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "The All-in-one AI Video Platform for Business Play video Pause video our mission Helping people w",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
     ]
 
     accepted = accepted_block_evidence("mission", spec, candidates)
 
     assert [item["text"] for item in accepted] == [
-        "We build treasury workflows for finance teams"
+        "We build treasury workflows for finance teams",
+        "We help teams launch, control, and measure their digital products more easily than ever.",
+        "We're on a mission to help professional designers earn a living doing work they take pride in.",
     ]
 
 
@@ -160,6 +182,11 @@ def test_vision_acceptance_requires_future_or_category_change_signal() -> None:
         },
         {
             "text": "We are building a new model for corporate treasury",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+        },
+        {
+            "text": "the future of softwar",
             "source": "strategic:vision_language",
             "group": "vision_language",
         },
@@ -197,7 +224,6 @@ def test_value_proposition_acceptance_rejects_non_offer_layer_evidence() -> None
     assert [item["text"] for item in accepted] == [
         "A platform that streamlines payments for finance teams"
     ]
-
 
 
 def test_value_proposition_diagnostics_drive_confidence_and_review() -> None:
@@ -332,3 +358,215 @@ def test_block_evidence_candidates_select_layer_evidence_when_no_packet() -> Non
         {"text": "Trusted by teams", "layer": "netspace", "source": "finding"},
         {"text": "Book a demo", "layer": "tactispace", "source": "evidence"},
     ]
+
+
+def test_value_proposition_rejects_strategic_packet_without_offer_candidate() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Employees: 40 - Monthly Growth: +29.0%",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        },
+        {
+            "text": "Startups program",
+            "source": "strategic:audience",
+            "group": "audience",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+def test_value_proposition_answer_does_not_append_weak_labels() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    accepted = [
+        {"text": "Anthropic's AI assistant for problem solvers.", "group": "product_offer"},
+        {"text": "Help and security", "group": "outcome"},
+        {"text": "Startups program", "group": "audience"},
+    ]
+
+    answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
+
+    assert answer == "Anthropic's AI assistant for problem solvers."
+
+
+def test_value_proposition_rejects_noisy_offer_candidates_and_uses_clean_offer() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Best Ecommerce Platform with AI-Powered Vexture | Miva ## Built-In AI Search That Understands Meaning, Not Just Keywords Traditional keyword search re",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Vexture interprets shopper intent using vector-based AI to deliver instant, accurate results.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Discover how Vexture's AI-powered search and merchandising improve product discovery, reducing no-result searches and increasing conversions.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+    result = interpret_tldr_block("value_proposition", spec, accepted, {"netspace": {"detected": True}}, "netspace")
+
+    assert [item["text"] for item in accepted][:2] == [
+        "Vexture interprets shopper intent using vector-based AI to deliver instant, accurate results.",
+        "Discover how Vexture's AI-powered search and merchandising improve product discovery, reducing no-result searches and increasing conversions.",
+    ]
+    assert result is not None
+    assert result["content"].startswith("Vexture interprets shopper intent")
+
+
+def test_value_proposition_rejects_navigation_and_metadata_offer_candidates() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Base b a s e b a s e Chain Products Developers Solutions Community About START HERE Get Base App Build on Base",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "FLORA is a Technology, Information and Internet company. Flora AI is an AI creative software company that helps individuals create organically.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "The All-in-one AI Video Platform for Business Play video Pause video our mission Helping people w",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Base is an open stack that empowers builders, creators, and people everywhere to build apps, grow businesses, create what they love, and earn onchain.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "Base is an open stack that empowers builders, creators, and people everywhere to build apps, grow businesses, create what they love, and earn onchain."
+    ]
+
+
+def test_value_proposition_rejects_repeated_service_title_and_cr_truncation() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "FLOC*Services | Moments of activation MOMENTS OF ACTIVATION MOMENTS OF ACTIVATION Every stage demands a di",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+        {
+            "text": "Synthesia 2.0 is an AI video communications platform that allows users to cr",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+def test_value_proposition_answer_does_not_append_copyright_navigation() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    accepted = [
+        {"text": "Text, image, and video models in one place.", "group": "product_offer"},
+        {"text": "for free Copyright (c) 2026 All rights reserved. Company Blog Careers Product Updates Pricing Teams Privacy Policy", "group": "audience"},
+    ]
+
+    answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
+
+    assert answer == "Text, image, and video models in one place."
+
+
+def test_value_proposition_rejects_concatenated_copy_as_offer() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Wearemorethanastrategicdesignstudio—weareanopencollectiveoftop-tierfreeleaders,unitedbythepassionandambitionforinnovation,withavisionforamoredecentralizedfuture.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        }
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+def test_value_proposition_answer_cleans_residual_navigation_fragments() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    cases = [
+        (
+            "Base App Base Build Base Chain Base Pay Base App Post, trade, chat, and earn - all in one place An everything app that brings together a social network, apps, payments, and finance.",
+            "Post, trade, chat, and earn - all in one place An everything app that brings together a social network, apps, payments, and finance.",
+        ),
+        (
+            "NewNotion's developer platform: Any data. Any tool. Any agent. No infra required. [Learn more](https://notion.dev/)",
+            "Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+        ),
+        (
+            "Watermelon Native - mobile-first UI components for iOS, Android, and cross-platform. Seamless, performant, ready to drop into your app.launching soon",
+            "Watermelon Native - mobile-first UI components for iOS, Android, and cross-platform. Seamless, performant, ready to drop into your app.",
+        ),
+        (
+            "Why Outcraft AI Is The Right Platform For Your Business?. Results driven Built for outcomes, not activity Optimized for demos booked, revenue recovered, users retained, and LTV increased. Businesses spend thousands on ads and campaigns, but too often leads go cold because sales teams can't follow up fast enou",
+            "Results driven Built for outcomes, not activity Optimized for demos booked, revenue recovered, users retained, and LTV increased.",
+        ),
+    ]
+
+    for raw, expected in cases:
+        assert answer_from_spec("value_proposition", raw, [{"text": raw, "group": "product_offer"}]) == expected
+
+
+def test_value_proposition_rejects_docs_navigation_candidate() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Splits | Financial infrastructure for onchain teams Teams Changelog Blog Support Docs Explore Splits Open Teams Financial infrastructure for onchain t",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+def test_value_proposition_answer_does_not_append_broken_markdown_addition() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    accepted = [
+        {"text": "NewNotion's developer platform: Any data. Any tool. Any agent. No infra required. [Learn more](https://notion.dev/)", "group": "product_offer"},
+        {"text": "Streamlined workflows to reduce timelines by 3x.->](https://www.notion.com/customers/toyota) Bring all your tools and teams under one roof. Calculate savings below.", "group": "outcome"},
+    ]
+
+    answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
+
+    assert answer == "Notion's developer platform: Any data. Any tool. Any agent. No infra required."

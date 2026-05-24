@@ -197,6 +197,7 @@ def strategic_packet_candidate_priority(
             "real-world data",
             "video generation",
             "operating system",
+            "open stack",
             "transport",
             "transporte",
             "planning",
@@ -282,18 +283,22 @@ def accepted_block_evidence(
             if block == "mission" and (
                 _is_testimonial_evidence(low)
                 or _is_truncated_evidence(low)
+                or _is_vague_mission_slogan(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
             if block == "vision" and (
                 _is_truncated_evidence(low) or not _has_future_signal(low)
             ):
+                continue
+            if block == "value_proposition" and _is_bad_value_prop_candidate(text):
                 continue
         else:
             if not any(_contains_keyword(low, term) for term in spec["look_for"]):
                 continue
             if block == "mission" and (
                 _is_truncated_evidence(low)
+                or _is_vague_mission_slogan(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
@@ -301,9 +306,16 @@ def accepted_block_evidence(
                 _is_truncated_evidence(low) or not _has_future_signal(low)
             ):
                 continue
-            if block == "value_proposition" and not _has_offer_signal(low):
+            if block == "value_proposition" and (_is_bad_value_prop_candidate(text) or not _has_offer_signal(low)):
                 continue
         accepted.append(candidate)
+    if block == "value_proposition" and accepted:
+        has_offer_candidate = any(
+            str(item.get("group") or "") == "product_offer" or _has_offer_signal(str(item.get("text") or "").lower())
+            for item in accepted
+        )
+        if not has_offer_candidate:
+            return []
     return accepted
 
 
@@ -478,6 +490,10 @@ def _has_operating_activity_signal(text: str) -> bool:
             "we offer",
             "we operate",
             "we deliver",
+            "we help",
+            "we make",
+            "we enable",
+            "we empower",
             "builds",
             "creates",
             "provides",
@@ -499,19 +515,24 @@ def _has_operating_activity_signal(text: str) -> bool:
     )
 
 
+def _is_vague_mission_slogan(text: str) -> bool:
+    low = text.strip().lower()
+    return low in {"we make good shit"} or "shit" in low
+
+
 def _is_testimonial_evidence(text: str) -> bool:
     low = text.strip().lower()
     return low.startswith((">", "“", '"')) or " nos ofrece " in low or " customer " in low
 
 
 def _is_truncated_evidence(text: str) -> bool:
-    return bool(re.search(r"\b(?:com|streamli|throu|users?|c)\s*$", text.strip(), re.I))
+    return bool(re.search(r"\b(?:com|streamli|throu|softwar|platfor|developmen|infrastructur|users?|c|w|cr)\s*$", text.strip(), re.I))
 
 
 def _has_formal_mission_signal(text: str) -> bool:
     return bool(
         re.search(
-            r"\b(our mission|nuestra misión|nuestra mision|mission revolves around)\b",
+            r"\b(our mission|nuestra misión|nuestra mision|mission revolves around|on a mission to)\b",
             text,
             re.I,
         )
@@ -568,6 +589,7 @@ def _has_offer_signal(text: str) -> bool:
             "centralise",
             "centralize",
             "soluciones",
+            "open stack",
             "human intelligence",
             "business analyst",
             "research people",
@@ -636,7 +658,7 @@ def _has_outcome_signal(text: str) -> bool:
 
 
 def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> str:
-    primary = evidence.strip()
+    primary = _clean_value_prop_answer_text(evidence)
     primary_low = primary.lower()
     if (
         not accepted
@@ -647,15 +669,86 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
     additions: list[str] = []
     for target_group in ("outcome", "audience"):
         for item in accepted:
-            text = str(item.get("text") or "").strip()
+            text = _clean_value_prop_answer_text(str(item.get("text") or ""))
             if item.get("group") != target_group or not text or text == primary or text in additions:
+                continue
+            if _is_weak_value_prop_addition(text):
                 continue
             additions.append(text)
             break
     if not additions:
         return primary
     answer = primary.rstrip(".") + ". " + " ".join(additions)
-    return answer[:360].rstrip()
+    return _clean_value_prop_answer_text(answer[:360].rstrip())
+
+
+def _clean_value_prop_answer_text(text: str) -> str:
+    cleaned = re.sub(r"\s+", " ", text or "").strip()
+    cleaned = re.sub(r"\s*\[[^\]]{2,90}\]\(https?://[^)]+\)\s*$", "", cleaned).strip()
+    cleaned = re.sub(r"^New(?=[A-Z][A-Za-z0-9]+(?:'s)\b)", "", cleaned)
+    cleaned = re.sub(r"^Base App Base Build Base Chain Base Pay Base App\s+", "", cleaned, flags=re.I)
+    cleaned = re.sub(r"^[A-Z][A-Za-z0-9 .&'*-]{1,60}\s+\|\s+", "", cleaned)
+    cleaned = re.sub(r"\s+Teams Changelog Blog Support Docs Explore.*$", "", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"\bWhere sales begin\s+Where sales begin\b", "Where sales begin", cleaned, flags=re.I)
+    cleaned = re.sub(r"^Why [A-Z][^?]{2,120}\?\.\s*", "", cleaned)
+    cleaned = re.sub(r"\s+Businesses spend thousands on ads.*$", "", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"\.?launching soon\s*$", ".", cleaned, flags=re.I).strip()
+    return cleaned.strip()
+
+
+def _is_bad_value_prop_candidate(text: str) -> bool:
+    stripped = text.strip()
+    low = stripped.lower()
+    if _is_truncated_evidence(low):
+        return True
+    if stripped.startswith("![") or "![" in stripped:
+        return True
+    if _looks_like_concatenated_copy(stripped):
+        return True
+    if re.fullmatch(r"\[[^\]]{2,120}\]\(https?://[^)]+\)", stripped):
+        return True
+    if "play video pause video" in low:
+        return True
+    if "teams changelog blog support docs" in low:
+        return True
+    if low.count("moments of activation") >= 2:
+        return True
+    if "schema detected:" in low:
+        return True
+    if "technology, information and internet company" in low:
+        return True
+    if " company. " in low and " is a " in low[:120]:
+        return True
+    if " | " in stripped and "##" in stripped:
+        return True
+    if " b a s e b a s e " in low or "chain products developers solutions community" in low:
+        return True
+    if "customers logos" in low or "_next/image" in low:
+        return True
+    if "book a demo" in low and low.startswith(("book a demo", "talk to")):
+        return True
+    if stripped.count("**](http") or stripped.endswith("]"):
+        return True
+    return False
+
+
+def _looks_like_concatenated_copy(text: str) -> bool:
+    stripped = text.strip()
+    if len(stripped) < 80:
+        return False
+    space_ratio = stripped.count(" ") / max(len(stripped), 1)
+    return space_ratio < 0.04
+
+
+def _is_weak_value_prop_addition(text: str) -> bool:
+    low = text.strip().lower()
+    if len(low) < 40 and not re.search(r"\b(?:helps|help|enables|enable|streamlines|automates|reduces|improves|builds|creates|for|para)\b", low):
+        return True
+    if any(marker in low for marker in ("copyright", "all rights reserved", "pricing", "privacy policy", "terms of service")):
+        return True
+    if any(marker in low for marker in ("](", "→](", "learn more", "calculate savings", "bring all your tools")):
+        return True
+    return low in {"help and security", "startups program"}
 
 
 def _evidence_list(value: Any) -> list[str]:

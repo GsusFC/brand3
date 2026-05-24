@@ -17,6 +17,8 @@ from src.collectors.web_collector import WebCollector
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
+    strategic_packet_candidate_priority,
+    strategic_packet_candidates,
 )
 from src.features.magnetism.content_distiller import ContentDistiller
 from src.reports.derivation import collect_evidences
@@ -703,12 +705,17 @@ Return exactly this JSON shape:
                 })
         if not candidates:
             return None
-        return sorted(candidates, key=MagnetismExtractor._strategic_packet_candidate_priority)[0]
+        return sorted(candidates, key=strategic_packet_candidate_priority)[0]
 
     def _first_accepted_tactispace_packet_evidence(self, strategic_packet: dict[str, Any]) -> str | None:
         for key in ("mission", "vision"):
             spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-            candidates = self._strategic_packet_candidates(key, spec, strategic_packet)
+            candidates = strategic_packet_candidates(
+                key,
+                spec,
+                strategic_packet,
+                str(TLDR_TO_LAYER.get(key, "netspace")),
+            )
             accepted = self._accepted_block_evidence(key, spec, candidates)
             if accepted:
                 return accepted[0]["text"]
@@ -853,7 +860,12 @@ Return exactly this JSON shape:
         candidates: list[dict[str, str]] = []
         seen: set[str] = set()
         if strategic_packet and key:
-            return self._strategic_packet_candidates(key, spec, strategic_packet)
+            return strategic_packet_candidates(
+                key,
+                spec,
+                strategic_packet,
+                str(TLDR_TO_LAYER.get(key, "netspace")),
+            )
         for layer_key in spec["source_layers"]:
             layer = layers.get(layer_key) or {}
             for source in ("evidence", "finding"):
@@ -865,63 +877,6 @@ Return exactly this JSON shape:
                     seen.add(cleaned)
                     candidates.append({"text": cleaned, "layer": layer_key, "source": source})
         return candidates
-
-    @staticmethod
-    def _strategic_packet_candidates(
-        key: str,
-        spec: dict[str, Any],
-        strategic_packet: dict[str, Any],
-    ) -> list[dict[str, str]]:
-        groups = strategic_packet.get("groups") if isinstance(strategic_packet, dict) else {}
-        if not isinstance(groups, dict):
-            return []
-        candidates: list[dict[str, str]] = []
-        for group in spec.get("strategic_groups") or []:
-            for item in groups.get(group) or []:
-                if not isinstance(item, dict):
-                    continue
-                text = MagnetismExtractor._clean_evidence_phrase(str(item.get("text") or ""))
-                if not text:
-                    continue
-                candidates.append({
-                    "text": text,
-                    "layer": str(TLDR_TO_LAYER.get(key, "netspace")),
-                    "source": f"strategic:{group}",
-                    "group": group,
-                    "source_type": str(item.get("source_type") or ""),
-                    "feature_name": str(item.get("feature_name") or ""),
-                })
-        return sorted(candidates, key=MagnetismExtractor._strategic_packet_candidate_priority)
-
-    @staticmethod
-    def _strategic_packet_candidate_priority(candidate: dict[str, str]) -> tuple[int, int, int, int, int, int, int, int]:
-        source_type = str(candidate.get("source_type") or "")
-        feature_name = str(candidate.get("feature_name") or "")
-        group = str(candidate.get("group") or "")
-        text = str(candidate.get("text") or "")
-        low = text.lower()
-        group_rank = {"product_offer": 0, "hero_claims": 1, "outcome": 2, "audience": 3}.get(group, 4)
-        source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(source_type, 3)
-        feature_rank = 3 if feature_name == "search_visibility" else 0
-        truncated_rank = 2 if re.search(r"\b(?:com|streamli|throu|c|users?)\s*$", text, re.I) else 0
-        generic_rank = 2 if low in {"todo en una plataforma", "all in one platform"} else 0
-        title_rank = 1 if (" | " in text or " – " in text or " # " in text) and len(text) < 120 else 0
-        richness = sum(
-            1
-            for marker in (
-                "platform", "plataforma", "teams", "creators", "developers", "enterprises",
-                "helps", "helping", "ayuda", "enables", "streamline", "streamlines",
-                "for ", "para ", "gestionar", "hacer crecer", "servicios financieros", "payments",
-                "pagos", "reduce", "reduce costes", "secure", "competitive advantage",
-                "web search", "search engine", "crawler", "real-world data", "video generation",
-                "operating system", "transport", "transporte", "planning", "roadmap",
-                "human intelligence", "business analyst", "research people", "creative entity",
-                "wield power", "world stage",
-            )
-            if marker in low
-        )
-        useful_length = min(len(text), 220)
-        return (group_rank, generic_rank, truncated_rank, -richness, title_rank, source_rank, feature_rank, -useful_length)
 
     def _accepted_block_evidence(
         self,

@@ -7,6 +7,7 @@ contract separate from scanner orchestration so specs can evolve independently.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 
@@ -82,3 +83,118 @@ def get_tldr_block_interpreter_spec(block: str) -> dict[str, Any] | None:
     """Return the executable spec for a migrated TLDR block."""
     spec = TLDR_BLOCK_INTERPRETER_SPECS.get(block)
     return dict(spec) if spec else None
+
+
+def strategic_packet_candidates(
+    block: str,
+    spec: dict[str, Any],
+    strategic_packet: dict[str, Any],
+    source_layer: str,
+) -> list[dict[str, str]]:
+    """Select ordered evidence candidates from a StrategicEvidencePacket."""
+    groups = strategic_packet.get("groups") if isinstance(strategic_packet, dict) else {}
+    if not isinstance(groups, dict):
+        return []
+    candidates: list[dict[str, str]] = []
+    for group in spec.get("strategic_groups") or []:
+        for item in groups.get(group) or []:
+            if not isinstance(item, dict):
+                continue
+            text = _clean_candidate_text(str(item.get("text") or ""))
+            if not text:
+                continue
+            candidates.append(
+                {
+                    "text": text,
+                    "layer": source_layer,
+                    "source": f"strategic:{group}",
+                    "group": group,
+                    "source_type": str(item.get("source_type") or ""),
+                    "feature_name": str(item.get("feature_name") or ""),
+                    "block": block,
+                }
+            )
+    return sorted(candidates, key=strategic_packet_candidate_priority)
+
+
+def strategic_packet_candidate_priority(
+    candidate: dict[str, str],
+) -> tuple[int, int, int, int, int, int, int, int]:
+    """Rank candidates so concrete owned offer evidence wins over snippets/noise."""
+    source_type = str(candidate.get("source_type") or "")
+    feature_name = str(candidate.get("feature_name") or "")
+    group = str(candidate.get("group") or "")
+    text = str(candidate.get("text") or "")
+    low = text.lower()
+    group_rank = {"product_offer": 0, "hero_claims": 1, "outcome": 2, "audience": 3}.get(
+        group, 4
+    )
+    source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(source_type, 3)
+    feature_rank = 3 if feature_name == "search_visibility" else 0
+    truncated_rank = (
+        2 if re.search(r"\b(?:com|streamli|throu|c|users?)\s*$", text, re.I) else 0
+    )
+    generic_rank = 2 if low in {"todo en una plataforma", "all in one platform"} else 0
+    title_rank = (
+        1 if (" | " in text or " – " in text or " # " in text) and len(text) < 120 else 0
+    )
+    richness = sum(
+        1
+        for marker in (
+            "platform",
+            "plataforma",
+            "teams",
+            "creators",
+            "developers",
+            "enterprises",
+            "helps",
+            "helping",
+            "ayuda",
+            "enables",
+            "streamline",
+            "streamlines",
+            "for ",
+            "para ",
+            "gestionar",
+            "hacer crecer",
+            "servicios financieros",
+            "payments",
+            "pagos",
+            "reduce",
+            "reduce costes",
+            "secure",
+            "competitive advantage",
+            "web search",
+            "search engine",
+            "crawler",
+            "real-world data",
+            "video generation",
+            "operating system",
+            "transport",
+            "transporte",
+            "planning",
+            "roadmap",
+            "human intelligence",
+            "business analyst",
+            "research people",
+            "creative entity",
+            "wield power",
+            "world stage",
+        )
+        if marker in low
+    )
+    useful_length = min(len(text), 220)
+    return (
+        group_rank,
+        generic_rank,
+        truncated_rank,
+        -richness,
+        title_rank,
+        source_rank,
+        feature_rank,
+        -useful_length,
+    )
+
+
+def _clean_candidate_text(value: str) -> str:
+    return re.sub(r"\s+", " ", value or "").strip(" -|•*\t")

@@ -3,6 +3,7 @@ from __future__ import annotations
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     get_tldr_block_interpreter_spec,
+    strategic_packet_candidates,
 )
 
 
@@ -73,3 +74,43 @@ def test_specs_declare_their_strategic_packet_groups() -> None:
     assert TLDR_BLOCK_INTERPRETER_SPECS["vision"]["strategic_groups"] == [
         "vision_language",
     ]
+
+
+def test_strategic_packet_candidates_are_selected_and_ordered_by_spec() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    packet = {
+        "groups": {
+            "audience": [{"text": "for finance teams", "source_type": "owned_raw"}],
+            "product_offer": [
+                {
+                    "text": "Search Result | Example is a platform com",
+                    "source_type": "other",
+                    "feature_name": "search_visibility",
+                },
+                {
+                    "text": "Example is a treasury platform for finance teams that streamlines cash visibility.",
+                    "source_type": "owned_raw",
+                    "feature_name": "raw_web",
+                },
+            ],
+            "mission_language": [
+                {"text": "We build unrelated evidence", "source_type": "owned_raw"}
+            ],
+        }
+    }
+
+    candidates = strategic_packet_candidates(
+        "value_proposition",
+        spec,
+        packet,
+        source_layer="netspace",
+    )
+
+    assert [candidate["group"] for candidate in candidates] == [
+        "product_offer",
+        "product_offer",
+        "audience",
+    ]
+    assert candidates[0]["text"].startswith("Example is a treasury platform")
+    assert all(candidate["source"].startswith("strategic:") for candidate in candidates)
+    assert all(candidate["layer"] == "netspace" for candidate in candidates)

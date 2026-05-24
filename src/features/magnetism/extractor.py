@@ -18,6 +18,7 @@ from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     accepted_block_evidence,
+    block_evidence_candidates,
     interpret_tldr_block,
     strategic_packet_candidate_priority,
     strategic_packet_candidates,
@@ -822,7 +823,13 @@ Return exactly this JSON shape:
         strategic_packet: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-        candidates = self._select_block_evidence_candidates(spec, layers, strategic_packet, key)
+        candidates = block_evidence_candidates(
+            key,
+            spec,
+            layers,
+            strategic_packet,
+            TLDR_TO_LAYER[key],
+        )
         return interpret_tldr_block(
             key,
             spec,
@@ -831,140 +838,10 @@ Return exactly this JSON shape:
             TLDR_TO_LAYER[key],
         )
 
-    def _select_block_evidence_candidates(
-        self,
-        spec: dict[str, Any],
-        layers: dict[str, Any],
-        strategic_packet: dict[str, Any] | None = None,
-        key: str | None = None,
-    ) -> list[dict[str, str]]:
-        candidates: list[dict[str, str]] = []
-        seen: set[str] = set()
-        if strategic_packet and key:
-            return strategic_packet_candidates(
-                key,
-                spec,
-                strategic_packet,
-                str(TLDR_TO_LAYER.get(key, "netspace")),
-            )
-        for layer_key in spec["source_layers"]:
-            layer = layers.get(layer_key) or {}
-            for source in ("evidence", "finding"):
-                value = layer.get(source)
-                for sentence in self._sentences("\n".join(self._evidence_list(value))):
-                    cleaned = self._clean_evidence_phrase(sentence)
-                    if not cleaned or cleaned in seen or self._is_navigation_noise(cleaned):
-                        continue
-                    seen.add(cleaned)
-                    candidates.append({"text": cleaned, "layer": layer_key, "source": source})
-        return candidates
-
-    @staticmethod
-    def _has_operating_activity_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "we build",
-                "we create",
-                "we provide",
-                "we offer",
-                "we operate",
-                "we deliver",
-                "builds",
-                "creates",
-                "provides",
-                "offers",
-                "operates",
-                "delivers",
-                "offers",
-                "accepts",
-                "implements",
-                "creamos",
-                "construimos",
-                "ofrecemos",
-                "ofrece",
-                "acepta",
-                "implementa",
-                "proporcionamos",
-                "desarrollamos",
-            )
-        )
-
     @staticmethod
     def _is_testimonial_evidence(text: str) -> bool:
         low = text.strip().lower()
         return low.startswith((">", "“", "\"")) or " nos ofrece " in low or " customer " in low
-
-    @staticmethod
-    def _is_truncated_evidence(text: str) -> bool:
-        return bool(re.search(r"\b(?:com|streamli|throu|users?|c)\s*$", text.strip(), re.I))
-
-    @staticmethod
-    def _has_formal_mission_signal(text: str) -> bool:
-        return bool(re.search(r"\b(our mission|nuestra misión|nuestra mision|mission revolves around)\b", text, re.I))
-
-    @staticmethod
-    def _has_future_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "future",
-                "future of",
-                "vision",
-                "new model",
-                "new paradigm",
-                "towards",
-                "toward",
-                "redefine",
-                "next generation",
-                "futuro",
-                "visión",
-                "nuevo modelo",
-                "nuevo paradigma",
-                "nueva generación",
-                "creative entity",
-                "creative work",
-                "wield power",
-                "world stage",
-            )
-        )
-
-    @staticmethod
-    def _has_offer_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "solution",
-                "solutions",
-                "platform",
-                "product",
-                "service",
-                "services",
-                "api",
-                "system",
-                "payments",
-                "pagos",
-                "billing",
-                "facturación",
-                "financial services",
-                "servicios financieros",
-                "revenue",
-                "ingresos",
-                "streamline",
-                "centralise",
-                "centralize",
-                "soluciones",
-                "human intelligence",
-                "business analyst",
-                "research people",
-                "research people and companies",
-                "materias primas",
-                "ingredientes",
-                "biorremediación",
-                "cosmética",
-                "nutrición",
-            )
-        )
 
     @staticmethod
     def _empty_tldr_block(key: str, layer_key: str) -> dict[str, Any]:

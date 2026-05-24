@@ -61,7 +61,6 @@ def test_strategic_evidence_packet_keeps_third_party_context_separate():
     assert "No owned/social evidence found" in " ".join(packet.warnings)
 
 
-
 def test_strategic_evidence_packet_rejects_navigation_mission_noise():
     snapshot = {
         "run": {"id": 79, "brand_name": "Enginy", "url": "https://www.enginy.ai"},
@@ -83,7 +82,6 @@ def test_strategic_evidence_packet_rejects_navigation_mission_noise():
 
     assert not packet.groups.get("mission_language")
     assert any(item["reason"] == "navigation_or_hiring_noise" for item in packet.rejected)
-
 
 
 def test_strategic_evidence_packet_cleans_repeated_headings_and_trailing_fragments():
@@ -328,7 +326,6 @@ def test_strategic_evidence_packet_keeps_brand_is_offer_copy():
     assert packet.groups["product_offer"][0].text.startswith("Galtea is the Quality Assurance platform")
 
 
-
 def test_strategic_evidence_packet_groups_human_research_product_language():
     snapshot = {
         "run": {"id": 91, "brand_name": "Ethos", "url": "https://agent.askethos.com"},
@@ -405,7 +402,6 @@ def test_owned_raw_duplicate_takes_priority_over_context_copy():
     assert packet.groups["vision_language"][0].source_type == "owned_raw"
 
 
-
 def test_strategic_evidence_packet_prioritizes_owned_raw_offer_over_search_visibility():
     snapshot = {
         "run": {"id": 126, "brand_name": "Temporal", "url": "https://temporal.io"},
@@ -479,7 +475,6 @@ def test_strategic_evidence_packet_classifies_we_make_as_mission_language():
     assert "we make developers more productive" in packet.groups["mission_language"][0].text
 
 
-
 def test_strategic_evidence_packet_rejects_markdown_link_only_product_navigation():
     snapshot = {
         "run": {"id": 129, "brand_name": "Datadog", "url": "https://datadoghq.com"},
@@ -545,7 +540,6 @@ def test_strategic_evidence_packet_classifies_on_a_mission_owned_claim():
     assert "on a mission to help professional designers" in packet.groups["mission_language"][0].text
 
 
-
 def test_strategic_evidence_packet_rejects_section_heading_as_offer():
     snapshot = {
         "run": {"id": 132, "brand_name": "Datadog", "url": "https://datadoghq.com"},
@@ -581,7 +575,6 @@ def test_strategic_evidence_packet_rejects_customer_quote_as_offer():
 
     assert not packet.groups.get("product_offer")
     assert any(item["reason"] == "testimonial_quote_noise" for item in packet.rejected)
-
 
 
 def test_strategic_evidence_packet_rejects_short_platform_team_label():
@@ -643,7 +636,6 @@ def test_strategic_evidence_packet_rejects_company_details_metadata():
     assert any(item["reason"] == "company_profile_metadata" for item in packet.rejected)
 
 
-
 def test_strategic_evidence_packet_rejects_employee_growth_metadata_fragment():
     snapshot = {
         "run": {"id": 137, "brand_name": "ChatGPT", "url": "https://chatgpt.com"},
@@ -680,7 +672,6 @@ def test_strategic_evidence_packet_accepts_brand_identities_offer():
     assert "product_offer" in packet.groups
     assert "audience" in packet.groups
     assert "brand identities" in packet.groups["product_offer"][0].text
-
 
 
 def test_strategic_evidence_packet_cleans_sign_in_prefix_from_ai_assistant_offer():
@@ -723,7 +714,6 @@ def test_strategic_evidence_packet_trims_event_tail_from_useful_agency_search_cl
     assert packet.groups["outcome"][0].text == "Streamline your search for the next agency."
 
 
-
 def test_strategic_evidence_packet_rejects_image_alt_text_as_offer():
     snapshot = {
         "run": {"id": 141, "brand_name": "Apple", "url": "https://apple.com"},
@@ -754,3 +744,88 @@ def test_strategic_evidence_packet_rejects_showcase_event_as_offer():
 
     assert not packet.groups.get("product_offer")
     assert any(item["reason"] == "promotion_or_event_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_testimonial_as_mission_language():
+    snapshot = {
+        "run": {"id": 143, "brand_name": "Eaship", "url": "https://eaship.io"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "> “Eaship nos ofrece múltiples soluciones mediante las cuales podemos "
+                        "conseguir optimizar la gestión y el coste de transporte, mejorando "
+                        "el servicio al cliente."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("mission_language")
+    assert any(item["reason"] == "testimonial_quote_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_generic_slogan_as_mission_language():
+    snapshot = {
+        "run": {"id": 144, "brand_name": "Dogstudio", "url": "https://dogstudio.co"},
+        "features": [],
+        "raw_inputs": [{"source": "web", "payload": {"markdown_content": "We Make Good Shit"}}],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("mission_language")
+    assert any(item["reason"] == "generic_slogan_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_truncated_mission_and_vision_fragments():
+    snapshot = {
+        "run": {"id": 145, "brand_name": "Truncated", "url": "https://truncated.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "our mission Helping people w\nthe future of softwar",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("mission_language")
+    assert not packet.groups.get("vision_language")
+    assert any(item["reason"] == "truncated_fragment_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_does_not_classify_product_transform_as_vision():
+    snapshot = {
+        "run": {"id": 146, "brand_name": "Product", "url": "https://product.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "Instantly transform a single static image into a dynamic, full-motion video. "
+                        "Connect with our team to see how Lightmatter can transform your AI "
+                        "networking and compute architecture."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("vision_language")

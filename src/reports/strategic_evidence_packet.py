@@ -123,7 +123,8 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "built for the future",
         "new model",
         "new paradigm",
-        "transform",
+        "transform the future",
+        "transforming the future",
         "shape the future",
         "creative entity",
         "creative work",
@@ -132,7 +133,8 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "futuro de",
         "nuevo modelo",
         "nueva generación",
-        "transformar",
+        "transformar la categoría",
+        "transformar el futuro",
     ),
     "values_language": (
         "trusted",
@@ -532,6 +534,10 @@ def _reject_reason(text: str) -> str | None:
         return "url_only"
     if text.strip().startswith("!["):
         return "image_alt_text_noise"
+    if _looks_truncated(low):
+        return "truncated_fragment_noise"
+    if low in {"we make good shit"}:
+        return "generic_slogan_noise"
     if _looks_like_short_label(low):
         return "navigation_or_section_heading_noise"
     if "company details" in low or ("industry:" in low and "type:" in low):
@@ -550,7 +556,7 @@ def _reject_reason(text: str) -> str | None:
         return "navigation_or_section_heading_noise"
     if "differentiates from" in low and any(marker in low for marker in ("logo", "mark", "blue", "green", "visual", "sterility", "wellness")):
         return "visual_comparison_noise"
-    if (low.startswith("“") or low.startswith('"')) and (" for us" in low or " customer" in low or " using " in low):
+    if _looks_like_testimonial_quote(low):
         return "testimonial_quote_noise"
     if (
         "api dashboard try" in low
@@ -586,3 +592,25 @@ def _reject_reason(text: str) -> str | None:
     if "magic quadrant" in low or "named a leader" in low:
         return "analyst_report_or_award_noise"
     return None
+
+
+def _looks_truncated(low: str) -> bool:
+    return bool(re.search(r"\b(?:throu|softwar|platfor|developmen|infrastructur|users?|c|w|cr)\s*$", low.strip(), re.I))
+
+
+def _looks_like_testimonial_quote(low: str) -> bool:
+    stripped = low.strip()
+    if not stripped.startswith(("“", '"', "> “", ">")):
+        return False
+    return any(
+        marker in stripped
+        for marker in (
+            " for us",
+            " customer",
+            " using ",
+            " nos ofrece",
+            " nos ayuda",
+            " servicio al cliente",
+            " procesos de trabajo",
+        )
+    )

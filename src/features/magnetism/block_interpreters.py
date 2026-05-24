@@ -282,6 +282,7 @@ def accepted_block_evidence(
             if block == "mission" and (
                 _is_testimonial_evidence(low)
                 or _is_truncated_evidence(low)
+                or _is_vague_mission_slogan(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
@@ -294,6 +295,7 @@ def accepted_block_evidence(
                 continue
             if block == "mission" and (
                 _is_truncated_evidence(low)
+                or _is_vague_mission_slogan(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
@@ -485,6 +487,10 @@ def _has_operating_activity_signal(text: str) -> bool:
             "we offer",
             "we operate",
             "we deliver",
+            "we help",
+            "we make",
+            "we enable",
+            "we empower",
             "builds",
             "creates",
             "provides",
@@ -506,19 +512,24 @@ def _has_operating_activity_signal(text: str) -> bool:
     )
 
 
+def _is_vague_mission_slogan(text: str) -> bool:
+    low = text.strip().lower()
+    return low in {"we make good shit"} or "shit" in low
+
+
 def _is_testimonial_evidence(text: str) -> bool:
     low = text.strip().lower()
     return low.startswith((">", "“", '"')) or " nos ofrece " in low or " customer " in low
 
 
 def _is_truncated_evidence(text: str) -> bool:
-    return bool(re.search(r"\b(?:com|streamli|throu|softwar|platfor|developmen|infrastructur|users?|c)\s*$", text.strip(), re.I))
+    return bool(re.search(r"\b(?:com|streamli|throu|softwar|platfor|developmen|infrastructur|users?|c|w)\s*$", text.strip(), re.I))
 
 
 def _has_formal_mission_signal(text: str) -> bool:
     return bool(
         re.search(
-            r"\b(our mission|nuestra misión|nuestra mision|mission revolves around)\b",
+            r"\b(our mission|nuestra misión|nuestra mision|mission revolves around|on a mission to)\b",
             text,
             re.I,
         )

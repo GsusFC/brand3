@@ -8,6 +8,7 @@ from src.features.magnetism.block_interpreters import (
     counter_evidence_from_spec,
     get_tldr_block_interpreter_spec,
     human_review_from_spec,
+    interpret_tldr_block,
     strategic_packet_candidates,
 )
 
@@ -248,3 +249,56 @@ def test_value_proposition_missing_outcome_lowers_confidence() -> None:
     assert counter_evidence == [
         "The available value proposition evidence does not clearly state the outcome or change for the audience."
     ]
+
+
+
+def test_interpret_tldr_block_returns_normalized_block_result() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "A platform for finance teams that streamlines payments",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+
+    result = interpret_tldr_block(
+        "value_proposition",
+        spec,
+        candidates,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+
+    assert result is not None
+    assert result["content"] == "A platform for finance teams that streamlines payments"
+    assert result["detected"] is True
+    assert result["claim_type"] == "declared"
+    assert result["mode"] == "compressed"
+    assert result["confidence"] == "high"
+    assert result["evidence"] == ["A platform for finance teams that streamlines payments"]
+    assert result["source_layers"] == ["netspace"]
+    assert result["human_review_recommended"] is False
+
+
+def test_interpret_tldr_block_returns_none_without_accepted_evidence() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "We provide treasury workflows for finance teams",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        }
+    ]
+
+    result = interpret_tldr_block(
+        "vision",
+        spec,
+        candidates,
+        {"tactispace": {"detected": True}},
+        "tactispace",
+    )
+
+    assert result is None

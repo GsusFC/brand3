@@ -196,6 +196,44 @@ def strategic_packet_candidate_priority(
     )
 
 
+def interpret_tldr_block(
+    block: str,
+    spec: dict[str, Any],
+    candidates: list[dict[str, str]],
+    layers: dict[str, Any],
+    primary_layer_key: str,
+) -> dict[str, Any] | None:
+    """Interpret a TLDR block from candidate evidence using its executable spec."""
+    accepted = accepted_block_evidence(block, spec, candidates)
+    if not accepted:
+        return None
+
+    evidence = accepted[0]["text"]
+    diagnostics = block_evidence_diagnostics(block, accepted, layers, primary_layer_key)
+    answer = answer_from_spec(block, evidence, accepted)
+    mode = mode_from_spec(block, diagnostics)
+    confidence = confidence_from_spec(block, diagnostics, accepted)
+    claim_type = claim_type_from_spec(block, diagnostics)
+    counter_evidence = counter_evidence_from_spec(block, diagnostics)
+    human_review = human_review_from_spec(block, diagnostics, confidence, counter_evidence)
+    reasoning = reasoning_from_spec(block, evidence, diagnostics)
+
+    return {
+        "content": answer,
+        "detected": True,
+        "claim_type": claim_type,
+        "mode": mode,
+        "confidence": confidence,
+        "evidence": [evidence],
+        "rationale": reasoning,
+        "reasoning": reasoning,
+        "observations": observations_from_spec(block, diagnostics),
+        "counter_evidence": counter_evidence,
+        "source_layers": list(dict.fromkeys(item["layer"] for item in accepted)),
+        "human_review_recommended": human_review,
+    }
+
+
 def accepted_block_evidence(
     block: str,
     spec: dict[str, Any],

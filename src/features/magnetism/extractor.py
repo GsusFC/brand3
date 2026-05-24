@@ -18,15 +18,7 @@ from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     accepted_block_evidence,
-    answer_from_spec,
-    block_evidence_diagnostics,
-    claim_type_from_spec,
-    confidence_from_spec,
-    counter_evidence_from_spec,
-    human_review_from_spec,
-    mode_from_spec,
-    observations_from_spec,
-    reasoning_from_spec,
+    interpret_tldr_block,
     strategic_packet_candidate_priority,
     strategic_packet_candidates,
 )
@@ -831,34 +823,13 @@ Return exactly this JSON shape:
     ) -> dict[str, Any] | None:
         spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
         candidates = self._select_block_evidence_candidates(spec, layers, strategic_packet, key)
-        accepted = accepted_block_evidence(key, spec, candidates)
-        if not accepted:
-            return None
-
-        evidence = accepted[0]["text"]
-        diagnostics = block_evidence_diagnostics(key, accepted, layers, TLDR_TO_LAYER[key])
-        answer = answer_from_spec(key, evidence, accepted)
-        mode = mode_from_spec(key, diagnostics)
-        confidence = confidence_from_spec(key, diagnostics, accepted)
-        claim_type = claim_type_from_spec(key, diagnostics)
-        counter_evidence = counter_evidence_from_spec(key, diagnostics)
-        human_review = human_review_from_spec(key, diagnostics, confidence, counter_evidence)
-        reasoning = reasoning_from_spec(key, evidence, diagnostics)
-
-        return {
-            "content": answer,
-            "detected": True,
-            "claim_type": claim_type,
-            "mode": mode,
-            "confidence": confidence,
-            "evidence": [evidence],
-            "rationale": reasoning,
-            "reasoning": reasoning,
-            "observations": observations_from_spec(key, diagnostics),
-            "counter_evidence": counter_evidence,
-            "source_layers": list(dict.fromkeys(item["layer"] for item in accepted)),
-            "human_review_recommended": human_review,
-        }
+        return interpret_tldr_block(
+            key,
+            spec,
+            candidates,
+            layers,
+            TLDR_TO_LAYER[key],
+        )
 
     def _select_block_evidence_candidates(
         self,

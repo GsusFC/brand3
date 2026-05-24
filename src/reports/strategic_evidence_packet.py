@@ -42,6 +42,9 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "products",
         "productos",
         "software",
+        "model",
+        "ai assistant",
+        "chatbot",
         "banking",
         "wealth management",
         "private banking",
@@ -49,6 +52,14 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "human intelligence",
         "research people",
         "research people and companies",
+        "brand identities",
+        "ai-powered search",
+        "product discovery",
+        "merchandising",
+        "conversions",
+        "shopper intent",
+        "ecommerce",
+        "e-commerce",
     ),
     "audience": (
         "teams",
@@ -76,6 +87,9 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "automate",
         "build relationships",
         "get things done",
+        "improve product discovery",
+        "increasing conversions",
+        "reduce no-result searches",
         "streamline",
         "centralise",
         "centralize",
@@ -90,7 +104,14 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "we create",
         "we provide",
         "we help",
+        "we make",
+        "we enable",
+        "we develop",
+        "we empower",
         "our mission",
+        "on a mission to",
+        "make developers",
+        "make teams",
         "help companies",
         "ayuda a",
         "ofrece",
@@ -295,12 +316,73 @@ def build_strategic_evidence_packet(snapshot: dict[str, Any]) -> StrategicEviden
         packet.warnings.append("No owned/social evidence found; packet relies on contextual evidence.")
     if not packet.groups:
         packet.warnings.append("No strategically usable evidence groups found.")
+    _rank_packet_groups(packet)
     if not packet.groups.get("product_offer"):
         packet.warnings.append("No product offer evidence group found.")
     if not packet.groups.get("audience"):
         packet.warnings.append("No audience evidence group found.")
     return packet
 
+
+
+def _rank_packet_groups(packet: StrategicEvidencePacket) -> None:
+    for group, lines in list(packet.groups.items()):
+        packet.groups[group] = sorted(lines, key=lambda line: _line_priority(line, group))
+
+
+def _line_priority(line: StrategicEvidenceLine, group: str) -> tuple[int, int, int, int, int]:
+    low = line.text.lower()
+    source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(line.source_type, 3)
+    feature_rank = 2 if line.feature_name == "search_visibility" else 0
+    context_rank = 1 if group == "third_party_context" else 0
+    noise_rank = 0
+    if _looks_like_promotion_or_event(low):
+        noise_rank += 3
+    if _looks_like_short_label(low):
+        noise_rank += 3
+    if _looks_like_title_or_directory(low):
+        noise_rank += 2
+    useful_length = min(len(line.text), 260)
+    return (source_rank, noise_rank, feature_rank, context_rank, -useful_length)
+
+
+def _looks_like_promotion_or_event(low: str) -> bool:
+    return any(
+        marker in low
+        for marker in (
+            "off your first payment",
+            "use code",
+            "welcome20",
+            "conference",
+            "webinar",
+            "register now",
+            "save your spot",
+            "named a leader",
+            "magic quadrant",
+        )
+    )
+
+
+def _looks_like_short_label(low: str) -> bool:
+    if len(low) > 64:
+        return False
+    if any(mark in low for mark in (".", "?", "!")):
+        return False
+    if low.startswith(("we ", "our ", "built ", "build ", "make ", "meet ", "earn ")):
+        return False
+    if re.search(r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces)\b", low):
+        return False
+    return any(marker in low for marker in (" + ", "products", "services", "platform", "infrastructure", "software delivery", "financial services"))
+
+
+def _looks_like_title_or_directory(low: str) -> bool:
+    return (
+        " | " in low
+        or " - " in low[:120]
+        or "company details" in low
+        or "industry:" in low
+        or "employees:" in low
+    )
 
 
 def _add_owned_raw_web_candidates(
@@ -416,12 +498,17 @@ def _groups_for(text: str, source_type: str) -> list[str]:
 def _clean_quote(value: str) -> str:
     text = re.sub(r"\s+", " ", value or "").strip(" -|•*\t")
     text = re.sub(r"^#+\s*", "", text).strip()
+    text = re.sub(r"^sign in to [^,]{2,80},\s*", "", text, flags=re.I).strip()
     text = re.sub(
         r"^(?P<brand>[A-Z][^.!?]{1,80})(?:\s+\([^)]{2,120}\))?\s+(?P=brand)\s+is\s+(?:a|an)\s+[^.!?]{2,120}\s+company\.\s*",
         "",
         text,
         flags=re.I,
     )
+    for marker in (" [![", "🚀 See the teams behind", " See the teams behind this year"):
+        idx = text.find(marker)
+        if idx > 40:
+            text = text[:idx].strip()
     if " # " in text:
         before, after = text.split(" # ", 1)
         repeated = before.lower().split(" - ")[-1].strip()
@@ -443,21 +530,42 @@ def _reject_reason(text: str) -> str | None:
         return "empty_or_too_short"
     if low.startswith(("http://", "https://")):
         return "url_only"
+    if text.strip().startswith("!["):
+        return "image_alt_text_noise"
+    if _looks_like_short_label(low):
+        return "navigation_or_section_heading_noise"
+    if "company details" in low or ("industry:" in low and "type:" in low):
+        return "company_profile_metadata"
+    if "employees:" in low and "monthly growth" in low:
+        return "company_profile_metadata"
     if any(marker in low for marker in NOISE_MARKERS):
         return "internal_or_technical_noise"
     if re.search(r"[\w.+-]+@[\w.-]+\.[a-z]{2,}", low) or "finding email" in low or "credits left" in low:
         return "demo_contact_or_app_state_noise"
     if re.match(r"^([a-z][a-z0-9& .-]{2,50}) \1 is (?:a|an) ", low):
         return "embedded_directory_or_competitor_noise"
+    if re.fullmatch(r"\[[^\]]{2,90}\]\(https?://[^)]+\)", text.strip()):
+        return "markdown_link_only_noise"
+    if low in {"platform capabilities", "explore services", "help and security", "startups program", "shots shots designers services explore popular"}:
+        return "navigation_or_section_heading_noise"
+    if "differentiates from" in low and any(marker in low for marker in ("logo", "mark", "blue", "green", "visual", "sterility", "wellness")):
+        return "visual_comparison_noise"
+    if (low.startswith("“") or low.startswith('"')) and (" for us" in low or " customer" in low or " using " in low):
+        return "testimonial_quote_noise"
     if (
         "api dashboard try" in low
         or "try api for free" in low
+        or "one platform, two great hosting paths" in low
         or low in {"api dashboard", "dashboard"}
         or ("products pricing" in low and len(low) < 90)
     ):
         return "navigation_or_cta_noise"
     profile_hits = sum(1 for marker in ("employs", "founded in", "headquartered", "total funding", "yoy") if marker in low)
     if profile_hits >= 2:
+        return "company_profile_metadata"
+    if "manufacturing company" in low and "wide range of products" in low:
+        return "company_profile_metadata"
+    if re.match(r"^[a-z0-9 .,&()-]{2,90} is a [a-z &-]+ company\. .{0,90}\bis a ", low):
         return "company_profile_metadata"
     nav_hits = sum(
         1
@@ -471,4 +579,10 @@ def _reject_reason(text: str) -> str | None:
         return "navigation_or_hiring_noise"
     if any(marker in low for marker in ("/news/", "/blog/", "read more", "press release")):
         return "article_or_navigation_noise"
+    if "to showcase" in low and (" at " in low or "conference" in low):
+        return "promotion_or_event_noise"
+    if _looks_like_promotion_or_event(low) and not any(marker in low for marker in ("platform", "software", "api")):
+        return "promotion_or_event_noise"
+    if "magic quadrant" in low or "named a leader" in low:
+        return "analyst_report_or_award_noise"
     return None

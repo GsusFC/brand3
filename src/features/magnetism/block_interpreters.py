@@ -304,6 +304,13 @@ def accepted_block_evidence(
             if block == "value_proposition" and not _has_offer_signal(low):
                 continue
         accepted.append(candidate)
+    if block == "value_proposition" and accepted:
+        has_offer_candidate = any(
+            str(item.get("group") or "") == "product_offer" or _has_offer_signal(str(item.get("text") or "").lower())
+            for item in accepted
+        )
+        if not has_offer_candidate:
+            return []
     return accepted
 
 
@@ -650,12 +657,21 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
             text = str(item.get("text") or "").strip()
             if item.get("group") != target_group or not text or text == primary or text in additions:
                 continue
+            if _is_weak_value_prop_addition(text):
+                continue
             additions.append(text)
             break
     if not additions:
         return primary
     answer = primary.rstrip(".") + ". " + " ".join(additions)
     return answer[:360].rstrip()
+
+
+def _is_weak_value_prop_addition(text: str) -> bool:
+    low = text.strip().lower()
+    if len(low) < 40 and not re.search(r"\b(?:helps|help|enables|enable|streamlines|automates|reduces|improves|builds|creates|for|para)\b", low):
+        return True
+    return low in {"help and security", "startups program"}
 
 
 def _evidence_list(value: Any) -> list[str]:

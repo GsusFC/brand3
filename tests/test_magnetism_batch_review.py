@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from scripts.magnetism_brand_audit_batch_review import (
+    _block_quality,
     _build_row,
+    _build_summary,
     _dedupe_snapshots,
     _known_noise_hits,
+    _render_markdown,
     _visible_interpretation_values,
 )
 
@@ -206,3 +209,123 @@ def test_dedupe_snapshots_keeps_latest_run_per_brand_url() -> None:
     deduped = _dedupe_snapshots(snapshots)
 
     assert [item["run"]["id"] for item in deduped] == [12, 11]
+
+
+
+def test_block_quality_marks_high_clean_block_as_strong() -> None:
+    quality = _block_quality(
+        "value_proposition",
+        {"answer": "A platform for finance teams.", "confidence": "high", "counter_evidence": []},
+    )
+
+    assert quality == {"status": "strong", "reasons": []}
+
+
+def test_block_quality_marks_gap_block_as_usable() -> None:
+    quality = _block_quality(
+        "value_proposition",
+        {
+            "answer": "A platform for finance teams.",
+            "confidence": "medium",
+            "counter_evidence": ["The available value proposition evidence does not clearly state the outcome or change for the audience."],
+        },
+    )
+
+    assert quality["status"] == "usable"
+    assert quality["reasons"] == ["missing_outcome"]
+
+
+def test_block_quality_marks_missing_and_noisy_blocks() -> None:
+    missing = _block_quality("mission", {"mode": "not_detected", "claim_type": "absent"})
+    noisy = _block_quality(
+        "vision",
+        {"answer": "A future claim.", "confidence": "high"},
+        noise_hits=["__NEXT_DATA__"],
+    )
+
+    assert missing == {"status": "missing", "reasons": ["no_answer"]}
+    assert noisy["status"] == "weak"
+    assert noisy["reasons"] == ["visible_noise"]
+
+
+def test_build_row_includes_block_quality_fields() -> None:
+    row = _build_row(
+        {"run": {"id": 8, "brand_name": "Quality Brand", "url": "https://quality.test"}},
+        {
+            "metrics": {},
+            "evidence_packet_summary": {"strategic_group_counts": {"product_offer": 1, "audience": 1, "outcome": 1}},
+            "magenta_circle": {"netspace": {"detected": True}},
+            "tldr_brand3": {
+                "value_proposition": {"answer": "A clear offer for teams.", "confidence": "high"},
+                "mission": {"mode": "not_detected", "claim_type": "absent"},
+                "vision": {"answer": "A future signal.", "confidence": "medium", "human_review_recommended": True},
+            },
+        },
+    )
+
+    assert row["value_proposition_quality"] == "strong"
+    assert row["mission_quality"] == "missing"
+    assert row["vision_quality"] == "usable"
+    assert row["vision_quality_reasons"] == ["human_review"]
+
+
+def test_summary_counts_block_quality() -> None:
+    summary = _build_summary(
+        [
+            {"value_proposition_quality": "strong", "mission_quality": "missing", "vision_quality": "usable"},
+            {"value_proposition_quality": "weak", "mission_quality": "missing", "vision_quality": "missing"},
+        ]
+    )
+
+    assert summary["block_quality"]["value_proposition"] == {"strong": 1, "weak": 1}
+    assert summary["block_quality"]["mission"] == {"missing": 2}
+    assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
+
+
+def test_render_markdown_includes_block_quality_section() -> None:
+    payload = {
+        "generated_at": "2026-05-24T00:00:00+00:00",
+        "db_path": "data/brand3.sqlite3",
+        "run_count": 1,
+        "summary": {
+            "value_proposition_confidence": {"high": 1},
+            "mission_confidence": {"low": 1},
+            "vision_confidence": {"medium": 1},
+            "block_quality": {
+                "value_proposition": {"strong": 1},
+                "mission": {"missing": 1},
+                "vision": {"usable": 1},
+            },
+        },
+        "rows": [
+            {
+                "run_id": 9,
+                "brand": "Quality Brand",
+                "detected_layers": [],
+                "detected_block_count": 1,
+                "review_flags": [],
+                "value_proposition": "A clear offer.",
+                "value_proposition_confidence": "high",
+                "value_proposition_quality": "strong",
+                "value_proposition_quality_reasons": [],
+                "value_proposition_gaps": [],
+                "mission": "",
+                "mission_confidence": "low",
+                "mission_quality": "missing",
+                "mission_quality_reasons": ["no_answer"],
+                "mission_gaps": [],
+                "vision": "A future signal.",
+                "vision_confidence": "medium",
+                "vision_quality": "usable",
+                "vision_quality_reasons": ["human_review"],
+                "vision_gaps": [],
+                "evidence_packet": {},
+            }
+        ],
+    }
+
+    markdown = _render_markdown(payload)
+
+    assert "VP quality" in markdown
+    assert "## Block Quality Examples" in markdown
+    assert "usable (human_review)" in markdown

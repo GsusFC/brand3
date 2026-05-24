@@ -1,8 +1,9 @@
 """Executable TLDR Brand3 block interpreter specs.
 
-The specs define the exercise each migrated TLDR block must perform. Runtime
-logic still lives in ``extractor.py`` for now; this module keeps the method
-contract separate from scanner orchestration so specs can evolve independently.
+The specs define the exercise each migrated TLDR block must perform. This
+module owns candidate selection, evidence acceptance, and block-level metadata
+for migrated TLDR blocks while the extractor remains responsible for scanner
+orchestration.
 """
 
 from __future__ import annotations

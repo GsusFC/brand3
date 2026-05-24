@@ -18,6 +18,7 @@ from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     accepted_block_evidence,
+    block_evidence_candidates,
     interpret_tldr_block,
     strategic_packet_candidate_priority,
     strategic_packet_candidates,
@@ -822,7 +823,13 @@ Return exactly this JSON shape:
         strategic_packet: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-        candidates = self._select_block_evidence_candidates(spec, layers, strategic_packet, key)
+        candidates = block_evidence_candidates(
+            key,
+            spec,
+            layers,
+            strategic_packet,
+            TLDR_TO_LAYER[key],
+        )
         return interpret_tldr_block(
             key,
             spec,
@@ -830,34 +837,6 @@ Return exactly this JSON shape:
             layers,
             TLDR_TO_LAYER[key],
         )
-
-    def _select_block_evidence_candidates(
-        self,
-        spec: dict[str, Any],
-        layers: dict[str, Any],
-        strategic_packet: dict[str, Any] | None = None,
-        key: str | None = None,
-    ) -> list[dict[str, str]]:
-        candidates: list[dict[str, str]] = []
-        seen: set[str] = set()
-        if strategic_packet and key:
-            return strategic_packet_candidates(
-                key,
-                spec,
-                strategic_packet,
-                str(TLDR_TO_LAYER.get(key, "netspace")),
-            )
-        for layer_key in spec["source_layers"]:
-            layer = layers.get(layer_key) or {}
-            for source in ("evidence", "finding"):
-                value = layer.get(source)
-                for sentence in self._sentences("\n".join(self._evidence_list(value))):
-                    cleaned = self._clean_evidence_phrase(sentence)
-                    if not cleaned or cleaned in seen or self._is_navigation_noise(cleaned):
-                        continue
-                    seen.add(cleaned)
-                    candidates.append({"text": cleaned, "layer": layer_key, "source": source})
-        return candidates
 
     @staticmethod
     def _has_operating_activity_signal(text: str) -> bool:

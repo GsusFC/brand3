@@ -1,0 +1,609 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:56:43.007858",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.harvey.ai",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "ai native",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 154,
+    "video_count": 4
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Harvey",
+  "calibration": {
+    "expected_category": "ai_native",
+    "notes": "Vertical AI SaaS with premium enterprise positioning."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#33312c",
+      "#ffffff",
+      "#437d88",
+      "#0052b4",
+      "#d80027",
+      "#ffda44"
+    ],
+    "background_candidates": [
+      "#33312c",
+      "#ffffff",
+      "#181714",
+      "#437d88",
+      "#eeeeee",
+      "#0052b4"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#33312c",
+      "#ffffff",
+      "#181714",
+      "#437d88",
+      "#eeeeee",
+      "#0052b4",
+      "#d80027",
+      "#ffda44"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#33312c",
+        "occurrences": 58,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 58,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#181714",
+        "occurrences": 18,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#437d88",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#eeeeee",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#0052b4",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#d80027",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffda44",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1f1d1a",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#333333",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#6e7879",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#122124",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e6e6e6",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#252420",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#33312c",
+      "#181714",
+      "#437d88",
+      "#0052b4",
+      "#d80027",
+      "#1f1d1a"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 44,
+        "labels": [
+          "Platform",
+          "Solutions",
+          "Resources",
+          "About",
+          "Login"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 35,
+        "labels": [
+          "Platform",
+          "Overview A unified view of how Harvey's products work together to support your e",
+          "Assistant Ask questions, analyze documents, and draft faster with domain-specifi",
+          "Vault Securely store, organize, and bulk-analyze legal documents.",
+          "Knowledge Research complex legal, regulatory, and tax questions across domains.",
+          "Workflow Agents Run pre-built Workflow agents or build your own, tailored to you",
+          "Harvey Mobile Get up to speed, capture new information, and keep work moving fro",
+          "Ecosystem Access Harvey where you already work and ground every answer in source",
+          "Solutions",
+          "Innovation Scale expertise and impact to drive firmwide transformation."
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "accordion",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Platform",
+      "Overview A unified view of how Harvey's products work together to support your e",
+      "Assistant Ask questions, analyze documents, and draft faster with domain-specifi",
+      "Vault Securely store, organize, and bulk-analyze legal documents.",
+      "Knowledge Research complex legal, regulatory, and tax questions across domains.",
+      "Workflow Agents Run pre-built Workflow agents or build your own, tailored to you",
+      "Harvey Mobile Get up to speed, capture new information, and keep work moving fro",
+      "Ecosystem Access Harvey where you already work and ground every answer in source"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.68,
+    "confidence": 0.568,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.514,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.568,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.562
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.669
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 14,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Bridgewater logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.sanity.io/images/07s0r5r6/production/85562a0494a1a7de8c434a376fc841ee0a03dd6d-364x200.svg"
+      },
+      {
+        "alt": "KKR logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.sanity.io/images/07s0r5r6/production/475bbc2a0f74530ca928cb7509c910ed6fb06c43-162x200.svg"
+      },
+      {
+        "alt": "Mintz - light logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.sanity.io/images/07s0r5r6/production/20f8192fe02b0bf6c136666d7784f032ca35c2da-119x200.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.388,
+      "composition_classification": "dense_grid",
+      "confidence": 0.833,
+      "edge_density": 0.045,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.052
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 685677,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.harvey.ai",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/harvey.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 77,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#000000",
+          "occurrences": 10345,
+          "ratio": 0.5172
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1918,
+          "ratio": 0.0959
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1592,
+          "ratio": 0.0796
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 1347,
+          "ratio": 0.0673
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1039,
+          "ratio": 0.052
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 890,
+          "ratio": 0.0445
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 456,
+          "ratio": 0.0228
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 453,
+          "ratio": 0.0226
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.388,
+      "composition_classification": "dense_grid",
+      "confidence": 0.833,
+      "edge_density": 0.045,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.052
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.833,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.88
+    },
+    "viewport_palette": {
+      "color_count": 77,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#000000",
+          "occurrences": 10345,
+          "ratio": 0.5172
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1918,
+          "ratio": 0.0959
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1592,
+          "ratio": 0.0796
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 1347,
+          "ratio": 0.0673
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1039,
+          "ratio": 0.052
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 890,
+          "ratio": 0.0445
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 456,
+          "ratio": 0.0228
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 453,
+          "ratio": 0.0226
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.052,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.833,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.88
+    }
+  },
+  "website_url": "https://www.harvey.ai"
+}

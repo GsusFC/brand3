@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-05-14",
+  "scope": "planning_only",
+  "goal": "reduce score_first_and_duplicated_narrative_without_changing_scoring_logic_or_rubric_dimensions",
+  "repetition_remaining": [
+    "current reading tab renders legacy_summary",
+    "synthesis tab renders synthesis_prose",
+    "fallback synthesis still repeats strongest / weakest / data quality",
+    "score hero and prose sections remain visually close enough to bleed together"
+  ],
+  "sources_of_repetition": [
+    {
+      "file": "src/reports/derivation.py",
+      "issue": "legacy_summary, summary, and synthesis_prose are populated from the same narrative source"
+    },
+    {
+      "file": "src/reports/derivation.py",
+      "issue": "deterministic fallback synthesis still emits strongest / weakest / data quality wording"
+    },
+    {
+      "file": "src/reports/templates/report.html.j2",
+      "issue": "current reading and synthesis are rendered as two separate narrative blocks"
+    }
+  ],
+  "proposed_changes": [
+    {
+      "name": "current_reading_becomes_metadata_first",
+      "risk": "low",
+      "impact": "reduces duplicate prose and lowers score_led pressure",
+      "description": "Keep the tab, but compress it into a compact diagnostic summary focused on readiness, data quality, and evidence coverage."
+    },
+    {
+      "name": "single_narrative_lead",
+      "risk": "medium",
+      "impact": "improves hierarchy and removes duplicated editorial authority",
+      "description": "Render only one full-length narrative lead and convert the other block into a short contextual lead or pointer."
+    },
+    {
+      "name": "fallback_synthesis_reframed",
+      "risk": "medium",
+      "impact": "reduces score-shaped prose in visible narrative sections",
+      "description": "Keep deterministic fallback behavior, but move strongest / weakest / data quality wording out of the main narrative position."
+    },
+    {
+      "name": "hero_and_prose_separation",
+      "risk": "medium",
+      "impact": "makes the score hero read like metadata, not the narrative lead",
+      "description": "Visually separate score metadata from the narrative blocks so the page hierarchy is less score-first."
+    }
+  ],
+  "expected_voice_impact": [
+    "less repetitive",
+    "less score_first",
+    "more diagnostic",
+    "more editorial",
+    "clearer separation between metadata and interpretation"
+  ],
+  "tests_needed": [
+    "tests/test_reports_renderer.py",
+    "tests/test_reports_snapshot.py",
+    "tests/test_reports_dossier.py",
+    "tests/test_reports_derivation.py"
+  ],
+  "rollback_plan": [
+    "restore the prior current reading and synthesis split",
+    "restore the prior fallback synthesis wording",
+    "keep the prompt refinements in place",
+    "compare snapshots before trying further hierarchy changes"
+  ],
+  "staged_order": [
+    "compress current reading into metadata-first summary",
+    "reduce duplication between current reading and synthesis",
+    "reframe fallback synthesis away from score-shaped prose",
+    "rebalance the score hero versus the narrative blocks",
+    "update snapshots after the hierarchy stabilizes"
+  ]
+}

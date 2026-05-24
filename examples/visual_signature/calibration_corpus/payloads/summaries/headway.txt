@@ -1,0 +1,40 @@
+Expected category: consumer_app
+Notes: Consumer subscription app with common mobile-app landing patterns.
+
+== Headway ==
+URL: https://makeheadway.com
+Interpretation status: interpretable
+Extraction confidence: 0.71 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.63, consistency_coverage=0.67]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.67
+
+Visual summaries:
+- palette preview: #8d33ff[###] #ff8833[###] #ffffff[###] #212121[###] #1863dc[###] #958b86[###] #f4f4f4[###] #000000[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=30; density=dense; patterns=flex,multi_column
+- components: button=80, cta=32, form=10, card=14, accordion=112, pricing=14
+- consistency: overall=0.46; color=0.48; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #c0c0c0[###] #ffffff[###] #202020[###] #a0a0a0[###] #0060ff[###] #808080[###] #c0e0ff[###] #606060[###]
+- viewport palette: #c0c0c0[###] #ffffff[###] #202020[###] #a0a0a0[###] #0060ff[###] #808080[###] #c0e0ff[###] #606060[###]
+- composition: density=dense; whitespace=8%; classification=dense_grid
+- viewport composition: density=dense; whitespace=8%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

@@ -1,0 +1,588 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:32:15.537706",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.smartsheet.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 482,
+    "video_count": 36
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Smartsheet",
+  "calibration": {
+    "expected_category": "template_like_saas",
+    "notes": "Enterprise SaaS with conventional sectioning and feature density."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#000f33",
+      "#ff0000",
+      "#0244d1",
+      "#ad911a",
+      "#265ecf",
+      "#4c53e3"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#000f33",
+      "#000000",
+      "#f4f5f9",
+      "#2a2930",
+      "#0244d1"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#000f33",
+      "#ff0000",
+      "#000000",
+      "#dee0e3",
+      "#f4f5f9",
+      "#2a2930",
+      "#0244d1"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 90,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000f33",
+        "occurrences": 58,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ff0000",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#dee0e3",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#f4f5f9",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#2a2930",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#0244d1",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#e1e3e8",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f5f6fa",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ad911a",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#265ecf",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4c53e3",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#7247f7",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#212536",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#333333",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ddbeff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#7416e2",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#485373",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1e4774",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#000f33",
+      "#000000",
+      "#2a2930",
+      "#0244d1",
+      "#265ecf",
+      "#4c53e3"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 96,
+        "labels": [
+          "\ue961",
+          "AI",
+          "Projects and portfolios",
+          "Digital and IT",
+          "Operations",
+          "Client delivery",
+          "Show previous slide",
+          "Show next slide",
+          "Reload"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 12,
+        "labels": [
+          "Skip to main content",
+          "Watch a demo",
+          "Try Smartsheet for free",
+          "Learn more",
+          "Learn why",
+          "Find out how",
+          "Learn how",
+          "Read the report",
+          "Show previous slide",
+          "Show next slide"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 110,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Skip to main content",
+      "Watch a demo",
+      "Try Smartsheet for free",
+      "Learn more",
+      "Learn why",
+      "Find out how",
+      "Learn how",
+      "Read the report"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.7,
+    "confidence": 0.67,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.614,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.67,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.63
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.709
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 46,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "adobe_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/adobe_logo.svg"
+      },
+      {
+        "alt": "aws_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/aws_logo.svg"
+      },
+      {
+        "alt": "box_logo_space.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/box_logo_space.svg"
+      },
+      {
+        "alt": "docusign_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/docusign_logo.svg"
+      },
+      {
+        "alt": "dropbox_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/dropbox_logo.svg"
+      },
+      {
+        "alt": "google_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/google_logo.svg"
+      },
+      {
+        "alt": "powerbi_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/powerbi_logo.svg"
+      },
+      {
+        "alt": "sap_logo.svg logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.smartsheet.com/sites/default/files/2025-09/sap_logo.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.55,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 2,
+        "role": "ui",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.315,
+      "composition_classification": "dense_grid",
+      "confidence": 0.789,
+      "edge_density": 0.05,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.222
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 317924,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.smartsheet.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/smartsheet.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 80,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#2040c0",
+          "occurrences": 5102,
+          "ratio": 0.2551
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4459,
+          "ratio": 0.223
+        },
+        {
+          "hex": "#4040e0",
+          "occurrences": 1081,
+          "ratio": 0.0541
+        },
+        {
+          "hex": "#c0c0ff",
+          "occurrences": 831,
+          "ratio": 0.0415
+        },
+        {
+          "hex": "#8060e0",
+          "occurrences": 824,
+          "ratio": 0.0412
+        },
+        {
+          "hex": "#6040e0",
+          "occurrences": 790,
+          "ratio": 0.0395
+        },
+        {
+          "hex": "#8080a0",
+          "occurrences": 758,
+          "ratio": 0.0379
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 723,
+          "ratio": 0.0362
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.315,
+      "composition_classification": "dense_grid",
+      "confidence": 0.789,
+      "edge_density": 0.05,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.222
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.789,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.867
+    },
+    "viewport_palette": {
+      "color_count": 80,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#2040c0",
+          "occurrences": 5102,
+          "ratio": 0.2551
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4459,
+          "ratio": 0.223
+        },
+        {
+          "hex": "#4040e0",
+          "occurrences": 1081,
+          "ratio": 0.0541
+        },
+        {
+          "hex": "#c0c0ff",
+          "occurrences": 831,
+          "ratio": 0.0415
+        },
+        {
+          "hex": "#8060e0",
+          "occurrences": 824,
+          "ratio": 0.0412
+        },
+        {
+          "hex": "#6040e0",
+          "occurrences": 790,
+          "ratio": 0.0395
+        },
+        {
+          "hex": "#8080a0",
+          "occurrences": 758,
+          "ratio": 0.0379
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 723,
+          "ratio": 0.0362
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.222,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.789,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.867
+    }
+  },
+  "website_url": "https://www.smartsheet.com"
+}

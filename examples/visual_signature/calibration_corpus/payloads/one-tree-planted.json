@@ -1,0 +1,544 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:27:54.349234",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://onetreeplanted.org",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 8,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 98,
+    "video_count": 4
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "One Tree Planted",
+  "calibration": {
+    "expected_category": "nonprofit_education",
+    "notes": "Nonprofit with ecommerce-like donation and campaign visuals."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#d54d4d",
+      "#131c0f",
+      "#487840"
+    ],
+    "background_candidates": [
+      "#1b1d22",
+      "#ffffff",
+      "#eeece9",
+      "#d54d4d",
+      "#000000",
+      "#e5e1df"
+    ],
+    "confidence": 0.794,
+    "dominant_colors": [
+      "#1b1d22",
+      "#ffffff",
+      "#eeece9",
+      "#d54d4d",
+      "#000000",
+      "#e5e1df",
+      "#131c0f",
+      "#487840"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#1b1d22",
+        "occurrences": 136,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 16,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#eeece9",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#d54d4d",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#000000",
+        "occurrences": 6,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#e5e1df",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#131c0f",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#487840",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#1b1d22",
+      "#d54d4d",
+      "#000000",
+      "#131c0f",
+      "#487840"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 30,
+        "labels": [
+          "\u00d7",
+          "Individuals",
+          "Businesses",
+          "Reload",
+          "Checkout",
+          "Close dialog",
+          "SIGN UP FOR EMAILS"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 19,
+        "labels": [
+          "Individual",
+          "Corporate",
+          "Gift trees today",
+          "Learn More",
+          "\u00d7",
+          "Read the announcement",
+          "Individuals",
+          "Businesses",
+          "Learn more",
+          "Reload"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 24,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 28,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Individual",
+      "Corporate",
+      "Gift trees today",
+      "Learn More",
+      "\u00d7",
+      "Read the announcement",
+      "Individuals",
+      "Businesses"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.72,
+    "confidence": 0.743,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.636,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.743,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.654
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.728
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 58,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "One Tree Planted",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://onetreeplanted.org/cdn/shop/files/one-tree-planted-logo-white_4fbd5665-5044-4f0f-a45c-07d3ca01c374_410x.svg?v=1679319028"
+      },
+      {
+        "alt": "Coldplay",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://onetreeplanted.org/cdn/shop/files/Coldplay--white-logo_2x_ec9f3c2f-0aab-44bc-9259-13bc4d9b01f5_300x.png?v=1738151225"
+      },
+      {
+        "alt": "FedEx",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://onetreeplanted.org/cdn/shop/files/fedex--white-logo_300x.png?v=1758726994"
+      },
+      {
+        "alt": "Cotton On Foundation",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://onetreeplanted.org/cdn/shop/files/Cotton_on_Foundation--white-logo_300x.png?v=1758726993"
+      },
+      {
+        "alt": "Volvo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://onetreeplanted.org/cdn/shop/files/volvo--white-logo_300x.png?v=1758727149"
+      },
+      {
+        "alt": "Brand logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://onetreeplanted.org/cdn/shop/files/lOccitane--white-logo_300x.png?v=1758727150"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Arial",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "Roboto",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "Helvetica",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 2,
+        "role": "body",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "Roboto Condensed",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      13.0,
+      14.0,
+      16.0,
+      14.0,
+      28.0,
+      14.0,
+      16.0,
+      14.0,
+      12.0,
+      13.0,
+      14.0,
+      16.0,
+      14.0,
+      28.0,
+      14.0,
+      16.0,
+      14.0,
+      12.0
+    ],
+    "weight_range": {
+      "max": 700,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.938,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.182,
+      "composition_classification": "dense_grid",
+      "confidence": 0.709,
+      "edge_density": 0.094,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.038
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 1540622,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://onetreeplanted.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/one-tree-planted.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 132,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 5657,
+          "ratio": 0.2828
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 1278,
+          "ratio": 0.0639
+        },
+        {
+          "hex": "#204020",
+          "occurrences": 930,
+          "ratio": 0.0465
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 826,
+          "ratio": 0.0413
+        },
+        {
+          "hex": "#800060",
+          "occurrences": 772,
+          "ratio": 0.0386
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 755,
+          "ratio": 0.0377
+        },
+        {
+          "hex": "#406020",
+          "occurrences": 736,
+          "ratio": 0.0368
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 659,
+          "ratio": 0.033
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.182,
+      "composition_classification": "dense_grid",
+      "confidence": 0.709,
+      "edge_density": 0.094,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.038
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.709,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.843
+    },
+    "viewport_palette": {
+      "color_count": 132,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 5657,
+          "ratio": 0.2828
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 1278,
+          "ratio": 0.0639
+        },
+        {
+          "hex": "#204020",
+          "occurrences": 930,
+          "ratio": 0.0465
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 826,
+          "ratio": 0.0413
+        },
+        {
+          "hex": "#800060",
+          "occurrences": 772,
+          "ratio": 0.0386
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 755,
+          "ratio": 0.0377
+        },
+        {
+          "hex": "#406020",
+          "occurrences": 736,
+          "ratio": 0.0368
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 659,
+          "ratio": 0.033
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.038,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.709,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.843
+    }
+  },
+  "website_url": "https://onetreeplanted.org"
+}

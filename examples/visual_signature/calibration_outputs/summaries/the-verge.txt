@@ -1,0 +1,27 @@
+Expected category: editorial/media
+Notes: High-density media layout with strong typography and recurring editorial modules.
+
+== The Verge ==
+URL: https://www.theverge.com
+Interpretation status: interpretable
+Extraction confidence: 0.76 (high) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.72, consistency_coverage=0.77]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.77
+
+Visual summaries:
+- palette preview: #f4f4f4[###] #ffffff[###] #000000[###] #3897f0[###] #dbdbdb[###] #eaeaea[###] #ff0033[###] #656565[###]
+- typography: Arial
+- layout: header=True; nav=True; hero=True; sections=50; density=dense; patterns=flex,multi_column,sticky_nav
+- components: button=214, cta=58, form=26, card=256, accordion=32, tabs=44, modal=22, pricing=22
+- consistency: overall=0.69; color=0.68; type=0.82; component=0.75; asset=0.45
+
+Weak or missing signals:
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

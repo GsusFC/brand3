@@ -1,0 +1,465 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:59:03.374440",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://render.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 1496,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Render",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Infrastructure platform with practical developer-facing page structure."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#8a05ff",
+      "#f239ff",
+      "#006d4c",
+      "#9d66ff"
+    ],
+    "background_candidates": [
+      "#000000",
+      "#e7fed4",
+      "#0d0d0d",
+      "#373145",
+      "#ffffff",
+      "#006d4c"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#e6daff",
+      "#8a05ff",
+      "#000000",
+      "#e7fed4",
+      "#e2e2e2",
+      "#858585",
+      "#0d0d0d",
+      "#373145"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#e6daff",
+        "occurrences": 72,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#8a05ff",
+        "occurrences": 62,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 42,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e7fed4",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e2e2e2",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#858585",
+        "occurrences": 28,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0d0d0d",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#373145",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#f239ff",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#ffffff",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#006d4c",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#4d4d4d",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#9d66ff",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fbceff",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4c4c4c",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f6f6f6",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#141414",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#8a05ff",
+      "#000000",
+      "#0d0d0d",
+      "#373145",
+      "#006d4c",
+      "#4d4d4d"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Start for free",
+          "Get in touch",
+          "View Templates",
+          "Trust center",
+          "HIPAA on Render",
+          "Deploy your app for free"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.58,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "Start for free",
+      "Get in touch",
+      "View Templates",
+      "Trust center",
+      "HIPAA on Render",
+      "Deploy your app for free"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.66,
+    "confidence": 0.505,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.449,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.505,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.462
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.625
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 4,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "dom_density_higher_than_viewport",
+        "dom_density_disagrees_with_viewport_first_fold"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "DOM suggests a denser page than the viewport first impression.",
+        "DOM suggests a denser page, but the viewport reads as spacious."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.947
+    },
+    "composition": {
+      "color_variance": 0.219,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.731,
+      "edge_density": 0.041,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.885
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 108233,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://render.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/render.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 50,
+      "confidence": 0.823,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 17606,
+          "ratio": 0.8803
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 618,
+          "ratio": 0.0309
+        },
+        {
+          "hex": "#200040",
+          "occurrences": 420,
+          "ratio": 0.021
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 201,
+          "ratio": 0.01
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 181,
+          "ratio": 0.0091
+        },
+        {
+          "hex": "#8000ff",
+          "occurrences": 157,
+          "ratio": 0.0078
+        },
+        {
+          "hex": "#804060",
+          "occurrences": 63,
+          "ratio": 0.0032
+        },
+        {
+          "hex": "#a06060",
+          "occurrences": 63,
+          "ratio": 0.0032
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.219,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.731,
+      "edge_density": 0.041,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.885
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.731,
+        "palette": 0.823,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.83
+    },
+    "viewport_palette": {
+      "color_count": 50,
+      "confidence": 0.823,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 17606,
+          "ratio": 0.8803
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 618,
+          "ratio": 0.0309
+        },
+        {
+          "hex": "#200040",
+          "occurrences": 420,
+          "ratio": 0.021
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 201,
+          "ratio": 0.01
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 181,
+          "ratio": 0.0091
+        },
+        {
+          "hex": "#8000ff",
+          "occurrences": 157,
+          "ratio": 0.0078
+        },
+        {
+          "hex": "#804060",
+          "occurrences": 63,
+          "ratio": 0.0032
+        },
+        {
+          "hex": "#a06060",
+          "occurrences": 63,
+          "ratio": 0.0032
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.885,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.731,
+        "palette": 0.823,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.83
+    }
+  },
+  "website_url": "https://render.com"
+}

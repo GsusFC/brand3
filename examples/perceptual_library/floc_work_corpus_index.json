@@ -1,0 +1,515 @@
+{
+  "corpus_id": "floc_public_work_perceptual_corpus",
+  "created_at": "2026-05-15",
+  "source": {
+    "type": "public_website",
+    "url": "https://wearefloc.com/work",
+    "method": "shallow_public_index",
+    "notes": [
+      "The public Work page text shows All Work [21], but the current public Framer search index exposes 24 /work/... case routes.",
+      "This file indexes public case routes and public descriptions only.",
+      "No private Notion source was used.",
+      "No deep case scraping was performed."
+    ]
+  },
+  "guardrails": {
+    "public_website_only": true,
+    "notion_used": false,
+    "runtime_integration": false,
+    "scoring": false,
+    "prompt_changes": false,
+    "report_changes": false,
+    "visual_signature_changes": false,
+    "ingestion_pipeline": false
+  },
+  "global_visible_tags": [
+    "strategy",
+    "branding",
+    "product design",
+    "Motion"
+  ],
+  "case_count": 24,
+  "cases": [
+    {
+      "project_name": "Charms",
+      "public_url": "https://wearefloc.com/work/charms",
+      "short_public_description": "A focused collaborative design sprint, spanning brand strategy to visual foundations, this project shows how AI, emotion, and play can shape a living universe.",
+      "visible_service_tags": [
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Soft digital worldbuilding, emotional play language, premium/playful tension, ritualized surface behavior.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Alchemain",
+      "public_url": "https://wearefloc.com/work/alchemain",
+      "short_public_description": "Core narrative translated into a complete brand and Framer landing website through a focused 3 + 2 week sprint combo.",
+      "visible_service_tags": [
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Sprint-to-launch surface, developer/product clarity, narrative compression, landing-page translation.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Meta4",
+      "public_url": "https://wearefloc.com/work/meta4",
+      "short_public_description": "Starter Kit to translate vision into a cohesive brand and digital presence for a conviction-led crypto investment pioneer.",
+      "visible_service_tags": [
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Crypto-investment authority, frontier finance tone, conviction-led editorial posture.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Aniwa",
+      "public_url": "https://wearefloc.com/work/aniwa",
+      "short_public_description": "Naming, branding, and ongoing product guardianship--designed to secure and evolve a digital venture.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Naming",
+        "Brand Identity",
+        "UX/UI",
+        "Product Guardian"
+      ],
+      "expected_perceptual_relevance": "Insurance/product trust language, naming system, product guardianship and long-term identity behavior.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Degen",
+      "public_url": "https://wearefloc.com/work/degen",
+      "short_public_description": "The legendary Top Hat logo continues to evolve its branding constantly with the community.",
+      "visible_service_tags": [
+        "Brand Identity",
+        "UX/UI",
+        "NFT Collection",
+        "Merchan Design"
+      ],
+      "expected_perceptual_relevance": "Meme culture, community-owned symbols, merchandise translation, playful/commodity tension.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "BUILD",
+      "public_url": "https://wearefloc.com/work/build",
+      "short_public_description": "The new open visual system based on error and repetition born to BUILD.",
+      "visible_service_tags": [
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "Error, repetition, retro computing, public-good builder culture, system behavior under deliberate imperfection.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "PAID",
+      "public_url": "https://wearefloc.com/work/paid",
+      "short_public_description": "Brand and platform redesign to early-access to most sought token launch.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI",
+        "Design System"
+      ],
+      "expected_perceptual_relevance": "Financial aspiration, access mechanics, platform surface, premium versus mass participation.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "VIPE",
+      "public_url": "https://wearefloc.com/work/vipe",
+      "short_public_description": "Branding and UX/UI for the pioneering marketplace for interoperable avatars.",
+      "visible_service_tags": [],
+      "expected_perceptual_relevance": "Avatar identity, marketplace behavior, interoperable self-expression, 3D/digital body cues.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Node Terminal",
+      "public_url": "https://wearefloc.com/work/node-terminal",
+      "short_public_description": "Inspired by good design to connect an identity and useful evolutionary landing.",
+      "visible_service_tags": [
+        "Brand Identity",
+        "UX/UI",
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Node investment, technical finance surface, utility-facing landing behavior.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Metacartel Ventures",
+      "public_url": "https://wearefloc.com/work/metacartel-ventures",
+      "short_public_description": "Building a powerful Brand3 for crypto investment leaders.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI",
+        "NFT Collection",
+        "Merchan Design",
+        "Motion"
+      ],
+      "expected_perceptual_relevance": "DAO mythology, investment-leader identity, collectible and merchandise extensions.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Onvote",
+      "public_url": "https://wearefloc.com/work/onvote",
+      "short_public_description": "Design sprint to create the branding of the modular voting system for web3.",
+      "visible_service_tags": [
+        "UX/UI",
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Modular voting, anonymous/gasless trust cues, civic-tech interface language.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Nektar Network",
+      "public_url": "https://wearefloc.com/work/nektar-network",
+      "short_public_description": "Design Sprint to create the alternative in Ethereum restaking.",
+      "visible_service_tags": [
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "Liquid/hive metaphors, restaking abstraction, community flow language.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Eigen Layer",
+      "public_url": "https://wearefloc.com/work/eigen-layer",
+      "short_public_description": "Conceptualization, design and interaction for one of the most awaited Airdrops.",
+      "visible_service_tags": [
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Airdrop choreography, builder process, phased interaction, claim ritual.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "D4DATA",
+      "public_url": "https://wearefloc.com/work/d4data",
+      "short_public_description": "Crafting a brand and website inspired by the movement and strength of Kendo.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI",
+        "Motion"
+      ],
+      "expected_perceptual_relevance": "Kendo discipline, data economy, motion intensity, strategic path metaphor.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Cocobay",
+      "public_url": "https://wearefloc.com/work/cocobay",
+      "short_public_description": "Brand built in public and PFP Collection for a Socialverse.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "Socialverse, PFP identity, inner-world expression, playful co-creation.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Vocdoni",
+      "public_url": "https://wearefloc.com/work/vocdoni",
+      "short_public_description": "Transformative Brand Identity & UX/UI for the future of digital voting.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "Voting immediacy, transparency/security cues, public-interest product language.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "ATH21",
+      "public_url": "https://wearefloc.com/work/ath21",
+      "short_public_description": "Rebranding, UI design & web development for Web3 law firms. Legal by Design.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "Legal/Web3 tension, chess-derived strategic surface, professional/human balance.",
+      "suggested_extraction_priority": "first_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": false
+      }
+    },
+    {
+      "project_name": "MetaMask",
+      "public_url": "https://wearefloc.com/work/metamask",
+      "short_public_description": "Customised swag collection for DevCon and ETH events.",
+      "visible_service_tags": [
+        "Merchan Design"
+      ],
+      "expected_perceptual_relevance": "Brand physicalization, event culture, apparel, web-culture artifact behavior.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": false,
+        "motion_interaction_language": false
+      }
+    },
+    {
+      "project_name": "Tutellus",
+      "public_url": "https://wearefloc.com/work/tutellus",
+      "short_public_description": "Rebranding and microsite: the collaborative adventure experience.",
+      "visible_service_tags": [
+        "Brand Strategy",
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "Learning/community evolution, adventure framing, microsite narrative.",
+      "suggested_extraction_priority": "later_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Troops",
+      "public_url": "https://wearefloc.com/work/troops",
+      "short_public_description": "Branding and landing for a multi-purpose onchain community environment.",
+      "visible_service_tags": [
+        "Brand Identity",
+        "UX/UI",
+        "Design Sprint"
+      ],
+      "expected_perceptual_relevance": "Shared-account behavior, collective identity, group utility made approachable.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "Grandvalira Resorts",
+      "public_url": "https://wearefloc.com/work/grandvalira-resorts",
+      "short_public_description": "The Design System for guiding the three ski resorts.",
+      "visible_service_tags": [
+        "UX/UI",
+        "Design System"
+      ],
+      "expected_perceptual_relevance": "Multi-brand design system, resort ecosystem navigation, institutional/product coherence.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": false
+      }
+    },
+    {
+      "project_name": "Wonderland",
+      "public_url": "https://wearefloc.com/work/wonderland",
+      "short_public_description": "Redesign and motion illustrations for a DeFi builders.",
+      "visible_service_tags": [
+        "Brand Identity"
+      ],
+      "expected_perceptual_relevance": "DeFi builder culture, inner feeling/process language, motion illustration cues.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    },
+    {
+      "project_name": "BYN",
+      "public_url": "https://wearefloc.com/work/byn",
+      "short_public_description": "Community as a service from the inspiration of a legendary brand.",
+      "visible_service_tags": [],
+      "expected_perceptual_relevance": "Cultural archive, heritage publication, digital art visibility, old media versus Web3 community.",
+      "suggested_extraction_priority": "later_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": false
+      }
+    },
+    {
+      "project_name": "TripTick",
+      "public_url": "https://wearefloc.com/work/triptick",
+      "short_public_description": "Identity and UX/UI MVP guided by the AI traveltech assistant.",
+      "visible_service_tags": [
+        "Brand Identity",
+        "UX/UI"
+      ],
+      "expected_perceptual_relevance": "AI travel assistant, discovery interface, destination rhythm, product guidance language.",
+      "suggested_extraction_priority": "second_pass",
+      "suitable_for": {
+        "surface_behavior": true,
+        "tension_pattern": true,
+        "premium_commodity_signal": true,
+        "editorial_tone": true,
+        "product_ux_language": true,
+        "motion_interaction_language": true
+      }
+    }
+  ],
+  "suggested_first_extraction_set": [
+    "Charms",
+    "BUILD",
+    "Degen",
+    "Eigen Layer",
+    "ATH21",
+    "D4DATA",
+    "Meta4",
+    "Alchemain",
+    "Aniwa",
+    "PAID"
+  ],
+  "local_case_artifacts": [
+    {
+      "project_name": "Charms",
+      "path": "examples/perceptual_library/cases/charms/"
+    }
+  ]
+}

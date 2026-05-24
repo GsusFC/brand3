@@ -1,0 +1,42 @@
+Expected category: consumer_app
+Notes: Consumer/community app with expressive illustration and CTA flows.
+
+== Discord ==
+URL: https://discord.com
+Interpretation status: interpretable
+Extraction confidence: 0.62 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.48, consistency_coverage=0.44]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.52
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.67
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.44
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #e5ce5f[###]
+- typography: none
+- layout: header=False; nav=True; hero=True; sections=6; density=balanced; patterns=grid,flex
+- components: cta=4, accordion=10
+- consistency: overall=0.53; color=0.78; type=0.20; component=0.64; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202080[###] #000040[###] #ffffff[###] #000020[###] #202020[###] #202060[###] #2020a0[###] #000000[###]
+- viewport palette: #202080[###] #000040[###] #ffffff[###] #000020[###] #202020[###] #202060[###] #2020a0[###] #000000[###]
+- composition: density=dense; whitespace=15%; classification=dense_grid
+- viewport composition: density=dense; whitespace=15%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- consistency: weak confidence (0.44)
+- extraction limitation: screenshot_not_available
+- extraction limitation: consistency_inference_limited

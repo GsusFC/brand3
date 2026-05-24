@@ -1,0 +1,367 @@
+{
+  "created_at": "2026-05-18T11:40:39.493049+00:00",
+  "executed": true,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "created_at": "2026-05-18T11:40:51.681639+00:00",
+      "group_id": "group_a",
+      "case_id": "lightmatter",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Closest measured competitor positioning distance",
+            "evidence_anchor": "QuiX Quantum as the audited brand's closest measured competitor with measured distance 0.815",
+            "observation": "Out of 5 competitors analyzed, QuiX Quantum has the closest measured positioning distance to the audited brand at 0.815, compared to an average distance of 0.883.",
+            "bounded_interpretation": "The audited brand's positioning is most similar to QuiX Quantum among the measured set, indicating a narrower relative positioning distance.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "Most different competitor positioning distance",
+            "evidence_anchor": "Anyon Systems Inc. as the audited brand's most different measured competitor with measured distance 0.959",
+            "observation": "Out of 5 competitors analyzed, Anyon Systems Inc. has the most different measured positioning distance from the audited brand at 0.959, compared to an average distance of 0.883.",
+            "bounded_interpretation": "The audited brand's positioning diverges most from Anyon Systems Inc. within the measured set, indicating a wider relative positioning distance.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T11:41:01.325858+00:00",
+      "group_id": "group_a",
+      "case_id": "celestial_ai",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Measured positioning distance to Cooper",
+            "evidence_anchor": "Cooper as the audited brand's closest measured competitor with measured distance 0.842",
+            "observation": "A competitor comparison of 5 entities identifies Cooper as the closest measured competitor with a distance of 0.842, compared to an average distance of 0.913.",
+            "bounded_interpretation": "The audited brand's positioning is relatively closer to Cooper than to the other analyzed competitors.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "Measured positioning distance to Opinly",
+            "evidence_anchor": "Opinly as the audited brand's most different measured competitor with measured distance 0.958",
+            "observation": "A competitor comparison of 5 entities identifies Opinly as the most different measured competitor with a distance of 0.958, compared to an average distance of 0.913.",
+            "bounded_interpretation": "The audited brand's positioning is relatively further from Opinly than from the other analyzed competitors.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T11:41:10.019994+00:00",
+      "group_id": "group_b",
+      "case_id": "raycast",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "allowed_evidence_urls": [
+        "https://www.raycast.com/blog/hello-world"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Developer productivity positioning claim",
+            "evidence_anchor": "\"At Raycast, we make developers more productive.\" (https://www.raycast.com/blog/hello-world)",
+            "observation": "Raycast states on its blog that its focus is making developers more productive.",
+            "bounded_interpretation": "This indicates a self-directed positioning focused on developer productivity.",
+            "limits": "This evidence is a self-reported claim and does not prove actual productivity gains, external market perception, user adoption, or competitive advantage.",
+            "evidence_urls": [
+              "https://www.raycast.com/blog/hello-world"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T11:41:22.237077+00:00",
+      "group_id": "group_b",
+      "case_id": "retool",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "included_evidence_count": 3,
+      "allowed_evidence_urls": [
+        "https://retool.com/enterprise",
+        "https://retool.com/newsroom",
+        "https://retool.com/newsroom/retool-raises-50-million-led-by-sequoia"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Owned claims of customer scale",
+            "evidence_anchor": "\"tens of thousands of companies have come to rely on Retool\" and \"The world’s best companies use Retool Enterprise\"",
+            "observation": "Retool's owned web properties state that tens of thousands of companies rely on the platform and that top companies use Retool Enterprise.",
+            "bounded_interpretation": "Retool's self-published messaging projects a broad customer base and enterprise usage.",
+            "limits": "These are self-reported marketing claims lacking external corroboration in the provided evidence. They do not prove actual market share, traction, or verified adoption metrics.",
+            "evidence_urls": [
+              "https://retool.com/enterprise",
+              "https://retool.com/newsroom/retool-raises-50-million-led-by-sequoia"
+            ]
+          },
+          {
+            "title": "Positioning for non-developer users",
+            "evidence_anchor": "\"Retool’s New AI-Powered App Builder Lets Non-Developers Build Enterprise Apps\"",
+            "observation": "Retool's newsroom claims its AI-powered app builder enables non-developers to construct enterprise applications.",
+            "bounded_interpretation": "Retool's public relations materials position the platform's AI features as accessible to users without traditional development backgrounds.",
+            "limits": "Does not prove actual usability, successful adoption by non-developers, or the complexity of the applications that can be built.",
+            "evidence_urls": [
+              "https://retool.com/newsroom"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T11:41:36.236460+00:00",
+      "group_id": "group_b",
+      "case_id": "cron",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 3,
+      "allowed_evidence_urls": [
+        "http://cron.com/",
+        "https://cal.com/blog/what-is-cron",
+        "https://www.ycombinator.com/companies/cron"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Next-generation calendar positioning pattern",
+            "evidence_anchor": "\"Cron is the next-generation calendar for professionals and teams.\" (http://cron.com/)",
+            "observation": "Both the audited surface and the Y Combinator profile describe Cron using the exact phrase \"next-generation calendar\" targeted at \"professionals and teams.\"",
+            "bounded_interpretation": "The messaging consistently aligns around a specific target audience (professionals and teams) and a specific descriptor (next-generation calendar) across both internal and external profiles.",
+            "limits": "Does not prove actual adoption by professionals or teams, nor does it define the technical or functional criteria of a \"next-generation\" calendar.",
+            "evidence_urls": [
+              "http://cron.com/",
+              "https://www.ycombinator.com/companies/cron"
+            ]
+          },
+          {
+            "title": "Acquisition and productivity voting recognition",
+            "evidence_anchor": "\"Cron (acq. by Notion)\" and \"voted the number one productivity app\"",
+            "observation": "Third-party sources document that Cron was acquired by Notion and was voted as a top productivity application.",
+            "bounded_interpretation": "External documentation of the application includes its acquisition status and at least one instance of recognition in a productivity voting context.",
+            "limits": "Does not prove sustained category leadership, the scale or methodology of the voting body, or the current operational status of the application post-acquisition.",
+            "evidence_urls": [
+              "https://www.ycombinator.com/companies/cron",
+              "https://cal.com/blog/what-is-cron"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T11:41:46.077893+00:00",
+      "group_id": "group_c",
+      "case_id": "locomotive",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Nash identified as closest competitor",
+            "evidence_anchor": "Nash as the audited brand's closest measured competitor with measured distance 0.897; avg_distance=0.922",
+            "observation": "Among five analyzed competitors, Nash has the lowest measured positioning distance at 0.897, which is below the average distance of 0.922.",
+            "bounded_interpretation": "The audited brand's positioning is most similar to Nash within the measured competitor set.",
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "LoadBetter Inc. shows greatest distance",
+            "evidence_anchor": "LoadBetter Inc. as the audited brand's most different measured competitor with measured distance 0.961; avg_distance=0.922",
+            "observation": "Among five analyzed competitors, LoadBetter Inc. has the highest measured positioning distance at 0.961, which is above the average distance of 0.922.",
+            "bounded_interpretation": "The audited brand's positioning is most distinct from LoadBetter Inc. within the measured competitor set.",
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T11:41:55.675644+00:00",
+      "group_id": "group_c",
+      "case_id": "bakken_baeck",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Closest measured competitor positioning distance",
+            "evidence_anchor": "Montell & Partners as the audited brand's closest measured competitor with measured distance 0.812",
+            "observation": "Among 5 analyzed competitors, Montell & Partners has the lowest measured positioning distance at 0.812, compared to an average distance of 0.879.",
+            "bounded_interpretation": "The brand's positioning shares the most similarities with Montell & Partners within the measured set.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          },
+          {
+            "title": "Most different competitor positioning distance",
+            "evidence_anchor": "Swedish Consulting Group as the audited brand's most different measured competitor with measured distance 0.965",
+            "observation": "Among 5 analyzed competitors, Swedish Consulting Group has the highest measured positioning distance at 0.965, compared to an average distance of 0.879.",
+            "bounded_interpretation": "The brand's positioning diverges the most from Swedish Consulting Group within the measured set.",
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    }
+  ],
+  "skipped": [
+    {
+      "group_id": "group_a",
+      "case_id": "synthesia",
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "intent": "segmented_matrix_case",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "dogstudio",
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "intent": "segmented_matrix_case",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "controls",
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "controls",
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

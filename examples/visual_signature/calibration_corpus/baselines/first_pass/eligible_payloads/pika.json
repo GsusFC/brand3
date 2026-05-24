@@ -1,0 +1,391 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:56:19.107335",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://pika.art",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 14,
+    "video_count": 8
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Pika",
+  "calibration": {
+    "expected_category": "ai_native",
+    "notes": "AI video product with consumer creative visual style."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ffc107",
+      "#ff3d00",
+      "#4caf50",
+      "#1976d2",
+      "#4267b2",
+      "#5865f2"
+    ],
+    "background_candidates": [
+      "#0d0d0d",
+      "#ffffff"
+    ],
+    "confidence": 0.794,
+    "dominant_colors": [
+      "#0d0d0d",
+      "#ffffff",
+      "#ffc107",
+      "#ff3d00",
+      "#4caf50",
+      "#1976d2",
+      "#4267b2",
+      "#5865f2"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#0d0d0d",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffffff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffc107",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff3d00",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4caf50",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1976d2",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4267b2",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#5865f2",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#0d0d0d",
+      "#1976d2",
+      "#4267b2",
+      "#5865f2"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 12,
+        "labels": [
+          "Sign in with Google",
+          "Sign in with Facebook",
+          "Sign in with Discord",
+          "Sign in with an email"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 4,
+        "labels": [
+          "Sign in with Google",
+          "Sign in with Facebook",
+          "Sign in with Discord",
+          "Sign in with an email"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.73,
+    "interaction_patterns": [
+      "modal"
+    ],
+    "primary_ctas": [
+      "Sign in with Google",
+      "Sign in with Facebook",
+      "Sign in with Discord",
+      "Sign in with an email"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.66,
+    "confidence": 0.526,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.509,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.526,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.451
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.624
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex"
+    ],
+    "section_count": 0,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.938,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.678,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.052,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.027
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 396137,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://pika.art",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/pika.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 96,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 8529,
+          "ratio": 0.4264
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 7174,
+          "ratio": 0.3587
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 557,
+          "ratio": 0.0278
+        },
+        {
+          "hex": "#2060a0",
+          "occurrences": 534,
+          "ratio": 0.0267
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 516,
+          "ratio": 0.0258
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 242,
+          "ratio": 0.0121
+        },
+        {
+          "hex": "#c0a080",
+          "occurrences": 178,
+          "ratio": 0.0089
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 149,
+          "ratio": 0.0075
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.678,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.052,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.027
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 96,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 8529,
+          "ratio": 0.4264
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 7174,
+          "ratio": 0.3587
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 557,
+          "ratio": 0.0278
+        },
+        {
+          "hex": "#2060a0",
+          "occurrences": 534,
+          "ratio": 0.0267
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 516,
+          "ratio": 0.0258
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 242,
+          "ratio": 0.0121
+        },
+        {
+          "hex": "#c0a080",
+          "occurrences": 178,
+          "ratio": 0.0089
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 149,
+          "ratio": 0.0075
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.027,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://pika.art"
+}

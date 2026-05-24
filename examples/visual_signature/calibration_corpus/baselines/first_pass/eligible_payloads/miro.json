@@ -1,0 +1,556 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:31:09.234676",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://miro.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 56,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 142,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Miro",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Visual collaboration SaaS with colorful interface-led storytelling."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#0099ff",
+      "#6366f1",
+      "#322bfe",
+      "#6e3cfe",
+      "#a34cff",
+      "#d05dff"
+    ],
+    "background_candidates": [
+      "#1c1c1e",
+      "#ffffff",
+      "#000000",
+      "#322bfe",
+      "#6e3cfe",
+      "#a34cff"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#1c1c1e",
+      "#ffffff",
+      "#000000",
+      "#656b81",
+      "#0099ff",
+      "#6366f1",
+      "#322bfe",
+      "#6e3cfe"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#1c1c1e",
+        "occurrences": 108,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 102,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 98,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#656b81",
+        "occurrences": 40,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0099ff",
+        "occurrences": 38,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6366f1",
+        "occurrences": 30,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#322bfe",
+        "occurrences": 24,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6e3cfe",
+        "occurrences": 24,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#a34cff",
+        "occurrences": 24,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d05dff",
+        "occurrences": 24,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f66eff",
+        "occurrences": 24,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e5e5e5",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f1f2f5",
+        "occurrences": 18,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#fff09a",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#ffe86d",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#6e6e6e",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#c52c2c",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#ffb4b4",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#600000",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#121212",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#7a90fe",
+        "occurrences": 12,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#e0e2e8",
+        "occurrences": 10,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#555a6a",
+        "occurrences": 10,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#c5e8c8",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#1c1c1e",
+      "#000000",
+      "#656b81",
+      "#0099ff",
+      "#6366f1",
+      "#322bfe"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 4,
+        "labels": [
+          "Learn more",
+          "Pricing\\\\\n\\\\\n**Select a plan**\\\\\n\\\\\n![",
+          "Templates\\\\\n\\\\\n**Get started fast**\\\\\n\\\\\n![",
+          "Academy\\\\\n\\\\\n**Get started   with Miro**\\\\\n\\\\\n!["
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Learn more",
+      "Pricing\\\\\n\\\\\n**Select a plan**\\\\\n\\\\\n![",
+      "Templates\\\\\n\\\\\n**Get started fast**\\\\\n\\\\\n![",
+      "Academy\\\\\n\\\\\n**Get started   with Miro**\\\\\n\\\\\n!["
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.7,
+    "confidence": 0.757,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.614,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.757,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.605
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.713
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex",
+      "sticky_nav"
+    ],
+    "section_count": 4,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 128,
+        "role": "body",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "expressive",
+    "size_samples_px": [
+      10.5,
+      8.5,
+      11.0,
+      12.0,
+      13.0,
+      10.5,
+      11.0,
+      10.0,
+      10.5,
+      10.0,
+      12.0,
+      8.0,
+      10.5,
+      48.0,
+      48.0,
+      48.0,
+      14.0,
+      12.0,
+      17.23,
+      14.0,
+      14.0,
+      24.0,
+      14.0,
+      24.0
+    ],
+    "weight_range": {
+      "max": 600,
+      "min": 500
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.968
+    },
+    "composition": {
+      "color_variance": 0.367,
+      "composition_classification": "dense_grid",
+      "confidence": 0.82,
+      "edge_density": 0.053,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.745
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 349992,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://miro.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/miro.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 63,
+      "confidence": 0.895,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14121,
+          "ratio": 0.706
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2941,
+          "ratio": 0.147
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1962,
+          "ratio": 0.0981
+        },
+        {
+          "hex": "#4060ff",
+          "occurrences": 208,
+          "ratio": 0.0104
+        },
+        {
+          "hex": "#ffe040",
+          "occurrences": 104,
+          "ratio": 0.0052
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 101,
+          "ratio": 0.005
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 79,
+          "ratio": 0.004
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 56,
+          "ratio": 0.0028
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.367,
+      "composition_classification": "dense_grid",
+      "confidence": 0.82,
+      "edge_density": 0.053,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.745
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.82,
+        "palette": 0.895,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.875
+    },
+    "viewport_palette": {
+      "color_count": 63,
+      "confidence": 0.895,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14121,
+          "ratio": 0.706
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2941,
+          "ratio": 0.147
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1962,
+          "ratio": 0.0981
+        },
+        {
+          "hex": "#4060ff",
+          "occurrences": 208,
+          "ratio": 0.0104
+        },
+        {
+          "hex": "#ffe040",
+          "occurrences": 104,
+          "ratio": 0.0052
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 101,
+          "ratio": 0.005
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 79,
+          "ratio": 0.004
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 56,
+          "ratio": 0.0028
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.745,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.82,
+        "palette": 0.895,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.875
+    }
+  },
+  "website_url": "https://miro.com"
+}

@@ -1,0 +1,105 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "capture_id": {
+      "minLength": 1,
+      "title": "Capture Id",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "evidence_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "from_state": {
+      "minLength": 1,
+      "title": "From State",
+      "type": "string"
+    },
+    "lineage_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Lineage Refs",
+      "type": "array"
+    },
+    "mutation_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Mutation Ref"
+    },
+    "notes": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Notes",
+      "type": "array"
+    },
+    "reason": {
+      "minLength": 1,
+      "title": "Reason",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "transition_record",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "phase-zero-transition-record-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    },
+    "to_state": {
+      "minLength": 1,
+      "title": "To State",
+      "type": "string"
+    },
+    "transition_id": {
+      "minLength": 1,
+      "title": "Transition Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "record_type",
+    "transition_id",
+    "capture_id",
+    "from_state",
+    "to_state",
+    "reason",
+    "confidence"
+  ],
+  "title": "TransitionRecord",
+  "type": "object"
+}

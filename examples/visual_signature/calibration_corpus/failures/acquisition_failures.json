@@ -1,0 +1,43 @@
+{
+  "failures": [
+    {
+      "acquisition_errors": [
+        "Request Timeout: Failed to scrape as the request timed out. The scrape operation timed out before completing. This happens when a page takes too long to load, render, or process. Possible causes: (1) The website is slow or unresponsive, (2) The page has heavy JavaScript that takes time to execute, (3) The page is very large or has many resources to load, (4) Network latency is high. To fix this, try increasing the timeout parameter in your scrape request, or if using actions, ensure your selectors are correct and the page is ready before actions are executed. - No additional error details provided."
+      ],
+      "brand_name": "Big Gay Ice Cream",
+      "error": null,
+      "expected_category": "local_service_small_business",
+      "interpretation_status": "not_interpretable",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/big-gay-ice-cream.json",
+      "status": "not_interpretable",
+      "website_url": "https://biggayicecream.com"
+    },
+    {
+      "acquisition_errors": [
+        "HTTP Error 403: Forbidden"
+      ],
+      "brand_name": "Hermes",
+      "error": null,
+      "expected_category": "premium_luxury",
+      "interpretation_status": "not_interpretable",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/hermes.json",
+      "status": "not_interpretable",
+      "website_url": "https://www.hermes.com"
+    },
+    {
+      "acquisition_errors": [
+        "DNS resolution failed for hostname \"takecareof.com\". This means the domain name could not be translated to an IP address. Possible causes: (1) The domain name is misspelled (check for typos), (2) The domain does not exist or has expired, (3) The DNS servers are temporarily unavailable, or (4) The domain was recently registered and DNS has not propagated yet. Please verify the URL is correct and the website exists."
+      ],
+      "brand_name": "Care/of",
+      "error": null,
+      "expected_category": "wellness_lifestyle",
+      "interpretation_status": "not_interpretable",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/care-of.json",
+      "status": "not_interpretable",
+      "website_url": "https://takecareof.com"
+    }
+  ],
+  "generated_at": "2026-05-09T02:34:36.030589",
+  "schema_version": "visual-signature-corpus-acquisition-failures-1",
+  "total": 3
+}

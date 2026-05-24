@@ -1,0 +1,560 @@
+{
+  "version": 0,
+  "case_id": "dogstudio",
+  "audit_url": "https://dogstudio.co",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Dogstudio is a digital agency that creates websites, communication campaigns, applications, and online interactive experiences.",
+          "url": "https://www.cbinsights.com/company/dogstudio",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.02; contrast signal 0.33.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Dogstudio is a multidisciplinarycreative studio at the intersectionof art, design and technology.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "We Make Good Shit",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "DOGSTUDIO/DEPT® is a Design Services company.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Dogstudio operates within the design services sector, specializing in art, technology, and storytelling",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Schema detected: WebSite",
+          "url": "https://dogstudio.co",
+          "source_class": "technical_internal",
+          "feature_name": "structured_identity",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "We Make Good Shit",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "DOGSTUDIO/DEPT® is a Design Services company.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Dogstudio operates within the design services sector, specializing in art, technology, and storytelling",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "presencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "# DOGSTUDIO/DEPT® DOGSTUDIO/DEPT® is a Design Services company. Dogstudio is a multidisciplinary creative studio at the intersection of art, design, a",
+          "url": "https://dogstudio.co/",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Dogstudio - Products, Competitors, Financials, Employees, Headquarters Locations ## Stage Acquired | Acquired ## About Dogstudio On May 20th, 2022, Do",
+          "url": "https://www.cbinsights.com/company/dogstudio",
+          "source_class": "external_third_party",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "# Dogstudio ## We Make Good Shit We Make Good Shit Dogstudio is a multidisciplinarycreative studio at the intersectionof art, design and technology. O",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/dogstudio.co",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/dogstudio",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@dogstudio",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/dogstudio",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Dogstudio. Multidisciplinary Creative Studio. Toggle sound - The Studio - Our Cases - Careers - Our Values - Contact Watch our Showreel - Facebook - I",
+          "url": "https://dogstudio.be/",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "sitemap.xml found with 37 URLs",
+          "url": "https://dogstudio.co/sitemap.xml",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "robots.txt found",
+          "url": "https://dogstudio.co/robots.txt",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/dogstudio",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Dogstudio. Multidisciplinary Creative Studio. Toggle sound - The Studio - Our Cases - Careers - Our Values - Contact Watch our Showreel - Facebook - I",
+          "url": "https://dogstudio.be/",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "percepcion": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Dogstudio is a multidisciplinary creative studio at the intersection of art, design, and technology. Their goal is to deliver amazing experiences that make people talk",
+          "url": "https://dogstudio.co/",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Dogstudio specializes in blending art, design, and technology to create compelling storytelling experiences, making it an ideal partner for brands seeking cutting-edge digital and experiential content.",
+          "url": "https://leadiq.com/c/dogstudiodept/5a1d9d3b23000052008d15d4",
+          "source_class": "external_third_party",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "We’re a global experience & innovation design team with a gift for interactive and pompous labels.",
+          "url": "https://staging.dogstudio.co/",
+          "source_class": "owned_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "External evidence is source-bounded and must be cited."
+      ],
+      "abstention_reason": ""
+    },
+    "diferenciacion": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "Dogstudio is a multidisciplinarycreative studio at the intersectionof art, design and technology.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Our goal is to deliver amazing experiences that makepeople talk, and build strategic value for brands, tech,entertainment, arts & culture.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Our strong focus on producing high quality & emotional brandings, digital products and experiences became a signature.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Pawsible.io as the audited brand's closest measured competitor with measured distance 0.916; avg_distance=0.931; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies PawsitiveTouch as the audited brand's most different measured competitor with measured distance 0.958; avg_distance=0.931; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Dogstudio is a multidisciplinarycreative studio at the intersectionof art, design and technology.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Our goal is to deliver amazing experiences that makepeople talk, and build strategic value for brands, tech,entertainment, arts & culture.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Our strong focus on producing high quality & emotional brandings, digital products and experiences became a signature.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://inside.dogstudio.be/about",
+          "source_class": "related_unresolved",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "",
+          "url": "https://inside.dogstudio.be/about",
+          "source_class": "related_unresolved",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "Do not generate this dimension.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    {
+      "dimension": "vitalidad",
+      "status": "blocked",
+      "reason_codes": [
+        "empty_text_evidence_blocked",
+        "review_gated_evidence_not_ready",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    }
+  ],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "coherencia",
+      "presencia",
+      "percepcion"
+    ],
+    "excluded_dimensions": [
+      "diferenciacion",
+      "vitalidad"
+    ],
+    "included_evidence_count": 5,
+    "excluded_evidence_count": 23,
+    "review_required_evidence_count": 9,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 8,
+      "presencia": 10,
+      "percepcion": 3,
+      "diferenciacion": 6,
+      "vitalidad": 1
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 1,
+      "presencia": 2,
+      "percepcion": 2,
+      "diferenciacion": 0,
+      "vitalidad": 0
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 8,
+        "candidate_inputs": 1,
+        "excluded_inputs": 7
+      },
+      "presencia": {
+        "current_inputs": 10,
+        "candidate_inputs": 2,
+        "excluded_inputs": 8
+      },
+      "percepcion": {
+        "current_inputs": 3,
+        "candidate_inputs": 2,
+        "excluded_inputs": 1
+      },
+      "diferenciacion": {
+        "current_inputs": 6,
+        "candidate_inputs": 0,
+        "excluded_inputs": 6
+      },
+      "vitalidad": {
+        "current_inputs": 1,
+        "candidate_inputs": 0,
+        "excluded_inputs": 1
+      }
+    }
+  }
+}

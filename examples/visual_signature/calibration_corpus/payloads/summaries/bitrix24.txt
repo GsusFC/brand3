@@ -1,0 +1,39 @@
+Expected category: template_like_saas
+Notes: Broad SaaS suite with high-density practical visual system.
+
+== Bitrix24 ==
+URL: https://www.bitrix24.com
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.57, consistency_coverage=0.54]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.57
+- typography: missing, confidence=0.35
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.54
+
+Visual summaries:
+- palette preview: #409eef[###] #2fc7f7[###] #ffffff[###] #0066a1[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=58; density=sparse; patterns=multi_column
+- components: button=76, cta=13, form=4, card=38, pricing=8
+- consistency: overall=0.55; color=0.78; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #808080[###] #ffffff[###] #608080[###] #808060[###] #608060[###] #202020[###] #608000[###] #606060[###]
+- viewport palette: #808080[###] #ffffff[###] #608080[###] #808060[###] #608060[###] #202020[###] #608000[###] #606060[###]
+- composition: density=dense; whitespace=21%; classification=dense_grid
+- viewport composition: density=dense; whitespace=21%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_palette_more_complex_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport palette is noisier than the DOM palette.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

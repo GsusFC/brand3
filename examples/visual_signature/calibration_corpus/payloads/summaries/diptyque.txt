@@ -1,0 +1,41 @@
+Expected category: premium_luxury
+Notes: Luxury fragrance ecommerce with campaign and product storytelling.
+
+== Diptyque ==
+URL: https://www.diptyqueparis.com
+Interpretation status: interpretable
+Extraction confidence: 0.63 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.50, consistency_coverage=0.44]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.46
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.44
+
+Visual summaries:
+- palette preview: #000000[###] #f8f8f8[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=12; density=dense; patterns=grid,flex,multi_column
+- components: button=274, cta=19, card=546, tabs=78, modal=6
+- consistency: overall=0.50; color=0.78; type=0.20; component=0.70; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #200000[###] #808080[###] #402000[###] #202000[###] #402020[###] #000000[###] #202020[###]
+- viewport palette: #ffffff[###] #200000[###] #808080[###] #402000[###] #202000[###] #402020[###] #000000[###] #202020[###]
+- composition: density=dense; whitespace=22%; classification=dense_grid
+- viewport composition: density=dense; whitespace=22%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.44)
+- extraction limitation: screenshot_not_available
+- extraction limitation: consistency_inference_limited

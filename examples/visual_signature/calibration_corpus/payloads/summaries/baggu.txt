@@ -1,0 +1,41 @@
+Expected category: ecommerce
+Notes: Ordinary mid-market ecommerce brand with product grid and campaign behavior.
+
+== Baggu ==
+URL: https://www.baggu.com
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.43, consistency_coverage=0.49]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.63
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.49
+
+Visual summaries:
+- palette preview: #000000[###] #b8b7b1[###] #f6f4ee[###] #ffffff[###] #4788ed[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=8; density=dense; patterns=grid,flex,multi_column,sticky_nav
+- components: button=48, cta=1, form=26, tabs=4
+- consistency: overall=0.54; color=0.78; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #a0a0a0[###] #ffffe0[###] #e0e0e0[###] #60a0ff[###] #80c0ff[###] #c0c0c0[###] #000000[###] #808080[###]
+- viewport palette: #a0a0a0[###] #ffffe0[###] #e0e0e0[###] #60a0ff[###] #80c0ff[###] #c0c0c0[###] #000000[###] #808080[###]
+- composition: density=dense; whitespace=20%; classification=dense_grid
+- viewport composition: density=dense; whitespace=20%; classification=dense_grid
+- vision confidence: 0.86 (high)
+- viewport confidence: 0.86 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

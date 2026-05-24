@@ -1,0 +1,873 @@
+{
+  "brands": [
+    {
+      "brand_name": "OpenAI",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/openai.png",
+      "website_url": "https://openai.com"
+    },
+    {
+      "brand_name": "Perplexity",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/perplexity.png",
+      "website_url": "https://www.perplexity.ai"
+    },
+    {
+      "brand_name": "Anthropic",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/anthropic.png",
+      "website_url": "https://www.anthropic.com"
+    },
+    {
+      "brand_name": "Hebbia",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/hebbia.png",
+      "website_url": "https://www.hebbia.ai"
+    },
+    {
+      "brand_name": "Runway",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/runway.png",
+      "website_url": "https://runwayml.com"
+    },
+    {
+      "brand_name": "Pika",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/pika.png",
+      "website_url": "https://pika.art"
+    },
+    {
+      "brand_name": "Granola",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/granola.png",
+      "website_url": "https://www.granola.ai"
+    },
+    {
+      "brand_name": "Cohere",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/cohere.png",
+      "website_url": "https://cohere.com"
+    },
+    {
+      "brand_name": "Lindy",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/lindy.png",
+      "website_url": "https://www.lindy.ai"
+    },
+    {
+      "brand_name": "Harvey",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/harvey.png",
+      "website_url": "https://www.harvey.ai"
+    },
+    {
+      "brand_name": "Writer",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/writer.png",
+      "website_url": "https://writer.com"
+    },
+    {
+      "brand_name": "Dust",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/dust.png",
+      "website_url": "https://dust.tt"
+    },
+    {
+      "brand_name": "Duolingo",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/duolingo.png",
+      "website_url": "https://www.duolingo.com"
+    },
+    {
+      "brand_name": "Strava",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/strava.png",
+      "website_url": "https://www.strava.com"
+    },
+    {
+      "brand_name": "Pocket Casts",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/pocket-casts.png",
+      "website_url": "https://pocketcasts.com"
+    },
+    {
+      "brand_name": "Finch",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/finch.png",
+      "website_url": "https://finchcare.com"
+    },
+    {
+      "brand_name": "Discord",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/discord.png",
+      "website_url": "https://discord.com"
+    },
+    {
+      "brand_name": "Fabulous",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/fabulous.png",
+      "website_url": "https://www.thefabulous.co"
+    },
+    {
+      "brand_name": "Moises",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/moises.png",
+      "website_url": "https://moises.ai"
+    },
+    {
+      "brand_name": "Headway",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/headway.png",
+      "website_url": "https://makeheadway.com"
+    },
+    {
+      "brand_name": "Yousician",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/yousician.png",
+      "website_url": "https://yousician.com"
+    },
+    {
+      "brand_name": "Elevate",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/elevate.png",
+      "website_url": "https://elevateapp.com"
+    },
+    {
+      "brand_name": "Sleep Cycle",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/sleep-cycle.png",
+      "website_url": "https://www.sleepcycle.com"
+    },
+    {
+      "brand_name": "PlantIn",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/plantin.png",
+      "website_url": "https://myplantin.com"
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/stripe-docs.png",
+      "website_url": "https://docs.stripe.com"
+    },
+    {
+      "brand_name": "Supabase",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/supabase.png",
+      "website_url": "https://supabase.com"
+    },
+    {
+      "brand_name": "Vercel",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/vercel.png",
+      "website_url": "https://vercel.com"
+    },
+    {
+      "brand_name": "Netlify",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/netlify.png",
+      "website_url": "https://www.netlify.com"
+    },
+    {
+      "brand_name": "PlanetScale",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/planetscale.png",
+      "website_url": "https://planetscale.com"
+    },
+    {
+      "brand_name": "Render",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/render.png",
+      "website_url": "https://render.com"
+    },
+    {
+      "brand_name": "Railway",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/railway.png",
+      "website_url": "https://railway.com"
+    },
+    {
+      "brand_name": "Sentry",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/sentry.png",
+      "website_url": "https://sentry.io"
+    },
+    {
+      "brand_name": "PostHog",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/posthog.png",
+      "website_url": "https://posthog.com"
+    },
+    {
+      "brand_name": "Hasura",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/hasura.png",
+      "website_url": "https://hasura.io"
+    },
+    {
+      "brand_name": "Fly.io",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/fly-io.png",
+      "website_url": "https://fly.io"
+    },
+    {
+      "brand_name": "Nhost",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/nhost.png",
+      "website_url": "https://nhost.io"
+    },
+    {
+      "brand_name": "Allbirds",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/allbirds.png",
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "brand_name": "Brooklinen",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/brooklinen.png",
+      "website_url": "https://www.brooklinen.com"
+    },
+    {
+      "brand_name": "Everlane",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/everlane.png",
+      "website_url": "https://www.everlane.com"
+    },
+    {
+      "brand_name": "Gymshark",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/gymshark.png",
+      "website_url": "https://www.gymshark.com"
+    },
+    {
+      "brand_name": "Glossier",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/glossier.png",
+      "website_url": "https://www.glossier.com"
+    },
+    {
+      "brand_name": "Bombas",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/bombas.png",
+      "website_url": "https://bombas.com"
+    },
+    {
+      "brand_name": "MeUndies",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/meundies.png",
+      "website_url": "https://www.meundies.com"
+    },
+    {
+      "brand_name": "Baggu",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/baggu.png",
+      "website_url": "https://www.baggu.com"
+    },
+    {
+      "brand_name": "Misen",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/misen.png",
+      "website_url": "https://misen.com"
+    },
+    {
+      "brand_name": "United By Blue",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/united-by-blue.png",
+      "website_url": "https://unitedbyblue.com"
+    },
+    {
+      "brand_name": "Pact",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/pact.png",
+      "website_url": "https://wearpact.com"
+    },
+    {
+      "brand_name": "Tattly",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/tattly.png",
+      "website_url": "https://tattly.com"
+    },
+    {
+      "brand_name": "The Verge",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-verge.png",
+      "website_url": "https://www.theverge.com"
+    },
+    {
+      "brand_name": "Sifted",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/sifted.png",
+      "website_url": "https://sifted.eu"
+    },
+    {
+      "brand_name": "Nieman Lab",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/nieman-lab.png",
+      "website_url": "https://www.niemanlab.org"
+    },
+    {
+      "brand_name": "The Atlantic",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-atlantic.png",
+      "website_url": "https://www.theatlantic.com"
+    },
+    {
+      "brand_name": "Vox",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/vox.png",
+      "website_url": "https://www.vox.com"
+    },
+    {
+      "brand_name": "The Marshall Project",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-marshall-project.png",
+      "website_url": "https://www.themarshallproject.org"
+    },
+    {
+      "brand_name": "Polygon",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/polygon.png",
+      "website_url": "https://www.polygon.com"
+    },
+    {
+      "brand_name": "Dezeen",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/dezeen.png",
+      "website_url": "https://www.dezeen.com"
+    },
+    {
+      "brand_name": "It's Nice That",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/it-s-nice-that.png",
+      "website_url": "https://www.itsnicethat.com"
+    },
+    {
+      "brand_name": "Hyperallergic",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/hyperallergic.png",
+      "website_url": "https://hyperallergic.com"
+    },
+    {
+      "brand_name": "The 19th",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-19th.png",
+      "website_url": "https://19thnews.org"
+    },
+    {
+      "brand_name": "Rest of World",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/rest-of-world.png",
+      "website_url": "https://restofworld.org"
+    },
+    {
+      "brand_name": "Wise",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/wise.png",
+      "website_url": "https://wise.com"
+    },
+    {
+      "brand_name": "Mercury",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/mercury.png",
+      "website_url": "https://mercury.com"
+    },
+    {
+      "brand_name": "Current",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/current.png",
+      "website_url": "https://current.com"
+    },
+    {
+      "brand_name": "Stash",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/stash.png",
+      "website_url": "https://www.stash.com"
+    },
+    {
+      "brand_name": "Monzo",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/monzo.png",
+      "website_url": "https://monzo.com"
+    },
+    {
+      "brand_name": "Found",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/found.png",
+      "website_url": "https://found.com"
+    },
+    {
+      "brand_name": "Brex",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/brex.png",
+      "website_url": "https://www.brex.com"
+    },
+    {
+      "brand_name": "Ramp",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/ramp.png",
+      "website_url": "https://ramp.com"
+    },
+    {
+      "brand_name": "Bluevine",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/bluevine.png",
+      "website_url": "https://www.bluevine.com"
+    },
+    {
+      "brand_name": "Teller",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/teller.png",
+      "website_url": "https://teller.io"
+    },
+    {
+      "brand_name": "NorthOne",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/northone.png",
+      "website_url": "https://www.northone.com"
+    },
+    {
+      "brand_name": "Novo",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/novo.png",
+      "website_url": "https://www.novo.co"
+    },
+    {
+      "brand_name": "Len The Plumber",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/len-the-plumber.png",
+      "website_url": "https://lentheplumber.com"
+    },
+    {
+      "brand_name": "Magnolia Bakery",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/magnolia-bakery.png",
+      "website_url": "https://www.magnoliabakery.com"
+    },
+    {
+      "brand_name": "The Meatball Shop",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/the-meatball-shop.png",
+      "website_url": "https://www.themeatballshop.com"
+    },
+    {
+      "brand_name": "Baked by Melissa",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/baked-by-melissa.png",
+      "website_url": "https://www.bakedbymelissa.com"
+    },
+    {
+      "brand_name": "Van Leeuwen Ice Cream",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/van-leeuwen-ice-cream.png",
+      "website_url": "https://vanleeuwenicecream.com"
+    },
+    {
+      "brand_name": "Big Gay Ice Cream",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/big-gay-ice-cream.png",
+      "website_url": "https://biggayicecream.com"
+    },
+    {
+      "brand_name": "Brooklyn Boulders",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/brooklyn-boulders.png",
+      "website_url": "https://brooklynboulders.com"
+    },
+    {
+      "brand_name": "Handy",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/handy.png",
+      "website_url": "https://www.handy.com"
+    },
+    {
+      "brand_name": "Mr. Handyman",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/mr-handyman.png",
+      "website_url": "https://www.mrhandyman.com"
+    },
+    {
+      "brand_name": "Roto-Rooter",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/roto-rooter.png",
+      "website_url": "https://www.rotorooter.com"
+    },
+    {
+      "brand_name": "MaidPro",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/maidpro.png",
+      "website_url": "https://www.maidpro.com"
+    },
+    {
+      "brand_name": "Lawn Love",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/lawn-love.png",
+      "website_url": "https://lawnlove.com"
+    },
+    {
+      "brand_name": "Khan Academy",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/khan-academy.png",
+      "website_url": "https://www.khanacademy.org"
+    },
+    {
+      "brand_name": "Charity Water",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/charity-water.png",
+      "website_url": "https://www.charitywater.org"
+    },
+    {
+      "brand_name": "Coursera",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/coursera.png",
+      "website_url": "https://www.coursera.org"
+    },
+    {
+      "brand_name": "edX",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/edx.png",
+      "website_url": "https://www.edx.org"
+    },
+    {
+      "brand_name": "Codecademy",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/codecademy.png",
+      "website_url": "https://www.codecademy.com"
+    },
+    {
+      "brand_name": "freeCodeCamp",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/freecodecamp.png",
+      "website_url": "https://www.freecodecamp.org"
+    },
+    {
+      "brand_name": "DonorsChoose",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/donorschoose.png",
+      "website_url": "https://www.donorschoose.org"
+    },
+    {
+      "brand_name": "Girls Who Code",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/girls-who-code.png",
+      "website_url": "https://girlswhocode.com"
+    },
+    {
+      "brand_name": "Code.org",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/code-org.png",
+      "website_url": "https://code.org"
+    },
+    {
+      "brand_name": "One Tree Planted",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/one-tree-planted.png",
+      "website_url": "https://onetreeplanted.org"
+    },
+    {
+      "brand_name": "826 National",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/826-national.png",
+      "website_url": "https://826national.org"
+    },
+    {
+      "brand_name": "826 Valencia",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/826-valencia.png",
+      "website_url": "https://826valencia.org"
+    },
+    {
+      "brand_name": "Hermes",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/hermes.png",
+      "website_url": "https://www.hermes.com"
+    },
+    {
+      "brand_name": "Aesop",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/aesop.png",
+      "website_url": "https://www.aesop.com"
+    },
+    {
+      "brand_name": "Bottega Veneta",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/bottega-veneta.png",
+      "website_url": "https://www.bottegaveneta.com"
+    },
+    {
+      "brand_name": "Loewe",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/loewe.png",
+      "website_url": "https://www.loewe.com"
+    },
+    {
+      "brand_name": "Rimowa",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/rimowa.png",
+      "website_url": "https://www.rimowa.com"
+    },
+    {
+      "brand_name": "Bang & Olufsen",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/bang-olufsen.png",
+      "website_url": "https://www.bang-olufsen.com"
+    },
+    {
+      "brand_name": "Tumi",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/tumi.png",
+      "website_url": "https://www.tumi.com"
+    },
+    {
+      "brand_name": "Le Labo",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/le-labo.png",
+      "website_url": "https://www.lelabofragrances.com"
+    },
+    {
+      "brand_name": "Diptyque",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/diptyque.png",
+      "website_url": "https://www.diptyqueparis.com"
+    },
+    {
+      "brand_name": "Our Legacy",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/our-legacy.png",
+      "website_url": "https://www.ourlegacy.com"
+    },
+    {
+      "brand_name": "Toteme",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/toteme.png",
+      "website_url": "https://toteme-studio.com"
+    },
+    {
+      "brand_name": "Noah",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/noah.png",
+      "website_url": "https://noahny.com"
+    },
+    {
+      "brand_name": "Linear",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/linear.png",
+      "website_url": "https://linear.app"
+    },
+    {
+      "brand_name": "Basecamp",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/basecamp.png",
+      "website_url": "https://basecamp.com"
+    },
+    {
+      "brand_name": "Asana",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/asana.png",
+      "website_url": "https://asana.com"
+    },
+    {
+      "brand_name": "ClickUp",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/clickup.png",
+      "website_url": "https://clickup.com"
+    },
+    {
+      "brand_name": "Calendly",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/calendly.png",
+      "website_url": "https://calendly.com"
+    },
+    {
+      "brand_name": "Loom",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/loom.png",
+      "website_url": "https://www.loom.com"
+    },
+    {
+      "brand_name": "Miro",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/miro.png",
+      "website_url": "https://miro.com"
+    },
+    {
+      "brand_name": "Freshworks",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/freshworks.png",
+      "website_url": "https://www.freshworks.com"
+    },
+    {
+      "brand_name": "PandaDoc",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/pandadoc.png",
+      "website_url": "https://www.pandadoc.com"
+    },
+    {
+      "brand_name": "Teamwork",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/teamwork.png",
+      "website_url": "https://www.teamwork.com"
+    },
+    {
+      "brand_name": "Pipefy",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/pipefy.png",
+      "website_url": "https://www.pipefy.com"
+    },
+    {
+      "brand_name": "Process Street",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/process-street.png",
+      "website_url": "https://www.process.st"
+    },
+    {
+      "brand_name": "Notion",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/notion.png",
+      "website_url": "https://www.notion.com"
+    },
+    {
+      "brand_name": "Airtable",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/airtable.png",
+      "website_url": "https://www.airtable.com"
+    },
+    {
+      "brand_name": "Monday.com",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/monday-com.png",
+      "website_url": "https://monday.com"
+    },
+    {
+      "brand_name": "Coda",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/coda.png",
+      "website_url": "https://coda.io"
+    },
+    {
+      "brand_name": "Smartsheet",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/smartsheet.png",
+      "website_url": "https://www.smartsheet.com"
+    },
+    {
+      "brand_name": "Wrike",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/wrike.png",
+      "website_url": "https://www.wrike.com"
+    },
+    {
+      "brand_name": "Zoho Projects",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/zoho-projects.png",
+      "website_url": "https://www.zoho.com/projects/"
+    },
+    {
+      "brand_name": "Nifty",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/nifty.png",
+      "website_url": "https://niftypm.com"
+    },
+    {
+      "brand_name": "Plaky",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/plaky.png",
+      "website_url": "https://plaky.com"
+    },
+    {
+      "brand_name": "Hive",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/hive.png",
+      "website_url": "https://hive.com"
+    },
+    {
+      "brand_name": "Scoro",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/scoro.png",
+      "website_url": "https://www.scoro.com"
+    },
+    {
+      "brand_name": "Bitrix24",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/bitrix24.png",
+      "website_url": "https://www.bitrix24.com"
+    },
+    {
+      "brand_name": "Headspace",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/headspace.png",
+      "website_url": "https://www.headspace.com"
+    },
+    {
+      "brand_name": "Ritual",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/ritual.png",
+      "website_url": "https://ritual.com"
+    },
+    {
+      "brand_name": "Calm",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/calm.png",
+      "website_url": "https://www.calm.com"
+    },
+    {
+      "brand_name": "Noom",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/noom.png",
+      "website_url": "https://www.noom.com"
+    },
+    {
+      "brand_name": "Alo Yoga",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/alo-yoga.png",
+      "website_url": "https://www.aloyoga.com"
+    },
+    {
+      "brand_name": "Peloton",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/peloton.png",
+      "website_url": "https://www.onepeloton.com"
+    },
+    {
+      "brand_name": "Whoop",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/whoop.png",
+      "website_url": "https://www.whoop.com"
+    },
+    {
+      "brand_name": "Oura",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/oura.png",
+      "website_url": "https://ouraring.com"
+    },
+    {
+      "brand_name": "Care/of",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/care-of.png",
+      "website_url": "https://takecareof.com"
+    },
+    {
+      "brand_name": "Thrive Market",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/thrive-market.png",
+      "website_url": "https://thrivemarket.com"
+    },
+    {
+      "brand_name": "Open",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/open.png",
+      "website_url": "https://o-p-e-n.com"
+    },
+    {
+      "brand_name": "Glo",
+      "capture_type": "viewport",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/glo.png",
+      "website_url": "https://www.glo.com"
+    }
+  ],
+  "capture_type": "viewport",
+  "generated_at": "2026-05-09T00:35:54.473082",
+  "schema_version": "visual-signature-corpus-capture-input-1",
+  "viewport_height": 900,
+  "viewport_width": 1440
+}

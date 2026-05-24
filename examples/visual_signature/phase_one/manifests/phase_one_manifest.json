@@ -1,0 +1,98 @@
+{
+  "blocked_count": 5,
+  "brands": [
+    {
+      "brand_name": "Linear",
+      "capture_id": "linear",
+      "eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/obstruction.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/density.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/state.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/transition_1_raw_capture_created.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/transition_2_human_review_required.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/transition_3_no_safe_affordance_detected.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/linear/dataset_eligibility.json"
+      ],
+      "validation_errors": []
+    },
+    {
+      "brand_name": "OpenAI",
+      "capture_id": "openai",
+      "eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/obstruction.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/density.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/state.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/transition_1_raw_capture_created.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/transition_2_human_review_required.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/transition_3_no_safe_affordance_detected.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/openai/dataset_eligibility.json"
+      ],
+      "validation_errors": []
+    },
+    {
+      "brand_name": "The Verge",
+      "capture_id": "the-verge",
+      "eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/obstruction.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/density.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/state.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/transition_1_raw_capture_created.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/transition_2_human_review_required.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/transition_3_no_safe_affordance_detected.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/the-verge/dataset_eligibility.json"
+      ],
+      "validation_errors": []
+    },
+    {
+      "brand_name": "Allbirds",
+      "capture_id": "allbirds",
+      "eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/obstruction.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/density.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/state.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/transition_1_raw_capture_created.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/transition_2_human_review_required.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/transition_3_exact_safe_affordance_detected.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/transition_4_safe_mutation_attempted.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/transition_5_safe_mutation_failed.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/mutation_audit.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/allbirds/dataset_eligibility.json"
+      ],
+      "validation_errors": []
+    },
+    {
+      "brand_name": "Headspace",
+      "capture_id": "headspace",
+      "eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/headspace/obstruction.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/headspace/density.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/headspace/state.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/headspace/transition_1_raw_capture_created.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/headspace/transition_2_protected_environment_detected.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one/records/headspace/dataset_eligibility.json"
+      ],
+      "validation_errors": []
+    }
+  ],
+  "created_at": "2026-05-11T20:51:43.794733Z",
+  "eligible_count": 0,
+  "output_root": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_one",
+  "phase": "phase_one",
+  "record_counts": {
+    "dataset_eligibility": 5,
+    "mutation_audit": 1,
+    "perceptual_observation": 10,
+    "perceptual_state": 5,
+    "transition_record": 16
+  },
+  "schema_version": "phase-one-manifest-1",
+  "source_capture_manifest_path": "examples/visual_signature/screenshots/capture_manifest.json",
+  "source_dismissal_audit_path": "examples/visual_signature/screenshots/dismissal_audit.json",
+  "validation_errors": [],
+  "validation_passed": true
+}

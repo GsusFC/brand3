@@ -1,0 +1,440 @@
+{
+  "version": "state_first_generation_trial.v0",
+  "created_at": "2026-05-17",
+  "status": {
+    "lab_only": true,
+    "runtime_integration": false,
+    "scoring_integration": false,
+    "prompt_production_change": false,
+    "official_report_mutation": false,
+    "renderer_change": false,
+    "visual_signature_integration": false,
+    "persistence": false,
+    "reusable_generator": false
+  },
+  "selected_case": {
+    "case_id": "watermelon",
+    "brand": "Watermelon",
+    "url": "https://watermelon.sh",
+    "selection_reason": "Watermelon has the richest existing composition pressure: report_narrative payload, payload-level diagnostics, render-aware diagnostics, EntityNarrativeState v0, and reviewed observed_related_surfaces metadata."
+  },
+  "input_artifacts": [
+    "examples/reports/narrative_harness/watermelon.payload.json",
+    "examples/reports/narrative_harness/watermelon.diagnostic.json",
+    "examples/reports/narrative_harness/watermelon.render_aware.diagnostic.json",
+    "examples/reports/narrative_harness/entity_state/watermelon.entity_narrative_state.v0.json",
+    "examples/reports/narrative_harness/entity_state/inputs/watermelon.observed_related_surfaces.input.json",
+    "examples/brand3_platform/brand3_editorial_discipline_gate.json",
+    "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.json"
+  ],
+  "baseline": {
+    "synthesis_excerpt": "The brand's owned presence at watermelon.sh describes a focus on Building the design infrastructure for modern startups, but external signals introduce GitHub, alternatives, and unrelated news surfaces.",
+    "tension_excerpt": "The current payload frames a disconnect between the owned startup-design-infrastructure claim and adjacent or ambiguous external surfaces.",
+    "measured_problems": {
+      "payload_warnings": 5,
+      "render_visible_warnings": 7,
+      "findings_count": 14,
+      "findings_without_evidence_urls": 6,
+      "safe_attribution_total": 9,
+      "generic_decision_phrase_count": 11,
+      "external_corroboration_caveat_total": 16,
+      "fallback_evidence_pool_phrase_total": 8,
+      "visible_repeated_opening_the_brand_appears": 6
+    },
+    "original_findings_by_dimension": {
+      "coherencia": [
+        {
+          "title": "Design infrastructure for startups",
+          "evidence_urls": [],
+          "problem": "Valid owned positioning is mixed with repeated caveat language and generic decision framing."
+        },
+        {
+          "title": "Open-source copilot for code",
+          "evidence_urls": [],
+          "problem": "A second product/surface is treated as the same brand without enough entity verification."
+        },
+        {
+          "title": "Visual design attributes",
+          "evidence_urls": [],
+          "problem": "Image-analysis metrics are present, but the implication drifts into possible design intent."
+        }
+      ],
+      "diferenciacion": [
+        {
+          "title": "Unified Design Ecosystem Pitch",
+          "evidence_urls": [],
+          "problem": "Owned claim is expanded into platform strategy without external support."
+        },
+        {
+          "title": "Problem-Solution Framing",
+          "evidence_urls": [],
+          "problem": "A legitimate owned pain-point claim is repeated with the same self-description caveat."
+        },
+        {
+          "title": "Content Quality Claim",
+          "evidence_urls": [],
+          "problem": "A self-described content-quality claim is interpreted as trust strategy."
+        }
+      ],
+      "percepcion": [
+        {
+          "title": "Self-description as startup infrastructure",
+          "evidence_urls": ["https://watermelon.sh/"],
+          "problem": "Owned positioning is visible but still over-extended into strategic intent."
+        },
+        {
+          "title": "GitHub presence for tools",
+          "evidence_urls": [
+            "https://github.com/watermelontools",
+            "https://github.com/WatermelonCorp/watermellon-registry"
+          ],
+          "problem": "Repository surfaces are useful signals but ownership/equivalence remains review-gated."
+        },
+        {
+          "title": "Product Hunt listing",
+          "evidence_urls": ["https://www.producthunt.com/products/watermelon"],
+          "problem": "Product Hunt presence is framed as traction-seeking without enough engagement evidence."
+        }
+      ],
+      "presencia": [
+        {
+          "title": "Self-description as Design Infrastructure",
+          "evidence_urls": ["https://watermelon.sh/"],
+          "problem": "Owned domain evidence is useful but repeated across dimensions."
+        },
+        {
+          "title": "GitHub Presence and Activity",
+          "evidence_urls": [
+            "https://github.com/WatermelonCorp/watermellon-registry",
+            "https://github.com/watermelontools"
+          ],
+          "problem": "Developer/repository surfaces need entity review before being merged into the main entity."
+        },
+        {
+          "title": "Limited Website Indexing",
+          "evidence_urls": [
+            "https://watermelon.sh/sitemap.xml",
+            "https://watermelon.sh/robots.txt"
+          ],
+          "problem": "Technical evidence is useful, but the finding speculates about acquisition strategy."
+        }
+      ],
+      "vitalidad": [
+        {
+          "title": "Recent Founding and Growth",
+          "evidence_urls": ["https://watermelon.us/"],
+          "problem": "A different Watermelon surface is used for vitality evidence without verified equivalence."
+        },
+        {
+          "title": "Limited External Engagement",
+          "evidence_urls": [
+            "https://www.softwaresuggest.com/watermelon/alternatives",
+            "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+            "https://github.com/WatermelonCorp/watermellon-registry"
+          ],
+          "problem": "Ambiguous and possibly unrelated external signals are grouped as engagement evidence."
+        }
+      ]
+    }
+  },
+  "shared_entity_state": {
+    "primary_entity_signal": {
+      "label": "Watermelon",
+      "primary_surface": "watermelon.sh",
+      "confidence": "medium",
+      "requires_human_review": true
+    },
+    "entity_ambiguity": {
+      "needs_review": true,
+      "observed_related_surfaces_count": 7,
+      "related_surface_types": [
+        "adjacent_domain",
+        "developer_surface",
+        "repository_surface",
+        "marketplace_profile"
+      ],
+      "rule": "Related surfaces are composition pressure only. They must not be treated as aliases, ownership proof, or unified roadmap evidence."
+    },
+    "owned_claim_density": {
+      "level": "high",
+      "safe_attribution_total": 9
+    },
+    "evidence_coverage": {
+      "finding_count": 14,
+      "findings_without_evidence_urls": 6,
+      "coverage_level": "mixed",
+      "affected_dimensions": ["coherencia", "diferenciacion"]
+    },
+    "budgets": {
+      "attribution_budget": "over_budget",
+      "corroboration_caveat_budget": "over_budget",
+      "repeated_opener_budget": "over_budget",
+      "decision_space_mode": "compressed_candidate"
+    },
+    "primary_tension": {
+      "summary": "Owned design-infrastructure positioning is coherent on watermelon.sh, but the collected evidence introduces unverified adjacent Watermelon surfaces and developer/repository references.",
+      "confidence": "low",
+      "requires_human_review": true
+    }
+  },
+  "shared_evidence_map": {
+    "owned_or_primary_surface": [
+      {
+        "url": "https://watermelon.sh/",
+        "supports": "Owned positioning around design infrastructure for modern startups.",
+        "boundary": "Can support observation of positioning, not proof of adoption or market fit."
+      },
+      {
+        "url": "https://watermelon.sh/sitemap.xml",
+        "supports": "Small indexed surface.",
+        "boundary": "Can support surface-size observation, not acquisition strategy."
+      },
+      {
+        "url": "https://watermelon.sh/robots.txt",
+        "supports": "Basic crawl/indexing configuration exists.",
+        "boundary": "Can support technical presence, not SEO intent."
+      }
+    ],
+    "developer_or_repository_surfaces": [
+      {
+        "url": "https://github.com/watermelontools",
+        "supports": "A Watermelon-named GitHub organization/surface exists.",
+        "boundary": "Entity relation to watermelon.sh requires review."
+      },
+      {
+        "url": "https://github.com/WatermelonCorp/watermellon-registry",
+        "supports": "A WatermelonCorp repository exists with visible activity metrics.",
+        "boundary": "Spelling variance and ownership are unresolved."
+      }
+    ],
+    "marketplace_or_external_surfaces": [
+      {
+        "url": "https://www.producthunt.com/products/watermelon",
+        "supports": "A Product Hunt product profile exists.",
+        "boundary": "Does not prove current traction or official ownership."
+      },
+      {
+        "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+        "supports": "A third-party alternatives page exists.",
+        "boundary": "May refer to another Watermelon product/entity; use as ambiguity pressure only."
+      },
+      {
+        "url": "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+        "supports": "Search/evidence collection surfaced an unrelated-looking Watermelons brand reference.",
+        "boundary": "Should not be interpreted as evidence about the audited software/design entity."
+      },
+      {
+        "url": "https://watermelon.us/",
+        "supports": "A Watermelon Software Inc surface claims founding, employees, growth, and funding.",
+        "boundary": "Not safe to merge with watermelon.sh without entity review."
+      }
+    ],
+    "missing_or_uncited": {
+      "findings_without_evidence_urls": 6,
+      "affected_dimensions": ["coherencia", "diferenciacion"],
+      "rule": "Missing URL support should reduce confidence and prevent strategic prescription."
+    }
+  },
+  "global_uncertainty_model": {
+    "can_state_as_observation": [
+      "watermelon.sh presents the phrase Design Infrastructure for Modern Startups.",
+      "The current evidence set contains Watermelon-named repository, marketplace, alternatives, and adjacent-domain surfaces.",
+      "Several baseline findings lack evidence URLs.",
+      "The payload repeats self-description and external-corroboration caveats."
+    ],
+    "can_state_as_interpretation": [
+      "The audit should treat Watermelon as an entity-composition case rather than a simple brand-positioning case.",
+      "The owned surface has a coherent problem frame, but the evidence set weakens entity certainty.",
+      "Repository and marketplace surfaces may matter, but only as review-gated related-surface pressure."
+    ],
+    "must_remain_uncertain": [
+      "Whether watermelon.sh, watermelon.ai, watermelon.us, GitHub repositories, and Product Hunt profile are the same entity.",
+      "Whether the design-infrastructure claim is externally validated.",
+      "Whether developer-tool signals represent an official product direction.",
+      "Whether the alternatives/news surfaces are relevant to the audited entity."
+    ],
+    "requires_human_review": [
+      "Entity boundary and ownership of related surfaces.",
+      "Use of watermelon.us vitality claims.",
+      "Use of GitHub repository evidence as official activity signal.",
+      "Any production recommendation about roadmap, market focus, or platform strategy."
+    ],
+    "must_not_infer": [
+      "Unified platform roadmap.",
+      "Verified funding or growth for watermelon.sh from watermelon.us.",
+      "Official open-source strategy from GitHub presence alone.",
+      "Market traction from Product Hunt or alternatives pages alone.",
+      "Unrelated food/produce brand coverage as perception of the audited entity."
+    ]
+  },
+  "state_first_finding_plan": {
+    "coordination_rules": [
+      "Use one global caveat about entity ambiguity instead of repeating no external corroboration in every finding.",
+      "Do not use generic Decision Space paragraphs.",
+      "Treat owned claims as owned claims once, then refer to their evidence limits only when necessary.",
+      "Separate primary surface observations from related-surface ambiguity.",
+      "Use dimensions to distribute the entity problem, not to repeat it."
+    ],
+    "dimension_plan": {
+      "coherencia": "Assess whether the story holds together across the owned surface and adjacent surfaces.",
+      "diferenciacion": "Keep differentiation at the level of owned positioning until external proof exists.",
+      "percepcion": "Read public perception as fragmented evidence ecology, not as confirmed market reputation.",
+      "presencia": "Separate owned-domain presence from repository/developer/marketplace surfaces.",
+      "vitalidad": "Use external activity indicators only as tentative signals because entity matching is unresolved."
+    }
+  },
+  "generated_state_first_findings": {
+    "global_caveat": "State-first reading treats watermelon.sh as the audited primary surface. Other Watermelon-named domains, repositories, marketplace pages, and third-party references are related-surface pressure only until ownership or entity continuity is reviewed.",
+    "findings_by_dimension": {
+      "coherencia": [
+        {
+          "title": "The owned story is coherent, but the entity boundary is not",
+          "finding": "watermelon.sh presents a clear owned story around design infrastructure for modern startups and a founder pain point: startups move quickly while design becomes a bottleneck. That is a coherent primary-surface claim. The problem is not the claim itself; it is that the wider evidence set also contains Watermelon-named developer, repository, marketplace, alternatives, and adjacent-domain surfaces whose relationship to watermelon.sh is not verified.",
+          "evidence": ["https://watermelon.sh/"],
+          "confidence": "medium for owned-surface observation, low for cross-surface entity interpretation",
+          "uncertainty": "Do not merge the adjacent surfaces into one entity or roadmap without human review."
+        },
+        {
+          "title": "The code-review/copilot signal should be held outside the core narrative for now",
+          "finding": "The baseline treats an open-source code-review/copilot surface as part of the Watermelon story. State-first generation keeps that signal separate: it may be relevant to a broader ecosystem, but the current evidence does not prove it is an official extension of the design-infrastructure surface.",
+          "evidence": [
+            "https://github.com/watermelontools",
+            "https://github.com/WatermelonCorp/watermellon-registry"
+          ],
+          "confidence": "low",
+          "uncertainty": "Repository ownership, naming variance, and relation to watermelon.sh require review."
+        }
+      ],
+      "diferenciacion": [
+        {
+          "title": "Differentiation currently rests on an owned platform claim",
+          "finding": "Watermelon differentiates itself through the language of infrastructure, ecosystem, and relief from fragmented design tools. That is a stronger and more specific claim than a generic design-service offer, but the available evidence supports it as owned positioning rather than externally validated differentiation.",
+          "evidence": ["https://watermelon.sh/"],
+          "confidence": "medium for claim visibility, low for market validation",
+          "uncertainty": "No external proof in the current set validates whether the infrastructure claim is recognized by users or the market."
+        },
+        {
+          "title": "The strongest safe reading is problem framing, not strategic intent",
+          "finding": "The brand's safest differentiating signal is its problem frame: founders stitching tools together, inconsistent UI, and design slowing product development. The report can say this is the brand's chosen frame. It should not infer a full platform strategy, category ownership, or adoption pathway from that copy alone.",
+          "evidence": ["https://watermelon.sh/"],
+          "confidence": "medium",
+          "uncertainty": "External corroboration is needed before treating the problem frame as market truth."
+        }
+      ],
+      "percepcion": [
+        {
+          "title": "Perception is fragmented by evidence collection, not necessarily by the market",
+          "finding": "The evidence set exposes several Watermelon associations: the primary design-infrastructure surface, GitHub repositories, a Product Hunt listing, alternatives pages, and unrelated-looking news coverage. State-first reading does not frame this as proven public confusion. It frames it as an evidence-ecology problem: Brand3 cannot yet tell which surfaces belong to the same entity.",
+          "evidence": [
+            "https://watermelon.sh/",
+            "https://github.com/watermelontools",
+            "https://github.com/WatermelonCorp/watermellon-registry",
+            "https://www.producthunt.com/products/watermelon",
+            "https://www.softwaresuggest.com/watermelon/alternatives",
+            "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/"
+          ],
+          "confidence": "medium for evidence fragmentation, low for audience-perception claims",
+          "uncertainty": "Audience perception should not be inferred from search/evidence collision alone."
+        },
+        {
+          "title": "Product Hunt is a visibility signal, not traction proof",
+          "finding": "The Product Hunt profile can support the observation that a Watermelon product surface exists in an early-adopter channel. It cannot support a claim about adoption, feedback quality, or traction without engagement data and entity review.",
+          "evidence": ["https://www.producthunt.com/products/watermelon"],
+          "confidence": "low to medium",
+          "uncertainty": "Use only as a related visibility signal unless ownership and current relevance are verified."
+        }
+      ],
+      "presencia": [
+        {
+          "title": "The primary owned presence is small but legible",
+          "finding": "watermelon.sh gives Brand3 a usable primary surface: a focused domain, a clear startup/design-infrastructure line, and basic crawl/indexing files. The safer presence finding is that the owned footprint is narrow but legible, not that the brand has an SEO or acquisition problem.",
+          "evidence": [
+            "https://watermelon.sh/",
+            "https://watermelon.sh/sitemap.xml",
+            "https://watermelon.sh/robots.txt"
+          ],
+          "confidence": "medium",
+          "uncertainty": "A small sitemap can indicate focus, early stage, or incomplete indexing; the current evidence does not decide among them."
+        },
+        {
+          "title": "Developer surfaces widen presence but also raise review burden",
+          "finding": "GitHub surfaces add technical presence, but they also increase ambiguity. The report should show them as possible related developer surfaces, not as confirmed proof that the design-infrastructure brand has an active open-source community.",
+          "evidence": [
+            "https://github.com/WatermelonCorp/watermellon-registry",
+            "https://github.com/watermelontools"
+          ],
+          "confidence": "low",
+          "uncertainty": "Entity relation and official status are unresolved."
+        }
+      ],
+      "vitalidad": [
+        {
+          "title": "Vitality signals are present but not entity-safe",
+          "finding": "The baseline uses watermelon.us for founding, hiring growth, and funding signals. State-first reading holds those claims as potentially useful but not entity-safe for watermelon.sh. They should not be used to describe the audited brand's vitality until the relationship between surfaces is verified.",
+          "evidence": ["https://watermelon.us/"],
+          "confidence": "low",
+          "uncertainty": "Funding, employee growth, and founding claims may belong to a different Watermelon entity."
+        },
+        {
+          "title": "External activity is mixed and partly irrelevant",
+          "finding": "The alternatives page, repository activity, and unrelated-looking produce/news reference do not form one clean vitality signal. The safer reading is that external collection is noisy: some surfaces may indicate low developer or marketplace activity, while others should be excluded or reviewed before interpretation.",
+          "evidence": [
+            "https://www.softwaresuggest.com/watermelon/alternatives",
+            "https://github.com/WatermelonCorp/watermellon-registry",
+            "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/"
+          ],
+          "confidence": "low",
+          "uncertainty": "Do not aggregate these as one vitality score narrative without entity filtering."
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "specificity": {
+      "winner": "state_first",
+      "reason": "The new findings name the actual composition problem instead of repeating generic strategy choices."
+    },
+    "evidence_binding": {
+      "winner": "state_first",
+      "reason": "Each generated finding states what the evidence can and cannot support."
+    },
+    "entity_coherence": {
+      "winner": "state_first",
+      "reason": "The entity ambiguity is centralized as the governing condition for the report."
+    },
+    "caveat_discipline": {
+      "winner": "state_first",
+      "reason": "Repeated no-external-corroboration caveats are replaced by one global caveat and local uncertainty boundaries."
+    },
+    "narrative_cohesion": {
+      "winner": "state_first",
+      "reason": "Dimensions coordinate around a shared entity problem instead of treating each finding as a separate paragraph task."
+    },
+    "uncertainty_preservation": {
+      "winner": "state_first",
+      "reason": "Uncertainty is more explicit and less repetitive; however, it still dominates the case because the evidence is genuinely ambiguous."
+    },
+    "overreach_risk": {
+      "winner": "state_first",
+      "reason": "The new findings avoid unified roadmap, adoption, market traction, and intent claims."
+    },
+    "brand3_floc_voice": {
+      "winner": "state_first",
+      "reason": "The writing is more direct, bounded, and evidence-aware, though still more diagnostic than editorial."
+    }
+  },
+  "verdict": {
+    "better_than_baseline": true,
+    "safer_than_baseline": true,
+    "clearer_than_baseline": true,
+    "worth_continuing": true,
+    "what_failed": [
+      "The trial still required manual generation; it does not prove an automated generator can do this.",
+      "The evidence set is so entity-ambiguous that the better narrative remains heavily bounded.",
+      "Generated findings are clearer but not yet production-ready report copy.",
+      "A shared evidence map must exist before generation; otherwise the model will reintroduce surface merging."
+    ],
+    "biggest_improvement": "The state-first version turns fragmented findings into one coordinated entity-composition reading.",
+    "biggest_remaining_risk": "False coherence could return immediately if related surfaces are treated as aliases or official proof."
+  }
+}

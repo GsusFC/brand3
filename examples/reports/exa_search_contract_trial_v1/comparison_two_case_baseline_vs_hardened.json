@@ -1,0 +1,741 @@
+{
+  "generated_at": "2026-05-19T04:58:22.919516+00:00",
+  "cases": [
+    {
+      "case_id": "builtwith_kit_com",
+      "brand": "builtwith.kit.com",
+      "url": "https://builtwith.kit.com",
+      "intents": {
+        "mentions": {
+          "query": "\"builtwith.kit.com\" \"builtwith.kit.com\" brand company",
+          "baseline": {
+            "ok": true,
+            "elapsed_s": 0.412628,
+            "effective_type": "auto",
+            "stats": {
+              "result_count": 15,
+              "unique_hosts": 13,
+              "owned_surface_hits": 2,
+              "unresolved_same_name_diff_root": 7,
+              "marketplace_hits": 0,
+              "trust_hits": 2,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "builtwith.com",
+                  3
+                ],
+                [
+                  "joesandbox.com",
+                  1
+                ],
+                [
+                  "scamadviser.com",
+                  1
+                ],
+                [
+                  "help.kit.com",
+                  1
+                ],
+                [
+                  "autocomplete.builtwith.com",
+                  1
+                ],
+                [
+                  "linkedin.com",
+                  1
+                ],
+                [
+                  "accio.com",
+                  1
+                ],
+                [
+                  "api.builtwith.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "hardened": {
+            "ok": true,
+            "elapsed_s": 1.133533,
+            "effective_type": "auto",
+            "stats": {
+              "result_count": 12,
+              "unique_hosts": 10,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 6,
+              "marketplace_hits": 0,
+              "trust_hits": 2,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "builtwith.com",
+                  3
+                ],
+                [
+                  "joesandbox.com",
+                  1
+                ],
+                [
+                  "scamadviser.com",
+                  1
+                ],
+                [
+                  "help.kit.com",
+                  1
+                ],
+                [
+                  "autocomplete.builtwith.com",
+                  1
+                ],
+                [
+                  "linkedin.com",
+                  1
+                ],
+                [
+                  "accio.com",
+                  1
+                ],
+                [
+                  "kb.builtwith.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "delta": {
+            "result_count": -3,
+            "owned_surface_hits": -1,
+            "unresolved_same_name_diff_root": -1,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 0.721
+          }
+        },
+        "news": {
+          "query": "\"builtwith.kit.com\" \"builtwith.kit.com\" news",
+          "baseline": {
+            "ok": true,
+            "elapsed_s": 0.259397,
+            "effective_type": "fast",
+            "stats": {
+              "result_count": 10,
+              "unique_hosts": 5,
+              "owned_surface_hits": 7,
+              "unresolved_same_name_diff_root": 1,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "kit.com",
+                  4
+                ],
+                [
+                  "newsletter.kit.com",
+                  3
+                ],
+                [
+                  "blog.builtwith.com",
+                  1
+                ],
+                [
+                  "basekit.com",
+                  1
+                ],
+                [
+                  "builtin.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "hardened": {
+            "ok": true,
+            "elapsed_s": 3.930342,
+            "effective_type": "deep-lite",
+            "stats": {
+              "result_count": 8,
+              "unique_hosts": 8,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 0,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "kit.com",
+                  1
+                ],
+                [
+                  "gtmkit.com",
+                  1
+                ],
+                [
+                  "betahub.io",
+                  1
+                ],
+                [
+                  "securityweek.com",
+                  1
+                ],
+                [
+                  "basekit.com",
+                  1
+                ],
+                [
+                  "prweb.com",
+                  1
+                ],
+                [
+                  "winbuzzer.com",
+                  1
+                ],
+                [
+                  "dev.to",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "delta": {
+            "result_count": -2,
+            "owned_surface_hits": -6,
+            "unresolved_same_name_diff_root": -1,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 3.671
+          }
+        },
+        "competitors": {
+          "query": "competitors similar to builtwith.kit.com builtwith.kit.com",
+          "baseline": {
+            "ok": true,
+            "effective_type": "deep",
+            "elapsed_s": 4.544544,
+            "stats": {
+              "result_count": 9,
+              "owned_surface_hits": 0,
+              "unresolved_same_name_diff_root": 0,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_canonical_urls": 0
+            },
+            "has_output": false
+          },
+          "hardened": {
+            "ok": true,
+            "effective_type": "deep-reasoning",
+            "elapsed_s": 103.368909,
+            "stats": {
+              "result_count": 7,
+              "owned_surface_hits": 0,
+              "unresolved_same_name_diff_root": 0,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_canonical_urls": 0
+            },
+            "has_output": false,
+            "output_preview": ""
+          },
+          "delta": {
+            "result_count": -2,
+            "owned_surface_hits": 0,
+            "unresolved_same_name_diff_root": 0,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 98.824
+          }
+        },
+        "ai_visibility": {
+          "query": "\"builtwith.kit.com\" \"builtwith.kit.com\" AI artificial intelligence recommendation",
+          "baseline": {
+            "ok": true,
+            "elapsed_s": 4.020068,
+            "effective_type": "deep",
+            "stats": {
+              "result_count": 5,
+              "unique_hosts": 4,
+              "owned_surface_hits": 2,
+              "unresolved_same_name_diff_root": 2,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "builtwith.com",
+                  2
+                ],
+                [
+                  "inkl.com",
+                  1
+                ],
+                [
+                  "kit.com",
+                  1
+                ],
+                [
+                  "help.kit.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "hardened": {
+            "ok": true,
+            "elapsed_s": 28.907892,
+            "effective_type": "deep-reasoning",
+            "stats": {
+              "result_count": 5,
+              "unique_hosts": 4,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 3,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "builtwith.com",
+                  2
+                ],
+                [
+                  "kit.com",
+                  1
+                ],
+                [
+                  "builtwith.kit-mail3.com",
+                  1
+                ],
+                [
+                  "pickyour-ai.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": true,
+            "output_preview": "{'entity_risks': ['No direct evidence of a domain or product at \"builtwith.kit.com\" — the domain does not resolve to a known entity', 'Kit (formerly ConvertKit) at kit.com is an email marketing platform for creators; its",
+            "grounding_count": 2
+          },
+          "delta": {
+            "result_count": 0,
+            "owned_surface_hits": -1,
+            "unresolved_same_name_diff_root": 1,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 24.888
+          }
+        }
+      }
+    },
+    {
+      "case_id": "wiocapital_com",
+      "brand": "Wio Capital",
+      "url": "https://wiocapital.com",
+      "intents": {
+        "mentions": {
+          "query": "\"Wio Capital\" \"wiocapital.com\" brand company",
+          "baseline": {
+            "ok": true,
+            "elapsed_s": 0.298735,
+            "effective_type": "auto",
+            "stats": {
+              "result_count": 15,
+              "unique_hosts": 11,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 3,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "wioclinic.com",
+                  4
+                ],
+                [
+                  "wio.io",
+                  2
+                ],
+                [
+                  "wiocapital.com",
+                  1
+                ],
+                [
+                  "wio.capital",
+                  1
+                ],
+                [
+                  "prospeo.io",
+                  1
+                ],
+                [
+                  "elreferente.es",
+                  1
+                ],
+                [
+                  "assets.ctfassets.net",
+                  1
+                ],
+                [
+                  "jointhewio.org",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "hardened": {
+            "ok": true,
+            "elapsed_s": 1.084472,
+            "effective_type": "auto",
+            "stats": {
+              "result_count": 12,
+              "unique_hosts": 8,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 2,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "wioclinic.com",
+                  4
+                ],
+                [
+                  "wio.io",
+                  2
+                ],
+                [
+                  "wiocapital.com",
+                  1
+                ],
+                [
+                  "wio.capital",
+                  1
+                ],
+                [
+                  "prospeo.io",
+                  1
+                ],
+                [
+                  "elreferente.es",
+                  1
+                ],
+                [
+                  "assets.ctfassets.net",
+                  1
+                ],
+                [
+                  "wcapitalbr.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "delta": {
+            "result_count": -3,
+            "owned_surface_hits": 0,
+            "unresolved_same_name_diff_root": -1,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 0.786
+          }
+        },
+        "news": {
+          "query": "\"Wio Capital\" \"wiocapital.com\" news",
+          "baseline": {
+            "ok": true,
+            "elapsed_s": 0.326125,
+            "effective_type": "fast",
+            "stats": {
+              "result_count": 10,
+              "unique_hosts": 10,
+              "owned_surface_hits": 0,
+              "unresolved_same_name_diff_root": 1,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "capital-riesgo.es",
+                  1
+                ],
+                [
+                  "elreferente.es",
+                  1
+                ],
+                [
+                  "valenciaplaza.com",
+                  1
+                ],
+                [
+                  "semafor.com",
+                  1
+                ],
+                [
+                  "arabnews.com",
+                  1
+                ],
+                [
+                  "integratormedia.com",
+                  1
+                ],
+                [
+                  "emiratesreporter.com",
+                  1
+                ],
+                [
+                  "techparley.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "hardened": {
+            "ok": true,
+            "elapsed_s": 3.978992,
+            "effective_type": "deep-lite",
+            "stats": {
+              "result_count": 8,
+              "unique_hosts": 8,
+              "owned_surface_hits": 0,
+              "unresolved_same_name_diff_root": 1,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "valenciaplaza.com",
+                  1
+                ],
+                [
+                  "elreferente.es",
+                  1
+                ],
+                [
+                  "en.firstbankeg.com",
+                  1
+                ],
+                [
+                  "thenewscrypto.com",
+                  1
+                ],
+                [
+                  "inforcapital.com",
+                  1
+                ],
+                [
+                  "finance.biggo.com",
+                  1
+                ],
+                [
+                  "eu.36kr.com",
+                  1
+                ],
+                [
+                  "financial-news.co.uk",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "delta": {
+            "result_count": -2,
+            "owned_surface_hits": 0,
+            "unresolved_same_name_diff_root": 0,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 3.653
+          }
+        },
+        "competitors": {
+          "query": "competitors similar to Wio Capital wiocapital.com",
+          "baseline": {
+            "ok": true,
+            "effective_type": "deep",
+            "elapsed_s": 4.331723,
+            "stats": {
+              "result_count": 10,
+              "owned_surface_hits": 0,
+              "unresolved_same_name_diff_root": 0,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_canonical_urls": 0
+            },
+            "has_output": false
+          },
+          "hardened": {
+            "ok": true,
+            "effective_type": "deep-reasoning",
+            "elapsed_s": 40.241647,
+            "stats": {
+              "result_count": 6,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 0,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_canonical_urls": 0
+            },
+            "has_output": true,
+            "output_preview": "{'entity_risks': [\"Luscent (luscent.io) - AI-native wealth intelligence platform for European independent advisors and wealth managers; directly competes with Wio Capital's AI-native infrastructure for independent adviso"
+          },
+          "delta": {
+            "result_count": -4,
+            "owned_surface_hits": 1,
+            "unresolved_same_name_diff_root": 0,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 35.91
+          }
+        },
+        "ai_visibility": {
+          "query": "\"Wio Capital\" \"wiocapital.com\" AI artificial intelligence recommendation",
+          "baseline": {
+            "ok": true,
+            "elapsed_s": 3.106636,
+            "effective_type": "deep",
+            "stats": {
+              "result_count": 3,
+              "unique_hosts": 3,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 1,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "wiocapital.com",
+                  1
+                ],
+                [
+                  "capital-riesgo.es",
+                  1
+                ],
+                [
+                  "elreferente.es",
+                  1
+                ]
+              ]
+            },
+            "has_output": false,
+            "output_preview": "",
+            "grounding_count": 0
+          },
+          "hardened": {
+            "ok": true,
+            "elapsed_s": 26.969232,
+            "effective_type": "deep-reasoning",
+            "stats": {
+              "result_count": 4,
+              "unique_hosts": 4,
+              "owned_surface_hits": 1,
+              "unresolved_same_name_diff_root": 2,
+              "marketplace_hits": 0,
+              "trust_hits": 0,
+              "technical_hits": 0,
+              "duplicate_urls": 0,
+              "duplicate_canonical_urls": 0,
+              "top_hosts": [
+                [
+                  "wiocapital.com",
+                  1
+                ],
+                [
+                  "capital-riesgo.es",
+                  1
+                ],
+                [
+                  "wio.capital",
+                  1
+                ],
+                [
+                  "rankiapro.com",
+                  1
+                ]
+              ]
+            },
+            "has_output": true,
+            "output_preview": "{'entity_risks': ['Early-stage company: Founded in 2025 with only ~8-11 employees and very low web traffic (~313 monthly visits), indicating minimal market traction so far', 'Small funding base: Only €1.2M seed round (le",
+            "grounding_count": 2
+          },
+          "delta": {
+            "result_count": 1,
+            "owned_surface_hits": 0,
+            "unresolved_same_name_diff_root": 1,
+            "marketplace_hits": 0,
+            "trust_hits": 0,
+            "technical_hits": 0,
+            "duplicate_canonical_urls": 0,
+            "elapsed_s": 23.863
+          }
+        }
+      }
+    }
+  ]
+}

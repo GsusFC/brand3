@@ -22,6 +22,7 @@ class MainExperimentTests(unittest.TestCase):
             True,
             True,
             refresh=True,
+            enable_visual_signature_shadow_run=False,
         )
 
     def test_render_report_without_diagnostic_flag_uses_existing_render_path(self):

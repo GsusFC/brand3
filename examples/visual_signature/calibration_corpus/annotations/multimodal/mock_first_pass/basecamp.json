@@ -1,0 +1,482 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:30:21.359977",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://basecamp.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.616,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.865
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.24,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 48
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Basecamp",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Established SaaS with pragmatic less trend-led visual language."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 52,
+        "labels": [
+          "No",
+          "Yes, that\u2019s fine",
+          "Hit play to see how Basecamp is different",
+          "What\u2019s my week look like?",
+          "What\u2019s on my plate today?",
+          "Which projects am I on?",
+          "A project page organizes everything",
+          "What to do + who\u2019s doing?",
+          "Who said what when?",
+          "What\u2019s due next?"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 32,
+        "labels": [
+          "Hit play to see how Basecamp is different",
+          "What\u2019s my week look like?",
+          "What\u2019s on my plate today?",
+          "Which projects am I on?",
+          "A project page organizes everything",
+          "What to do + who\u2019s doing?",
+          "Who said what when?",
+          "What\u2019s due next?",
+          "Where\u2019s the latest version?",
+          "Got a quick question?"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 54,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 48,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Hit play to see how Basecamp is different",
+      "What\u2019s my week look like?",
+      "What\u2019s on my plate today?",
+      "Which projects am I on?",
+      "A project page organizes everything",
+      "What to do + who\u2019s doing?",
+      "Who said what when?",
+      "What\u2019s due next?"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.15,
+    "component_consistency": 0.72,
+    "confidence": 0.297,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.315,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.297,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.323
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.545
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": false,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "multi_column"
+    ],
+    "section_count": 6,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.0,
+    "font_families": [],
+    "heading_scale": "unknown",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "dom_density_higher_than_viewport",
+        "viewport_palette_more_complex_than_dom",
+        "dom_density_disagrees_with_viewport_first_fold"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "DOM suggests a denser page than the viewport first impression.",
+        "Viewport palette is noisier than the DOM palette.",
+        "DOM suggests a denser page, but the viewport reads as spacious."
+      ],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.284,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.77,
+      "edge_density": 0.117,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.733
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 477760,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://basecamp.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/basecamp.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 128,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14574,
+          "ratio": 0.7287
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 1257,
+          "ratio": 0.0629
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 1140,
+          "ratio": 0.057
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1020,
+          "ratio": 0.051
+        },
+        {
+          "hex": "#a0c0e0",
+          "occurrences": 185,
+          "ratio": 0.0092
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 146,
+          "ratio": 0.0073
+        },
+        {
+          "hex": "#a06020",
+          "occurrences": 116,
+          "ratio": 0.0058
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 95,
+          "ratio": 0.0047
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.284,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.77,
+      "edge_density": 0.117,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.733
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.77,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.861
+    },
+    "viewport_palette": {
+      "color_count": 128,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14574,
+          "ratio": 0.7287
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 1257,
+          "ratio": 0.0629
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 1140,
+          "ratio": 0.057
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1020,
+          "ratio": 0.051
+        },
+        {
+          "hex": "#a0c0e0",
+          "occurrences": 185,
+          "ratio": 0.0092
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 146,
+          "ratio": 0.0073
+        },
+        {
+          "hex": "#a06020",
+          "occurrences": 116,
+          "ratio": 0.0058
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 95,
+          "ratio": 0.0047
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.733,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.77,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.861
+    }
+  },
+  "website_url": "https://basecamp.com"
+}

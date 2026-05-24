@@ -1,0 +1,512 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:57:55.797787",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.thefabulous.co",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "consumer app",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 46,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Fabulous",
+  "calibration": {
+    "expected_category": "consumer_app",
+    "notes": "Mid-market consumer habit app with wellness-adjacent conversion patterns."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.62,
+        "count": 7,
+        "labels": [
+          "Start your journey",
+          "Find out more",
+          "Get started",
+          "Cookie Preferences",
+          "Join a community",
+          "Contact Us",
+          "Sign in"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Start your journey",
+      "Find out more",
+      "Get started",
+      "Cookie Preferences",
+      "Join a community",
+      "Contact Us",
+      "Sign in"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.68,
+    "confidence": 0.345,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.355,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.345,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.455
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "consistency_inference_limited"
+    ],
+    "score": 0.599
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex"
+    ],
+    "section_count": 4,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/Fabulous-Logo.jpg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/Shape-Logo.jpg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/clarify-logo2.jpeg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "nav",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/Elixir-Logo.jpg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "nav",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/Mind-Logo.jpg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "nav",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/65e9754c9626aa0169367958/65e976858d073e88fa982a02_logotype.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/logo-black-n.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.thefabulous.co/images/fabulous_logo2x.webp"
+      }
+    ],
+    "confidence": 0.75,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.934
+    },
+    "composition": {
+      "color_variance": 0.609,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.017,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.444
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 354253,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.thefabulous.co",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/fabulous.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 42,
+      "confidence": 0.78,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 8739,
+          "ratio": 0.437
+        },
+        {
+          "hex": "#200060",
+          "occurrences": 4100,
+          "ratio": 0.205
+        },
+        {
+          "hex": "#202060",
+          "occurrences": 2064,
+          "ratio": 0.1032
+        },
+        {
+          "hex": "#402060",
+          "occurrences": 1632,
+          "ratio": 0.0816
+        },
+        {
+          "hex": "#602060",
+          "occurrences": 636,
+          "ratio": 0.0318
+        },
+        {
+          "hex": "#604080",
+          "occurrences": 571,
+          "ratio": 0.0285
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 345,
+          "ratio": 0.0173
+        },
+        {
+          "hex": "#404080",
+          "occurrences": 263,
+          "ratio": 0.0132
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.609,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.017,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.444
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.78,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.855
+    },
+    "viewport_palette": {
+      "color_count": 42,
+      "confidence": 0.78,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 8739,
+          "ratio": 0.437
+        },
+        {
+          "hex": "#200060",
+          "occurrences": 4100,
+          "ratio": 0.205
+        },
+        {
+          "hex": "#202060",
+          "occurrences": 2064,
+          "ratio": 0.1032
+        },
+        {
+          "hex": "#402060",
+          "occurrences": 1632,
+          "ratio": 0.0816
+        },
+        {
+          "hex": "#602060",
+          "occurrences": 636,
+          "ratio": 0.0318
+        },
+        {
+          "hex": "#604080",
+          "occurrences": 571,
+          "ratio": 0.0285
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 345,
+          "ratio": 0.0173
+        },
+        {
+          "hex": "#404080",
+          "occurrences": 263,
+          "ratio": 0.0132
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.444,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.78,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.855
+    }
+  },
+  "website_url": "https://www.thefabulous.co"
+}

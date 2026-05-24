@@ -1,0 +1,106 @@
+{
+  "items": [
+    {
+      "description": "Raw viewport evidence was captured.",
+      "from_states": [],
+      "key": "raw_capture_created",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "RAW_STATE"
+    },
+    {
+      "description": "Viewport evidence contains an obstruction.",
+      "from_states": [
+        "RAW_STATE"
+      ],
+      "key": "viewport_obstruction_detected",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "OBSTRUCTED_STATE"
+    },
+    {
+      "description": "No obstruction was found in the raw viewport.",
+      "from_states": [
+        "RAW_STATE"
+      ],
+      "key": "no_obstruction_detected",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "RAW_STATE"
+    },
+    {
+      "description": "An obvious reversible affordance is present.",
+      "from_states": [
+        "OBSTRUCTED_STATE"
+      ],
+      "key": "exact_safe_affordance_detected",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "ELIGIBLE_FOR_SAFE_INTERVENTION"
+    },
+    {
+      "description": "The obstruction is visible but no safe affordance is obvious.",
+      "from_states": [
+        "OBSTRUCTED_STATE"
+      ],
+      "key": "no_safe_affordance_detected",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "REVIEW_REQUIRED_STATE"
+    },
+    {
+      "description": "The overlay looks like a protected environment such as login or paywall.",
+      "from_states": [
+        "OBSTRUCTED_STATE"
+      ],
+      "key": "protected_environment_detected",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "UNSAFE_MUTATION_BLOCKED"
+    },
+    {
+      "description": "A safe intervention was attempted.",
+      "from_states": [
+        "ELIGIBLE_FOR_SAFE_INTERVENTION"
+      ],
+      "key": "safe_mutation_attempted",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "ELIGIBLE_FOR_SAFE_INTERVENTION"
+    },
+    {
+      "description": "A safe intervention succeeded and raw evidence remains preserved.",
+      "from_states": [
+        "ELIGIBLE_FOR_SAFE_INTERVENTION"
+      ],
+      "key": "safe_mutation_succeeded",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "MINIMALLY_MUTATED_STATE"
+    },
+    {
+      "description": "A safe intervention failed and the raw state remains primary.",
+      "from_states": [
+        "ELIGIBLE_FOR_SAFE_INTERVENTION"
+      ],
+      "key": "safe_mutation_failed",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "REVIEW_REQUIRED_STATE"
+    },
+    {
+      "description": "A human reviewer is required to resolve uncertainty.",
+      "from_states": [
+        "OBSTRUCTED_STATE",
+        "REVIEW_REQUIRED_STATE"
+      ],
+      "key": "human_review_required",
+      "requires_evidence": true,
+      "requires_lineage": true,
+      "to_state": "REVIEW_REQUIRED_STATE"
+    }
+  ],
+  "registry_type": "transition_registry",
+  "schema_version": "phase-zero-transition-registry-1",
+  "taxonomy_version": "phase-zero-taxonomy-1"
+}

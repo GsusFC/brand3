@@ -1,0 +1,404 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:50:43.565829",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.stash.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 6,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 28,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Stash",
+  "calibration": {
+    "expected_category": "finance_fintech",
+    "notes": "Consumer finance app added for more ordinary subscription and investing conversion patterns."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#00b67a",
+      "#005128",
+      "#009ceb"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#f2f4f5",
+      "#191919",
+      "#005128",
+      "#009ceb"
+    ],
+    "confidence": 0.739,
+    "dominant_colors": [
+      "#dcdce6",
+      "#ffffff",
+      "#f2f4f5",
+      "#191919",
+      "#00b67a",
+      "#005128",
+      "#009ceb"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#dcdce6",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#ffffff",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#f2f4f5",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#191919",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00b67a",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#005128",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#009ceb",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#191919",
+      "#005128"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 10,
+        "labels": [
+          "1 As of 2022, according to&nbsp; ...",
+          "1",
+          "2",
+          "3"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 8,
+        "labels": [
+          "Explore my portfolio",
+          "Get Started in Minutes",
+          "Start Today",
+          "Start Investing",
+          "Build My Portfolio",
+          "Get your invite",
+          "Learn more about self directed investing",
+          "Learn more about Smart Portfolio"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Explore my portfolio",
+      "Get Started in Minutes",
+      "Start Today",
+      "Start Investing",
+      "Build My Portfolio",
+      "Get your invite",
+      "Learn more about self directed investing",
+      "Learn more about Smart Portfolio"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.68,
+    "confidence": 0.517,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.514,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.517,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.47
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.63
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 34,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.834,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.542,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.078,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.401
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 371729,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.stash.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/stash.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 67,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7699,
+          "ratio": 0.385
+        },
+        {
+          "hex": "#004060",
+          "occurrences": 2122,
+          "ratio": 0.1061
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2013,
+          "ratio": 0.1007
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1931,
+          "ratio": 0.0965
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 1922,
+          "ratio": 0.0961
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1614,
+          "ratio": 0.0807
+        },
+        {
+          "hex": "#00a0e0",
+          "occurrences": 1209,
+          "ratio": 0.0604
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 271,
+          "ratio": 0.0135
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.542,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.078,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.401
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 67,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7699,
+          "ratio": 0.385
+        },
+        {
+          "hex": "#004060",
+          "occurrences": 2122,
+          "ratio": 0.1061
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2013,
+          "ratio": 0.1007
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1931,
+          "ratio": 0.0965
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 1922,
+          "ratio": 0.0961
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1614,
+          "ratio": 0.0807
+        },
+        {
+          "hex": "#00a0e0",
+          "occurrences": 1209,
+          "ratio": 0.0604
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 271,
+          "ratio": 0.0135
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.401,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.stash.com"
+}

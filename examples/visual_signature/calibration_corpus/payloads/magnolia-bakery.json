@@ -1,0 +1,395 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:08:06.308210",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.magnoliabakery.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 68,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 80,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Magnolia Bakery",
+  "calibration": {
+    "expected_category": "local_service_small_business",
+    "notes": "Local-origin brand with ecommerce/service blend and moderate polish."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#00211a"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#333333",
+      "#00211a",
+      "#161616",
+      "#bae8d4"
+    ],
+    "confidence": 0.683,
+    "dominant_colors": [
+      "#ffffff",
+      "#333333",
+      "#00211a",
+      "#161616",
+      "#bae8d4",
+      "#e7cbef"
+    ],
+    "palette": [
+      {
+        "confidence": 0.84,
+        "hex": "#ffffff",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#333333",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#00211a",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#161616",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#bae8d4",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e7cbef",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#333333",
+      "#00211a",
+      "#161616"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 20,
+        "labels": [
+          "Reload",
+          "Chat with us"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 10,
+        "labels": [
+          "LEARN MORE",
+          "ORDER NOW",
+          "GET TICKETS",
+          "Learn More",
+          "ORDER HERE",
+          "View More",
+          "GET STARTED",
+          "Reload",
+          "Chat with us",
+          "ORDER ONLINE"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 36,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 30,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "LEARN MORE",
+      "ORDER NOW",
+      "GET TICKETS",
+      "Learn More",
+      "ORDER HERE",
+      "View More",
+      "GET STARTED",
+      "Reload"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.7,
+    "confidence": 0.518,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.519,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.518,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.47
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.63
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex"
+    ],
+    "section_count": 34,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.73,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.209,
+      "composition_classification": "dense_grid",
+      "confidence": 0.726,
+      "edge_density": 0.06,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.061
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 789488,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.magnoliabakery.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/magnolia-bakery.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 85,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#606060",
+          "occurrences": 8384,
+          "ratio": 0.4192
+        },
+        {
+          "hex": "#a0c0a0",
+          "occurrences": 2042,
+          "ratio": 0.1021
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 1573,
+          "ratio": 0.0786
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1190,
+          "ratio": 0.0595
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 921,
+          "ratio": 0.0461
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 751,
+          "ratio": 0.0376
+        },
+        {
+          "hex": "#c0e0c0",
+          "occurrences": 657,
+          "ratio": 0.0328
+        },
+        {
+          "hex": "#a0e0a0",
+          "occurrences": 569,
+          "ratio": 0.0284
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.209,
+      "composition_classification": "dense_grid",
+      "confidence": 0.726,
+      "edge_density": 0.06,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.061
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.726,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.848
+    },
+    "viewport_palette": {
+      "color_count": 85,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#606060",
+          "occurrences": 8384,
+          "ratio": 0.4192
+        },
+        {
+          "hex": "#a0c0a0",
+          "occurrences": 2042,
+          "ratio": 0.1021
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 1573,
+          "ratio": 0.0786
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1190,
+          "ratio": 0.0595
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 921,
+          "ratio": 0.0461
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 751,
+          "ratio": 0.0376
+        },
+        {
+          "hex": "#c0e0c0",
+          "occurrences": 657,
+          "ratio": 0.0328
+        },
+        {
+          "hex": "#a0e0a0",
+          "occurrences": 569,
+          "ratio": 0.0284
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.061,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.726,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.848
+    }
+  },
+  "website_url": "https://www.magnoliabakery.com"
+}

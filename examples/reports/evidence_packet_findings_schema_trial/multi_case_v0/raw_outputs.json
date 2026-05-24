@@ -1,0 +1,99 @@
+{
+  "created_at": "2026-05-18T08:48:47.258152+00:00",
+  "executed": false,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      }
+    },
+    {
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      }
+    },
+    {
+      "case_id": "launchdarkly",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      }
+    },
+    {
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "allowed_evidence_urls": [
+        "https://watermelon.sh/"
+      ],
+      "executed": false,
+      "raw_response": null,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      }
+    }
+  ],
+  "skipped": [
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

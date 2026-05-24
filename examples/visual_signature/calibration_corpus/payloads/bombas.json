@@ -1,0 +1,340 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:00:03.180146",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://bombas.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 2,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 38,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Bombas",
+  "calibration": {
+    "expected_category": "ecommerce",
+    "notes": "Mainstream DTC ecommerce with promotion and mission sections."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 82,
+        "labels": [
+          "Enable accessibility",
+          "United States",
+          "Log In",
+          "Quick View",
+          "Sign Up",
+          "Reload"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "United States",
+          "Log In",
+          "Quick View",
+          "Sign Up",
+          "Get Help",
+          "Reload"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 462,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": [
+      "United States",
+      "Log In",
+      "Quick View",
+      "Sign Up",
+      "Get Help",
+      "Reload"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.68,
+    "confidence": 0.433,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.51,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.433,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.388
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.588
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid"
+    ],
+    "section_count": 122,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.55,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 2,
+        "role": "display",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.386,
+      "composition_classification": "dense_grid",
+      "confidence": 0.832,
+      "edge_density": 0.071,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.237
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 493422,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://bombas.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/bombas.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 113,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#e0c040",
+          "occurrences": 4975,
+          "ratio": 0.2487
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4521,
+          "ratio": 0.2261
+        },
+        {
+          "hex": "#e0c0c0",
+          "occurrences": 1925,
+          "ratio": 0.0963
+        },
+        {
+          "hex": "#e0e0c0",
+          "occurrences": 1803,
+          "ratio": 0.0901
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 1078,
+          "ratio": 0.0539
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 764,
+          "ratio": 0.0382
+        },
+        {
+          "hex": "#a04020",
+          "occurrences": 366,
+          "ratio": 0.0183
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 242,
+          "ratio": 0.0121
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.386,
+      "composition_classification": "dense_grid",
+      "confidence": 0.832,
+      "edge_density": 0.071,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.237
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.832,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.88
+    },
+    "viewport_palette": {
+      "color_count": 113,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#e0c040",
+          "occurrences": 4975,
+          "ratio": 0.2487
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4521,
+          "ratio": 0.2261
+        },
+        {
+          "hex": "#e0c0c0",
+          "occurrences": 1925,
+          "ratio": 0.0963
+        },
+        {
+          "hex": "#e0e0c0",
+          "occurrences": 1803,
+          "ratio": 0.0901
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 1078,
+          "ratio": 0.0539
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 764,
+          "ratio": 0.0382
+        },
+        {
+          "hex": "#a04020",
+          "occurrences": 366,
+          "ratio": 0.0183
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 242,
+          "ratio": 0.0121
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.237,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.832,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.88
+    }
+  },
+  "website_url": "https://bombas.com"
+}

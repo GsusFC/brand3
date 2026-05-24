@@ -1,0 +1,352 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:26:49.499303",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://lawnlove.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 116,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Lawn Love",
+  "calibration": {
+    "expected_category": "local_service_small_business",
+    "notes": "Local services marketplace with practical booking-first layout."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#a3d145"
+    ],
+    "background_candidates": [
+      "#a3d145",
+      "#f7fdfa"
+    ],
+    "confidence": 0.461,
+    "dominant_colors": [
+      "#a3d145",
+      "#f7fdfa"
+    ],
+    "palette": [
+      {
+        "confidence": 0.76,
+        "hex": "#a3d145",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f7fdfa",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 8,
+        "labels": [
+          "\u00d7",
+          "See My Price \u2192 Loading...",
+          "See My Price Loading...",
+          "Show More Reviews Show Fewer Reviews"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 7,
+        "labels": [
+          "\u00d7",
+          "See My Price \u2192 Loading...",
+          "See My Price Loading...",
+          "Get a free estimate \u2192",
+          "quote form",
+          "Try Us \u2192",
+          "Learn more \u2192"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.42,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": [
+      "\u00d7",
+      "See My Price \u2192 Loading...",
+      "See My Price Loading...",
+      "Get a free estimate \u2192",
+      "quote form",
+      "Try Us \u2192",
+      "Learn more \u2192"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.68,
+    "confidence": 0.448,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.544,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.448,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.399
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.594
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex"
+    ],
+    "section_count": 32,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.313,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.384,
+      "composition_classification": "dense_grid",
+      "confidence": 0.83,
+      "edge_density": 0.072,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.325
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 789977,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://lawnlove.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/lawn-love.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 175,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 6362,
+          "ratio": 0.3181
+        },
+        {
+          "hex": "#a0e040",
+          "occurrences": 5148,
+          "ratio": 0.2574
+        },
+        {
+          "hex": "#006020",
+          "occurrences": 1063,
+          "ratio": 0.0532
+        },
+        {
+          "hex": "#a0c040",
+          "occurrences": 785,
+          "ratio": 0.0393
+        },
+        {
+          "hex": "#a0c060",
+          "occurrences": 751,
+          "ratio": 0.0376
+        },
+        {
+          "hex": "#204000",
+          "occurrences": 359,
+          "ratio": 0.018
+        },
+        {
+          "hex": "#406000",
+          "occurrences": 340,
+          "ratio": 0.017
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 278,
+          "ratio": 0.0139
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.384,
+      "composition_classification": "dense_grid",
+      "confidence": 0.83,
+      "edge_density": 0.072,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.325
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.83,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.879
+    },
+    "viewport_palette": {
+      "color_count": 175,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 6362,
+          "ratio": 0.3181
+        },
+        {
+          "hex": "#a0e040",
+          "occurrences": 5148,
+          "ratio": 0.2574
+        },
+        {
+          "hex": "#006020",
+          "occurrences": 1063,
+          "ratio": 0.0532
+        },
+        {
+          "hex": "#a0c040",
+          "occurrences": 785,
+          "ratio": 0.0393
+        },
+        {
+          "hex": "#a0c060",
+          "occurrences": 751,
+          "ratio": 0.0376
+        },
+        {
+          "hex": "#204000",
+          "occurrences": 359,
+          "ratio": 0.018
+        },
+        {
+          "hex": "#406000",
+          "occurrences": 340,
+          "ratio": 0.017
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 278,
+          "ratio": 0.0139
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.325,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.83,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.879
+    }
+  },
+  "website_url": "https://lawnlove.com"
+}

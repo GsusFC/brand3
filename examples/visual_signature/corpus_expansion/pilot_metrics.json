@@ -1,0 +1,51 @@
+{
+  "category_distribution": {
+    "AI-native": 1,
+    "SaaS": 1,
+    "ecommerce": 1,
+    "editorial/media": 1,
+    "wellness_lifestyle": 1
+  },
+  "confidence_distribution": {
+    "high": 2,
+    "low": 1,
+    "medium": 1,
+    "unknown": 1
+  },
+  "confirmed_count": 1,
+  "contradicted_count": 1,
+  "contradiction_rate": 0.2,
+  "current_capture_count": 5,
+  "evidence_only_corpus_expansion": true,
+  "generated_at": "2026-05-12T10:43:08.621714Z",
+  "insufficient_for_model_training": true,
+  "insufficient_for_production_scoring": true,
+  "known_limitations": [
+    "Current corpus expansion state is a scaffold, not a production corpus.",
+    "This bundle is insufficient for model training.",
+    "This bundle is insufficient for production scoring.",
+    "This bundle is evidence-only corpus expansion."
+  ],
+  "needs_additional_evidence_count": 1,
+  "notes": [
+    "Evidence-only corpus expansion metrics.",
+    "Governance-only; no runtime enablement."
+  ],
+  "pilot_run_id": "visual-signature-corpus-expansion-pilot-1",
+  "queue_state_distribution": {
+    "needs_additional_evidence": 1,
+    "queued": 1,
+    "reviewed": 2,
+    "unresolved": 1
+  },
+  "queued_capture_count": 1,
+  "readiness_scope": "human_review_scaling",
+  "readiness_status": "not_ready",
+  "record_type": "corpus_expansion_metrics",
+  "reviewed_capture_count": 2,
+  "reviewer_coverage": 0.4,
+  "schema_version": "visual-signature-corpus-expansion-metrics-1",
+  "target_capture_count": 20,
+  "unresolved_capture_count": 1,
+  "unresolved_rate": 0.2
+}

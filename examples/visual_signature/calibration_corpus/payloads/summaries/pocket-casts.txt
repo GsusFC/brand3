@@ -1,0 +1,40 @@
+Expected category: consumer_app
+Notes: Mid-market consumer audio app added to reduce global app overfitting.
+
+== Pocket Casts ==
+URL: https://pocketcasts.com
+Interpretation status: interpretable
+Extraction confidence: 0.64 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.48, consistency_coverage=0.54]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.74
+- typography: missing, confidence=0.40
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.67
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.54
+
+Visual summaries:
+- palette preview: #03a9f4[###] #f43e37[###] #ffffff[###] #4285f4[###] #34a853[###] #fbbc05[###] #ea4335[###]
+- typography: none
+- layout: header=False; nav=True; hero=True; sections=10; density=sparse; patterns=grid,multi_column
+- components: cta=3, modal=2
+- consistency: overall=0.50; color=0.68; type=0.20; component=0.64; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #200000[###] #400000[###] #202020[###] #e04040[###] #c04020[###] #000000[###] #404040[###]
+- viewport palette: #ffffff[###] #200000[###] #400000[###] #202020[###] #e04040[###] #c04020[###] #000000[###] #404040[###]
+- composition: density=dense; whitespace=48%; classification=dense_grid
+- viewport composition: density=dense; whitespace=48%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

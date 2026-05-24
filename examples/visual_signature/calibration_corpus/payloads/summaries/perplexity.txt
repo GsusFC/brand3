@@ -1,0 +1,42 @@
+Expected category: ai_native
+Notes: AI-native consumer/product surface with search-first behavior.
+
+== Perplexity ==
+URL: https://www.perplexity.ai
+Interpretation status: interpretable
+Extraction confidence: 0.60 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.41, consistency_coverage=0.47]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.41
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.47
+
+Visual summaries:
+- palette preview: #c8d991[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=0; density=sparse; patterns=grid,flex,multi_column
+- components: button=78, cta=40, form=2, card=2, accordion=6, tabs=42, modal=4, pricing=2
+- consistency: overall=0.56; color=0.78; type=0.20; component=0.75; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #404040[###] #e0e0e0[###] #606060[###] #c0c0c0[###] #a0a0a0[###] #808080[###] #000000[###]
+- viewport palette: #ffffff[###] #404040[###] #e0e0e0[###] #606060[###] #c0c0c0[###] #a0a0a0[###] #808080[###] #000000[###]
+- composition: density=sparse; whitespace=99%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=99%; classification=sparse_single_focus
+- vision confidence: 0.75 (medium)
+- viewport confidence: 0.75 (medium)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: weak confidence (0.41)
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

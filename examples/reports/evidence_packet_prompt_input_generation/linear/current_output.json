@@ -1,0 +1,40 @@
+{
+  "label": "current_brand3_findings_prompt",
+  "created_at": "2026-05-18T08:11:24.394137+00:00",
+  "started_at": "2026-05-18T08:10:58.606667+00:00",
+  "model": "gemini-3.1-pro-preview",
+  "dimension": "diferenciacion",
+  "raw_response": {
+    "findings": [
+      {
+        "title": "Self-Description as Agent Collaborative System",
+        "observation": "Third parties quote the brand describing itself as \"The product development system for teams and agents\" and categorize the platform as being \"purpose-built for modern teams with AI workflows at its core.\"",
+        "implication": "Structurally pairing \"agents\" with \"teams\" in the core value proposition suggests a strategic attempt to differentiate from traditional issue trackers by framing artificial intelligence as an active participant rather than a passive tool.",
+        "typical_decision": "Teams in this position typically choose between building highly technical documentation to prove these agent capabilities to developers, or focusing marketing efforts on the broader productivity benefits for managers, noting that the right path depends on internal product readiness and target buyer personas.",
+        "evidence_urls": [
+          "https://linear.app"
+        ]
+      },
+      {
+        "title": "Contrast Between Product Pitch and Content Tone",
+        "observation": "While third parties quote the brand describing its product as \"designed for workflows shared by humans and agents,\" another external source categorizes the brand's marketing content as feeling distinctly \"original and human-written\" across owned surfaces like the blog and changelog on linear.app.",
+        "implication": "This divergence between an automated, agent-heavy product narrative and a distinctly human editorial tone may indicate a deliberate strategy to maintain authenticity and trust with technical audiences who are often skeptical of automated marketing.",
+        "typical_decision": "Teams in this position typically choose between maintaining a strict firewall between human-authored marketing and AI-driven product features, or gradually introducing agent-generated insights into public case studies, recognizing that the optimal move depends on internal brand guidelines and unobservable audience sentiment metrics.",
+        "evidence_urls": [
+          "https://linear.app"
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "finding_count": 2,
+    "titles": [
+      "Self-Description as Agent Collaborative System",
+      "Contrast Between Product Pitch and Content Tone"
+    ],
+    "risky_terms_detected": [
+      "strategy",
+      "strategic"
+    ]
+  }
+}

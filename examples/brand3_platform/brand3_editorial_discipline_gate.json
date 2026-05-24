@@ -1,0 +1,236 @@
+{
+  "artifact_id": "brand3_editorial_discipline_gate_v0_1",
+  "artifact_type": "editorial_quality_gate_specification",
+  "generated_at": "2026-05-16",
+  "status": "documentation_specification",
+  "scope": "editorial_quality_gate_only",
+  "guardrails": {
+    "documentation_only": true,
+    "prompt_changes": false,
+    "runtime_changes": false,
+    "scoring_changes": false,
+    "report_changes": false,
+    "renderer_changes": false,
+    "visual_signature_changes": false,
+    "rollout": false
+  },
+  "purpose": "Prevent Brand3 reports and perceptual narratives from drifting into generic AI verbosity while preserving the Brand3/FLOC* perceptual voice.",
+  "being_brand3_means": [
+    "observation-first",
+    "evidence-bound",
+    "short",
+    "specific",
+    "perceptual when evidence supports it",
+    "willing to say there is no signal",
+    "willing to write negative or thin readings without turning them into business verdicts",
+    "tension-aware only when evidence contains a real tension",
+    "allergic to generic praise and invented strategic intent"
+  ],
+  "ai_verbosity": {
+    "definition": "Prose that uses many words to avoid making a precise observation.",
+    "warning_signs": [
+      "repeating the same idea in adjacent clauses",
+      "using abstract nouns instead of surface mechanisms",
+      "explaining the methodology inside the finding",
+      "adding generic implications after a clear observation",
+      "cushioning every sentence with may, could, supports, suggests, and appears",
+      "ending with broad consultant language",
+      "using balanced but empty phrasing such as opportunities and challenges"
+    ],
+    "bad_example": "The brand appears to communicate a strong and cohesive presence across its digital ecosystem, which may support a perception of clarity and strategic maturity.",
+    "brand3_rewrite": "The website and social surfaces repeat the same product vocabulary. External proof is thinner, so coherence is visible inside owned channels but not yet corroborated outside them."
+  },
+  "false_sophistication": {
+    "definition": "Prestige-coded language presented as analysis.",
+    "reject_or_rewrite_terms": [
+      "premium",
+      "sophisticated",
+      "elevated",
+      "refined",
+      "polished",
+      "world-class",
+      "elegant",
+      "modern",
+      "robust",
+      "compelling",
+      "best-in-class",
+      "leader",
+      "leading",
+      "mature",
+      "high-end",
+      "seamless"
+    ],
+    "allowed_only_when": [
+      "the term appears in a direct quote",
+      "the prose immediately translates the term into an observable mechanism",
+      "the claim remains source-bound"
+    ],
+    "bad_example": "The brand has a premium and sophisticated visual identity.",
+    "brand3_rewrite": "The surface uses restrained spacing, product-scale imagery, and short declarative copy. Premium positioning is not visible by itself; it would need price, audience, or third-party proof."
+  },
+  "unsupported_perceptual_language": {
+    "definition": "A feeling, pattern, intention, or emotional temperature named without evidence.",
+    "reject_or_rewrite_when_prose_claims": [
+      "users feel reassured, supported, empowered, safe, or inspired",
+      "the brand seeks authority, trust, cultural relevance, or leadership",
+      "motion is cinematic, choreographed, or concept-bearing without motion evidence",
+      "the system is cohesive without repeated surface evidence",
+      "the product is intuitive or seamless from copy alone",
+      "the audience is sophisticated, enterprise, premium, or culturally fluent without source support"
+    ],
+    "safe_form": "Soft color, simple hierarchy, and friendly illustration support a low-to-medium reading of calm accessibility. Mental-health support remains unproven without product-flow evidence."
+  },
+  "when_to_say_no_signal": [
+    "empty evidence",
+    "score-only material",
+    "generic marketing copy with no concrete nouns",
+    "missing screenshots or obstructed captures",
+    "no repeated surface behavior",
+    "no external corroboration where corroboration is required",
+    "no proof structure behind proof claims"
+  ],
+  "no_signal_example": {
+    "bad": "The brand has room to strengthen its differentiation and communicate its value more clearly.",
+    "brand3": "The evidence does not yet show a distinctive surface pattern. The visible issue is low specificity, not proven strategic weakness."
+  },
+  "negative_or_thin_readings": {
+    "valid_when_they_name_surface_behavior": [
+      "low specificity",
+      "template-like surface",
+      "claim/signal mismatch",
+      "dense surface without guidance",
+      "weak corroboration",
+      "generic proof structure",
+      "unclear product object",
+      "broad promise with few concrete use cases"
+    ],
+    "invalid_when_they_claim": [
+      "failed strategy",
+      "weak business",
+      "irrelevant brand",
+      "low ambition",
+      "bad product",
+      "audience does not care",
+      "team does not understand the market"
+    ],
+    "safe_shape": "The surface repeats a broad hero promise, feature-card grid, and abstract benefit copy. That supports a template-like surface reading, not a conclusion about product value."
+  },
+  "short_sharp_evidence_bound_rules": {
+    "order": [
+      "signal",
+      "mechanism",
+      "implication",
+      "limit only if needed"
+    ],
+    "sentence_rules": [
+      "Prefer two short sentences over one padded sentence.",
+      "Name concrete nouns such as navigation, code panels, proof modules, reviews, service list, CTA, hero claim, template grid, and product object.",
+      "Use one uncertainty marker per sentence.",
+      "Keep caveats specific: copy-supported, single-source, product-flow proof missing.",
+      "Cut any sentence that does not add a signal, tension, or limit."
+    ],
+    "preferred_structures": [
+      "X and Y make Z visible.",
+      "The claim is X; the visible signal is Y.",
+      "The surface shows X. It does not yet show Y.",
+      "This supports a bounded reading of X, not Y.",
+      "The tension is between X and Y.",
+      "Low specificity is visible; strategic failure is not."
+    ]
+  },
+  "forbidden_filler_patterns": [
+    "in today's competitive landscape",
+    "plays a crucial role",
+    "serves as a testament to",
+    "this positions the brand as",
+    "a strong foundation for",
+    "creates a seamless experience",
+    "communicates innovation and trust",
+    "a compelling and cohesive identity",
+    "clear and consistent messaging",
+    "strategically aligned",
+    "elevates the brand experience",
+    "resonates with its audience",
+    "drives engagement",
+    "enhances brand perception",
+    "sets the brand apart",
+    "room for improvement without naming the surface issue",
+    "opportunities and challenges without naming the tradeoff"
+  ],
+  "acceptable_uncertainty_language": [
+    "suggests",
+    "may indicate",
+    "could support",
+    "points to",
+    "reads as",
+    "copy-supported",
+    "source-level",
+    "single-source",
+    "not yet visible",
+    "unproven without product-flow evidence",
+    "too thin for a stable pattern",
+    "requires human review"
+  ],
+  "avoid_uncertainty_stacking": {
+    "bad": "may suggest that it could potentially support a reading of",
+    "brand3": "This supports a bounded reading of"
+  },
+  "hard_rejection_rules": [
+    "No concrete evidence anchor.",
+    "Opens with score, quality praise, or brand essence.",
+    "Uses prestige adjectives as analysis.",
+    "Claims strategic intent without direct evidence.",
+    "Claims user emotion, trust, support, safety, or wellbeing without mechanism and corroboration.",
+    "Turns copy into product behavior.",
+    "Invents visual, motion, or interaction details.",
+    "Invents a tension to sound analytical.",
+    "Treats weak evidence as brand failure.",
+    "Uses a perceptual pattern without target-brand signal.",
+    "Repeats generic AI filler.",
+    "Exceeds the useful reading: more words, no more signal."
+  ],
+  "bad_ai_prose_rewrites": [
+    {
+      "case": "generic_saas_praise",
+      "bad": "The brand presents a modern and polished SaaS experience that clearly communicates its value proposition and positions it as a strong player in the market.",
+      "brand3": "The page uses a familiar SaaS hero, feature-card grid, and broad benefit copy. The surface is legible, but the proof structure is too generic to support a differentiated reading."
+    },
+    {
+      "case": "unsupported_wellness_emotion",
+      "bad": "The brand creates a warm and supportive experience that helps users feel calm and confident.",
+      "brand3": "Soft color, low-density hierarchy, and friendly illustration support a calm-accessibility reading. User support or wellbeing impact is not visible without product-flow evidence."
+    },
+    {
+      "case": "false_enterprise_authority",
+      "bad": "The company demonstrates robust enterprise maturity through a sophisticated platform narrative.",
+      "brand3": "Solution taxonomy and compliance copy make an enterprise frame visible. Trust and maturity remain source-level claims unless third-party proof or product evidence corroborates them."
+    },
+    {
+      "case": "empty_differentiation",
+      "bad": "The brand has an opportunity to strengthen differentiation and build a more compelling identity.",
+      "brand3": "The surface repeats broad category language and few concrete use cases. The issue is low specificity, not a proven lack of product value."
+    },
+    {
+      "case": "over_bound_narrative",
+      "bad": "Every touchpoint reinforces a unified story of trust, innovation, and leadership.",
+      "brand3": "Owned pages repeat the same trust and innovation claims. External corroboration is thin, so the pattern is repetition inside owned channels, not market leadership."
+    }
+  ],
+  "paragraph_checklist": [
+    "Does it name at least one concrete signal?",
+    "Does it separate observation from implication?",
+    "Does every perceptual claim have a mechanism?",
+    "Is the confidence level appropriate to the evidence?",
+    "Does it avoid strategic intent unless directly stated?",
+    "Does it avoid user outcome claims unless corroborated?",
+    "Does it avoid prestige adjectives as analysis?",
+    "Does it say no signal when signal is absent?",
+    "If negative, is the reading about surface behavior rather than business failure?",
+    "If thin, does it frame limitation rather than weakness?",
+    "If generic, does it name template behavior rather than mock the brand?",
+    "Is there a real tension, not fabricated contrast?",
+    "Can one sentence be cut without losing information?",
+    "Would a human analyst be able to point to the evidence behind each claim?"
+  ],
+  "final_standard": "If the paragraph cannot answer what exactly on the surface supports this, it should not reach the report."
+}

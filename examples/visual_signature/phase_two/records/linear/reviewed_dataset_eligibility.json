@@ -1,0 +1,42 @@
+{
+  "blocked_reasons": [
+    "review_required_not_completed",
+    "confidence_below_threshold",
+    "review_rejected",
+    "visually_not_supported"
+  ],
+  "brand_name": "Linear",
+  "capture_id": "linear",
+  "confidence_threshold": 0.8,
+  "created_at": "2026-05-11T21:05:47.415244Z",
+  "eligible": false,
+  "evidence_refs": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/linear.png"
+  ],
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:linear",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+    "phase_one_eligibility:elig_linear",
+    "review:review_linear"
+  ],
+  "mutation_lineage_preserved": true,
+  "observed_confidence": 0.0,
+  "raw_evidence_preserved": true,
+  "reasons": [
+    "schema valid",
+    "raw evidence preserved",
+    "mutation lineage preserved",
+    "no unsupported inference"
+  ],
+  "record_id": "elig_linear_reviewed",
+  "record_type": "dataset_eligibility",
+  "review_completed": false,
+  "review_required": true,
+  "schema_valid": true,
+  "schema_version": "phase-zero-dataset-eligibility-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty_below_threshold": false,
+  "unsupported_inference_found": false,
+  "website_url": "https://linear.app"
+}

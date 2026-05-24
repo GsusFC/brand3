@@ -1,0 +1,522 @@
+{
+  "version": 0,
+  "case_id": "figma",
+  "audit_url": "https://www.figma.com",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Figma is a collaborative web application for interface design",
+          "url": "https://en.wikipedia.org/wiki/Figma",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        },
+        {
+          "text": "Figma is a company that empowers developers to build better products.",
+          "url": "https://figma.com/",
+          "source_class": "audited_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.53; contrast signal 1.00.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Figma lets you turn big ideas into real products.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Make anything possible, all in Figma",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Make anything possible, all in Figma",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Figma lets you turn big ideas into real products. Brainstorm, design, and build with your team.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Figma is where teams come together to turn ideas into the world’s best digital products and experiences.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Schema detected: Organization",
+          "url": "https://www.figma.com",
+          "source_class": "technical_internal",
+          "feature_name": "structured_identity",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Make anything possible, all in Figma",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Figma lets you turn big ideas into real products. Brainstorm, design, and build with your team.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Figma is where teams come together to turn ideas into the world’s best digital products and experiences.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "presencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "# Figma (Figma Inc.) Figma (FIG) is a Design Services company. Figma is a company that empowers developers to build better products. They provide desi",
+          "url": "https://figma.com/",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Figma: The Collaborative Interface Design Tool This website uses cookies, pixel tags, and local storage for performance, personalization, and marketin",
+          "url": "https://www.figma.com/about",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "# Make anything possible, all in Figma Gallery scroll from Figma on Vimeo Playing in picture-in-picture Pause Image mask from Figma on Vimeo Playing i",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/figma",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/in/masaya-takizawa",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@figma",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/smee_leee",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Investor Relations | Figma, Inc. NYSE: FIG $20.23 +1.29 (6.84%) 20 minutes minimum delay Last trade May 14, 2026 3:41 PM ### Figma is where teams come",
+          "url": "https://investor.figma.com/",
+          "source_class": "owned_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "sitemap.xml found with 14 URLs",
+          "url": "https://www.figma.com/sitemap.xml",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "robots.txt found",
+          "url": "https://www.figma.com/robots.txt",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "Owned claims lack external corroboration; keep attribution visible."
+      ],
+      "abstention_reason": ""
+    },
+    "percepcion": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Figma brings product teams together in a fast and more inclusive design workflow.",
+          "url": "https://www.figma.com/learn-more-about-figma/",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Figma is where teams come together to turn ideas into the world’s best digital products and experiences.",
+          "url": "https://investor.figma.com/",
+          "source_class": "owned_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Figma has evolved from a design tool to a connected, AI-powered platform that helps teams go from idea to shipped product.",
+          "url": "https://investor.figma.com/",
+          "source_class": "owned_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "Owned claims lack external corroboration; keep attribution visible."
+      ],
+      "abstention_reason": ""
+    },
+    "diferenciacion": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Existing Brand3 competitor comparison identifies Builder.io as the audited brand's closest measured competitor with measured distance 0.85; avg_distance=0.886; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Noon as the audited brand's most different measured competitor with measured distance 0.921; avg_distance=0.886; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Key pages found: about, blog, pricing",
+          "url": "https://www.figma.com",
+          "source_class": "technical_internal",
+          "feature_name": "content_depth",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Competitor comparison supports only relative positioning distance, not leadership.",
+        "Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "vitalidad": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Agents, meet the Figma canvas",
+          "url": "https://www.figma.com/blog/the-figma-canvas-is-now-open-to-agents/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://investor.figma.com/news-events/news/news-details/2026/Figma-Announces-First-Quarter-2026-Financial-Results/default.aspx",
+          "source_class": "owned_surface",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "",
+          "url": "https://figma.com/",
+          "source_class": "audited_surface",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://www.youtube.com/watch?v=11mdb7lLclM",
+          "source_class": "external_third_party",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "Q1 revenue grew 46% year-over-year to $333.4 million, accelerating from 40% year-over-year growth in the previous quarter",
+          "url": "https://investor.figma.com/news-events/news/news-details/2026/Figma-Announces-First-Quarter-2026-Financial-Results/default.aspx",
+          "source_class": "owned_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Figma raises full year revenue and non-GAAP operating income guidance, reflecting sustained seat expansion and AI adoption",
+          "url": "https://investor.figma.com/news-events/news/news-details/2026/Figma-Announces-First-Quarter-2026-Financial-Results/default.aspx",
+          "source_class": "owned_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "Owned claims lack external corroboration; keep attribution visible."
+      ],
+      "abstention_reason": ""
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "coherencia",
+      "presencia",
+      "percepcion",
+      "diferenciacion",
+      "vitalidad"
+    ],
+    "excluded_dimensions": [],
+    "included_evidence_count": 8,
+    "excluded_evidence_count": 25,
+    "review_required_evidence_count": 3,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 10,
+      "presencia": 10,
+      "percepcion": 3,
+      "diferenciacion": 6,
+      "vitalidad": 7
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 2,
+      "presencia": 2,
+      "percepcion": 1,
+      "diferenciacion": 2,
+      "vitalidad": 1
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 10,
+        "candidate_inputs": 2,
+        "excluded_inputs": 8
+      },
+      "presencia": {
+        "current_inputs": 10,
+        "candidate_inputs": 2,
+        "excluded_inputs": 8
+      },
+      "percepcion": {
+        "current_inputs": 3,
+        "candidate_inputs": 1,
+        "excluded_inputs": 2
+      },
+      "diferenciacion": {
+        "current_inputs": 6,
+        "candidate_inputs": 2,
+        "excluded_inputs": 4
+      },
+      "vitalidad": {
+        "current_inputs": 7,
+        "candidate_inputs": 1,
+        "excluded_inputs": 6
+      }
+    }
+  }
+}

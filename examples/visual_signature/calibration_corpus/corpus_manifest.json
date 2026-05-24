@@ -1,0 +1,48 @@
+{
+  "schema_version": "visual-signature-corpus-manifest-1",
+  "corpus_version": "0.1.0",
+  "created_for": "expanded_visual_signature_calibration",
+  "evidence_only": true,
+  "no_scoring_boundary": {
+    "modifies_scoring": false,
+    "modifies_rubric_dimensions": false,
+    "modifies_production_reports": false,
+    "modifies_production_ui": false
+  },
+  "versions": {
+    "extractor_version": "visual-signature-mvp-1",
+    "vision_version": "vision-enrichment-mvp-1",
+    "baseline_version": "visual-signature-category-baseline-mvp-1"
+  },
+  "minimums": {
+    "viewport_width": 1200,
+    "viewport_height": 750,
+    "signal_coverage": 0.7,
+    "directional_baseline_interpretable_records": 5,
+    "outlier_detection_interpretable_records": 10,
+    "broader_calibration_interpretable_records": 15
+  },
+  "categories": [
+    {"slug": "saas", "display_name": "SaaS", "target_interpretable_records": 15},
+    {"slug": "template_like_saas", "display_name": "Template-like SaaS", "target_interpretable_records": 15},
+    {"slug": "developer_first", "display_name": "Developer-first", "target_interpretable_records": 15},
+    {"slug": "ai_native", "display_name": "AI-native", "target_interpretable_records": 15},
+    {"slug": "editorial_media", "display_name": "Editorial/media", "target_interpretable_records": 15},
+    {"slug": "ecommerce", "display_name": "Ecommerce", "target_interpretable_records": 15},
+    {"slug": "premium_luxury", "display_name": "Premium/luxury", "target_interpretable_records": 15},
+    {"slug": "wellness_lifestyle", "display_name": "Wellness/lifestyle", "target_interpretable_records": 15},
+    {"slug": "local_service_small_business", "display_name": "Local service/small business", "target_interpretable_records": 15},
+    {"slug": "consumer_app", "display_name": "Consumer app", "target_interpretable_records": 15},
+    {"slug": "finance_fintech", "display_name": "Finance/fintech", "target_interpretable_records": 15},
+    {"slug": "nonprofit_education", "display_name": "Nonprofit/education", "target_interpretable_records": 15}
+  ],
+  "storage": {
+    "category_seed_dir": "categories/",
+    "viewport_screenshot_dir": "screenshots/viewport/",
+    "full_page_screenshot_dir": "screenshots/full_page/",
+    "payload_dir": "payloads/",
+    "baseline_dir": "baselines/",
+    "failure_dir": "failures/",
+    "annotation_dir": "annotations/"
+  }
+}

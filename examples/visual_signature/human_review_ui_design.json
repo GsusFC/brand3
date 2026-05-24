@@ -1,0 +1,435 @@
+{
+  "schema_version": "visual-signature-human-review-ui-design-1",
+  "record_type": "human_review_ui_design",
+  "status": "design_only",
+  "guardrails": [
+    "no UI implementation",
+    "no scoring logic changes",
+    "no rubric dimension changes",
+    "no prompt changes",
+    "no runtime behavior changes",
+    "no capture behavior changes",
+    "no provider execution",
+    "no production report changes",
+    "no Visual Signature semantic changes",
+    "no fabricated review decisions"
+  ],
+  "source_documents": [
+    "examples/visual_signature/human_review_workflow_map.md",
+    "examples/visual_signature/human_review_workflow_map.json",
+    "web/templates/visual_signature.html.j2",
+    "web/templates/visual_signature_screenshot_preview.html.j2",
+    "examples/visual_signature/corpus_expansion/reviewer_viewer/index.html",
+    "examples/visual_signature/corpus_expansion/reviewer_viewer/viewer.css",
+    "examples/visual_signature/corpus_expansion/reviewer_viewer/viewer.js",
+    "web/templates/reports_list.html.j2",
+    "web/templates/brand_history.html.j2"
+  ],
+  "core_intent": "Make the reviewer screen an evidence-first, question-driven visual judgment workflow instead of a governance dashboard.",
+  "required_principles": [
+    "screenshot first",
+    "question-driven review",
+    "governance hidden unless needed",
+    "no raw JSON by default",
+    "reviewer knows exactly what to do",
+    "Brand3 report visual language",
+    "Visual Signature remains separate from Initial Scoring",
+    "evidence-only",
+    "no scoring impact"
+  ],
+  "brand3_patterns_to_reuse": [
+    "terminal header",
+    "section-head label/tag rhythm",
+    "stacked report sections",
+    "thin dashed rule separators",
+    "status badges",
+    "muted metadata rows",
+    "collapsed details for source artifacts",
+    "table styling for dense secondary lists",
+    "simulated screenshot viewport",
+    "light Brand3 palette with orange accent"
+  ],
+  "canonical_reviewer_screen": {
+    "recommended_routes_later": [
+      "/visual-signature/reviewer",
+      "/visual-signature/reviewer/{queue_id}"
+    ],
+    "regions": [
+      {
+        "id": "review_queue_header",
+        "priority": 1,
+        "purpose": "Orient the reviewer and identify the next review item.",
+        "show_by_default": [
+          "page title",
+          "evidence-only/no scoring guardrails",
+          "queue summary",
+          "compact queue selector",
+          "active queue item status",
+          "confidence bucket"
+        ],
+        "hide_by_default": [
+          "raw queue JSON",
+          "governance integrity status",
+          "runtime policy matrix details"
+        ]
+      },
+      {
+        "id": "active_capture_summary",
+        "priority": 2,
+        "purpose": "State what the reviewer is judging.",
+        "show_by_default": [
+          "brand name",
+          "category",
+          "capture id",
+          "website URL",
+          "queue state",
+          "perceptual state",
+          "obstruction summary",
+          "visible-evidence-only instruction"
+        ],
+        "hide_by_default": [
+          "system paths",
+          "source artifact hashes",
+          "schema versions"
+        ]
+      },
+      {
+        "id": "visual_evidence_area",
+        "priority": 3,
+        "purpose": "Make screenshots the dominant review surface.",
+        "default_variant": "raw viewport",
+        "tabs": [
+          "Raw viewport",
+          "Clean attempt",
+          "Full page"
+        ],
+        "show_by_default": [
+          "large screenshot viewport",
+          "primary/supplemental evidence labels",
+          "source filename",
+          "open full-resolution image link"
+        ],
+        "hide_by_default": [
+          "capture manifest excerpt",
+          "dismissal audit excerpt",
+          "candidate click target arrays",
+          "raw JSON"
+        ],
+        "behavior": [
+          "raw viewport selected by default",
+          "clean attempt shows unavailable state when missing",
+          "full-page uses fit-viewport default with actual-size secondary mode",
+          "no page-level horizontal scroll"
+        ]
+      },
+      {
+        "id": "structured_visual_questions",
+        "priority": 4,
+        "purpose": "Convert visual inspection into consistent human judgment.",
+        "question_groups": [
+          {
+            "name": "Evidence support",
+            "questions": [
+              "Is the current perception claim visually supported by the screenshot evidence?",
+              "Is the raw viewport usable for first-impression visual judgment?",
+              "Did the system infer anything not visible in the evidence?"
+            ]
+          },
+          {
+            "name": "Obstruction",
+            "questions": [
+              "Is the viewport materially obstructed?",
+              "What obstruction type is visible?",
+              "Is obstruction severity supported by the image?"
+            ]
+          },
+          {
+            "name": "Supplemental evidence",
+            "questions": [
+              "Does a clean attempt exist?",
+              "If present, is it only supplemental to the raw viewport?",
+              "Does the full-page screenshot change the interpretation?"
+            ]
+          },
+          {
+            "name": "Contradiction and unresolved",
+            "questions": [
+              "Is the claim contradicted by visible evidence?",
+              "Is evidence missing, broken, cropped, blocked, or ambiguous?",
+              "What additional evidence would resolve uncertainty?"
+            ]
+          }
+        ],
+        "control_patterns": [
+          "segmented yes/partial/no/uncertain choices",
+          "compact select for obstruction type",
+          "checkboxes for missing/broken/cropped/ambiguous",
+          "notes supplement structured answers"
+        ]
+      },
+      {
+        "id": "confidence_notes_outcome",
+        "priority": 5,
+        "purpose": "Collect review record fields.",
+        "required_controls": [
+          "reviewer_id",
+          "confidence_bucket",
+          "review_outcome",
+          "review_status",
+          "notes",
+          "evidence_refs"
+        ],
+        "outcomes": [
+          "confirmed",
+          "contradicted",
+          "unresolved",
+          "insufficient_review"
+        ],
+        "status_mapping": [
+          "approved",
+          "rejected",
+          "needs_more_evidence"
+        ],
+        "conditional_controls": [
+          "contradiction note required when contradicted is selected",
+          "additional evidence needed shown when unresolved or insufficient_review is selected"
+        ]
+      },
+      {
+        "id": "review_record_preview",
+        "priority": 6,
+        "purpose": "Show what would become a review record without writing it.",
+        "show_by_default": [
+          "reviewer identity",
+          "queue id",
+          "capture id",
+          "selected outcome",
+          "confidence bucket",
+          "structured question answers",
+          "notes",
+          "evidence refs",
+          "contradiction notes",
+          "missing evidence notes"
+        ],
+        "copy": "Preview only. No review record is persisted from this screen in the current phase."
+      },
+      {
+        "id": "advanced_system_metadata",
+        "priority": 7,
+        "purpose": "Support audit/debug without making governance the review task.",
+        "collapsed_by_default": true,
+        "contains": [
+          "source artifact links",
+          "capture manifest row",
+          "dismissal audit row",
+          "mutation audit",
+          "perceptual transition records",
+          "governance integrity report",
+          "capability registry",
+          "runtime policy matrix",
+          "calibration readiness",
+          "calibration reliability report",
+          "raw JSON"
+        ],
+        "placement_rule": "Never place governance cards above the screenshot or questions."
+      }
+    ]
+  },
+  "information_hierarchy": {
+    "primary": [
+      "brand/capture being reviewed",
+      "screenshot evidence",
+      "structured questions",
+      "outcome/confidence/notes",
+      "review record preview"
+    ],
+    "secondary": [
+      "queue status",
+      "evidence notes",
+      "source artifact links",
+      "mutation/audit summary"
+    ],
+    "advanced": [
+      "raw JSON",
+      "governance reports",
+      "runtime policy matrix",
+      "capability registry",
+      "calibration aggregate metrics"
+    ]
+  },
+  "shown_vs_hidden": {
+    "shown_by_default": [
+      "active brand",
+      "queue state",
+      "confidence bucket",
+      "screenshot tabs",
+      "raw viewport image",
+      "clean attempt availability",
+      "full-page availability",
+      "current perception claim",
+      "required reviewer questions",
+      "outcome controls",
+      "notes field",
+      "evidence-only/no scoring guardrails"
+    ],
+    "hidden_by_default": [
+      "raw JSON",
+      "long candidate/rejected target arrays",
+      "full governance status matrix",
+      "source artifact hashes",
+      "schema version lists",
+      "runtime policy detail",
+      "calibration threshold tables",
+      "platform/debug diagnostics"
+    ]
+  },
+  "first_cases": {
+    "headspace": {
+      "queue_state": "queued",
+      "confidence_bucket": "unknown",
+      "category": "wellness_lifestyle",
+      "obstruction": "login_wall",
+      "severity": "blocking",
+      "perceptual_state": "UNSAFE_MUTATION_BLOCKED",
+      "screenshots": {
+        "raw_viewport": "examples/visual_signature/screenshots/headspace.png",
+        "clean_attempt": null,
+        "full_page": "examples/visual_signature/screenshots/headspace.full-page.png"
+      },
+      "primary_reviewer_task": [
+        "decide whether protected environment classification is visually supported",
+        "decide whether evidence is sufficient or should remain unresolved/insufficient"
+      ],
+      "default_questions": [
+        "Is a login/protected wall visibly present?",
+        "Is there any safe dismissal affordance visible?",
+        "Is raw viewport evidence sufficient for first-impression judgment?",
+        "Should this remain blocked from mutation?",
+        "Is more evidence needed?"
+      ],
+      "ui_emphasis": [
+        "show raw viewport first",
+        "show missing clean attempt as unavailable",
+        "show full-page as supplemental context",
+        "keep governance below review controls"
+      ]
+    },
+    "allbirds": {
+      "queue_state": "needs_additional_evidence",
+      "confidence_bucket": "low",
+      "category": "ecommerce",
+      "obstruction": "newsletter_modal",
+      "severity": "blocking",
+      "perceptual_state": "REVIEW_REQUIRED_STATE",
+      "screenshots": {
+        "raw_viewport": "examples/visual_signature/screenshots/allbirds.png",
+        "clean_attempt": "examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+        "full_page": "examples/visual_signature/screenshots/allbirds.full-page.png"
+      },
+      "primary_reviewer_task": [
+        "decide whether obstruction and failed clean attempt are visually supported",
+        "decide whether existing evidence is enough or more evidence is needed",
+        "record contradictions if clean attempt conflicts with the claim"
+      ],
+      "default_questions": [
+        "Is the newsletter modal visibly blocking first-impression review?",
+        "Is the clean attempt supplemental and not a replacement?",
+        "Does the clean attempt materially reduce obstruction?",
+        "Is the safe affordance interpretation visually supported?",
+        "Is the current queue state needs_additional_evidence appropriate?"
+      ],
+      "ui_emphasis": [
+        "show raw vs clean attempt comparison prominently",
+        "show mutation audit summary as secondary",
+        "make needs additional evidence guidance obvious"
+      ]
+    }
+  },
+  "review_record_flow": [
+    "select queue item",
+    "inspect screenshots",
+    "answer structured questions",
+    "choose outcome",
+    "set confidence",
+    "add notes and evidence refs",
+    "preview review record",
+    "persist only in a later approved implementation phase",
+    "feed calibration only after a real review record exists"
+  ],
+  "current_phase_constraints": [
+    "no persistence",
+    "no synthetic completed review",
+    "no calibration mutation"
+  ],
+  "layout": {
+    "desktop": [
+      "single centered Brand3 page shell",
+      "top queue/status section",
+      "screenshot evidence as dominant full-width section",
+      "questions and outcome controls in two columns below screenshot",
+      "advanced metadata as full-width collapsed sections below"
+    ],
+    "laptop_1280": [
+      "avoid fixed sidebars",
+      "no sticky right rail",
+      "use stacked report sections",
+      "question/outcome columns use minmax(0, 1fr) if two-column"
+    ],
+    "mobile": [
+      "queue selector stacks",
+      "screenshot viewport fits width",
+      "question controls stack",
+      "outcome/notes stack",
+      "advanced metadata remains collapsed"
+    ]
+  },
+  "component_inventory": [
+    "review_queue_selector",
+    "active_capture_summary",
+    "evidence_viewer",
+    "screenshot_variant_tabs",
+    "simulated_screenshot_viewport",
+    "review_question_group",
+    "confidence_selector",
+    "review_outcome_selector",
+    "evidence_ref_selector",
+    "notes_panel",
+    "contradiction_panel",
+    "unresolved_panel",
+    "review_record_preview",
+    "advanced_source_artifacts",
+    "advanced_governance_metadata"
+  ],
+  "data_adapter_needs": {
+    "read_only_sources": [
+      "examples/visual_signature/corpus_expansion/review_queue.json",
+      "examples/visual_signature/corpus_expansion/reviewer_workflow_pilot.json",
+      "examples/visual_signature/corpus_expansion/reviewer_packets/*.md",
+      "examples/visual_signature/screenshots/capture_manifest.json",
+      "examples/visual_signature/screenshots/dismissal_audit.json",
+      "examples/visual_signature/screenshots/*.png",
+      "examples/visual_signature/phase_one/records/*/*.json",
+      "examples/visual_signature/phase_two/reviews/review_records.json",
+      "examples/visual_signature/calibration/calibration_records.json"
+    ],
+    "forbidden_calls": [
+      "provider calls",
+      "capture calls",
+      "scoring calls",
+      "report rewrites"
+    ]
+  },
+  "explicit_non_goals": [
+    "UI implementation in this phase",
+    "scoring integration",
+    "rubric changes",
+    "prompt changes",
+    "provider execution",
+    "capture behavior changes",
+    "production report changes",
+    "runtime mutation enablement",
+    "raw JSON-first interface",
+    "governance-first reviewer task",
+    "fake completed review records"
+  ]
+}

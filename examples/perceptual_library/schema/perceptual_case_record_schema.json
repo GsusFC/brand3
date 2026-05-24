@@ -1,0 +1,98 @@
+{
+  "schema_id": "perceptual_case_record_v0_1",
+  "schema_version": "0.1.0",
+  "created_at": "2026-05-15",
+  "status": "draft_fixture_contract",
+  "purpose": "Operational perceptual case record for controlled corpus conversion before scoring integration.",
+  "non_goals": [
+    "scoring",
+    "prompt_changes",
+    "report_changes",
+    "visual_signature_runtime_changes",
+    "runtime_ingestion",
+    "quality_ranking"
+  ],
+  "required_top_level_fields": [
+    "record_id",
+    "schema_version",
+    "case",
+    "source_material",
+    "method_boundaries",
+    "confidence_semantics",
+    "extracted_facts",
+    "visual_observations",
+    "strategic_interpretations",
+    "unsupported_or_low_confidence_inferences",
+    "contradictions",
+    "human_review",
+    "validation"
+  ],
+  "layer_contract": {
+    "extracted_facts": {
+      "definition": "Directly extracted public-source facts. No interpretation.",
+      "requires_evidence": true,
+      "allowed_confidence": ["high"],
+      "examples": ["public title", "service tags", "case copy phrase", "source URL"]
+    },
+    "visual_observations": {
+      "definition": "Observable surface behavior tied to a source anchor. Can describe visible composition, pacing, typography, motifs, density, hierarchy, interaction, and motion.",
+      "requires_evidence": true,
+      "allowed_confidence": ["high", "medium"],
+      "must_not_include": ["business recommendation", "score", "unanchored strategy"]
+    },
+    "strategic_interpretations": {
+      "definition": "Brand3 interpretation derived from facts and observations. Must remain conditional when intent is not explicitly stated.",
+      "requires_evidence": true,
+      "allowed_confidence": ["high", "medium", "low"],
+      "requires_human_review_when": ["inferred_intent", "copy_only_basis", "aesthetic_only_basis"]
+    },
+    "unsupported_or_low_confidence_inferences": {
+      "definition": "Useful but weak readings that should not feed downstream systems without review.",
+      "requires_evidence": true,
+      "allowed_confidence": ["low"],
+      "requires_human_review": true
+    },
+    "contradictions": {
+      "definition": "Explicit mapping between a stated claim and an observed or weakly observed signal.",
+      "required_fields": ["stated_claim", "observed_signal", "contradiction_level", "confidence", "evidence", "requires_human_review"],
+      "allowed_contradiction_levels": ["none", "soft", "moderate", "strong", "unverified"]
+    }
+  },
+  "evidence_contract": {
+    "required_fields": ["source_type", "source_id", "support_level"],
+    "allowed_source_types": [
+      "public_case_page",
+      "public_case_copy",
+      "public_case_metadata",
+      "local_prior_case_artifact",
+      "capture",
+      "human_review_note"
+    ],
+    "allowed_support_levels": [
+      "direct",
+      "corroborating",
+      "copy_based",
+      "weak_inference",
+      "negative_evidence"
+    ],
+    "rule": "Every fact, observation, interpretation, inference, and contradiction must carry at least one evidence object."
+  },
+  "confidence_semantics": {
+    "high": {
+      "definition": "Visible or stated directly in a source anchor, or repeated across independently anchored observations.",
+      "minimum_basis": ["direct support level or multiple corroborating anchors"],
+      "examples": ["public service tag", "visible repeated motif in local visual observation artifact"]
+    },
+    "medium": {
+      "definition": "Reasonable interpretation from public copy or from one anchored visual observation, but not independently repeated.",
+      "minimum_basis": ["copy_based or single corroborating anchor"],
+      "examples": ["tone inferred from case language", "system behavior inferred from one page section"]
+    },
+    "low": {
+      "definition": "A plausible but weak inference from aesthetics, copy tone, or incomplete evidence.",
+      "minimum_basis": ["weak_inference support level"],
+      "requires_human_review": true,
+      "examples": ["strategic intent not explicitly stated", "audience assumption from style alone"]
+    }
+  }
+}

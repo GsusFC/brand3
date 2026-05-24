@@ -4,52 +4,96 @@
 <meta charset="UTF-8">
 <title>brand-audit :: {{ brand.url or brand.name }}{% if theme == 'dark' %} · night{% endif %}</title>
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
+
   :root {
   {%- if theme == 'dark' %}
-    --fg: #d6d3cc;
-    --fg-bright: #f2efe7;
-    --bg: #0e0f10;
-    --panel: #121314;
-    --muted: #6a6963;
-    --rule: #2a2b2d;
-    --alert: #e06b5c;
-    --ok: #8fbf6a;
-    --warn: #e0c26b;
-    --accent: #6fa8c9;
-    --key: #b58a6a;
-    --chip-bg: #15171a;
-    --chip-border: #333336;
+    --fg: #dedbd2;
+    --fg-bright: #f6f0e5;
+    --bg: #0b0d0e;
+    --panel: #121615;
+    --muted: #8a877d;
+    --rule: #28302d;
+    --alert: #e07a6d;
+    --ok: #9bcf82;
+    --warn: #e4c76d;
+    --accent: #7fb7a3;
+    --key: #d0a16f;
+    --chip-bg: #121615;
+    --chip-border: #39423e;
   {%- else %}
-    --fg: #111111;
-    --fg-bright: #111111;
-    --bg: #fafaf7;
-    --panel: #fafaf7;
-    --muted: #6b6b6b;
-    --rule: #111111;
-    --alert: #a8261c;
-    --ok: #1f5d3a;
-    --warn: #9a7a00;
-    --accent: #111111;
-    --key: #6b6b6b;
-    --chip-bg: #f2f0ea;
-    --chip-border: #c9c6bf;
+    --fg: #161616;
+    --fg-bright: #161616;
+    --bg: #eeeeee;
+    --panel: #f5f5f5;
+    --muted: #77736d;
+    --rule: #e4e4e4;
+    --alert: #b84f3f;
+    --ok: #5f745c;
+    --warn: #b7792b;
+    --accent: #ef490d;
+    --key: #ef490d;
+    --chip-bg: #eeeeee;
+    --chip-border: #e4e4e4;
   {%- endif %}
+    --font-mono: "JetBrains Mono", ui-monospace, monospace;
   }
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0;
-    background: var(--bg); color: var(--fg);
-    font-family: "IBM Plex Mono", "JetBrains Mono", "Menlo", "Consolas", ui-monospace, monospace;
+    background: {% if theme == 'dark' %}linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 280px), repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 96px), var(--bg){% else %}repeating-linear-gradient(135deg, rgba(22, 22, 22, 0.018) 0 1px, transparent 1px 7px), var(--bg){% endif %};
+    color: var(--fg);
+    font-family: var(--font-mono);
     font-size: 13px; line-height: 1.55;
     -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
     font-feature-settings: "liga" 0, "calt" 0;
   }
-  .page { max-width: 920px; margin: 0 auto; padding: 40px 28px 80px; }
-  .term-head { white-space: pre-wrap; margin: 0 0 6px; font-family: inherit; font-size: 13px; line-height: 1.55; }
+  .page {
+    width: min(1180px, calc(100% - 48px));
+    min-height: calc(100vh - 48px);
+    margin: 24px auto;
+    padding: 34px 28px 76px;
+    background: {% if theme == 'dark' %}transparent{% else %}rgba(245, 245, 245, 0.94){% endif %};
+    border: 1px solid {% if theme == 'dark' %}transparent{% else %}var(--rule){% endif %};
+    box-shadow: {% if theme == 'dark' %}none{% else %}0 10px 32px rgba(22, 22, 22, 0.035){% endif %};
+  }
+  .report-app-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 0 0 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .report-app-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    background: var(--chip-bg);
+    color: var(--fg);
+    font-size: 12px;
+    text-decoration: none;
+  }
+  .report-app-nav a:hover {
+    border-color: var(--accent);
+    color: var(--fg-bright);
+  }
+  .report-app-nav .spacer {
+    flex: 1 1 auto;
+  }
+  .term-head {
+    white-space: pre-wrap; margin: 0 0 6px;
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.65;
+    font-feature-settings: "liga" 0, "calt" 0;
+  }
   .prompt {
-    color: {% if theme == 'dark' %}var(--ok){% else %}var(--muted){% endif %};
+    color: {% if theme == 'dark' %}var(--ok){% else %}var(--accent){% endif %};
     user-select: none;
-    {% if theme == 'dark' %}font-weight: 700;{% endif %}
+{% if theme == 'dark' %}    font-weight: 700;{% endif %}
   }
   .dim { color: var(--muted); }
   .rule { border: 0; border-top: 1px solid var(--rule); margin: 18px 0; }
@@ -59,14 +103,16 @@
   .section-head {
     display: flex; justify-content: space-between; align-items: baseline;
     gap: 12px; margin: 28px 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
   }
-  .section-head .tag { color: var(--muted); font-weight: 400; }
-  .section-head .label { text-transform: uppercase; font-weight: 700; }
-  table { width: 100%; border-collapse: collapse; font-family: inherit; font-size: 13px; }
-  th, td { text-align: left; padding: 4px 10px 4px 0; vertical-align: top; font-weight: 400; }
-  th { border-bottom: 1px solid {% if theme == 'dark' %}var(--rule){% else %}var(--fg){% endif %}; font-weight: 700; color: var(--fg-bright); }
+  .section-head .tag { color: var(--muted); font-family: var(--font-mono); font-size: 12px; font-weight: 400; }
+  .section-head .label { font-family: var(--font-mono); font-size: 12px; text-transform: uppercase; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 12px; font-feature-settings: "liga" 0, "calt" 0; }
+  th, td { text-align: left; padding: 6px 10px 6px 0; vertical-align: top; font-weight: 400; }
+  th { border-bottom: 1px solid {% if theme == 'dark' %}var(--chip-border){% else %}var(--chip-border){% endif %}; font-weight: 700; color: var(--fg-bright); background: {% if theme == 'dark' %}transparent{% else %}rgba(238, 238, 238, 0.78){% endif %}; }
   td.num { text-align: right; white-space: nowrap; padding-right: 18px; }
-  td.bar { font-family: inherit; white-space: pre; color: var(--fg); }
+  td.bar { font-family: var(--font-mono); white-space: pre; color: var(--accent); }
   td.verdict { color: var(--muted); }
 
   /* Header meta — fixed-width label column so values never concatenate. */
@@ -79,11 +125,17 @@
   dl.report-meta dt { color: {% if theme == 'dark' %}var(--key){% else %}var(--muted){% endif %}; margin: 0; }
   dl.report-meta dd { margin: 0; color: var(--fg); }
 
-  .score-huge { font-size: 74px; line-height: 1; font-weight: 700; letter-spacing: -2px; margin: 6px 0 0; }
+  .score-panel { text-align: right; }
+  .score-huge { font-size: 74px; line-height: 1; font-weight: 700; letter-spacing: 0; margin: 6px 0 0; }
   .score-scale { color: var(--muted); font-size: 12px; }
   .header-grid { display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: end; }
+  .col-meta { width: 28%; }
+  .col-dimension { width: 20%; }
+  .col-score { width: 8%; }
+  .col-bar { width: 28%; }
+  .col-compact { width: 12%; }
 
-  .prose { max-width: 78ch; }
+  .prose { max-width: none; }
   .num-inline { font-variant-numeric: tabular-nums; }
 
   .quality-note {
@@ -167,6 +219,17 @@
   .finding { margin: 10px 0 14px; }
   .finding h4 { color: var(--fg-bright); }
   .finding p { margin: 4px 0 6px; color: var(--fg); }
+  .finding-primary { color: var(--fg); }
+  .finding-decision {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .finding-decision .finding-label {
+    color: var(--key);
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
+  }
   ul.chips { list-style: none; padding: 0; margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
   ul.chips li { margin: 0; }
   ul.chips a {
@@ -196,7 +259,7 @@
 
   .badge {
     display: inline-block; border: 1px solid var(--fg); padding: 0 6px;
-    font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em;
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0;
     font-weight: 700; color: var(--fg-bright);
   }
   .badge.warn { border-color: var(--alert); color: var(--alert); }
@@ -213,6 +276,8 @@
     border-top: 1px solid {% if theme == 'dark' %}var(--rule){% else %}var(--fg){% endif %};
     color: var(--muted); font-size: 12px;
   }
+  .footer-note { margin-top: 14px; }
+  .footer-cursor { margin-top: 10px; }
   .cursor {
     display: inline-block; width: 7px; height: 14px;
     background: {% if theme == 'dark' %}var(--ok){% else %}var(--fg){% endif %};
@@ -221,21 +286,36 @@
     margin-left: 4px;
   }
   @keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
-  a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+  a { color: inherit; text-decoration: underline; text-decoration-color: {% if theme == 'dark' %}rgba(127, 183, 163, 0.58){% else %}currentColor{% endif %}; text-underline-offset: 3px; }
+  a:hover { color: var(--fg-bright); text-decoration-color: var(--accent); }
 
   @media (max-width: 640px) {
+    .page { width: min(100% - 28px, 1180px); padding: 24px 0 60px; }
     .header-grid { grid-template-columns: 1fr; }
     dl.report-meta { grid-template-columns: 120px 1fr; }
+    .score-panel { text-align: left; }
     .score-huge { font-size: 56px; }
   }
   @media print {
     body { background: #fff; }
+    .report-app-nav { display: none; }
     .cursor { display: none; }
   }
 </style>
 </head>
 <body>
 <div class="page">
+
+<nav class="report-app-nav" aria-label="Brand3 report navigation">
+  <a href="/reports">Reports</a>
+  <a href="/brand/{{ brand.domain or brand.name }}">Brand history</a>
+  {%- if footer.lab_href %}
+  <a href="{{ footer.lab_href }}" aria-label="Open read-only Brand3 Lab diagnostics for this audit">Brand3 Lab <span class="dim">diagnostic · no scoring impact</span></a>
+  {%- endif %}
+  <span class="spacer"></span>
+  <a href="?theme=light">Light</a>
+  <a href="?theme=dark">Dark</a>
+</nav>
 
 <pre class="term-head"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand-audit <span class="hl-accent">--target</span> {{ brand.url or brand.name }} <span class="hl-accent">--profile</span> {{ brand.profile }} <span class="hl-accent">--engine</span> {{ footer.engine }}
 {%- for line in term_lines %}
@@ -259,7 +339,7 @@
     <dt>scope</dt>
     <dd>public web surface + organic mentions (no paid)</dd>
   </dl>
-  <div style="text-align:right">
+  <div class="score-panel">
     <div class="small">SCORE_GLOBAL</div>
     <div class="score-huge num-inline">{{ score.global_display }}</div>
     <div class="score-scale">/ 100 · <span class="dim">band: {{ score.band_letter }} · "{{ score.band_adjective }}"</span></div>
@@ -275,7 +355,7 @@
 <table>
   <tbody>
     <tr>
-      <th style="width:28%">estado agregado</th>
+      <th class="col-meta">estado agregado</th>
       <td>
         {%- if evaluation.overall_status == 'insufficient_data' -%}
           <span class="hl-alert">{{ evaluation.overall_status_label }}</span>
@@ -348,7 +428,7 @@
   <table>
     <tbody>
       <tr>
-        <th style="width:28%">mode</th>
+        <th class="col-meta">mode</th>
         <td>{{ report_mode_labels.get(readiness.report_mode, readiness.report_mode) }}</td>
       </tr>
       {%- if readiness.blockers %}
@@ -443,11 +523,11 @@
 <table>
   <thead>
     <tr>
-      <th style="width: 20%">dimension</th>
-      <th style="width: 8%" class="num">score</th>
-      <th style="width: 28%">bar</th>
-      <th style="width: 12%">confianza</th>
-      <th style="width: 12%">cobertura</th>
+      <th class="col-dimension">dimension</th>
+      <th class="num col-score">score</th>
+      <th class="col-bar">bar</th>
+      <th class="col-compact">confianza</th>
+      <th class="col-compact">cobertura</th>
       <th>verdict</th>
     </tr>
   </thead>
@@ -491,7 +571,7 @@
 <table>
   <tbody>
     <tr>
-      <th style="width:28%">evidencia total</th>
+      <th class="col-meta">evidencia total</th>
       <td>{{ evidence_summary.total }}</td>
     </tr>
     <tr>
@@ -547,7 +627,7 @@
   <table>
     <tbody>
       <tr>
-        <th style="width:28%">sitemap</th>
+        <th class="col-meta">sitemap</th>
         <td>{% if context_readiness.sitemap_found %}encontrado · {{ context_readiness.sitemap_url_count }} URLs{% else %}<span class="hl-alert">no encontrado</span>{% endif %}</td>
       </tr>
       <tr>
@@ -601,9 +681,55 @@
   <section class="tab-panel" id="panel-actual" role="tabpanel" aria-labelledby="tab-actual" hidden>
     <div class="section-head">
       <span class="label">§3A  current reading</span>
-      <span class="tag">// analytical view</span>
+      <span class="tag">// metadata-first</span>
     </div>
-    <div class="prose">{{ legacy_summary }}</div>
+    <div class="quality-note">
+      <strong>Technical summary.</strong> The main narrative interpretation lives in the synthesis tab.
+      Current Reading keeps the score, band, trust, and coverage state visible without competing with that narrative.
+    </div>
+
+    {%- set scored_dimensions = dimensions | selectattr('score', 'ne', none) | list -%}
+    {%- set sorted_scored_dimensions = scored_dimensions | sort(attribute='score', reverse=true) -%}
+    {%- set strongest_dimension = sorted_scored_dimensions[0] if sorted_scored_dimensions else none -%}
+    {%- set weakest_dimension = sorted_scored_dimensions[-1] if sorted_scored_dimensions else none -%}
+    {%- set readiness_mode = readiness.report_mode if readiness is defined and readiness else 'n/a' -%}
+    <table>
+      <tbody>
+        <tr>
+          <th class="col-meta">score</th>
+          <td>{{ score.global_display }}/100</td>
+        </tr>
+        <tr>
+          <th>band</th>
+          <td>{{ score.band_letter }} · {{ score.band_label }} · {{ score.band_adjective }}</td>
+        </tr>
+        <tr>
+          <th>strongest dimension</th>
+          <td>{% if strongest_dimension %}{{ strongest_dimension.display_name }} · {{ '%.0f'|format(strongest_dimension.score) }}/100{% else %}<span class="dim">no scored dimensions</span>{% endif %}</td>
+        </tr>
+        <tr>
+          <th>weakest dimension</th>
+          <td>{% if weakest_dimension %}{{ weakest_dimension.display_name }} · {{ '%.0f'|format(weakest_dimension.score) }}/100{% else %}<span class="dim">no scored dimensions</span>{% endif %}</td>
+        </tr>
+        <tr>
+          <th>data quality</th>
+          <td>{{ evaluation.data_quality }}</td>
+        </tr>
+        <tr>
+          <th>trust / readiness</th>
+          <td>{{ trust_summary.overall_status_label }} · {{ readiness_mode | replace('_', ' ') }}</td>
+        </tr>
+        <tr>
+          <th>evidence coverage</th>
+          <td>{{ evidence_summary.total }} items{% if evidence_summary.dimensions_without_evidence %} · missing: {{ evidence_summary.dimensions_without_evidence | join(', ') }}{% endif %}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <details class="sources" style="margin-top: 12px;">
+      <summary>show legacy summary (collapsed)</summary>
+      <div class="prose">{{ legacy_summary }}</div>
+    </details>
 
     <hr class="rule">
 
@@ -698,7 +824,15 @@
         {%- for finding in dim.findings %}
         <div class="finding">
           <h4>{{ finding.title }}</h4>
-          <p>{{ finding.prose }}</p>
+          {%- if finding.observation or finding.implication %}
+          <p class="finding-primary">
+            {%- if finding.observation -%}{{ finding.observation }}{%- endif -%}
+            {%- if finding.observation and finding.implication %} {% endif -%}
+            {%- if finding.implication -%}{{ finding.implication }}{%- endif -%}
+          </p>
+          {%- elif finding.prose %}
+          <p class="finding-primary">{{ finding.prose }}</p>
+          {%- endif %}
           {%- if finding.evidence_urls %}
           <ul class="chips">
             {%- for url in finding.evidence_urls %}
@@ -767,12 +901,12 @@
     <dt>report_id</dt>
     <dd>{{ footer.report_id }}</dd>
   </dl>
-  <div style="margin-top:14px" class="small">
+  <div class="small footer-note">
     This analysis was automatically generated by Brand3 using public data.
     The scores are opinions derived from heuristics and LLM analysis, not facts.
     If you own this brand and want the analysis removed, see <a href="/takedown">/takedown</a>.
   </div>
-  <div style="margin-top:10px"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> _<span class="cursor"></span></div>
+  <div class="footer-cursor"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> _<span class="cursor"></span></div>
 </div>
 
 </div>

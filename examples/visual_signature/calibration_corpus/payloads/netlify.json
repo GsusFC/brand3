@@ -1,0 +1,618 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:58:52.543827",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.netlify.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 2,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 118,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Netlify",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Developer platform with established docs/product marketing patterns."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#89ddff",
+      "#c792ea",
+      "#2e51ed",
+      "#5fb3ff",
+      "#5de4c7",
+      "#7fdbca"
+    ],
+    "background_candidates": [
+      "#defffe",
+      "#e4f0fb",
+      "#545a61",
+      "#181a1c",
+      "#014847",
+      "#0c2a2a"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#89ddff",
+      "#defffe",
+      "#e4f0fb",
+      "#545a61",
+      "#c792ea",
+      "#add7ff",
+      "#2e51ed",
+      "#5fb3ff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#89ddff",
+        "occurrences": 562,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#defffe",
+        "occurrences": 310,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e4f0fb",
+        "occurrences": 244,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#545a61",
+        "occurrences": 170,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#c792ea",
+        "occurrences": 90,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#add7ff",
+        "occurrences": 76,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#2e51ed",
+        "occurrences": 68,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#5fb3ff",
+        "occurrences": 44,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#181a1c",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#5de4c7",
+        "occurrences": 30,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#7fdbca",
+        "occurrences": 28,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#14d8d4",
+        "occurrences": 26,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#014847",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#0c2a2a",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#a6accd",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#fbb13d",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#edf4ff",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffffff",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#facd6f",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fe4e5c",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#3ac364",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#c1c1c1",
+        "occurrences": 2,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#cccccc",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#89ddff",
+      "#545a61",
+      "#c792ea",
+      "#add7ff",
+      "#2e51ed",
+      "#5fb3ff"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 36,
+        "labels": [
+          "AI apps",
+          "Marketing sites",
+          "SaaS apps",
+          "Ecommerce",
+          "Internal tools",
+          "Ask Netlify",
+          "Verify"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 15,
+        "labels": [
+          "Start building",
+          "Talk to sales",
+          "Play",
+          "Explore the platform",
+          "Explore AI Gateway",
+          "Marketing sites on Netlify",
+          "Explore platform primitives",
+          "Ecommerce on Netlify",
+          "Internal apps on Netlify",
+          "Start for free"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 40,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 46,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Start building",
+      "Talk to sales",
+      "Play",
+      "Explore the platform",
+      "Explore AI Gateway",
+      "Marketing sites on Netlify",
+      "Explore platform primitives",
+      "Ecommerce on Netlify"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.72,
+    "confidence": 0.635,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.464,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.635,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.632
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.704
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 34,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Meta",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/meta-black.svg"
+      },
+      {
+        "alt": "Mighty",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/mighty-black.svg"
+      },
+      {
+        "alt": "Finn",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/finn-black.svg"
+      },
+      {
+        "alt": "Autodesk",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/autodesk-black.svg"
+      },
+      {
+        "alt": "Navan",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/navan.svg"
+      },
+      {
+        "alt": "Zscaler",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/zscaler-black.svg"
+      },
+      {
+        "alt": "ServiceTitan",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/servicetitan-black.svg"
+      },
+      {
+        "alt": "Stack Overflow",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.netlify.com/images/home/logos/stack-overflow.svg"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.4,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      14.0,
+      28.0,
+      14.0,
+      14.0,
+      28.0,
+      14.0
+    ],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.95
+    },
+    "composition": {
+      "color_variance": 0.544,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.066,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.179
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 167833,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.netlify.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/netlify.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 52,
+      "confidence": 0.834,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 14236,
+          "ratio": 0.7118
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 3572,
+          "ratio": 0.1786
+        },
+        {
+          "hex": "#2060e0",
+          "occurrences": 805,
+          "ratio": 0.0403
+        },
+        {
+          "hex": "#40e0e0",
+          "occurrences": 303,
+          "ratio": 0.0152
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 208,
+          "ratio": 0.0104
+        },
+        {
+          "hex": "#ffc040",
+          "occurrences": 159,
+          "ratio": 0.008
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 87,
+          "ratio": 0.0043
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 78,
+          "ratio": 0.0039
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.544,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.066,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.179
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.834,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.869
+    },
+    "viewport_palette": {
+      "color_count": 52,
+      "confidence": 0.834,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 14236,
+          "ratio": 0.7118
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 3572,
+          "ratio": 0.1786
+        },
+        {
+          "hex": "#2060e0",
+          "occurrences": 805,
+          "ratio": 0.0403
+        },
+        {
+          "hex": "#40e0e0",
+          "occurrences": 303,
+          "ratio": 0.0152
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 208,
+          "ratio": 0.0104
+        },
+        {
+          "hex": "#ffc040",
+          "occurrences": 159,
+          "ratio": 0.008
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 87,
+          "ratio": 0.0043
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 78,
+          "ratio": 0.0039
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.179,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.834,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.869
+    }
+  },
+  "website_url": "https://www.netlify.com"
+}

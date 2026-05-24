@@ -1,0 +1,168 @@
+{
+  "generated": "2026-05-13",
+  "scope": "audit only",
+  "rules_followed": [
+    "did not modify reviewed files",
+    "did not move files",
+    "did not delete files",
+    "did not change scoring",
+    "did not change prompts",
+    "did not change Visual Signature semantics",
+    "did not publish anything"
+  ],
+  "files_reviewed": [
+    "README.md",
+    "CONTRIBUTING.md",
+    ".gitignore",
+    ".env.example",
+    "examples/brand3_platform/github_readiness_audit.md",
+    "examples/brand3_platform/github_repository_preparation_plan.md"
+  ],
+  "overall_result": "pass_with_low_risk_followups",
+  "summary": "Phase 1 is coherent and safe to proceed from. README and CONTRIBUTING describe the unified project and separation guardrails. .gitignore protects local data/caches without hiding current source, prompts, docs, or required examples. .env.example uses placeholders only.",
+  "checks": {
+    "readme_commands_accurate": {
+      "result": "pass",
+      "confirmed": [
+        "scripts/run_web_dev_macos.sh",
+        "PYTHONPATH=. ./.venv/bin/python -m uvicorn web.app:app --host 127.0.0.1 --port 8000",
+        "./.venv/bin/python main.py analyze <url> [brand_name]",
+        "--no-llm",
+        "--no-social",
+        "--visual-signature-shadow-run",
+        "runs",
+        "brands",
+        "show-run",
+        "render-report",
+        "/",
+        "/analyze",
+        "/reports",
+        "/visual-signature",
+        "/visual-signature/governance",
+        "/visual-signature/calibration",
+        "/visual-signature/corpus",
+        "/visual-signature/reviewer"
+      ]
+    },
+    "contributing_guardrails_match_architecture": {
+      "result": "pass",
+      "notes": [
+        "Prompt changes are treated as source changes.",
+        "Scoring/rubric files are called out as sensitive.",
+        "Visual Signature is described as evidence-only.",
+        "Contributors are told not to mutate dimension_scores from Visual Signature.",
+        "Read-only platform routes are protected from provider execution/runtime mutation."
+      ]
+    },
+    "gitignore_does_not_hide_source_prompts_docs_or_required_examples": {
+      "result": "pass",
+      "representative_paths_checked_not_ignored": [
+        "src/features/llm_analyzer.py",
+        "src/visual_signature/types.py",
+        "web/routes/visual_signature.py",
+        "docs/scoring_review.md",
+        "examples/brand3_platform/github_readiness_audit.md",
+        "examples/visual_signature/governance/capability_registry.json",
+        "examples/visual_signature/screenshots/allbirds.png",
+        "src/brand3/visual-signature/index.ts",
+        "tests/test_visual_signature.py",
+        "README.md",
+        "CONTRIBUTING.md",
+        ".env.example",
+        "pyproject.toml"
+      ],
+      "future_caveat": "Global *.sqlite, *.sqlite3, and *.db ignores are safe now because no tracked DB fixtures were found. Add explicit exceptions if future tests require SQLite fixtures."
+    },
+    "gitignore_local_safety": {
+      "result": "pass",
+      "confirmed_ignored": [
+        ".env",
+        ".env.local",
+        "data/brand3.sqlite3",
+        "data/brand3.sqlite3-wal",
+        "output/foo.json",
+        "validation-*/",
+        "*.log",
+        ".pytest_cache/",
+        ".sentrux/",
+        "playwright-report/",
+        "test-results/",
+        ".cache/",
+        "graphify-out/cache/",
+        "graphify-out/manifest.json",
+        ".mcp.json"
+      ]
+    },
+    "env_example_contains_no_secrets": {
+      "result": "pass",
+      "placeholders_detected": [
+        "your-firecrawl-api-key-here",
+        "your-exa-api-key-here",
+        "your-aistudio-key-here",
+        "replace-with-local-team-token",
+        "replace-with-at-least-32-random-characters"
+      ],
+      "real_secret_patterns_detected": false
+    },
+    "output_ignore_policy_clear": {
+      "result": "pass",
+      "notes": [
+        "README marks output/** as local/generated runtime output.",
+        "CONTRIBUTING says local runtime output should not be committed by default.",
+        ".gitignore ignores output/."
+      ]
+    },
+    "sqlite_local_db_policy_safe": {
+      "result": "pass",
+      "notes": [
+        "data/ is ignored.",
+        "SQLite DB, WAL, and SHM files are ignored.",
+        "README says data/brand3.sqlite3 is local runtime data.",
+        "CONTRIBUTING says private local database files should never be committed.",
+        "No tracked SQLite/DB fixture files were found."
+      ],
+      "future_caveat": "Add allowlist exceptions if synthetic DB fixtures are introduced."
+    },
+    "visual_signature_example_artifact_policy_clear": {
+      "result": "pass",
+      "notes": [
+        ".gitignore does not bulk-ignore examples/visual_signature/**.",
+        "README explains that Visual Signature examples are mixed source/generated artifacts.",
+        "CONTRIBUTING asks contributors to classify generated artifacts and document ambiguity."
+      ]
+    },
+    "prompt_editing_workflow_clear": {
+      "result": "pass",
+      "prompt_locations_documented": [
+        "src/features/llm_analyzer.py",
+        "src/reports/narrative.py",
+        "src/features/visual_analyzer.py",
+        "src/visual_signature/annotations/prompts.py"
+      ],
+      "notes": [
+        "Workflow asks reviewers to identify affected layer.",
+        "Workflow separates prompt changes from rubric changes.",
+        "Workflow requires version bump/introduction when semantics/cache behavior changes.",
+        "Workflow asks for tests, snapshots, or rationale."
+      ],
+      "followup": "Create docs/prompts.md as the full prompt registry in a later phase."
+    }
+  },
+  "findings": [
+    {
+      "severity": "low",
+      "title": "README environment list is not complete",
+      "details": "README lists common variables but omits some local app/development variables present in .env.example and code, including BRAND3_MAX_CONCURRENT_ANALYSES, BRAND3_ANALYSIS_TIMEOUT_SECONDS, rate-limit settings, BRAND3_BASE_URL, and BRAND3_ENVIRONMENT.",
+      "impact": "Low; .env.example contains the missing variables, so local setup remains possible.",
+      "recommendation": "Add docs/environment.md in the next docs phase as the complete env reference."
+    },
+    {
+      "severity": "low",
+      "title": "Global SQLite ignore needs future fixture exception if DB fixtures are added",
+      "details": ".gitignore globally ignores *.sqlite, *.sqlite3, and *.db.",
+      "impact": "Low today; no tracked SQLite/DB fixtures were found.",
+      "recommendation": "If future tests need SQLite fixtures, add explicit allowlist exceptions such as !tests/fixtures/**/*.sqlite3."
+    }
+  ],
+  "recommendation": "Proceed to the next phase with the low-risk follow-ups recorded."
+}

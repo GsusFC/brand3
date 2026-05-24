@@ -1,0 +1,93 @@
+{
+  "document": "brand3_local_evidence_packet_v0_hardening_review",
+  "purpose": "Review the first hardening pass that moved local Evidence Packet v0 toward the useful Deep Research evidence-packet reference shape.",
+  "updated_artifacts": [
+    "src/reports/evidence_packet.py",
+    "tests/test_evidence_packet.py",
+    "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json"
+  ],
+  "created_artifacts": [
+    "docs/brand3_local_evidence_packet_v0_hardening_review.md",
+    "docs/brand3_local_evidence_packet_v0_hardening_review.json"
+  ],
+  "new_fields": [
+    "entity_resolution",
+    "entity_resolution.related_surfaces",
+    "source_inventory.url",
+    "source_inventory.source_type",
+    "source_inventory.source_quality",
+    "source_inventory.role",
+    "source_inventory.notes",
+    "cross_dimension_evidence",
+    "cross_dimension_evidence.contradiction_candidates"
+  ],
+  "builtwith_hardened_counts": {
+    "owned_claims": 8,
+    "external_evidence": 5,
+    "related_surface_evidence": 12,
+    "technical_signals": 1,
+    "trust_or_security_signals": 5,
+    "visual_or_internal_signals": 2,
+    "entity_ambiguity": 5,
+    "missing_evidence": 12,
+    "finding_eligible_evidence": 0,
+    "evidence_not_eligible_for_findings": 26,
+    "requires_human_review": 7,
+    "source_inventory": 27
+  },
+  "eligibility_hardening": {
+    "owned_claims": "owned_or_observation_only_unless_independently_supported",
+    "marketplace_listings": "requires_human_review_by_default",
+    "repository_evidence": "developer_activity_not_adoption",
+    "trust_security": "review_gated",
+    "technical_internal_visual": "technical_only",
+    "usage_install_user_count_claims": "observation_only_unless_independently_supported",
+    "missing_urls": "block_normal_finding_eligibility",
+    "same_name_different_root": "unresolved_not_alias"
+  },
+  "deep_research_reference_alignment": [
+    "entity resolution now exists locally",
+    "related surfaces carry relation metadata",
+    "source inventory records URL/source quality/role",
+    "missing evidence remains first-class",
+    "contradiction candidates are explicit",
+    "human review gates remain visible"
+  ],
+  "remaining_gaps": [
+    "local v0 cannot discover missing source-context evidence",
+    "local v0 cannot verify ownership beyond collected evidence",
+    "local v0 cannot discover canonical related surfaces unless upstream collection found them",
+    "local v0 cannot judge unfamiliar directories beyond deterministic source rules",
+    "local v0 does not yet emit the full nested dimensions object from the Deep Research reference"
+  ],
+  "what_local_v0_can_now_do_cheaply": [
+    "conservative entity frame",
+    "explicit related-surface records",
+    "URL/source quality inventory",
+    "evidence eligibility before generation",
+    "missing evidence visibility",
+    "review gates",
+    "contradiction candidates",
+    "deterministic blocking of technical visual and trust/security signals"
+  ],
+  "ready_for_next_snapshot_tests": true,
+  "recommended_next_cases": [
+    "Watermelon",
+    "LaunchDarkly"
+  ],
+  "ready_to_feed_into_generation": false,
+  "recommended_next_step": "Run hardened Evidence Packet v0 on Watermelon and LaunchDarkly snapshots if available, then decide whether it distinguishes clean evidence from ambiguity without blocking everything.",
+  "non_goals_preserved": [
+    "no runtime integration",
+    "no prompt changes",
+    "no scoring changes",
+    "no report generation changes",
+    "no rendering changes",
+    "no persisted payload changes",
+    "no Visual Signature changes",
+    "no Deep Research calls",
+    "no Exa Firecrawl or API calls",
+    "no new provider",
+    "no generation input changes"
+  ]
+}

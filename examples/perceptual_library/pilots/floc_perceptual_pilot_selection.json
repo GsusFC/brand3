@@ -1,0 +1,51 @@
+{
+  "artifact_id": "floc_perceptual_pilot_selection",
+  "created_at": "2026-05-15",
+  "mode": "controlled_reversible_non_runtime",
+  "selection_principle": "contrast_not_quality",
+  "source_boundary": "public_floc_case_study_corpus",
+  "guardrails": {
+    "public_website_only": true,
+    "notion_used": false,
+    "scoring_changes": false,
+    "prompt_changes": false,
+    "report_changes": false,
+    "visual_signature_runtime_changes": false,
+    "runtime_changes": false
+  },
+  "selected_pilots": [
+    {
+      "case_id": "charms",
+      "project_name": "Charms",
+      "role": "editorial_minimal_atmospheric",
+      "public_url": "https://wearefloc.com/work/charms",
+      "selection_reason": "Soft editorial surface, restrained identity cues, emotional and ritual language, prior local visual observation artifacts available.",
+      "record_status": "canonical_fixture_created"
+    },
+    {
+      "case_id": "d4data",
+      "project_name": "D4DATA",
+      "role": "experimental_motion_heavy",
+      "public_url": "https://wearefloc.com/work/d4data",
+      "selection_reason": "Kendo metaphor, datamosh transitions, MetaHuman production, explicit motion and audiovisual language.",
+      "record_status": "selected_only"
+    },
+    {
+      "case_id": "grandvalira_resorts",
+      "project_name": "Grandvalira Resorts",
+      "role": "corporate_system",
+      "public_url": "https://wearefloc.com/work/grandvalira-resorts",
+      "selection_reason": "Multi-brand design system, component library, foundations, scalability, cohesion across resort identities.",
+      "record_status": "selected_only"
+    }
+  ],
+  "pilot_rules": [
+    "do_not_score",
+    "do_not_infer_quality",
+    "do_not_generalize_case_specific_metaphors",
+    "do_not_treat_case_copy_as_visual_proof_without_independent_anchor",
+    "separate_direct_floc_language_from_brand3_interpretation",
+    "mark_unsupported_or_weak_inferences_explicitly",
+    "require_human_review_for_inferred_strategic_intention"
+  ]
+}

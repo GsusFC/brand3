@@ -1,0 +1,378 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:57:14.954453",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.strava.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 50,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Strava",
+  "calibration": {
+    "expected_category": "consumer_app",
+    "notes": "Consumer app with community and performance positioning."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#fc5200",
+      "#4285f4",
+      "#34a853",
+      "#fbbc05",
+      "#ea4335",
+      "#ffffff"
+    ],
+    "background_candidates": [
+      "#ffffff"
+    ],
+    "confidence": 0.683,
+    "dominant_colors": [
+      "#fc5200",
+      "#4285f4",
+      "#34a853",
+      "#fbbc05",
+      "#ea4335",
+      "#ffffff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#fc5200",
+        "occurrences": 32,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4285f4",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#34a853",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fbbc05",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ea4335",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffffff",
+        "occurrences": 2,
+        "role": "accent",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 18,
+        "labels": [
+          "Sign Up With Google",
+          "Sign Up With Apple",
+          "Sign Up With Email"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 10,
+        "labels": [
+          "Sign Up With Google",
+          "Sign Up With Apple",
+          "Sign Up With Email",
+          "Join Us Now",
+          "Explore",
+          "Join us for free.",
+          "Try",
+          "**Join Us Now**",
+          "**Join us for free.**",
+          "**Try**"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      }
+    ],
+    "confidence": 0.73,
+    "interaction_patterns": [
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Sign Up With Google",
+      "Sign Up With Apple",
+      "Sign Up With Email",
+      "Join Us Now",
+      "Explore",
+      "Join us for free.",
+      "Try",
+      "**Join Us Now**"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.66,
+    "confidence": 0.488,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.509,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.488,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.45
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.618
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 24,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.73,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.685,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.058,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.338
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 721769,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.strava.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/strava.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 116,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 6730,
+          "ratio": 0.3365
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 5017,
+          "ratio": 0.2509
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 1723,
+          "ratio": 0.0862
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 527,
+          "ratio": 0.0263
+        },
+        {
+          "hex": "#a0a080",
+          "occurrences": 476,
+          "ratio": 0.0238
+        },
+        {
+          "hex": "#808060",
+          "occurrences": 465,
+          "ratio": 0.0232
+        },
+        {
+          "hex": "#606040",
+          "occurrences": 456,
+          "ratio": 0.0228
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 439,
+          "ratio": 0.022
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.685,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.058,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.338
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 116,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 6730,
+          "ratio": 0.3365
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 5017,
+          "ratio": 0.2509
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 1723,
+          "ratio": 0.0862
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 527,
+          "ratio": 0.0263
+        },
+        {
+          "hex": "#a0a080",
+          "occurrences": 476,
+          "ratio": 0.0238
+        },
+        {
+          "hex": "#808060",
+          "occurrences": 465,
+          "ratio": 0.0232
+        },
+        {
+          "hex": "#606040",
+          "occurrences": 456,
+          "ratio": 0.0228
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 439,
+          "ratio": 0.022
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.338,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.strava.com"
+}

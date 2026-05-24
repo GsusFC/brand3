@@ -1,0 +1,743 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:58:50.092595",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://vercel.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "developer first",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 198,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Vercel",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Design-forward developer platform useful as high-maturity reference."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#2c8ce1",
+      "#45dec4",
+      "#ff3e00",
+      "#00dc82",
+      "#fc6d26",
+      "#2684ff"
+    ],
+    "background_candidates": [
+      "#0052cc"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#2c8ce1",
+      "#45dec4",
+      "#d9d9d9",
+      "#ff3e00",
+      "#00dc82",
+      "#fc6d26",
+      "#2684ff",
+      "#41d1ff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#2c8ce1",
+        "occurrences": 40,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#45dec4",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#d9d9d9",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ff3e00",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#00dc82",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#fc6d26",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#2684ff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#41d1ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#bd34fe",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffea83",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffdd35",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffa800",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0096ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff1e56",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#dddd11",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#dddddd",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f04939",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f37368",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0078d4",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e24329",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fca326",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0052cc",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#149eca",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#d83333",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#2c8ce1",
+      "#0078d4",
+      "#0052cc",
+      "#d83333"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 18,
+        "labels": [
+          "AI Apps AI Apps",
+          "Web Apps Web Apps",
+          "Ecommerce Ecommerce",
+          "Marketing Marketing",
+          "Platforms Platforms",
+          "AI SDK",
+          "Python",
+          "OpenAI HTTP"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 22,
+        "labels": [
+          "Get your ticket",
+          "Deploy Start Deploying",
+          "Get a Demo",
+          "AI Apps AI Apps",
+          "Web Apps Web Apps",
+          "Ecommerce Ecommerce",
+          "Marketing Marketing",
+          "Platforms Platforms",
+          "Deploy AI Apps in seconds",
+          "Enterprise"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 60,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Get your ticket",
+      "Deploy Start Deploying",
+      "Get a Demo",
+      "AI Apps AI Apps",
+      "Web Apps Web Apps",
+      "Ecommerce Ecommerce",
+      "Marketing Marketing",
+      "Platforms Platforms"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.74,
+    "confidence": 0.635,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.469,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.635,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.607
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.695
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 22,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Runway",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/runway-light.0_1l12ke61ums.svg"
+      },
+      {
+        "alt": "Runway",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/runway-dark.1anio3luprqa2.svg"
+      },
+      {
+        "alt": "LeonardoAi",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/leonardo-ai-light.33rurcgq77tyi.svg"
+      },
+      {
+        "alt": "LeonardoAi",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/leonardo-ai-dark.0n04u0ze4qgvg.svg"
+      },
+      {
+        "alt": "Zapier",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/zapier-light.1mik6pqvmlto_.svg"
+      },
+      {
+        "alt": "Zapier",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/zapier-dark.2jinjef-7qh6t.svg"
+      },
+      {
+        "alt": "Adobe",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/adobe-light.3de-9hqn511ns.svg"
+      },
+      {
+        "alt": "Adobe",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://vercel.com/vc-ap-vercel-marketing/_next/static/immutable/media/adobe-dark.2yxcg9r5ex73q.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.4,
+    "font_families": [],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      12.0,
+      9.5,
+      12.0,
+      9.5
+    ],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.118,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.671,
+      "edge_density": 0.069,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.748
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 638770,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://vercel.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/vercel.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 77,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14905,
+          "ratio": 0.7452
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 350,
+          "ratio": 0.0175
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 322,
+          "ratio": 0.0161
+        },
+        {
+          "hex": "#ffe0c0",
+          "occurrences": 256,
+          "ratio": 0.0128
+        },
+        {
+          "hex": "#60ffc0",
+          "occurrences": 243,
+          "ratio": 0.0121
+        },
+        {
+          "hex": "#c0ffe0",
+          "occurrences": 237,
+          "ratio": 0.0118
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 223,
+          "ratio": 0.0112
+        },
+        {
+          "hex": "#e0c040",
+          "occurrences": 198,
+          "ratio": 0.0099
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.118,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.671,
+      "edge_density": 0.069,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.748
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.671,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.831
+    },
+    "viewport_palette": {
+      "color_count": 77,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14905,
+          "ratio": 0.7452
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 350,
+          "ratio": 0.0175
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 322,
+          "ratio": 0.0161
+        },
+        {
+          "hex": "#ffe0c0",
+          "occurrences": 256,
+          "ratio": 0.0128
+        },
+        {
+          "hex": "#60ffc0",
+          "occurrences": 243,
+          "ratio": 0.0121
+        },
+        {
+          "hex": "#c0ffe0",
+          "occurrences": 237,
+          "ratio": 0.0118
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 223,
+          "ratio": 0.0112
+        },
+        {
+          "hex": "#e0c040",
+          "occurrences": 198,
+          "ratio": 0.0099
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.748,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.671,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.831
+    }
+  },
+  "website_url": "https://vercel.com"
+}

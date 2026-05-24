@@ -1,0 +1,635 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:00:59.338863",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.theverge.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "editorial media",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 10,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 272,
+    "video_count": 36
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "The Verge",
+  "calibration": {
+    "expected_category": "editorial_media",
+    "notes": "Dense editorial system with strong recurring modules."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ff0000",
+      "#00ff00",
+      "#0000ff",
+      "#ffff00",
+      "#ff00ff",
+      "#00ffff"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#000000",
+      "#0000ff",
+      "#ffff00",
+      "#eaeaea",
+      "#2e3644"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#000000",
+      "#ff0000",
+      "#00ff00",
+      "#0000ff",
+      "#ffff00",
+      "#ff00ff",
+      "#00ffff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 52,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#000000",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#ff0000",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#00ff00",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#0000ff",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#ffff00",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#ff00ff",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#00ffff",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#eaeaea",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff0033",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#656565",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#2e3644",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0095f6",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#c1c1c1",
+        "occurrences": 2,
+        "role": "border",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#ffffff",
+      "#000000",
+      "#ff0000",
+      "#00ff00",
+      "#0000ff",
+      "#ffff00"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 226,
+        "labels": [
+          "Hamburger Navigation Button",
+          "close Close",
+          "Top Stories",
+          "Latest",
+          "Following",
+          "Link",
+          "See All Latest",
+          "Play Video",
+          "Play",
+          "Skip Backward"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 67,
+        "labels": [
+          "Skip to main content",
+          "Subscribe",
+          "Top Stories",
+          "Latest",
+          "Following",
+          "See All Latest",
+          "Play Video",
+          "Play",
+          "Skip Backward",
+          "Skip Forward"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 44,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 258,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 42,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 38,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 46,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Skip to main content",
+      "Subscribe",
+      "Top Stories",
+      "Latest",
+      "Following",
+      "See All Latest",
+      "Play Video",
+      "Play"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.75,
+    "confidence": 0.595,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.531,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.595,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.605
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.689
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 48,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "The Verge",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.cookielaw.org/logos/451d8686-ff0b-4065-9afa-6289c6cb87c3/8ab3bfb1-b2e2-46dd-b96a-c25a457b231f/9812319a-c53f-4a49-8a96-f6f71fb51088/verge-ot-logo.png"
+      },
+      {
+        "alt": "Powered by Onetrust",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.cookielaw.org/logos/static/powered_by_logo.svg"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": true,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "flat",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.414,
+      "composition_classification": "dense_grid",
+      "confidence": 0.848,
+      "edge_density": 0.054,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.01
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 246530,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.theverge.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-verge.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 96,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 11440,
+          "ratio": 0.572
+        },
+        {
+          "hex": "#40ffc0",
+          "occurrences": 4987,
+          "ratio": 0.2493
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 592,
+          "ratio": 0.0296
+        },
+        {
+          "hex": "#e0c020",
+          "occurrences": 403,
+          "ratio": 0.0202
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 378,
+          "ratio": 0.0189
+        },
+        {
+          "hex": "#e0c040",
+          "occurrences": 277,
+          "ratio": 0.0138
+        },
+        {
+          "hex": "#ffe040",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 157,
+          "ratio": 0.0078
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.414,
+      "composition_classification": "dense_grid",
+      "confidence": 0.848,
+      "edge_density": 0.054,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.01
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.848,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "viewport_palette": {
+      "color_count": 96,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 11440,
+          "ratio": 0.572
+        },
+        {
+          "hex": "#40ffc0",
+          "occurrences": 4987,
+          "ratio": 0.2493
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 592,
+          "ratio": 0.0296
+        },
+        {
+          "hex": "#e0c020",
+          "occurrences": 403,
+          "ratio": 0.0202
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 378,
+          "ratio": 0.0189
+        },
+        {
+          "hex": "#e0c040",
+          "occurrences": 277,
+          "ratio": 0.0138
+        },
+        {
+          "hex": "#ffe040",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 157,
+          "ratio": 0.0078
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.01,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.848,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    }
+  },
+  "website_url": "https://www.theverge.com"
+}

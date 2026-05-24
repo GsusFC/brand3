@@ -1,0 +1,39 @@
+Expected category: developer_first
+Notes: Lower-fame developer platform for avoiding polished-brand overfitting.
+
+== Nhost ==
+URL: https://nhost.io
+Interpretation status: interpretable
+Extraction confidence: 0.69 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.60, consistency_coverage=0.63]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.73
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.63
+
+Visual summaries:
+- palette preview: #ffffff[###] #011627[###] #d6deeb[###] #82aaff[###] #61dafb[###] #01579b[###] #336791[###] #f7df1e[###]
+- typography: Consolas, Monaco, &quot
+- layout: header=False; nav=False; hero=True; sections=18; density=sparse; patterns=grid,flex,multi_column
+- components: cta=4, card=2, tabs=60
+- consistency: overall=0.56; color=0.48; type=0.65; component=0.66; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #202020[###] #000020[###] #002040[###] #002020[###] #ffffff[###] #202040[###] #c0c0c0[###]
+- viewport palette: #000000[###] #202020[###] #000020[###] #002040[###] #002020[###] #ffffff[###] #202040[###] #c0c0c0[###]
+- composition: density=dense; whitespace=2%; classification=dense_grid
+- viewport composition: density=dense; whitespace=2%; classification=dense_grid
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

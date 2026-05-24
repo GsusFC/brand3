@@ -1,0 +1,138 @@
+{
+  "review": "brand3_evidence_packet_real_validation_batch_v2_1",
+  "mode": "lab_only_non_runtime_non_mutating",
+  "created_at": "2026-05-18T11:41:55.690301+00:00",
+  "case_resolution": {
+    "resolved_total": 9,
+    "unresolved_total": 0,
+    "groups": {
+      "group_a": {
+        "selected_count": 3,
+        "coverage_gap": 0,
+        "selected_primary_count": 3,
+        "selected_backup_count": 0
+      },
+      "group_b": {
+        "selected_count": 3,
+        "coverage_gap": 0,
+        "selected_primary_count": 3,
+        "selected_backup_count": 0
+      },
+      "group_c": {
+        "selected_count": 3,
+        "coverage_gap": 0,
+        "selected_primary_count": 3,
+        "selected_backup_count": 0
+      }
+    }
+  },
+  "execution": {
+    "llm_calls_planned": 7,
+    "llm_calls_executed": 7,
+    "parse_failures_unrecovered": 0,
+    "json_repair_retries_attempted": 0,
+    "json_repair_retries_succeeded": 0
+  },
+  "pass_criteria": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "evidence_urls_valid": true,
+    "parse_failures_unrecovered": 0,
+    "blocked_controls_skipped": true
+  },
+  "group_level_flags": {
+    "group_a_majority_ready_low_review_pressure": true,
+    "group_b_product_system_mixed_ready_thin": true,
+    "group_c_expressive_stays_bounded": true
+  },
+  "group_metrics": {
+    "group_a": {
+      "name": "Deeptech / scientific systems",
+      "target_count": 3,
+      "selected_count": 3,
+      "coverage_gap": 0,
+      "executed_count": 2,
+      "primary_selected_count": 3,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 2,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    },
+    "group_b": {
+      "name": "Product / system identity",
+      "target_count": 3,
+      "selected_count": 3,
+      "coverage_gap": 0,
+      "executed_count": 3,
+      "primary_selected_count": 3,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 1,
+        "thin": 2,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    },
+    "group_c": {
+      "name": "Expressive / visual language",
+      "target_count": 3,
+      "selected_count": 3,
+      "coverage_gap": 0,
+      "executed_count": 2,
+      "primary_selected_count": 3,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 2,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    }
+  },
+  "overall_pass": true,
+  "assessment": {
+    "drift_behavior": "bounded",
+    "blocked_review_handling_quality": "enforced",
+    "readiness_distribution": {
+      "group_a": {
+        "ready": 2,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "group_b": {
+        "ready": 1,
+        "thin": 2,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "group_c": {
+        "ready": 2,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      }
+    }
+  },
+  "decision_gate": "pass_promote_as_default_lab_benchmark",
+  "failure_classes": []
+}

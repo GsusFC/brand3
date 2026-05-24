@@ -1,0 +1,50 @@
+{
+  "items": [
+    {
+      "boundary_note": "Evidence only in Phase Zero.",
+      "description": "Visible clarity of structure, CTA, and navigation.",
+      "enabled": false,
+      "key": "functional_readability",
+      "observation_keys": [
+        "obstruction",
+        "cta_clarity",
+        "navigation_clarity",
+        "density"
+      ]
+    },
+    {
+      "boundary_note": "Observation layer only until a future explicit decision.",
+      "description": "Visible tone, rhythm, tension, and consistency.",
+      "enabled": false,
+      "key": "editorial_signal_strength",
+      "observation_keys": [
+        "visual_tone",
+        "brand_consistency",
+        "expressive_density",
+        "creative_intent"
+      ]
+    },
+    {
+      "boundary_note": "Used for dataset eligibility, not scoring.",
+      "description": "Confidence that observations are trustworthy enough to export.",
+      "enabled": false,
+      "key": "perceptual_confidence",
+      "observation_keys": [
+        "confidence"
+      ]
+    },
+    {
+      "boundary_note": "Reserved for drift analysis, not user-facing scoring.",
+      "description": "How stable the perceptual signature is over time.",
+      "enabled": false,
+      "key": "lineage_stability",
+      "observation_keys": [
+        "perceptual_state",
+        "transition_record"
+      ]
+    }
+  ],
+  "registry_type": "scoring_registry",
+  "schema_version": "phase-zero-scoring-registry-1",
+  "taxonomy_version": "phase-zero-taxonomy-1"
+}

@@ -1,0 +1,390 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:26:34.604995",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.mrhandyman.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 1106,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Mr. Handyman",
+  "calibration": {
+    "expected_category": "local_service_small_business",
+    "notes": "Franchise service site with conventional practical visual system."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ffc800"
+    ],
+    "background_candidates": [],
+    "confidence": 0.406,
+    "dominant_colors": [
+      "#ffc800"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffc800",
+        "occurrences": 840,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 28,
+        "labels": [
+          "Request A Call",
+          "Find My Local Mr. Handyman",
+          "We\u2019re Trustworthy",
+          "Our Workmanship is Guaranteed",
+          "Customer Service That Goes Above and Beyond",
+          "Should I hire a handyman service expert?",
+          "Do you offer handyman services for residential home interiors?",
+          "How do I set up an appointment with Mr. Handyman?",
+          "Does Mr. Handyman service my area?",
+          "How soon can I expect a Mr. Handyman professional to start working on my request"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 24,
+        "labels": [
+          "Request A Call",
+          "View All Reviews",
+          "Get Started",
+          "About Us",
+          "Find My Local Mr. Handyman",
+          "(844) 584-3795",
+          "We\u2019re Trustworthy",
+          "Our Workmanship is Guaranteed",
+          "Customer Service That Goes Above and Beyond",
+          "Should I hire a handyman service expert?"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 36,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 426,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 168,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 30,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Request A Call",
+      "View All Reviews",
+      "Get Started",
+      "About Us",
+      "Find My Local Mr. Handyman",
+      "(844) 584-3795",
+      "We\u2019re Trustworthy",
+      "Our Workmanship is Guaranteed"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.74,
+    "confidence": 0.462,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.559,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.462,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.491
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.629
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "sticky_nav"
+    ],
+    "section_count": 38,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Mr. Handyman service van parked on a suburban street, with a ladder mounted on the roof and the Neighborly logo displayed on the side.",
+        "confidence": 0.72,
+        "location": "body",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.mrhandyman.com/brand/_assets/images/brand-img/home-page/mrh_19_us_van_desktop_1440x634.webp"
+      },
+      {
+        "alt": "Neighborly Done Right Promise Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.mrhandyman.com/brand/_assets/images/brand-logo/ndrp-small-logo-round.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "body",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 0.209,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.654,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.072,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.376
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 857996,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.mrhandyman.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/mr-handyman.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 178,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7274,
+          "ratio": 0.3637
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2492,
+          "ratio": 0.1246
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1651,
+          "ratio": 0.0825
+        },
+        {
+          "hex": "#c02020",
+          "occurrences": 1296,
+          "ratio": 0.0648
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 845,
+          "ratio": 0.0423
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 764,
+          "ratio": 0.0382
+        },
+        {
+          "hex": "#a0c0e0",
+          "occurrences": 504,
+          "ratio": 0.0252
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 385,
+          "ratio": 0.0192
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.654,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.072,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.376
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 178,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7274,
+          "ratio": 0.3637
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2492,
+          "ratio": 0.1246
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1651,
+          "ratio": 0.0825
+        },
+        {
+          "hex": "#c02020",
+          "occurrences": 1296,
+          "ratio": 0.0648
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 845,
+          "ratio": 0.0423
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 764,
+          "ratio": 0.0382
+        },
+        {
+          "hex": "#a0c0e0",
+          "occurrences": 504,
+          "ratio": 0.0252
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 385,
+          "ratio": 0.0192
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.376,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.mrhandyman.com"
+}

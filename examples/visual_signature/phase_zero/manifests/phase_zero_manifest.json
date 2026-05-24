@@ -1,0 +1,53 @@
+{
+  "directories": [
+    "taxonomy",
+    "schemas",
+    "fixtures"
+  ],
+  "files": [
+    "taxonomy/observation_registry.json",
+    "taxonomy/state_registry.json",
+    "taxonomy/transition_registry.json",
+    "taxonomy/scoring_registry.json",
+    "taxonomy/uncertainty_policy.json",
+    "schemas/observation_registry.schema.json",
+    "schemas/state_registry.schema.json",
+    "schemas/transition_registry.schema.json",
+    "schemas/scoring_registry.schema.json",
+    "schemas/uncertainty_policy.schema.json",
+    "schemas/uncertainty_profile.schema.json",
+    "schemas/reasoning_trace.schema.json",
+    "schemas/perceptual_observation.schema.json",
+    "schemas/perceptual_state.schema.json",
+    "schemas/transition_record.schema.json",
+    "schemas/mutation_audit.schema.json",
+    "schemas/dataset_eligibility.schema.json",
+    "fixtures/observation_record.example.json",
+    "fixtures/state_record.example.json",
+    "fixtures/transition_record.example.json",
+    "fixtures/mutation_audit.example.json",
+    "fixtures/reasoning_trace.example.json",
+    "fixtures/uncertainty_profile.example.json",
+    "fixtures/dataset_eligibility.example.json",
+    "fixtures/review_record.example.json",
+    "manifests/phase_zero_manifest.json"
+  ],
+  "phase": "phase_zero",
+  "schema_version": "phase-zero-manifest-1",
+  "schema_versions": {
+    "dataset_eligibility": "phase-zero-dataset-eligibility-1",
+    "mutation_audit": "phase-zero-mutation-audit-1",
+    "observation_registry": "phase-zero-observation-registry-1",
+    "perceptual_observation": "phase-zero-perceptual-observation-1",
+    "perceptual_state": "phase-zero-perceptual-state-1",
+    "reasoning_trace": "phase-zero-reasoning-trace-1",
+    "review_record": "phase-zero-review-record-1",
+    "scoring_registry": "phase-zero-scoring-registry-1",
+    "state_registry": "phase-zero-state-registry-1",
+    "transition_record": "phase-zero-transition-record-1",
+    "transition_registry": "phase-zero-transition-registry-1",
+    "uncertainty_policy": "phase-zero-uncertainty-policy-1",
+    "uncertainty_profile": "phase-zero-uncertainty-profile-1"
+  },
+  "taxonomy_version": "phase-zero-taxonomy-1"
+}

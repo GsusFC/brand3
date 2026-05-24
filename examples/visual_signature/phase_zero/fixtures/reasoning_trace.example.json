@@ -1,0 +1,32 @@
+{
+  "created_at": "2026-05-11T10:00:00Z",
+  "lineage_refs": [
+    "capture:phase-zero-example"
+  ],
+  "record_type": "reasoning_trace",
+  "review_required": true,
+  "schema_version": "phase-zero-reasoning-trace-1",
+  "statements": [
+    {
+      "confidence": 0.92,
+      "evidence_refs": [
+        "raw_screenshot_path"
+      ],
+      "statement": "A cookie modal covers the lower portion of the viewport.",
+      "warnings": []
+    },
+    {
+      "confidence": 0.78,
+      "evidence_refs": [
+        "raw_screenshot_path",
+        "dom_snapshot_ref"
+      ],
+      "statement": "The primary CTA is visible but its clarity is reduced by the overlay.",
+      "warnings": []
+    }
+  ],
+  "summary": "The viewport is readable but partially obstructed, so human review is required.",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "trace_id": "trace_phase_zero_example",
+  "unsupported_inference_warnings": []
+}

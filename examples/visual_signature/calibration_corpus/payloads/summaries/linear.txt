@@ -1,0 +1,39 @@
+Expected category: saas
+Notes: Mature product-led SaaS with controlled visual system.
+
+== Linear ==
+URL: https://linear.app
+Interpretation status: interpretable
+Extraction confidence: 0.70 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.63, consistency_coverage=0.64]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.40
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.64
+
+Visual summaries:
+- palette preview: #08090a[###] #e4e5e9[###] #4354b8[###] #e5591d[###] #8a8f98[###] #2e2e32[###] #ffffff[###] #62666d[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=18; density=balanced; patterns=grid,flex,multi_column
+- components: button=118, cta=26, form=8, card=2, accordion=4, pricing=10
+- consistency: overall=0.46; color=0.48; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #202020[###] #002020[###] #ffffff[###] #404040[###] #000020[###] #606060[###] #808080[###]
+- viewport palette: #000000[###] #202020[###] #002020[###] #ffffff[###] #404040[###] #000020[###] #606060[###] #808080[###]
+- composition: density=dense; whitespace=2%; classification=dense_grid
+- viewport composition: density=dense; whitespace=2%; classification=dense_grid
+- vision confidence: 0.77 (high)
+- viewport confidence: 0.77 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

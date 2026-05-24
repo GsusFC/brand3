@@ -1,0 +1,44 @@
+Expected category: local_service_small_business
+Notes: Local restaurant group with service and hospitality visual behavior.
+
+== The Meatball Shop ==
+URL: https://www.themeatballshop.com
+Interpretation status: interpretable
+Extraction confidence: 0.52 (medium) [acquisition=0.65, html_coverage=0.72, signal_coverage=0.37, consistency_coverage=0.32]
+
+Signal coverage: 57%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.15
+- layout: ok, confidence=0.80
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.32
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=0; density=balanced; patterns=single_column
+- components: navigation=2, cta=2, form=10, modal=4
+- consistency: overall=0.35; color=0.15; type=0.20; component=0.88; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffe0[###] #000000[###] #c0c0c0[###] #e0e0e0[###] #ffe0e0[###] #a0a0a0[###] #404040[###] #e0e0c0[###]
+- viewport palette: #ffffe0[###] #000000[###] #c0c0c0[###] #e0e0e0[###] #ffe0e0[###] #a0a0a0[###] #404040[###] #e0e0c0[###]
+- composition: density=dense; whitespace=0%; classification=dense_grid
+- viewport composition: density=dense; whitespace=0%; classification=dense_grid
+- vision confidence: 0.77 (high)
+- viewport confidence: 0.77 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.32)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

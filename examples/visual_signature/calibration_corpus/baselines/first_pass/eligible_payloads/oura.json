@@ -1,0 +1,412 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:34:07.348117",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://ouraring.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 56,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 74,
+    "video_count": 8
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Oura",
+  "calibration": {
+    "expected_category": "wellness_lifestyle",
+    "notes": "Wellness hardware with premium product imagery and health education."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ffb648"
+    ],
+    "background_candidates": [
+      "#cbcbcb",
+      "#eadccf",
+      "#b6cfdd",
+      "#f3ebe1",
+      "#b5e4fe",
+      "#d5c3ab"
+    ],
+    "confidence": 0.739,
+    "dominant_colors": [
+      "#cbcbcb",
+      "#eadccf",
+      "#b6cfdd",
+      "#f3ebe1",
+      "#b5e4fe",
+      "#d5c3ab",
+      "#ffb648"
+    ],
+    "palette": [
+      {
+        "confidence": 0.64,
+        "hex": "#cbcbcb",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#eadccf",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#b6cfdd",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f3ebe1",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#b5e4fe",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#d5c3ab",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffb648",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 44,
+        "labels": [
+          "Starting your day",
+          "Taking a walk",
+          "Under the weather",
+          "Winding down",
+          "Hosting a party"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 11,
+        "labels": [
+          "Discover Oura Ring 4",
+          "Learn More",
+          "Why Oura",
+          "How It Works",
+          "Starting your day",
+          "Taking a walk",
+          "Under the weather",
+          "Winding down",
+          "Hosting a party",
+          "Read More"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 74,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 24,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 44,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Discover Oura Ring 4",
+      "Learn More",
+      "Why Oura",
+      "How It Works",
+      "Starting your day",
+      "Taking a walk",
+      "Under the weather",
+      "Winding down"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.72,
+    "confidence": 0.555,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.524,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.555,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.495
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.644
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 10,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.834,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.949
+    },
+    "composition": {
+      "color_variance": 0.167,
+      "composition_classification": "dense_grid",
+      "confidence": 0.7,
+      "edge_density": 0.053,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.13
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 445504,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://ouraring.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/oura.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 51,
+      "confidence": 0.829,
+      "dominant_colors": [
+        {
+          "hex": "#c0a080",
+          "occurrences": 3265,
+          "ratio": 0.1633
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 2606,
+          "ratio": 0.1303
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2389,
+          "ratio": 0.1195
+        },
+        {
+          "hex": "#c0a0a0",
+          "occurrences": 2236,
+          "ratio": 0.1118
+        },
+        {
+          "hex": "#a08080",
+          "occurrences": 1982,
+          "ratio": 0.0991
+        },
+        {
+          "hex": "#a0a080",
+          "occurrences": 1660,
+          "ratio": 0.083
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 1416,
+          "ratio": 0.0708
+        },
+        {
+          "hex": "#a08060",
+          "occurrences": 1219,
+          "ratio": 0.0609
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.167,
+      "composition_classification": "dense_grid",
+      "confidence": 0.7,
+      "edge_density": 0.053,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.13
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.7,
+        "palette": 0.829,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.822
+    },
+    "viewport_palette": {
+      "color_count": 51,
+      "confidence": 0.829,
+      "dominant_colors": [
+        {
+          "hex": "#c0a080",
+          "occurrences": 3265,
+          "ratio": 0.1633
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 2606,
+          "ratio": 0.1303
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2389,
+          "ratio": 0.1195
+        },
+        {
+          "hex": "#c0a0a0",
+          "occurrences": 2236,
+          "ratio": 0.1118
+        },
+        {
+          "hex": "#a08080",
+          "occurrences": 1982,
+          "ratio": 0.0991
+        },
+        {
+          "hex": "#a0a080",
+          "occurrences": 1660,
+          "ratio": 0.083
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 1416,
+          "ratio": 0.0708
+        },
+        {
+          "hex": "#a08060",
+          "occurrences": 1219,
+          "ratio": 0.0609
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.13,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.7,
+        "palette": 0.829,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.822
+    }
+  },
+  "website_url": "https://ouraring.com"
+}

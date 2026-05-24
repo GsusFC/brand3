@@ -138,6 +138,41 @@ class SQLiteStore:
         for path in sorted(migrations_dir.glob("*.sql")):
             sql = path.read_text(encoding="utf-8")
             self.conn.executescript(sql)
+        self._ensure_file_migration_columns()
+
+    def _ensure_file_migration_columns(self) -> None:
+        """Backfill columns for tables owned by SQL migrations.
+
+        The `.sql` migrations are intentionally re-runnable. SQLite has no
+        portable `ALTER TABLE ADD COLUMN IF NOT EXISTS`, so existing migrated
+        databases get additive columns through this guarded Python path.
+        """
+        tables = {
+            row["name"]
+            for row in self.conn.execute(
+                "SELECT name FROM sqlite_master WHERE type='table'"
+            ).fetchall()
+        }
+        if "web_requests" in tables:
+            self._ensure_columns(
+                "web_requests",
+                {
+                    "phase": "TEXT NOT NULL DEFAULT 'queued'",
+                    "phase_updated_at": "TIMESTAMP",
+                },
+            )
+            self.conn.commit()
+        if "magnetism_scans" in tables:
+            self._ensure_columns(
+                "magnetism_scans",
+                {
+                    "status": "TEXT NOT NULL DEFAULT 'ready'",
+                    "token": "TEXT",
+                    "phase": "TEXT",
+                    "error_message": "TEXT",
+                },
+            )
+            self.conn.commit()
 
     def close(self) -> None:
         self.conn.close()
@@ -510,6 +545,9 @@ class SQLiteStore:
         )
         self.conn.commit()
 
+    def save_visual_signature_evidence(self, run_id: int, payload: Any) -> None:
+        self.save_raw_input(run_id, "visual_signature", payload)
+
     def update_run_classification(
         self,
         run_id: int,
@@ -568,6 +606,14 @@ class SQLiteStore:
         if not row:
             return None
         return json.loads(row["payload_json"])
+
+    def get_latest_visual_signature_evidence(
+        self,
+        brand_name: str,
+        url: str,
+        max_age_hours: int = 24,
+    ) -> Any | None:
+        return self.get_latest_raw_input(brand_name, url, "visual_signature", max_age_hours=max_age_hours)
 
     def save_evidence_items(self, run_id: int, items: list[dict[str, Any]]) -> None:
         if not items:

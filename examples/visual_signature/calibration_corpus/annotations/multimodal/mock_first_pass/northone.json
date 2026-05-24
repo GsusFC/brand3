@@ -1,0 +1,488 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:51:30.402632",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.northone.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "finance fintech",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 36,
+    "video_count": 2
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "NorthOne",
+  "calibration": {
+    "expected_category": "finance_fintech",
+    "notes": "Small-business fintech with practical conversion and trust layout."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.62,
+        "count": 7,
+        "labels": [
+          "Apply for an account",
+          "Explore the demo",
+          "Read",
+          "Sign up in minutes",
+          "Pricing",
+          "Accounting & Bookkeeping",
+          "Start a Business"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 98,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.42,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.58,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "Apply for an account",
+      "Explore the demo",
+      "Read",
+      "Sign up in minutes",
+      "Pricing",
+      "Accounting & Bookkeeping",
+      "Start a Business"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.66,
+    "confidence": 0.302,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.35,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.302,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.36
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.559
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 108,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/663c2dfea25e008f2afbb7ed/67aa3f0bee7791faa7c73e02_image%202.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/663c2dfea25e008f2afbb7ed/67aa3f6f3654dc168a9200fa_image%204.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/663c2dfea25e008f2afbb7ed/67aa3f62701a9382a7fe2be2_image%206%20(1).png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/663c2dfea25e008f2afbb7ed/67aa3a5221a2c6def546f156_Group%201538231190.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/663c2dfea25e008f2afbb7ed/663c2dfea25e008f2afbbce2_northone-small-logo-new.webp"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.341,
+      "composition_classification": "dense_grid",
+      "confidence": 0.804,
+      "edge_density": 0.071,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.334
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 963415,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.northone.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/northone.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 96,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 6490,
+          "ratio": 0.3245
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1874,
+          "ratio": 0.0937
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 1043,
+          "ratio": 0.0522
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 993,
+          "ratio": 0.0496
+        },
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 915,
+          "ratio": 0.0457
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 691,
+          "ratio": 0.0345
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 680,
+          "ratio": 0.034
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 670,
+          "ratio": 0.0335
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.341,
+      "composition_classification": "dense_grid",
+      "confidence": 0.804,
+      "edge_density": 0.071,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.334
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.804,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.871
+    },
+    "viewport_palette": {
+      "color_count": 96,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 6490,
+          "ratio": 0.3245
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1874,
+          "ratio": 0.0937
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 1043,
+          "ratio": 0.0522
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 993,
+          "ratio": 0.0496
+        },
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 915,
+          "ratio": 0.0457
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 691,
+          "ratio": 0.0345
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 680,
+          "ratio": 0.034
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 670,
+          "ratio": 0.0335
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.334,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.804,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.871
+    }
+  },
+  "website_url": "https://www.northone.com"
+}

@@ -1,0 +1,101 @@
+{
+  "brand_name": "Mixed Identity Inc",
+  "website_url": "https://mixed.example",
+  "analyzed_url": "https://mixed.example",
+  "acquisition": {
+    "adapter": "existing_web_data",
+    "status_code": 200,
+    "acquired_at": "2026-05-08T00:00:00",
+    "warnings": [],
+    "errors": []
+  },
+  "colors": {
+    "palette": [
+      {"hex": "#111111", "role": "text", "occurrences": 4, "source": "rendered_html", "confidence": 0.64},
+      {"hex": "#ff3366", "role": "accent", "occurrences": 2, "source": "rendered_html", "confidence": 0.58},
+      {"hex": "#23c55e", "role": "accent", "occurrences": 2, "source": "rendered_html", "confidence": 0.58},
+      {"hex": "#7c3aed", "role": "accent", "occurrences": 2, "source": "rendered_html", "confidence": 0.58},
+      {"hex": "#f59e0b", "role": "accent", "occurrences": 2, "source": "rendered_html", "confidence": 0.58},
+      {"hex": "#06b6d4", "role": "accent", "occurrences": 2, "source": "rendered_html", "confidence": 0.58}
+    ],
+    "dominant_colors": ["#111111", "#ff3366", "#23c55e", "#7c3aed", "#f59e0b", "#06b6d4"],
+    "accent_candidates": ["#ff3366", "#23c55e", "#7c3aed", "#f59e0b", "#06b6d4"],
+    "background_candidates": [],
+    "text_color_candidates": ["#111111"],
+    "palette_complexity": "medium",
+    "confidence": 0.68
+  },
+  "typography": {
+    "font_families": [
+      {"family": "Inter", "role": "body", "occurrences": 2, "source": "rendered_html", "confidence": 0.65},
+      {"family": "Roboto", "role": "body", "occurrences": 2, "source": "rendered_html", "confidence": 0.65},
+      {"family": "Georgia", "role": "display", "occurrences": 1, "source": "rendered_html", "confidence": 0.55},
+      {"family": "Arial", "role": "ui", "occurrences": 1, "source": "rendered_html", "confidence": 0.5},
+      {"family": "Montserrat", "role": "heading", "occurrences": 1, "source": "rendered_html", "confidence": 0.5},
+      {"family": "Poppins", "role": "heading", "occurrences": 1, "source": "rendered_html", "confidence": 0.5}
+    ],
+    "heading_scale": "moderate",
+    "weight_range": {"min": 300, "max": 800},
+    "size_samples_px": [14, 16, 18, 28, 44],
+    "confidence": 0.74
+  },
+  "logo": {
+    "logo_detected": true,
+    "candidates": [
+      {"url": "https://mixed.example/logo-old.svg", "alt": "Mixed Identity", "location": "header", "source": "images", "confidence": 0.72},
+      {"url": "https://mixed.example/new-wordmark.png", "alt": "Mixed", "location": "footer", "source": "images", "confidence": 0.55}
+    ],
+    "favicon_detected": true,
+    "textual_brand_mark_detected": false,
+    "primary_location": "header",
+    "confidence": 0.75
+  },
+  "layout": {
+    "has_header": true,
+    "has_navigation": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_footer": true,
+    "section_count": 9,
+    "layout_patterns": ["grid", "flex", "multi_column"],
+    "visual_density": "dense",
+    "confidence": 0.82
+  },
+  "components": {
+    "components": [
+      {"type": "navigation", "count": 2, "labels": ["Home", "Solutions"], "source": "rendered_html", "confidence": 0.7},
+      {"type": "cta", "count": 5, "labels": ["Start now", "Learn more", "Contact"], "source": "rendered_html", "confidence": 0.62},
+      {"type": "card", "count": 18, "labels": [], "source": "rendered_html", "confidence": 0.48}
+    ],
+    "primary_ctas": ["Start now", "Learn more", "Contact"],
+    "interaction_patterns": ["navigation"],
+    "confidence": 0.68
+  },
+  "assets": {
+    "image_count": 17,
+    "svg_count": 9,
+    "video_count": 0,
+    "background_image_count": 8,
+    "logo_image_candidates": [{"url": "https://mixed.example/logo-old.svg", "source": "images", "alt": "Mixed Identity", "role_hint": "logo"}],
+    "icon_candidates": [],
+    "screenshot_available": true,
+    "asset_mix": ["logo", "icon", "photo", "screenshot"],
+    "confidence": 0.72
+  },
+  "consistency": {
+    "color_consistency": 0.42,
+    "typography_consistency": 0.42,
+    "component_consistency": 0.78,
+    "asset_consistency": 0.75,
+    "overall_consistency": 0.572,
+    "notes": ["Many font families detected in rendered CSS."],
+    "confidence": 0.705
+  },
+  "extraction_confidence": {
+    "score": 0.73,
+    "level": "medium",
+    "factors": {"acquisition": 0.9, "html_coverage": 0.72, "signal_coverage": 0.73, "consistency_coverage": 0.705},
+    "limitations": []
+  },
+  "version": "visual-signature-mvp-1"
+}

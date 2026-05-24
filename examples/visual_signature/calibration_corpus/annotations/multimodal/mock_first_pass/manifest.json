@@ -1,0 +1,993 @@
+{
+  "annotated": 139,
+  "annotation_audit_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/annotation_audit.json",
+  "annotation_audit_md": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/annotation_audit.md",
+  "completed_at": "2026-05-09T10:12:22.105995",
+  "error_results": [],
+  "errors": 0,
+  "input_dir": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/eligible_payloads",
+  "output_dir": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass",
+  "provider": {
+    "mock": true,
+    "model": "mock-visual-annotator-v1",
+    "name": "mock"
+  },
+  "results": [
+    {
+      "brand_name": "826 National",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/826-national.json",
+      "status": "annotated",
+      "website_url": "https://826national.org"
+    },
+    {
+      "brand_name": "826 Valencia",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/826-valencia.json",
+      "status": "annotated",
+      "website_url": "https://826valencia.org"
+    },
+    {
+      "brand_name": "Aesop",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/aesop.json",
+      "status": "annotated",
+      "website_url": "https://www.aesop.com"
+    },
+    {
+      "brand_name": "Airtable",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/airtable.json",
+      "status": "annotated",
+      "website_url": "https://www.airtable.com"
+    },
+    {
+      "brand_name": "Allbirds",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/allbirds.json",
+      "status": "annotated",
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "brand_name": "Alo Yoga",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/alo-yoga.json",
+      "status": "annotated",
+      "website_url": "https://www.aloyoga.com"
+    },
+    {
+      "brand_name": "Anthropic",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/anthropic.json",
+      "status": "annotated",
+      "website_url": "https://www.anthropic.com"
+    },
+    {
+      "brand_name": "Asana",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/asana.json",
+      "status": "annotated",
+      "website_url": "https://asana.com"
+    },
+    {
+      "brand_name": "Baggu",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/baggu.json",
+      "status": "annotated",
+      "website_url": "https://www.baggu.com"
+    },
+    {
+      "brand_name": "Baked by Melissa",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/baked-by-melissa.json",
+      "status": "annotated",
+      "website_url": "https://www.bakedbymelissa.com"
+    },
+    {
+      "brand_name": "Bang & Olufsen",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/bang-olufsen.json",
+      "status": "annotated",
+      "website_url": "https://www.bang-olufsen.com"
+    },
+    {
+      "brand_name": "Basecamp",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/basecamp.json",
+      "status": "annotated",
+      "website_url": "https://basecamp.com"
+    },
+    {
+      "brand_name": "Bitrix24",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/bitrix24.json",
+      "status": "annotated",
+      "website_url": "https://www.bitrix24.com"
+    },
+    {
+      "brand_name": "Bluevine",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/bluevine.json",
+      "status": "annotated",
+      "website_url": "https://www.bluevine.com"
+    },
+    {
+      "brand_name": "Bombas",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/bombas.json",
+      "status": "annotated",
+      "website_url": "https://bombas.com"
+    },
+    {
+      "brand_name": "Bottega Veneta",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/bottega-veneta.json",
+      "status": "annotated",
+      "website_url": "https://www.bottegaveneta.com"
+    },
+    {
+      "brand_name": "Brex",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/brex.json",
+      "status": "annotated",
+      "website_url": "https://www.brex.com"
+    },
+    {
+      "brand_name": "Brooklinen",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/brooklinen.json",
+      "status": "annotated",
+      "website_url": "https://www.brooklinen.com"
+    },
+    {
+      "brand_name": "Brooklyn Boulders",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/brooklyn-boulders.json",
+      "status": "annotated",
+      "website_url": "https://brooklynboulders.com"
+    },
+    {
+      "brand_name": "Calendly",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/calendly.json",
+      "status": "annotated",
+      "website_url": "https://calendly.com"
+    },
+    {
+      "brand_name": "Charity Water",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/charity-water.json",
+      "status": "annotated",
+      "website_url": "https://www.charitywater.org"
+    },
+    {
+      "brand_name": "ClickUp",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/clickup.json",
+      "status": "annotated",
+      "website_url": "https://clickup.com"
+    },
+    {
+      "brand_name": "Coda",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/coda.json",
+      "status": "annotated",
+      "website_url": "https://coda.io"
+    },
+    {
+      "brand_name": "Code.org",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/code-org.json",
+      "status": "annotated",
+      "website_url": "https://code.org"
+    },
+    {
+      "brand_name": "Codecademy",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/codecademy.json",
+      "status": "annotated",
+      "website_url": "https://www.codecademy.com"
+    },
+    {
+      "brand_name": "Cohere",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/cohere.json",
+      "status": "annotated",
+      "website_url": "https://cohere.com"
+    },
+    {
+      "brand_name": "Coursera",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/coursera.json",
+      "status": "annotated",
+      "website_url": "https://www.coursera.org"
+    },
+    {
+      "brand_name": "Current",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/current.json",
+      "status": "annotated",
+      "website_url": "https://current.com"
+    },
+    {
+      "brand_name": "Dezeen",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/dezeen.json",
+      "status": "annotated",
+      "website_url": "https://www.dezeen.com"
+    },
+    {
+      "brand_name": "Diptyque",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/diptyque.json",
+      "status": "annotated",
+      "website_url": "https://www.diptyqueparis.com"
+    },
+    {
+      "brand_name": "Discord",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/discord.json",
+      "status": "annotated",
+      "website_url": "https://discord.com"
+    },
+    {
+      "brand_name": "DonorsChoose",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/donorschoose.json",
+      "status": "annotated",
+      "website_url": "https://www.donorschoose.org"
+    },
+    {
+      "brand_name": "Duolingo",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/duolingo.json",
+      "status": "annotated",
+      "website_url": "https://www.duolingo.com"
+    },
+    {
+      "brand_name": "Dust",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/dust.json",
+      "status": "annotated",
+      "website_url": "https://dust.tt"
+    },
+    {
+      "brand_name": "edX",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/edx.json",
+      "status": "annotated",
+      "website_url": "https://www.edx.org"
+    },
+    {
+      "brand_name": "Elevate",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/elevate.json",
+      "status": "annotated",
+      "website_url": "https://elevateapp.com"
+    },
+    {
+      "brand_name": "Everlane",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/everlane.json",
+      "status": "annotated",
+      "website_url": "https://www.everlane.com"
+    },
+    {
+      "brand_name": "Fabulous",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/fabulous.json",
+      "status": "annotated",
+      "website_url": "https://www.thefabulous.co"
+    },
+    {
+      "brand_name": "Finch",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/finch.json",
+      "status": "annotated",
+      "website_url": "https://finchcare.com"
+    },
+    {
+      "brand_name": "Fly.io",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/fly-io.json",
+      "status": "annotated",
+      "website_url": "https://fly.io"
+    },
+    {
+      "brand_name": "Found",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/found.json",
+      "status": "annotated",
+      "website_url": "https://found.com"
+    },
+    {
+      "brand_name": "freeCodeCamp",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/freecodecamp.json",
+      "status": "annotated",
+      "website_url": "https://www.freecodecamp.org"
+    },
+    {
+      "brand_name": "Freshworks",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/freshworks.json",
+      "status": "annotated",
+      "website_url": "https://www.freshworks.com"
+    },
+    {
+      "brand_name": "Girls Who Code",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/girls-who-code.json",
+      "status": "annotated",
+      "website_url": "https://girlswhocode.com"
+    },
+    {
+      "brand_name": "Glo",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/glo.json",
+      "status": "annotated",
+      "website_url": "https://www.glo.com"
+    },
+    {
+      "brand_name": "Glossier",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/glossier.json",
+      "status": "annotated",
+      "website_url": "https://www.glossier.com"
+    },
+    {
+      "brand_name": "Granola",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/granola.json",
+      "status": "annotated",
+      "website_url": "https://www.granola.ai"
+    },
+    {
+      "brand_name": "Gymshark",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/gymshark.json",
+      "status": "annotated",
+      "website_url": "https://www.gymshark.com"
+    },
+    {
+      "brand_name": "Handy",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/handy.json",
+      "status": "annotated",
+      "website_url": "https://www.handy.com"
+    },
+    {
+      "brand_name": "Harvey",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/harvey.json",
+      "status": "annotated",
+      "website_url": "https://www.harvey.ai"
+    },
+    {
+      "brand_name": "Hasura",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/hasura.json",
+      "status": "annotated",
+      "website_url": "https://hasura.io"
+    },
+    {
+      "brand_name": "Headspace",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/headspace.json",
+      "status": "annotated",
+      "website_url": "https://www.headspace.com"
+    },
+    {
+      "brand_name": "Headway",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/headway.json",
+      "status": "annotated",
+      "website_url": "https://makeheadway.com"
+    },
+    {
+      "brand_name": "Hebbia",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/hebbia.json",
+      "status": "annotated",
+      "website_url": "https://www.hebbia.ai"
+    },
+    {
+      "brand_name": "Hive",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/hive.json",
+      "status": "annotated",
+      "website_url": "https://hive.com"
+    },
+    {
+      "brand_name": "Hyperallergic",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/hyperallergic.json",
+      "status": "annotated",
+      "website_url": "https://hyperallergic.com"
+    },
+    {
+      "brand_name": "It's Nice That",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/it-s-nice-that.json",
+      "status": "annotated",
+      "website_url": "https://www.itsnicethat.com"
+    },
+    {
+      "brand_name": "Khan Academy",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/khan-academy.json",
+      "status": "annotated",
+      "website_url": "https://www.khanacademy.org"
+    },
+    {
+      "brand_name": "Lawn Love",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/lawn-love.json",
+      "status": "annotated",
+      "website_url": "https://lawnlove.com"
+    },
+    {
+      "brand_name": "Le Labo",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/le-labo.json",
+      "status": "annotated",
+      "website_url": "https://www.lelabofragrances.com"
+    },
+    {
+      "brand_name": "Lindy",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/lindy.json",
+      "status": "annotated",
+      "website_url": "https://www.lindy.ai"
+    },
+    {
+      "brand_name": "Linear",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/linear.json",
+      "status": "annotated",
+      "website_url": "https://linear.app"
+    },
+    {
+      "brand_name": "Loewe",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/loewe.json",
+      "status": "annotated",
+      "website_url": "https://www.loewe.com"
+    },
+    {
+      "brand_name": "Loom",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/loom.json",
+      "status": "annotated",
+      "website_url": "https://www.loom.com"
+    },
+    {
+      "brand_name": "Magnolia Bakery",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/magnolia-bakery.json",
+      "status": "annotated",
+      "website_url": "https://www.magnoliabakery.com"
+    },
+    {
+      "brand_name": "MaidPro",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/maidpro.json",
+      "status": "annotated",
+      "website_url": "https://www.maidpro.com"
+    },
+    {
+      "brand_name": "Mercury",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/mercury.json",
+      "status": "annotated",
+      "website_url": "https://mercury.com"
+    },
+    {
+      "brand_name": "MeUndies",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/meundies.json",
+      "status": "annotated",
+      "website_url": "https://www.meundies.com"
+    },
+    {
+      "brand_name": "Miro",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/miro.json",
+      "status": "annotated",
+      "website_url": "https://miro.com"
+    },
+    {
+      "brand_name": "Misen",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/misen.json",
+      "status": "annotated",
+      "website_url": "https://misen.com"
+    },
+    {
+      "brand_name": "Moises",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/moises.json",
+      "status": "annotated",
+      "website_url": "https://moises.ai"
+    },
+    {
+      "brand_name": "Monday.com",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/monday-com.json",
+      "status": "annotated",
+      "website_url": "https://monday.com"
+    },
+    {
+      "brand_name": "Monzo",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/monzo.json",
+      "status": "annotated",
+      "website_url": "https://monzo.com"
+    },
+    {
+      "brand_name": "Mr. Handyman",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/mr-handyman.json",
+      "status": "annotated",
+      "website_url": "https://www.mrhandyman.com"
+    },
+    {
+      "brand_name": "Netlify",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/netlify.json",
+      "status": "annotated",
+      "website_url": "https://www.netlify.com"
+    },
+    {
+      "brand_name": "Nhost",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/nhost.json",
+      "status": "annotated",
+      "website_url": "https://nhost.io"
+    },
+    {
+      "brand_name": "Nieman Lab",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/nieman-lab.json",
+      "status": "annotated",
+      "website_url": "https://www.niemanlab.org"
+    },
+    {
+      "brand_name": "Nifty",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/nifty.json",
+      "status": "annotated",
+      "website_url": "https://niftypm.com"
+    },
+    {
+      "brand_name": "Noah",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/noah.json",
+      "status": "annotated",
+      "website_url": "https://noahny.com"
+    },
+    {
+      "brand_name": "Noom",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/noom.json",
+      "status": "annotated",
+      "website_url": "https://www.noom.com"
+    },
+    {
+      "brand_name": "NorthOne",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/northone.json",
+      "status": "annotated",
+      "website_url": "https://www.northone.com"
+    },
+    {
+      "brand_name": "Notion",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/notion.json",
+      "status": "annotated",
+      "website_url": "https://www.notion.com"
+    },
+    {
+      "brand_name": "Novo",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/novo.json",
+      "status": "annotated",
+      "website_url": "https://www.novo.co"
+    },
+    {
+      "brand_name": "One Tree Planted",
+      "expected_category": "nonprofit_education",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/one-tree-planted.json",
+      "status": "annotated",
+      "website_url": "https://onetreeplanted.org"
+    },
+    {
+      "brand_name": "Open",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/open.json",
+      "status": "annotated",
+      "website_url": "https://o-p-e-n.com"
+    },
+    {
+      "brand_name": "OpenAI",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/openai.json",
+      "status": "annotated",
+      "website_url": "https://openai.com"
+    },
+    {
+      "brand_name": "Our Legacy",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/our-legacy.json",
+      "status": "annotated",
+      "website_url": "https://www.ourlegacy.com"
+    },
+    {
+      "brand_name": "Oura",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/oura.json",
+      "status": "annotated",
+      "website_url": "https://ouraring.com"
+    },
+    {
+      "brand_name": "Pact",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/pact.json",
+      "status": "annotated",
+      "website_url": "https://wearpact.com"
+    },
+    {
+      "brand_name": "PandaDoc",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/pandadoc.json",
+      "status": "annotated",
+      "website_url": "https://www.pandadoc.com"
+    },
+    {
+      "brand_name": "Peloton",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/peloton.json",
+      "status": "annotated",
+      "website_url": "https://www.onepeloton.com"
+    },
+    {
+      "brand_name": "Perplexity",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/perplexity.json",
+      "status": "annotated",
+      "website_url": "https://www.perplexity.ai"
+    },
+    {
+      "brand_name": "Pika",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/pika.json",
+      "status": "annotated",
+      "website_url": "https://pika.art"
+    },
+    {
+      "brand_name": "Pipefy",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/pipefy.json",
+      "status": "annotated",
+      "website_url": "https://www.pipefy.com"
+    },
+    {
+      "brand_name": "Plaky",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/plaky.json",
+      "status": "annotated",
+      "website_url": "https://plaky.com"
+    },
+    {
+      "brand_name": "PlanetScale",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/planetscale.json",
+      "status": "annotated",
+      "website_url": "https://planetscale.com"
+    },
+    {
+      "brand_name": "PlantIn",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/plantin.json",
+      "status": "annotated",
+      "website_url": "https://myplantin.com"
+    },
+    {
+      "brand_name": "Pocket Casts",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/pocket-casts.json",
+      "status": "annotated",
+      "website_url": "https://pocketcasts.com"
+    },
+    {
+      "brand_name": "Polygon",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/polygon.json",
+      "status": "annotated",
+      "website_url": "https://www.polygon.com"
+    },
+    {
+      "brand_name": "PostHog",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/posthog.json",
+      "status": "annotated",
+      "website_url": "https://posthog.com"
+    },
+    {
+      "brand_name": "Process Street",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/process-street.json",
+      "status": "annotated",
+      "website_url": "https://www.process.st"
+    },
+    {
+      "brand_name": "Railway",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/railway.json",
+      "status": "annotated",
+      "website_url": "https://railway.com"
+    },
+    {
+      "brand_name": "Ramp",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/ramp.json",
+      "status": "annotated",
+      "website_url": "https://ramp.com"
+    },
+    {
+      "brand_name": "Render",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/render.json",
+      "status": "annotated",
+      "website_url": "https://render.com"
+    },
+    {
+      "brand_name": "Rest of World",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/rest-of-world.json",
+      "status": "annotated",
+      "website_url": "https://restofworld.org"
+    },
+    {
+      "brand_name": "Rimowa",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/rimowa.json",
+      "status": "annotated",
+      "website_url": "https://www.rimowa.com"
+    },
+    {
+      "brand_name": "Ritual",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/ritual.json",
+      "status": "annotated",
+      "website_url": "https://ritual.com"
+    },
+    {
+      "brand_name": "Roto-Rooter",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/roto-rooter.json",
+      "status": "annotated",
+      "website_url": "https://www.rotorooter.com"
+    },
+    {
+      "brand_name": "Runway",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/runway.json",
+      "status": "annotated",
+      "website_url": "https://runwayml.com"
+    },
+    {
+      "brand_name": "Scoro",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/scoro.json",
+      "status": "annotated",
+      "website_url": "https://www.scoro.com"
+    },
+    {
+      "brand_name": "Sentry",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/sentry.json",
+      "status": "annotated",
+      "website_url": "https://sentry.io"
+    },
+    {
+      "brand_name": "Sifted",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/sifted.json",
+      "status": "annotated",
+      "website_url": "https://sifted.eu"
+    },
+    {
+      "brand_name": "Sleep Cycle",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/sleep-cycle.json",
+      "status": "annotated",
+      "website_url": "https://www.sleepcycle.com"
+    },
+    {
+      "brand_name": "Smartsheet",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/smartsheet.json",
+      "status": "annotated",
+      "website_url": "https://www.smartsheet.com"
+    },
+    {
+      "brand_name": "Stash",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/stash.json",
+      "status": "annotated",
+      "website_url": "https://www.stash.com"
+    },
+    {
+      "brand_name": "Strava",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/strava.json",
+      "status": "annotated",
+      "website_url": "https://www.strava.com"
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/stripe-docs.json",
+      "status": "annotated",
+      "website_url": "https://docs.stripe.com"
+    },
+    {
+      "brand_name": "Supabase",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/supabase.json",
+      "status": "annotated",
+      "website_url": "https://supabase.com"
+    },
+    {
+      "brand_name": "Tattly",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/tattly.json",
+      "status": "annotated",
+      "website_url": "https://tattly.com"
+    },
+    {
+      "brand_name": "Teamwork",
+      "expected_category": "saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/teamwork.json",
+      "status": "annotated",
+      "website_url": "https://www.teamwork.com"
+    },
+    {
+      "brand_name": "Teller",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/teller.json",
+      "status": "annotated",
+      "website_url": "https://teller.io"
+    },
+    {
+      "brand_name": "The 19th",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/the-19th.json",
+      "status": "annotated",
+      "website_url": "https://19thnews.org"
+    },
+    {
+      "brand_name": "The Atlantic",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/the-atlantic.json",
+      "status": "annotated",
+      "website_url": "https://www.theatlantic.com"
+    },
+    {
+      "brand_name": "The Marshall Project",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/the-marshall-project.json",
+      "status": "annotated",
+      "website_url": "https://www.themarshallproject.org"
+    },
+    {
+      "brand_name": "The Meatball Shop",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/the-meatball-shop.json",
+      "status": "annotated",
+      "website_url": "https://www.themeatballshop.com"
+    },
+    {
+      "brand_name": "The Verge",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/the-verge.json",
+      "status": "annotated",
+      "website_url": "https://www.theverge.com"
+    },
+    {
+      "brand_name": "Thrive Market",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/thrive-market.json",
+      "status": "annotated",
+      "website_url": "https://thrivemarket.com"
+    },
+    {
+      "brand_name": "Toteme",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/toteme.json",
+      "status": "annotated",
+      "website_url": "https://toteme-studio.com"
+    },
+    {
+      "brand_name": "Tumi",
+      "expected_category": "premium_luxury",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/tumi.json",
+      "status": "annotated",
+      "website_url": "https://www.tumi.com"
+    },
+    {
+      "brand_name": "United By Blue",
+      "expected_category": "ecommerce",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/united-by-blue.json",
+      "status": "annotated",
+      "website_url": "https://unitedbyblue.com"
+    },
+    {
+      "brand_name": "Van Leeuwen Ice Cream",
+      "expected_category": "local_service_small_business",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/van-leeuwen-ice-cream.json",
+      "status": "annotated",
+      "website_url": "https://vanleeuwenicecream.com"
+    },
+    {
+      "brand_name": "Vercel",
+      "expected_category": "developer_first",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/vercel.json",
+      "status": "annotated",
+      "website_url": "https://vercel.com"
+    },
+    {
+      "brand_name": "Vox",
+      "expected_category": "editorial_media",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/vox.json",
+      "status": "annotated",
+      "website_url": "https://www.vox.com"
+    },
+    {
+      "brand_name": "Whoop",
+      "expected_category": "wellness_lifestyle",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/whoop.json",
+      "status": "annotated",
+      "website_url": "https://www.whoop.com"
+    },
+    {
+      "brand_name": "Wise",
+      "expected_category": "finance_fintech",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/wise.json",
+      "status": "annotated",
+      "website_url": "https://wise.com"
+    },
+    {
+      "brand_name": "Wrike",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/wrike.json",
+      "status": "annotated",
+      "website_url": "https://www.wrike.com"
+    },
+    {
+      "brand_name": "Writer",
+      "expected_category": "ai_native",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/writer.json",
+      "status": "annotated",
+      "website_url": "https://writer.com"
+    },
+    {
+      "brand_name": "Yousician",
+      "expected_category": "consumer_app",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/yousician.json",
+      "status": "annotated",
+      "website_url": "https://yousician.com"
+    },
+    {
+      "brand_name": "Zoho Projects",
+      "expected_category": "template_like_saas",
+      "output_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/zoho-projects.json",
+      "status": "annotated",
+      "website_url": "https://www.zoho.com/projects/"
+    }
+  ],
+  "schema_version": "visual-signature-corpus-annotation-run-1",
+  "started_at": "2026-05-09T10:12:21.892497",
+  "total": 139
+}

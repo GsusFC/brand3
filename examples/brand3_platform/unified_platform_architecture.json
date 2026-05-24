@@ -1,0 +1,370 @@
+{
+  "schema_version": "brand3-unified-platform-architecture-1",
+  "record_type": "unified_platform_architecture",
+  "generated_at": "2026-05-13",
+  "scope": "design_only",
+  "base_ui": "existing FastAPI/Jinja scoring UI",
+  "guardrails": [
+    "do not modify scoring logic",
+    "do not modify rubric dimensions",
+    "do not modify Visual Signature semantics",
+    "do not change capture behavior",
+    "do not implement platform in this step",
+    "do not invent missing generated_texts artifacts",
+    "mark report prose as render-time derived"
+  ],
+  "architecture_summary": {
+    "decision": "Extend the existing FastAPI/Jinja local UI with a platform shell and read-only Visual Signature sections instead of replacing the scoring app with the static platform.",
+    "reasoning": "The existing UI already owns the New Brand Scan/input flow, queue, status page, scoring report route, reports list, brand history, SQLite access, and Brand3 visual style. Visual Signature should be added as a separate read-only navigation/review area.",
+    "separation_principle": "Initial Scoring remains the executable workflow. Visual Signature remains an evidence, review, calibration, and governance surface. The platform can present both, but must not pipe Visual Signature into scoring."
+  },
+  "answers": {
+    "1_where_visual_signature_should_appear": {
+      "recommendation": "Add a dedicated Visual Signature area in the existing local UI navigation, plus per-run read-only links where a run has Visual Signature-related evidence.",
+      "placements": [
+        {
+          "surface": "global_navigation",
+          "route": "/visual-signature",
+          "purpose": "Visual Signature overview with evidence-only warning, readiness, governance status, captures, reviewer workflow, calibration, and corpus expansion cards."
+        },
+        {
+          "surface": "reports_observatory",
+          "route": "/reports",
+          "purpose": "Optional read-only badges linking to Visual Signature overview, not per-score integration."
+        },
+        {
+          "surface": "brand_history",
+          "route": "/brand/{domain}",
+          "purpose": "Optional separate Visual Signature evidence links by brand/capture id when artifacts can be matched without altering scoring."
+        },
+        {
+          "surface": "report_page",
+          "route": "/r/{token}",
+          "purpose": "Optional separate section or link labeled Visual Signature Evidence, explicitly no scoring impact. Do not inject Visual Signature into score explanations."
+        }
+      ],
+      "not_recommended": "Do not put Visual Signature controls inside the scoring input form or scoring status pipeline."
+    },
+    "2_new_brand_scan_flow_connection": {
+      "recommendation": "Keep the New Brand Scan/input flow exactly connected to existing scoring.",
+      "unchanged_routes": [
+        "GET /",
+        "POST /analyze",
+        "GET /r/{token}/status",
+        "GET /r/{token}",
+        "GET /reports",
+        "GET /brand/{domain}"
+      ],
+      "unchanged_execution": [
+        "web/routes/analyze.py validates URL and writes web_requests",
+        "web/workers/queue.py calls src.services.brand_service.run",
+        "src.services.brand_service.run collects inputs, extracts features, scores, saves SQLite rows, writes output JSON",
+        "src.reports.renderer.ReportRenderer renders reports from SQLite snapshots"
+      ],
+      "platform_constraint": "The unified platform may link to the scan form and status/report pages, but must not call scoring directly from Visual Signature routes or platform data adapters."
+    },
+    "3_dimension_scores_and_rendered_dimension_prose": {
+      "dimension_scores": {
+        "authoritative_sources": [
+          "SQLite data/brand3.sqlite3 table scores",
+          "SQLite runs.composite_score",
+          "output/*.json field dimensions"
+        ],
+        "preferred_for_ui": "SQLiteStore.get_run_snapshot(run_id), because it provides scores, features, evidence, run metadata, and audit context together.",
+        "fallback_for_static_exports": "output/*.json dimensions and composite_score"
+      },
+      "rendered_dimension_prose": {
+        "status": "render_time_derived",
+        "not_a_persisted_artifact": true,
+        "source_files": [
+          "src/reports/derivation.py",
+          "src/reports/dossier.py",
+          "src/reports/narrative.py",
+          "src/reports/templates/report.html.j2"
+        ],
+        "source_data": [
+          "SQLite scores",
+          "SQLite features.raw_value",
+          "SQLite evidence_items",
+          "SQLite raw_inputs",
+          "runs.summary"
+        ],
+        "display_strategy": "Surface the same derived report context used by the renderer. Label it as render-time derived and do not invent or persist generated_texts_per_dimension.",
+        "safe_option": "Use deterministic derivation from src.reports.derivation.build_report_base/build_report_context for platform summaries. Avoid provider-backed narrative generation in platform adapters."
+      }
+    },
+    "4_visual_signature_separation": {
+      "separation_rules": [
+        "Visual Signature routes read only examples/visual_signature artifacts and optional existing visual_signature raw inputs.",
+        "Visual Signature does not write to runs, scores, features, rubric files, report templates, or output scoring JSON.",
+        "Visual Signature does not alter composite_score, dimensions, confidence summaries, or report readiness.",
+        "Visual Signature evidence is shown as separate evidence/review status, not as score evidence.",
+        "Visual Signature review outcomes do not update scoring tables.",
+        "Visual Signature capture and reviewer tools remain governed by their existing scripts and generated artifacts."
+      ],
+      "ui_language": [
+        "Evidence-only",
+        "No scoring impact",
+        "No rubric impact",
+        "No production report impact",
+        "No provider execution from platform view",
+        "Read-only unless using explicitly existing scoring scan form"
+      ]
+    },
+    "5_routes_templates_components": {
+      "routes": [
+        {
+          "route": "/platform",
+          "template": "platform_index.html.j2",
+          "purpose": "Unified local dashboard landing page. Shows Initial Scoring and Visual Signature as separate top-level lanes."
+        },
+        {
+          "route": "/platform/scoring",
+          "template": "platform_scoring.html.j2",
+          "purpose": "Read-only scoring overview: latest runs, JSON outputs, report links, rubric dimensions, score summaries."
+        },
+        {
+          "route": "/platform/scoring/run/{run_id}",
+          "template": "platform_scoring_run.html.j2",
+          "purpose": "Read-only run detail using SQLite snapshot. Shows dimension_scores, features, evidence, rules/insights, and links to /r/{token} where available."
+        },
+        {
+          "route": "/visual-signature",
+          "template": "visual_signature_index.html.j2",
+          "purpose": "Visual Signature overview, readiness, governance, next steps, source artifact links."
+        },
+        {
+          "route": "/visual-signature/captures",
+          "template": "visual_signature_captures.html.j2",
+          "purpose": "Capture manifest, screenshots, raw vs clean/full-page previews, obstruction/dismissal status."
+        },
+        {
+          "route": "/visual-signature/reviewer",
+          "template": "visual_signature_reviewer.html.j2",
+          "purpose": "Review queue, pilot status, packet links, embedded or linked reviewer viewer."
+        },
+        {
+          "route": "/visual-signature/calibration",
+          "template": "visual_signature_calibration.html.j2",
+          "purpose": "Calibration manifest, summary, records, reliability, readiness."
+        },
+        {
+          "route": "/visual-signature/governance",
+          "template": "visual_signature_governance.html.j2",
+          "purpose": "Capability registry, runtime policy matrix, governance integrity, validation plan."
+        },
+        {
+          "route": "/visual-signature/corpus",
+          "template": "visual_signature_corpus.html.j2",
+          "purpose": "Corpus expansion manifest, pilot metrics, pending items."
+        },
+        {
+          "route": "/artifacts/{path:path}",
+          "template": "none_static_or_file_response",
+          "purpose": "Optional local-only artifact serving for images/JSON/HTML under allowlisted roots."
+        }
+      ],
+      "shared_components": [
+        "platform_nav",
+        "status_badge",
+        "score_bar",
+        "artifact_link",
+        "source_artifact_list",
+        "raw_json_details",
+        "screenshot_preview_grid",
+        "read_only_guardrail_banner",
+        "section_card",
+        "metric_grid",
+        "next_steps_panel"
+      ],
+      "base_template_change": "Add platform navigation links to web/templates/base.html.j2 footer/header, keeping existing scoring routes unchanged."
+    },
+    "6_data_adapters": {
+      "scoring_adapters": [
+        {
+          "name": "ScoringRunsAdapter",
+          "reads": [
+            "data/brand3.sqlite3 runs",
+            "scores",
+            "features",
+            "evidence_items",
+            "web_requests"
+          ],
+          "purpose": "Latest runs, run detail snapshots, brand history, report token lookup."
+        },
+        {
+          "name": "ScoringOutputFilesAdapter",
+          "reads": [
+            "output/*.json",
+            "output/reports/**/*.html"
+          ],
+          "purpose": "File-based exports, rendered report links, graceful fallback when SQLite rows are absent."
+        },
+        {
+          "name": "RubricAdapter",
+          "reads": [
+            "src/dimensions.py"
+          ],
+          "purpose": "Display rubric dimensions/weights/features read-only."
+        },
+        {
+          "name": "ReportContextAdapter",
+          "reads": [
+            "SQLiteStore.get_run_snapshot",
+            "src.reports.derivation"
+          ],
+          "purpose": "Build render-time derived score/prose context without provider-backed narrative calls."
+        }
+      ],
+      "visual_signature_adapters": [
+        {
+          "name": "VisualSignatureArtifactAdapter",
+          "reads": [
+            "examples/visual_signature/screenshots/capture_manifest.json",
+            "examples/visual_signature/screenshots/dismissal_audit.json",
+            "examples/visual_signature/corpus_expansion/review_queue.json",
+            "examples/visual_signature/corpus_expansion/reviewer_workflow_pilot.json",
+            "examples/visual_signature/calibration/*.json",
+            "examples/visual_signature/governance/*.json",
+            "examples/visual_signature/corpus_expansion/*.json"
+          ],
+          "purpose": "Read manifests, summaries, readiness, governance, queue, and pilot metrics."
+        },
+        {
+          "name": "VisualSignatureMediaAdapter",
+          "reads": [
+            "examples/visual_signature/screenshots/*.png",
+            "examples/visual_signature/corpus_expansion/reviewer_viewer/index.html",
+            "examples/visual_signature/corpus_expansion/reviewer_packets/*.md"
+          ],
+          "purpose": "Resolve screenshot previews, full-page/raw/clean links, reviewer packets, local viewer links."
+        },
+        {
+          "name": "ArtifactIntegrityAdapter",
+          "reads": [
+            "expected artifact list",
+            "filesystem existence",
+            "record_type/schema_version fields where available"
+          ],
+          "purpose": "Gracefully report missing optional artifacts and block missing required artifacts without generating new data."
+        }
+      ]
+    },
+    "7_read_only_vs_executable": {
+      "executable_existing": [
+        {
+          "surface": "New Brand Scan",
+          "routes": [
+            "GET /",
+            "POST /analyze"
+          ],
+          "note": "Existing scoring workflow remains executable because it is already the product's input flow."
+        },
+        {
+          "surface": "Status polling",
+          "routes": [
+            "GET /r/{token}/status"
+          ],
+          "note": "Existing status page remains executable/read state from web_requests."
+        }
+      ],
+      "read_only": [
+        "All Visual Signature sections",
+        "Platform overview",
+        "Scoring run detail in /platform/scoring/run/{run_id}",
+        "Rubric display",
+        "Output JSON listing",
+        "Rendered report links",
+        "Raw JSON details",
+        "Screenshot previews",
+        "Governance/calibration/corpus summaries"
+      ],
+      "explicitly_not_executable_from_platform": [
+        "Visual Signature capture scripts",
+        "Visual Signature reviewer outcome persistence",
+        "Calibration generation",
+        "Corpus expansion generation",
+        "Governance mutation",
+        "Scoring recomputation",
+        "Report rendering with provider-backed narrative generation",
+        "Provider calls",
+        "Model training"
+      ]
+    },
+    "8_out_of_scope": [
+      "Changing src/dimensions.py",
+      "Changing src/scoring/engine.py",
+      "Changing src/services/scoring_pipeline.py",
+      "Changing report scoring semantics",
+      "Changing production/local report templates for scoring meaning",
+      "Using Visual Signature as a scoring input",
+      "Persisting Visual Signature reviewer results through the platform",
+      "Running capture/dismissal scripts from the platform",
+      "Adding backend provider calls",
+      "Adding a database for the platform",
+      "Training or fine-tuning models",
+      "Inventing generated_texts_per_dimension artifacts",
+      "Changing capture behavior or runtime mutation policy"
+    ],
+    "9_minimum_implementation_plan": [
+      {
+        "step": 1,
+        "title": "Add read-only adapters",
+        "details": "Create platform/scoring and platform/visual_signature adapters that read SQLite, output files, report files, rubric source, and Visual Signature artifacts without executing pipelines."
+      },
+      {
+        "step": 2,
+        "title": "Add platform routes",
+        "details": "Add web/routes/platform.py and web/routes/visual_signature.py. Include routers in web/app.py. Existing scoring routes remain unchanged."
+      },
+      {
+        "step": 3,
+        "title": "Add Jinja templates",
+        "details": "Create templates for /platform, /platform/scoring, /platform/scoring/run/{run_id}, and Visual Signature subsections using existing Brand3 CSS and components."
+      },
+      {
+        "step": 4,
+        "title": "Surface scoring data",
+        "details": "Use SQLiteStore.get_run_snapshot for run detail. Show dimension_scores from scores and derived report context from src.reports.derivation, clearly labeled render-time derived."
+      },
+      {
+        "step": 5,
+        "title": "Surface Visual Signature data",
+        "details": "Read manifests and screenshots from examples/visual_signature. Show raw JSON in collapsed details. Link reviewer viewer/packets."
+      },
+      {
+        "step": 6,
+        "title": "Add tests",
+        "details": "Test routes render with scoring artifacts, with Visual Signature artifacts, and with optional missing artifacts. Test no provider calls and no scoring recomputation."
+      },
+      {
+        "step": 7,
+        "title": "Keep static platform optional",
+        "details": "Use the existing static platform as a local export/reference if useful, but do not make it the primary architecture over the FastAPI/Jinja app."
+      }
+    ]
+  },
+  "source_documents": [
+    "examples/brand3_platform/original_scoring_flow_audit.md",
+    "examples/brand3_platform/original_scoring_flow_audit.json",
+    "web/app.py",
+    "web/templates/base.html.j2",
+    "web/routes/index.py",
+    "web/routes/analyze.py",
+    "web/routes/status.py",
+    "web/routes/report.py",
+    "web/routes/reports_list.py",
+    "web/routes/brand.py",
+    "web/storage.py",
+    "web/workers/queue.py",
+    "src/storage/sqlite_store.py",
+    "src/reports/renderer.py",
+    "src/reports/derivation.py",
+    "src/reports/dossier.py",
+    "src/reports/narrative.py",
+    "examples/visual_signature/screenshots/capture_manifest.json",
+    "examples/visual_signature/corpus_expansion/review_queue.json",
+    "examples/visual_signature/calibration/calibration_readiness.json",
+    "examples/visual_signature/governance/governance_integrity_report.json"
+  ]
+}

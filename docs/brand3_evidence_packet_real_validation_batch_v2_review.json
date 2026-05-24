@@ -1,0 +1,141 @@
+{
+  "review": "brand3_evidence_packet_real_validation_batch_v2",
+  "mode": "lab_only_non_runtime_non_mutating",
+  "created_at": "2026-05-18T10:51:22.685642+00:00",
+  "case_resolution": {
+    "resolved_total": 6,
+    "unresolved_total": 23,
+    "groups": {
+      "group_a": {
+        "selected_count": 4,
+        "coverage_gap": 1,
+        "selected_primary_count": 2,
+        "selected_backup_count": 2
+      },
+      "group_b": {
+        "selected_count": 2,
+        "coverage_gap": 3,
+        "selected_primary_count": 2,
+        "selected_backup_count": 0
+      },
+      "group_c": {
+        "selected_count": 0,
+        "coverage_gap": 5,
+        "selected_primary_count": 0,
+        "selected_backup_count": 0
+      }
+    }
+  },
+  "execution": {
+    "llm_calls_planned": 5,
+    "llm_calls_executed": 5,
+    "parse_failures_unrecovered": 0,
+    "json_repair_retries_attempted": 0,
+    "json_repair_retries_succeeded": 0
+  },
+  "pass_criteria": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": false,
+    "evidence_urls_valid": true,
+    "parse_failures_unrecovered": 0,
+    "blocked_controls_skipped": true
+  },
+  "group_level_flags": {
+    "group_a_majority_ready_low_review_pressure": true,
+    "group_b_conservative_thin_or_review": true,
+    "group_c_strong_abstain_or_blocked_discipline": false
+  },
+  "group_metrics": {
+    "group_a": {
+      "name": "High evidence / low ambiguity",
+      "target_count": 5,
+      "selected_count": 4,
+      "coverage_gap": 1,
+      "executed_count": 3,
+      "primary_selected_count": 2,
+      "backup_selected_count": 2,
+      "readiness_distribution": {
+        "ready": 3,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    },
+    "group_b": {
+      "name": "Strong visual identity / weak external grounding",
+      "target_count": 5,
+      "selected_count": 2,
+      "coverage_gap": 3,
+      "executed_count": 2,
+      "primary_selected_count": 2,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 1,
+        "thin": 1,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": false
+    },
+    "group_c": {
+      "name": "Contradiction-heavy / multi-signal tension",
+      "target_count": 5,
+      "selected_count": 0,
+      "coverage_gap": 5,
+      "executed_count": 0,
+      "primary_selected_count": 0,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 0,
+        "thin": 0,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": false
+    }
+  },
+  "overall_pass": false,
+  "assessment": {
+    "drift_behavior": "drift_detected",
+    "blocked_review_handling_quality": "enforced",
+    "readiness_distribution": {
+      "group_a": {
+        "ready": 3,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "group_b": {
+        "ready": 1,
+        "thin": 1,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "group_c": {
+        "ready": 0,
+        "thin": 0,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      }
+    }
+  },
+  "decision_gate": "fail_keep_experimental_and_document_failure_classes",
+  "failure_classes": [
+    "readiness",
+    "url_canonicalization"
+  ]
+}

@@ -1,0 +1,44 @@
+Expected category: saas
+Notes: Broad work-management SaaS with mature marketing and product surfaces.
+
+== Asana ==
+URL: https://asana.com
+Interpretation status: interpretable
+Extraction confidence: 0.56 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.36, consistency_coverage=0.31]
+
+Signal coverage: 71%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.64
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.31
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=22; density=balanced; patterns=grid,multi_column
+- components: button=16, cta=23, card=56, pricing=2
+- consistency: overall=0.35; color=0.15; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #2060e0[###] #000000[###] #e0e0e0[###] #404040[###] #808080[###] #606060[###]
+- viewport palette: #ffffff[###] #202020[###] #2060e0[###] #000000[###] #e0e0e0[###] #404040[###] #808080[###] #606060[###]
+- composition: density=dense; whitespace=72%; classification=dense_grid
+- viewport composition: density=dense; whitespace=72%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.31)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

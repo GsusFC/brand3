@@ -1,0 +1,88 @@
+{
+  "case_id": "charms",
+  "source_url": "https://wearefloc.com/work/charms",
+  "artifact_type": "perceptual_signals",
+  "not_a_scoring_report": true,
+  "signals": [
+    {
+      "id": "signal-001",
+      "signal": "soft blue gradient field",
+      "category": "color_atmosphere",
+      "visible_form": "Saturated blue shifting into pale blue and white.",
+      "perceptual_read": "Calm digital space; ambient rather than urgent.",
+      "use_in_brand3": "Use when a surface lowers technical pressure through atmospheric color."
+    },
+    {
+      "id": "signal-002",
+      "signal": "luminous sphere",
+      "category": "recurring_motif",
+      "visible_form": "Large blurred orb or portal shape, often cropped.",
+      "perceptual_read": "World entry, softness, repeated ritual, gentle motion.",
+      "use_in_brand3": "Use when a brand creates coherence through a recurring spatial object."
+    },
+    {
+      "id": "signal-003",
+      "signal": "high-contrast serif logotype",
+      "category": "typography",
+      "visible_form": "Elegant white or blue serif wordmark and headline treatment.",
+      "perceptual_read": "Editorial warmth and adult composure inside a Web3/game context.",
+      "use_in_brand3": "Use when type translates a technical category into emotional legibility."
+    },
+    {
+      "id": "signal-004",
+      "signal": "narrow uppercase supporting line",
+      "category": "typography",
+      "visible_form": "Small condensed uppercase phrase above the large serif hero line.",
+      "perceptual_read": "Ceremonial caption; sets a quiet premise before the main phrase expands.",
+      "use_in_brand3": "Use when hierarchy is staged through scale contrast and caption-like framing."
+    },
+    {
+      "id": "signal-005",
+      "signal": "field-and-flower photography",
+      "category": "texture",
+      "visible_form": "Soft outdoor imagery with grass, flowers, dappled light, and shallow focus.",
+      "perceptual_read": "Human, tactile, living, lightly nostalgic.",
+      "use_in_brand3": "Use when a digital brand borrows organic texture to regulate emotional temperature."
+    },
+    {
+      "id": "signal-006",
+      "signal": "type specimen in natural setting",
+      "category": "editorial_artifact",
+      "visible_form": "Printed type samples placed among flowers and grass.",
+      "perceptual_read": "Design process made tender; typography treated like an object in a world.",
+      "use_in_brand3": "Use when a brand makes its system visible as a tactile artifact."
+    },
+    {
+      "id": "signal-007",
+      "signal": "embroidered cap application",
+      "category": "physicalization",
+      "visible_form": "Charms wordmark embroidered on a blue cap.",
+      "perceptual_read": "The soft identity can survive contact with casual merchandise.",
+      "use_in_brand3": "Use when evaluating whether a delicate mark remains legible outside flat digital surfaces."
+    },
+    {
+      "id": "signal-008",
+      "signal": "large image sequence",
+      "category": "pacing",
+      "visible_form": "A long scroll of large visual panels after the introductory copy.",
+      "perceptual_read": "Lookbook tempo; the brand is learned by immersion.",
+      "use_in_brand3": "Use when a surface teaches through repeated visual contact rather than explanation."
+    },
+    {
+      "id": "signal-009",
+      "signal": "three-word closing cadence",
+      "category": "editorial_tone",
+      "visible_form": "Short final phrase with three compact verbs or states.",
+      "perceptual_read": "A ritual-like exit line; simple, mnemonic, and emotional.",
+      "use_in_brand3": "Use when the page resolves into feeling rather than specification."
+    },
+    {
+      "id": "signal-010",
+      "signal": "black site chrome with neon green accent",
+      "category": "container_context",
+      "visible_form": "FLOC* page shell uses black UI chrome and neon green selection/scroll accents.",
+      "perceptual_read": "The case is housed inside a sharper studio frame, making the Charms surface feel even softer by contrast.",
+      "use_in_brand3": "Use when distinguishing project identity signals from portfolio-shell signals."
+    }
+  ]
+}

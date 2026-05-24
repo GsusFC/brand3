@@ -1,0 +1,24 @@
+{
+  "capture_id": "headspace",
+  "confidence": 1.0,
+  "created_at": "2026-05-11T17:46:24.963640",
+  "evidence_refs": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+  ],
+  "from_state": "RAW_STATE",
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:headspace",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+  ],
+  "mutation_ref": null,
+  "notes": [
+    "protected_environment_requires_no_mutation"
+  ],
+  "reason": "protected_environment_detected",
+  "record_type": "transition_record",
+  "schema_version": "phase-zero-transition-record-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "to_state": "UNSAFE_MUTATION_BLOCKED",
+  "transition_id": "transition_headspace_protected_environment_detected"
+}

@@ -1,0 +1,24 @@
+{
+  "checked_artifacts": {
+    "calibration_governance_checkpoint": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration/calibration_governance_checkpoint.md",
+    "calibration_readiness": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration/calibration_readiness.json",
+    "capability_registry": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/governance/capability_registry.json",
+    "reliable_visual_perception": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/reliable_visual_perception.md",
+    "runtime_policy_matrix": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/governance/runtime_policy_matrix.json",
+    "technical_checkpoint": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/technical_checkpoint.md"
+  },
+  "checked_at": "2026-05-12T11:47:28.529305+00:00",
+  "error_count": 0,
+  "errors": [],
+  "notes": [
+    "Evidence-only governance integrity check.",
+    "No scoring, rubric dimensions, production UI, production reports, runtime behavior, or capture behavior are modified."
+  ],
+  "readiness_scope": "broader_corpus_use",
+  "readiness_status": "not_ready",
+  "record_type": "governance_integrity_report",
+  "schema_version": "visual-signature-governance-integrity-1",
+  "status": "valid",
+  "warning_count": 0,
+  "warnings": []
+}

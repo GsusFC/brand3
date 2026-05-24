@@ -1,0 +1,27 @@
+{
+  "results": [
+    {
+      "brand_name": "Allbirds",
+      "mutation_audit": {
+        "after_artifact_ref": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+        "after_state": "REVIEW_REQUIRED_STATE",
+        "attempted": true,
+        "before_artifact_ref": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+        "before_state": "ELIGIBLE_FOR_SAFE_INTERVENTION",
+        "evidence_preserved": true,
+        "integrity_notes": [
+          "raw_viewport_preserved_as_primary_evidence",
+          "clean_attempt_is_supplemental_only; raw_viewport_remains_primary",
+          "safe_mutation_failed_without_overwriting_raw_state",
+          "raw_state_preserved_after_failed_attempt"
+        ],
+        "mutation_id": "19b338a23e1f4d21af54be0ce7dc9c09",
+        "mutation_type": "newsletter_modal_dismissal",
+        "reversible": true,
+        "risk_level": "low",
+        "successful": false,
+        "trigger": "close"
+      }
+    }
+  ]
+}

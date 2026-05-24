@@ -1,0 +1,115 @@
+{
+  "notes": [
+    "Annotation audit is calibration-only.",
+    "Mock provider outputs are not semantic ground truth.",
+    "No scoring or rubric dimensions are modified."
+  ],
+  "per_category_status": {
+    "ai_native": {
+      "annotated": 12
+    },
+    "consumer_app": {
+      "annotated": 12
+    },
+    "developer_first": {
+      "annotated": 12
+    },
+    "ecommerce": {
+      "annotated": 12
+    },
+    "editorial_media": {
+      "annotated": 12
+    },
+    "finance_fintech": {
+      "annotated": 12
+    },
+    "local_service_small_business": {
+      "annotated": 10
+    },
+    "nonprofit_education": {
+      "annotated": 12
+    },
+    "premium_luxury": {
+      "annotated": 11
+    },
+    "saas": {
+      "annotated": 12
+    },
+    "template_like_saas": {
+      "annotated": 12
+    },
+    "wellness_lifestyle": {
+      "annotated": 10
+    }
+  },
+  "status_counts": {
+    "annotated": 139
+  },
+  "target_completion": {
+    "category_cues": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    },
+    "category_fit": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    },
+    "human_presence": {
+      "avg_confidence": 0.25,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 139,
+      "unknown_rate": 1.0
+    },
+    "imagery_style": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    },
+    "logo_prominence": {
+      "avg_confidence": 0.531,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 56,
+      "unknown_rate": 0.403
+    },
+    "perceived_polish": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    },
+    "product_presence": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    },
+    "template_likeness": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    },
+    "visual_distinctiveness": {
+      "avg_confidence": 0.72,
+      "count": 139,
+      "rate": 1.0,
+      "unknown_count": 0,
+      "unknown_rate": 0.0
+    }
+  },
+  "total": 139,
+  "version": "visual-signature-annotation-audit-1"
+}

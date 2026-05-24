@@ -1,0 +1,39 @@
+Expected category: wellness_lifestyle
+Notes: Lifestyle ecommerce with premium wellness imagery and retail density.
+
+== Alo Yoga ==
+URL: https://www.aloyoga.com
+Interpretation status: interpretable
+Extraction confidence: 0.69 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.58, consistency_coverage=0.68]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.55
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.68
+
+Visual summaries:
+- palette preview: #000000[###] #ffffff[###] #53b19c[###] #01305c[###] #513b2c[###] #ceb18f[###] #f2eee8[###] #f4314d[###]
+- typography: &quot, -apple-system, BlinkMacSystemFont
+- layout: header=True; nav=False; hero=True; sections=128; density=sparse; patterns=grid,flex,multi_column
+- components: button=418, cta=3, form=2, card=124, accordion=4, modal=12
+- consistency: overall=0.58; color=0.48; type=0.65; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #000000[###] #a0a0a0[###] #404040[###] #808080[###] #c0c0c0[###] #606060[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #000000[###] #a0a0a0[###] #404040[###] #808080[###] #c0c0c0[###] #606060[###]
+- composition: density=balanced; whitespace=73%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=73%; classification=balanced_blocks
+- vision confidence: 0.77 (high)
+- viewport confidence: 0.77 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

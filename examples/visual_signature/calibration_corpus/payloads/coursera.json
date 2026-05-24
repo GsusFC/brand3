@@ -1,0 +1,513 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:27:07.919201",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.coursera.org",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 170,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Coursera",
+  "calibration": {
+    "expected_category": "nonprofit_education",
+    "notes": "Education platform with marketplace and credential messaging."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#1e72eb",
+      "#0ff0ff",
+      "#4b95ff",
+      "#1cffba",
+      "#08ffb5",
+      "#76ebc8"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#1e2229"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#1e72eb",
+      "#cfe2ff",
+      "#0ff0ff",
+      "#4b95ff",
+      "#1cffba",
+      "#08ffb5",
+      "#1e2229"
+    ],
+    "palette": [
+      {
+        "confidence": 0.76,
+        "hex": "#ffffff",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#1e72eb",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#cfe2ff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0ff0ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4b95ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1cffba",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#08ffb5",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1e2229",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#76ebc8",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#24dbe7",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#5b9dfc",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#1e72eb",
+      "#1e2229"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 86,
+        "labels": [
+          "Join for Free",
+          "Previous",
+          "Next",
+          "Go to item 1",
+          "Go to item 2",
+          "Go to item 3",
+          "Enroll now",
+          "Try Coursera for Business",
+          "Start 7-day free trial",
+          "Learn more"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 34,
+        "labels": [
+          "Join for Free",
+          "Enroll now",
+          "Start learning skills",
+          "Previous",
+          "Next",
+          "Go to item 1",
+          "Go to item 2",
+          "Go to item 3",
+          "Build online communities that connect, grow, and last",
+          "Drive your business forward and empower your teams"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 140,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 72,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Join for Free",
+      "Enroll now",
+      "Start learning skills",
+      "Previous",
+      "Next",
+      "Go to item 1",
+      "Go to item 2",
+      "Go to item 3"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.72,
+    "confidence": 0.585,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.524,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.585,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.573
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.676
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex"
+    ],
+    "section_count": 26,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Coursera and Google Deepmind Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://images.ctfassets.net/00atxywtfxvd/7zf7zyF7mJVxSYH38KpyIF/9f1e9842c824c596e6009171dfb4cc02/Courser-DeepMind_Logo_Lockup.png?auto=format%2Ccompress&amp;dpr=1&amp;w=1686&amp;h=16"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/http://coursera-university-assets.s3.amazonaws.com/bc/5889cfbcf1452e8ad89ace3d30438f/HRCI-Purple-Logo_360x360.png?auto=format%2Ccompress&amp;dpr=3&amp;w=24&amp;h=24"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/http://coursera-university-assets.s3.amazonaws.com/cc/61dbdf2c1c475d82d3b8bf8eee1bda/MSFT-stacked-logo_FINAL.png?auto=format%2Ccompress&amp;dpr=3&amp;w=24&amp;h=24"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/http://coursera-university-assets.s3.amazonaws.com/bb/f5ced2bdd4437aa79f00eb1bf7fbf0/IBM-Logo-Blk---Square.png?auto=format%2Ccompress&amp;dpr=3&amp;w=24&amp;h=24"
+      },
+      {
+        "alt": "Meta logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://images.ctfassets.net/00atxywtfxvd/4i3Hoaxk9Abz3boVxtfVr9/52e9d359fad38c52e31e4d149232a5c6/Meta_Logo.png?auto=format%2Ccompress&amp;dpr=1&amp;w=668&amp;h=16"
+      },
+      {
+        "alt": "Coursera for Business logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://images.ctfassets.net/00atxywtfxvd/5QULjGwNJ5GSRz4HmpMEsv/46a5520c689eccbc33dd30b9942070f0/coursera_for_business.png?auto=format%2Ccompress&amp;dpr=1&amp;w=294&amp;h=16"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://images.ctfassets.net/00atxywtfxvd/7iLJYdbTLExBFAgVoHe2Pc/1735062f2f3a6df1dca8cfd9f1815098/ibm-logo.png?auto=format%2Ccompress&amp;dpr=1&amp;w=24&amp;h=24"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://d3njjcbhbojbot.cloudfront.net/api/utilities/v1/imageproxy/https://images.ctfassets.net/00atxywtfxvd/88r0gwMY5y55z3J0h1T4M/e80fdcb65ff8681943c5394c670f6b7d/OAI_MVP_01_OpenAI_Logo_Black.png?auto=format%2Ccompress&amp;dpr=1&amp;w=24&amp;h=24"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.398,
+      "composition_classification": "dense_grid",
+      "confidence": 0.839,
+      "edge_density": 0.067,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.491
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 442368,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.coursera.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/coursera.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 205,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 9627,
+          "ratio": 0.4814
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 2266,
+          "ratio": 0.1133
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 1572,
+          "ratio": 0.0786
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 976,
+          "ratio": 0.0488
+        },
+        {
+          "hex": "#0060e0",
+          "occurrences": 500,
+          "ratio": 0.025
+        },
+        {
+          "hex": "#0040c0",
+          "occurrences": 375,
+          "ratio": 0.0187
+        },
+        {
+          "hex": "#6080c0",
+          "occurrences": 303,
+          "ratio": 0.0152
+        },
+        {
+          "hex": "#4080c0",
+          "occurrences": 296,
+          "ratio": 0.0148
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.398,
+      "composition_classification": "dense_grid",
+      "confidence": 0.839,
+      "edge_density": 0.067,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.491
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.839,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.882
+    },
+    "viewport_palette": {
+      "color_count": 205,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 9627,
+          "ratio": 0.4814
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 2266,
+          "ratio": 0.1133
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 1572,
+          "ratio": 0.0786
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 976,
+          "ratio": 0.0488
+        },
+        {
+          "hex": "#0060e0",
+          "occurrences": 500,
+          "ratio": 0.025
+        },
+        {
+          "hex": "#0040c0",
+          "occurrences": 375,
+          "ratio": 0.0187
+        },
+        {
+          "hex": "#6080c0",
+          "occurrences": 303,
+          "ratio": 0.0152
+        },
+        {
+          "hex": "#4080c0",
+          "occurrences": 296,
+          "ratio": 0.0148
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.491,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.839,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.882
+    }
+  },
+  "website_url": "https://www.coursera.org"
+}

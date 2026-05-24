@@ -1,0 +1,146 @@
+{
+  "allowed_review_outcomes": [
+    "confirmed",
+    "contradicted",
+    "unresolved",
+    "needs_additional_evidence"
+  ],
+  "block_conditions": [
+    "synthetic review decisions",
+    "completed review records generated in the pilot artifact",
+    "selected items with non-pending queue states",
+    "missing source review queue artifact",
+    "missing source corpus expansion metrics or manifest"
+  ],
+  "contradiction_handling": [
+    "Contradictions must be recorded explicitly.",
+    "Contradictions do not imply removal of the original queue item."
+  ],
+  "generated_at": "2026-05-12T12:42:58.285147+00:00",
+  "notes": [
+    "Evidence-only reviewer workflow pilot.",
+    "No scoring, runtime behavior, production UI, or production reports are modified.",
+    "No provider calls are run.",
+    "No fake review decisions are generated."
+  ],
+  "pilot_run_id": "visual-signature-corpus-expansion-pilot-1",
+  "pilot_status": "pending",
+  "queue_state_distribution": {
+    "needs_additional_evidence": 1,
+    "queued": 1
+  },
+  "readiness_scope": "human_review_scaling",
+  "record_type": "reviewer_workflow_pilot",
+  "required_reviewer_fields": [
+    "reviewer_id",
+    "reviewed_at",
+    "review_outcome",
+    "notes",
+    "evidence_refs",
+    "confidence_bucket"
+  ],
+  "review_instructions": [
+    "Review only the pending items selected in this pilot artifact.",
+    "Do not fabricate completed decisions.",
+    "Preserve unresolved cases when evidence remains insufficient.",
+    "Record contradictions explicitly instead of flattening them.",
+    "Keep queue items pending until a reviewer actually completes them."
+  ],
+  "reviewer_coverage_requirements": [
+    "Each selected queue item must be assigned to a reviewer before any outcome is recorded.",
+    "Selected items should reach 100% assignment coverage before the pilot is treated as usable.",
+    "No completed review record may be generated without explicit reviewer identity and timestamp."
+  ],
+  "schema_version": "visual-signature-reviewer-workflow-pilot-1",
+  "selected_review_queue_item_count": 2,
+  "selected_review_queue_item_ids": [
+    "queue_allbirds",
+    "queue_headspace"
+  ],
+  "selected_review_queue_items": [
+    {
+      "brand_name": "Allbirds",
+      "capture_id": "allbirds",
+      "category": "ecommerce",
+      "confidence_bucket": "low",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-needs-more-evidence"
+      ],
+      "queue_id": "queue_allbirds",
+      "queue_state": "needs_additional_evidence",
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "brand_name": "Headspace",
+      "capture_id": "headspace",
+      "category": "wellness_lifestyle",
+      "confidence_bucket": "unknown",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-queued-capture"
+      ],
+      "queue_id": "queue_headspace",
+      "queue_state": "queued",
+      "website_url": "https://www.headspace.com"
+    }
+  ],
+  "source_artifacts": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/corpus_expansion/review_queue.json",
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/corpus_expansion/pilot_metrics.json",
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/corpus_expansion/corpus_expansion_manifest.json"
+  ],
+  "source_summaries": {
+    "corpus_expansion_manifest": {
+      "current_capture_count": 5,
+      "queue_state_distribution": {
+        "needs_additional_evidence": 1,
+        "queued": 1,
+        "reviewed": 2,
+        "unresolved": 1
+      },
+      "record_type": "corpus_expansion_manifest",
+      "reviewed_capture_count": 2,
+      "schema_version": "visual-signature-corpus-expansion-manifest-1"
+    },
+    "pilot_metrics": {
+      "current_capture_count": 5,
+      "queue_state_distribution": {
+        "needs_additional_evidence": 1,
+        "queued": 1,
+        "reviewed": 2,
+        "unresolved": 1
+      },
+      "record_type": "corpus_expansion_metrics",
+      "reviewed_capture_count": 2,
+      "schema_version": "visual-signature-corpus-expansion-metrics-1"
+    },
+    "review_queue": {
+      "current_capture_count": 5,
+      "queue_state_distribution": {
+        "needs_additional_evidence": 1,
+        "queued": 1,
+        "reviewed": 2,
+        "unresolved": 1
+      },
+      "record_type": "corpus_expansion_review_queue",
+      "reviewed_capture_count": 2,
+      "schema_version": "visual-signature-corpus-expansion-review-queue-1"
+    }
+  },
+  "success_criteria": [
+    "pilot artifact preserves only pending queue items",
+    "review instructions and required fields are explicit",
+    "allowed outcomes are constrained and evidence-only",
+    "validation rejects any fake completed review record",
+    "selected items can be handed to reviewers without mutating source data"
+  ],
+  "unresolved_handling": [
+    "Unresolved items remain unresolved and are not promoted to reviewed.",
+    "Unresolved items must retain evidence references and reviewer notes."
+  ]
+}

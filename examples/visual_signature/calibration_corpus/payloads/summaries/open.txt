@@ -1,0 +1,39 @@
+Expected category: wellness_lifestyle
+Notes: Smaller wellness brand with polished but less famous visual system.
+
+== Open ==
+URL: https://o-p-e-n.com
+Interpretation status: interpretable
+Extraction confidence: 0.72 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.65, consistency_coverage=0.70]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: missing, confidence=0.15
+- layout: ok, confidence=0.95
+- components: ok, confidence=0.64
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.70
+
+Visual summaries:
+- palette preview: #eeece7[###] #000000[###] #ffffff[###] #a2b833[###] #5f5e5c[###] #f9d685[###] #bebec0[###] #d25e2b[###]
+- typography: Helvetica Neue, Helvetica, Monument Grotesk Regular, Monument Grotesk Semi-Mono, Helvetica!important, system-ui, Segoe UI, Roboto, Arial, Apple Color Emoji, Segoe UI Emoji, ui-monospace
+- layout: header=True; nav=True; hero=True; sections=6; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: navigation=2, card=6, tabs=8, modal=36
+- consistency: overall=0.51; color=0.48; type=0.42; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #200000[###] #ff8040[###] #ffa040[###] #602000[###] #a04020[###] #ff8020[###] #802000[###]
+- viewport palette: #000000[###] #200000[###] #ff8040[###] #ffa040[###] #602000[###] #a04020[###] #ff8020[###] #802000[###]
+- composition: density=dense; whitespace=0%; classification=dense_grid
+- viewport composition: density=dense; whitespace=0%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

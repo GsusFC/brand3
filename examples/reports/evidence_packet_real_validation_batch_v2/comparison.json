@@ -1,0 +1,148 @@
+{
+  "created_at": "2026-05-18T10:51:22.679309+00:00",
+  "executed": true,
+  "cases_executed": 5,
+  "cases_skipped": 3,
+  "rows": [
+    {
+      "group_id": "group_a",
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "launchdarkly",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "iris",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": false,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "finding_count": 1,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    }
+  ],
+  "group_metrics": {
+    "group_a": {
+      "name": "High evidence / low ambiguity",
+      "target_count": 5,
+      "selected_count": 4,
+      "coverage_gap": 1,
+      "executed_count": 3,
+      "primary_selected_count": 2,
+      "backup_selected_count": 2,
+      "readiness_distribution": {
+        "ready": 3,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    },
+    "group_b": {
+      "name": "Strong visual identity / weak external grounding",
+      "target_count": 5,
+      "selected_count": 2,
+      "coverage_gap": 3,
+      "executed_count": 2,
+      "primary_selected_count": 2,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 1,
+        "thin": 1,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": false
+    },
+    "group_c": {
+      "name": "Contradiction-heavy / multi-signal tension",
+      "target_count": 5,
+      "selected_count": 0,
+      "coverage_gap": 5,
+      "executed_count": 0,
+      "primary_selected_count": 0,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 0,
+        "thin": 0,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": false
+    }
+  },
+  "pass_criteria": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": false,
+    "evidence_urls_valid": true,
+    "parse_failures_unrecovered": 0,
+    "blocked_controls_skipped": true
+  },
+  "group_level_flags": {
+    "group_a_majority_ready_low_review_pressure": true,
+    "group_b_conservative_thin_or_review": true,
+    "group_c_strong_abstain_or_blocked_discipline": false
+  },
+  "overall_pass": false
+}

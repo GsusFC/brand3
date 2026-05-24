@@ -1,0 +1,40 @@
+Expected category: nonprofit_education
+Notes: Education nonprofit with broad audience and practical product flows.
+
+== Khan Academy ==
+URL: https://www.khanacademy.org
+Interpretation status: interpretable
+Extraction confidence: 0.66 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.54, consistency_coverage=0.53]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.68
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.53
+
+Visual summaries:
+- palette preview: #bfe6dd[###] #f5f5f5[###] #ffffff[###] #656565[###] #2e3644[###] #f2dede[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=8; density=dense; patterns=multi_column
+- components: button=40, cta=18, form=36, accordion=46, tabs=8, modal=8
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000020[###] #808080[###] #ffffff[###] #004080[###] #606060[###] #002020[###] #404040[###] #404060[###]
+- viewport palette: #000020[###] #808080[###] #ffffff[###] #004080[###] #606060[###] #002020[###] #404040[###] #404060[###]
+- composition: density=dense; whitespace=6%; classification=dense_grid
+- viewport composition: density=dense; whitespace=6%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

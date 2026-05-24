@@ -1,0 +1,525 @@
+{
+  "categorical_summaries": {
+    "dom_viewport_agreement_level": {
+      "distribution": {
+        "high": 57,
+        "low": 43,
+        "medium": 39
+      },
+      "entropy": 0.988,
+      "metric": "dom_viewport_agreement_level",
+      "top_share": 0.41,
+      "top_value": "high"
+    },
+    "dom_viewport_disagreement_severity": {
+      "distribution": {
+        "major": 23,
+        "minor": 39,
+        "moderate": 20,
+        "none": 57
+      },
+      "entropy": 0.937,
+      "metric": "dom_viewport_disagreement_severity",
+      "top_share": 0.41,
+      "top_value": "none"
+    },
+    "viewport_composition": {
+      "distribution": {
+        "balanced_blocks": 17,
+        "blank": 4,
+        "dense_grid": 101,
+        "sparse_single_focus": 17
+      },
+      "entropy": 0.612,
+      "metric": "viewport_composition",
+      "top_share": 0.727,
+      "top_value": "dense_grid"
+    },
+    "viewport_density": {
+      "distribution": {
+        "balanced": 17,
+        "dense": 101,
+        "sparse": 21
+      },
+      "entropy": 0.705,
+      "metric": "viewport_density",
+      "top_share": 0.727,
+      "top_value": "dense"
+    },
+    "viewport_whitespace_band": {
+      "distribution": {
+        "high": 18,
+        "low": 65,
+        "moderate": 24,
+        "very_high": 32
+      },
+      "entropy": 0.91,
+      "metric": "viewport_whitespace_band",
+      "top_share": 0.468,
+      "top_value": "low"
+    }
+  },
+  "category_insensitive_metrics": [
+    "composition_stability",
+    "structural_agreement_score",
+    "density_agreement_score",
+    "composition_agreement_score",
+    "cta_density",
+    "extraction_confidence",
+    "vision_confidence",
+    "signal_availability",
+    "signal_coverage"
+  ],
+  "category_sensitive_metrics": [
+    "viewport_whitespace",
+    "viewport_density_score",
+    "dom_viewport_agreement_score",
+    "dom_viewport_disagreement_severity_score",
+    "palette_agreement_score",
+    "visible_cta_weight",
+    "component_density",
+    "typography_complexity"
+  ],
+  "category_sensitivity": {
+    "component_density": {
+      "category_median_max": 1.0,
+      "category_median_min": 0.761,
+      "category_sensitivity": 0.239
+    },
+    "composition_agreement_score": {
+      "category_median_max": 1.0,
+      "category_median_min": 1.0,
+      "category_sensitivity": 0.0
+    },
+    "composition_stability": {
+      "category_median_max": 1.0,
+      "category_median_min": 1.0,
+      "category_sensitivity": 0.0
+    },
+    "cta_density": {
+      "category_median_max": 1.0,
+      "category_median_min": 1.0,
+      "category_sensitivity": 0.0
+    },
+    "density_agreement_score": {
+      "category_median_max": 1.0,
+      "category_median_min": 1.0,
+      "category_sensitivity": 0.0
+    },
+    "dom_viewport_agreement_score": {
+      "category_median_max": 1.0,
+      "category_median_min": 0.5,
+      "category_sensitivity": 0.5
+    },
+    "dom_viewport_disagreement_severity_score": {
+      "category_median_max": 0.25,
+      "category_median_min": 0.0,
+      "category_sensitivity": 0.25
+    },
+    "extraction_confidence": {
+      "category_median_max": 0.686,
+      "category_median_min": 0.629,
+      "category_sensitivity": 0.057
+    },
+    "palette_agreement_score": {
+      "category_median_max": 1.0,
+      "category_median_min": 0.55,
+      "category_sensitivity": 0.45
+    },
+    "palette_complexity": {
+      "category_median_max": 0.837,
+      "category_median_min": 0.681,
+      "category_sensitivity": 0.155
+    },
+    "signal_availability": {
+      "category_median_max": 1.0,
+      "category_median_min": 1.0,
+      "category_sensitivity": 0.0
+    },
+    "signal_coverage": {
+      "category_median_max": 0.738,
+      "category_median_min": 0.66,
+      "category_sensitivity": 0.078
+    },
+    "signal_usability": {
+      "category_median_max": 0.597,
+      "category_median_min": 0.477,
+      "category_sensitivity": 0.12
+    },
+    "structural_agreement_score": {
+      "category_median_max": 1.0,
+      "category_median_min": 1.0,
+      "category_sensitivity": 0.0
+    },
+    "typography_complexity": {
+      "category_median_max": 0.26,
+      "category_median_min": 0.0,
+      "category_sensitivity": 0.26
+    },
+    "viewport_density_score": {
+      "category_median_max": 0.9,
+      "category_median_min": 0.55,
+      "category_sensitivity": 0.35
+    },
+    "viewport_whitespace": {
+      "category_median_max": 0.592,
+      "category_median_min": 0.152,
+      "category_sensitivity": 0.44
+    },
+    "visible_cta_weight": {
+      "category_median_max": 1.0,
+      "category_median_min": 0.8,
+      "category_sensitivity": 0.2
+    },
+    "vision_confidence": {
+      "category_median_max": 0.883,
+      "category_median_min": 0.833,
+      "category_sensitivity": 0.05
+    }
+  },
+  "metric_summaries": {
+    "component_density": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.822,
+      "entropy": 0.405,
+      "iqr": 0.05,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "component_density",
+      "min": 0.0,
+      "noise_risk": "medium",
+      "p10": 0.754,
+      "p90": 1.0,
+      "q1": 0.95,
+      "q3": 1.0,
+      "saturation_detected": false
+    },
+    "composition_agreement_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.388,
+      "entropy": 0.109,
+      "iqr": 0.0,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "composition_agreement_score",
+      "min": 0.65,
+      "noise_risk": "medium",
+      "p10": 1.0,
+      "p90": 1.0,
+      "q1": 1.0,
+      "q3": 1.0,
+      "saturation_detected": true
+    },
+    "composition_stability": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.25,
+      "entropy": 0.0,
+      "iqr": 0.0,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "composition_stability",
+      "min": 1.0,
+      "noise_risk": "medium",
+      "p10": 1.0,
+      "p90": 1.0,
+      "q1": 1.0,
+      "q3": 1.0,
+      "saturation_detected": true
+    },
+    "cta_density": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.645,
+      "entropy": 0.315,
+      "iqr": 0.0,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "cta_density",
+      "min": 0.0,
+      "noise_risk": "medium",
+      "p10": 0.75,
+      "p90": 1.0,
+      "q1": 1.0,
+      "q3": 1.0,
+      "saturation_detected": true
+    },
+    "density_agreement_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.849,
+      "entropy": 0.495,
+      "iqr": 0.9,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "density_agreement_score",
+      "min": 0.0,
+      "noise_risk": "low",
+      "p10": 0.1,
+      "p90": 1.0,
+      "q1": 0.1,
+      "q3": 1.0,
+      "saturation_detected": false
+    },
+    "dom_viewport_agreement_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.996,
+      "entropy": 0.988,
+      "iqr": 1.0,
+      "max": 1.0,
+      "median": 0.5,
+      "metric": "dom_viewport_agreement_score",
+      "min": 0.0,
+      "noise_risk": "low",
+      "p10": 0.0,
+      "p90": 1.0,
+      "q1": 0.0,
+      "q3": 1.0,
+      "saturation_detected": false
+    },
+    "dom_viewport_disagreement_severity_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.981,
+      "entropy": 0.937,
+      "iqr": 0.6,
+      "max": 1.0,
+      "median": 0.25,
+      "metric": "dom_viewport_disagreement_severity_score",
+      "min": 0.0,
+      "noise_risk": "low",
+      "p10": 0.0,
+      "p90": 1.0,
+      "q1": 0.0,
+      "q3": 0.6,
+      "saturation_detected": false
+    },
+    "extraction_confidence": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.714,
+      "entropy": 0.578,
+      "iqr": 0.072,
+      "max": 0.792,
+      "median": 0.649,
+      "metric": "extraction_confidence",
+      "min": 0.322,
+      "noise_risk": "low",
+      "p10": 0.576,
+      "p90": 0.714,
+      "q1": 0.615,
+      "q3": 0.686,
+      "saturation_detected": false
+    },
+    "palette_agreement_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.833,
+      "entropy": 0.994,
+      "iqr": 0.45,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "palette_agreement_score",
+      "min": 0.55,
+      "noise_risk": "medium",
+      "p10": 0.55,
+      "p90": 1.0,
+      "q1": 0.55,
+      "q3": 1.0,
+      "saturation_detected": false
+    },
+    "palette_complexity": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.844,
+      "entropy": 0.799,
+      "iqr": 0.176,
+      "max": 0.966,
+      "median": 0.789,
+      "metric": "palette_complexity",
+      "min": 0.284,
+      "noise_risk": "low",
+      "p10": 0.581,
+      "p90": 0.9,
+      "q1": 0.676,
+      "q3": 0.852,
+      "saturation_detected": false
+    },
+    "signal_availability": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.25,
+      "entropy": 0.0,
+      "iqr": 0.0,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "signal_availability",
+      "min": 1.0,
+      "noise_risk": "medium",
+      "p10": 1.0,
+      "p90": 1.0,
+      "q1": 1.0,
+      "q3": 1.0,
+      "saturation_detected": true
+    },
+    "signal_coverage": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.697,
+      "entropy": 0.656,
+      "iqr": 0.09,
+      "max": 0.81,
+      "median": 0.686,
+      "metric": "signal_coverage",
+      "min": 0.477,
+      "noise_risk": "low",
+      "p10": 0.602,
+      "p90": 0.769,
+      "q1": 0.646,
+      "q3": 0.736,
+      "saturation_detected": false
+    },
+    "signal_usability": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.776,
+      "entropy": 0.741,
+      "iqr": 0.138,
+      "max": 0.707,
+      "median": 0.517,
+      "metric": "signal_usability",
+      "min": 0.196,
+      "noise_risk": "low",
+      "p10": 0.389,
+      "p90": 0.645,
+      "q1": 0.455,
+      "q3": 0.593,
+      "saturation_detected": false
+    },
+    "structural_agreement_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.25,
+      "entropy": 0.0,
+      "iqr": 0.0,
+      "max": 1.0,
+      "median": 1.0,
+      "metric": "structural_agreement_score",
+      "min": 1.0,
+      "noise_risk": "medium",
+      "p10": 1.0,
+      "p90": 1.0,
+      "q1": 1.0,
+      "q3": 1.0,
+      "saturation_detected": true
+    },
+    "typography_complexity": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.887,
+      "entropy": 0.623,
+      "iqr": 0.31,
+      "max": 1.0,
+      "median": 0.0,
+      "metric": "typography_complexity",
+      "min": 0.0,
+      "noise_risk": "low",
+      "p10": 0.0,
+      "p90": 1.0,
+      "q1": 0.0,
+      "q3": 0.31,
+      "saturation_detected": false
+    },
+    "viewport_density_score": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.822,
+      "entropy": 0.705,
+      "iqr": 0.35,
+      "max": 0.9,
+      "median": 0.9,
+      "metric": "viewport_density_score",
+      "min": 0.2,
+      "noise_risk": "low",
+      "p10": 0.2,
+      "p90": 0.9,
+      "q1": 0.55,
+      "q3": 0.9,
+      "saturation_detected": false
+    },
+    "viewport_whitespace": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.978,
+      "entropy": 0.931,
+      "iqr": 0.566,
+      "max": 0.997,
+      "median": 0.285,
+      "metric": "viewport_whitespace",
+      "min": 0.0,
+      "noise_risk": "low",
+      "p10": 0.013,
+      "p90": 0.895,
+      "q1": 0.108,
+      "q3": 0.674,
+      "saturation_detected": false
+    },
+    "visible_cta_weight": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.853,
+      "entropy": 0.509,
+      "iqr": 0.1,
+      "max": 1.0,
+      "median": 0.8,
+      "metric": "visible_cta_weight",
+      "min": 0.0,
+      "noise_risk": "low",
+      "p10": 0.6,
+      "p90": 1.0,
+      "q1": 0.8,
+      "q3": 0.9,
+      "saturation_detected": false
+    },
+    "vision_confidence": {
+      "availability_rate": 1.0,
+      "diagnostic_score": 0.634,
+      "entropy": 0.424,
+      "iqr": 0.047,
+      "max": 0.885,
+      "median": 0.852,
+      "metric": "vision_confidence",
+      "min": 0.529,
+      "noise_risk": "low",
+      "p10": 0.771,
+      "p90": 0.885,
+      "q1": 0.83,
+      "q3": 0.877,
+      "saturation_detected": false
+    }
+  },
+  "noisy_metrics": [
+    "composition_stability",
+    "structural_agreement_score",
+    "composition_agreement_score",
+    "palette_agreement_score",
+    "cta_density",
+    "component_density",
+    "signal_availability"
+  ],
+  "notes": [
+    "Availability, usability, and discriminability are separated for calibration only.",
+    "Saturation detection means the metric is present but currently weak for ranking brands.",
+    "No multimodal semantic interpretation is used in this audit."
+  ],
+  "row_count": 139,
+  "saturated_metrics": [
+    "composition_stability",
+    "structural_agreement_score",
+    "composition_agreement_score",
+    "cta_density",
+    "signal_availability"
+  ],
+  "strongest_metrics": [
+    "dom_viewport_agreement_score",
+    "dom_viewport_disagreement_severity_score",
+    "viewport_whitespace",
+    "typography_complexity",
+    "visible_cta_weight",
+    "density_agreement_score"
+  ],
+  "version": "visual-signature-metric-audit-1",
+  "weakest_metrics": [
+    "cta_density",
+    "vision_confidence",
+    "composition_agreement_score",
+    "composition_stability",
+    "structural_agreement_score",
+    "signal_availability"
+  ]
+}

@@ -1,0 +1,393 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-08T12:21:23.487417",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.headspace.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 266,
+    "video_count": 2
+  },
+  "brand_name": "Headspace",
+  "calibration": {
+    "expected_category": "wellness/lifestyle",
+    "notes": "Wellness brand with illustration, soft palette, and consumer conversion flows."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ff7300",
+      "#281466",
+      "#1a0c54",
+      "#3b197f",
+      "#101340",
+      "#ffce00"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#44423f",
+      "#2d2c2b",
+      "#141313",
+      "#281466",
+      "#1a0c54"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#44423f",
+      "#2d2c2b",
+      "#141313",
+      "#ff7300",
+      "#281466",
+      "#b0aca5",
+      "#1a0c54"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 318,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#44423f",
+        "occurrences": 242,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#2d2c2b",
+        "occurrences": 46,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#141313",
+        "occurrences": 44,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ff7300",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#281466",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#b0aca5",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#1a0c54",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#3b197f",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f9f4f2",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#c6c1b9",
+        "occurrences": 22,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#101340",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e2ded9",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffce00",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ff76b8",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffb700",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0b662a",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#5f2b89",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#613889",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#ff4200",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#00a4ff",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#fc5500",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#8144a8",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#a03d3d",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#44423f",
+      "#2d2c2b",
+      "#141313",
+      "#281466",
+      "#1a0c54",
+      "#3b197f"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 54,
+        "labels": [
+          "AI guidance",
+          "Guided meditations",
+          "Sleep resources",
+          "Expert-led programs",
+          "Online therapy",
+          "Featured",
+          "Popular",
+          "Sleep",
+          "Stress",
+          "Meditation and Mindfulness"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 29,
+        "labels": [
+          "Try for $0",
+          "Check your coverage",
+          "AI guidance",
+          "Guided meditations",
+          "Sleep resources",
+          "Expert-led programs",
+          "Online therapy",
+          "Chat with Ebb",
+          "Learn more",
+          "Explore sleep resources"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 116,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 56,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 36,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Try for $0",
+      "Check your coverage",
+      "AI guidance",
+      "Guided meditations",
+      "Sleep resources",
+      "Expert-led programs",
+      "Online therapy",
+      "Chat with Ebb"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.74,
+    "confidence": 0.595,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.469,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.595,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.58
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.68
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "single_column"
+    ],
+    "section_count": 4,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://headspace-contentful.imgix.net/5L4y2yWKpHthCA2Ld0IOvJ/3f11d61010781c77b7748c18a6cfbc03/BMO-logo-HS-Website.svg?ixlib=js-3.8.0&amp;w=640"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "flat",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "website_url": "https://www.headspace.com"
+}

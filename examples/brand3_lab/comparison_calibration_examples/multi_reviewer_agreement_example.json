@@ -1,0 +1,276 @@
+{
+  "schema_version": "brand3-comparison-calibration-log-1",
+  "record_type": "perceptual_narrative_comparison_calibration_log",
+  "draft_only": true,
+  "official_record": false,
+  "persistence_scope": "local_lab_only",
+  "scoring_integration": false,
+  "production_runtime_enabled": false,
+  "source_viewer": {
+    "route": "/brand3-lab/perceptual-narrative-comparison",
+    "export_schema_version": "brand3-perceptual-narrative-comparison-draft-1",
+    "export_record_type": "perceptual_narrative_comparison_review_draft"
+  },
+  "calibration_run": {
+    "calibration_id": "comparison-calibration-20260515-three-reviewer-example",
+    "created_at": "2026-05-15T17:00:00Z",
+    "review_window": {
+      "started_at": "2026-05-15T16:35:00Z",
+      "ended_at": "2026-05-15T16:58:00Z"
+    },
+    "reviewer_count": 3,
+    "case_count": 2,
+    "notes": "Example showing agreement and unsafe veto handling."
+  },
+  "source_artifacts": [
+    {
+      "path": "examples/brand3_platform/perceptual_narrative_evaluation.json",
+      "artifact_role": "paired_narrative_evaluation"
+    },
+    {
+      "path": "examples/perceptual_library/patterns/perceptual_reasoning_stress_test.json",
+      "artifact_role": "reasoning_stress_test"
+    },
+    {
+      "path": "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.json",
+      "artifact_role": "overreach_taxonomy"
+    }
+  ],
+  "normalization_rules": {
+    "input_export_contract": {
+      "accepted_schema_version": "brand3-perceptual-narrative-comparison-draft-1",
+      "accepted_record_type": "perceptual_narrative_comparison_review_draft",
+      "required_flags": {
+        "draft_only": true,
+        "official_record": false,
+        "persistence_status": "not_persisted"
+      }
+    },
+    "decision_mapping": {
+      "baseline_better": "Baseline is clearer, safer, or more proportionate.",
+      "perceptual_better": "Perceptual narrative improves specificity without unsafe overreach.",
+      "mixed": "Perceptual narrative helps and harms in the same case.",
+      "unsafe_overreach": "Perceptual narrative introduces unsupported interpretation or unsafe inference.",
+      "unreviewed": "No reviewer decision was provided."
+    },
+    "case_identity_rules": [
+      "Use brand_id as stable case key.",
+      "Keep brand as display label.",
+      "Attach source_case_index from the paired evaluation artifact."
+    ],
+    "notes_rules": [
+      "Preserve reviewer notes verbatim.",
+      "Summarize notes only in calibration_signals.notes_summary.",
+      "Do not treat notes as official findings."
+    ],
+    "overreach_tagging_rules": [
+      "Unsafe decisions must include at least one overreach mode when notes identify one.",
+      "If notes identify outcome claims in wellness, tag unsupported_emotional_projection.",
+      "If notes identify unsupported authority or trust, tag invented_intentionality."
+    ],
+    "safe_zone_tagging_rules": [
+      "Safe augmentation requires majority perceptual_better or mixed without unsafe veto.",
+      "Safe augmentation requires medium or high confidence from most reviewers."
+    ],
+    "draft_handling": [
+      "Local lab artifact only.",
+      "No database write.",
+      "No scoring or report output dependency."
+    ]
+  },
+  "reviewer_agreement_model": {
+    "model_id": "majority_with_overreach_veto_v1",
+    "agreement_levels": {
+      "strong_agreement": "At least 75% of reviewed votes select the same non-unsafe decision.",
+      "moderate_agreement": "More than 50% of reviewed votes select the same non-unsafe decision.",
+      "split": "No majority decision.",
+      "unsafe_veto": "At least one reviewed vote selects unsafe_overreach."
+    },
+    "decision_weights": {
+      "baseline_better": -1,
+      "perceptual_better": 1,
+      "mixed": 0,
+      "unsafe_overreach": -2,
+      "unreviewed": 0
+    },
+    "disagreement_patterns": [
+      {
+        "pattern_id": "safety_vs_specificity",
+        "definition": "Some reviewers value perceptual specificity while another flags unsafe interpretation.",
+        "calibration_action": "Keep augmentation blocked for this case until the unsafe claim is rewritten or removed."
+      },
+      {
+        "pattern_id": "voice_preference_stable",
+        "definition": "Reviewers agree perceptual version feels more Brand3 while remaining bounded.",
+        "calibration_action": "Mark as candidate safe augmentation zone."
+      }
+    ]
+  },
+  "confidence_aggregation_rules": {
+    "model_id": "weighted_reviewer_consensus_v1",
+    "inputs": [
+      "reviewer decision",
+      "reviewer confidence",
+      "unsafe overreach flags",
+      "safe augmentation label",
+      "feels Brand3 consistency",
+      "notes indicating evidence limits"
+    ],
+    "case_confidence_rules": [
+      "Strong agreement with no unsafe veto can be high confidence.",
+      "Unsafe veto overrides perceptual preference.",
+      "Mixed cases remain medium or low until notes converge."
+    ],
+    "aggregate_confidence_rules": [
+      "Track safe wins separately from unsafe veto cases.",
+      "Require repeated safe wins by surface class before deployment claims.",
+      "Do not aggregate unreviewed votes into preference trends."
+    ],
+    "overreach_frequency_rules": [
+      "unsafe_overreach count divided by reviewed votes gives direct unsafe rate.",
+      "Overreach mode frequency is counted per reviewer vote.",
+      "A case with any unsafe vote is unsafe_veto=true."
+    ],
+    "feels_brand3_consistency_rules": [
+      "High when most reviewers mark perceptual_better or mixed and notes cite evidence-bound specificity.",
+      "Medium when preference is split but no unsafe veto exists.",
+      "Low when notes cite generic sophistication or unsupported interpretation."
+    ]
+  },
+  "case_reviews": [
+    {
+      "brand": "Stripe Docs",
+      "brand_id": "stripe-docs",
+      "source_case_index": 3,
+      "surface_class": "corporate_enterprise_brands",
+      "reviewer_votes": [
+        {
+          "reviewer_id": "reviewer-01",
+          "decision": "perceptual_better",
+          "confidence": "high",
+          "notes": "Operational density and category-to-surface language are specific and evidence-bound.",
+          "overreach_modes": [],
+          "safe_augmentation_zone": true,
+          "feels_brand3_consistency": "high"
+        },
+        {
+          "reviewer_id": "reviewer-02",
+          "decision": "perceptual_better",
+          "confidence": "high",
+          "notes": "The augmented version avoids trust claims and names visible documentation mechanisms.",
+          "overreach_modes": [],
+          "safe_augmentation_zone": true,
+          "feels_brand3_consistency": "high"
+        },
+        {
+          "reviewer_id": "reviewer-03",
+          "decision": "perceptual_better",
+          "confidence": "medium",
+          "notes": "Good Brand3 voice; keep operational density anchored to navigation and code evidence.",
+          "overreach_modes": [],
+          "safe_augmentation_zone": true,
+          "feels_brand3_consistency": "high"
+        }
+      ],
+      "agreement": {
+        "level": "strong_agreement",
+        "majority_decision": "perceptual_better",
+        "unsafe_veto": false,
+        "agreement_ratio": 1,
+        "disagreement_pattern_ids": ["voice_preference_stable"]
+      },
+      "calibration_signals": {
+        "overreach_detection_frequency": 0,
+        "safe_augmentation_rate": 1,
+        "perceptual_preference_rate": 1,
+        "baseline_preference_rate": 0,
+        "mixed_rate": 0,
+        "feels_brand3_consistency": "high",
+        "dominant_overreach_modes": [],
+        "notes_summary": "Reviewers agree perceptual version improves specificity and Brand3 voice without unsafe overreach."
+      }
+    },
+    {
+      "brand": "Headspace",
+      "brand_id": "headspace",
+      "source_case_index": 4,
+      "surface_class": "wellness_lifestyle_brands",
+      "reviewer_votes": [
+        {
+          "reviewer_id": "reviewer-01",
+          "decision": "mixed",
+          "confidence": "medium",
+          "notes": "Better boundaries than baseline, but support language remains risky.",
+          "overreach_modes": ["unsupported_emotional_projection"],
+          "safe_augmentation_zone": false,
+          "feels_brand3_consistency": "medium"
+        },
+        {
+          "reviewer_id": "reviewer-02",
+          "decision": "unsafe_overreach",
+          "confidence": "high",
+          "notes": "Wellness support and outcome language need stricter evidence gates.",
+          "overreach_modes": ["unsupported_emotional_projection", "weak_evidence_amplification"],
+          "safe_augmentation_zone": false,
+          "feels_brand3_consistency": "low"
+        },
+        {
+          "reviewer_id": "reviewer-03",
+          "decision": "perceptual_better",
+          "confidence": "medium",
+          "notes": "Perceptual version is more careful than baseline, but not safe without reviewer constraints.",
+          "overreach_modes": ["unsupported_emotional_projection"],
+          "safe_augmentation_zone": false,
+          "feels_brand3_consistency": "medium"
+        }
+      ],
+      "agreement": {
+        "level": "unsafe_veto",
+        "majority_decision": "mixed",
+        "unsafe_veto": true,
+        "agreement_ratio": 0.333,
+        "disagreement_pattern_ids": ["safety_vs_specificity"]
+      },
+      "calibration_signals": {
+        "overreach_detection_frequency": 1,
+        "safe_augmentation_rate": 0,
+        "perceptual_preference_rate": 0.333,
+        "baseline_preference_rate": 0,
+        "mixed_rate": 0.333,
+        "feels_brand3_consistency": "medium",
+        "dominant_overreach_modes": ["unsupported_emotional_projection", "weak_evidence_amplification"],
+        "notes_summary": "Reviewers see narrative improvement but flag wellness emotional projection as unsafe."
+      }
+    }
+  ],
+  "aggregate_calibration": {
+    "reviewer_agreement_summary": {
+      "reviewer_count": 3,
+      "case_count": 2,
+      "strong_agreement_cases": 1,
+      "unsafe_veto_cases": 1,
+      "split_cases": 0
+    },
+    "narrative_preference_trends": {
+      "perceptual_better_rate": 0.667,
+      "baseline_better_rate": 0,
+      "mixed_rate": 0.167,
+      "unsafe_overreach_rate": 0.167
+    },
+    "overreach_detection_summary": {
+      "unsafe_overreach_rate": 0.167,
+      "case_unsafe_veto_rate": 0.5,
+      "dominant_overreach_modes": ["unsupported_emotional_projection"]
+    },
+    "safe_augmentation_zones": [
+      "documentation or enterprise surfaces with visible information architecture",
+      "cases where perceptual language replaces trust claims with observable mechanisms"
+    ],
+    "unsafe_augmentation_zones": [
+      "wellness or lifestyle surfaces where emotional support is inferred from tone",
+      "cases where reviewer notes flag user outcome claims"
+    ],
+    "feels_brand3_consistency": "mixed",
+    "calibration_recommendation": "Perceptual augmentation is promising for documentation and enterprise surfaces, but wellness/lifestyle should remain blocked without stricter emotional projection controls."
+  }
+}

@@ -1,0 +1,170 @@
+{
+  "audit": {
+    "date": "2026-05-15",
+    "scope": "audit_only_before_commit_deploy",
+    "deploy_recommendation": "safe_with_caution",
+    "working_tree_at_audit_start": "clean",
+    "runtime_modified_by_audit": false,
+    "commit_performed": false,
+    "files_deleted": false,
+    "experimental_features_enabled": false
+  },
+  "git_state": {
+    "initial_status_short": [],
+    "recent_commits": [
+      {
+        "sha": "2e58d01",
+        "subject": "Persist rich report narrative for fast reads"
+      },
+      {
+        "sha": "842c73d",
+        "subject": "Avoid live LLM work on public report reads"
+      },
+      {
+        "sha": "46a8186",
+        "subject": "Add Brand3 dark mode toggle"
+      }
+    ],
+    "changed_untracked_classification_at_start": {
+      "production_brand_audit": [],
+      "reports_scoring_narrative": [],
+      "visual_signature_lab": [],
+      "brand3_lab": [],
+      "perceptual_library_research": [],
+      "docs_deployment": [],
+      "unknown_risky": []
+    },
+    "files_created_by_this_audit": [
+      "docs/deployment/current_repo_state_audit.md",
+      "docs/deployment/current_repo_state_audit.json"
+    ]
+  },
+  "boundaries": {
+    "brand_audit_primary_product": {
+      "status": "confirmed",
+      "evidence": [
+        "web/app.py includes index, analyze, status, report, reports_list, and brand routers",
+        "web/routes/analyze.py implements POST /analyze",
+        "reports and brand listing routes remain production surfaces"
+      ]
+    },
+    "visual_signature_lab": {
+      "status": "confirmed",
+      "evidence": [
+        "visual signature routes are namespaced under /visual-signature",
+        "critical Visual Signature route tests passed",
+        "no scoring mutation found in route smoke or tested path"
+      ]
+    },
+    "brand3_lab_experimental": {
+      "status": "confirmed",
+      "evidence": [
+        "web/routes/brand3_lab.py docstring says Experimental Brand3 lab routes",
+        "only observed route is /brand3-lab/perceptual-narrative-comparison",
+        "route renders static comparison model"
+      ]
+    },
+    "perceptual_narrative_opt_in": {
+      "status": "confirmed",
+      "evidence": [
+        "src/reports/dossier.py default enable_perceptual_narrative is false",
+        "src/reports/narrative.py default enable_perceptual_narrative is false",
+        "production report path does not enable it"
+      ]
+    },
+    "perceptual_library_research_asset": {
+      "status": "confirmed",
+      "evidence": [
+        "artifacts live under examples/perceptual_library",
+        "runtime reference is limited to src/reports/experimental_perceptual_narrative.py",
+        "usage requires opt-in experimental narrative flag"
+      ]
+    }
+  },
+  "route_checks": [
+    {
+      "route": "/",
+      "method": "GET",
+      "status_code": 200,
+      "result": "pass"
+    },
+    {
+      "route": "/analyze",
+      "method": "GET",
+      "status_code": 405,
+      "result": "expected_post_only"
+    },
+    {
+      "route": "/analyze",
+      "method": "POST",
+      "status_code": 400,
+      "result": "pass_invalid_url_rejected"
+    },
+    {
+      "route": "/reports",
+      "method": "GET",
+      "status_code": 200,
+      "result": "pass"
+    },
+    {
+      "route": "/visual-signature",
+      "method": "GET",
+      "status_code": 200,
+      "result": "pass"
+    },
+    {
+      "route": "/brand3-lab/perceptual-narrative-comparison",
+      "method": "GET",
+      "status_code": 200,
+      "result": "pass"
+    }
+  ],
+  "validation": {
+    "py_compile": {
+      "command": "./.venv/bin/python -m py_compile web/app.py web/config.py web/routes/*.py web/middleware/*.py web/workers/*.py src/reports/*.py",
+      "status": "passed"
+    },
+    "critical_tests": {
+      "command": "./.venv/bin/python -m pytest tests/test_web_app.py tests/test_web_listings.py tests/test_web_visual_signature_routes.py tests/test_reports_renderer.py tests/test_reports_dossier.py tests/test_scoring_engine.py tests/test_visual_signature.py",
+      "status": "passed",
+      "summary": "81 passed in 4.26s"
+    },
+    "json_parse": {
+      "command": "for f in $(find examples/perceptual_library examples/brand3_lab examples/brand3_platform docs/deployment -name '*.json' | sort); do ./.venv/bin/python -m json.tool \"$f\" >/dev/null || exit 1; done",
+      "status": "passed",
+      "note": "Initial multi-file json.tool invocation was invalid CLI usage; rerun parsed one file at a time."
+    }
+  },
+  "commit_guidance": {
+    "files_to_include": [
+      "docs/deployment/current_repo_state_audit.md",
+      "docs/deployment/current_repo_state_audit.json"
+    ],
+    "files_to_exclude": []
+  },
+  "risks": [
+    {
+      "risk": "Lab routes are publicly reachable",
+      "severity": "medium",
+      "mitigation": "Acceptable for current partner-visible deployment; add gate or banner before stricter public launch."
+    },
+    {
+      "risk": "Research artifacts are large and visible in repo",
+      "severity": "low",
+      "mitigation": "Keep labeled as examples/research and avoid treating as production runtime data."
+    },
+    {
+      "risk": "macOS fork-safety LLM crash logs can appear in optional real LLM integration path",
+      "severity": "low",
+      "mitigation": "Does not block current critical suite; keep live LLM out of public report reads."
+    }
+  ],
+  "pre_deploy_cleanup": {
+    "required": [],
+    "recommended": [
+      "Decide whether lab routes need banner, access gate, or partner-only copy before broader public launch.",
+      "Keep research artifacts out of marketing claims until reviewed.",
+      "Continue preventing live LLM calls on public report reads."
+    ]
+  }
+}

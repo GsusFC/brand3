@@ -1,0 +1,176 @@
+{
+  "created_at": "2026-05-18T11:41:55.686266+00:00",
+  "executed": true,
+  "cases_executed": 7,
+  "cases_skipped": 4,
+  "rows": [
+    {
+      "group_id": "group_a",
+      "case_id": "lightmatter",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "celestial_ai",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "raycast",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "finding_count": 1,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "retool",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "included_evidence_count": 3,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "cron",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 3,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "locomotive",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "bakken_baeck",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "finding_count": 2,
+      "no_typical_decision": true,
+      "limits_present": true,
+      "risky_terms_outside_limits_empty": true,
+      "evidence_urls_valid": true,
+      "parse_failure_unrecovered": false
+    }
+  ],
+  "group_metrics": {
+    "group_a": {
+      "name": "Deeptech / scientific systems",
+      "target_count": 3,
+      "selected_count": 3,
+      "coverage_gap": 0,
+      "executed_count": 2,
+      "primary_selected_count": 3,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 2,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    },
+    "group_b": {
+      "name": "Product / system identity",
+      "target_count": 3,
+      "selected_count": 3,
+      "coverage_gap": 0,
+      "executed_count": 3,
+      "primary_selected_count": 3,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 1,
+        "thin": 2,
+        "blocked": 0,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    },
+    "group_c": {
+      "name": "Expressive / visual language",
+      "target_count": 3,
+      "selected_count": 3,
+      "coverage_gap": 0,
+      "executed_count": 2,
+      "primary_selected_count": 3,
+      "backup_selected_count": 0,
+      "readiness_distribution": {
+        "ready": 2,
+        "thin": 0,
+        "blocked": 1,
+        "abstain": 0,
+        "review_required": 0,
+        "other": 0
+      },
+      "all_rows_pass": true
+    }
+  },
+  "pass_criteria": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "evidence_urls_valid": true,
+    "parse_failures_unrecovered": 0,
+    "blocked_controls_skipped": true
+  },
+  "group_level_flags": {
+    "group_a_majority_ready_low_review_pressure": true,
+    "group_b_product_system_mixed_ready_thin": true,
+    "group_c_expressive_stays_bounded": true
+  },
+  "overall_pass": true
+}

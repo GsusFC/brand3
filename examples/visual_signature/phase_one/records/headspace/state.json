@@ -1,0 +1,105 @@
+{
+  "brand_name": "Headspace",
+  "capture_id": "headspace",
+  "confidence": 1.0,
+  "created_at": "2026-05-11T17:46:24.963640",
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:headspace",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+  ],
+  "perceptual_state": "UNSAFE_MUTATION_BLOCKED",
+  "reasoning_trace": {
+    "created_at": "2026-05-11T17:46:24.963640",
+    "lineage_refs": [
+      "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+      "capture:headspace",
+      "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+    ],
+    "record_type": "reasoning_trace",
+    "review_required": true,
+    "schema_version": "phase-zero-reasoning-trace-1",
+    "statements": [
+      {
+        "confidence": 1.0,
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+        ],
+        "statement": "Perceptual state is UNSAFE_MUTATION_BLOCKED.",
+        "warnings": []
+      }
+    ],
+    "summary": "Capture state recorded as UNSAFE_MUTATION_BLOCKED.",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "trace_id": "trace_headspace_state",
+    "unsupported_inference_warnings": []
+  },
+  "record_id": "state_headspace",
+  "record_type": "perceptual_state",
+  "schema_version": "phase-zero-perceptual-state-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "transitions": [
+    {
+      "capture_id": "headspace",
+      "confidence": 1.0,
+      "created_at": "2026-05-11T17:46:24.963640",
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+      ],
+      "from_state": "RAW_STATE",
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:headspace",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+      ],
+      "mutation_ref": null,
+      "notes": [
+        "raw_viewport_preserved_as_primary_evidence"
+      ],
+      "reason": "raw_capture_created",
+      "record_type": "transition_record",
+      "schema_version": "phase-zero-transition-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "to_state": "RAW_STATE",
+      "transition_id": "transition_headspace_raw_capture_created"
+    },
+    {
+      "capture_id": "headspace",
+      "confidence": 1.0,
+      "created_at": "2026-05-11T17:46:24.963640",
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+      ],
+      "from_state": "RAW_STATE",
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:headspace",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+      ],
+      "mutation_ref": null,
+      "notes": [
+        "protected_environment_requires_no_mutation"
+      ],
+      "reason": "protected_environment_detected",
+      "record_type": "transition_record",
+      "schema_version": "phase-zero-transition-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "to_state": "UNSAFE_MUTATION_BLOCKED",
+      "transition_id": "transition_headspace_protected_environment_detected"
+    }
+  ],
+  "uncertainty": {
+    "confidence": 1.0,
+    "confidence_level": "high",
+    "known_unknowns": [],
+    "record_type": "uncertainty_profile",
+    "reviewer_required": true,
+    "schema_version": "phase-zero-uncertainty-profile-1",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "uncertainty_reasons": [
+      "blocking"
+    ],
+    "unsupported_inference": false
+  },
+  "website_url": "https://www.headspace.com"
+}

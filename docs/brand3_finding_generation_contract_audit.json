@@ -1,0 +1,320 @@
+{
+  "title": "Brand3 Finding Generation Contract Audit",
+  "status": "audit_only",
+  "created_for": "finding_generation_contract_review",
+  "core_question": "Is Brand3 asking the model to generate intelligent findings from clean evidence, or to rationalize noisy, weak, technical, or entity-mixed inputs into strategic prose?",
+  "answer": "The current contract often asks the model to rationalize mixed evidence into strategic prose.",
+  "pipeline_map": [
+    {
+      "step": "feature_collection",
+      "description": "Collectors and feature analyzers write raw feature values and optional evidence items."
+    },
+    {
+      "step": "evidence_extraction",
+      "file": "src/reports/derivation.py",
+      "description": "Feature raw values and evidence items are normalized into Evidence objects."
+    },
+    {
+      "step": "dimension_grouping",
+      "file": "src/reports/derivation.py",
+      "description": "Evidence objects are grouped by dimension without an eligibility gate."
+    },
+    {
+      "step": "narrative_generation",
+      "file": "src/reports/narrative.py",
+      "description": "The LLM generates findings, tensions, and synthesis from dimension evidence pools."
+    },
+    {
+      "step": "payload_persistence",
+      "file": "src/reports/dossier.py",
+      "description": "Report narrative persists finding text fields and evidence URLs only."
+    },
+    {
+      "step": "rendering",
+      "file": "src/reports/templates/report.html.j2",
+      "description": "The renderer displays observation and implication, and conditionally displays Decision space."
+    }
+  ],
+  "llm_call_map": [
+    {
+      "area": "feature_analysis",
+      "file": "src/features/llm_analyzer.py",
+      "role": "default unless caller overrides",
+      "affects_scoring": true,
+      "affects_final_report_prose": "indirectly",
+      "persists_output": true
+    },
+    {
+      "area": "run_preparation",
+      "file": "src/services/run_preparation.py",
+      "role": "cheap",
+      "affects_scoring": "indirectly",
+      "affects_final_report_prose": false,
+      "persists_output": true
+    },
+    {
+      "area": "visual_analysis",
+      "file": "src/features/visual_analyzer.py",
+      "role": "vision",
+      "affects_scoring": true,
+      "affects_final_report_prose": "indirectly",
+      "persists_output": true
+    },
+    {
+      "area": "findings",
+      "file": "src/reports/narrative.py",
+      "role": "premium",
+      "affects_scoring": false,
+      "affects_final_report_prose": true,
+      "persists_output": true
+    },
+    {
+      "area": "tensions",
+      "file": "src/reports/narrative.py",
+      "role": "premium",
+      "affects_scoring": false,
+      "affects_final_report_prose": true,
+      "persists_output": true
+    },
+    {
+      "area": "synthesis",
+      "file": "src/reports/narrative.py",
+      "role": "premium",
+      "affects_scoring": false,
+      "affects_final_report_prose": true,
+      "persists_output": true
+    }
+  ],
+  "current_models": {
+    "default": "gemini-3.1-pro-preview",
+    "cheap": "gemini-3.1-flash-lite",
+    "premium": "gemini-3.1-pro-preview",
+    "vision": "gemini-2.5-flash"
+  },
+  "finding_generation_contract": {
+    "generated_in": "src/reports/narrative.py",
+    "system_prompt_properties": [
+      "valid_json",
+      "no_echo_chamber",
+      "separate_observation_from_implication",
+      "no_singular_prescriptions",
+      "closed_evaluative_adjectives_forbidden",
+      "diagnostic_not_celebratory",
+      "evidence_anchor_first"
+    ],
+    "user_prompt_inputs": [
+      "dimension_display_name",
+      "dimension_score",
+      "dimension_verdict",
+      "brand_name",
+      "up_to_12_formatted_evidence_items",
+      "optional_perceptual_hints"
+    ],
+    "evidence_line_shape": "[SOURCE_TYPE · DOMAIN · sentiment?] \"quote if present\" → url",
+    "required_output_fields": [
+      "title",
+      "observation",
+      "implication",
+      "typical_decision",
+      "evidence_urls"
+    ],
+    "missing_inputs": [
+      "evidence_confidence",
+      "evidence_freshness",
+      "source_ownership_summary",
+      "entity_ambiguity",
+      "related_surface_status",
+      "technical_appendix_only_flag",
+      "internal_analysis_only_flag",
+      "owned_claim_only_flag",
+      "finding_eligibility",
+      "no_finding_output_path",
+      "optional_typical_decision_flag"
+    ]
+  },
+  "evidence_metadata_map": {
+    "evidence_object_fields": [
+      "dimension",
+      "quote",
+      "url",
+      "source_type",
+      "source_domain",
+      "sentiment",
+      "feature_name",
+      "extra"
+    ],
+    "prompt_exposed_fields": [
+      "quote",
+      "url",
+      "source_type",
+      "source_domain",
+      "sentiment"
+    ],
+    "persisted_finding_fields": [
+      "title",
+      "observation",
+      "implication",
+      "typical_decision",
+      "evidence_urls"
+    ],
+    "metadata_lost_before_or_after_generation": [
+      "feature_name",
+      "confidence",
+      "freshness_days",
+      "technical_or_internal_flag",
+      "source_ownership_summary",
+      "entity_relation",
+      "evidence_eligibility",
+      "appendix_only_status"
+    ]
+  },
+  "finding_failure_taxonomy": [
+    {
+      "id": "forced_strategic_implication",
+      "description": "The prompt requires every finding to state commercial or strategic meaning."
+    },
+    {
+      "id": "mandatory_typical_decision",
+      "description": "The prompt requires decision-space prose for every finding."
+    },
+    {
+      "id": "technical_artifact_promotion",
+      "description": "Technical artifacts can become normal narrative evidence."
+    },
+    {
+      "id": "owned_claim_repetition",
+      "description": "Owned claims are caveated but still repeatedly converted into implications."
+    },
+    {
+      "id": "entity_ambiguity_smoothing",
+      "description": "Mixed entities or related surfaces lack a contract before findings are generated."
+    },
+    {
+      "id": "missing_evidence_url_allowed",
+      "description": "URL validation filters bad URLs but does not reject findings with no URLs."
+    },
+    {
+      "id": "payload_metadata_loss",
+      "description": "Persisted report_narrative cannot reconstruct evidence quality or entity relation."
+    },
+    {
+      "id": "render_suppression_not_generation_fix",
+      "description": "Rendering can hide generic Decision space but cannot correct the upstream finding."
+    }
+  ],
+  "builtwith_trace_table": [
+    {
+      "finding": "Visual analysis metrics",
+      "likely_evidence": "visual_consistency evidence_insights such as local image analysis color groups, whitespace ratio, contrast signal",
+      "why_allowed": "Internal technical observations entered the evidence pool as quotes; the prompt required implication and typical_decision.",
+      "missing_metadata": [
+        "internal_analysis_only",
+        "technical_appendix_only",
+        "evidence_url",
+        "product_relation",
+        "eligibility_gate"
+      ],
+      "recommended_handling": "reject_or_move_to_technical_appendix"
+    },
+    {
+      "finding": "Technical site configuration",
+      "likely_evidence": "robots.txt URL and context readiness signals",
+      "why_allowed": "A URL existed and the prompt asked the model to infer implication and decision space.",
+      "missing_metadata": [
+        "technical_appendix_only",
+        "seo_intent_evidence",
+        "evidence_threshold"
+      ],
+      "recommended_handling": "move_to_technical_appendix_or_heavily_weaken"
+    },
+    {
+      "finding": "Email-first OS for creators",
+      "likely_evidence": "Kit owned website/self-description, sometimes with no finding-level URL",
+      "why_allowed": "Owned self-description is allowed if caveated, but the prompt still requires implication and decision space.",
+      "missing_metadata": [
+        "entity_boundary",
+        "owned_claim_only",
+        "related_surface_status",
+        "finding_level_url_requirement"
+      ],
+      "recommended_handling": "require_entity_review_or_weaken"
+    },
+    {
+      "finding": "Technology intelligence provider",
+      "likely_evidence": "BuiltWith intelligence-provider evidence mixed into a builtwith.kit.com run",
+      "why_allowed": "Contradictory or mixed dimension evidence was grouped and the model lacked entity state.",
+      "missing_metadata": [
+        "entity_relation",
+        "source_ownership_summary",
+        "related_surface_status"
+      ],
+      "recommended_handling": "keep_as_entity_boundary_issue_not_normal_positioning"
+    }
+  ],
+  "root_cause_assessment": {
+    "primary_root_cause": "Evidence eligibility and entity boundary are not defined before finding generation.",
+    "secondary_causes": [
+      "The prompt requires strategic implication for every finding.",
+      "The prompt requires typical_decision for every finding.",
+      "Validation checks shape and URL allowlist but not evidence eligibility.",
+      "Persisted payload drops source and evidence quality metadata.",
+      "Renderer suppression improves visibility but does not fix generation."
+    ],
+    "not_primary_cause": [
+      "model_quality_alone",
+      "renderer_alone",
+      "scoring_alone",
+      "Visual_Signature"
+    ]
+  },
+  "model_upgrade_implications": {
+    "gemini_3_1_may_improve": [
+      "JSON obedience",
+      "instruction following",
+      "caveat wording",
+      "long context handling",
+      "consistency"
+    ],
+    "gemini_3_1_cannot_fix_without_contract_changes": [
+      "mixed entity evidence",
+      "technical artifacts presented as narrative evidence",
+      "mandatory strategic implication",
+      "mandatory decision framing",
+      "missing evidence URLs allowed",
+      "payload metadata loss"
+    ]
+  },
+  "recommended_next_step": {
+    "action": "Specify and implement an offline finding evidence eligibility gate before report finding generation.",
+    "scope": "offline_diagnostic_first",
+    "classes": [
+      "narrative_eligible",
+      "owned_claim_only",
+      "technical_appendix_only",
+      "internal_analysis_only",
+      "off_entity_or_ambiguous",
+      "weak_external_signal",
+      "reject",
+      "requires_human_review"
+    ],
+    "first_fixture": "builtwith.kit.com",
+    "defer": [
+      "broad_prompt_rewrite",
+      "runtime_gate",
+      "new_lab_layer",
+      "payload_format_change"
+    ]
+  },
+  "explicit_non_goals": [
+    "no_prompt_changes",
+    "no_scoring_changes",
+    "no_generation_changes",
+    "no_rendering_changes",
+    "no_payload_format_changes",
+    "no_Visual_Signature_changes",
+    "no_runtime_gate",
+    "no_LLM_calls",
+    "no_new_audits",
+    "no_new_Lab_layers"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "created_at": "2026-05-18T14:20:35.463172+00:00",
+  "executed": true,
+  "requests_executed": 7,
+  "requests_skipped": 4,
+  "trial_pass": true,
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "evidence_urls_valid": true,
+    "blocked_controls_skipped": true,
+    "thin_cases_qualified": true,
+    "parse_failures_unrecovered_zero": true,
+    "delta_non_regressive_vs_v2_1": true
+  },
+  "parse_failures_unrecovered": 0,
+  "baseline_source": "examples/reports/evidence_packet_candidate_integration_dry_path_v2_1/comparison.json",
+  "source_mode": "benchmark",
+  "cost_observation": {
+    "json_repair_retries_attempted": 0,
+    "json_repair_retries_succeeded": 0,
+    "parse_failures_unrecovered": 0,
+    "llm_calls_executed": 7,
+    "model": "gemini-3.1-pro-preview"
+  },
+  "manual_review_required": true,
+  "runtime_effect": false,
+  "prompt_rollout": false
+}

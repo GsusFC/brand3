@@ -1,0 +1,401 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:01:55.456813",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "/feed/all/",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 48,
+    "video_count": 4
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "The Atlantic",
+  "calibration": {
+    "expected_category": "editorial_media",
+    "notes": "Editorial subscription site with classic publication hierarchy."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#000000",
+      "#ffffff",
+      "#faf4eb"
+    ],
+    "confidence": 0.517,
+    "dominant_colors": [
+      "#000000",
+      "#ffffff",
+      "#faf4eb"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#ffffff",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#faf4eb",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#000000"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.7,
+        "count": 6,
+        "labels": [
+          "Skip to content",
+          "The Atlantic",
+          "Popular",
+          "Latest",
+          "Newsletters",
+          "Ideas",
+          "Politics",
+          "Economy",
+          "Global",
+          "National Security"
+        ],
+        "source": "rendered_html",
+        "type": "navigation"
+      },
+      {
+        "confidence": 0.72,
+        "count": 22,
+        "labels": [
+          "Sign Up",
+          "About",
+          "Contact",
+          "Podcasts",
+          "Subscription",
+          "Follow"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 11,
+        "labels": [
+          "Democrats Might Actually Win Iowa",
+          "Subscribe",
+          "Search Now",
+          "Sign Up",
+          "Play Games",
+          "Explore Audio",
+          "About",
+          "Contact",
+          "Podcasts",
+          "Subscription"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 96,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 46,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "navigation",
+      "form",
+      "accordion",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Democrats Might Actually Win Iowa",
+      "Subscribe",
+      "Search Now",
+      "Sign Up",
+      "Play Games",
+      "Explore Audio",
+      "About",
+      "Contact"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.94,
+    "confidence": 0.499,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.609,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.499,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.516
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.643
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.95,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": false,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "multi_column"
+    ],
+    "section_count": 18,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.15,
+    "favicon_detected": true,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 0.418,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.934
+    },
+    "composition": {
+      "color_variance": 0.374,
+      "composition_classification": "dense_grid",
+      "confidence": 0.825,
+      "edge_density": 0.055,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.225
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 290754,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.theatlantic.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-atlantic.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 42,
+      "confidence": 0.78,
+      "dominant_colors": [
+        {
+          "hex": "#606060",
+          "occurrences": 11837,
+          "ratio": 0.5918
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4770,
+          "ratio": 0.2385
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 839,
+          "ratio": 0.042
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 826,
+          "ratio": 0.0413
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 533,
+          "ratio": 0.0267
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 210,
+          "ratio": 0.0105
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 122,
+          "ratio": 0.0061
+        },
+        {
+          "hex": "#600000",
+          "occurrences": 105,
+          "ratio": 0.0053
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.374,
+      "composition_classification": "dense_grid",
+      "confidence": 0.825,
+      "edge_density": 0.055,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.225
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.825,
+        "palette": 0.78,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.848
+    },
+    "viewport_palette": {
+      "color_count": 42,
+      "confidence": 0.78,
+      "dominant_colors": [
+        {
+          "hex": "#606060",
+          "occurrences": 11837,
+          "ratio": 0.5918
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4770,
+          "ratio": 0.2385
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 839,
+          "ratio": 0.042
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 826,
+          "ratio": 0.0413
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 533,
+          "ratio": 0.0267
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 210,
+          "ratio": 0.0105
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 122,
+          "ratio": 0.0061
+        },
+        {
+          "hex": "#600000",
+          "occurrences": 105,
+          "ratio": 0.0053
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.225,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.825,
+        "palette": 0.78,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.848
+    }
+  },
+  "website_url": "https://www.theatlantic.com"
+}

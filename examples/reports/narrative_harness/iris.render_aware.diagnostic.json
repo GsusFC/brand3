@@ -1,0 +1,269 @@
+{
+  "version": 1,
+  "status": "warning",
+  "summary": {
+    "payload_status": "warning",
+    "visible_render_status": "warning",
+    "suppressed_risk_count": 4,
+    "still_visible_risk_count": 7
+  },
+  "payload_metrics": {
+    "findings_count": 14,
+    "findings_without_evidence_urls": 6,
+    "sentence_opening_counts": {
+      "agency vs": 1,
+      "brand identity creation": 2,
+      "brand identity speed": 1,
+      "brand intelligence platform": 1,
+      "design agency positioning": 1,
+      "distinctive product development": 1,
+      "efficiency and content": 1,
+      "experience and reach": 1,
+      "focus on speed": 1,
+      "iris design is": 1,
+      "multiple domains for": 1,
+      "on irisdesign": 1,
+      "open source tooling": 1,
+      "organizational growth and": 1,
+      "product expansion and": 1,
+      "teams in this": 14,
+      "the brand appears": 3,
+      "the brand describes": 5,
+      "the brand encourages": 1,
+      "the brand highlights": 1,
+      "the brand is": 1,
+      "the brand's own": 1,
+      "the brand's self": 2,
+      "the existence of": 1,
+      "these claims suggest": 1,
+      "this indicates a": 1,
+      "this language suggests": 1,
+      "this pairing of": 1,
+      "this positioning may": 2,
+      "this positioning suggests": 2,
+      "this self characterization": 1,
+      "this suggests a": 4
+    },
+    "generic_phrase_counts": {
+      "compelling": 1,
+      "teams in this position typically": 14
+    },
+    "unsupported_prescription_counts": {
+      "the brand should": 2
+    },
+    "safe_attribution_phrase_counts": {
+      "the brand describes itself": 4,
+      "the brand claims": 1,
+      "based only on self-description": 10
+    },
+    "safe_attribution_total": 15,
+    "observation_repetition_family_counts": {
+      "external_corroboration_caveat_repetition": {
+        "total": 20,
+        "phrases": {
+          "based only on self-description": 10,
+          "no external corroboration": 10
+        }
+      },
+      "fallback_evidence_opening_repetition": {
+        "total": 10,
+        "phrases": {
+          "the evidence pool": 10
+        }
+      },
+      "safe_attribution_repetition": {
+        "total": 15,
+        "phrases": {
+          "based only on self-description": 10,
+          "the brand claims": 1,
+          "the brand describes itself": 4
+        }
+      }
+    },
+    "warning_count": 6,
+    "error_count": 0
+  },
+  "visible_render_metrics": {
+    "visible_text_chars": 15293,
+    "visible_link_count": 51,
+    "visible_evidence_chip_link_count": 13,
+    "visible_decision_space_count": 0,
+    "visible_teams_in_this_position_typically_count": 0,
+    "visible_the_brand_count": 21,
+    "visible_no_external_corroboration_count": 10,
+    "sentence_opening_counts": {
+      "iris design is": 1,
+      "iris scores 76": 1,
+      "on irisdesign": 1,
+      "the brand appears": 3,
+      "the brand describes": 5,
+      "the brand encourages": 1,
+      "the brand highlights": 1,
+      "the brand is": 1,
+      "the brand's own": 1,
+      "the brand's self": 2
+    },
+    "repeated_sentence_opening_counts": {
+      "the brand appears": 3,
+      "the brand describes": 5
+    },
+    "generic_phrase_counts": {},
+    "safe_attribution_phrase_counts": {
+      "the brand describes itself": 4,
+      "the brand claims": 1,
+      "based only on self-description": 10
+    },
+    "safe_attribution_total": 15,
+    "observation_repetition_family_counts": {
+      "external_corroboration_caveat_repetition": {
+        "total": 20,
+        "phrases": {
+          "based only on self-description": 10,
+          "no external corroboration": 10
+        }
+      },
+      "fallback_evidence_opening_repetition": {
+        "total": 10,
+        "phrases": {
+          "the evidence pool": 10
+        }
+      },
+      "safe_attribution_repetition": {
+        "total": 15,
+        "phrases": {
+          "based only on self-description": 10,
+          "the brand claims": 1,
+          "the brand describes itself": 4
+        }
+      }
+    },
+    "warning_signals": {
+      "repeated_sentence_openings": {
+        "the brand describes": 5,
+        "the brand appears": 3
+      },
+      "phrase_matches": [
+        {
+          "path": "visible_render",
+          "excerpt": "brand-audit :: https://irisdesign.dev · night Reports Brand history Light Dark ❯ brand-audit --target https://irisdesign.dev --profile base --engine brand3 v0....",
+          "phrase": "the brand describes itself",
+          "count": 4
+        },
+        {
+          "path": "visible_render",
+          "excerpt": "brand-audit :: https://irisdesign.dev · night Reports Brand history Light Dark ❯ brand-audit --target https://irisdesign.dev --profile base --engine brand3 v0....",
+          "phrase": "the brand claims",
+          "count": 1
+        },
+        {
+          "path": "visible_render",
+          "excerpt": "brand-audit :: https://irisdesign.dev · night Reports Brand history Light Dark ❯ brand-audit --target https://irisdesign.dev --profile base --engine brand3 v0....",
+          "phrase": "based only on self-description",
+          "count": 10
+        }
+      ]
+    }
+  },
+  "suppressed_by_rendering": [
+    {
+      "risk": "generic_strategic_filler",
+      "phrase": "compelling",
+      "payload_count": 1,
+      "visible_count": 0,
+      "suppressed_count": 1
+    },
+    {
+      "risk": "generic_strategic_filler",
+      "phrase": "teams in this position typically",
+      "payload_count": 14,
+      "visible_count": 0,
+      "suppressed_count": 14
+    },
+    {
+      "risk": "repeated_sentence_opening",
+      "opening": "teams in this",
+      "payload_count": 14,
+      "visible_count": 0,
+      "suppressed_count": 14
+    },
+    {
+      "risk": "repeated_sentence_opening",
+      "opening": "this suggests a",
+      "payload_count": 4,
+      "visible_count": 0,
+      "suppressed_count": 4
+    }
+  ],
+  "still_visible_risks": [
+    {
+      "risk": "visible_safe_attribution_overuse",
+      "visible_count": 15,
+      "phrase_counts": {
+        "the brand describes itself": 4,
+        "the brand claims": 1,
+        "based only on self-description": 10
+      }
+    },
+    {
+      "risk": "visible_repeated_sentence_opening",
+      "opening": "the brand appears",
+      "visible_count": 3
+    },
+    {
+      "risk": "visible_repeated_sentence_opening",
+      "opening": "the brand describes",
+      "visible_count": 5
+    },
+    {
+      "risk": "visible_external_corroboration_repetition",
+      "phrase": "no external corroboration",
+      "visible_count": 10
+    },
+    {
+      "risk": "visible_observation_repetition_family",
+      "family": "external_corroboration_caveat_repetition",
+      "visible_count": 20,
+      "phrase_counts": {
+        "based only on self-description": 10,
+        "no external corroboration": 10
+      }
+    },
+    {
+      "risk": "visible_observation_repetition_family",
+      "family": "fallback_evidence_opening_repetition",
+      "visible_count": 10,
+      "phrase_counts": {
+        "the evidence pool": 10
+      }
+    },
+    {
+      "risk": "visible_observation_repetition_family",
+      "family": "safe_attribution_repetition",
+      "visible_count": 15,
+      "phrase_counts": {
+        "based only on self-description": 10,
+        "the brand claims": 1,
+        "the brand describes itself": 4
+      }
+    }
+  ],
+  "payload_diagnostic_summary": {
+    "total_checks": 8,
+    "passed": 2,
+    "warnings": 6,
+    "errors": 0
+  },
+  "input_metadata": {
+    "payload_version": 1,
+    "payload_source": "report_narrative",
+    "run_id": 77,
+    "brand": null,
+    "has_base_dossier": true,
+    "has_synthesis": true,
+    "has_tension": true,
+    "dimensions_count": 5,
+    "findings_count": 14,
+    "rendered_as_html": true,
+    "visible_text_chars": 15293
+  }
+}

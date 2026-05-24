@@ -66,7 +66,9 @@ def _run_llm_http_call(
             msg = data["choices"][0]["message"]
             return "ok", msg.get("content") or msg.get("reasoning") or ""
 
-    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    import sys
+    method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    ctx = mp.get_context(method)
     output_queue = ctx.Queue(maxsize=1)
     process = ctx.Process(
         target=_llm_http_worker,

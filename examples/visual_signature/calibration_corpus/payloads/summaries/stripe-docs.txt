@@ -1,0 +1,40 @@
+Expected category: developer_first
+Notes: Developer documentation with dense navigation and code-first hierarchy.
+
+== Stripe Docs ==
+URL: https://docs.stripe.com
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.52, consistency_coverage=0.67]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.55
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.67
+
+Visual summaries:
+- palette preview: #555555[###] #f5f5f5[###] #85d996[###] #ffffff[###] #b0b0b0[###] #0a2540[###] #000000[###] #e4ab80[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=0; density=sparse; patterns=flex,multi_column
+- components: button=20, cta=20, form=6, card=6, accordion=16, tabs=38, modal=4, pricing=2
+- consistency: overall=0.47; color=0.48; type=0.20; component=0.75; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202040[###] #6060e0[###] #e0e0e0[###] #404060[###] #608080[###] #e0e0ff[###] #6080e0[###]
+- viewport palette: #ffffff[###] #202040[###] #6060e0[###] #e0e0e0[###] #404060[###] #608080[###] #e0e0ff[###] #6080e0[###]
+- composition: density=sparse; whitespace=78%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=78%; classification=sparse_single_focus
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

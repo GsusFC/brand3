@@ -1,0 +1,41 @@
+Expected category: developer_first
+Notes: Developer infrastructure site with sparse technical communication.
+
+== Fly.io ==
+URL: https://fly.io
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.44, consistency_coverage=0.47]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.46
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.47
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #001aff[###] #6ee5c2[###] #ffc83a[###] #ff008a[###] #6100ff[###] #fd4f00[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=18; density=sparse; patterns=grid,flex,multi_column
+- components: cta=10
+- consistency: overall=0.50; color=0.68; type=0.20; component=0.62; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0ff[###] #ffe0e0[###] #e0ffff[###] #402080[###] #ffe0ff[###] #6060e0[###] #ffc0c0[###]
+- viewport palette: #ffffff[###] #e0e0ff[###] #ffe0e0[###] #e0ffff[###] #402080[###] #ffe0ff[###] #6060e0[###] #ffc0c0[###]
+- composition: density=balanced; whitespace=57%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=57%; classification=balanced_blocks
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

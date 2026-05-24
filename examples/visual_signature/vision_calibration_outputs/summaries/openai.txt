@@ -1,0 +1,40 @@
+Expected category: AI-native
+Notes: AI-native company with restrained editorial/product visual behavior.
+
+== OpenAI ==
+URL: https://openai.com
+Interpretation status: not_interpretable
+Extraction confidence: 0.03 (low) [acquisition=0.10, html_coverage=0.00, signal_coverage=0.01, consistency_coverage=0.02]
+
+Signal coverage: 29%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: missing, confidence=0.00
+- components: missing, confidence=0.00
+- assets: ok, confidence=0.04
+- consistency: ok, confidence=0.02
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=False; hero=False; sections=0; density=unknown; patterns=unknown
+- components: none
+- consistency: overall=0.20; color=0.15; type=0.20; component=0.25; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #8080a0[###] #ff8020[###] #a0a0c0[###] #c0c0c0[###] #404040[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #8080a0[###] #ff8020[###] #a0a0c0[###] #c0c0c0[###] #404040[###]
+- composition: density=sparse; whitespace=100%; classification=blank
+- viewport composition: density=sparse; whitespace=100%; classification=blank
+- vision confidence: 0.74 (medium)
+- viewport confidence: 0.74 (medium)
+
+Acquisition failure:
+- acquisition error: HTTPSConnectionPool(host='api.firecrawl.dev', port=443): Max retries exceeded with url: /v2/scrape (Caused by NameResolutionError("HTTPSConnection(host='api.firecrawl.dev', port=443): Failed to resolve 'api.firecrawl.dev' ([Errno 8] nodename nor servname provided, or not known)"))
+- extraction limitation: acquisition_errors_present
+- extraction limitation: screenshot_not_available
+- extraction limitation: html_coverage_limited
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

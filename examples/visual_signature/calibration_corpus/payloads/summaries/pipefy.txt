@@ -1,0 +1,44 @@
+Expected category: saas
+Notes: Mid-market SaaS with template and workflow messaging patterns.
+
+== Pipefy ==
+URL: https://www.pipefy.com
+Interpretation status: interpretable
+Extraction confidence: 0.60 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.45, consistency_coverage=0.39]
+
+Signal coverage: 71%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.35
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.39
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=38; density=sparse; patterns=grid,flex
+- components: cta=7, accordion=52, tabs=134, modal=2
+- consistency: overall=0.35; color=0.15; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #000000[###] #e0e0ff[###] #e0e0e0[###] #ffe0ff[###] #0040a0[###] #e0ffff[###] #0060c0[###]
+- viewport palette: #ffffff[###] #000000[###] #e0e0ff[###] #e0e0e0[###] #ffe0ff[###] #0040a0[###] #e0ffff[###] #0060c0[###]
+- composition: density=sparse; whitespace=78%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=78%; classification=sparse_single_focus
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- consistency: weak confidence (0.39)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

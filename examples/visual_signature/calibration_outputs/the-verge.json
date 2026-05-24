@@ -1,0 +1,363 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-08T12:21:16.946219",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.theverge.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 12,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 426,
+    "video_count": 42
+  },
+  "brand_name": "The Verge",
+  "calibration": {
+    "expected_category": "editorial/media",
+    "notes": "High-density media layout with strong typography and recurring editorial modules."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#3897f0",
+      "#ff0033"
+    ],
+    "background_candidates": [
+      "#f4f4f4",
+      "#ffffff",
+      "#000000",
+      "#eaeaea",
+      "#2e3644"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#f4f4f4",
+      "#ffffff",
+      "#000000",
+      "#3897f0",
+      "#dbdbdb",
+      "#eaeaea",
+      "#ff0033",
+      "#656565"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#f4f4f4",
+        "occurrences": 78,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 54,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 20,
+        "role": "surface",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#3897f0",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#dbdbdb",
+        "occurrences": 6,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#eaeaea",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff0033",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#656565",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#2e3644",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#c1c1c1",
+        "occurrences": 2,
+        "role": "border",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#000000",
+      "#3897f0",
+      "#656565",
+      "#2e3644"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 214,
+        "labels": [
+          "Hamburger Navigation Button",
+          "close Close",
+          "Top Stories",
+          "Latest",
+          "Following",
+          "Link",
+          "See All Latest",
+          "Previous",
+          "Next",
+          "Tap to unmute"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 58,
+        "labels": [
+          "Skip to main content",
+          "Subscribe",
+          "Top Stories",
+          "Latest",
+          "Following",
+          "View profile",
+          "capcomasia 3,775 posts \u00b7 51K followers",
+          "View more on Instagram",
+          "See All Latest",
+          "bbcsussex 2,334 posts \u00b7 29K followers"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 26,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 256,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 32,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 44,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Skip to main content",
+      "Subscribe",
+      "Top Stories",
+      "Latest",
+      "Following",
+      "View profile",
+      "capcomasia 3,775 posts \u00b7 51K followers",
+      "View more on Instagram"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.75,
+    "confidence": 0.77,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.686,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.77,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.722
+    },
+    "level": "high",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.756
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 50,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "thumbnail-image",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://yt3.ggpht.com/FYvV_uQeuyLaEyuyGAMas4vufGnRurSI6MGdhfKb2ug4ip7kuu9Xlv4n43dU41Yd3iXlGzJRGw=s68-c-k-c0x00ffffff-no-rj"
+      },
+      {
+        "alt": "Inside the return of Xbox",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/05/xboxlogo.jpg?quality=90&amp;strip=all&amp;crop=21.875%2C0%2C56.25%2C100&amp;w=2400"
+      },
+      {
+        "alt": "Inside the return of Xbox",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/05/xboxlogo.jpg?quality=90&amp;strip=all&amp;crop=7.8125%2C0%2C84.375%2C100&amp;w=2400"
+      },
+      {
+        "alt": "With Saros, Housemarque makes a case for doing next-gen games differently",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/SAROS_KEYART_HORIZONTAL_nologo.jpg?quality=90&amp;strip=all&amp;crop=7.8125%2C0%2C84.375%2C100&amp;w=2400"
+      },
+      {
+        "alt": "With Saros, Housemarque makes a case for doing next-gen games differently",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://platform.theverge.com/wp-content/uploads/sites/2/2026/04/SAROS_KEYART_HORIZONTAL_nologo.jpg?quality=90&amp;strip=all&amp;crop=21.875%2C0%2C56.25%2C100&amp;w=2400"
+      },
+      {
+        "alt": "The Verge",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.cookielaw.org/logos/451d8686-ff0b-4065-9afa-6289c6cb87c3/8ab3bfb1-b2e2-46dd-b96a-c25a457b231f/9812319a-c53f-4a49-8a96-f6f71fb51088/verge-ot-logo.png"
+      },
+      {
+        "alt": "Powered by Onetrust",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.cookielaw.org/logos/static/powered_by_logo.svg"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": true,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Arial",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0
+    ],
+    "weight_range": {
+      "max": 550,
+      "min": 100
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "website_url": "https://www.theverge.com"
+}

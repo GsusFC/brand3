@@ -1,0 +1,300 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:27:13.878409",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.edx.org",
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.24,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "edX",
+  "calibration": {
+    "expected_category": "nonprofit_education",
+    "notes": "Education platform with institutional trust and course discovery."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.406,
+    "dominant_colors": [
+      "#c1c1c1"
+    ],
+    "palette": [
+      {
+        "confidence": 0.64,
+        "hex": "#c1c1c1",
+        "occurrences": 2,
+        "role": "border",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.68,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      }
+    ],
+    "confidence": 0.46,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": []
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.78,
+    "component_consistency": 0.44,
+    "confidence": 0.327,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.434,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.327,
+      "html_coverage": 0.72,
+      "signal_coverage": 0.293
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.494
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.209,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.848,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.085,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.338
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 356132,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.edx.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/edx.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 156,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#000000",
+          "occurrences": 7601,
+          "ratio": 0.38
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 6701,
+          "ratio": 0.3351
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 934,
+          "ratio": 0.0467
+        },
+        {
+          "hex": "#00c0e0",
+          "occurrences": 574,
+          "ratio": 0.0287
+        },
+        {
+          "hex": "#200020",
+          "occurrences": 427,
+          "ratio": 0.0214
+        },
+        {
+          "hex": "#400000",
+          "occurrences": 302,
+          "ratio": 0.0151
+        },
+        {
+          "hex": "#402000",
+          "occurrences": 289,
+          "ratio": 0.0144
+        },
+        {
+          "hex": "#602000",
+          "occurrences": 270,
+          "ratio": 0.0135
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.848,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.085,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.338
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 156,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#000000",
+          "occurrences": 7601,
+          "ratio": 0.38
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 6701,
+          "ratio": 0.3351
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 934,
+          "ratio": 0.0467
+        },
+        {
+          "hex": "#00c0e0",
+          "occurrences": 574,
+          "ratio": 0.0287
+        },
+        {
+          "hex": "#200020",
+          "occurrences": 427,
+          "ratio": 0.0214
+        },
+        {
+          "hex": "#400000",
+          "occurrences": 302,
+          "ratio": 0.0151
+        },
+        {
+          "hex": "#402000",
+          "occurrences": 289,
+          "ratio": 0.0144
+        },
+        {
+          "hex": "#602000",
+          "occurrences": 270,
+          "ratio": 0.0135
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.338,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.edx.org"
+}

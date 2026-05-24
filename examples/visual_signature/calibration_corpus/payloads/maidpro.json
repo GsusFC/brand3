@@ -1,0 +1,515 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:26:42.918999",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.maidpro.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 16,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "MaidPro",
+  "calibration": {
+    "expected_category": "local_service_small_business",
+    "notes": "Local service/franchise site useful for lower-design-maturity baseline."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#110011",
+      "#110022",
+      "#110055",
+      "#220066",
+      "#113366",
+      "#440099"
+    ],
+    "background_candidates": [
+      "#110011",
+      "#222222",
+      "#110022",
+      "#110055",
+      "#220066",
+      "#113366"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#110011",
+      "#222222",
+      "#110022",
+      "#110055",
+      "#220066",
+      "#113366",
+      "#440099",
+      "#111100"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#110011",
+        "occurrences": 60,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#222222",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#110022",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#110055",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#220066",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#113366",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#440099",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#111100",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#111155",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#112200",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#660000",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#111144",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#110099",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#110011",
+      "#222222",
+      "#110022",
+      "#110055",
+      "#220066",
+      "#113366"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 42,
+        "labels": [
+          "Go!",
+          "Previous",
+          "Next",
+          "Get a Free Estimate",
+          "Very good experience with MaidPro! Definitely 5 Stars. Very through, efficient a",
+          "Kimberly, Mark, and Anna were super friendly and professional! The house looks a",
+          "Living Room",
+          "Kitchen",
+          "Bedrooms",
+          "Bathrooms"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 12,
+        "labels": [
+          "Get a Free Estimate",
+          "Find Your MaidPro",
+          "FAQs",
+          "Employment",
+          "Gift Cards",
+          "Blog",
+          "Press",
+          "Contact",
+          "Service Feedback",
+          "Refer Friends, Get $50!"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 20,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      }
+    ],
+    "confidence": 0.73,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": [
+      "Get a Free Estimate",
+      "Find Your MaidPro",
+      "FAQs",
+      "Employment",
+      "Gift Cards",
+      "Blog",
+      "Press",
+      "Contact"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.66,
+    "confidence": 0.542,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.509,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.542,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.545
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.66
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 78,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Icon / Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://octanecdn.com/maidprocom/maidprocom_168757083.svg"
+      },
+      {
+        "alt": "Icon / Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://octanecdn.com/maidprocom/maidprocom_695245597.svg"
+      },
+      {
+        "alt": "Icon / Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://octanecdn.com/maidprocom/maidprocom_242709458.svg"
+      },
+      {
+        "alt": "Franchise Business Review Top Maid Service award badge in blue and white with red text",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://transform.octanecdn.com/fitLogo/450x450/https://octanecdn.com/maidprocom/maidprocom_805621509.png"
+      },
+      {
+        "alt": "Entrepreneur Hall of Fame blue and white badge with five stars and rounded edges design.",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://transform.octanecdn.com/fitLogo/450x450/https://octanecdn.com/maidprocom/maidprocom_540742385.png"
+      },
+      {
+        "alt": "Entrepreneur badge with five stars and text Top Multi-Unit on blue shield background",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://transform.octanecdn.com/fitLogo/450x450/https://octanecdn.com/maidprocom/maidprocom_300502654.png"
+      },
+      {
+        "alt": "Forbes badge ranked top ten best franchises to buy with blue and white design and bold text.",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://transform.octanecdn.com/fitLogo/450x450/https://octanecdn.com/maidprocom/maidprocom_630883042.png"
+      },
+      {
+        "alt": "Boston Business Journal blue badge with five stars and text Best Places to Work",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://transform.octanecdn.com/fitLogo/450x450/https://octanecdn.com/maidprocom/maidprocom_926670264.png"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.891
+    },
+    "composition": {
+      "color_variance": 0.017,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.61,
+      "edge_density": 0.011,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.989
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 38861,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.maidpro.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/maidpro.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 16,
+      "confidence": 0.637,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19693,
+          "ratio": 0.9847
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 131,
+          "ratio": 0.0066
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 52,
+          "ratio": 0.0026
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 30,
+          "ratio": 0.0015
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 28,
+          "ratio": 0.0014
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 22,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 22,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#ff8020",
+          "occurrences": 6,
+          "ratio": 0.0003
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.017,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.61,
+      "edge_density": 0.011,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.989
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.61,
+        "palette": 0.637,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.747
+    },
+    "viewport_palette": {
+      "color_count": 16,
+      "confidence": 0.637,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19693,
+          "ratio": 0.9847
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 131,
+          "ratio": 0.0066
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 52,
+          "ratio": 0.0026
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 30,
+          "ratio": 0.0015
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 28,
+          "ratio": 0.0014
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 22,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 22,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#ff8020",
+          "occurrences": 6,
+          "ratio": 0.0003
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.989,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.61,
+        "palette": 0.637,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.747
+    }
+  },
+  "website_url": "https://www.maidpro.com"
+}

@@ -1,0 +1,599 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:56:36.295496",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.lindy.ai",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 2,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 240,
+    "video_count": 20
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Lindy",
+  "calibration": {
+    "expected_category": "ai_native",
+    "notes": "Mid-market AI agent product added for less famous AI-native calibration."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#f5ad18",
+      "#34a853",
+      "#ecb22e",
+      "#9c2bad",
+      "#ea4335",
+      "#4285f4"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#9c2bad",
+      "#fbffff",
+      "#000000",
+      "#fffffe",
+      "#d9eef4"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#f1e6c8",
+      "#ffffff",
+      "#f5ad18",
+      "#dfdfdf",
+      "#756d59",
+      "#34a853",
+      "#ecb22e",
+      "#9c2bad"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#f1e6c8",
+        "occurrences": 84,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 74,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#f5ad18",
+        "occurrences": 10,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#dfdfdf",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#756d59",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#34a853",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#ecb22e",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#9c2bad",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#fbffff",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#000000",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ea4335",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#4285f4",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#2db87d",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#35c6ef",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#e11e5b",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#3c62b5",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#fffffe",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff492c",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#d9eef4",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#70b0ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#94c9fe",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#c5221f",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fbbc04",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#355159",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#f5ad18",
+      "#756d59",
+      "#9c2bad",
+      "#000000",
+      "#e11e5b",
+      "#3c62b5"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 30,
+        "labels": [
+          "Try for free",
+          "Tap to unmute",
+          "Watch on Watch: See Lindy in action HOW&nbsp;IT&nbsp;WORKS Get started in second",
+          "See how we protect your data",
+          "Button Text"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Try for free",
+          "Tap to unmute",
+          "Watch on",
+          "See all integrations",
+          "See how we protect your data",
+          "Button Text"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 28,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Try for free",
+      "Tap to unmute",
+      "Watch on",
+      "See all integrations",
+      "See how we protect your data",
+      "Button Text"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.7,
+    "confidence": 0.62,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.459,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.62,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.622
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.698
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 22,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69cbedb21d123fc1f6aef887_gmail-icon.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69c68ffd9ec705529eeb2ad5_google-cal-icon.avif"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69cbedb291a666ddbfa4fd4d_outlook-icon.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69c68ffdb28daeff6a481aee_IMessage_logo%201.avif"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69c68ffda43943bf13132f82_slack-icon.avif"
+      },
+      {
+        "alt": "shopify logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69f241a8b2e088d6b720f2b7_AppLovin_Full%20Logo_Black_RGB%2014.svg"
+      },
+      {
+        "alt": "apple logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69f241a8635a1cb2cc99f9ae_AppLovin_Full%20Logo_Black_RGB%2010.svg"
+      },
+      {
+        "alt": "adobe logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/63e15df811f9df22b231e58f/69f241a88b642aae9f9709d1_AppLovin_Full%20Logo_Black_RGB%2020.svg"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.35,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {
+      "max": 100,
+      "min": 100
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.232,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.739,
+      "edge_density": 0.049,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.75
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 325557,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.lindy.ai",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/lindy.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 95,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14869,
+          "ratio": 0.7435
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1194,
+          "ratio": 0.0597
+        },
+        {
+          "hex": "#c08040",
+          "occurrences": 619,
+          "ratio": 0.0309
+        },
+        {
+          "hex": "#a06020",
+          "occurrences": 568,
+          "ratio": 0.0284
+        },
+        {
+          "hex": "#804000",
+          "occurrences": 313,
+          "ratio": 0.0157
+        },
+        {
+          "hex": "#804020",
+          "occurrences": 248,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#00a0e0",
+          "occurrences": 226,
+          "ratio": 0.0113
+        },
+        {
+          "hex": "#e0a060",
+          "occurrences": 201,
+          "ratio": 0.01
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.232,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.739,
+      "edge_density": 0.049,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.75
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.739,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.852
+    },
+    "viewport_palette": {
+      "color_count": 95,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14869,
+          "ratio": 0.7435
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1194,
+          "ratio": 0.0597
+        },
+        {
+          "hex": "#c08040",
+          "occurrences": 619,
+          "ratio": 0.0309
+        },
+        {
+          "hex": "#a06020",
+          "occurrences": 568,
+          "ratio": 0.0284
+        },
+        {
+          "hex": "#804000",
+          "occurrences": 313,
+          "ratio": 0.0157
+        },
+        {
+          "hex": "#804020",
+          "occurrences": 248,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#00a0e0",
+          "occurrences": 226,
+          "ratio": 0.0113
+        },
+        {
+          "hex": "#e0a060",
+          "occurrences": 201,
+          "ratio": 0.01
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.75,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.739,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.852
+    }
+  },
+  "website_url": "https://www.lindy.ai"
+}

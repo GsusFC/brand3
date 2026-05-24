@@ -1,0 +1,42 @@
+Expected category: ai_native
+Notes: AI company with editorial and safety-led visual positioning.
+
+== Anthropic ==
+URL: https://www.anthropic.com
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.46, consistency_coverage=0.45]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.52
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.95
+- components: ok, confidence=0.73
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.45
+
+Visual summaries:
+- palette preview: #181818[###] #000000[###] #f9f9f7[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=4; density=balanced; patterns=grid,multi_column
+- components: button=10, cta=6, accordion=2
+- consistency: overall=0.54; color=0.78; type=0.20; component=0.66; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffe0e0[###] #202020[###] #404040[###] #ffffff[###] #202040[###] #606060[###] #808080[###] #e0e0e0[###]
+- viewport palette: #ffe0e0[###] #202020[###] #404040[###] #ffffff[###] #202040[###] #606060[###] #808080[###] #e0e0e0[###]
+- composition: density=dense; whitespace=1%; classification=dense_grid
+- viewport composition: density=dense; whitespace=1%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.45)
+- extraction limitation: screenshot_not_available
+- extraction limitation: consistency_inference_limited

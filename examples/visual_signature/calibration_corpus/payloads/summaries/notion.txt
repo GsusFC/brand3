@@ -1,0 +1,39 @@
+Expected category: template_like_saas
+Notes: Common modular SaaS homepage structure with broad product modules.
+
+== Notion ==
+URL: https://www.notion.com
+Interpretation status: interpretable
+Extraction confidence: 0.75 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.70, consistency_coverage=0.77]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.77
+
+Visual summaries:
+- palette preview: #2537b1[###] #097fe8[###] #ffb110[###] #f64932[###] #ff8a33[###] #ad6ded[###] #2a9d99[###] #ff83dd[###]
+- typography: ui-sans-serif, -apple-system, BlinkMacSystemFont, &quot
+- layout: header=False; nav=False; hero=True; sections=14; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=30, cta=13, form=28, card=30, accordion=2, tabs=20, pricing=4
+- consistency: overall=0.64; color=0.68; type=0.65; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #000040[###] #202040[###] #002040[###] #e0e0e0[###] #202060[###] #204060[###] #404060[###]
+- viewport palette: #ffffff[###] #000040[###] #202040[###] #002040[###] #e0e0e0[###] #202060[###] #204060[###] #404060[###]
+- composition: density=dense; whitespace=35%; classification=dense_grid
+- viewport composition: density=dense; whitespace=35%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

@@ -1,0 +1,40 @@
+Expected category: local_service_small_business
+Notes: Local-origin consumer brand with colorful but practical service/retail system.
+
+== Van Leeuwen Ice Cream ==
+URL: https://vanleeuwenicecream.com
+Interpretation status: interpretable
+Extraction confidence: 0.63 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.47, consistency_coverage=0.52]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.73
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.52
+
+Visual summaries:
+- palette preview: #ffefc5[###] #f9e0ec[###] #fff7ea[###] #a6c7bf[###] #ecd5e0[###] #e4bf93[###] #f9c0d9[###] #b3c8e9[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=26; density=sparse; patterns=grid,multi_column
+- components: cta=6, card=2, tabs=2
+- consistency: overall=0.46; color=0.68; type=0.20; component=0.66; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #e0c0a0[###] #a02080[###] #ffffe0[###] #e0e0e0[###] #000000[###] #e0c0ff[###] #e0a0e0[###] #ffe0e0[###]
+- viewport palette: #e0c0a0[###] #a02080[###] #ffffe0[###] #e0e0e0[###] #000000[###] #e0c0ff[###] #e0a0e0[###] #ffe0e0[###]
+- composition: density=dense; whitespace=0%; classification=dense_grid
+- viewport composition: density=dense; whitespace=0%; classification=dense_grid
+- vision confidence: 0.86 (high)
+- viewport confidence: 0.86 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.24)
+- extraction limitation: screenshot_not_available

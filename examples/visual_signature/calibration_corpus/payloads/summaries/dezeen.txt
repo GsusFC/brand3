@@ -1,0 +1,44 @@
+Expected category: editorial_media
+Notes: Design publication with strong grid and image-led behavior.
+
+== Dezeen ==
+URL: https://www.dezeen.com
+Interpretation status: interpretable
+Extraction confidence: 0.50 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.23, consistency_coverage=0.20]
+
+Signal coverage: 57%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.52
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.20
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=False; hero=False; sections=0; density=dense; patterns=multi_column,sticky_nav
+- components: cta=12, card=50
+- consistency: overall=0.29; color=0.15; type=0.20; component=0.64; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202020[###] #606060[###] #ffffff[###] #000000[###] #000020[###] #2060e0[###] #406060[###] #200000[###]
+- viewport palette: #202020[###] #606060[###] #ffffff[###] #000000[###] #000020[###] #2060e0[###] #406060[###] #200000[###]
+- composition: density=dense; whitespace=15%; classification=dense_grid
+- viewport composition: density=dense; whitespace=15%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.20)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

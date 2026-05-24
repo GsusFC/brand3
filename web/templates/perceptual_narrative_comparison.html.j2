@@ -1,0 +1,147 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.title }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">brand3_lab</span>
+    <span class="tag">// aggregate index · per-brand review lives in cases</span>
+  </div>
+
+  <h1 class="page-title">{{ model.title }}</h1>
+  <p class="prose dim intro-copy">{{ model.intro }}</p>
+
+  <div class="guardrail-banner">
+    <strong>Aggregate overview only.</strong>
+    <span class="dim">Open each Brand Case for the full baseline/perceptual comparison, reviewer decision, notes, and local draft export. Nothing here persists reviewer choices.</span>
+  </div>
+
+  <div class="badge-line">
+    {% for guardrail in model.guardrails %}
+    <span class="badge">{{ guardrail }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Compared Brand Cases</span>
+    <span class="tag">// {{ model.pair_count }} case-level reviews</span>
+  </div>
+  <div class="lab-index-list">
+    {% for case in model.case_links %}
+    <article class="lab-index-row">
+      <div>
+        <h2>{{ case.brand }}</h2>
+        <div class="lab-index-meta">
+          <span class="inline-kv"><span class="k">brand3_confidence</span>=<span class="v">{{ case.brand3_confidence|replace('_', ' ') }}</span></span>
+          <span class="inline-kv"><span class="k">perceptual_gains</span>=<span class="v">{{ case.gain_count }}</span></span>
+          <span class="inline-kv"><span class="k">overreach_risks</span>=<span class="v">{{ case.risk_count }}</span></span>
+        </div>
+      </div>
+      <a class="source-link" href="{{ case.href }}">open case review</a>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Aggregate Assessment</span>
+    <span class="tag">// experiment-level context</span>
+  </div>
+  <div class="lab-detail-block">
+    <div class="kv artifact-kv">
+      {% for key, value in model.aggregate.items() %}
+      <span class="k">{{ key }}</span>    <span class="v">{{ value }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Recommendation</span>
+    <span class="tag">// before rollout</span>
+  </div>
+  <div class="lab-detail-block">
+    <div class="kv artifact-kv">
+      {% for key, value in model.recommendation.items() %}
+      <span class="k">{{ key }}</span>    <span class="v">{{ value }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Deployment Context</span>
+    <span class="tag">// from stress test and overreach taxonomy</span>
+  </div>
+
+  <div class="deployment-grid">
+    <article class="deployment-panel">
+      <h2>Safe deployment zones</h2>
+      <ul>
+        {% for item in model.safe_deployment_zones %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    <article class="deployment-panel risk-box">
+      <h2>Unsafe deployment zones</h2>
+      <ul>
+        {% for item in model.unsafe_deployment_zones %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Overreach Taxonomy</span>
+    <span class="tag">// warning signs</span>
+  </div>
+
+  <div class="failure-mode-grid">
+    {% for mode in model.failure_modes %}
+    <details class="failure-mode-card">
+      <summary>
+        <span>{{ mode.name }}</span>
+        <span class="badge">{{ mode.id }}</span>
+      </summary>
+      <ul>
+        {% for sign in mode.warning_signs %}
+        <li>{{ sign }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">source_artifacts</span>
+    <span class="tag">// static inputs</span>
+  </div>
+  <div class="kv artifact-kv">
+    {% for path in model.source_paths %}
+    <span class="k">source</span>    <span class="v mono-token">{{ path }}</span>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

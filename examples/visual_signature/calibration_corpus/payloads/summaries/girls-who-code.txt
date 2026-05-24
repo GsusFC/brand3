@@ -1,0 +1,39 @@
+Expected category: nonprofit_education
+Notes: Mission-led education nonprofit with editorial and donation flows.
+
+== Girls Who Code ==
+URL: https://girlswhocode.com
+Interpretation status: interpretable
+Extraction confidence: 0.66 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.54, consistency_coverage=0.57]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.68
+- typography: missing, confidence=0.35
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.57
+
+Visual summaries:
+- palette preview: #0d9c90[###] #43d6b9[###] #0d38d3[###] #ffffff[###] #d7f9f4[###] #e5f8ff[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=0; density=sparse; patterns=grid
+- components: button=18, cta=5, form=8, card=2, pricing=42
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #e0ffff[###] #006060[###] #60c0a0[###] #ffc080[###] #00a080[###] #ffe080[###] #a0a080[###] #202020[###]
+- viewport palette: #e0ffff[###] #006060[###] #60c0a0[###] #ffc080[###] #00a080[###] #ffe080[###] #a0a080[###] #202020[###]
+- composition: density=dense; whitespace=0%; classification=dense_grid
+- viewport composition: density=dense; whitespace=0%; classification=dense_grid
+- vision confidence: 0.88 (high)
+- viewport confidence: 0.88 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

@@ -1,0 +1,458 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:33:02.053716",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.bitrix24.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 2,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 298,
+    "video_count": 20
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Bitrix24",
+  "calibration": {
+    "expected_category": "template_like_saas",
+    "notes": "Broad SaaS suite with high-density practical visual system."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#409eef",
+      "#2fc7f7",
+      "#0066a1"
+    ],
+    "background_candidates": [
+      "#ffffff"
+    ],
+    "confidence": 0.572,
+    "dominant_colors": [
+      "#409eef",
+      "#2fc7f7",
+      "#ffffff",
+      "#0066a1"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#409eef",
+        "occurrences": 128,
+        "role": "surface",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#2fc7f7",
+        "occurrences": 28,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#0066a1",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#0066a1"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 76,
+        "labels": [
+          "\u2039",
+          "\u203a",
+          "Tap to unmute",
+          "Watch on Flat pricing Each of our plans has a fixed price and a user limit. You ",
+          "Project management",
+          "Sales",
+          "Marketing",
+          "Customer service",
+          "HR",
+          "\">"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 13,
+        "labels": [
+          "START FOR FREE",
+          "\u2039",
+          "\u203a",
+          "Start for free",
+          "Tap to unmute",
+          "Watch on",
+          "Start saving now",
+          "Try this solution",
+          "Learn more",
+          "See more success stories"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 38,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.42,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": [
+      "START FOR FREE",
+      "\u2039",
+      "\u203a",
+      "Start for free",
+      "Tap to unmute",
+      "Watch on",
+      "Start saving now",
+      "Try this solution"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.7,
+    "confidence": 0.538,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.549,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.538,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.567
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.667
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "multi_column"
+    ],
+    "section_count": 58,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "thumbnail-image",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://yt3.ggpht.com/gjQqyrfpId7_wV0iEBhw9qu7XsReoJqzK3sJZeY4fB29K5PND7cqr1K3wy2uqPDvWioc6eEs=s68-c-k-c0x00ffffff-no-rj"
+      },
+      {
+        "alt": "Bitrix24",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.bitrix24.com/upload/optimizer/converted/images/content_en/bxw_blocks/bxw_block_trusted_companies/img-logo-1.750w.png.webp"
+      },
+      {
+        "alt": "Bitrix24",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.bitrix24.com/upload/optimizer/converted/images/content_en/bxw_blocks/bxw_block_trusted_companies/img-logo-2.750w.png.webp"
+      },
+      {
+        "alt": "Bitrix24",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.bitrix24.com/upload/optimizer/converted/images/content_en/bxw_blocks/bxw_block_trusted_companies/img-logo-3.750w.png.webp"
+      },
+      {
+        "alt": "Bitrix24",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.bitrix24.com/upload/optimizer/converted/images/content_en/bxw_blocks/bxw_block_trusted_companies/img-logo-4.750w.png.webp"
+      },
+      {
+        "alt": "Bitrix24",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.bitrix24.com/upload/optimizer/converted/images/content_en/bxw_blocks/bxw_block_trusted_companies/img-logo-5.750w.png.webp"
+      },
+      {
+        "alt": "Bitrix24",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.bitrix24.com/upload/optimizer/converted/images/content_en/bxw_blocks/bxw_block_trusted_companies/img-logo-6.750w.png.webp"
+      },
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "body",
+        "source": "rendered_html",
+        "text": "Bitrix24",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.35,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {
+      "max": 100,
+      "min": 100
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.522,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.25,
+      "composition_classification": "dense_grid",
+      "confidence": 0.75,
+      "edge_density": 0.049,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.214
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 252677,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.bitrix24.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/bitrix24.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 86,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 7924,
+          "ratio": 0.3962
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4166,
+          "ratio": 0.2083
+        },
+        {
+          "hex": "#608080",
+          "occurrences": 3370,
+          "ratio": 0.1685
+        },
+        {
+          "hex": "#808060",
+          "occurrences": 1631,
+          "ratio": 0.0815
+        },
+        {
+          "hex": "#608060",
+          "occurrences": 428,
+          "ratio": 0.0214
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 353,
+          "ratio": 0.0176
+        },
+        {
+          "hex": "#608000",
+          "occurrences": 230,
+          "ratio": 0.0115
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 213,
+          "ratio": 0.0106
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.25,
+      "composition_classification": "dense_grid",
+      "confidence": 0.75,
+      "edge_density": 0.049,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.214
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.75,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.855
+    },
+    "viewport_palette": {
+      "color_count": 86,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 7924,
+          "ratio": 0.3962
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 4166,
+          "ratio": 0.2083
+        },
+        {
+          "hex": "#608080",
+          "occurrences": 3370,
+          "ratio": 0.1685
+        },
+        {
+          "hex": "#808060",
+          "occurrences": 1631,
+          "ratio": 0.0815
+        },
+        {
+          "hex": "#608060",
+          "occurrences": 428,
+          "ratio": 0.0214
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 353,
+          "ratio": 0.0176
+        },
+        {
+          "hex": "#608000",
+          "occurrences": 230,
+          "ratio": 0.0115
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 213,
+          "ratio": 0.0106
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.214,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.75,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.855
+    }
+  },
+  "website_url": "https://www.bitrix24.com"
+}

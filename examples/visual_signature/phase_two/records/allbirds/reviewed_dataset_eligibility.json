@@ -1,0 +1,42 @@
+{
+  "blocked_reasons": [],
+  "brand_name": "Allbirds",
+  "capture_id": "allbirds",
+  "confidence_threshold": 0.8,
+  "created_at": "2026-05-11T21:05:47.414204Z",
+  "eligible": true,
+  "evidence_refs": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png"
+  ],
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:allbirds",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+    "clean_attempt:/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+    "mutation:19b338a23e1f4d21af54be0ce7dc9c09",
+    "mutation:19b338a23e1f4d21af54be0ce7dc9c09",
+    "phase_one_eligibility:elig_allbirds",
+    "review:review_allbirds"
+  ],
+  "mutation_lineage_preserved": true,
+  "observed_confidence": 0.0,
+  "raw_evidence_preserved": true,
+  "reasons": [
+    "schema valid",
+    "raw evidence preserved",
+    "mutation lineage preserved",
+    "no unsupported inference",
+    "review completed",
+    "uncertainty explicitly labeled"
+  ],
+  "record_id": "elig_allbirds_reviewed",
+  "record_type": "dataset_eligibility",
+  "review_completed": true,
+  "review_required": true,
+  "schema_valid": true,
+  "schema_version": "phase-zero-dataset-eligibility-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty_below_threshold": false,
+  "unsupported_inference_found": false,
+  "website_url": "https://www.allbirds.com"
+}

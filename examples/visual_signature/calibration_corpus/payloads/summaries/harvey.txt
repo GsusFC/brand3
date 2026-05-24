@@ -1,0 +1,40 @@
+Expected category: ai_native
+Notes: Vertical AI SaaS with premium enterprise positioning.
+
+== Harvey ==
+URL: https://www.harvey.ai
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.56, consistency_coverage=0.57]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.57
+
+Visual summaries:
+- palette preview: #33312c[###] #ffffff[###] #181714[###] #437d88[###] #eeeeee[###] #0052b4[###] #d80027[###] #ffda44[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=14; density=dense; patterns=grid,flex,multi_column
+- components: button=44, cta=35, accordion=2, modal=2
+- consistency: overall=0.51; color=0.68; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #202020[###] #e0e0e0[###] #200000[###] #ffffff[###] #202000[###] #404040[###] #402020[###]
+- viewport palette: #000000[###] #202020[###] #e0e0e0[###] #200000[###] #ffffff[###] #202000[###] #404040[###] #402020[###]
+- composition: density=dense; whitespace=5%; classification=dense_grid
+- viewport composition: density=dense; whitespace=5%; classification=dense_grid
+- vision confidence: 0.88 (high)
+- viewport confidence: 0.88 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

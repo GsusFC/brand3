@@ -1,0 +1,64 @@
+{
+  "brands": [
+    {
+      "brand_name": "Hermes",
+      "website_url": "https://www.hermes.com",
+      "expected_category": "premium/luxury",
+      "notes": "Luxury house with strong editorial product presentation and distinctive palette."
+    },
+    {
+      "brand_name": "Linear",
+      "website_url": "https://linear.app",
+      "expected_category": "SaaS",
+      "notes": "Modern SaaS with controlled dark visual system and product-led components."
+    },
+    {
+      "brand_name": "OpenAI",
+      "website_url": "https://openai.com",
+      "expected_category": "AI-native",
+      "notes": "AI-native company with restrained editorial/product visual behavior."
+    },
+    {
+      "brand_name": "The Verge",
+      "website_url": "https://www.theverge.com",
+      "expected_category": "editorial/media",
+      "notes": "High-density media layout with strong typography and recurring editorial modules."
+    },
+    {
+      "brand_name": "Allbirds",
+      "website_url": "https://www.allbirds.com",
+      "expected_category": "ecommerce",
+      "notes": "Consumer ecommerce with product imagery, category navigation, and lifestyle assets."
+    },
+    {
+      "brand_name": "Joe's Plumbing NYC",
+      "website_url": "https://www.joesplumbingnyc.com",
+      "expected_category": "weak/small business site",
+      "notes": "Small local service site candidate; useful for sparse or template-heavy signals."
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "website_url": "https://docs.stripe.com",
+      "expected_category": "developer-first",
+      "notes": "Developer-first documentation surface with dense navigation and UI patterns."
+    },
+    {
+      "brand_name": "Headspace",
+      "website_url": "https://www.headspace.com",
+      "expected_category": "wellness/lifestyle",
+      "notes": "Wellness brand with illustration, soft palette, and consumer conversion flows."
+    },
+    {
+      "brand_name": "Notion",
+      "website_url": "https://www.notion.com",
+      "expected_category": "template-like SaaS",
+      "notes": "Broad SaaS/productivity surface; useful for detecting consistent but common SaaS patterns."
+    },
+    {
+      "brand_name": "A24",
+      "website_url": "https://a24films.com",
+      "expected_category": "editorial/media",
+      "notes": "Culture/media-commerce hybrid with distinctive object and content presentation."
+    }
+  ]
+}

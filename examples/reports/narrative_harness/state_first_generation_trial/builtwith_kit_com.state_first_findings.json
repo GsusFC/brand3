@@ -1,0 +1,253 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-17",
+  "case_id": "builtwith_kit_com",
+  "selected_case": {
+    "name": "Builtwith / Kit",
+    "target": "https://builtwith.kit.com",
+    "rationale": "Strong unresolved entity-boundary case with measured caveat inflation and mixed Kit/BuiltWith surfaces.",
+    "pressure_family": "entity_ambiguity_and_caveat_inflation"
+  },
+  "status": {
+    "lab_only": true,
+    "manual_offline_generation": true,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false,
+    "production_ready": false
+  },
+  "input_artifacts": [
+    "examples/reports/narrative_harness/builtwith_kit_com.payload.json",
+    "examples/reports/narrative_harness/builtwith_kit_com.diagnostic.json",
+    "examples/reports/narrative_harness/builtwith_kit_com.render_aware.diagnostic.json",
+    "examples/reports/narrative_harness/entity_state/builtwith_kit_com.entity_narrative_state.json",
+    "examples/reports/narrative_harness/state_first_generation_trial/watermelon.state_first_findings.json"
+  ],
+  "baseline": {
+    "summary": "The baseline sees creator/email positioning, BuiltWith web-intelligence positioning, technical observations, and external trust scrutiny, but writes dimension findings as isolated paragraphs.",
+    "measured_problems": {
+      "findings_count": 13,
+      "findings_without_evidence_urls": 4,
+      "safe_attribution_total": 11,
+      "external_corroboration_caveat_total": 14,
+      "fallback_evidence_opening_total": 9,
+      "generic_decision_space_count": 9,
+      "visible_no_external_corroboration_count": 8
+    },
+    "primary_failure": "The baseline risks treating Kit and BuiltWith surfaces as one coherent strategic object before entity continuity is reviewed."
+  },
+  "shared_entity_state": {
+    "primary_entity_signal": "ambiguous entity frame: Kit creator/email platform signals overlap with BuiltWith web-intelligence signals",
+    "primary_target": "https://builtwith.kit.com",
+    "observed_surfaces": [
+      "https://kit.com/",
+      "https://builtwith.com/",
+      "https://builtwith.com/about",
+      "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+      "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "https://www.joesandbox.com/analysis/1719754/0/html"
+    ],
+    "requires_human_review": true,
+    "state_constraint": "Do not collapse Kit, BuiltWith, knowledge-base, blog, and external trust/security surfaces into one verified entity."
+  },
+  "shared_evidence_map": {
+    "owned_or_self_description": [
+      "https://kit.com/",
+      "https://builtwith.com/",
+      "https://builtwith.com/about",
+      "https://kb.builtwith.com/account-management/all-builtwith-products/",
+      "https://blog.builtwith.com/2026/02/25/llms-and-mcp/"
+    ],
+    "external_trust_or_security": [
+      "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "https://www.joesandbox.com/analysis/1719754/0/html"
+    ],
+    "technical_configuration": [
+      "https://builtwith.kit.com/robots.txt"
+    ],
+    "evidence_limits": [
+      "Several findings have no evidence URLs.",
+      "The evidence shows surfaces and claims but does not prove ownership continuity.",
+      "External trust/security pages are evidence of scrutiny, not proof of broad perception or product risk."
+    ]
+  },
+  "global_uncertainty_model": {
+    "can_state_as_observation": [
+      "Kit/email positioning is visible in the evidence.",
+      "BuiltWith web-intelligence positioning is visible in the evidence.",
+      "External trust and malware-analysis surfaces appear for the submitted target.",
+      "The baseline repeats owned-claim and corroboration caveats."
+    ],
+    "can_state_as_interpretation": [
+      "The report is an entity-boundary case before it is a differentiation case.",
+      "The evidence set creates a split between creator-email positioning, web-intelligence positioning, and external trust scrutiny."
+    ],
+    "must_remain_uncertain": [
+      "Whether Kit and BuiltWith are the same operational entity.",
+      "Whether the target mixed sources because of crawling, targeting, redirect behavior, or actual brand architecture.",
+      "Whether external trust/security surfaces materially shape audience perception."
+    ],
+    "must_not_infer": [
+      "unified platform strategy",
+      "creator-market intent from BuiltWith surfaces",
+      "B2B web-intelligence intent from Kit surfaces",
+      "security weakness from the presence of a scan alone",
+      "public reputation from isolated external trust pages"
+    ]
+  },
+  "state_first_finding_plan": {
+    "coordination_rules": [
+      "Use one global entity-boundary caveat.",
+      "Separate Kit/email evidence from BuiltWith/web-intelligence evidence.",
+      "Treat external trust/security pages as scrutiny signals, not conclusive perception.",
+      "Remove generic Decision Space.",
+      "Avoid recommendations about expansion, pivoting, or broader market moves."
+    ],
+    "dimension_roles": {
+      "coherencia": "entity boundary and story split",
+      "diferenciacion": "owned positioning claims, not market validation",
+      "percepcion": "external trust/security scrutiny and its limits",
+      "presencia": "surface footprint and technical visibility",
+      "vitalidad": "activity signals by surface, without assuming one roadmap"
+    }
+  },
+  "generated_state_first_findings": {
+    "global_caveat": "State-first reading treats builtwith.kit.com as the submitted target and does not assume that Kit, BuiltWith, knowledge-base, blog, and external trust/security surfaces form one verified entity. Entity continuity requires human review.",
+    "findings_by_dimension": {
+      "coherencia": [
+        {
+          "title": "The report is governed by entity ambiguity, not by a single brand story",
+          "finding": "The evidence set contains at least two strong owned narratives: Kit-style creator/email positioning and BuiltWith-style web-intelligence positioning. Both are visible, but the current evidence does not prove they belong to one coherent audited entity. The safest coherence finding is that Brand3 cannot yet write one stable story without resolving the target boundary.",
+          "evidence_urls": [
+            "https://kit.com/",
+            "https://builtwith.com/",
+            "https://builtwith.com/about"
+          ],
+          "confidence": "medium for surface observation, low for unified entity interpretation"
+        },
+        {
+          "title": "Technical and visual-analysis signals should not carry the core narrative",
+          "finding": "The baseline includes local visual-analysis metrics and technical observations. They may describe the audit process, but they do not establish brand coherence for the target. In this case, those signals should be secondary until the entity boundary is clearer.",
+          "evidence_urls": [
+            "https://builtwith.kit.com/robots.txt"
+          ],
+          "confidence": "low_to_medium"
+        }
+      ],
+      "diferenciacion": [
+        {
+          "title": "Differentiation is split between creator email and web intelligence",
+          "finding": "Kit differentiates through an email-first operating-system claim for creators. BuiltWith differentiates through web profiling, competitive analysis, and business intelligence claims. Both claims are more specific than generic SaaS language, but the evidence does not support merging them into one differentiated position.",
+          "evidence_urls": [
+            "https://kit.com/",
+            "https://builtwith.com/"
+          ],
+          "confidence": "medium for claim visibility, low for shared positioning"
+        },
+        {
+          "title": "Owned claims should be treated as positioning, not proof",
+          "finding": "Claims about original, human-written content and creator value can be reported as owned positioning. They should not become proof of audience adoption, product quality, or category leadership without external corroboration.",
+          "evidence_urls": [
+            "https://kit.com/"
+          ],
+          "confidence": "medium for owned claim, low for market validation"
+        }
+      ],
+      "percepcion": [
+        {
+          "title": "External trust scrutiny exists, but its meaning is bounded",
+          "finding": "ScamAdviser and Joe Sandbox appear in the evidence set for builtwith.kit.com. That supports a perception finding about external scrutiny around the submitted target. It does not prove broad market distrust, product insecurity, or audience rejection.",
+          "evidence_urls": [
+            "https://www.scamadviser.com/check-website/builtwith.kit.com",
+            "https://www.joesandbox.com/analysis/1719754/0/html"
+          ],
+          "confidence": "medium for scrutiny signal, low for broader reputation inference"
+        },
+        {
+          "title": "Public perception cannot be cleanly assigned until the entity is resolved",
+          "finding": "The same evidence set contains creator-email, web-intelligence, support, API, and trust/security surfaces. Until those surfaces are classified, perception should be framed as evidence fragmentation rather than a confident audience read.",
+          "evidence_urls": [
+            "https://kit.com/",
+            "https://builtwith.com/",
+            "https://kb.builtwith.com/account-management/all-builtwith-products/",
+            "https://blog.builtwith.com/2026/02/25/llms-and-mcp/"
+          ],
+          "confidence": "medium for evidence fragmentation, low for audience perception"
+        }
+      ],
+      "presencia": [
+        {
+          "title": "Presence is broad enough to be visible, but not entity-safe",
+          "finding": "The audit has multiple visible surfaces: submitted target, Kit, BuiltWith, knowledge base, blog, robots file, and external assessment pages. That is not the same as a coherent owned presence. The state-first reading should separate surface availability from verified brand architecture.",
+          "evidence_urls": [
+            "https://builtwith.kit.com/robots.txt",
+            "https://kit.com/",
+            "https://builtwith.com/",
+            "https://kb.builtwith.com/account-management/all-builtwith-products/"
+          ],
+          "confidence": "medium"
+        },
+        {
+          "title": "Basic crawl/configuration evidence is useful but narrow",
+          "finding": "The accessible robots file supports a small technical presence observation. It should not be inflated into SEO maturity, indexing strategy, or technical sophistication.",
+          "evidence_urls": [
+            "https://builtwith.kit.com/robots.txt"
+          ],
+          "confidence": "medium"
+        }
+      ],
+      "vitalidad": [
+        {
+          "title": "Activity signals exist, but they belong to surfaces that require review",
+          "finding": "The BuiltWith blog and knowledge-base surfaces show activity around APIs, products, and support content. That is evidence of activity on BuiltWith-related surfaces. It should not automatically describe the vitality of Kit or the submitted target until entity continuity is verified.",
+          "evidence_urls": [
+            "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+            "https://kb.builtwith.com/account-management/all-builtwith-products/"
+          ],
+          "confidence": "medium for activity on those surfaces, low for target-level vitality"
+        },
+        {
+          "title": "The strongest vitality claim is conditional",
+          "finding": "If the BuiltWith surfaces are verified as part of the audited entity, the API and knowledge-base evidence suggests active product maintenance. If not, Brand3 should withhold that vitality claim for builtwith.kit.com.",
+          "evidence_urls": [
+            "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+            "https://builtwith.com/"
+          ],
+          "confidence": "conditional; requires human review"
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "against_baseline": {
+      "specificity": "State-first wins by naming the entity-boundary problem instead of treating mixed surfaces as a single strategy.",
+      "evidence_binding": "State-first wins because each claim is tied to the surface it can actually support.",
+      "entity_coherence": "State-first wins by refusing to merge Kit and BuiltWith without review.",
+      "caveat_discipline": "State-first wins by centralizing caveats rather than repeating them inside every finding.",
+      "remaining_gap": "The trial does not fix missing evidence URLs or prove automation."
+    },
+    "against_watermelon": {
+      "shared_pattern": "Both cases improve when related surfaces are not treated as aliases.",
+      "difference": "Watermelon is ecosystem ambiguity; Builtwith / Kit is a sharper collision between two strong owned narratives.",
+      "value_level": "State-first value is high because the baseline can create a false object of analysis."
+    }
+  },
+  "verdict": {
+    "better_than_baseline": true,
+    "safer_than_baseline": true,
+    "clearer_than_baseline": true,
+    "worth_continuing": true,
+    "biggest_improvement": "Entity ambiguity becomes the governing condition instead of a hidden source of fragmented findings.",
+    "biggest_remaining_risk": "A future generator may make the rewritten text too fluent and cause readers to miss that entity resolution is still unresolved.",
+    "what_failed": [
+      "This does not prove automation.",
+      "This does not fix evidence URL attachment.",
+      "The finding set remains conditional on human entity review."
+    ]
+  }
+}
+

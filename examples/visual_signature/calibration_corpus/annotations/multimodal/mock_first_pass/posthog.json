@@ -1,0 +1,648 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:59:23.231087",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://posthog.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.616,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.865
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "developer first",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 10,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 22,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "PostHog",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Developer-first analytics with intentionally informal visual system."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#6d7428",
+      "#090803",
+      "#070602",
+      "#6d7328",
+      "#070702",
+      "#707428"
+    ],
+    "background_candidates": [
+      "#090803",
+      "#070602",
+      "#070702",
+      "#080803",
+      "#070703",
+      "#080703"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#6d7428",
+      "#090803",
+      "#070602",
+      "#6d7328",
+      "#070702",
+      "#707428",
+      "#6e7528",
+      "#080803"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#6d7428",
+        "occurrences": 106,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#090803",
+        "occurrences": 84,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#070602",
+        "occurrences": 72,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6d7328",
+        "occurrences": 70,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#070702",
+        "occurrences": 68,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#707428",
+        "occurrences": 62,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6e7528",
+        "occurrences": 58,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#080803",
+        "occurrences": 54,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#070703",
+        "occurrences": 50,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#080703",
+        "occurrences": 50,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0b0a04",
+        "occurrences": 46,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0a0903",
+        "occurrences": 46,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#090703",
+        "occurrences": 46,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0a0803",
+        "occurrences": 44,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6e7428",
+        "occurrences": 38,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0b0b04",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0a0a04",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#949935",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 30,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#090903",
+        "occurrences": 30,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6f7528",
+        "occurrences": 28,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0d0b04",
+        "occurrences": 28,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#080702",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6b7127",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#6d7428",
+      "#090803",
+      "#070602",
+      "#6d7328",
+      "#070702",
+      "#707428"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 24,
+        "labels": [
+          "Product OS",
+          "Pricing",
+          "Docs",
+          "Community",
+          "Company",
+          "More"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Product OS",
+          "Pricing",
+          "Docs",
+          "Community",
+          "Company",
+          "More"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 18,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Product OS",
+      "Pricing",
+      "Docs",
+      "Community",
+      "Company",
+      "More"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.68,
+    "confidence": 0.507,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.454,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.507,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.413
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited"
+    ],
+    "score": 0.608
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": false,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.0,
+    "font_families": [],
+    "heading_scale": "unknown",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.172,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.703,
+      "edge_density": 0.086,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.484
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 617447,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://posthog.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/posthog.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 142,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 9891,
+          "ratio": 0.4945
+        },
+        {
+          "hex": "#e0e0c0",
+          "occurrences": 3435,
+          "ratio": 0.1718
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1795,
+          "ratio": 0.0897
+        },
+        {
+          "hex": "#e0c0c0",
+          "occurrences": 956,
+          "ratio": 0.0478
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 657,
+          "ratio": 0.0328
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 370,
+          "ratio": 0.0185
+        },
+        {
+          "hex": "#2080ff",
+          "occurrences": 224,
+          "ratio": 0.0112
+        },
+        {
+          "hex": "#e0a020",
+          "occurrences": 172,
+          "ratio": 0.0086
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.172,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.703,
+      "edge_density": 0.086,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.484
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.703,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.841
+    },
+    "viewport_palette": {
+      "color_count": 142,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 9891,
+          "ratio": 0.4945
+        },
+        {
+          "hex": "#e0e0c0",
+          "occurrences": 3435,
+          "ratio": 0.1718
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1795,
+          "ratio": 0.0897
+        },
+        {
+          "hex": "#e0c0c0",
+          "occurrences": 956,
+          "ratio": 0.0478
+        },
+        {
+          "hex": "#c0c0a0",
+          "occurrences": 657,
+          "ratio": 0.0328
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 370,
+          "ratio": 0.0185
+        },
+        {
+          "hex": "#2080ff",
+          "occurrences": 224,
+          "ratio": 0.0112
+        },
+        {
+          "hex": "#e0a020",
+          "occurrences": 172,
+          "ratio": 0.0086
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.484,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.703,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.841
+    }
+  },
+  "website_url": "https://posthog.com"
+}

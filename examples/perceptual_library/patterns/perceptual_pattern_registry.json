@@ -1,0 +1,364 @@
+{
+  "artifact_id": "brand3_perceptual_pattern_registry_v0_1",
+  "artifact_type": "perceptual_pattern_registry",
+  "created_at": "2026-05-15",
+  "status": "draft_registry",
+  "scope": "registry_only",
+  "source_artifacts": [
+    "examples/perceptual_library/patterns/first_three_case_pattern_audit.md",
+    "examples/perceptual_library/patterns/first_three_case_pattern_audit.json",
+    "examples/perceptual_library/cases/charms/perceptual_case_record.json",
+    "examples/perceptual_library/cases/d4data/perceptual_case_record.json",
+    "examples/perceptual_library/cases/grandvalira/perceptual_case_record.json"
+  ],
+  "guardrails": {
+    "scoring_integration": false,
+    "prompt_changes": false,
+    "report_changes": false,
+    "visual_signature_changes": false,
+    "schema_mutation": false,
+    "runtime_changes": false
+  },
+  "patterns": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "description": "An abstract domain is made perceptually legible through a surface system.",
+      "perceptual_meaning": "The brand does not merely state a category; it gives the category a readable surface logic.",
+      "observable_signals": [
+        "source names an abstract domain",
+        "record identifies a perceptual organizing frame",
+        "strategy or identity is linked to surface behavior"
+      ],
+      "typical_tensions": [
+        "stated category / surface expression",
+        "concept / implementation proof",
+        "copy claim / visible evidence"
+      ],
+      "emotional_temperature": "controlled, intentional, concept-led",
+      "common_contexts": ["Web3", "technical platforms", "multi-brand systems", "identity systems", "design sprints"],
+      "anti_patterns": [
+        "treating the category itself as the perceptual pattern",
+        "repeating the source metaphor without observing surface behavior",
+        "turning concept translation into a quality claim"
+      ],
+      "confidence_level": "high",
+      "supporting_cases": ["charms", "d4data", "grandvalira"],
+      "feels": {
+        "premium": true,
+        "editorial": "varies",
+        "ritualized": "varies",
+        "cinematic": false,
+        "operational": true,
+        "playful": "varies",
+        "restrained": "varies",
+        "dense": false,
+        "atmospheric": "varies",
+        "system_driven": true
+      }
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Surface Behavior",
+      "description": "A perceptual reading is constrained by its evidence status.",
+      "perceptual_meaning": "The pattern protects Brand3 from converting source language into confirmed visual truth.",
+      "observable_signals": [
+        "facts, observations, interpretations and weak inferences are separated",
+        "medium-confidence observations are often copy-based",
+        "low-confidence inferences require human review",
+        "contradictions name the boundary between claim and signal"
+      ],
+      "typical_tensions": [
+        "copy-stated behavior / observed behavior",
+        "strategic interpretation / evidence anchor",
+        "review-ready pattern / downstream use"
+      ],
+      "emotional_temperature": "restrained, diagnostic, cautious",
+      "common_contexts": ["perceptual records", "audits", "review workflows", "prompt design"],
+      "anti_patterns": [
+        "calling a claim visible before a capture exists",
+        "treating public case language as product behavior",
+        "allowing low-confidence strategic intent into reusable language without review"
+      ],
+      "confidence_level": "high",
+      "supporting_cases": ["charms", "d4data", "grandvalira"],
+      "feels": {
+        "premium": false,
+        "editorial": true,
+        "ritualized": false,
+        "cinematic": false,
+        "operational": true,
+        "playful": false,
+        "restrained": true,
+        "dense": false,
+        "atmospheric": false,
+        "system_driven": true
+      }
+    },
+    {
+      "pattern_id": "pattern_guided_movement",
+      "pattern_name": "Guided Movement",
+      "description": "The case frames movement through a guided path: gallery pacing, UI guidance, or design system guidance.",
+      "perceptual_meaning": "Movement can be how a surface directs attention, sequence, identity, or system use.",
+      "observable_signals": [
+        "path, guiding, threshold, transition, seamlessness, or navigation language",
+        "sequential gallery or lookbook-like movement",
+        "UI claims about guiding users",
+        "system claims about guiding multiple brand instances"
+      ],
+      "typical_tensions": [
+        "guidance / intensity",
+        "guided path / evidence gap",
+        "smooth movement / complex system"
+      ],
+      "emotional_temperature": "controlled, directional, calm-to-dynamic",
+      "common_contexts": ["case-study pages", "onboarding", "motion-led interfaces", "design systems", "multi-step product flows"],
+      "anti_patterns": [
+        "treating any animation as guided movement",
+        "treating the word guide as proof of interface clarity",
+        "ignoring friction if the path is claimed but not visible"
+      ],
+      "confidence_level": "medium",
+      "supporting_cases": ["charms", "d4data", "grandvalira"],
+      "feels": {
+        "premium": "varies",
+        "editorial": true,
+        "ritualized": "varies",
+        "cinematic": "varies",
+        "operational": true,
+        "playful": "varies",
+        "restrained": "varies",
+        "dense": false,
+        "atmospheric": "varies",
+        "system_driven": true
+      }
+    },
+    {
+      "pattern_id": "pattern_concept_bearing_motion",
+      "pattern_name": "Concept-Bearing Motion",
+      "description": "Motion or implied motion is used to carry a concept rather than to decorate the surface.",
+      "perceptual_meaning": "Movement becomes part of identity logic when it embodies the case's conceptual source.",
+      "observable_signals": [
+        "motion production language tied to a concept",
+        "transitions described as meaningful",
+        "surface rhythm or repeated pacing supports a conceptual atmosphere",
+        "human review required when motion is only stated in copy"
+      ],
+      "typical_tensions": [
+        "motion claim / motion evidence",
+        "cinematic intensity / interface guidance",
+        "production method / perceptual effect"
+      ],
+      "emotional_temperature": "dynamic, cinematic, potentially intense",
+      "common_contexts": ["motion-led identity", "campaign surfaces", "case-study galleries", "Web3 products", "audiovisual systems"],
+      "anti_patterns": [
+        "treating production tools as perceptual evidence by themselves",
+        "calling motion concept-bearing without showing what concept it carries",
+        "overusing cinematic language for static surfaces"
+      ],
+      "confidence_level": "medium",
+      "supporting_cases": ["d4data", "charms"],
+      "feels": {
+        "premium": "varies",
+        "editorial": false,
+        "ritualized": "varies",
+        "cinematic": true,
+        "operational": false,
+        "playful": false,
+        "restrained": false,
+        "dense": "varies",
+        "atmospheric": "varies",
+        "system_driven": "varies"
+      }
+    },
+    {
+      "pattern_id": "pattern_system_cohesion_difference",
+      "pattern_name": "Cohesion With Preserved Difference",
+      "description": "A system creates recognizable unity while preserving meaningful variation.",
+      "perceptual_meaning": "Strong systems can make difference legible inside a controlled frame.",
+      "observable_signals": [
+        "multi-brand components, foundations, shared structures, or repeated motifs",
+        "language about cohesion and unique personalities",
+        "repetition with controlled variation",
+        "need for variant, component, or sub-brand evidence"
+      ],
+      "typical_tensions": [
+        "unity / differentiation",
+        "cohesion / uniqueness",
+        "modularity claim / component evidence"
+      ],
+      "emotional_temperature": "ordered, institutional, controlled",
+      "common_contexts": ["design systems", "multi-brand portfolios", "product ecosystems", "scalable identity systems"],
+      "anti_patterns": [
+        "treating uniformity as coherence",
+        "treating uniqueness claims as proven without variant evidence",
+        "calling repetition modular without component proof"
+      ],
+      "confidence_level": "medium",
+      "supporting_cases": ["grandvalira", "charms"],
+      "feels": {
+        "premium": true,
+        "editorial": false,
+        "ritualized": false,
+        "cinematic": false,
+        "operational": true,
+        "playful": false,
+        "restrained": true,
+        "dense": "varies",
+        "atmospheric": false,
+        "system_driven": true
+      }
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "description": "A productive or unresolved gap appears between what the source claims and what the available evidence can support.",
+      "perceptual_meaning": "The gap is a review object that prevents premature generalization.",
+      "observable_signals": [
+        "contradictions marked as soft or unverified",
+        "claims that need more evidence",
+        "low-confidence inferences requiring human review",
+        "friction log entries about copy-only or system evidence"
+      ],
+      "typical_tensions": [
+        "claim / evidence gap",
+        "stated intent / observed signal",
+        "source language / Brand3 interpretation"
+      ],
+      "emotional_temperature": "diagnostic, restrained, skeptical",
+      "common_contexts": ["public case pages", "source-led audits", "early corpus construction", "prompt QA"],
+      "anti_patterns": [
+        "treating every gap as a negative contradiction",
+        "letting uncertainty disappear in polished prose",
+        "resolving gaps by adding unsupported strategy language"
+      ],
+      "confidence_level": "high",
+      "supporting_cases": ["charms", "d4data", "grandvalira"],
+      "feels": {
+        "premium": false,
+        "editorial": true,
+        "ritualized": false,
+        "cinematic": false,
+        "operational": true,
+        "playful": false,
+        "restrained": true,
+        "dense": false,
+        "atmospheric": false,
+        "system_driven": true
+      }
+    },
+    {
+      "pattern_id": "pattern_threshold_pacing",
+      "pattern_name": "Threshold Pacing",
+      "description": "The surface creates a felt transition from one state into another.",
+      "perceptual_meaning": "Pacing behaves like a threshold when it changes how the viewer enters, exits, or interprets a system.",
+      "observable_signals": [
+        "gallery-first sequencing",
+        "delayed or threshold-like CTA",
+        "transition language",
+        "motion or rhythm that marks passage between states"
+      ],
+      "typical_tensions": [
+        "contemplation / action",
+        "intensity / control",
+        "atmosphere / utility"
+      ],
+      "emotional_temperature": "anticipatory, atmospheric, controlled",
+      "common_contexts": ["case-study pages", "launch pages", "motion-led identity surfaces", "campaign-to-product transitions"],
+      "anti_patterns": [
+        "treating any scroll sequence as threshold behavior",
+        "calling slow pacing premium without evidence",
+        "confusing atmospheric delay with missing product clarity"
+      ],
+      "confidence_level": "medium",
+      "supporting_cases": ["charms", "d4data"],
+      "feels": {
+        "premium": true,
+        "editorial": true,
+        "ritualized": true,
+        "cinematic": true,
+        "operational": false,
+        "playful": "varies",
+        "restrained": true,
+        "dense": false,
+        "atmospheric": true,
+        "system_driven": false
+      }
+    }
+  ],
+  "unstable_patterns": [
+    {
+      "pattern_id": "pattern_concept_bearing_motion",
+      "reason": "Needs actual motion capture, not only production-method copy."
+    },
+    {
+      "pattern_id": "pattern_guided_movement",
+      "reason": "Currently mixes interface guidance, case-page pacing, and system guidance."
+    },
+    {
+      "pattern_id": "pattern_system_governance",
+      "reason": "Strong for Grandvalira, but needs more system cases and component evidence."
+    },
+    {
+      "pattern_id": "pattern_premium_restraint",
+      "reason": "Well supported in Charms, weaker in D4DATA."
+    },
+    {
+      "pattern_id": "pattern_threshold_pacing",
+      "reason": "Strong in Charms, still speculative outside case-page flows."
+    }
+  ],
+  "too_case_specific_patterns": [
+    "Kendo-as-data-economy discipline",
+    "Datamosh as disruption",
+    "MetaHuman as humanizing layer",
+    "Infinite winter as system atmosphere",
+    "Agentic games as soft social ritual",
+    "Three-resort unity/difference structure"
+  ],
+  "vocabulary_collisions": [
+    {
+      "term": "system",
+      "collision": "Can mean visual identity system, product system, design system, ecosystem, or governance layer."
+    },
+    {
+      "term": "motion",
+      "collision": "Can mean animation, transition, production method, cadence, or implied movement."
+    },
+    {
+      "term": "guidance",
+      "collision": "Can mean UI guidance, case-page pacing, strategic direction, or system governance."
+    },
+    {
+      "term": "modular",
+      "collision": "Can mean component architecture, narrative flexibility, or brand extensibility."
+    },
+    {
+      "term": "cohesion",
+      "collision": "Can mean visual consistency, multi-brand governance, or narrative unity."
+    },
+    {
+      "term": "ritual",
+      "collision": "Can mean repeated interaction, emotional cadence, or poetic copy."
+    },
+    {
+      "term": "premium",
+      "collision": "Can mean restraint, polish, aspiration, or high production value."
+    }
+  ],
+  "generic_or_llm_like_language": [
+    "forward-thinking",
+    "seamless experience",
+    "user-friendly",
+    "impactful",
+    "powerful",
+    "innovative",
+    "ecosystem",
+    "digital universe",
+    "refined",
+    "intuitive",
+    "meaningful connection",
+    "positive impact"
+  ],
+  "registry_boundary": "This registry is not a scoring rubric, prompt file, report language file, Visual Signature implementation, or runtime dependency."
+}

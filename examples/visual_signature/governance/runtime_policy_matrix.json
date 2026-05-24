@@ -1,0 +1,402 @@
+{
+  "capabilities": [
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "provider_pilot_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "viewport_obstruction_detection",
+      "dependencies": [
+        "raw_viewport_capture",
+        "dom_heuristics",
+        "obstruction_signals"
+      ],
+      "description": "Detects viewport obstructions such as cookie banners, consent modals, login walls, and overlays.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Detection is evidence-only.",
+        "Does not click, dismiss, or mutate the page."
+      ],
+      "layer": "vision",
+      "maturity_state": "governed",
+      "mutation_risk": "low",
+      "outputs": [
+        "viewport_obstruction",
+        "obstruction_audit",
+        "capture_manifest.obstruction_fields"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "allowed",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "review_only",
+        "provider_pilot_use": "allowed",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "provider_pilot_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "affordance_semantics",
+      "dependencies": [
+        "visible_text",
+        "aria_label",
+        "role",
+        "dom_context",
+        "overlay_context"
+      ],
+      "description": "Classifies visible interaction affordances such as close, consent, login, subscription, and checkout controls.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Diagnostics only.",
+        "Click behavior remains separate."
+      ],
+      "layer": "perception",
+      "maturity_state": "governed",
+      "mutation_risk": "low",
+      "outputs": [
+        "candidate_click_targets.affordance_category",
+        "dismissal_audit.affordance_category_distribution"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "review_only",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "review_only",
+        "provider_pilot_use": "review_only",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "provider_pilot_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "affordance_localization",
+      "dependencies": [
+        "dom_ancestry",
+        "viewport_location",
+        "z_index",
+        "overlay_context",
+        "aria_dialog_relationships"
+      ],
+      "description": "Determines whether a detected affordance belongs to the active obstruction or unrelated UI.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Used to explain rejected targets.",
+        "Does not promote targets into execution."
+      ],
+      "layer": "perception",
+      "maturity_state": "constrained",
+      "mutation_risk": "low",
+      "outputs": [
+        "candidate_click_targets.affordance_owner",
+        "dismissal_audit.affordance_owner_distribution"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "review_only",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "review_only",
+        "provider_pilot_use": "review_only",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "provider_pilot_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "perceptual_state_machine",
+      "dependencies": [
+        "raw_capture",
+        "obstruction_detection",
+        "safe_intervention_policy"
+      ],
+      "description": "Tracks perceptual state transitions and mutation lineage for captured interfaces.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Supports evidence lineage and auditability.",
+        "Does not alter scoring or capture defaults."
+      ],
+      "layer": "perception",
+      "maturity_state": "governed",
+      "mutation_risk": "low",
+      "outputs": [
+        "perceptual_state",
+        "perceptual_transitions",
+        "mutation_audit"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "review_only",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "review_only",
+        "provider_pilot_use": "review_only",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "provider_pilot_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "mutation_audit",
+      "dependencies": [
+        "dismissal_flow",
+        "raw_viewport_capture",
+        "safe_affordance_discovery"
+      ],
+      "description": "Records safe, minimal interaction attempts and before/after evidence lineage.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Audit trail only.",
+        "Supports reversible evidence-preserving captures."
+      ],
+      "layer": "mutation",
+      "maturity_state": "constrained",
+      "mutation_risk": "moderate",
+      "outputs": [
+        "mutation_audit",
+        "dismissal_audit"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "experimental_only",
+        "human_review_scaling": "review_only",
+        "model_training": "blocked",
+        "production_runtime": "blocked",
+        "provider_pilot_use": "experimental_only",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "phase_two_review",
+      "dependencies": [
+        "phase_one_records",
+        "review_records"
+      ],
+      "description": "Joins reviewed outcomes to Phase One records for human validation and eligibility control.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Human validation remains separate from scoring.",
+        "Reviewed eligibility is a governance output only."
+      ],
+      "layer": "validation",
+      "maturity_state": "governed",
+      "mutation_risk": "none",
+      "outputs": [
+        "review_outcome",
+        "reviewed_dataset_eligibility"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "provider_pilot_use",
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "review_only",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "blocked",
+        "provider_pilot_use": "review_only",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "provider_pilot_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "calibration_bundle",
+      "dependencies": [
+        "phase_one_records",
+        "phase_two_reviews",
+        "capture_manifest",
+        "dismissal_audit"
+      ],
+      "description": "Builds the evidence bundle that joins machine claims with reviewed outcomes.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Evidence-only bundle generation.",
+        "No scoring or runtime behavior changes."
+      ],
+      "layer": "calibration",
+      "maturity_state": "governed",
+      "mutation_risk": "none",
+      "outputs": [
+        "calibration_records",
+        "calibration_summary",
+        "calibration_manifest"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "allowed",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "review_only",
+        "provider_pilot_use": "allowed",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use",
+        "human_review_scaling"
+      ],
+      "capability_id": "calibration_reliability_reporting",
+      "dependencies": [
+        "calibration_bundle",
+        "validated_records"
+      ],
+      "description": "Produces evidence-only reliability interpretation of the calibration bundle.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Summarizes bundle quality and limitations.",
+        "Does not imply readiness by itself."
+      ],
+      "layer": "calibration",
+      "maturity_state": "governed",
+      "mutation_risk": "none",
+      "outputs": [
+        "calibration_reliability_report"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "provider_pilot_use",
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "allowed",
+        "human_review_scaling": "allowed",
+        "model_training": "blocked",
+        "production_runtime": "review_only",
+        "provider_pilot_use": "review_only",
+        "scoring_integration": "blocked"
+      }
+    },
+    {
+      "allowed_scopes": [
+        "broader_corpus_use"
+      ],
+      "capability_id": "calibration_readiness_gate",
+      "dependencies": [
+        "calibration_bundle",
+        "calibration_manifest",
+        "calibration_corpus_manifest"
+      ],
+      "description": "Evaluates whether the calibration bundle is ready for a specific scope.",
+      "evidence_status": "validated",
+      "governance_notes": [
+        "Scope-aware readiness is explicit and conservative.",
+        "Unsupported scopes are not silently reused from broader-corpus thresholds."
+      ],
+      "layer": "governance",
+      "maturity_state": "constrained",
+      "mutation_risk": "none",
+      "outputs": [
+        "calibration_readiness",
+        "calibration_governance_checkpoint"
+      ],
+      "production_enabled": false,
+      "prohibited_scopes": [
+        "provider_pilot_use",
+        "human_review_scaling",
+        "production_runtime",
+        "scoring_integration",
+        "model_training"
+      ],
+      "runtime_mutation": false,
+      "scope_policies": {
+        "broader_corpus_use": "review_only",
+        "human_review_scaling": "blocked",
+        "model_training": "blocked",
+        "production_runtime": "blocked",
+        "provider_pilot_use": "blocked",
+        "scoring_integration": "blocked"
+      }
+    }
+  ],
+  "capability_count": 9,
+  "generated_at": "2026-05-12T11:31:32.190822Z",
+  "governance_scope": "visual_signature",
+  "matrix_version": "visual-signature-runtime-policy-matrix-1",
+  "notes": [
+    "Evidence-only governance matrix.",
+    "Capability presence does not imply production approval.",
+    "Readiness is scope-dependent and separate from capability presence.",
+    "Runtime policy is governance-only and does not modify runtime behavior.",
+    "No scoring, rubric dimensions, production UI, production reports, or capture behavior are modified."
+  ],
+  "policy_count": 60,
+  "record_type": "runtime_policy_matrix",
+  "runtime_mutation_policy": {
+    "scope_policies": {
+      "broader_corpus_use": "experimental_only",
+      "human_review_scaling": "review_only",
+      "model_training": "blocked",
+      "production_runtime": "blocked",
+      "provider_pilot_use": "experimental_only",
+      "scoring_integration": "blocked"
+    }
+  },
+  "schema_version": "visual-signature-runtime-policy-matrix-1"
+}

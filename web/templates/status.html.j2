@@ -16,7 +16,7 @@
 {%- if status == "queued" -%}
 <span class="hl-warn">[queued]</span>   <span class="dim">{{ brand_slug }} — waiting for worker</span>
 {%- elif status == "running" -%}
-<span class="hl-accent">[running]</span>  <span class="dim">{{ brand_slug }} — started {{ elapsed_seconds }}s ago</span>
+<span class="hl-accent">[running]</span>  <span class="dim">{{ brand_slug }} — {{ phase_label }}</span>
 {%- elif status == "ready" -%}
 <span class="hl-ok">[ready]</span>    <span class="dim">{{ brand_slug }} — redirecting to report ...</span>
 {%- elif status == "failed" -%}
@@ -25,11 +25,51 @@
   </pre>
 
   {% if status in ("queued", "running") %}
-  <p class="small dim">Page auto-refreshes every 5 seconds. A typical analysis takes 2–3 minutes.</p>
+  <div class="matrix-loader phase-{{ phase }}" aria-hidden="true">
+    {% for row in range(4) %}
+    <div class="matrix-row">
+      {% for col in range(320) %}
+      <span class="matrix-dot"></span>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="status-grid">
+    <div class="status-metric">
+      <span class="k">phase</span>
+      <span class="v">{{ phase_label }}</span>
+    </div>
+    <div class="status-metric">
+      <span class="k">elapsed</span>
+      <span class="v">{{ elapsed_label }}</span>
+    </div>
+    <div class="status-metric">
+      <span class="k">typical run</span>
+      <span class="v">2–4 min</span>
+    </div>
+  </div>
+
+  <ol class="status-steps">
+    {% for step in phase_steps %}
+    <li class="status-step is-{{ step.state }}">
+      <span class="status-step-mark">
+        {%- if step.state == "done" -%}[done]
+        {%- elif step.state == "active" -%}[active]
+        {%- elif step.state == "failed" -%}[failed]
+        {%- else -%}[pending]
+        {%- endif -%}
+      </span>
+      <span>{{ step.label }}</span>
+    </li>
+    {% endfor %}
+  </ol>
+
+  <p class="small dim">Page auto-refreshes every 5 seconds. This checklist reflects pipeline phase, not a percentage estimate.</p>
   {% elif status == "ready" %}
-  <p><a href="/r/{{ token }}">→ open report</a></p>
+  <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">→ open report</a></p>
   {% elif status == "failed" %}
-  <p><a href="/">← back to form</a></p>
+  <p><a href="{{ back_href if back_href else '/' }}">← back to form</a></p>
   {% endif %}
 </section>
 {% endblock %}

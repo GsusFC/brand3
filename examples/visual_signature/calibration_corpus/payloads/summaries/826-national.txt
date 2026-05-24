@@ -1,0 +1,39 @@
+Expected category: nonprofit_education
+Notes: Lower-fame education nonprofit with modest but distinctive visual system.
+
+== 826 National ==
+URL: https://826national.org
+Interpretation status: interpretable
+Extraction confidence: 0.65 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.51, consistency_coverage=0.57]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.46
+- typography: ok, confidence=0.55
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.57
+
+Visual summaries:
+- palette preview: #e5e3df[###] #1a73e8[###]
+- typography: Roboto, Arial
+- layout: header=True; nav=False; hero=True; sections=24; density=sparse; patterns=flex,multi_column,sticky_nav
+- components: button=2, cta=14, form=16, card=90, accordion=4, modal=6, pricing=2
+- consistency: overall=0.71; color=0.78; type=0.82; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202040[###] #000020[###] #202020[###] #ffc000[###] #a0c0c0[###] #ffffff[###] #404040[###] #ffa040[###]
+- viewport palette: #202040[###] #000020[###] #202020[###] #ffc000[###] #a0c0c0[###] #ffffff[###] #404040[###] #ffa040[###]
+- composition: density=dense; whitespace=2%; classification=dense_grid
+- viewport composition: density=dense; whitespace=2%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_palette_more_complex_than_dom,viewport_density_disagrees_with_dom,dom_consistency_conflicts_with_viewport_density
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport palette is noisier than the DOM palette.; Viewport reads denser than the DOM summary suggests.; DOM consistency suggests order, but the viewport is visually dense.
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

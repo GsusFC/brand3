@@ -32,6 +32,14 @@ def get_client_ip(request: Request) -> str:
     return client.host if client else "unknown"
 
 
+def _rate_limit_bypass_ips() -> set[str]:
+    return {
+        item.strip()
+        for item in settings.rate_limit_bypass_ips.split(",")
+        if item.strip()
+    }
+
+
 async def rate_limit_middleware(
     request: Request,
     call_next: Callable[[Request], Awaitable[Response]],
@@ -39,11 +47,17 @@ async def rate_limit_middleware(
     if not (request.method == "POST" and request.url.path == PROTECTED_PATH):
         return await call_next(request)
 
+    if not settings.rate_limit_enabled:
+        return await call_next(request)
+
     serializer = create_serializer(settings.cookie_secret)
     if is_team_request(request, serializer):
         return await call_next(request)
 
     ip = get_client_ip(request)
+    if ip in _rate_limit_bypass_ips():
+        return await call_next(request)
+
     count = count_recent_analyses_for_ip(ip, hours=settings.rate_limit_window_hours)
     if count >= settings.rate_limit_per_ip:
         log.info("rate_limit_hit ip=%s count=%d", ip, count)

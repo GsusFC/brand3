@@ -1,0 +1,15 @@
+{
+  "confidence": 0.78,
+  "confidence_level": "medium",
+  "known_unknowns": [
+    "overlay may affect CTA visibility"
+  ],
+  "record_type": "uncertainty_profile",
+  "reviewer_required": true,
+  "schema_version": "phase-zero-uncertainty-profile-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty_reasons": [
+    "mixed_affordance_signals"
+  ],
+  "unsupported_inference": false
+}

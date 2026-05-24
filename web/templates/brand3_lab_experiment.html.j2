@@ -1,0 +1,122 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.title }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.kind }}</span>
+    <span class="tag">// lab only · active experiment detail</span>
+  </div>
+  <a class="source-link" href="{{ model.back_href }}">Back to Brand3 Lab</a>
+  <h1 class="page-title">{{ model.title }}</h1>
+  <p class="prose dim intro-copy">{{ model.summary }}</p>
+  <div class="badge-line">
+    {% for guardrail in model.guardrails %}
+    <span class="badge">{{ guardrail }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">How This Layer Works</span>
+    <span class="tag">// evidence before interpretation</span>
+  </div>
+  <div class="lab-experiment-work-grid">
+    <div class="lab-detail-block">
+      <h2>What it reads</h2>
+      <ul class="lab-detail-list">
+        {% for item in model.reads %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="lab-detail-block">
+      <h2>What it adds to each case</h2>
+      <p>{{ model.adds_to_case }}</p>
+    </div>
+    <div class="lab-detail-block">
+      <h2>How the LLM should use it</h2>
+      <ul class="lab-detail-list">
+        {% for item in model.how_llm_uses_it %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Vocabulary</span>
+    <span class="tag">// terms this layer makes reusable</span>
+  </div>
+  <div class="lab-token-list">
+    {% for term in model.vocabulary %}
+    <span class="badge">{{ term }}</span>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Examples</span>
+    <span class="tag">// acceptable readings</span>
+  </div>
+  <div class="lab-detail-block">
+    <ul class="lab-detail-list">
+      {% for example in model.examples %}
+      <li>{{ example }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Evidence Base</span>
+    <span class="tag">// where this came from</span>
+  </div>
+  <div class="lab-evidence-grid">
+    {% for artifact in model.artifacts %}
+    <article class="lab-evidence-card">
+      <div>
+        <h2>{{ artifact.label }}</h2>
+        <p class="mono-token">{{ artifact.path }}</p>
+      </div>
+      <span class="badge{% if artifact.status == 'available' %} badge-ready{% endif %}">{{ artifact.status }}</span>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Applied To Cases</span>
+    <span class="tag">// current evidence links</span>
+  </div>
+  <div class="lab-index-list">
+    {% for case in model.related_cases %}
+    <article class="lab-index-row">
+      <div>
+        <h2>{{ case.brand }}</h2>
+        <p>{{ case.evidence }}</p>
+      </div>
+      <div class="lab-row-actions">
+        <span class="badge{% if case.status == 'applied' %} badge-ready{% endif %}">{{ case.status }}</span>
+        <a class="source-link" href="{{ case.href }}">open case</a>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

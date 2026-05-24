@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import inspect
 import logging
 import sqlite3
 import time
@@ -32,12 +33,20 @@ def set_run_analysis_override(fn) -> None:
     _run_analysis_override = fn
 
 
-def _call_engine(url: str) -> dict:
+def _call_engine(url: str, progress_cb=None) -> dict:
     """Run the engine in a blocking call — always invoked via `to_thread`."""
     if _run_analysis_override is not None:
+        signature = inspect.signature(_run_analysis_override)
+        if "progress_cb" in signature.parameters:
+            return _run_analysis_override(url, progress_cb=progress_cb)
         return _run_analysis_override(url)
     from src.services.brand_service import run as brand_service_run
-    return brand_service_run(url, use_social=True, use_llm=True)
+    return brand_service_run(
+        url,
+        use_social=True,
+        use_llm=True,
+        progress_cb=progress_cb,
+    )
 
 
 def _db_path() -> Path:
@@ -89,7 +98,8 @@ class AnalysisQueue:
         """Reset `running` rows to `queued` after an ungraceful restart."""
         with sqlite3.connect(str(_db_path())) as conn:
             cur = conn.execute(
-                "UPDATE web_requests SET status='queued', started_at=NULL "
+                "UPDATE web_requests SET status='queued', phase='queued', "
+                "phase_updated_at=NULL, started_at=NULL "
                 "WHERE status='running'"
             )
             if cur.rowcount:
@@ -127,21 +137,35 @@ class AnalysisQueue:
             log.warning("token not found: %s", token)
             return
 
-        _set_status(token, status="running", started_at=_now())
+        _set_status(
+            token,
+            status="running",
+            phase="collecting",
+            phase_updated_at=_now(),
+            started_at=_now(),
+        )
         log.info("analysis started token=%s url=%s", token, request["url"])
+
+        def progress_cb(phase: str) -> None:
+            _set_status(token, phase=phase, phase_updated_at=_now())
+
         try:
             result = await asyncio.wait_for(
-                asyncio.to_thread(_call_engine, request["url"]),
+                asyncio.to_thread(_call_engine, request["url"], progress_cb),
                 timeout=settings.analysis_timeout_seconds,
             )
         except asyncio.TimeoutError:
             _set_status(token, status="failed",
+                        phase="failed",
+                        phase_updated_at=_now(),
                         completed_at=_now(),
                         error_message="timeout")
             log.warning("analysis timeout token=%s", token)
             return
         except Exception as exc:  # noqa: BLE001
             _set_status(token, status="failed",
+                        phase="failed",
+                        phase_updated_at=_now(),
                         completed_at=_now(),
                         error_message=str(exc)[:500])
             log.exception("analysis failed token=%s", token)
@@ -151,6 +175,8 @@ class AnalysisQueue:
         _set_status(
             token,
             status="ready",
+            phase="ready",
+            phase_updated_at=_now(),
             completed_at=_now(),
             run_id=run_id,
         )

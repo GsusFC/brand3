@@ -1,0 +1,202 @@
+{
+  "completed_at": "2026-05-11T17:46:24.963677",
+  "output_dir": "examples/visual_signature/screenshots",
+  "results": [
+    {
+      "brand_name": "Allbirds",
+      "capture_type": "viewport",
+      "capture_variant": "raw_viewport",
+      "captured_at": "2026-05-11T17:46:01.414933",
+      "clean_attempt_capture_variant": "clean_attempt",
+      "clean_attempt_screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+      "clicked_text": "Close",
+      "dismissal_attempted": true,
+      "dismissal_block_reason": null,
+      "dismissal_eligibility": "eligible",
+      "dismissal_method": "close",
+      "dismissal_successful": false,
+      "page_url": "https://www.allbirds.com",
+      "perceptual_state": "REVIEW_REQUIRED_STATE",
+      "perceptual_transitions": [
+        {
+          "confidence": 1.0,
+          "evidence_refs": [
+            "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png"
+          ],
+          "from_state": "RAW_STATE",
+          "mutation_ref": null,
+          "notes": [
+            "raw_viewport_preserved_as_primary_evidence"
+          ],
+          "reason": "raw_capture_created",
+          "to_state": "RAW_STATE"
+        },
+        {
+          "confidence": 0.89,
+          "evidence_refs": [
+            "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png"
+          ],
+          "from_state": "RAW_STATE",
+          "mutation_ref": null,
+          "notes": [
+            "obstruction_present_but_confidence_or_first_impression_is_low"
+          ],
+          "reason": "low_confidence_obstruction",
+          "to_state": "REVIEW_REQUIRED_STATE"
+        },
+        {
+          "confidence": 0.89,
+          "evidence_refs": [
+            "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png"
+          ],
+          "from_state": "REVIEW_REQUIRED_STATE",
+          "mutation_ref": null,
+          "notes": [
+            "obstruction_present_but_confidence_or_first_impression_is_low",
+            "exact_safe_affordance_detected"
+          ],
+          "reason": "exact_safe_affordance_detected",
+          "to_state": "ELIGIBLE_FOR_SAFE_INTERVENTION"
+        },
+        {
+          "confidence": 0.89,
+          "evidence_refs": [
+            "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png"
+          ],
+          "from_state": "ELIGIBLE_FOR_SAFE_INTERVENTION",
+          "mutation_ref": null,
+          "notes": [
+            "safe_mutation_attempted"
+          ],
+          "reason": "safe_mutation_attempted",
+          "to_state": "ELIGIBLE_FOR_SAFE_INTERVENTION"
+        },
+        {
+          "confidence": 0.89,
+          "evidence_refs": [
+            "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+            "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png"
+          ],
+          "from_state": "ELIGIBLE_FOR_SAFE_INTERVENTION",
+          "mutation_ref": null,
+          "notes": [
+            "raw_viewport_preserved_as_primary_evidence",
+            "clean_attempt_is_supplemental_only; raw_viewport_remains_primary",
+            "safe_mutation_failed_without_overwriting_raw_state"
+          ],
+          "reason": "safe_mutation_failed",
+          "to_state": "REVIEW_REQUIRED_STATE"
+        }
+      ],
+      "raw_screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+      "raw_viewport_metrics": {
+        "composition_confidence": 0.775,
+        "palette_color_count": 58,
+        "palette_confidence": 0.867,
+        "viewport_composition": "dense_grid",
+        "viewport_visual_density": "dense",
+        "viewport_whitespace_ratio": 0.184
+      },
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+      "secondary_screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+      "status": "ok",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "website_url": "https://www.allbirds.com",
+      "width": 1440,
+      "height": 900,
+      "before_obstruction": {
+        "confidence": 0.89,
+        "coverage_ratio": 0.92,
+        "first_impression_valid": false,
+        "limitations": [],
+        "overlay_level_signals": [
+          "dom_keyword:offer",
+          "dom_overlay_term:modal",
+          "dom_overlay_term:dialog"
+        ],
+        "page_level_signals": [
+          "dom_keyword:cookie",
+          "dom_keyword:cookies",
+          "dom_keyword:newsletter",
+          "dom_keyword:subscribe",
+          "dom_keyword:login",
+          "dom_keyword:promo",
+          "dom_overlay_term:dialog",
+          "dom_overlay_term:overlay"
+        ],
+        "present": true,
+        "severity": "blocking",
+        "signals": [
+          "dom_keyword:cookie",
+          "dom_keyword:cookies",
+          "dom_keyword:newsletter",
+          "dom_keyword:subscribe",
+          "dom_keyword:login",
+          "dom_keyword:promo",
+          "dom_overlay_term:dialog",
+          "dom_overlay_term:overlay",
+          "dom_keyword:offer",
+          "dom_overlay_term:modal",
+          "dom_fixed_or_sticky_position_pattern",
+          "dom_bottom_aligned_container_pattern",
+          "dom_full_viewport_container_pattern",
+          "dom_high_z_index_pattern"
+        ],
+        "type": "newsletter_modal",
+        "visual_signals": [
+          "dom_fixed_or_sticky_position_pattern",
+          "dom_bottom_aligned_container_pattern",
+          "dom_full_viewport_container_pattern",
+          "dom_high_z_index_pattern"
+        ]
+      },
+      "after_obstruction": {
+        "confidence": 0.89,
+        "coverage_ratio": 0.92,
+        "first_impression_valid": false,
+        "limitations": [],
+        "overlay_level_signals": [
+          "dom_keyword:offer",
+          "dom_overlay_term:modal",
+          "dom_overlay_term:dialog"
+        ],
+        "page_level_signals": [
+          "dom_keyword:cookie",
+          "dom_keyword:cookies",
+          "dom_keyword:newsletter",
+          "dom_keyword:subscribe",
+          "dom_keyword:login",
+          "dom_keyword:promo",
+          "dom_overlay_term:dialog",
+          "dom_overlay_term:overlay"
+        ],
+        "present": true,
+        "severity": "blocking",
+        "signals": [
+          "dom_keyword:cookie",
+          "dom_keyword:cookies",
+          "dom_keyword:newsletter",
+          "dom_keyword:subscribe",
+          "dom_keyword:login",
+          "dom_keyword:promo",
+          "dom_overlay_term:dialog",
+          "dom_overlay_term:overlay",
+          "dom_keyword:offer",
+          "dom_overlay_term:modal",
+          "dom_fixed_or_sticky_position_pattern",
+          "dom_bottom_aligned_container_pattern",
+          "dom_full_viewport_container_pattern",
+          "dom_high_z_index_pattern"
+        ],
+        "type": "newsletter_modal",
+        "visual_signals": [
+          "dom_fixed_or_sticky_position_pattern",
+          "dom_bottom_aligned_container_pattern",
+          "dom_full_viewport_container_pattern",
+          "dom_high_z_index_pattern"
+        ]
+      }
+    }
+  ]
+}

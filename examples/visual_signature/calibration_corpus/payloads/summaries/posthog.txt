@@ -1,0 +1,41 @@
+Expected category: developer_first
+Notes: Developer-first analytics with intentionally informal visual system.
+
+== PostHog ==
+URL: https://posthog.com
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.41, consistency_coverage=0.51]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.51
+
+Visual summaries:
+- palette preview: #6d7428[###] #090803[###] #070602[###] #6d7328[###] #070702[###] #707428[###] #6e7528[###] #080803[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=0; density=sparse; patterns=grid,flex
+- components: button=24, cta=6, accordion=18, pricing=2
+- consistency: overall=0.45; color=0.48; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0c0[###] #e0e0e0[###] #e0c0c0[###] #c0c0a0[###] #c0c0c0[###] #2080ff[###] #e0a020[###]
+- viewport palette: #ffffff[###] #e0e0c0[###] #e0e0e0[###] #e0c0c0[###] #c0c0a0[###] #c0c0c0[###] #2080ff[###] #e0a020[###]
+- composition: density=balanced; whitespace=48%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=48%; classification=balanced_blocks
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

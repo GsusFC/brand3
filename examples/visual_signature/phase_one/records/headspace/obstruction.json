@@ -1,0 +1,60 @@
+{
+  "brand_name": "Headspace",
+  "capture_id": "headspace",
+  "confidence": 1.0,
+  "created_at": "2026-05-11T17:46:24.963640",
+  "evidence_refs": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+  ],
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:headspace",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+  ],
+  "observation_key": "obstruction",
+  "observation_value": "login_wall",
+  "perception_layer": "functional",
+  "reasoning_trace": {
+    "created_at": "2026-05-11T17:46:24.963640",
+    "lineage_refs": [
+      "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+      "capture:headspace",
+      "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+    ],
+    "record_type": "reasoning_trace",
+    "review_required": true,
+    "schema_version": "phase-zero-reasoning-trace-1",
+    "statements": [
+      {
+        "confidence": 1.0,
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+        ],
+        "statement": "Viewport obstruction evidence is login_wall.",
+        "warnings": []
+      }
+    ],
+    "summary": "Capture reports obstruction value login_wall.",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "trace_id": "trace_headspace_obstruction",
+    "unsupported_inference_warnings": []
+  },
+  "record_id": "obs_headspace_obstruction",
+  "record_type": "perceptual_observation",
+  "schema_version": "phase-zero-perceptual-observation-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty": {
+    "confidence": 1.0,
+    "confidence_level": "high",
+    "known_unknowns": [],
+    "record_type": "uncertainty_profile",
+    "reviewer_required": true,
+    "schema_version": "phase-zero-uncertainty-profile-1",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "uncertainty_reasons": [
+      "blocking"
+    ],
+    "unsupported_inference": false
+  },
+  "website_url": "https://www.headspace.com"
+}

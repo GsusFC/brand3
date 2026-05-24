@@ -1,0 +1,172 @@
+{
+  "current_flow": [
+    {
+      "evidence_risk": "none",
+      "output": "run record",
+      "stage": "audit_url",
+      "source": "brand_service.analyze_brand"
+    },
+    {
+      "evidence_risk": "technical artifacts can later become narrative evidence",
+      "output": "ContextData and context evidence_items",
+      "stage": "context_scan",
+      "source": "input_collection._collect_context_input"
+    },
+    {
+      "evidence_risk": "owned content and scrape artifacts share one shape",
+      "output": "WebData",
+      "stage": "web_scrape",
+      "source": "input_collection._collect_web_input / WebCollector.scrape"
+    },
+    {
+      "evidence_risk": "same-name or off-entity search results can enter normal feature evidence",
+      "output": "ExaData",
+      "stage": "exa_collection",
+      "source": "input_collection._collect_exa_input / ExaCollector.collect_brand_data"
+    },
+    {
+      "evidence_risk": "added Exa/Web results merge back into normal inputs without hard eligibility",
+      "output": "enriched ExaData/WebData",
+      "stage": "discovery_enrichment",
+      "source": "discovery.enrichment"
+    },
+    {
+      "evidence_risk": "feature raw values become flexible evidence containers",
+      "output": "features",
+      "stage": "feature_extraction",
+      "source": "services.feature_pipeline"
+    },
+    {
+      "evidence_risk": "technical/context evidence can become ordinary narrative input",
+      "output": "Evidence objects grouped by dimension",
+      "stage": "narrative_evidence_derivation",
+      "source": "reports.derivation.collect_evidences"
+    }
+  ],
+  "deep_research_benchmark_categories": [
+    "audited_surface",
+    "owned_claims",
+    "external_evidence",
+    "related_surface_evidence",
+    "technical_signals",
+    "trust_or_security_signals",
+    "entity_ambiguity",
+    "excluded_noise",
+    "missing_evidence",
+    "finding_eligible_evidence",
+    "evidence_not_eligible_for_findings",
+    "requires_human_review"
+  ],
+  "entity_surface_rules": {
+    "audited_url": "exact submitted or final canonical URL",
+    "canonical_root": "root domain of audited URL; owned context but not same page",
+    "explicit_related_surface": "official links, same organization docs, or reviewed metadata",
+    "forbidden_alias_inference": [
+      "name similarity",
+      "search co-occurrence",
+      "third-party mention alone",
+      "URL token match alone"
+    ],
+    "same_name_different_domain": "unresolved unless explicit evidence links it",
+    "same_root_surface": "related surface, not automatic ownership or equivalence",
+    "unresolved_surface": "requires review"
+  },
+  "evidence_packet_v0": {
+    "deep_research_required": false,
+    "llm_required": false,
+    "metadata": {
+      "runtime_effect": false,
+      "source": "existing_exa_web_pipeline",
+      "version": 0
+    },
+    "top_level_fields": [
+      "version",
+      "case_id",
+      "audit_url",
+      "audited_surface",
+      "source_inventory",
+      "owned_claims",
+      "external_evidence",
+      "related_surface_evidence",
+      "technical_signals",
+      "trust_or_security_signals",
+      "visual_or_internal_signals",
+      "entity_ambiguity",
+      "excluded_noise",
+      "missing_evidence",
+      "finding_eligible_evidence",
+      "evidence_not_eligible_for_findings",
+      "requires_human_review",
+      "dimension_evidence_inputs",
+      "metadata"
+    ]
+  },
+  "finding_eligibility_rules": {
+    "appendix_only": "useful as audit support but not narrative material",
+    "eligible_for_narrative_finding": "source-qualified, URL-backed, entity-safe, and dimension-relevant",
+    "observation_only": "true but weak, owned/self-description, or thin; no strategic implication",
+    "reject_noise": "unrelated, duplicated, off-entity, broad context, or search noise",
+    "requires_human_review": "entity relation, source quality, or security meaning unresolved",
+    "technical_only": "infrastructure, readiness, context, and internal technical signals",
+    "trust_security_review_only": "scanner/trust signals needing interpretation"
+  },
+  "implementation_slice": {
+    "create": [
+      "src/reports/evidence_packet.py",
+      "tests/test_evidence_packet.py",
+      "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json",
+      "docs/brand3_existing_pipeline_evidence_packet_v0_review.md"
+    ],
+    "first_fixture": "Builtwith run 74 or existing Builtwith example snapshot",
+    "scope": "offline/local builder from existing run snapshot only",
+    "unchanged": [
+      "collectors",
+      "scoring",
+      "prompts",
+      "report generation",
+      "rendering",
+      "persisted payload format",
+      "Visual Signature"
+    ]
+  },
+  "invariants": [
+    "Exa results do not become findings without source classification",
+    "technical/internal metrics cannot become strategic implications",
+    "evidence_insights from visual/internal analysis are not finding-eligible",
+    "robots.txt, sitemap, schema, crawl status, and generic site config are technical-only",
+    "owned claims remain owned claims and cannot become external validation",
+    "same-name different-root domains are not aliases",
+    "same-root/subdomain relation is not equivalent to ownership",
+    "missing evidence URL is explicit and blocks finding eligibility by default",
+    "security/trust signals are review-only unless source quality policy allows narrative use",
+    "evidence eligibility is computed before narrative generation",
+    "Evidence Packet v0 requires no LLM call",
+    "Deep Research is not required for local packet construction",
+    "Visual Signature remains separate",
+    "scoring remains unchanged"
+  ],
+  "problematic_builtwith_handling": {
+    "builtwith_com_evidence": "related_surface_evidence with relationship=unresolved; not eligible as audited-surface finding",
+    "evidence_without_urls": "missing_evidence; not eligible unless backed by source URL or explicit internal diagnostic class",
+    "generic_technical_configuration": "technical_only; no strategic implication",
+    "kit_owned_claims": "owned_claims and observation_only unless entity/controller is clear",
+    "robots_txt": "technical_signals and technical-only/appendix-only",
+    "security_trust_scans": "trust_or_security_signals and review-only unless source quality is high",
+    "visual_analysis_metrics": "visual_or_internal_signals and never finding-eligible"
+  },
+  "recommended_next_step": "Implement an offline/local Evidence Packet v0 builder against existing snapshots, then compare Builtwith output against the Deep Research single-URL evidence packet before touching prompts.",
+  "source_classification_rules": {
+    "audited_surface": "URL host equals submitted or canonical audit host",
+    "external_third_party": "source host differs from owned domains and is not a known technical/security host",
+    "noise": "off-topic broad market stats, unrelated same-name results, competitor material outside scope",
+    "owned_surface": "same root/canonical domain, owned fallback URL, or explicit official URL",
+    "related_unresolved": "same-name or adjacent domain without explicit ownership relation",
+    "same_root_subdomain": "same registrable/root domain as audit URL; not automatically alias",
+    "search_result": "Exa result with title/text/highlights/summary; candidate evidence, not finding-ready by default",
+    "technical_internal": "context, robots, sitemap, schema, crawl status, page depth, performance, raw tech stack",
+    "trust_security": "security, malware, scam, blacklist, trust, sandbox, scanner domains",
+    "visual_internal_metric": "visual analyzer, screenshot metrics, color, contrast, whitespace, style analysis"
+  },
+  "status": "specification_only",
+  "title": "Brand3 Existing Pipeline Evidence Reset Plan"
+}

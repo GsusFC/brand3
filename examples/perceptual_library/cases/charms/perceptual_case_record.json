@@ -1,0 +1,321 @@
+{
+  "record_id": "floc_charms_perceptual_case_record_v0_1",
+  "schema_version": "0.1.0",
+  "created_at": "2026-05-15",
+  "status": "canonical_fixture",
+  "case": {
+    "case_id": "charms",
+    "project_name": "Charms",
+    "public_url": "https://wearefloc.com/work/charms",
+    "pilot_role": "editorial_minimal_atmospheric",
+    "why_selected": "Tests whether the schema can hold softness, editorial restraint, emotional language, and ritualized surface behavior without overclaiming strategy."
+  },
+  "source_material": {
+    "public_case_page": {
+      "url": "https://wearefloc.com/work/charms",
+      "title": "Charms x FLOC* - The Future of Agentic Games Onchain",
+      "captured_as": "public_text_fetch",
+      "source_id": "floc_public_case_charms"
+    },
+    "public_case_copy_excerpts": [
+      {
+        "source_id": "charms_copy_title",
+        "text": "The Future of Agentic Games Onchain"
+      },
+      {
+        "source_id": "charms_copy_living_universe",
+        "text": "AI, emotion, and play converge"
+      },
+      {
+        "source_id": "charms_copy_social_ritual",
+        "text": "every game becomes a social ritual"
+      },
+      {
+        "source_id": "charms_copy_brand_foundation",
+        "text": "feel alive, empathetic, and modular"
+      },
+      {
+        "source_id": "charms_copy_close_line",
+        "text": "Feel. Play. Belong."
+      }
+    ],
+    "local_prior_case_artifacts": [
+      {
+        "source_id": "charms_surface_observations_v0",
+        "path": "examples/perceptual_library/cases/charms/surface_observations.json",
+        "use": "visual observation anchor produced before this operational record"
+      },
+      {
+        "source_id": "charms_case_readme_v0",
+        "path": "examples/perceptual_library/cases/charms/README.md",
+        "use": "local summary of visible public page evidence"
+      }
+    ]
+  },
+  "method_boundaries": {
+    "public_website_only": true,
+    "notion_used": false,
+    "no_scoring": true,
+    "no_prompt_changes": true,
+    "no_report_changes": true,
+    "no_visual_signature_runtime_changes": true,
+    "no_runtime_changes": true,
+    "quality_evaluation": false
+  },
+  "confidence_semantics": {
+    "high": "Directly stated in public copy, directly listed in public metadata, or anchored to existing local visual observations with direct visible evidence.",
+    "medium": "Reasonable interpretation from public copy or from a single anchored visual observation, but not independently repeated.",
+    "low": "Plausible but weak inference from aesthetics, tone, or incomplete evidence; requires human review before reuse."
+  },
+  "extracted_facts": [
+    {
+      "id": "fact-001",
+      "fact": "The public case headline frames Charms as agentic games onchain.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_title",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-002",
+      "fact": "The public case copy links AI, emotion, play, meaningful connection, and social ritual.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_living_universe",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_social_ritual",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-003",
+      "fact": "The public page identifies the work as a Design Sprint.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_metadata",
+          "source_id": "floc_public_case_charms",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-004",
+      "fact": "The public copy says the engagement produced brand strategy, visual direction, creative foundations, a Framer landing-page concept, and $CHARMS visual identity.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_page",
+          "source_id": "floc_public_case_charms",
+          "support_level": "direct"
+        }
+      ]
+    }
+  ],
+  "visual_observations": [
+    {
+      "id": "visual-001",
+      "facet": "surface_behavior",
+      "observation": "The visible system is described locally as soft, light-based, and atmospheric rather than hard-interface driven.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-001",
+          "support_level": "direct"
+        }
+      ],
+      "downstream_note": "Useful for Visual Signature as a surface-behavior anchor, but should be rechecked against screenshots before automation."
+    },
+    {
+      "id": "visual-002",
+      "facet": "visual_rhythm",
+      "observation": "Repeated rounded light forms, serif wordmarks, blue fields, and white negative space create a gentle recurring rhythm.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-003",
+          "support_level": "direct"
+        }
+      ],
+      "downstream_note": "A reviewer should distinguish system repetition from decorative repetition."
+    },
+    {
+      "id": "visual-003",
+      "facet": "hierarchy",
+      "observation": "Hierarchy is described as scale plus silence: large serif typography carries the emotional center while navigation and support text recede.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-005",
+          "support_level": "direct"
+        }
+      ],
+      "downstream_note": "Do not treat hierarchy only as readability; this record frames it as perceptual priority."
+    },
+    {
+      "id": "visual-004",
+      "facet": "interaction_feeling",
+      "observation": "The interaction layer is described as lookbook-like: gallery-first pacing, delayed CTA, and threshold-like exit behavior.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-006",
+          "support_level": "corroborating"
+        }
+      ],
+      "downstream_note": "This needs direct browser/capture evidence before becoming a reusable interaction pattern."
+    }
+  ],
+  "strategic_interpretations": [
+    {
+      "id": "interp-001",
+      "interpretation": "Charms translates a technical onchain gaming category into a softer emotional ritual frame.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_title",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_social_ritual",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-004",
+          "support_level": "corroborating"
+        }
+      ],
+      "why_not_high_confidence": "The interpretation combines stated copy with visual reading; intent is plausible but not independently confirmed."
+    },
+    {
+      "id": "interp-002",
+      "interpretation": "The case suggests that premium play can be expressed through restraint instead of speed, spectacle, or maximal game tropes.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-008",
+          "support_level": "corroborating"
+        },
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-012",
+          "support_level": "corroborating"
+        }
+      ],
+      "why_not_high_confidence": "The public page does not state premium intent; this is a Brand3 reading of surface behavior."
+    }
+  ],
+  "unsupported_or_low_confidence_inferences": [
+    {
+      "id": "low-001",
+      "inference": "The intended audience may be closer to design-literate Web3 players than to mainstream mobile gamers.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-008",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "Audience is not directly stated; the inference comes from aesthetic cues."
+    },
+    {
+      "id": "low-002",
+      "inference": "The case may be intentionally avoiding conventional gaming intensity.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-001",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "Avoidance is an intent claim; current evidence only supports the absence of hard-interface or aggressive gaming cues."
+    }
+  ],
+  "contradictions": [
+    {
+      "id": "contra-001",
+      "stated_claim": "The public copy frames the project as games onchain.",
+      "observed_signal": "The local visual observations describe calm editorial pacing, soft light forms, serif typography, and lookbook-like interaction rather than high-intensity game UI.",
+      "contradiction_level": "soft",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_title",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-006",
+          "support_level": "corroborating"
+        }
+      ],
+      "interpretation_boundary": "This is not a flaw claim. It records a productive tension between category language and surface behavior."
+    },
+    {
+      "id": "contra-002",
+      "stated_claim": "The public copy says the brand is modular.",
+      "observed_signal": "Current visual evidence is stronger for repetition and motif control than for explicit modular component behavior.",
+      "contradiction_level": "unverified",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "charms_copy_brand_foundation",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "local_prior_case_artifact",
+          "source_id": "charms_surface_observations_v0:surface-003",
+          "support_level": "weak_inference"
+        }
+      ],
+      "interpretation_boundary": "Do not convert the modular claim into a confirmed system property without component or layout evidence."
+    }
+  ],
+  "human_review": {
+    "status": "required_before_downstream_use",
+    "review_questions": [
+      "Do screenshots confirm the visual observations used as anchors?",
+      "Is the soft contradiction between onchain games and editorial pacing productive or misleading?",
+      "Should modularity remain a copy-level fact until component evidence is available?",
+      "Which terms are safe to reuse outside Charms without importing FLOC* case-study voice?"
+    ],
+    "reviewed_by": null,
+    "reviewed_at": null
+  },
+  "validation": {
+    "json_parse_required": true,
+    "schema_contract": "examples/perceptual_library/schema/perceptual_case_record_schema.json",
+    "test_file": "tests/test_perceptual_case_record.py",
+    "case_artifact_boundary": "canonical_fixture_only",
+    "ready_for_scoring": false,
+    "ready_for_runtime": false
+  }
+}

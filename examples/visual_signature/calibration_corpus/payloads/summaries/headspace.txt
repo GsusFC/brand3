@@ -1,0 +1,40 @@
+Expected category: wellness_lifestyle
+Notes: Wellness brand with soft visual language and conversion flows.
+
+== Headspace ==
+URL: https://www.headspace.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.58, consistency_coverage=0.59]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #ffffff[###] #44423f[###] #f9f4f2[###] #281466[###] #141313[###] #1a0c54[###] #3b197f[###] #ff7300[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=4; density=dense; patterns=single_column
+- components: button=54, cta=29, form=10, card=116, accordion=56, tabs=36, pricing=6
+- consistency: overall=0.47; color=0.48; type=0.20; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #ffc000[###] #202020[###] #0060e0[###] #a0a0a0[###] #e0e0e0[###] #808080[###] #606060[###]
+- viewport palette: #ffffff[###] #ffc000[###] #202020[###] #0060e0[###] #a0a0a0[###] #e0e0e0[###] #808080[###] #606060[###]
+- composition: density=balanced; whitespace=77%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=77%; classification=balanced_blocks
+- vision confidence: 0.86 (high)
+- viewport confidence: 0.86 (high)
+- agreement: low; flags=dom_density_higher_than_viewport,dom_density_disagrees_with_viewport_first_fold
+- agreement notes: DOM suggests a denser page than the viewport first impression.; DOM suggests a denser page, but the viewport reads as spacious.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

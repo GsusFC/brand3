@@ -1,0 +1,22 @@
+{
+  "capture_id": "cap_phase_zero_example",
+  "confidence": 0.93,
+  "created_at": "2026-05-11T10:00:00Z",
+  "evidence_refs": [
+    "raw_screenshot_path"
+  ],
+  "from_state": "RAW_STATE",
+  "lineage_refs": [
+    "capture:phase-zero-example"
+  ],
+  "mutation_ref": null,
+  "notes": [
+    "cookie modal visible"
+  ],
+  "reason": "viewport_obstruction_detected",
+  "record_type": "transition_record",
+  "schema_version": "phase-zero-transition-record-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "to_state": "OBSTRUCTED_STATE",
+  "transition_id": "transition_phase_zero_example"
+}

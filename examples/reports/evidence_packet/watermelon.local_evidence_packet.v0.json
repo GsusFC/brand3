@@ -1,0 +1,2225 @@
+{
+  "version": 0,
+  "case_id": "watermelon",
+  "audit_url": "https://watermelon.sh",
+  "audited_surface": {
+    "url": "https://watermelon.sh",
+    "host": "watermelon.sh",
+    "root_domain": "watermelon.sh",
+    "evidence": [
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We star",
+        "url": "https://watermelon.sh/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+        "url": "https://watermelon.sh/",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.",
+        "url": "https://watermelon.sh/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "watermelon.sh",
+    "confidence": "medium",
+    "evidence": [
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We star",
+        "url": "https://watermelon.sh/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+        "url": "https://watermelon.sh/",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.",
+        "url": "https://watermelon.sh/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "related_surfaces": [
+      {
+        "surface": "https://www.linkedin.com/company/watermelon",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/watermelon",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://watermelon.us/",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "",
+            "url": "https://watermelon.us/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "Watermelon Software Inc employs 24 people (+47.8% YoY, +11 people), founded in 2021.",
+            "url": "https://watermelon.us/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          },
+          {
+            "text": "Has $3.6M in total funding.",
+            "url": "https://watermelon.us/",
+            "classification_reason": "same_name_different_root_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://www.crunchbase.com/organization/watermelon-3d11",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+            "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://github.com/WatermelonCorp/watermellon-registry",
+        "relation_type": "repository",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "# Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3 - Primary language: TypeScript - Languages: Typ",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Topics: dashboard, shadcn, shadcn-ui, ui, ui-design",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "WatermelonCorp/watermellon-registry",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://github.com/watermelontools",
+        "relation_type": "repository",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "# Organization: Watermelon Tools (@watermelontools) Copilot for Code Review - Website: watermelontools.com - Email: support@watermelon.tools - Twitter",
+            "url": "https://github.com/watermelontools",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Watermelon Tools Copilot for Code Review",
+            "url": "https://github.com/watermelontools",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://www.softwaresuggest.com/watermelon/alternatives",
+        "relation_type": "marketplace_listing",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "",
+            "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+            "classification_reason": "marketplace_listing_not_automatic_external_validation",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://www.producthunt.com/products/watermelon",
+        "relation_type": "marketplace_listing",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "Watermelon - Product Information, Latest Updates, and Reviews 2024 | Product Hunt",
+            "url": "https://www.producthunt.com/products/watermelon",
+            "classification_reason": "marketplace_listing_not_automatic_external_validation",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/watermelon",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://watermelon.us/",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://www.crunchbase.com/organization/watermelon-3d11",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/watermelon",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/watermelon",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@watermelon",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/watermelon",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://watermelon.sh/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "source_type": "repository",
+      "source_quality": "high",
+      "role": "repository_or_developer_surface",
+      "notes": "repository_activity_not_adoption"
+    },
+    {
+      "url": "https://github.com/watermelontools",
+      "source_type": "repository",
+      "source_quality": "high",
+      "role": "repository_or_developer_surface",
+      "notes": "repository_activity_not_adoption"
+    },
+    {
+      "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+      "source_type": "marketplace",
+      "source_quality": "medium",
+      "role": "marketplace_or_directory_listing",
+      "notes": "marketplace_listing_not_automatic_external_validation"
+    },
+    {
+      "url": "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "excluded_noise_candidate",
+      "notes": "off_topic_or_broad_market_noise"
+    },
+    {
+      "url": "https://watermelon.us/",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_different_root_not_alias"
+    },
+    {
+      "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://www.producthunt.com/products/watermelon",
+      "source_type": "marketplace",
+      "source_quality": "medium",
+      "role": "marketplace_or_directory_listing",
+      "notes": "marketplace_listing_not_automatic_external_validation"
+    },
+    {
+      "url": "https://watermelon.sh/sitemap.xml",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://watermelon.sh/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://watermelon.sh",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://watermelon.sh",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://watermelon.sh/",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/watermelon",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://watermelon.sh",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://watermelon.sh/",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=2"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhe",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon UI — an open-source design system with production-ready components. Built for developers and designers who want to ship fast without sacrificing quality.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon is not one product. It's five, working together.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "# Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3 - Primary language: TypeScript - Languages: Typ",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "# Organization: Watermelon Tools (@watermelontools) Copilot for Code Review - Website: watermelontools.com - Email: support@watermelon.tools - Twitter",
+      "url": "https://github.com/watermelontools",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "marketplace_listing",
+      "eligibility": "requires_human_review",
+      "classification_reason": "marketplace_listing_not_automatic_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "marketplace_listing",
+      "eligibility": "requires_human_review",
+      "classification_reason": "marketplace_listing_not_automatic_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Topics: dashboard, shadcn, shadcn-ui, ui, ui-design",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon | Design Infrastructure for Modern Startups",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Open-Source Copilot For Code Review",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Building the design infrastructure for modern startups.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Founders are stuck stitching together fragmented tools, fighting inconsistent UI, and watching product development slow down at the worst possible time.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "So we built Watermelon — a unified design ecosystem that combines services, systems, and inspiration into one platform. Not another tool. An infrastructure.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Cropin as the audited brand's closest measured competitor with measured distance 0.927; avg_distance=0.949; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Acuity Agriculture as the audited brand's most different measured competitor with measured distance 0.992; avg_distance=0.949; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "WatermelonCorp/watermellon-registry",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon Tools Copilot for Code Review",
+      "url": "https://github.com/watermelontools",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon - Product Information, Latest Updates, and Reviews 2024 | Product Hunt",
+      "url": "https://www.producthunt.com/products/watermelon",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "marketplace_listing",
+      "eligibility": "requires_human_review",
+      "classification_reason": "marketplace_listing_not_automatic_external_validation",
+      "limits": ""
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://watermelon.us/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "Watermelon Software Inc employs 24 people (+47.8% YoY, +11 people), founded in 2021.",
+      "url": "https://watermelon.us/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "Has $3.6M in total funding.",
+      "url": "https://watermelon.us/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    },
+    {
+      "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+      "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "sitemap.xml found with 2 URLs",
+      "url": "https://watermelon.sh/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://watermelon.sh/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.00; contrast signal 0.24.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/watermelon",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://watermelon.us/",
+      "text": "",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    },
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.crunchbase.com/organization/watermelon-3d11",
+      "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [
+    {
+      "text": "",
+      "url": "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "noise",
+      "eligibility": "reject_noise",
+      "classification_reason": "off_topic_or_broad_market_noise",
+      "limits": ""
+    }
+  ],
+  "missing_evidence": [
+    {
+      "text": "Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhe",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.00; contrast signal 0.24.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Watermelon UI — an open-source design system with production-ready components. Built for developers and designers who want to ship fast without sacrificing quality.",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Watermelon is not one product. It's five, working together.",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Watermelon | Design Infrastructure for Modern Startups",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Open-Source Copilot For Code Review",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Building the design infrastructure for modern startups.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Founders are stuck stitching together fragmented tools, fighting inconsistent UI, and watching product development slow down at the worst possible time.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "So we built Watermelon — a unified design ecosystem that combines services, systems, and inspiration into one platform. Not another tool. An infrastructure.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We star",
+      "url": "https://watermelon.sh/",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "url": "https://watermelon.sh/",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Cropin as the audited brand's closest measured competitor with measured distance 0.927; avg_distance=0.949; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Acuity Agriculture as the audited brand's most different measured competitor with measured distance 0.992; avg_distance=0.949; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.",
+      "url": "https://watermelon.sh/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhe",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/watermelon",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "# Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3 - Primary language: TypeScript - Languages: Typ",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "# Organization: Watermelon Tools (@watermelontools) Copilot for Code Review - Website: watermelontools.com - Email: support@watermelon.tools - Twitter",
+      "url": "https://github.com/watermelontools",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "marketplace_listing",
+      "eligibility": "requires_human_review",
+      "classification_reason": "marketplace_listing_not_automatic_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "noise",
+      "eligibility": "reject_noise",
+      "classification_reason": "off_topic_or_broad_market_noise",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://watermelon.us/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon Software Inc employs 24 people (+47.8% YoY, +11 people), founded in 2021.",
+      "url": "https://watermelon.us/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Has $3.6M in total funding.",
+      "url": "https://watermelon.us/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_different_root_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.00; contrast signal 0.24.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon UI — an open-source design system with production-ready components. Built for developers and designers who want to ship fast without sacrificing quality.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Topics: dashboard, shadcn, shadcn-ui, ui, ui-design",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon is not one product. It's five, working together.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+      "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon | Design Infrastructure for Modern Startups",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Open-Source Copilot For Code Review",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Building the design infrastructure for modern startups.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Founders are stuck stitching together fragmented tools, fighting inconsistent UI, and watching product development slow down at the worst possible time.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "So we built Watermelon — a unified design ecosystem that combines services, systems, and inspiration into one platform. Not another tool. An infrastructure.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "WatermelonCorp/watermellon-registry",
+      "url": "https://github.com/WatermelonCorp/watermellon-registry",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon Tools Copilot for Code Review",
+      "url": "https://github.com/watermelontools",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Watermelon - Product Information, Latest Updates, and Reviews 2024 | Product Hunt",
+      "url": "https://www.producthunt.com/products/watermelon",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "marketplace_listing",
+      "eligibility": "requires_human_review",
+      "classification_reason": "marketplace_listing_not_automatic_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "sitemap.xml found with 2 URLs",
+      "url": "https://watermelon.sh/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://watermelon.sh/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/watermelon",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "",
+      "url": "https://watermelon.us/",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    },
+    {
+      "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+      "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhe",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/watermelon",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/watermelon",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@watermelon",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/watermelon",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We star",
+        "url": "https://watermelon.sh/",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "# Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3 - Primary language: TypeScript - Languages: Typ",
+        "url": "https://github.com/WatermelonCorp/watermellon-registry",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      },
+      {
+        "text": "# Organization: Watermelon Tools (@watermelontools) Copilot for Code Review - Website: watermelontools.com - Email: support@watermelon.tools - Twitter",
+        "url": "https://github.com/watermelontools",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      },
+      {
+        "text": "sitemap.xml found with 2 URLs",
+        "url": "https://watermelon.sh/sitemap.xml",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://watermelon.sh/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "marketplace_listing",
+        "eligibility": "requires_human_review",
+        "classification_reason": "marketplace_listing_not_automatic_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "noise",
+        "eligibility": "reject_noise",
+        "classification_reason": "off_topic_or_broad_market_noise",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://watermelon.us/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.softwaresuggest.com/watermelon/alternatives",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "marketplace_listing",
+        "eligibility": "requires_human_review",
+        "classification_reason": "marketplace_listing_not_automatic_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon Software Inc employs 24 people (+47.8% YoY, +11 people), founded in 2021.",
+        "url": "https://watermelon.us/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "Has $3.6M in total funding.",
+        "url": "https://watermelon.us/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_different_root_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3",
+        "url": "https://github.com/WatermelonCorp/watermellon-registry",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.00; contrast signal 0.24.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+        "url": "https://watermelon.sh/",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon UI — an open-source design system with production-ready components. Built for developers and designers who want to ship fast without sacrificing quality.",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Topics: dashboard, shadcn, shadcn-ui, ui, ui-design",
+        "url": "https://github.com/WatermelonCorp/watermellon-registry",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon is not one product. It's five, working together.",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+        "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Open-Source Copilot For Code Review",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "Building the design infrastructure for modern startups.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Founders are stuck stitching together fragmented tools, fighting inconsistent UI, and watching product development slow down at the worst possible time.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "So we built Watermelon — a unified design ecosystem that combines services, systems, and inspiration into one platform. Not another tool. An infrastructure.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Cropin as the audited brand's closest measured competitor with measured distance 0.927; avg_distance=0.949; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Acuity Agriculture as the audited brand's most different measured competitor with measured distance 0.992; avg_distance=0.949; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.",
+        "url": "https://watermelon.sh/",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "WatermelonCorp/watermellon-registry",
+        "url": "https://github.com/WatermelonCorp/watermellon-registry",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon Tools Copilot for Code Review",
+        "url": "https://github.com/watermelontools",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon - Product Information, Latest Updates, and Reviews 2024 | Product Hunt",
+        "url": "https://www.producthunt.com/products/watermelon",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "marketplace_listing",
+        "eligibility": "requires_human_review",
+        "classification_reason": "marketplace_listing_not_automatic_external_validation",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "ready",
+      "eligible_count": 1,
+      "blocked_count": 10,
+      "review_required_count": 4,
+      "missing_evidence_count": 8,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "visual_brand_support_only",
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url"
+      ],
+      "readiness_reason": "Coherencia has multiple owned textual surfaces and at least one usable non-review-gated evidence item.",
+      "recommended_action": "Proceed with intra-entity consistency language only."
+    },
+    "presencia": {
+      "status": "thin",
+      "eligible_count": 1,
+      "blocked_count": 9,
+      "review_required_count": 1,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "external_channel_coverage_thin"
+      ],
+      "readiness_reason": "Presencia has owned-surface evidence, but external channel evidence is insufficient.",
+      "recommended_action": "Verify official profiles and collect external channel evidence."
+    },
+    "percepcion": {
+      "status": "thin",
+      "eligible_count": 1,
+      "blocked_count": 3,
+      "review_required_count": 1,
+      "missing_evidence_count": 0,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "insufficient_external_sentiment_evidence"
+      ],
+      "readiness_reason": "Percepcion has usable evidence, but external sentiment coverage is thin.",
+      "recommended_action": "Acquire more independent perception sources or keep prose heavily qualified."
+    },
+    "diferenciacion": {
+      "status": "blocked",
+      "eligible_count": 2,
+      "blocked_count": 4,
+      "review_required_count": 3,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "readiness_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness.",
+      "recommended_action": "Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "status": "blocked",
+      "eligible_count": 0,
+      "blocked_count": 7,
+      "review_required_count": 5,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked",
+        "review_gated_evidence_not_ready",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "readiness_reason": "Evidence is dominated by unresolved entity or surface ambiguity.",
+      "recommended_action": "Resolve entity boundaries before narrative generation."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhe",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon UI — an open-source design system with production-ready components. Built for developers and designers who want to ship fast without sacrificing quality.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Watermelon is not one product. It's five, working together.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "Existing Brand3 competitor comparison identifies Cropin as the audited brand's closest measured competitor with measured distance 0.927; avg_distance=0.949; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Acuity Agriculture as the audited brand's most different measured competitor with measured distance 0.992; avg_distance=0.949; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "sitemap.xml found with 2 URLs",
+        "url": "https://watermelon.sh/sitemap.xml",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://watermelon.sh/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.00; contrast signal 0.24.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [],
+    "excluded_noise": [
+      {
+        "text": "",
+        "url": "https://perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot/",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "noise",
+        "eligibility": "reject_noise",
+        "classification_reason": "off_topic_or_broad_market_noise",
+        "limits": ""
+      }
+    ],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/watermelon",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://watermelon.us/",
+        "text": "",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      },
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.crunchbase.com/organization/watermelon-3d11",
+        "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/watermelon",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://watermelon.us/",
+        "evidence": "",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.crunchbase.com/organization/watermelon-3d11",
+        "evidence": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "search_visibility",
+        "owned_evidence": [
+          {
+            "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We star",
+            "url": "https://watermelon.sh/",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "# Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3 - Primary language: TypeScript - Languages: Typ",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "# Organization: Watermelon Tools (@watermelontools) Copilot for Code Review - Website: watermelontools.com - Email: support@watermelon.tools - Twitter",
+            "url": "https://github.com/watermelontools",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "messaging_consistency",
+        "owned_evidence": [
+          {
+            "text": "We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups. A note from the Watermelon team We started Watermelon because we saw the same problem everywhere — startups move fast, but design becomes the bottleneck.",
+            "url": "https://watermelon.sh/",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Watermelon UI — an open-source design system with production-ready components. Built for developers and designers who want to ship fast without sacrificing quality.",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Topics: dashboard, shadcn, shadcn-ui, ui, ui-design",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Watermelon Software Inc is a Software Development company. Watermelon is a company that provides reliability and platform solutions.",
+            "url": "https://www.crunchbase.com/organization/watermelon-3d11",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "brand_sentiment",
+        "owned_evidence": [
+          {
+            "text": "Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.",
+            "url": "https://watermelon.sh/",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "WatermelonCorp/watermellon-registry",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Watermelon Tools Copilot for Code Review",
+            "url": "https://github.com/watermelontools",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Watermelon - Product Information, Latest Updates, and Reviews 2024 | Product Hunt",
+            "url": "https://www.producthunt.com/products/watermelon",
+            "classification_reason": "marketplace_listing_not_automatic_external_validation",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "count_or_activity_claims_require_support",
+        "surface": "",
+        "evidence": [
+          {
+            "text": "# Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3 - Primary language: TypeScript - Languages: Typ",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Repository: WatermelonCorp/watermellon-registry - Stars: 7 - Forks: 6 - Watchers: 7 - Open issues: 3",
+            "url": "https://github.com/WatermelonCorp/watermellon-registry",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          }
+        ],
+        "reason": "Usage, install, follower, contributor, star, fork, and upvote counts require independent support before narrative use.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 31,
+      "owned_claims": 5,
+      "external_evidence": 20,
+      "related_surface_evidence": 5,
+      "technical_signals": 2,
+      "trust_or_security_signals": 0,
+      "visual_or_internal_signals": 2,
+      "entity_ambiguity": 3,
+      "excluded_noise": 1,
+      "missing_evidence": 13,
+      "finding_eligible_evidence": 5,
+      "evidence_not_eligible_for_findings": 32,
+      "requires_human_review": 3
+    }
+  }
+}

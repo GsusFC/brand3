@@ -15,6 +15,24 @@ from ..templates_env import templates
 router = APIRouter()
 
 
+class _WebReportNarrativeFallback:
+    """Force deterministic report prose for public web reads.
+
+    Report generation can use LLM narrative during the audit pipeline. The
+    public detail page should be a read path: fast, repeatable, and safe under
+    health checks.
+    """
+
+    def _call(self, *args, **kwargs) -> str:
+        return ""
+
+    def _call_json(self, *args, **kwargs) -> dict:
+        return {}
+
+
+_WEB_REPORT_ANALYZER = _WebReportNarrativeFallback()
+
+
 def _load_snapshot(run_id: int) -> dict | None:
     from src.config import BRAND3_DB_PATH
     from src.storage.sqlite_store import SQLiteStore
@@ -30,7 +48,7 @@ def _load_snapshot(run_id: int) -> dict | None:
 async def report(
     request: Request,
     token: str,
-    theme: Literal["dark", "light"] = Query("dark"),
+    theme: Literal["dark", "light"] = Query("light"),
 ):
     row = get_request(token)
     if row is None:
@@ -68,5 +86,9 @@ async def report(
             status_code=500,
         )
 
-    html = ReportRenderer().render(snapshot, theme=theme)
+    html = ReportRenderer().render(
+        snapshot,
+        theme=theme,
+        analyzer=_WEB_REPORT_ANALYZER,
+    )
     return HTMLResponse(content=html)

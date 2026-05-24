@@ -1402,13 +1402,15 @@ Tabular foundation models for real-world data.
     def test_scrape_does_not_call_browser_when_firecrawl_is_usable(self):
         collector = WebCollector()
         content = "# Claude\n\nClaude helps people solve problems with AI. " * 8
+        html = "<html><body><main>Claude helps people solve problems with AI.</main></body></html>"
 
-        with patch.object(WebCollector, "_run_firecrawl", return_value={"content": content}):
+        with patch.object(WebCollector, "_run_firecrawl", return_value={"content": content, "html": html}):
             with patch.object(WebCollector, "_fetch_html_fallback") as html_fallback:
                 with patch.object(WebCollector, "_fetch_browser_fallback") as browser_fallback:
                     data = collector.scrape("https://claude.ai/")
 
         self.assertIn("Claude helps people solve problems", data.markdown_content)
+        self.assertEqual(data.html, html)
         html_fallback.assert_not_called()
         browser_fallback.assert_not_called()
 
@@ -1426,6 +1428,78 @@ Tabular foundation models for real-world data.
 
         self.assertGreaterEqual(len(content), 200)
         self.assertFalse(collector._looks_like_cookie_banner("Claude", content))
+
+    def test_extract_internal_links(self):
+        collector = WebCollector()
+        markdown = (
+            "Check our [Pricing](https://example.com/pricing), [About](https://example.com/about), "
+            "and [External link](https://external.com/blog). Also, [relative links](/features) "
+            "and [nested relative link](platform/solutions)."
+        )
+        links = collector._extract_internal_links(markdown, "https://example.com")
+        self.assertIn("https://example.com/pricing", links)
+        self.assertIn("https://example.com/about", links)
+        self.assertIn("https://example.com/features", links)
+        self.assertIn("https://example.com/platform/solutions", links)
+        self.assertNotIn("https://external.com/blog", links)
+
+    def test_score_internal_links(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/privacy-policy",
+            "https://example.com/pricing",
+            "https://example.com/about-us",
+            "https://example.com/blog/2026/05/19",
+            "https://example.com/features/dashboard",
+        ]
+        sorted_links = collector._score_internal_links(links, "https://example.com")
+        self.assertEqual(sorted_links[0], "https://example.com/pricing")
+        self.assertEqual(sorted_links[1], "https://example.com/features/dashboard")
+        self.assertEqual(sorted_links[2], "https://example.com/about-us")
+        self.assertNotIn("https://example.com/privacy-policy", sorted_links)
+
+    def test_scrape_recursive_crawling(self):
+        from unittest.mock import patch
+        collector = WebCollector()
+        
+        main_content = (
+            "# Main Page\n\nWelcome to our company page. "
+            "Learn more at [pricing](https://example.com/pricing) "
+            "or [about nosotros](https://example.com/about). " * 10
+        )
+        pricing_content = "# Pricing Page\n\nOur plans start at $10/mo." * 10
+        about_content = "# About Us Page\n\nWe are a premium team." * 10
+        
+        def mock_run_firecrawl(url):
+            if url == "https://example.com":
+                return {"content": main_content, "html": "<html></html>"}
+            elif url == "https://example.com/pricing":
+                return {"content": pricing_content, "html": "<html></html>"}
+            elif url == "https://example.com/about":
+                return {"content": about_content, "html": "<html></html>"}
+            return {"error": "not found"}
+            
+        with patch.object(WebCollector, "_run_firecrawl", side_effect=mock_run_firecrawl):
+            data = collector.scrape("https://example.com", crawl_subpages=True)
+            self.assertIn("Subpage: https://example.com/pricing", data.markdown_content)
+            self.assertIn("Our plans start at $10/mo", data.markdown_content)
+            self.assertIn("Subpage: https://example.com/about", data.markdown_content)
+            self.assertIn("We are a premium team", data.markdown_content)
+            
+            data_no_crawl = collector.scrape("https://example.com", crawl_subpages=False)
+            self.assertNotIn("Subpage: https://example.com/pricing", data_no_crawl.markdown_content)
+
+    def test_dismiss_cookie_banners_playwright(self):
+        from unittest.mock import MagicMock
+        collector = WebCollector()
+        mock_page = MagicMock()
+        mock_locator = MagicMock()
+        mock_page.locator.return_value = mock_locator
+        
+        collector._dismiss_cookie_banners(mock_page)
+        
+        mock_page.locator.assert_called_once()
+        mock_locator.first.click.assert_called_once_with(timeout=500)
 
 
 class ExaCollectorTests(unittest.TestCase):

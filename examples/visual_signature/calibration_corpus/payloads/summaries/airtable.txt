@@ -1,0 +1,40 @@
+Expected category: template_like_saas
+Notes: Highly modular SaaS page useful for template-like pattern detection.
+
+== Airtable ==
+URL: https://www.airtable.com
+Interpretation status: interpretable
+Extraction confidence: 0.64 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.52, consistency_coverage=0.50]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.52
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.50
+
+Visual summaries:
+- palette preview: #254fad[###] #214224[###] #0a2e0e[###] #ffffff[###] #41454d[###] #181d26[###] #aa2d00[###] #fcab79[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=32; density=sparse; patterns=multi_column
+- components: button=2, cta=7
+- consistency: overall=0.50; color=0.68; type=0.20; component=0.64; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #e0e0e0[###] #2060c0[###] #404040[###] #c0c0c0[###] #606060[###] #a0a0a0[###]
+- viewport palette: #ffffff[###] #202020[###] #e0e0e0[###] #2060c0[###] #404040[###] #c0c0c0[###] #606060[###] #a0a0a0[###]
+- composition: density=sparse; whitespace=90%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=90%; classification=sparse_single_focus
+- vision confidence: 0.81 (high)
+- viewport confidence: 0.81 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

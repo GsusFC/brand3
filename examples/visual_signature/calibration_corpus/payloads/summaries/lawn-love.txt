@@ -1,0 +1,43 @@
+Expected category: local_service_small_business
+Notes: Local services marketplace with practical booking-first layout.
+
+== Lawn Love ==
+URL: https://lawnlove.com
+Interpretation status: interpretable
+Extraction confidence: 0.59 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.40, consistency_coverage=0.45]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.46
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.45
+
+Visual summaries:
+- palette preview: #a3d145[###] #f7fdfa[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=32; density=balanced; patterns=grid,flex
+- components: button=8, cta=7, form=8, pricing=8
+- consistency: overall=0.54; color=0.78; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #a0e040[###] #006020[###] #a0c040[###] #a0c060[###] #204000[###] #406000[###] #000000[###]
+- viewport palette: #ffffff[###] #a0e040[###] #006020[###] #a0c040[###] #a0c060[###] #204000[###] #406000[###] #000000[###]
+- composition: density=dense; whitespace=32%; classification=dense_grid
+- viewport composition: density=dense; whitespace=32%; classification=dense_grid
+- vision confidence: 0.88 (high)
+- viewport confidence: 0.88 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.45)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

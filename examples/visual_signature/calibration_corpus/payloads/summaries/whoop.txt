@@ -1,0 +1,40 @@
+Expected category: wellness_lifestyle
+Notes: Performance wellness brand with product-led technical visuals.
+
+== Whoop ==
+URL: https://www.whoop.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.58, consistency_coverage=0.59]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #000000[###] #ffffff[###] #00f19f[###] #999999[###] #aaaaaa[###] #eeeeee[###] #dddddd[###] #bbbbbb[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=14; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=60, cta=14, card=304, accordion=38, modal=14, pricing=2
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #606060[###] #ffffff[###] #808080[###] #406060[###] #000000[###] #4060ff[###] #806040[###] #404060[###]
+- viewport palette: #606060[###] #ffffff[###] #808080[###] #406060[###] #000000[###] #4060ff[###] #806040[###] #404060[###]
+- composition: density=dense; whitespace=16%; classification=dense_grid
+- viewport composition: density=dense; whitespace=16%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

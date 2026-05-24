@@ -1,0 +1,40 @@
+Expected category: editorial_media
+Notes: Mission-led media site with clear editorial and donation patterns.
+
+== The 19th ==
+URL: https://19thnews.org
+Interpretation status: interpretable
+Extraction confidence: 0.65 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.50, consistency_coverage=0.59]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.35
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #f9135c[###] #00c6f3[###] #563a88[###] #51338d[###] #612058[###] #35217f[###] #888888[###] #f8f8fc[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=0; density=balanced; patterns=grid,flex,multi_column
+- components: button=2, cta=7, accordion=2, modal=4
+- consistency: overall=0.51; color=0.68; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #c02020[###] #404040[###] #c0c0c0[###] #606060[###] #808080[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #c02020[###] #404040[###] #c0c0c0[###] #606060[###] #808080[###]
+- composition: density=balanced; whitespace=69%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=69%; classification=balanced_blocks
+- vision confidence: 0.76 (high)
+- viewport confidence: 0.76 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

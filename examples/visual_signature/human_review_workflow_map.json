@@ -1,0 +1,411 @@
+{
+  "schema_version": "visual-signature-human-review-workflow-map-1",
+  "record_type": "human_review_workflow_map",
+  "status": "design_only",
+  "guardrails": [
+    "no scoring logic changes",
+    "no rubric dimension changes",
+    "no prompt changes",
+    "no runtime behavior changes",
+    "no capture behavior changes",
+    "no provider execution",
+    "no production report changes",
+    "no Visual Signature semantic changes",
+    "no fabricated review decisions"
+  ],
+  "core_principle": "The main human task is structured visual judgment from preserved evidence, not governance metadata inspection.",
+  "separation_from_initial_scoring": {
+    "initial_scoring_owns": [
+      "brand input",
+      "scoring logic",
+      "rubric dimensions",
+      "dimension_scores",
+      "rendered report prose"
+    ],
+    "visual_signature_owns": [
+      "screenshots",
+      "capture manifests",
+      "obstruction perception",
+      "mutation audit",
+      "review records",
+      "calibration records",
+      "reliability reports",
+      "readiness gates"
+    ],
+    "current_scoring_impact": "none",
+    "future_scoring_bridge": {
+      "allowed_only_after": [
+        "explicit signal contract",
+        "reviewed calibration basis",
+        "stable sample size and category coverage",
+        "accepted contradiction thresholds",
+        "accepted unresolved thresholds",
+        "scoring and rubric approval",
+        "tests proving no accidental score drift",
+        "report language explaining visual evidence use"
+      ],
+      "current_status": "out_of_scope"
+    }
+  },
+  "layers": [
+    {
+      "name": "Evidence Layer",
+      "purpose": "Preserve and expose source material for human visual judgment.",
+      "primary_human_use": "Inspect screenshots and evidence records before answering review questions.",
+      "canonical_artifacts": [
+        "examples/visual_signature/screenshots/*.png",
+        "examples/visual_signature/screenshots/capture_manifest.json",
+        "examples/visual_signature/screenshots/dismissal_audit.json",
+        "examples/visual_signature/phase_one/records/*/state.json",
+        "examples/visual_signature/phase_one/records/*/obstruction.json",
+        "examples/visual_signature/phase_one/records/*/mutation_audit.json",
+        "examples/visual_signature/phase_one/records/*/transition_*.json",
+        "examples/visual_signature/phase_one/records/*/dataset_eligibility.json",
+        "examples/visual_signature/calibration_corpus/annotations/**",
+        "examples/visual_signature/calibration_corpus/screenshots/**"
+      ],
+      "evidence_types": [
+        "raw viewport screenshot",
+        "clean-attempt screenshot",
+        "full-page screenshot",
+        "capture status",
+        "obstruction type and severity",
+        "candidate safe-affordance evidence",
+        "rejected targets",
+        "mutation audit",
+        "perceptual state transitions",
+        "annotation claims tied to screenshot evidence"
+      ],
+      "rules": [
+        "raw viewport is primary evidence",
+        "clean attempts are supplemental",
+        "full-page screenshots are contextual",
+        "metadata does not replace visual judgment"
+      ]
+    },
+    {
+      "name": "Review Layer",
+      "purpose": "Convert preserved evidence into structured human review records.",
+      "primary_human_use": "Answer evidence-bound questions, choose outcomes, record confidence, notes, and evidence references.",
+      "canonical_artifacts": [
+        "examples/visual_signature/phase_zero/schemas/review_record.schema.json",
+        "examples/visual_signature/phase_zero/fixtures/review_record.example.json",
+        "examples/visual_signature/phase_two/reviews/review_records.json",
+        "examples/visual_signature/phase_two/records/*/reviewed_dataset_eligibility.json",
+        "examples/visual_signature/calibration_corpus/annotations/multimodal/review/REVIEW_GUIDE.md",
+        "examples/visual_signature/calibration_corpus/annotations/multimodal/review/review_sample.json",
+        "examples/visual_signature/corpus_expansion/review_queue.json",
+        "examples/visual_signature/corpus_expansion/reviewer_packets/*.md",
+        "examples/visual_signature/corpus_expansion/reviewer_workflow_pilot.json"
+      ],
+      "required_actions": [
+        "choose or receive a brand/capture",
+        "inspect raw viewport screenshot first",
+        "inspect clean attempt and full page when present",
+        "compare evidence against current perception claim or queue question",
+        "answer required structured fields",
+        "mark confidence or uncertainty",
+        "add evidence-based notes",
+        "preserve evidence references",
+        "use an allowed outcome",
+        "leave unresolved cases unresolved when evidence is insufficient",
+        "record contradictions explicitly"
+      ],
+      "optional_actions": [
+        "inspect collapsed JSON metadata when visual evidence is ambiguous",
+        "inspect mutation audit when a clean attempt exists",
+        "inspect dismissal audit when obstruction handling is being reviewed",
+        "add corrected label when clearly supported",
+        "flag missing screenshot variants or broken evidence references"
+      ]
+    },
+    {
+      "name": "System/Governance Layer",
+      "purpose": "Audit process integrity, policy boundaries, validation, and readiness.",
+      "primary_human_use": "Review after visual judgment to understand readiness and process risks.",
+      "canonical_artifacts": [
+        "examples/visual_signature/governance/capability_registry.json",
+        "examples/visual_signature/governance/runtime_policy_matrix.json",
+        "examples/visual_signature/governance/governance_integrity_report.json",
+        "examples/visual_signature/governance/three_track_validation_plan.json",
+        "examples/visual_signature/calibration/calibration_manifest.json",
+        "examples/visual_signature/calibration/calibration_summary.json",
+        "examples/visual_signature/calibration/calibration_readiness.json",
+        "examples/visual_signature/calibration/calibration_reliability_report.md",
+        "examples/visual_signature/corpus_expansion/corpus_expansion_manifest.json",
+        "examples/visual_signature/corpus_expansion/pilot_metrics.json"
+      ],
+      "not_primary_reviewer_evidence": true
+    }
+  ],
+  "evidence_vs_metadata": {
+    "evidence": [
+      "raw viewport screenshot",
+      "clean-attempt screenshot",
+      "full-page screenshot",
+      "visible obstruction",
+      "visible logo",
+      "visible typography",
+      "visible imagery",
+      "visible product or interface presence",
+      "visible people",
+      "visible layout",
+      "visible palette",
+      "visible density",
+      "capture manifest rows",
+      "dismissal audit rows",
+      "mutation audit records",
+      "perceptual transitions",
+      "annotation claims tied to screenshot evidence"
+    ],
+    "system_metadata": [
+      "schema versions",
+      "generated timestamps",
+      "capability registry entries",
+      "runtime policy matrix entries",
+      "governance integrity status",
+      "validation plan rows",
+      "readiness thresholds",
+      "aggregate reliability rates",
+      "source artifact hashes",
+      "platform route metadata"
+    ]
+  },
+  "reviewer_questions_still_intended": true,
+  "example_reviewer_questions": [
+    "Is the current perception claim visually supported by the screenshot evidence?",
+    "Is the raw viewport usable for first-impression visual judgment?",
+    "Is the viewport materially obstructed?",
+    "If obstructed, what type of obstruction is visible?",
+    "Does a clean attempt exist, and is it supplemental rather than primary?",
+    "Did the system infer anything not visible in the evidence?",
+    "Is the claim contradicted by the screenshot?",
+    "Is the evidence insufficient, cropped, blocked, broken, or ambiguous?",
+    "What confidence bucket should this review carry?",
+    "What evidence references support the answer?",
+    "Is the logo prominence label supported by visible placement and scale?",
+    "Is the imagery style label supported by visible imagery?",
+    "Is product or service presence visible, or only implied?",
+    "Are people visibly present, or only inferred from text?",
+    "Does the visible system have distinctive, ownable visual traits?",
+    "Does the visible presentation fit the expected category?",
+    "Is perceived polish supported by alignment, hierarchy, spacing, and clarity?"
+  ],
+  "required_reviewer_fields": {
+    "phase_zero_review_record": [
+      "review_id",
+      "capture_id",
+      "reviewer_id",
+      "reviewed_at",
+      "review_status",
+      "visually_supported",
+      "unsupported_inference_present",
+      "uncertainty_accepted",
+      "notes"
+    ],
+    "corpus_expansion_workflow": [
+      "reviewer_id",
+      "reviewed_at",
+      "review_outcome",
+      "notes",
+      "evidence_refs",
+      "confidence_bucket"
+    ],
+    "recommended_canonical_record": [
+      "schema_version",
+      "record_type",
+      "review_id",
+      "queue_id",
+      "capture_id",
+      "brand_name",
+      "reviewer_id",
+      "reviewed_at",
+      "review_status",
+      "review_outcome",
+      "visually_supported",
+      "unsupported_inference_present",
+      "uncertainty_accepted",
+      "confidence_bucket",
+      "evidence_refs",
+      "question_answers",
+      "notes",
+      "contradictions",
+      "missing_evidence"
+    ]
+  },
+  "allowed_outcomes": {
+    "phase_zero_review_status": [
+      "approved",
+      "rejected",
+      "needs_more_evidence"
+    ],
+    "calibration_agreement_state": [
+      "confirmed",
+      "contradicted",
+      "unresolved",
+      "insufficient_review"
+    ],
+    "corpus_expansion_review_outcome": [
+      "confirmed",
+      "contradicted",
+      "unresolved",
+      "insufficient_review"
+    ],
+    "pilot_queue_handling_note": "The reviewer workflow pilot uses needs_additional_evidence as a queue outcome. Canonically this maps to queue_state=needs_additional_evidence or calibration agreement_state=insufficient_review."
+  },
+  "canonical_reviewer_journey": [
+    {
+      "step": "choose brand/capture",
+      "description": "Start from review_queue.json, a reviewer packet, or a platform reviewer route."
+    },
+    {
+      "step": "inspect screenshots",
+      "description": "Raw viewport first, clean attempt as supplemental evidence, full page as context."
+    },
+    {
+      "step": "inspect claim or question",
+      "description": "Understand what the system believes or what the queue needs resolved."
+    },
+    {
+      "step": "answer structured visual questions",
+      "description": "Use visible evidence only."
+    },
+    {
+      "step": "mark confidence",
+      "description": "Use low, medium, high, or unknown."
+    },
+    {
+      "step": "add notes",
+      "description": "Keep notes short, concrete, and evidence-based."
+    },
+    {
+      "step": "submit or record review",
+      "description": "Include reviewer identity, timestamp, outcome, notes, and evidence refs."
+    },
+    {
+      "step": "feed calibration",
+      "description": "Join review outcome with perception claims."
+    },
+    {
+      "step": "inspect reliability/readiness",
+      "description": "Use governance and calibration summaries after review, not as the primary review task."
+    }
+  ],
+  "how_answers_become_records": [
+    "Reviewer selects a queued capture.",
+    "Platform shows evidence first.",
+    "Reviewer answers structured questions.",
+    "Reviewer chooses an allowed outcome.",
+    "Reviewer records confidence, notes, and evidence references.",
+    "Answer set is persisted as a review record or review outcome.",
+    "Queue item changes only after real reviewer identity and timestamp are present.",
+    "Review records are joined with perception claims to produce calibration records."
+  ],
+  "calibration_flow": {
+    "perception_claim_inputs": [
+      "claim_kind",
+      "claim_value",
+      "confidence",
+      "confidence_bucket",
+      "evidence_refs",
+      "lineage_refs"
+    ],
+    "review_outcome_inputs": [
+      "review_status",
+      "visually_supported",
+      "unsupported_inference_present",
+      "uncertainty_accepted",
+      "notes"
+    ],
+    "derived_outputs": [
+      "agreement_state",
+      "uncertainty_alignment",
+      "contradiction_rate",
+      "unresolved_rate",
+      "high_confidence_contradiction_count",
+      "confidence_bucket_spread",
+      "category_coverage",
+      "readiness_status"
+    ],
+    "readiness_rules": [
+      "missing review is insufficient_review",
+      "unclear review is unresolved",
+      "high contradiction rates block readiness",
+      "high unresolved rates block readiness",
+      "limited category coverage blocks broader corpus use",
+      "limited confidence spread blocks broader corpus use"
+    ]
+  },
+  "unresolved_handling": {
+    "use_when": [
+      "screenshot evidence is missing or broken",
+      "viewport is too obstructed to judge",
+      "raw and clean-attempt states conflict",
+      "claim is plausible but not visible",
+      "metadata references evidence that is unavailable",
+      "reviewer confidence is too low"
+    ],
+    "rules": [
+      "retain evidence refs",
+      "retain reviewer notes",
+      "do not promote to reviewed without a real reviewer decision",
+      "do not convert to confirmed or contradicted without sufficient evidence"
+    ]
+  },
+  "contradiction_handling": {
+    "use_when": [
+      "claim is directly contradicted by screenshot evidence",
+      "annotation says a visual element is present but it is not visible",
+      "system claims a safe target but the target appears unrelated or unsafe",
+      "perceptual state conflicts with visible obstruction",
+      "clean attempt changes evidence in a way that cannot be trusted"
+    ],
+    "rules": [
+      "record contradiction explicitly",
+      "do not delete original evidence",
+      "do not delete original claim",
+      "do not delete original queue item",
+      "feed contradiction into calibration as a reliability signal"
+    ]
+  },
+  "artifacts_that_affect_calibration": [
+    "examples/visual_signature/phase_two/reviews/review_records.json",
+    "examples/visual_signature/phase_two/records/*/reviewed_dataset_eligibility.json",
+    "examples/visual_signature/calibration/calibration_records.json",
+    "examples/visual_signature/calibration/calibration_summary.json",
+    "examples/visual_signature/calibration/calibration_readiness.json",
+    "examples/visual_signature/calibration/calibration_reliability_report.md",
+    "examples/visual_signature/calibration_corpus/annotations/multimodal/review/review_sample.json",
+    "completed corpus expansion review queue items with real reviewer metadata"
+  ],
+  "governance_or_diagnostic_only_artifacts": [
+    "examples/visual_signature/governance/capability_registry.json",
+    "examples/visual_signature/governance/runtime_policy_matrix.json",
+    "examples/visual_signature/governance/governance_integrity_report.json",
+    "examples/visual_signature/governance/three_track_validation_plan.json",
+    "examples/visual_signature/corpus_expansion/reviewer_workflow_pilot.json",
+    "examples/visual_signature/corpus_expansion/pilot_metrics.json",
+    "examples/visual_signature/corpus_expansion/corpus_expansion_manifest.json"
+  ],
+  "explicit_non_goals": [
+    "scoring integration",
+    "rubric dimension changes",
+    "prompt changes",
+    "provider execution",
+    "model training",
+    "production UI/report changes",
+    "runtime mutation enablement",
+    "capture behavior changes",
+    "fabricated review decisions",
+    "replacement of raw evidence with clean attempts",
+    "reviewer workflow centered on governance metadata inspection"
+  ],
+  "minimum_next_design_direction": [
+    "evidence-first screenshot inspection",
+    "structured reviewer question form",
+    "confidence and notes controls",
+    "explicit unresolved and contradiction paths",
+    "source artifact links in collapsed details",
+    "governance and readiness summaries below or after the review task"
+  ]
+}

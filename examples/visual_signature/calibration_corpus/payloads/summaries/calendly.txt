@@ -1,0 +1,39 @@
+Expected category: saas
+Notes: Mainstream SaaS with simple conversion-led visual behavior.
+
+== Calendly ==
+URL: https://calendly.com
+Interpretation status: interpretable
+Extraction confidence: 0.71 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.62, consistency_coverage=0.70]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.70
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.70
+
+Visual summaries:
+- palette preview: #ffffff[###] #0b3558[###] #476788[###] #006bff[###] #e7edf6[###] #d4e0ed[###] #f8f9fb[###] #e6f0ff[###]
+- typography: Gilroy
+- layout: header=False; nav=False; hero=True; sections=66; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: button=64, cta=16, card=136, accordion=12, pricing=100
+- consistency: overall=0.61; color=0.48; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #002040[###] #e060ff[###] #004060[###] #0060ff[###] #00a0ff[###] #e0e0e0[###] #e0e0ff[###]
+- viewport palette: #ffffff[###] #002040[###] #e060ff[###] #004060[###] #0060ff[###] #00a0ff[###] #e0e0e0[###] #e0e0ff[###]
+- composition: density=balanced; whitespace=77%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=77%; classification=balanced_blocks
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

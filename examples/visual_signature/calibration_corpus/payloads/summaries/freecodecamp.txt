@@ -1,0 +1,44 @@
+Expected category: nonprofit_education
+Notes: Nonprofit education site with utilitarian and community-first behavior.
+
+== freeCodeCamp ==
+URL: https://www.freecodecamp.org
+Interpretation status: interpretable
+Extraction confidence: 0.54 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.31, consistency_coverage=0.28]
+
+Signal coverage: 57%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.52
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.28
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=6; density=dense; patterns=flex,multi_column
+- components: cta=19, card=18
+- consistency: overall=0.34; color=0.15; type=0.20; component=0.64; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #e0ffff[###] #e0e0ff[###] #202020[###] #ffe0e0[###] #e0e0e0[###] #000020[###] #000000[###] #ffffff[###]
+- viewport palette: #e0ffff[###] #e0e0ff[###] #202020[###] #ffe0e0[###] #e0e0e0[###] #000020[###] #000000[###] #ffffff[###]
+- composition: density=dense; whitespace=2%; classification=dense_grid
+- viewport composition: density=dense; whitespace=2%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.28)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

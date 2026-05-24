@@ -1,0 +1,2887 @@
+{
+  "brands": [
+    {
+      "brand_name": "OpenAI",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "AI-native reference brand with restrained visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/openai.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 13829,
+        "height": 900,
+        "page_url": "https://openai.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://openai.com"
+    },
+    {
+      "brand_name": "Perplexity",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "AI-native consumer/product surface with search-first behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/perplexity.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 40320,
+        "height": 900,
+        "page_url": "https://www.perplexity.ai",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.perplexity.ai"
+    },
+    {
+      "brand_name": "Anthropic",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "AI company with editorial and safety-led visual positioning.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/anthropic.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 229656,
+        "height": 900,
+        "page_url": "https://www.anthropic.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.anthropic.com"
+    },
+    {
+      "brand_name": "Hebbia",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Mid-market AI work product added to reduce frontier-model brand concentration.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/hebbia.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 421543,
+        "height": 900,
+        "page_url": "https://www.hebbia.ai",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.hebbia.ai"
+    },
+    {
+      "brand_name": "Runway",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Creative AI brand with media-rich visual behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/runway.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 478592,
+        "height": 900,
+        "page_url": "https://runwayml.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://runwayml.com"
+    },
+    {
+      "brand_name": "Pika",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "AI video product with consumer creative visual style.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/pika.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 396137,
+        "height": 900,
+        "page_url": "https://pika.art",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://pika.art"
+    },
+    {
+      "brand_name": "Granola",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Smaller AI-native productivity app added to reduce frontier-brand overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/granola.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 98538,
+        "height": 900,
+        "page_url": "https://www.granola.ai",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.granola.ai"
+    },
+    {
+      "brand_name": "Cohere",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Enterprise AI platform with B2B positioning and restrained visuals.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/cohere.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 722796,
+        "height": 900,
+        "page_url": "https://cohere.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://cohere.com"
+    },
+    {
+      "brand_name": "Lindy",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Mid-market AI agent product added for less famous AI-native calibration.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/lindy.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 325557,
+        "height": 900,
+        "page_url": "https://www.lindy.ai",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.lindy.ai"
+    },
+    {
+      "brand_name": "Harvey",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Vertical AI SaaS with premium enterprise positioning.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/harvey.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 685677,
+        "height": 900,
+        "page_url": "https://www.harvey.ai",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.harvey.ai"
+    },
+    {
+      "brand_name": "Writer",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Enterprise AI platform with conventional SaaS conversion patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/writer.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 452260,
+        "height": 900,
+        "page_url": "https://writer.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://writer.com"
+    },
+    {
+      "brand_name": "Dust",
+      "capture_type": "viewport",
+      "expected_category": "ai_native",
+      "notes": "Smaller AI-native company to balance famous frontier AI brands.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/dust.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 172780,
+        "height": 900,
+        "page_url": "https://dust.tt",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://dust.tt"
+    },
+    {
+      "brand_name": "Duolingo",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Consumer app with strong character-led visual behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/duolingo.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 119248,
+        "height": 900,
+        "page_url": "https://www.duolingo.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.duolingo.com"
+    },
+    {
+      "brand_name": "Strava",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Consumer app with community and performance positioning.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/strava.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 721769,
+        "height": 900,
+        "page_url": "https://www.strava.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.strava.com"
+    },
+    {
+      "brand_name": "Pocket Casts",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Mid-market consumer audio app added to reduce global app overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/pocket-casts.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 432894,
+        "height": 900,
+        "page_url": "https://pocketcasts.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://pocketcasts.com"
+    },
+    {
+      "brand_name": "Finch",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Lower-fame consumer self-care app added for ordinary app landing behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/finch.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 10157,
+        "height": 900,
+        "page_url": "https://finchcare.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://finchcare.com"
+    },
+    {
+      "brand_name": "Discord",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Consumer/community app with expressive illustration and CTA flows.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/discord.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 497956,
+        "height": 900,
+        "page_url": "https://discord.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://discord.com"
+    },
+    {
+      "brand_name": "Fabulous",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Mid-market consumer habit app with wellness-adjacent conversion patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/fabulous.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 354253,
+        "height": 900,
+        "page_url": "https://www.thefabulous.co",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.thefabulous.co"
+    },
+    {
+      "brand_name": "Moises",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Lower-fame consumer music app added for app-category diversity.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/moises.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 556931,
+        "height": 900,
+        "page_url": "https://moises.ai",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://moises.ai"
+    },
+    {
+      "brand_name": "Headway",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Consumer subscription app with common mobile-app landing patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/headway.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 422347,
+        "height": 900,
+        "page_url": "https://makeheadway.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://makeheadway.com"
+    },
+    {
+      "brand_name": "Yousician",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Consumer learning app with product and lifestyle messaging.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/yousician.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 405726,
+        "height": 900,
+        "page_url": "https://yousician.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://yousician.com"
+    },
+    {
+      "brand_name": "Elevate",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Lower-fame consumer app for average app landing behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/elevate.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 58281,
+        "height": 900,
+        "page_url": "https://elevateapp.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://elevateapp.com"
+    },
+    {
+      "brand_name": "Sleep Cycle",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Consumer health app with calmer conversion page patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/sleep-cycle.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 474375,
+        "height": 900,
+        "page_url": "https://www.sleepcycle.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.sleepcycle.com"
+    },
+    {
+      "brand_name": "PlantIn",
+      "capture_type": "viewport",
+      "expected_category": "consumer_app",
+      "notes": "Lower-fame consumer app useful for avoiding famous-app overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/plantin.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1003358,
+        "height": 900,
+        "page_url": "https://myplantin.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://myplantin.com"
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer documentation with dense navigation and code-first hierarchy.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/stripe-docs.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 163100,
+        "height": 900,
+        "page_url": "https://docs.stripe.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://docs.stripe.com"
+    },
+    {
+      "brand_name": "Supabase",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer-first product homepage with technical positioning.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/supabase.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 90238,
+        "height": 900,
+        "page_url": "https://supabase.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://supabase.com"
+    },
+    {
+      "brand_name": "Vercel",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Design-forward developer platform useful as high-maturity reference.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/vercel.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 638770,
+        "height": 900,
+        "page_url": "https://vercel.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://vercel.com"
+    },
+    {
+      "brand_name": "Netlify",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer platform with established docs/product marketing patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/netlify.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 167833,
+        "height": 900,
+        "page_url": "https://www.netlify.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.netlify.com"
+    },
+    {
+      "brand_name": "PlanetScale",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer database product with strong technical visual narrative.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/planetscale.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 150288,
+        "height": 900,
+        "page_url": "https://planetscale.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://planetscale.com"
+    },
+    {
+      "brand_name": "Render",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Infrastructure platform with practical developer-facing page structure.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/render.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 108233,
+        "height": 900,
+        "page_url": "https://render.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://render.com"
+    },
+    {
+      "brand_name": "Railway",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer platform with modern but compact visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/railway.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 618216,
+        "height": 900,
+        "page_url": "https://railway.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://railway.com"
+    },
+    {
+      "brand_name": "Sentry",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer tooling with distinctive brand voice and dense product explanation.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/sentry.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 983144,
+        "height": 900,
+        "page_url": "https://sentry.io",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://sentry.io"
+    },
+    {
+      "brand_name": "PostHog",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer-first analytics with intentionally informal visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/posthog.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 617447,
+        "height": 900,
+        "page_url": "https://posthog.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://posthog.com"
+    },
+    {
+      "brand_name": "Hasura",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Technical platform with enterprise developer messaging.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/hasura.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 212681,
+        "height": 900,
+        "page_url": "https://hasura.io",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://hasura.io"
+    },
+    {
+      "brand_name": "Fly.io",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Developer infrastructure site with sparse technical communication.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/fly-io.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 955642,
+        "height": 900,
+        "page_url": "https://fly.io",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://fly.io"
+    },
+    {
+      "brand_name": "Nhost",
+      "capture_type": "viewport",
+      "expected_category": "developer_first",
+      "notes": "Lower-fame developer platform for avoiding polished-brand overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/nhost.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 203945,
+        "height": 900,
+        "page_url": "https://nhost.io",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://nhost.io"
+    },
+    {
+      "brand_name": "Allbirds",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Consumer ecommerce with product and lifestyle imagery.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/allbirds.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 612527,
+        "height": 900,
+        "page_url": "https://www.allbirds.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "brand_name": "Brooklinen",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Mid-market ecommerce with promotion and product-led layout.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/brooklinen.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1257970,
+        "height": 900,
+        "page_url": "https://www.brooklinen.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.brooklinen.com"
+    },
+    {
+      "brand_name": "Everlane",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Apparel ecommerce with minimal product and sustainability messaging.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/everlane.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 815447,
+        "height": 900,
+        "page_url": "https://www.everlane.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.everlane.com"
+    },
+    {
+      "brand_name": "Gymshark",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "High-conversion apparel ecommerce with campaign and product emphasis.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/gymshark.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 717757,
+        "height": 900,
+        "page_url": "https://www.gymshark.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.gymshark.com"
+    },
+    {
+      "brand_name": "Glossier",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Beauty ecommerce with strong brand color and product storytelling.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/glossier.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 813735,
+        "height": 900,
+        "page_url": "https://www.glossier.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.glossier.com"
+    },
+    {
+      "brand_name": "Bombas",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Mainstream DTC ecommerce with promotion and mission sections.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/bombas.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 493422,
+        "height": 900,
+        "page_url": "https://bombas.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://bombas.com"
+    },
+    {
+      "brand_name": "MeUndies",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Consumer ecommerce with playful product imagery and promotional density.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/meundies.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 691170,
+        "height": 900,
+        "page_url": "https://www.meundies.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.meundies.com"
+    },
+    {
+      "brand_name": "Baggu",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Ordinary mid-market ecommerce brand with product grid and campaign behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/baggu.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1029119,
+        "height": 900,
+        "page_url": "https://www.baggu.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.baggu.com"
+    },
+    {
+      "brand_name": "Misen",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "DTC product ecommerce with utilitarian product-led visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/misen.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 322821,
+        "height": 900,
+        "page_url": "https://misen.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://misen.com"
+    },
+    {
+      "brand_name": "United By Blue",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Smaller ecommerce candidate with mission-led visual messaging.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/united-by-blue.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1479355,
+        "height": 900,
+        "page_url": "https://unitedbyblue.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://unitedbyblue.com"
+    },
+    {
+      "brand_name": "Pact",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Practical ecommerce site useful for ordinary product retail baseline.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/pact.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 877872,
+        "height": 900,
+        "page_url": "https://wearpact.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://wearpact.com"
+    },
+    {
+      "brand_name": "Tattly",
+      "capture_type": "viewport",
+      "expected_category": "ecommerce",
+      "notes": "Small product ecommerce with lower-complexity visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/tattly.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 68323,
+        "height": 900,
+        "page_url": "https://tattly.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://tattly.com"
+    },
+    {
+      "brand_name": "The Verge",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Dense editorial system with strong recurring modules.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-verge.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 246530,
+        "height": 900,
+        "page_url": "https://www.theverge.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.theverge.com"
+    },
+    {
+      "brand_name": "Sifted",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Mid-market business publication added to replace an ambiguous film-studio candidate.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/sifted.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 180198,
+        "height": 900,
+        "page_url": "https://sifted.eu",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://sifted.eu"
+    },
+    {
+      "brand_name": "Nieman Lab",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Niche editorial site added to reduce major-publication overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/nieman-lab.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 72383,
+        "height": 900,
+        "page_url": "https://www.niemanlab.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.niemanlab.org"
+    },
+    {
+      "brand_name": "The Atlantic",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Editorial subscription site with classic publication hierarchy.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-atlantic.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 290754,
+        "height": 900,
+        "page_url": "https://www.theatlantic.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.theatlantic.com"
+    },
+    {
+      "brand_name": "Vox",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Modern media homepage with topic modules and dense editorial rhythm.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/vox.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 209643,
+        "height": 900,
+        "page_url": "https://www.vox.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.vox.com"
+    },
+    {
+      "brand_name": "The Marshall Project",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Mission-led publication added for less commercial editorial baseline behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-marshall-project.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 839055,
+        "height": 900,
+        "page_url": "https://www.themarshallproject.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.themarshallproject.org"
+    },
+    {
+      "brand_name": "Polygon",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Entertainment media with high content density and recurring cards.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/polygon.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 604387,
+        "height": 900,
+        "page_url": "https://www.polygon.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.polygon.com"
+    },
+    {
+      "brand_name": "Dezeen",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Design publication with strong grid and image-led behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/dezeen.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 296870,
+        "height": 900,
+        "page_url": "https://www.dezeen.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.dezeen.com"
+    },
+    {
+      "brand_name": "It's Nice That",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Creative publication with distinctive but practical editorial layout.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/it-s-nice-that.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 380179,
+        "height": 900,
+        "page_url": "https://www.itsnicethat.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.itsnicethat.com"
+    },
+    {
+      "brand_name": "Hyperallergic",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Independent arts publication for less-polished editorial baseline behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/hyperallergic.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 513536,
+        "height": 900,
+        "page_url": "https://hyperallergic.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://hyperallergic.com"
+    },
+    {
+      "brand_name": "The 19th",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Mission-led media site with clear editorial and donation patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-19th.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 73379,
+        "height": 900,
+        "page_url": "https://19thnews.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://19thnews.org"
+    },
+    {
+      "brand_name": "Rest of World",
+      "capture_type": "viewport",
+      "expected_category": "editorial_media",
+      "notes": "Editorial site with distinctive but not mass-market visual behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/rest-of-world.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 728147,
+        "height": 900,
+        "page_url": "https://restofworld.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://restofworld.org"
+    },
+    {
+      "brand_name": "Wise",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Consumer fintech with high-clarity conversion flows.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/wise.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 211605,
+        "height": 900,
+        "page_url": "https://wise.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://wise.com"
+    },
+    {
+      "brand_name": "Mercury",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "B2B fintech with product-led trust and interface emphasis.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/mercury.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1621367,
+        "height": 900,
+        "page_url": "https://mercury.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://mercury.com"
+    },
+    {
+      "brand_name": "Current",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Mid-market consumer fintech added to reduce global-bank overrepresentation.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/current.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 444734,
+        "height": 900,
+        "page_url": "https://current.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://current.com"
+    },
+    {
+      "brand_name": "Stash",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Consumer finance app added for more ordinary subscription and investing conversion patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/stash.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 371729,
+        "height": 900,
+        "page_url": "https://www.stash.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.stash.com"
+    },
+    {
+      "brand_name": "Monzo",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Consumer bank with distinctive brand color and app-first page behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/monzo.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 815552,
+        "height": 900,
+        "page_url": "https://monzo.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://monzo.com"
+    },
+    {
+      "brand_name": "Found",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Ordinary small-business fintech with practical conversion and trust patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/found.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 103874,
+        "height": 900,
+        "page_url": "https://found.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://found.com"
+    },
+    {
+      "brand_name": "Brex",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "B2B fintech with polished enterprise SaaS-like visual language.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/brex.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 298158,
+        "height": 900,
+        "page_url": "https://www.brex.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.brex.com"
+    },
+    {
+      "brand_name": "Ramp",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "B2B fintech with product-led and trust-heavy conversion structure.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/ramp.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 175094,
+        "height": 900,
+        "page_url": "https://ramp.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://ramp.com"
+    },
+    {
+      "brand_name": "Bluevine",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Mid-market small-business finance brand added for less design-forward baseline variety.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/bluevine.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 475668,
+        "height": 900,
+        "page_url": "https://www.bluevine.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.bluevine.com"
+    },
+    {
+      "brand_name": "Teller",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Smaller fintech infrastructure brand for lower-fame baseline variety.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/teller.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 224551,
+        "height": 900,
+        "page_url": "https://teller.io",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://teller.io"
+    },
+    {
+      "brand_name": "NorthOne",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Small-business fintech with practical conversion and trust layout.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/northone.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 963415,
+        "height": 900,
+        "page_url": "https://www.northone.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.northone.com"
+    },
+    {
+      "brand_name": "Novo",
+      "capture_type": "viewport",
+      "expected_category": "finance_fintech",
+      "notes": "Lower-fame fintech with ordinary marketing-site behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/novo.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 566886,
+        "height": 900,
+        "page_url": "https://www.novo.co",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.novo.co"
+    },
+    {
+      "brand_name": "Len The Plumber",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Regional service business replacing a previously unstable plumbing domain.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/len-the-plumber.png",
+      "screenshot_payload": {
+        "capture_error": "Page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"https://lentheplumber.com/\", waiting until \"domcontentloaded\"\n",
+        "capture_status": "error",
+        "capture_type": "viewport",
+        "file_size_bytes": null,
+        "height": null,
+        "page_url": "https://lentheplumber.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": null
+      },
+      "website_url": "https://lentheplumber.com"
+    },
+    {
+      "brand_name": "Magnolia Bakery",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local-origin brand with ecommerce/service blend and moderate polish.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/magnolia-bakery.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 789488,
+        "height": 900,
+        "page_url": "https://www.magnoliabakery.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.magnoliabakery.com"
+    },
+    {
+      "brand_name": "The Meatball Shop",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local restaurant group with service and hospitality visual behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/the-meatball-shop.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 89823,
+        "height": 900,
+        "page_url": "https://www.themeatballshop.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.themeatballshop.com"
+    },
+    {
+      "brand_name": "Baked by Melissa",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local-origin retail brand with strong ecommerce crossover.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/baked-by-melissa.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1097695,
+        "height": 900,
+        "page_url": "https://www.bakedbymelissa.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.bakedbymelissa.com"
+    },
+    {
+      "brand_name": "Van Leeuwen Ice Cream",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local-origin consumer brand with colorful but practical service/retail system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/van-leeuwen-ice-cream.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 218511,
+        "height": 900,
+        "page_url": "https://vanleeuwenicecream.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://vanleeuwenicecream.com"
+    },
+    {
+      "brand_name": "Big Gay Ice Cream",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Small hospitality brand with expressive but simple visual surface.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/big-gay-ice-cream.png",
+      "screenshot_payload": {
+        "capture_error": "Page.goto: Timeout 45000ms exceeded.\nCall log:\n  - navigating to \"https://biggayicecream.com/\", waiting until \"domcontentloaded\"\n",
+        "capture_status": "error",
+        "capture_type": "viewport",
+        "file_size_bytes": null,
+        "height": null,
+        "page_url": "https://biggayicecream.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": null
+      },
+      "website_url": "https://biggayicecream.com"
+    },
+    {
+      "brand_name": "Brooklyn Boulders",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local service business with community and membership conversion needs.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/brooklyn-boulders.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1199945,
+        "height": 900,
+        "page_url": "https://brooklynboulders.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://brooklynboulders.com"
+    },
+    {
+      "brand_name": "Handy",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Service marketplace with utilitarian booking and trust signals.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/handy.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 275088,
+        "height": 900,
+        "page_url": "https://www.handy.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.handy.com"
+    },
+    {
+      "brand_name": "Mr. Handyman",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Franchise service site with conventional practical visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/mr-handyman.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 857996,
+        "height": 900,
+        "page_url": "https://www.mrhandyman.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.mrhandyman.com"
+    },
+    {
+      "brand_name": "Roto-Rooter",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Established service brand with utilitarian conversion-heavy homepage.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/roto-rooter.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 283376,
+        "height": 900,
+        "page_url": "https://www.rotorooter.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.rotorooter.com"
+    },
+    {
+      "brand_name": "MaidPro",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local service/franchise site useful for lower-design-maturity baseline.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/maidpro.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 38861,
+        "height": 900,
+        "page_url": "https://www.maidpro.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.maidpro.com"
+    },
+    {
+      "brand_name": "Lawn Love",
+      "capture_type": "viewport",
+      "expected_category": "local_service_small_business",
+      "notes": "Local services marketplace with practical booking-first layout.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/lawn-love.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 789977,
+        "height": 900,
+        "page_url": "https://lawnlove.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://lawnlove.com"
+    },
+    {
+      "brand_name": "Khan Academy",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Education nonprofit with broad audience and practical product flows.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/khan-academy.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 220519,
+        "height": 900,
+        "page_url": "https://www.khanacademy.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.khanacademy.org"
+    },
+    {
+      "brand_name": "Charity Water",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Nonprofit with campaign storytelling and donation conversion.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/charity-water.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 595556,
+        "height": 900,
+        "page_url": "https://www.charitywater.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.charitywater.org"
+    },
+    {
+      "brand_name": "Coursera",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Education platform with marketplace and credential messaging.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/coursera.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 442368,
+        "height": 900,
+        "page_url": "https://www.coursera.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.coursera.org"
+    },
+    {
+      "brand_name": "edX",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Education platform with institutional trust and course discovery.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/edx.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 356132,
+        "height": 900,
+        "page_url": "https://www.edx.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.edx.org"
+    },
+    {
+      "brand_name": "Codecademy",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Learning platform with product-led education conversion patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/codecademy.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 572135,
+        "height": 900,
+        "page_url": "https://www.codecademy.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.codecademy.com"
+    },
+    {
+      "brand_name": "freeCodeCamp",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Nonprofit education site with utilitarian and community-first behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/freecodecamp.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 765869,
+        "height": 900,
+        "page_url": "https://www.freecodecamp.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.freecodecamp.org"
+    },
+    {
+      "brand_name": "DonorsChoose",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Donation marketplace with practical trust and cause-driven UI.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/donorschoose.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 499614,
+        "height": 900,
+        "page_url": "https://www.donorschoose.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.donorschoose.org"
+    },
+    {
+      "brand_name": "Girls Who Code",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Mission-led education nonprofit with editorial and donation flows.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/girls-who-code.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 563234,
+        "height": 900,
+        "page_url": "https://girlswhocode.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://girlswhocode.com"
+    },
+    {
+      "brand_name": "Code.org",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Large education nonprofit with practical student/teacher navigation.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/code-org.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 312699,
+        "height": 900,
+        "page_url": "https://code.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://code.org"
+    },
+    {
+      "brand_name": "One Tree Planted",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Nonprofit with ecommerce-like donation and campaign visuals.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/one-tree-planted.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1540622,
+        "height": 900,
+        "page_url": "https://onetreeplanted.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://onetreeplanted.org"
+    },
+    {
+      "brand_name": "826 National",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Lower-fame education nonprofit with modest but distinctive visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/826-national.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 867460,
+        "height": 900,
+        "page_url": "https://826national.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://826national.org"
+    },
+    {
+      "brand_name": "826 Valencia",
+      "capture_type": "viewport",
+      "expected_category": "nonprofit_education",
+      "notes": "Local education nonprofit candidate to reduce famous-institution overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/826-valencia.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 355171,
+        "height": 900,
+        "page_url": "https://826valencia.org",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://826valencia.org"
+    },
+    {
+      "brand_name": "Hermes",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Luxury reference brand; useful for acquisition fallback testing if blocked.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/hermes.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 51431,
+        "height": 900,
+        "page_url": "https://www.hermes.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.hermes.com"
+    },
+    {
+      "brand_name": "Aesop",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Premium retail visual system with restrained product presentation.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/aesop.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 39444,
+        "height": 900,
+        "page_url": "https://www.aesop.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.aesop.com"
+    },
+    {
+      "brand_name": "Bottega Veneta",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Luxury fashion brand with image-led and sparse visual behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/bottega-veneta.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 427994,
+        "height": 900,
+        "page_url": "https://www.bottegaveneta.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.bottegaveneta.com"
+    },
+    {
+      "brand_name": "Loewe",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Luxury brand with craft/editorial art direction.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/loewe.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1552445,
+        "height": 900,
+        "page_url": "https://www.loewe.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.loewe.com"
+    },
+    {
+      "brand_name": "Rimowa",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Premium product brand with minimal product-focused visual language.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/rimowa.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 26301,
+        "height": 900,
+        "page_url": "https://www.rimowa.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.rimowa.com"
+    },
+    {
+      "brand_name": "Bang & Olufsen",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Premium electronics with product imagery and luxury positioning.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/bang-olufsen.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 492926,
+        "height": 900,
+        "page_url": "https://www.bang-olufsen.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.bang-olufsen.com"
+    },
+    {
+      "brand_name": "Tumi",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Premium retail brand closer to mainstream ecommerce behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/tumi.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 26707,
+        "height": 900,
+        "page_url": "https://www.tumi.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.tumi.com"
+    },
+    {
+      "brand_name": "Le Labo",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Premium fragrance brand with restrained typography and product focus.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/le-labo.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 947670,
+        "height": 900,
+        "page_url": "https://www.lelabofragrances.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.lelabofragrances.com"
+    },
+    {
+      "brand_name": "Diptyque",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Luxury fragrance ecommerce with campaign and product storytelling.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/diptyque.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 805069,
+        "height": 900,
+        "page_url": "https://www.diptyqueparis.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.diptyqueparis.com"
+    },
+    {
+      "brand_name": "Our Legacy",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Smaller premium fashion brand with less mass-market polish.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/our-legacy.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 742767,
+        "height": 900,
+        "page_url": "https://www.ourlegacy.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.ourlegacy.com"
+    },
+    {
+      "brand_name": "Toteme",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Modern premium fashion with sparse editorial product behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/toteme.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1488881,
+        "height": 900,
+        "page_url": "https://toteme-studio.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://toteme-studio.com"
+    },
+    {
+      "brand_name": "Noah",
+      "capture_type": "viewport",
+      "expected_category": "premium_luxury",
+      "notes": "Premium apparel candidate with less conventional luxury signaling.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/noah.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1559581,
+        "height": 900,
+        "page_url": "https://noahny.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://noahny.com"
+    },
+    {
+      "brand_name": "Linear",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Mature product-led SaaS with controlled visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/linear.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 141213,
+        "height": 900,
+        "page_url": "https://linear.app",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://linear.app"
+    },
+    {
+      "brand_name": "Basecamp",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Established SaaS with pragmatic less trend-led visual language.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/basecamp.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 477760,
+        "height": 900,
+        "page_url": "https://basecamp.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://basecamp.com"
+    },
+    {
+      "brand_name": "Asana",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Broad work-management SaaS with mature marketing and product surfaces.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/asana.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 151140,
+        "height": 900,
+        "page_url": "https://asana.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://asana.com"
+    },
+    {
+      "brand_name": "ClickUp",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "High-density SaaS homepage with broad feature and CTA structure.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/clickup.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 171426,
+        "height": 900,
+        "page_url": "https://clickup.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://clickup.com"
+    },
+    {
+      "brand_name": "Calendly",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Mainstream SaaS with simple conversion-led visual behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/calendly.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 202049,
+        "height": 900,
+        "page_url": "https://calendly.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://calendly.com"
+    },
+    {
+      "brand_name": "Loom",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Product-led SaaS with human/product demonstration patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/loom.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 323113,
+        "height": 900,
+        "page_url": "https://www.loom.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.loom.com"
+    },
+    {
+      "brand_name": "Miro",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Visual collaboration SaaS with colorful interface-led storytelling.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/miro.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 349992,
+        "height": 900,
+        "page_url": "https://miro.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://miro.com"
+    },
+    {
+      "brand_name": "Freshworks",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Mid-market operational SaaS with more conventional enterprise layout.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/freshworks.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 174434,
+        "height": 900,
+        "page_url": "https://www.freshworks.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.freshworks.com"
+    },
+    {
+      "brand_name": "PandaDoc",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Conversion-heavy SaaS useful for average-market baseline behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/pandadoc.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 102672,
+        "height": 900,
+        "page_url": "https://www.pandadoc.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.pandadoc.com"
+    },
+    {
+      "brand_name": "Teamwork",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Less design-forward SaaS candidate for mature but ordinary visual systems.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/teamwork.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 324072,
+        "height": 900,
+        "page_url": "https://www.teamwork.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.teamwork.com"
+    },
+    {
+      "brand_name": "Pipefy",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Mid-market SaaS with template and workflow messaging patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/pipefy.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 335539,
+        "height": 900,
+        "page_url": "https://www.pipefy.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.pipefy.com"
+    },
+    {
+      "brand_name": "Process Street",
+      "capture_type": "viewport",
+      "expected_category": "saas",
+      "notes": "Smaller SaaS candidate to reduce famous-brand overfitting.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/process-street.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 630706,
+        "height": 900,
+        "page_url": "https://www.process.st",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.process.st"
+    },
+    {
+      "brand_name": "Notion",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Common modular SaaS homepage structure with broad product modules.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/notion.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 796950,
+        "height": 900,
+        "page_url": "https://www.notion.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.notion.com"
+    },
+    {
+      "brand_name": "Airtable",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Highly modular SaaS page useful for template-like pattern detection.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/airtable.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 122526,
+        "height": 900,
+        "page_url": "https://www.airtable.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.airtable.com"
+    },
+    {
+      "brand_name": "Monday.com",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Feature-heavy SaaS with repeated modules and conversion blocks.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/monday-com.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 189331,
+        "height": 900,
+        "page_url": "https://monday.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://monday.com"
+    },
+    {
+      "brand_name": "Coda",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Workspace SaaS with familiar template/product storytelling patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/coda.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 170043,
+        "height": 900,
+        "page_url": "https://coda.io",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://coda.io"
+    },
+    {
+      "brand_name": "Smartsheet",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Enterprise SaaS with conventional sectioning and feature density.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/smartsheet.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 317924,
+        "height": 900,
+        "page_url": "https://www.smartsheet.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.smartsheet.com"
+    },
+    {
+      "brand_name": "Wrike",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Mature SaaS page with predictable enterprise module stack.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/wrike.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 164623,
+        "height": 900,
+        "page_url": "https://www.wrike.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.wrike.com"
+    },
+    {
+      "brand_name": "Zoho Projects",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Large-suite SaaS with utilitarian page patterns and lower design polish.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/zoho-projects.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 552151,
+        "height": 900,
+        "page_url": "https://www.zoho.com/projects/",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.zoho.com/projects/"
+    },
+    {
+      "brand_name": "Nifty",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Smaller SaaS with familiar template-first marketing structure.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/nifty.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 243451,
+        "height": 900,
+        "page_url": "https://niftypm.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://niftypm.com"
+    },
+    {
+      "brand_name": "Plaky",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Lower-fame SaaS candidate for ordinary template-like page behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/plaky.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 499309,
+        "height": 900,
+        "page_url": "https://plaky.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://plaky.com"
+    },
+    {
+      "brand_name": "Hive",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Mid-market SaaS with repeated social proof and feature modules.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/hive.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 169766,
+        "height": 900,
+        "page_url": "https://hive.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://hive.com"
+    },
+    {
+      "brand_name": "Scoro",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Business SaaS with conventional page rhythm and dashboard imagery.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/scoro.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 217224,
+        "height": 900,
+        "page_url": "https://www.scoro.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.scoro.com"
+    },
+    {
+      "brand_name": "Bitrix24",
+      "capture_type": "viewport",
+      "expected_category": "template_like_saas",
+      "notes": "Broad SaaS suite with high-density practical visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/bitrix24.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 252677,
+        "height": 900,
+        "page_url": "https://www.bitrix24.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.bitrix24.com"
+    },
+    {
+      "brand_name": "Headspace",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Wellness brand with soft visual language and conversion flows.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/headspace.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 270497,
+        "height": 900,
+        "page_url": "https://www.headspace.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.headspace.com"
+    },
+    {
+      "brand_name": "Ritual",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Wellness ecommerce brand with product-led education.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/ritual.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 838220,
+        "height": 900,
+        "page_url": "https://ritual.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://ritual.com"
+    },
+    {
+      "brand_name": "Calm",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Mainstream wellness app with calm first-impression design patterns.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/calm.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 5851,
+        "height": 900,
+        "page_url": "https://www.calm.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.calm.com"
+    },
+    {
+      "brand_name": "Noom",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Consumer wellness app with conversion and credibility messaging.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/noom.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1809837,
+        "height": 900,
+        "page_url": "https://www.noom.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.noom.com"
+    },
+    {
+      "brand_name": "Alo Yoga",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Lifestyle ecommerce with premium wellness imagery and retail density.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/alo-yoga.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 57033,
+        "height": 900,
+        "page_url": "https://www.aloyoga.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.aloyoga.com"
+    },
+    {
+      "brand_name": "Peloton",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Fitness/lifestyle brand with product, community, and app surfaces.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/peloton.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 225261,
+        "height": 900,
+        "page_url": "https://www.onepeloton.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.onepeloton.com"
+    },
+    {
+      "brand_name": "Whoop",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Performance wellness brand with product-led technical visuals.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/whoop.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 401244,
+        "height": 900,
+        "page_url": "https://www.whoop.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.whoop.com"
+    },
+    {
+      "brand_name": "Oura",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Wellness hardware with premium product imagery and health education.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/oura.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 445504,
+        "height": 900,
+        "page_url": "https://ouraring.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://ouraring.com"
+    },
+    {
+      "brand_name": "Care/of",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Consumer wellness ecommerce with quiz and product subscription behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/care-of.png",
+      "screenshot_payload": {
+        "capture_error": "Page.goto: net::ERR_NAME_NOT_RESOLVED at https://takecareof.com/\nCall log:\n  - navigating to \"https://takecareof.com/\", waiting until \"domcontentloaded\"\n",
+        "capture_status": "error",
+        "capture_type": "viewport",
+        "file_size_bytes": null,
+        "height": null,
+        "page_url": "https://takecareof.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": null
+      },
+      "website_url": "https://takecareof.com"
+    },
+    {
+      "brand_name": "Thrive Market",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Wellness-adjacent ecommerce with practical membership conversion flow.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/thrive-market.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 923848,
+        "height": 900,
+        "page_url": "https://thrivemarket.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://thrivemarket.com"
+    },
+    {
+      "brand_name": "Open",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Smaller wellness brand with polished but less famous visual system.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/open.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 1378163,
+        "height": 900,
+        "page_url": "https://o-p-e-n.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://o-p-e-n.com"
+    },
+    {
+      "brand_name": "Glo",
+      "capture_type": "viewport",
+      "expected_category": "wellness_lifestyle",
+      "notes": "Lower-fame wellness subscription candidate for ordinary category behavior.",
+      "screenshot_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/glo.png",
+      "screenshot_payload": {
+        "capture_error": null,
+        "capture_status": "ok",
+        "capture_type": "viewport",
+        "file_size_bytes": 19926,
+        "height": 900,
+        "page_url": "https://www.glo.com",
+        "source": "playwright",
+        "viewport_height": 900,
+        "viewport_width": 1440,
+        "width": 1440
+      },
+      "website_url": "https://www.glo.com"
+    }
+  ],
+  "generated_at": "2026-05-09T00:55:50.821839",
+  "schema_version": "visual-signature-corpus-calibration-input-1",
+  "with_vision": true
+}

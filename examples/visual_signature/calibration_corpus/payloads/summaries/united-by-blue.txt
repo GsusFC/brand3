@@ -1,0 +1,39 @@
+Expected category: ecommerce
+Notes: Smaller ecommerce candidate with mission-led visual messaging.
+
+== United By Blue ==
+URL: https://unitedbyblue.com
+Interpretation status: interpretable
+Extraction confidence: 0.66 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.55, consistency_coverage=0.55]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.46
+- typography: ok, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.55
+
+Visual summaries:
+- palette preview: #146ff8[###] #000000[###]
+- typography: &quot
+- layout: header=False; nav=True; hero=True; sections=68; density=balanced; patterns=grid,multi_column
+- components: button=20, cta=11, form=358, card=102, modal=4
+- consistency: overall=0.70; color=0.78; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #606040[###] #404020[###] #806040[###] #604020[###] #002040[###] #a0a0a0[###] #c0a060[###]
+- viewport palette: #ffffff[###] #606040[###] #404020[###] #806040[###] #604020[###] #002040[###] #a0a0a0[###] #c0a060[###]
+- composition: density=dense; whitespace=27%; classification=dense_grid
+- viewport composition: density=dense; whitespace=27%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

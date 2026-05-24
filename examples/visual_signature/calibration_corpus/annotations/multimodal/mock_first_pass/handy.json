@@ -1,0 +1,476 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:26:29.211153",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.handy.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "local service small business",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 8,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Handy",
+  "calibration": {
+    "expected_category": "local_service_small_business",
+    "notes": "Service marketplace with utilitarian booking and trust signals."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.62,
+        "count": 4,
+        "labels": [
+          "See All",
+          "Learn more.",
+          "Become a pro",
+          "Partner with Handy"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 64,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      }
+    ],
+    "confidence": 0.52,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "See All",
+      "Learn more.",
+      "Become a pro",
+      "Partner with Handy"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.64,
+    "confidence": 0.278,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.345,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.278,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.368
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.558
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid"
+    ],
+    "section_count": 24,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cache-landingpages.services.handy.com/assets/pages/home/wayfair_2x-ef915dd5b334d0fc46ca926a5cb741262335f725bd5643b3522f276e7d5a8084.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cache-landingpages.services.handy.com/assets/pages/home/walmart_2x-8a6db194706379ebce4916d4aad8192d437de109903b5fa9da697a1d086a7848.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cache-landingpages.services.handy.com/assets/pages/home/googlehome_2x-8c832ed9f499bce2b1a126469af62899f9a830c65f7dac6490d222ec62d4974f.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cache-landingpages.services.handy.com/assets/pages/home/nest_2x-923a9e1e233ceb592ea124e3b7a7ea0fdc3b646d3ded505fae1f6f3e41ebd9e9.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cache-landingpages.services.handy.com/assets/pages/home/equity_2x-c325449d05716f8f9a7b801a38aca569550f55b9ae36c5d0f0d77e7871d091dd.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cache-landingpages.services.handy.com/assets/pages/home/leesa_2x-f3bfe6cb59a126e8dd56060593dc74f4d5d48c3cad346004a01a31d1c901a131.png"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.106,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.664,
+      "edge_density": 0.046,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.836
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 275088,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.handy.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/handy.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 111,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 16739,
+          "ratio": 0.8369
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1218,
+          "ratio": 0.0609
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 295,
+          "ratio": 0.0147
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 207,
+          "ratio": 0.0103
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 105,
+          "ratio": 0.0053
+        },
+        {
+          "hex": "#00c0e0",
+          "occurrences": 85,
+          "ratio": 0.0043
+        },
+        {
+          "hex": "#80c040",
+          "occurrences": 72,
+          "ratio": 0.0036
+        },
+        {
+          "hex": "#c0c0e0",
+          "occurrences": 71,
+          "ratio": 0.0036
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.106,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.664,
+      "edge_density": 0.046,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.836
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.664,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.829
+    },
+    "viewport_palette": {
+      "color_count": 111,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 16739,
+          "ratio": 0.8369
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1218,
+          "ratio": 0.0609
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 295,
+          "ratio": 0.0147
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 207,
+          "ratio": 0.0103
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 105,
+          "ratio": 0.0053
+        },
+        {
+          "hex": "#00c0e0",
+          "occurrences": 85,
+          "ratio": 0.0043
+        },
+        {
+          "hex": "#80c040",
+          "occurrences": 72,
+          "ratio": 0.0036
+        },
+        {
+          "hex": "#c0c0e0",
+          "occurrences": 71,
+          "ratio": 0.0036
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.836,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.664,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.829
+    }
+  },
+  "website_url": "https://www.handy.com"
+}

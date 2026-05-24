@@ -1,0 +1,377 @@
+{
+  "record_id": "floc_d4data_perceptual_case_record_v0_1",
+  "schema_version": "0.1.0",
+  "created_at": "2026-05-15",
+  "status": "second_pilot_fixture",
+  "case": {
+    "case_id": "d4data",
+    "project_name": "D4DATA",
+    "public_url": "https://wearefloc.com/work/d4data",
+    "pilot_role": "experimental_motion_heavy",
+    "why_selected": "Tests whether the schema can hold a motion-heavy, metaphor-led case where public evidence emphasizes audiovisual production, kendo, data economy, and interface guidance."
+  },
+  "source_material": {
+    "public_case_page": {
+      "url": "https://wearefloc.com/work/d4data",
+      "title": "D4DATA x FLOC* - Building a powerful Brand3 for crypto investment leaders",
+      "captured_as": "public_text_fetch",
+      "source_id": "floc_public_case_d4data"
+    },
+    "public_case_copy_excerpts": [
+      {
+        "source_id": "d4data_copy_title",
+        "text": "Building a powerful Brand3 for crypto investment leaders"
+      },
+      {
+        "source_id": "d4data_copy_kendo_strategy",
+        "text": "distinctive digital strategy inspired by the strength, fluidity and discipline of kendo"
+      },
+      {
+        "source_id": "d4data_copy_data_economy",
+        "text": "emergence of a decentralized data economy"
+      },
+      {
+        "source_id": "d4data_copy_ui_design",
+        "text": "The UI design delivers a refined, intuitive experience that guides users seamlessly"
+      },
+      {
+        "source_id": "d4data_copy_power_structures",
+        "text": "symbolizing the disruption of centralized power structures and the rise of a new, user-empowered data ecosystem"
+      },
+      {
+        "source_id": "d4data_copy_motion_stack",
+        "text": "Datamosh techniques to create impactful transitions and MetaHuman technology to render realistic, expressive characters"
+      },
+      {
+        "source_id": "d4data_copy_kendo_motion",
+        "text": "capturing the intensity and precision of Kendo"
+      },
+      {
+        "source_id": "d4data_copy_close_line",
+        "text": "We show the Path of the DATA"
+      }
+    ],
+    "local_prior_case_artifacts": []
+  },
+  "method_boundaries": {
+    "public_website_only": true,
+    "notion_used": false,
+    "no_scoring": true,
+    "no_prompt_changes": true,
+    "no_report_changes": true,
+    "no_visual_signature_runtime_changes": true,
+    "no_runtime_changes": true,
+    "quality_evaluation": false
+  },
+  "confidence_semantics": {
+    "high": "Directly stated in public copy, directly listed in public metadata, or anchored to existing local visual observations with direct visible evidence.",
+    "medium": "Reasonable interpretation from public copy or from a single anchored visual observation, but not independently repeated.",
+    "low": "Plausible but weak inference from aesthetics, tone, or incomplete evidence; requires human review before reuse."
+  },
+  "extracted_facts": [
+    {
+      "id": "fact-001",
+      "fact": "The public case headline frames D4DATA as a Brand3 project for crypto investment leaders.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_title",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-002",
+      "fact": "The public copy states that the digital strategy was inspired by kendo's strength, fluidity, and discipline.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_strategy",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-003",
+      "fact": "The public page identifies Brand Strategy, Brand Identity, UX/UI, and Motion as service areas.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_metadata",
+          "source_id": "floc_public_case_d4data",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-004",
+      "fact": "The public copy says the audiovisual production used Datamosh techniques and MetaHuman technology.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-005",
+      "fact": "The public copy describes the UI as refined, intuitive, and seamlessly guiding users.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_ui_design",
+          "support_level": "direct"
+        }
+      ]
+    }
+  ],
+  "visual_observations": [
+    {
+      "id": "visual-001",
+      "facet": "motion_language",
+      "observation": "The public description anchors motion in specific production techniques: Datamosh transitions and MetaHuman character rendering.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "Treat as motion-language evidence, not confirmed visual behavior, until capture evidence verifies the transitions and characters."
+    },
+    {
+      "id": "visual-002",
+      "facet": "interaction_feeling",
+      "observation": "The interface is publicly described as refined, intuitive, and seamlessly guiding users.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_ui_design",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "This is a stated UX claim. It should not be treated as observed usability without a capture or walkthrough."
+    },
+    {
+      "id": "visual-003",
+      "facet": "conceptual_metaphor",
+      "observation": "The case explicitly ties the visual and motion premise to kendo: strength, fluidity, discipline, intensity, and precision.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_strategy",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_motion",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "The metaphor is explicit in copy; visible embodiment still requires screenshot or video evidence."
+    },
+    {
+      "id": "visual-004",
+      "facet": "system_behavior",
+      "observation": "The case positions data flow and user empowerment as system behaviors, using language around decentralized data economy and user-guided ecosystems.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_data_economy",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_power_structures",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "This is concept/system language, not yet visible interaction evidence."
+    }
+  ],
+  "strategic_interpretations": [
+    {
+      "id": "interp-001",
+      "interpretation": "D4DATA appears to translate a decentralized data economy into a disciplined motion and interface metaphor rather than a purely technical dashboard frame.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_data_economy",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_strategy",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "copy_based"
+        }
+      ],
+      "why_not_high_confidence": "The interpretation combines stated copy into a Brand3 reading; no direct visual capture confirms how the metaphor appears in the interface."
+    },
+    {
+      "id": "interp-002",
+      "interpretation": "The case frames motion as an identity-bearing layer, not just decorative animation.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_motion",
+          "support_level": "copy_based"
+        }
+      ],
+      "why_not_high_confidence": "The production stack is stated directly, but the identity-bearing effect is inferred."
+    },
+    {
+      "id": "interp-003",
+      "interpretation": "The interface claim suggests a tension between high-intensity audiovisual language and a refined, intuitive user path.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_ui_design",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_motion",
+          "support_level": "copy_based"
+        }
+      ],
+      "why_not_high_confidence": "The tension is inferred from copy contrast; actual UX complexity and motion intensity are not directly observed."
+    }
+  ],
+  "unsupported_or_low_confidence_inferences": [
+    {
+      "id": "low-001",
+      "inference": "The visual execution may use glitch, rupture, or compression artifacts as a metaphor for data disruption.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "Datamosh implies a possible glitch-like visual behavior, but the public text alone does not prove how it appears."
+    },
+    {
+      "id": "low-002",
+      "inference": "The intended visual tone may be martial, precise, and premium rather than playful or soft.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_strategy",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "The copy names kendo qualities, but tone requires visual confirmation."
+    },
+    {
+      "id": "low-003",
+      "inference": "The realistic characters may be used to humanize an otherwise abstract data-economy proposition.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "MetaHuman usage is stated, but its narrative role is not stated."
+    }
+  ],
+  "contradictions": [
+    {
+      "id": "contra-001",
+      "stated_claim": "The public copy claims a refined, intuitive UI that guides users seamlessly.",
+      "observed_signal": "The same public copy emphasizes high-intensity motion language, Datamosh transitions, MetaHuman characters, and kendo intensity.",
+      "contradiction_level": "soft",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_ui_design",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_motion_stack",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_kendo_motion",
+          "support_level": "copy_based"
+        }
+      ],
+      "interpretation_boundary": "This is a copy-level tension, not a confirmed usability conflict."
+    },
+    {
+      "id": "contra-002",
+      "stated_claim": "The public case claims disruption of centralized power structures and a user-empowered data ecosystem.",
+      "observed_signal": "The available first-pass evidence is primarily case-study language, not direct product behavior showing user empowerment.",
+      "contradiction_level": "unverified",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_power_structures",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "d4data_copy_ui_design",
+          "support_level": "weak_inference"
+        }
+      ],
+      "interpretation_boundary": "Do not convert empowerment language into observed product behavior without capture or flow evidence."
+    }
+  ],
+  "human_review": {
+    "status": "required_before_downstream_use",
+    "review_questions": [
+      "Do captures confirm Datamosh transitions, MetaHuman characters, and the claimed intensity/precision of kendo?",
+      "Does the interface visibly guide users, or is that only a stated UX claim?",
+      "Is the refined UI / intense motion tension productive, unresolved, or not visible?",
+      "Which D4DATA terms are reusable as Brand3 perceptual vocabulary without importing the case-specific kendo metaphor?"
+    ],
+    "reviewed_by": null,
+    "reviewed_at": null
+  },
+  "validation": {
+    "json_parse_required": true,
+    "schema_contract": "examples/perceptual_library/schema/perceptual_case_record_schema.json",
+    "test_file": "tests/test_perceptual_case_record.py",
+    "case_artifact_boundary": "second_pilot_fixture_only",
+    "ready_for_scoring": false,
+    "ready_for_runtime": false
+  }
+}

@@ -1,0 +1,199 @@
+{
+  "schema_version": "brand3-report-voice-guide-1",
+  "record_type": "brand3_report_voice_guide",
+  "generated_at": "2026-05-14",
+  "scope": "documentation_only",
+  "summary": {
+    "voice_goal": "Brand3 / FLOC* reports should read as precise diagnostics of brand surfaces rather than generic brand-strategy memos.",
+    "core_shift": "Move from score-led consultant prose to observation-first, evidence-linked, tension-aware analysis."
+  },
+  "voice_rules": {
+    "desired_voice": [
+      "concise",
+      "diagnostic",
+      "observation-first",
+      "tension-aware",
+      "evidence-linked",
+      "specific",
+      "perceptual"
+    ],
+    "undesired_voice": [
+      "score-led",
+      "promotional",
+      "consultant-sounding",
+      "overconfident relative to evidence",
+      "literary without diagnostic gain"
+    ],
+    "core_rules": [
+      "Start with what is observable, not with the score.",
+      "Name the actual pattern, not a generic positive impression.",
+      "Separate observation from implication.",
+      "Use tension language only when evidence really supports a tension.",
+      "Prefer concrete signals, pages, quotes, channels, and mismatches over abstract branding language.",
+      "Keep fallback language honest and specific about what is missing."
+    ]
+  },
+  "forbidden_phrases": [
+    "clear message",
+    "strong presence",
+    "differentiated strategy",
+    "well-defined identity",
+    "sophisticated platform ambition",
+    "the available sources point in the same direction",
+    "automatic synthesis unavailable",
+    "available evidence",
+    "the brand demonstrates",
+    "the brand is"
+  ],
+  "preferred_sentence_structures": [
+    "The evidence shows X across Y, while Z remains limited.",
+    "Self-description emphasizes X; external coverage compresses it into Y.",
+    "This may indicate ...",
+    "That could leave a strategic question around ...",
+    "The pattern is visible in ..."
+  ],
+  "observation_implication_tension_model": {
+    "observation": [
+      "State only what is visible in the evidence.",
+      "Name the specific touchpoints and evidence chain."
+    ],
+    "implication": [
+      "Use conditional language only.",
+      "Keep inference modest and evidence-bound."
+    ],
+    "tension": [
+      "Use only when there is a real contradiction, mismatch, or trade-off.",
+      "Do not invent tension when the evidence is simply thin."
+    ]
+  },
+  "dimension_specific_rules": {
+    "coherencia": {
+      "focus": [
+        "consistency or divergence across touchpoints",
+        "specific touchpoints: web, social, press, visual identity, tone"
+      ],
+      "preferred": [
+        "visual language stays aligned across surfaces",
+        "self-description diverges from third-party framing"
+      ],
+      "avoid": [
+        "clear message",
+        "coherent brand identity"
+      ]
+    },
+    "presencia": {
+      "focus": [
+        "discoverability and footprint",
+        "owned web presence versus broader discoverability"
+      ],
+      "preferred": [
+        "owned site is live, but external footprint is shallow",
+        "social / directory reach is limited"
+      ],
+      "avoid": [
+        "strong presence",
+        "the brand is easy to find"
+      ]
+    },
+    "percepcion": {
+      "focus": [
+        "awareness, sentiment, controversy, and review surface",
+        "source quality and coverage depth"
+      ],
+      "preferred": [
+        "mentions are sparse and concentrated in niche sources",
+        "coverage is positive but thin",
+        "controversy is absent in the current evidence pool"
+      ],
+      "avoid": [
+        "positive perception",
+        "mixed reception"
+      ]
+    },
+    "diferenciacion": {
+      "focus": [
+        "ownable vocabulary",
+        "generic language",
+        "competitor compression"
+      ],
+      "preferred": [
+        "the brand uses ownable category language",
+        "third-party coverage compresses the offer into a narrower tool",
+        "competitors share too much of the vocabulary"
+      ],
+      "avoid": [
+        "clear, differentiated strategy",
+        "strong positioning"
+      ]
+    },
+    "vitalidad": {
+      "focus": [
+        "cadence",
+        "recency",
+        "momentum",
+        "lifecycle stage"
+      ],
+      "preferred": [
+        "recent publishing exists, but cadence is irregular",
+        "activity looks maintained rather than expanding"
+      ],
+      "avoid": [
+        "alive",
+        "dead",
+        "brand is building"
+      ]
+    }
+  },
+  "fallback_text_rules": {
+    "rules": [
+      "Say what failed or what is missing.",
+      "Do not pretend a generic observation is a real synthesis.",
+      "Do not repeat the same fallback sentence across all dimensions.",
+      "Keep the score out of the opening line.",
+      "Mention the evidence limitation explicitly."
+    ],
+    "preferred_patterns": [
+      "Synthesis unavailable for this run; the available evidence is too thin to support a stronger reading.",
+      "Coherencia fallback: visual evidence is missing, so the reading is limited to message and channel signals.",
+      "Percepcion fallback: the mention pool is too sparse to support a reliable sentiment reading."
+    ],
+    "avoid_patterns": [
+      "Available evidence",
+      "Automatic synthesis unavailable",
+      "The available sources point in the same direction"
+    ]
+  },
+  "before_after_rewrites": [
+    {
+      "label": "score_led_summary",
+      "before": "Example scores 72/100 (band B). Strongest dimension: Presence (82/100). Weakest dimension: Differentiation (54/100). Data quality: degraded.",
+      "after": "The brand is visible on its own site, but the external reading is less stable. Differentiation is the main pressure point: the offer is present, yet the market still compresses it into a narrower category."
+    },
+    {
+      "label": "generic_positive_synthesis",
+      "before": "Netlify presents a clear message backed by consistent external coverage.",
+      "after": "Netlify’s own language and external coverage both point to a builder-facing product, but the market still simplifies the story to serverless infrastructure."
+    },
+    {
+      "label": "fallback_block",
+      "before": "Available evidence.",
+      "after": "Perception is not reliable here: the mention pool is too sparse to support a stable sentiment reading."
+    },
+    {
+      "label": "consultant_tone",
+      "before": "This creates a tension between the company's sophisticated platform ambition and a more narrow, tool-focused market understanding.",
+      "after": "The tension is narrower and more useful: the product is framed as a platform internally, while the market still repeats tool-level language."
+    }
+  ],
+  "validation_set": [
+    "tests/snapshots/report-netlify-light.html",
+    "output/reports/manual-preview.html",
+    "output/reports/manual-preview-real.html",
+    "output/reports/manual-preview-real-actual.html",
+    "output/reports/charms-real.html",
+    "output/reports/charms-real-actual.html",
+    "output/reports/elevenlabs/13-20260430-230043/report.dark.html",
+    "output/reports/floc/9-20260430-064008/report.light.html",
+    "output/reports/a16z/42-20260419-144049/report.light.html"
+  ]
+}

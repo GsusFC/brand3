@@ -1,0 +1,13 @@
+{
+  "created_at": "2026-05-18T08:48:47.258157+00:00",
+  "execute_requested": false,
+  "executed": false,
+  "llm_calls_planned": 4,
+  "llm_calls_executed": 0,
+  "model": "gemini-3.1-pro-preview",
+  "usage_metadata_available": false,
+  "cost_estimate_available": false,
+  "notes": [
+    "Single trial batch for multi-case schema validation; provider usage metadata not exposed by LLMAnalyzer."
+  ]
+}

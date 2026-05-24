@@ -1,0 +1,40 @@
+Expected category: editorial_media
+Notes: Creative publication with distinctive but practical editorial layout.
+
+== It's Nice That ==
+URL: https://www.itsnicethat.com
+Interpretation status: interpretable
+Extraction confidence: 0.65 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.51, consistency_coverage=0.57]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.57
+
+Visual summaries:
+- palette preview: #f3f3f3[###] #f3ebe3[###] #846f62[###] #333842[###] #f5f5f4[###] #72b2ba[###] #aa3640[###] #141c25[###]
+- typography: none
+- layout: header=True; nav=False; hero=False; sections=0; density=sparse; patterns=flex,multi_column,sticky_nav
+- components: button=8, cta=8, form=10, card=2
+- consistency: overall=0.45; color=0.48; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #808080[###] #ffffff[###] #808060[###] #606060[###] #000000[###] #202020[###] #404040[###] #e0e0e0[###]
+- viewport palette: #808080[###] #ffffff[###] #808060[###] #606060[###] #000000[###] #202020[###] #404040[###] #e0e0e0[###]
+- composition: density=dense; whitespace=29%; classification=dense_grid
+- viewport composition: density=dense; whitespace=29%; classification=dense_grid
+- vision confidence: 0.86 (high)
+- viewport confidence: 0.86 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

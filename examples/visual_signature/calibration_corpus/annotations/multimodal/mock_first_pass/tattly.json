@@ -1,0 +1,441 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:00:47.858313",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://tattly.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "ecommerce",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.24,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Tattly",
+  "calibration": {
+    "expected_category": "ecommerce",
+    "notes": "Small product ecommerce with lower-complexity visual system."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 4,
+        "labels": [
+          "Reload"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 1,
+        "labels": [
+          "Reload"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      }
+    ],
+    "confidence": 0.52,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "Reload"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.15,
+    "component_consistency": 0.64,
+    "confidence": 0.34,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.45,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.34,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.41
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.582
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 8,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://tattly.com/cdn/shop/files/tattly-logo.webp?v=1776799668&amp;width=3840"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.55,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 2,
+        "role": "body",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.88
+    },
+    "composition": {
+      "color_variance": 0.054,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.633,
+      "edge_density": 0.025,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.976
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 68323,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://tattly.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/tattly.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 9,
+      "confidence": 0.599,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19442,
+          "ratio": 0.9721
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 194,
+          "ratio": 0.0097
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 74,
+          "ratio": 0.0037
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 64,
+          "ratio": 0.0032
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 60,
+          "ratio": 0.003
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 46,
+          "ratio": 0.0023
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 40,
+          "ratio": 0.002
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 40,
+          "ratio": 0.002
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.054,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.633,
+      "edge_density": 0.025,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.976
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.633,
+        "palette": 0.599,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.745
+    },
+    "viewport_palette": {
+      "color_count": 9,
+      "confidence": 0.599,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19442,
+          "ratio": 0.9721
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 194,
+          "ratio": 0.0097
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 74,
+          "ratio": 0.0037
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 64,
+          "ratio": 0.0032
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 60,
+          "ratio": 0.003
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 46,
+          "ratio": 0.0023
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 40,
+          "ratio": 0.002
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 40,
+          "ratio": 0.002
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.976,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.633,
+        "palette": 0.599,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.745
+    }
+  },
+  "website_url": "https://tattly.com"
+}

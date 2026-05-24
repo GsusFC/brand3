@@ -1,0 +1,519 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:31:35.399397",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.pipefy.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 44,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Pipefy",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Mid-market SaaS with template and workflow messaging patterns."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.62,
+        "count": 7,
+        "labels": [
+          "Book a demo",
+          "Try for free",
+          "Learn more at Pipefy&nbsp;Security",
+          "View awards",
+          "Book a Demo",
+          "Learn more at Pipefy\u00a0Security",
+          "![Book a Demo"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 52,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 134,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Book a demo",
+      "Try for free",
+      "Learn more at Pipefy&nbsp;Security",
+      "View awards",
+      "Book a Demo",
+      "Learn more at Pipefy\u00a0Security",
+      "![Book a Demo"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.68,
+    "confidence": 0.392,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.355,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.392,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.445
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.602
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex"
+    ],
+    "section_count": 38,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Accenture",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/08/Accenture.png"
+      },
+      {
+        "alt": "BASF",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/08/BASF-Logo_bw.png"
+      },
+      {
+        "alt": "IBM",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/08/IBM_logo.png"
+      },
+      {
+        "alt": "Kraft Heinz",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/08/KraftHeinz.png"
+      },
+      {
+        "alt": "Wellhub",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/08/wellhub-logo.png"
+      },
+      {
+        "alt": "Zeiss",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/08/Zeiss_logo.png"
+      },
+      {
+        "alt": "Logo 1",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/11/788423db-b91f-4088-9433-757db801a9da-3.png"
+      },
+      {
+        "alt": "Logo 2",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://assets-site.staticpipefy.com/production/wp-content/uploads/2025/11/Fast500_2025_SocialMediaBadge_Winner-1.png"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.35,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {
+      "max": 400,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.314,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.788,
+      "edge_density": 0.051,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.782
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 335539,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.pipefy.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/pipefy.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 73,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 15844,
+          "ratio": 0.7922
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1314,
+          "ratio": 0.0657
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1062,
+          "ratio": 0.0531
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 265,
+          "ratio": 0.0132
+        },
+        {
+          "hex": "#ffe0ff",
+          "occurrences": 185,
+          "ratio": 0.0092
+        },
+        {
+          "hex": "#0040a0",
+          "occurrences": 171,
+          "ratio": 0.0086
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 169,
+          "ratio": 0.0084
+        },
+        {
+          "hex": "#0060c0",
+          "occurrences": 168,
+          "ratio": 0.0084
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.314,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.788,
+      "edge_density": 0.051,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.782
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.788,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.866
+    },
+    "viewport_palette": {
+      "color_count": 73,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 15844,
+          "ratio": 0.7922
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1314,
+          "ratio": 0.0657
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1062,
+          "ratio": 0.0531
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 265,
+          "ratio": 0.0132
+        },
+        {
+          "hex": "#ffe0ff",
+          "occurrences": 185,
+          "ratio": 0.0092
+        },
+        {
+          "hex": "#0040a0",
+          "occurrences": 171,
+          "ratio": 0.0086
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 169,
+          "ratio": 0.0084
+        },
+        {
+          "hex": "#0060c0",
+          "occurrences": 168,
+          "ratio": 0.0084
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.782,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.788,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.866
+    }
+  },
+  "website_url": "https://www.pipefy.com"
+}

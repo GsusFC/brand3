@@ -1,0 +1,29 @@
+Expected category: developer-first
+Notes: Developer-first documentation surface with dense navigation and UI patterns.
+
+== Stripe Docs ==
+URL: https://docs.stripe.com
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.52, consistency_coverage=0.67]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.55
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.67
+
+Visual summaries:
+- palette preview: #555555[###] #f5f5f5[###] #85d996[###] #ffffff[###] #b0b0b0[###] #0a2540[###] #000000[###] #556cd6[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=0; density=sparse; patterns=flex,multi_column
+- components: button=20, cta=20, form=6, card=2, accordion=16, tabs=38, modal=4, pricing=2
+- consistency: overall=0.47; color=0.48; type=0.20; component=0.75; asset=0.45
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

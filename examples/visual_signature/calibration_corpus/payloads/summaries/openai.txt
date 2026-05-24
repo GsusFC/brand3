@@ -1,0 +1,42 @@
+Expected category: ai_native
+Notes: AI-native reference brand with restrained visual system.
+
+== OpenAI ==
+URL: https://openai.com
+Interpretation status: interpretable
+Extraction confidence: 0.60 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.41, consistency_coverage=0.46]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.41
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.46
+
+Visual summaries:
+- palette preview: #0d0d0d[###]
+- typography: none
+- layout: header=True; nav=False; hero=False; sections=0; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: button=6, cta=18, form=4, card=202, modal=4, pricing=6
+- consistency: overall=0.55; color=0.78; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #8080a0[###] #ff8020[###] #a0a0c0[###] #c0c0c0[###] #404040[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #8080a0[###] #ff8020[###] #a0a0c0[###] #c0c0c0[###] #404040[###]
+- composition: density=sparse; whitespace=100%; classification=blank
+- viewport composition: density=sparse; whitespace=100%; classification=blank
+- vision confidence: 0.74 (medium)
+- viewport confidence: 0.74 (medium)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: weak confidence (0.41)
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

@@ -1,0 +1,93 @@
+{
+  "created_at": "2026-05-18T08:39:59.005063+00:00",
+  "executed": true,
+  "requests_executed": 3,
+  "requests_skipped": 3,
+  "per_case": {
+    "linear::coherencia": {
+      "case_id": "linear",
+      "dimension": "coherencia",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Software development and issue tracking"
+        ],
+        "risky_terms_detected": [
+          "leadership",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://linear.app/",
+          "https://medium.com/linear-app/about"
+        ],
+        "evidence_url_validity": true
+      }
+    },
+    "vercel::coherencia": {
+      "case_id": "vercel",
+      "dimension": "coherencia",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Vercel maintains Next.js framework"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://en.wikipedia.org/wiki/Vercel"
+        ],
+        "evidence_url_validity": true
+      }
+    },
+    "launchdarkly::vitalidad": {
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "summary": {
+        "finding_count": 3,
+        "titles": [
+          "Feature flag version restoration added",
+          "Online evals in AI Configs",
+          "Leadership team expansion announced"
+        ],
+        "risky_terms_detected": [
+          "leadership",
+          "advantage",
+          "traction",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+          "https://releasebot.io/updates/launchdarkly",
+          "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+        ],
+        "evidence_url_validity": true
+      }
+    }
+  },
+  "pass_flags": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "blocked_or_review_controls_skipped": true,
+    "thin_case_qualified": true,
+    "evidence_urls_valid": true
+  },
+  "trial_pass": true,
+  "manual_review_required": true
+}

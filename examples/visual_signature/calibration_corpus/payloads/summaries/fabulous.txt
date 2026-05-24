@@ -1,0 +1,42 @@
+Expected category: consumer_app
+Notes: Mid-market consumer habit app with wellness-adjacent conversion patterns.
+
+== Fabulous ==
+URL: https://www.thefabulous.co
+Interpretation status: interpretable
+Extraction confidence: 0.60 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.46, consistency_coverage=0.34]
+
+Signal coverage: 71%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.75
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.34
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=4; density=dense; patterns=flex
+- components: cta=7, accordion=2, tabs=10, pricing=2
+- consistency: overall=0.35; color=0.15; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #200060[###] #202060[###] #402060[###] #602060[###] #604080[###] #202020[###] #404080[###]
+- viewport palette: #ffffff[###] #200060[###] #202060[###] #402060[###] #602060[###] #604080[###] #202020[###] #404080[###]
+- composition: density=dense; whitespace=44%; classification=dense_grid
+- viewport composition: density=dense; whitespace=44%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: consistency_inference_limited

@@ -1,0 +1,79 @@
+{
+  "version": "brand3_state_first_prose_generator_v0_outputs_review.v0",
+  "created_at": "2026-05-17",
+  "status": {
+    "review_only": true,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false
+  },
+  "generated_outputs": [
+    {
+      "case_id": "iris",
+      "output": "examples/reports/narrative_harness/state_first_prose_generator_v0/iris.state_first_prose_generator_v0.json",
+      "manual_reference": "examples/reports/narrative_harness/state_first_prose_v0/iris.state_first_prose_v0.json",
+      "pressure_subtype": "name_collision",
+      "mode": "strong",
+      "structure_match": true,
+      "guardrails_preserved": true,
+      "manual_quality_match": "partial",
+      "assessment": "The generator preserves the audited-surface/name-collision boundary, but the manual version is more precise about which Iris-like surfaces create which risk."
+    },
+    {
+      "case_id": "watermelon",
+      "output": "examples/reports/narrative_harness/state_first_prose_generator_v0/watermelon.state_first_prose_generator_v0.json",
+      "manual_reference": "examples/reports/narrative_harness/state_first_prose_v0/watermelon.state_first_prose_v0.json",
+      "pressure_subtype": "ecosystem_surface_pressure",
+      "mode": "strong",
+      "structure_match": true,
+      "guardrails_preserved": true,
+      "manual_quality_match": "partial",
+      "assessment": "The generator preserves ecosystem-surface separation and blocks roadmap/traction inference, but the manual version handles unrelated watermelon references more sharply."
+    },
+    {
+      "case_id": "launchdarkly",
+      "output": "examples/reports/narrative_harness/state_first_prose_generator_v0/launchdarkly.state_first_prose_generator_v0.json",
+      "manual_reference": "examples/reports/narrative_harness/state_first_prose_v0/launchdarkly.state_first_prose_v0.json",
+      "pressure_subtype": "stable_entity_evidence_binding",
+      "mode": "light",
+      "structure_match": true,
+      "guardrails_preserved": true,
+      "manual_quality_match": "medium_high",
+      "assessment": "The generator performs best on the stable case because the required move is restrained proof distribution rather than nuanced ambiguity handling."
+    }
+  ],
+  "what_worked": [
+    "The generator preserves the same high-level candidate shape as the manual artifacts.",
+    "The generator correctly carries mode and pressure_subtype into the prose candidate.",
+    "Strong ambiguity cases remain human-review-gated.",
+    "LaunchDarkly remains light and does not invent ambiguity.",
+    "Every generated dimension includes evidence_boundary, uncertainty_retained and overreach_avoided.",
+    "Unsupported pressure subtypes abstain instead of generating."
+  ],
+  "what_is_weaker_than_manual": [
+    "Dimension prose is more templated and less case-specific than the manual candidates.",
+    "The generator does not yet use relation_type details deeply enough inside each dimension.",
+    "The generator can name evidence families, but it does not yet rank which evidence is most important for a dimension.",
+    "The generator does not yet produce the sharper editorial compression seen in manual Iris and Watermelon."
+  ],
+  "safety_assessment": {
+    "safer_than_baseline": true,
+    "production_ready": false,
+    "main_reason": "The generator preserves epistemic boundaries, but its prose is still a lab candidate and lacks enough case-specific editorial judgement.",
+    "unsafe_to_do_next": [
+      "wire into official report generation",
+      "replace official findings",
+      "enable runtime generation",
+      "use as prompt rollout",
+      "remove human review from strong-mode ambiguity cases"
+    ]
+  },
+  "recommendation": {
+    "decision": "continue_lab_only",
+    "next_step": "create a side-by-side Lab comparison artifact showing baseline, manual state-first, and generated state-first for the three cases",
+    "rationale": "The generator is structurally valid, but humans need to see whether generated prose is good enough compared with manual candidates before any deeper implementation."
+  }
+}

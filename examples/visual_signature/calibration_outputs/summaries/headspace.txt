@@ -1,0 +1,29 @@
+Expected category: wellness/lifestyle
+Notes: Wellness brand with illustration, soft palette, and consumer conversion flows.
+
+== Headspace ==
+URL: https://www.headspace.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.58, consistency_coverage=0.59]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #ffffff[###] #44423f[###] #2d2c2b[###] #141313[###] #ff7300[###] #281466[###] #b0aca5[###] #1a0c54[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=4; density=dense; patterns=single_column
+- components: button=54, cta=29, form=10, card=116, accordion=56, tabs=36, pricing=6
+- consistency: overall=0.47; color=0.48; type=0.20; component=0.74; asset=0.45
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

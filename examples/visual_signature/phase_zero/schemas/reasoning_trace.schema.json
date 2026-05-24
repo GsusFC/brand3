@@ -1,0 +1,113 @@
+{
+  "$defs": {
+    "ReasoningStatement": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "evidence_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "statement",
+        "confidence"
+      ],
+      "title": "ReasoningStatement",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "lineage_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Lineage Refs",
+      "type": "array"
+    },
+    "record_type": {
+      "const": "reasoning_trace",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "review_required": {
+      "default": false,
+      "title": "Review Required",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "phase-zero-reasoning-trace-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "statements": {
+      "items": {
+        "$ref": "#/$defs/ReasoningStatement"
+      },
+      "title": "Statements",
+      "type": "array"
+    },
+    "summary": {
+      "minLength": 1,
+      "title": "Summary",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    },
+    "trace_id": {
+      "minLength": 1,
+      "title": "Trace Id",
+      "type": "string"
+    },
+    "unsupported_inference_warnings": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Unsupported Inference Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "record_type",
+    "trace_id",
+    "summary",
+    "statements"
+  ],
+  "title": "ReasoningTrace",
+  "type": "object"
+}

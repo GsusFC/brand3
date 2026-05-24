@@ -1,0 +1,90 @@
+{
+  "brand_name": "Template SaaS",
+  "website_url": "https://template-saas.example",
+  "analyzed_url": "https://template-saas.example",
+  "acquisition": {
+    "adapter": "existing_web_data",
+    "status_code": 200,
+    "acquired_at": "2026-05-08T00:00:00",
+    "warnings": [],
+    "errors": []
+  },
+  "colors": {
+    "palette": [
+      {"hex": "#ffffff", "role": "background", "occurrences": 16, "source": "rendered_html", "confidence": 0.86},
+      {"hex": "#0f172a", "role": "text", "occurrences": 10, "source": "rendered_html", "confidence": 0.8},
+      {"hex": "#6366f1", "role": "accent", "occurrences": 7, "source": "rendered_html", "confidence": 0.72},
+      {"hex": "#f8fafc", "role": "surface", "occurrences": 6, "source": "rendered_html", "confidence": 0.68}
+    ],
+    "dominant_colors": ["#ffffff", "#0f172a", "#6366f1", "#f8fafc"],
+    "accent_candidates": ["#6366f1"],
+    "background_candidates": ["#ffffff", "#f8fafc"],
+    "text_color_candidates": ["#0f172a"],
+    "palette_complexity": "low",
+    "confidence": 0.74
+  },
+  "typography": {
+    "font_families": [{"family": "Inter", "role": "body", "occurrences": 10, "source": "rendered_html", "confidence": 0.8}],
+    "heading_scale": "moderate",
+    "weight_range": {"min": 400, "max": 700},
+    "size_samples_px": [14, 16, 18, 40, 56],
+    "confidence": 0.86
+  },
+  "logo": {
+    "logo_detected": true,
+    "candidates": [{"text": "Template SaaS", "location": "header", "source": "rendered_html", "confidence": 0.55}],
+    "favicon_detected": true,
+    "textual_brand_mark_detected": true,
+    "primary_location": "header",
+    "confidence": 0.75
+  },
+  "layout": {
+    "has_header": true,
+    "has_navigation": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_footer": true,
+    "section_count": 7,
+    "layout_patterns": ["grid", "flex"],
+    "visual_density": "balanced",
+    "confidence": 0.84
+  },
+  "components": {
+    "components": [
+      {"type": "navigation", "count": 1, "labels": ["Features", "Pricing", "Docs"], "source": "rendered_html", "confidence": 0.7},
+      {"type": "cta", "count": 3, "labels": ["Get started", "Book a demo"], "source": "rendered_html", "confidence": 0.66},
+      {"type": "card", "count": 12, "labels": [], "source": "rendered_html", "confidence": 0.48},
+      {"type": "pricing", "count": 3, "labels": [], "source": "rendered_html", "confidence": 0.42}
+    ],
+    "primary_ctas": ["Get started", "Book a demo"],
+    "interaction_patterns": ["navigation"],
+    "confidence": 0.74
+  },
+  "assets": {
+    "image_count": 4,
+    "svg_count": 18,
+    "video_count": 0,
+    "background_image_count": 0,
+    "logo_image_candidates": [],
+    "icon_candidates": [{"url": "https://template-saas.example/check.svg", "source": "images", "role_hint": "icon"}],
+    "screenshot_available": true,
+    "asset_mix": ["icon", "screenshot"],
+    "confidence": 0.68
+  },
+  "consistency": {
+    "color_consistency": 0.78,
+    "typography_consistency": 0.82,
+    "component_consistency": 0.82,
+    "asset_consistency": 0.69,
+    "overall_consistency": 0.785,
+    "notes": ["System is internally consistent; compare against category norms for template likeness."],
+    "confidence": 0.755
+  },
+  "extraction_confidence": {
+    "score": 0.78,
+    "level": "high",
+    "factors": {"acquisition": 0.9, "html_coverage": 0.72, "signal_coverage": 0.77, "consistency_coverage": 0.755},
+    "limitations": []
+  },
+  "version": "visual-signature-mvp-1"
+}

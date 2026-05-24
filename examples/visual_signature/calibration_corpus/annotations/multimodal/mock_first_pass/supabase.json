@@ -1,0 +1,542 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:58:44.242619",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://supabase.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "developer first",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 632,
+    "video_count": 2
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Supabase",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Developer-first product homepage with technical positioning."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#7298f9"
+    ],
+    "background_candidates": [],
+    "confidence": 0.406,
+    "dominant_colors": [
+      "#7298f9"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#7298f9",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 30,
+        "labels": [
+          "View Template",
+          "Table Editor",
+          "SQL Editor",
+          "RLS Policies"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 10,
+        "labels": [
+          "Start your project",
+          "Request a demo",
+          "View all stories",
+          "View events",
+          "View all examples",
+          "Official GitHub library",
+          "View Template",
+          "Join us on Discord",
+          "@supabase 102K",
+          "Next.js logo\\\\\n\\\\\nVercel logo\\\\\n\\\\\n**Next.js Starter**\\\\\n\\\\\n\\\\\nView Template"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 252,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Start your project",
+      "Request a demo",
+      "View all stories",
+      "View events",
+      "View all examples",
+      "Official GitHub library",
+      "View Template",
+      "Join us on Discord"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.7,
+    "confidence": 0.459,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.549,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.459,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.464
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.619
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "mozilla",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/mozilla.svg"
+      },
+      {
+        "alt": "github",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/github.svg"
+      },
+      {
+        "alt": "1password",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/1password.svg"
+      },
+      {
+        "alt": "pwc",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/pwc.svg"
+      },
+      {
+        "alt": "pika",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/pika.svg"
+      },
+      {
+        "alt": "humata",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/humata.svg"
+      },
+      {
+        "alt": "udio",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/udio.svg"
+      },
+      {
+        "alt": "langchain",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://supabase.com/images/logos/publicity/langchain.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.209,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.904
+    },
+    "composition": {
+      "color_variance": 0.052,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.631,
+      "edge_density": 0.039,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.955
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 90238,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://supabase.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/supabase.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 24,
+      "confidence": 0.681,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19089,
+          "ratio": 0.9545
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 239,
+          "ratio": 0.012
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 181,
+          "ratio": 0.0091
+        },
+        {
+          "hex": "#80e0a0",
+          "occurrences": 97,
+          "ratio": 0.0049
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 74,
+          "ratio": 0.0037
+        },
+        {
+          "hex": "#40c080",
+          "occurrences": 67,
+          "ratio": 0.0034
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 59,
+          "ratio": 0.0029
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 45,
+          "ratio": 0.0022
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.052,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.631,
+      "edge_density": 0.039,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.955
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.631,
+        "palette": 0.681,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.765
+    },
+    "viewport_palette": {
+      "color_count": 24,
+      "confidence": 0.681,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19089,
+          "ratio": 0.9545
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 239,
+          "ratio": 0.012
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 181,
+          "ratio": 0.0091
+        },
+        {
+          "hex": "#80e0a0",
+          "occurrences": 97,
+          "ratio": 0.0049
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 74,
+          "ratio": 0.0037
+        },
+        {
+          "hex": "#40c080",
+          "occurrences": 67,
+          "ratio": 0.0034
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 59,
+          "ratio": 0.0029
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 45,
+          "ratio": 0.0022
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.955,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.631,
+        "palette": 0.681,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.765
+    }
+  },
+  "website_url": "https://supabase.com"
+}

@@ -1,0 +1,44 @@
+Expected category: premium_luxury
+Notes: Premium fragrance brand with restrained typography and product focus.
+
+== Le Labo ==
+URL: https://www.lelabofragrances.com
+Interpretation status: interpretable
+Extraction confidence: 0.56 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.35, consistency_coverage=0.37]
+
+Signal coverage: 57%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.37
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=22; density=sparse; patterns=single_column
+- components: button=4, cta=8, form=4, card=16, modal=8
+- consistency: overall=0.36; color=0.15; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #404040[###] #606060[###] #000000[###] #202020[###] #200000[###] #604040[###] #402020[###] #ffffff[###]
+- viewport palette: #404040[###] #606060[###] #000000[###] #202020[###] #200000[###] #604040[###] #402020[###] #ffffff[###]
+- composition: density=dense; whitespace=3%; classification=dense_grid
+- viewport composition: density=dense; whitespace=3%; classification=dense_grid
+- vision confidence: 0.78 (high)
+- viewport confidence: 0.78 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_palette_more_complex_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport palette is noisier than the DOM palette.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- consistency: weak confidence (0.37)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

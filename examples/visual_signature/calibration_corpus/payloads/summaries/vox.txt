@@ -1,0 +1,40 @@
+Expected category: editorial_media
+Notes: Modern media homepage with topic modules and dense editorial rhythm.
+
+== Vox ==
+URL: https://www.vox.com
+Interpretation status: interpretable
+Extraction confidence: 0.64 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.52, consistency_coverage=0.50]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.57
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.50
+
+Visual summaries:
+- palette preview: #000000[###] #fff200[###] #ffffff[###] #c1c1c1[###]
+- typography: none
+- layout: header=True; nav=True; hero=False; sections=6; density=dense; patterns=single_column,sticky_nav
+- components: button=10, cta=12, form=10, card=190, modal=6
+- consistency: overall=0.55; color=0.78; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #ffff00[###] #000000[###] #e0e0e0[###] #e04040[###] #202020[###] #204020[###] #404040[###]
+- viewport palette: #ffffff[###] #ffff00[###] #000000[###] #e0e0e0[###] #e04040[###] #202020[###] #204020[###] #404040[###]
+- composition: density=dense; whitespace=47%; classification=dense_grid
+- viewport composition: density=dense; whitespace=47%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

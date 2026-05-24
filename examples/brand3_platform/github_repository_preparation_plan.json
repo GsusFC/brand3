@@ -1,0 +1,480 @@
+{
+  "generated": "2026-05-13",
+  "scope": "planning only",
+  "rules_followed": [
+    "did not move files",
+    "did not delete files",
+    "did not modify scoring",
+    "did not modify prompts",
+    "did not modify Visual Signature semantics",
+    "did not change runtime behavior",
+    "did not publish anything"
+  ],
+  "goal": "Prepare Brand3 for GitHub/team review as one coherent repository while preserving Initial Scoring and Visual Signature as separate layers.",
+  "recommended_repository_structure": [
+    "README.md",
+    "CONTRIBUTING.md",
+    ".env.example",
+    "pyproject.toml",
+    "main.py",
+    "docs/architecture.md",
+    "docs/artifact_policy.md",
+    "docs/environment.md",
+    "docs/local_review.md",
+    "docs/prompts.md",
+    "docs/visual_signature.md",
+    "src/collectors/**",
+    "src/discovery/**",
+    "src/features/**",
+    "src/niche/**",
+    "src/quality/**",
+    "src/reports/**",
+    "src/scoring/**",
+    "src/services/**",
+    "src/storage/**",
+    "src/visual_signature/**",
+    "web/**",
+    "scripts/**",
+    "migrations/**",
+    "tests/**",
+    "examples/brand3_platform/**",
+    "examples/visual_signature/**",
+    "design/**",
+    "deploy/**"
+  ],
+  "track_policy": {
+    "keep_tracked": [
+      "README.md",
+      "CONTRIBUTING.md once created",
+      ".gitignore",
+      ".env.example",
+      "pyproject.toml",
+      "main.py",
+      "src/**",
+      "web/**",
+      "scripts/*.py",
+      "scripts/*.sh",
+      "migrations/*.sql",
+      "tests/**",
+      "docs/**",
+      "design/**",
+      "deploy/**",
+      "db/**",
+      "examples/brand3_platform/**",
+      "examples/*.json",
+      "selected examples/visual_signature fixtures/manifests/governance/calibration/corpus artifacts needed for tests and review"
+    ],
+    "track_with_explicit_review": [
+      "src/brand3/visual-signature/**",
+      "tsconfig.visual-signature.json",
+      "examples/visual_signature/platform/**",
+      "graphify-out/GRAPH_REPORT.md"
+    ],
+    "ignore_or_keep_local": [
+      ".env",
+      ".env.local",
+      ".venv/",
+      "venv/",
+      "env/",
+      "data/",
+      "output/",
+      "validation-*/",
+      "*.log",
+      ".pytest_cache/",
+      ".sentrux/",
+      ".mcp.json",
+      ".DS_Store",
+      "__pycache__/",
+      "*.pyc",
+      "*.sqlite3-shm",
+      "*.sqlite3-wal",
+      "generated browser/server caches"
+    ],
+    "conditional_ignores_after_artifact_policy": [
+      "examples/visual_signature/screenshots/*.png",
+      "examples/visual_signature/calibration_corpus/screenshots/**/*.png",
+      "large generated examples/visual_signature/calibration_corpus/** payloads",
+      "generated review viewers if rebuildable",
+      "generated static platform bundles if rebuildable"
+    ]
+  },
+  "generated_artifacts_policy": {
+    "default_rule": "Commit curated source fixtures, manifests, governance records, calibration records, and small deterministic test artifacts; do not commit local runtime outputs by default.",
+    "commit": [
+      "small deterministic fixtures used by tests",
+      "schema examples and manifest examples",
+      "governance JSON/MD artifacts that define policy",
+      "calibration summaries and small sample records needed for review",
+      "small stable reviewer packet samples"
+    ],
+    "do_not_commit_by_default": [
+      "output/**",
+      "SQLite databases",
+      "validation run folders",
+      "generated logs",
+      "full screenshot sets",
+      "full calibration corpora",
+      "generated static bundles that can be reproduced"
+    ],
+    "use_lfs_or_external_bundle_for": [
+      "full screenshot sets",
+      "full calibration corpus screenshot sets",
+      "large visual review bundles",
+      "artifact packs over normal source-review size"
+    ],
+    "pr_questions": [
+      "Is this source fixture, audit export, or local output?",
+      "Can it be regenerated?",
+      "Is it needed by tests?",
+      "Is it small enough for normal Git?",
+      "Does it contain private/local data?"
+    ]
+  },
+  "screenshots_cache_policy": {
+    "screenshots": [
+      "Keep only minimal curated screenshot samples in Git when tests or docs need them.",
+      "Put full screenshot sets in Git LFS or external artifact storage.",
+      "Do not commit screenshots from private client work without explicit approval.",
+      "Preserve raw vs clean/full-page semantics in artifact names and manifests."
+    ],
+    "caches": [
+      "Never commit .pytest_cache, __pycache__, local browser caches, provider caches, or temporary generated files.",
+      "Treat LLM cache rows in SQLite as local runtime state unless a synthetic fixture is explicitly created.",
+      "Treat Graphify cache/cost/manifest files as local cache."
+    ]
+  },
+  "secrets_env_policy": {
+    "rules": [
+      "Commit .env.example.",
+      "Never commit .env or .env.local.",
+      "Never paste real provider keys into docs, examples, logs, tests, or screenshots.",
+      "Keep team/deploy secrets in GitHub Actions secrets or deployment platform secrets.",
+      "Use dummy test tokens only in tests."
+    ],
+    "documented_variables": [
+      "FIRECRAWL_API_KEY",
+      "EXA_API_KEY",
+      "BRAND3_LLM_API_KEY",
+      "GEMINI_API_KEY",
+      "GOOGLE_API_KEY",
+      "OPENROUTER_API_KEY",
+      "BRAND3_LLM_BASE_URL",
+      "BRAND3_LLM_MODEL",
+      "BRAND3_LLM_CHEAP_MODEL",
+      "BRAND3_LLM_PREMIUM_MODEL",
+      "BRAND3_VISION_MODEL",
+      "SCREENSHOT_PROVIDER",
+      "BRAND3_DB_PATH",
+      "BRAND3_TEAM_TOKEN",
+      "BRAND3_COOKIE_SECRET",
+      "BRAND3_RATE_LIMIT_BYPASS_IPS",
+      "BRAND3_MAX_CONCURRENT_ANALYSES",
+      "BRAND3_ANALYSIS_TIMEOUT_SECONDS",
+      "BRAND3_BASE_URL",
+      "BRAND3_ENVIRONMENT",
+      "BRAND3_VISUAL_SIGNATURE_ROOT"
+    ],
+    "recommended_doc": "docs/environment.md"
+  },
+  "prompt_versioning_policy": {
+    "prompt_locations": [
+      "src/features/llm_analyzer.py",
+      "src/reports/narrative.py",
+      "src/features/visual_analyzer.py",
+      "src/visual_signature/annotations/prompts.py"
+    ],
+    "rules": [
+      "Prompts are source code.",
+      "Prompt changes require PR review.",
+      "Prompt changes must identify the affected layer.",
+      "Prompt changes must not be bundled with rubric changes unless explicitly stated.",
+      "Prompt changes that affect cached provider calls must bump or introduce a prompt version.",
+      "Long prompts should have stable IDs and version strings.",
+      "PRs should include snapshot/test evidence or written rationale when behavior changes."
+    ],
+    "recommended_versions": [
+      "Keep brand3-llm-v1 until semantic llm_analyzer prompt changes.",
+      "Add explicit versions for report narrative prompts.",
+      "Add explicit version for visual_analyzer vision prompt.",
+      "Keep visual-signature-annotation-prompt-1 until Visual Signature annotation semantics change."
+    ],
+    "recommended_doc": "docs/prompts.md"
+  },
+  "commands": {
+    "setup": [
+      "python -m venv .venv",
+      "./.venv/bin/python -m pip install -e ."
+    ],
+    "fastapi_jinja_app": [
+      "scripts/run_web_dev_macos.sh",
+      "PYTHONPATH=. ./.venv/bin/python -m uvicorn web.app:app --host 127.0.0.1 --port 8000"
+    ],
+    "local_review_urls": [
+      "http://127.0.0.1:8000/",
+      "http://127.0.0.1:8000/reports",
+      "http://127.0.0.1:8000/visual-signature",
+      "http://127.0.0.1:8000/visual-signature/governance",
+      "http://127.0.0.1:8000/visual-signature/calibration",
+      "http://127.0.0.1:8000/visual-signature/corpus",
+      "http://127.0.0.1:8000/visual-signature/reviewer"
+    ],
+    "tests": [
+      "./.venv/bin/python -m pytest",
+      "./.venv/bin/python -m pytest tests/test_scoring_engine.py tests/test_reports_derivation.py tests/test_reports_renderer.py -q",
+      "./.venv/bin/python -m pytest tests/test_web_app.py tests/test_web_health.py tests/test_web_listings.py -q",
+      "./.venv/bin/python -m pytest tests/test_visual_signature*.py -q"
+    ],
+    "initial_scoring_brand_audit": [
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe",
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe --no-llm",
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe --no-social",
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe --visual-signature-shadow-run",
+      "./.venv/bin/python main.py runs --limit 20",
+      "./.venv/bin/python main.py brands --limit 50",
+      "./.venv/bin/python main.py show-run --run-id <id>",
+      "./.venv/bin/python main.py render-report --latest --theme light",
+      "./.venv/bin/python main.py render-report --run-id <id> --theme light"
+    ],
+    "visual_signature_scripts": {
+      "governance": [
+        "./.venv/bin/python scripts/visual_signature_capability_registry.py",
+        "./.venv/bin/python scripts/visual_signature_runtime_policy_matrix.py",
+        "./.venv/bin/python scripts/visual_signature_governance_integrity.py",
+        "./.venv/bin/python scripts/visual_signature_three_track_validation_plan.py"
+      ],
+      "calibration": [
+        "./.venv/bin/python scripts/visual_signature_calibrate.py",
+        "./.venv/bin/python scripts/visual_signature_calibration.py",
+        "./.venv/bin/python scripts/visual_signature_calibration_validate.py",
+        "./.venv/bin/python scripts/visual_signature_calibration_readiness.py",
+        "./.venv/bin/python scripts/visual_signature_calibration_reliability_report.py"
+      ],
+      "capture_corpus_reviewer": [
+        "./.venv/bin/python scripts/visual_signature_capture_screenshots.py",
+        "./.venv/bin/python scripts/visual_signature_corpus_pass.py",
+        "./.venv/bin/python scripts/visual_signature_corpus_expansion.py",
+        "./.venv/bin/python scripts/visual_signature_reviewer_workflow_pilot.py",
+        "./.venv/bin/python scripts/visual_signature_reviewer_viewer.py"
+      ],
+      "platform": [
+        "./.venv/bin/python scripts/visual_signature_platform.py"
+      ],
+      "phase_artifacts": [
+        "./.venv/bin/python scripts/visual_signature_phase_zero_generate.py",
+        "./.venv/bin/python scripts/visual_signature_phase_zero_validate.py",
+        "./.venv/bin/python scripts/visual_signature_phase_one_generate.py",
+        "./.venv/bin/python scripts/visual_signature_phase_one_validate.py",
+        "./.venv/bin/python scripts/visual_signature_phase_two_generate.py",
+        "./.venv/bin/python scripts/visual_signature_phase_two_validate.py"
+      ]
+    }
+  },
+  "suggested_readme_structure": [
+    "Project summary",
+    "Current status",
+    "Architecture overview",
+    "Initial Scoring / Brand Audit",
+    "Visual Signature",
+    "Separation rules",
+    "Local setup",
+    "Environment variables",
+    "Run the local app",
+    "Run a brand audit",
+    "Inspect reports and scoring outputs",
+    "Inspect Visual Signature outputs",
+    "Run tests",
+    "Generated artifact policy",
+    "Prompt workflow",
+    "Repository map",
+    "Contributing"
+  ],
+  "suggested_contributing_structure": [
+    "Contributor expectations",
+    "Branch naming",
+    "Local setup",
+    "Required checks before PR",
+    "PR checklist",
+    "Artifact policy",
+    "Prompt change policy",
+    "Scoring/rubric change policy",
+    "Visual Signature change policy",
+    "Secrets policy",
+    "Review workflow",
+    "Release/publish notes"
+  ],
+  "suggested_pr_checklist": {
+    "scope": [
+      "Initial Scoring",
+      "Prompt system",
+      "Reports/prose",
+      "FastAPI/Jinja UI",
+      "Visual Signature",
+      "Docs/artifacts only"
+    ],
+    "guardrails": [
+      "No secrets committed",
+      "No local database/output/log/cache committed",
+      "No scoring logic change unless explicitly intended",
+      "No rubric dimension change unless explicitly intended",
+      "No Visual Signature to scoring integration unless explicitly intended",
+      "No provider execution added to read-only platform views",
+      "No runtime mutation added to review/navigation surfaces"
+    ],
+    "artifacts": [
+      "New artifacts are source fixtures, not local outputs",
+      "Large files are avoided, externalized, or intentionally handled through LFS",
+      "Generated artifacts include regeneration command or rationale"
+    ],
+    "prompts": [
+      "Prompt changes are identified",
+      "Prompt version updated if semantics/cache behavior changed",
+      "Prompt behavior has tests, snapshots, or written rationale"
+    ],
+    "validation": [
+      "Relevant scoring/report tests run",
+      "Relevant web tests run",
+      "Relevant Visual Signature tests run",
+      "README/docs updated if commands or workflows changed"
+    ]
+  },
+  "team_workflow": {
+    "run_locally": [
+      "Clone the repo.",
+      "Create .env from .env.example.",
+      "Add provider keys only if running provider-backed scoring/capture.",
+      "Install locally.",
+      "Start the app.",
+      "Open http://127.0.0.1:8000/."
+    ],
+    "review_prompts": [
+      "Check which file and prompt ID changed.",
+      "Identify affected layer: scoring extraction, report narrative, vision, or Visual Signature annotation.",
+      "Check whether output contract changed.",
+      "Check whether prompt version/cache key changed when needed.",
+      "Check tests/snapshots/rationale.",
+      "Keep rubric/scoring changes intentionally separate."
+    ],
+    "inspect_scoring_outputs": [
+      "Use /reports, /r/{token}, and /brand/{domain}.",
+      "Use main.py runs/show-run/render-report.",
+      "Review SQLite scores and output JSON dimensions.",
+      "Remember rich report prose is render-time derived."
+    ],
+    "inspect_visual_signature_outputs": [
+      "Use /visual-signature and subroutes.",
+      "Review examples/visual_signature/governance/**.",
+      "Review examples/visual_signature/calibration/**.",
+      "Review examples/visual_signature/corpus_expansion/**.",
+      "Review screenshots/capture manifests according to artifact policy.",
+      "Remember Visual Signature is evidence-only and does not mutate scoring."
+    ]
+  },
+  "staged_implementation_plan": [
+    {
+      "stage": 1,
+      "name": "safety cleanup",
+      "objective": "Prevent accidental publication of local data, secrets, and generated outputs.",
+      "actions": [
+        "Inspect git status --short.",
+        "Separate intended source/test/docs changes from local generated artifacts.",
+        "Confirm .env, data, output, logs, validation folders, caches, and local tool configs are not staged.",
+        "Run targeted secret scan excluding local ignored paths.",
+        "Decide how to handle untracked Visual Signature source/tests versus generated artifacts."
+      ],
+      "done_when": [
+        "Staging boundary is clear.",
+        "No local secret/runtime/generated data is selected for commit.",
+        "The team can see which files are source and which are generated."
+      ]
+    },
+    {
+      "stage": 2,
+      "name": "docs",
+      "objective": "Make the project understandable to a teammate without repo archaeology.",
+      "actions": [
+        "Update README.md.",
+        "Add CONTRIBUTING.md.",
+        "Add docs/environment.md.",
+        "Add docs/artifact_policy.md.",
+        "Add docs/prompts.md.",
+        "Add docs/architecture.md.",
+        "Add docs/local_review.md."
+      ],
+      "done_when": [
+        "A teammate can set up, run, test, inspect scoring, inspect Visual Signature, and understand guardrails from docs."
+      ]
+    },
+    {
+      "stage": 3,
+      "name": "gitignore",
+      "objective": "Encode artifact and cache policy into repository hygiene.",
+      "actions": [
+        "Add .sentrux/.",
+        "Add .pytest_cache/.",
+        "Add *.sqlite3-shm and *.sqlite3-wal.",
+        "Add generated Visual Signature screenshot/corpus paths after artifact policy decision.",
+        "Keep .env, .env.local, data, output, logs, and validation batches ignored."
+      ],
+      "done_when": [
+        "New local runs do not create tempting untracked generated clutter."
+      ]
+    },
+    {
+      "stage": 4,
+      "name": "platform navigation",
+      "objective": "Keep the unified local review flow easy to access.",
+      "actions": [
+        "Preserve / and /analyze scoring flow.",
+        "Keep /visual-signature read-only.",
+        "Document routes in README and docs/local_review.md.",
+        "Add or verify tests for navigation if route labels change."
+      ],
+      "done_when": [
+        "A teammate can run the app and review both Initial Scoring and Visual Signature from the browser."
+      ]
+    },
+    {
+      "stage": 5,
+      "name": "prompt workflow",
+      "objective": "Make prompt evolution reviewable and reproducible.",
+      "actions": [
+        "Document current prompt inventory.",
+        "Add explicit prompt IDs/versions where missing in future prompt PRs.",
+        "Define when prompt version bumps are required.",
+        "Define expected tests/snapshots/rationale for prompt changes.",
+        "Keep prompt PRs separate from rubric/scoring changes by default."
+      ],
+      "done_when": [
+        "Reviewers can tell whether a prompt change affects scoring, report prose, cache keys, or Visual Signature annotation semantics."
+      ]
+    },
+    {
+      "stage": 6,
+      "name": "team review process",
+      "objective": "Establish repeatable collaboration before publication.",
+      "actions": [
+        "Use the PR checklist.",
+        "Require relevant test commands in PR descriptions.",
+        "Require artifact classification for new files.",
+        "Require docs updates when commands, env vars, routes, prompts, or artifact policy changes.",
+        "Use small PRs: hygiene/docs, Visual Signature source, fixture policy, prompt workflow, platform navigation."
+      ],
+      "done_when": [
+        "The repo can be published with clear review norms and without accidentally merging private/generated state."
+      ]
+    }
+  ],
+  "publication_readiness_gate": [
+    "README.md updated",
+    "CONTRIBUTING.md exists",
+    "Env/secrets docs exist",
+    "Artifact policy exists",
+    "Prompt workflow docs exist",
+    ".gitignore covers local caches and generated outputs",
+    "Source/test changes are intentionally staged",
+    "Large generated artifacts are excluded, LFS-managed, or explicitly approved",
+    "Full or relevant test suite passes",
+    "Visual Signature separation from scoring is documented",
+    "No .env, local DB, output, logs, validation folders, or caches are staged"
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "artifacts": {
+    "builder": "src/reports/evidence_packet.py",
+    "deep_research_benchmark": "examples/reports/deep_research_trial/builtwith_kit_com_single_url/evidence_packet.json",
+    "local_packet": "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json",
+    "tests": "tests/test_evidence_packet.py"
+  },
+  "builtwith_local_packet_counts": {
+    "entity_ambiguity": 4,
+    "evidence_not_eligible_for_findings": 26,
+    "external_evidence": 6,
+    "finding_eligible_evidence": 0,
+    "missing_evidence": 12,
+    "owned_claims": 8,
+    "related_surface_evidence": 11,
+    "requires_human_review": 6,
+    "technical_signals": 1,
+    "trust_or_security_signals": 5,
+    "visual_or_internal_signals": 2
+  },
+  "comparison": {
+    "current_brand3_behavior": {
+      "builtwith_com_evidence": "mixed_into_normal_narrative",
+      "finding_eligibility": "not_computed_before_prompt",
+      "kit_owned_claims": "can_become_repeated_findings_with_caveats",
+      "missing_urls": "can_survive_into_findings",
+      "technical_artifacts": "can_become_findings",
+      "trust_security": "can_become_broad_perception_findings",
+      "visual_metrics": "can_become_findings"
+    },
+    "deep_research_single_url": {
+      "discovery": "stronger; found Kit subdomain docs and rebrand context",
+      "eligible_evidence": 2,
+      "limitation": "expensive and agentic",
+      "relation_handling": "stronger source-context disambiguation"
+    },
+    "local_evidence_packet_v0": {
+      "discovery": "none; snapshot-only",
+      "eligible_evidence": 0,
+      "limitation": "cannot discover missing Kit subdomain evidence",
+      "relation_handling": "conservative and prevents false aliasing"
+    }
+  },
+  "matched_deep_research": [
+    "Kit claims classified as owned claims, not external validation",
+    "BuiltWith.com evidence classified as unresolved related-surface evidence",
+    "robots.txt classified as technical-only",
+    "visual metrics classified as visual/internal-only",
+    "Joe Sandbox and ScamAdviser classified as trust/security review signals",
+    "URL-less evidence surfaced as missing evidence",
+    "no alias inferred between builtwith.kit.com and builtwith.com"
+  ],
+  "recommended_next_step": "Run Evidence Packet v0 on two more existing snapshots: LaunchDarkly as a clean/high-evidence case and Iris or Watermelon as an ambiguity case before feeding packet-filtered evidence into prompts.",
+  "review_gated_material": [
+    "same-name different-root domains",
+    "trust/security scanner interpretations",
+    "URL-less owned claims",
+    "social profile candidates with no verification or activity",
+    "BuiltWith.com evidence in a builtwith.kit.com audit",
+    "visual/internal metrics",
+    "technical readiness artifacts"
+  ],
+  "root_finding": "Evidence Packet v0 can locally reproduce the most important Deep Research classification discipline from existing Brand3 snapshots, but it cannot discover missing disambiguating evidence. It is useful as a pre-narrative order layer, not as acquisition replacement.",
+  "status": "completed",
+  "title": "Brand3 Existing Pipeline Evidence Packet v0 Review"
+}

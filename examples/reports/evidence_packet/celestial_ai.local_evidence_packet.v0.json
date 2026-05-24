@@ -1,0 +1,1977 @@
+{
+  "version": 0,
+  "case_id": "celestial_ai",
+  "audit_url": "https://www.celestial.ai",
+  "audited_surface": {
+    "url": "https://www.celestial.ai",
+    "host": "celestial.ai",
+    "root_domain": "celestial.ai",
+    "evidence": [
+      {
+        "text": "# Celestial AI Celestial AI is a Semiconductor Manufacturing company. Celestial AI develops audacious AI computing platforms that elevate performance,",
+        "url": "https://celestial.ai/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About — Celestial AI ## Ushering in a New Era of Optical Connectivity The explosive growth in AI model size is driving the need for a step function in",
+        "url": "https://www.celestial.ai/about-1",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Home — Celestial AI ## The Photonic Fabric™ Company ### Optical interconnect technology platform for memory and compute ### Celestial AI Closes $175 M",
+        "url": "https://www.celestial.ai/home-1",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI is a Semiconductor Manufacturing company.",
+        "url": "https://celestial.ai/",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI Wins 2024 Global Semiconductor Alliance Start-Up to Watch Award",
+        "url": "https://www.celestial.ai/home-26-1-1",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Exceptional technology traction validating Photonic Fabric based connectivity solutions for AI infrastructure",
+        "url": "https://www.celestial.ai/blog/celestial-ai-announces-photonic-fabric-adoption-by-lead-hyperscaler-customers",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "celestial.ai",
+    "confidence": "medium",
+    "evidence": [
+      {
+        "text": "# Celestial AI Celestial AI is a Semiconductor Manufacturing company. Celestial AI develops audacious AI computing platforms that elevate performance,",
+        "url": "https://celestial.ai/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About — Celestial AI ## Ushering in a New Era of Optical Connectivity The explosive growth in AI model size is driving the need for a step function in",
+        "url": "https://www.celestial.ai/about-1",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Home — Celestial AI ## The Photonic Fabric™ Company ### Optical interconnect technology platform for memory and compute ### Celestial AI Closes $175 M",
+        "url": "https://www.celestial.ai/home-1",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI is a Semiconductor Manufacturing company.",
+        "url": "https://celestial.ai/",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI Wins 2024 Global Semiconductor Alliance Start-Up to Watch Award",
+        "url": "https://www.celestial.ai/home-26-1-1",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Exceptional technology traction validating Photonic Fabric based connectivity solutions for AI infrastructure",
+        "url": "https://www.celestial.ai/blog/celestial-ai-announces-photonic-fabric-adoption-by-lead-hyperscaler-customers",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "related_surfaces": [
+      {
+        "surface": "https://www.linkedin.com/company/celestialai",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/celestialai",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/celestialai",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/celestialai",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/celestialai",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@celestialai",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/celestialai",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://celestial.ai/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai/about-1",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai/home-1",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://www.linkedin.com/posts/josepozophotonics_optica-insights-understanding-the-secret-activity-7401895257333895168-MA0i",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://investor.marvell.com/news-events/press-releases/detail/1000/marvell-to-acquire-celestial-ai-accelerating-scale-up-connectivity-for-next-generation-data-centers",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://www.cbinsights.com/company/inorganic-intelligence",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://www.celestial.ai/home-26-1-1",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai/blog/celestial-ai-announces-photonic-fabric-adoption-by-lead-hyperscaler-customers",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai/sitemap.xml",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://www.celestial.ai",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.celestial.ai",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.celestial.ai/",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/celestialai",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.celestial.ai",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.celestial.ai",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=4"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "# Intelligence, illuminated.™ Reaching the unlimited potential of humankind at the speed of light. ### This just in. ### **A New Chapter Begins. Celes",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI was founded to break the data movement barrier holding AI back",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "The Photonic Fabric™ Company",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.linkedin.com/posts/josepozophotonics_optica-insights-understanding-the-secret-activity-7401895257333895168-MA0i",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "Marvell to Acquire Celestial AI, Accelerating Scale-up Connectivity for Next-Generation Data Centers",
+      "url": "https://investor.marvell.com/news-events/press-releases/detail/1000/marvell-to-acquire-celestial-ai-accelerating-scale-up-connectivity-for-next-generation-data-centers",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+      "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Marvell Technology, Inc.(NASDAQ: MRVL), a leader in data infrastructure semiconductor solutions, today announced that it has completed its previously announced acquisition of Celestial AI",
+      "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI focuses on optical interconnect technology for the artificial intelligence sector.",
+      "url": "https://www.cbinsights.com/company/inorganic-intelligence",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Reaching the unlimited potential of humankind at the speed of light.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We’re revolutionizing how data moves by harnessing light.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI develops audacious AI computing platforms that elevate performance, energy and economic efficiencies",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI was founded to break the data movement barrier holding AI back, enabling intelligence to become faster, more efficient, and more sustainable as it scales.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We’re revolutionizing how data moves by harnessing light.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Reaching the unlimited potential of humankind at the speed of light.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Cooper as the audited brand's closest measured competitor with measured distance 0.842; avg_distance=0.913; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Opinly as the audited brand's most different measured competitor with measured distance 0.958; avg_distance=0.913; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+      "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "sitemap.xml found with 24 URLs",
+      "url": "https://www.celestial.ai/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://www.celestial.ai/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Schema detected: LocalBusiness, Organization, WebSite",
+      "url": "https://www.celestial.ai",
+      "dimension": "coherencia",
+      "feature_name": "structured_identity",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog",
+      "url": "https://www.celestial.ai",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.02; contrast signal 0.43.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/celestialai",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [],
+  "missing_evidence": [
+    {
+      "text": "# Intelligence, illuminated.™ Reaching the unlimited potential of humankind at the speed of light. ### This just in. ### **A New Chapter Begins. Celes",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.02; contrast signal 0.43.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Celestial AI was founded to break the data movement barrier holding AI back",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "The Photonic Fabric™ Company",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Reaching the unlimited potential of humankind at the speed of light.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "We’re revolutionizing how data moves by harnessing light.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Celestial AI develops audacious AI computing platforms that elevate performance, energy and economic efficiencies",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Celestial AI was founded to break the data movement barrier holding AI back, enabling intelligence to become faster, more efficient, and more sustainable as it scales.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "We’re revolutionizing how data moves by harnessing light.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Reaching the unlimited potential of humankind at the speed of light.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "# Celestial AI Celestial AI is a Semiconductor Manufacturing company. Celestial AI develops audacious AI computing platforms that elevate performance,",
+      "url": "https://celestial.ai/",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "About — Celestial AI ## Ushering in a New Era of Optical Connectivity The explosive growth in AI model size is driving the need for a step function in",
+      "url": "https://www.celestial.ai/about-1",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Home — Celestial AI ## The Photonic Fabric™ Company ### Optical interconnect technology platform for memory and compute ### Celestial AI Closes $175 M",
+      "url": "https://www.celestial.ai/home-1",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Marvell to Acquire Celestial AI, Accelerating Scale-up Connectivity for Next-Generation Data Centers",
+      "url": "https://investor.marvell.com/news-events/press-releases/detail/1000/marvell-to-acquire-celestial-ai-accelerating-scale-up-connectivity-for-next-generation-data-centers",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+      "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Marvell Technology, Inc.(NASDAQ: MRVL), a leader in data infrastructure semiconductor solutions, today announced that it has completed its previously announced acquisition of Celestial AI",
+      "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI focuses on optical interconnect technology for the artificial intelligence sector.",
+      "url": "https://www.cbinsights.com/company/inorganic-intelligence",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI is a Semiconductor Manufacturing company.",
+      "url": "https://celestial.ai/",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Cooper as the audited brand's closest measured competitor with measured distance 0.842; avg_distance=0.913; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Opinly as the audited brand's most different measured competitor with measured distance 0.958; avg_distance=0.913; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Celestial AI Wins 2024 Global Semiconductor Alliance Start-Up to Watch Award",
+      "url": "https://www.celestial.ai/home-26-1-1",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Exceptional technology traction validating Photonic Fabric based connectivity solutions for AI infrastructure",
+      "url": "https://www.celestial.ai/blog/celestial-ai-announces-photonic-fabric-adoption-by-lead-hyperscaler-customers",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "# Intelligence, illuminated.™ Reaching the unlimited potential of humankind at the speed of light. ### This just in. ### **A New Chapter Begins. Celes",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/celestialai",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.linkedin.com/posts/josepozophotonics_optica-insights-understanding-the-secret-activity-7401895257333895168-MA0i",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.02; contrast signal 0.43.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI was founded to break the data movement barrier holding AI back",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "The Photonic Fabric™ Company",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Reaching the unlimited potential of humankind at the speed of light.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We’re revolutionizing how data moves by harnessing light.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI develops audacious AI computing platforms that elevate performance, energy and economic efficiencies",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Celestial AI was founded to break the data movement barrier holding AI back, enabling intelligence to become faster, more efficient, and more sustainable as it scales.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "sitemap.xml found with 24 URLs",
+      "url": "https://www.celestial.ai/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://www.celestial.ai/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Schema detected: LocalBusiness, Organization, WebSite",
+      "url": "https://www.celestial.ai",
+      "dimension": "coherencia",
+      "feature_name": "structured_identity",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog",
+      "url": "https://www.celestial.ai",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/celestialai",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "# Intelligence, illuminated.™ Reaching the unlimited potential of humankind at the speed of light. ### This just in. ### **A New Chapter Begins. Celes",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/celestialai",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/celestialai",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@celestialai",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/celestialai",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "# Celestial AI Celestial AI is a Semiconductor Manufacturing company. Celestial AI develops audacious AI computing platforms that elevate performance,",
+        "url": "https://celestial.ai/",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About — Celestial AI ## Ushering in a New Era of Optical Connectivity The explosive growth in AI model size is driving the need for a step function in",
+        "url": "https://www.celestial.ai/about-1",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Home — Celestial AI ## The Photonic Fabric™ Company ### Optical interconnect technology platform for memory and compute ### Celestial AI Closes $175 M",
+        "url": "https://www.celestial.ai/home-1",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "sitemap.xml found with 24 URLs",
+        "url": "https://www.celestial.ai/sitemap.xml",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://www.celestial.ai/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.linkedin.com/posts/josepozophotonics_optica-insights-understanding-the-secret-activity-7401895257333895168-MA0i",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "Marvell to Acquire Celestial AI, Accelerating Scale-up Connectivity for Next-Generation Data Centers",
+        "url": "https://investor.marvell.com/news-events/press-releases/detail/1000/marvell-to-acquire-celestial-ai-accelerating-scale-up-connectivity-for-next-generation-data-centers",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+        "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Marvell Technology, Inc.(NASDAQ: MRVL), a leader in data infrastructure semiconductor solutions, today announced that it has completed its previously announced acquisition of Celestial AI",
+        "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.02; contrast signal 0.43.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI was founded to break the data movement barrier holding AI back",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI focuses on optical interconnect technology for the artificial intelligence sector.",
+        "url": "https://www.cbinsights.com/company/inorganic-intelligence",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "The Photonic Fabric™ Company",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI is a Semiconductor Manufacturing company.",
+        "url": "https://celestial.ai/",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Reaching the unlimited potential of humankind at the speed of light.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "We’re revolutionizing how data moves by harnessing light.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI develops audacious AI computing platforms that elevate performance, energy and economic efficiencies",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Schema detected: LocalBusiness, Organization, WebSite",
+        "url": "https://www.celestial.ai",
+        "feature_name": "structured_identity",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "Celestial AI was founded to break the data movement barrier holding AI back, enabling intelligence to become faster, more efficient, and more sustainable as it scales.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "We’re revolutionizing how data moves by harnessing light.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Reaching the unlimited potential of humankind at the speed of light.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Cooper as the audited brand's closest measured competitor with measured distance 0.842; avg_distance=0.913; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Opinly as the audited brand's most different measured competitor with measured distance 0.958; avg_distance=0.913; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog",
+        "url": "https://www.celestial.ai",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "Celestial AI Wins 2024 Global Semiconductor Alliance Start-Up to Watch Award",
+        "url": "https://www.celestial.ai/home-26-1-1",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+        "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Exceptional technology traction validating Photonic Fabric based connectivity solutions for AI infrastructure",
+        "url": "https://www.celestial.ai/blog/celestial-ai-announces-photonic-fabric-adoption-by-lead-hyperscaler-customers",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "ready",
+      "eligible_count": 2,
+      "blocked_count": 8,
+      "review_required_count": 3,
+      "missing_evidence_count": 7,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "visual_brand_support_only",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url"
+      ],
+      "readiness_reason": "Coherencia has multiple owned textual surfaces and at least one usable non-review-gated evidence item.",
+      "recommended_action": "Proceed with intra-entity consistency language only."
+    },
+    "presencia": {
+      "status": "thin",
+      "eligible_count": 3,
+      "blocked_count": 7,
+      "review_required_count": 1,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "external_channel_coverage_thin"
+      ],
+      "readiness_reason": "Presencia has owned-surface evidence, but external channel evidence is insufficient.",
+      "recommended_action": "Verify official profiles and collect external channel evidence."
+    },
+    "percepcion": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 0,
+      "review_required_count": 0,
+      "missing_evidence_count": 0,
+      "reason_codes": [],
+      "readiness_reason": "Percepcion has non-empty eligible evidence and at least one external perception source.",
+      "recommended_action": "Proceed only with source-bounded perception language."
+    },
+    "diferenciacion": {
+      "status": "ready",
+      "eligible_count": 2,
+      "blocked_count": 5,
+      "review_required_count": 3,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "competitor_corpus_present",
+        "bounded_comparison_evidence",
+        "no_strategy_inference"
+      ],
+      "readiness_reason": "Comparative or category-distinctive evidence is present, but should remain bounded to the cited sources.",
+      "recommended_action": "Use only the cited comparative evidence; do not infer category leadership."
+    },
+    "vitalidad": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 4,
+      "review_required_count": 0,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked"
+      ],
+      "readiness_reason": "Vitalidad has multiple non-empty temporal activity signals.",
+      "recommended_action": "Proceed with activity language without inferring traction or growth."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "# Intelligence, illuminated.™ Reaching the unlimited potential of humankind at the speed of light. ### This just in. ### **A New Chapter Begins. Celes",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI was founded to break the data movement barrier holding AI back",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "The Photonic Fabric™ Company",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "Marvell to Acquire Celestial AI, Accelerating Scale-up Connectivity for Next-Generation Data Centers",
+        "url": "https://investor.marvell.com/news-events/press-releases/detail/1000/marvell-to-acquire-celestial-ai-accelerating-scale-up-connectivity-for-next-generation-data-centers",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+        "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Marvell Technology, Inc.(NASDAQ: MRVL), a leader in data infrastructure semiconductor solutions, today announced that it has completed its previously announced acquisition of Celestial AI",
+        "url": "https://www.marvell.com/company/newsroom/marvell-completes-acquisition-of-celestial-ai.html",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Celestial AI focuses on optical interconnect technology for the artificial intelligence sector.",
+        "url": "https://www.cbinsights.com/company/inorganic-intelligence",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Cooper as the audited brand's closest measured competitor with measured distance 0.842; avg_distance=0.913; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Opinly as the audited brand's most different measured competitor with measured distance 0.958; avg_distance=0.913; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+        "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "sitemap.xml found with 24 URLs",
+        "url": "https://www.celestial.ai/sitemap.xml",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://www.celestial.ai/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Schema detected: LocalBusiness, Organization, WebSite",
+        "url": "https://www.celestial.ai",
+        "dimension": "coherencia",
+        "feature_name": "structured_identity",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog",
+        "url": "https://www.celestial.ai",
+        "dimension": "diferenciacion",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.02; contrast signal 0.43.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [],
+    "excluded_noise": [],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/celestialai",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/celestialai",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "messaging_consistency",
+        "owned_evidence": [
+          {
+            "text": "Celestial AI was founded to break the data movement barrier holding AI back",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "The Photonic Fabric™ Company",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Celestial AI is a Semiconductor Manufacturing company.",
+            "url": "https://celestial.ai/",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Celestial AI focuses on optical interconnect technology for the artificial intelligence sector.",
+            "url": "https://www.cbinsights.com/company/inorganic-intelligence",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "brand_sentiment",
+        "owned_evidence": [
+          {
+            "text": "Celestial AI Wins 2024 Global Semiconductor Alliance Start-Up to Watch Award",
+            "url": "https://www.celestial.ai/home-26-1-1",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Exceptional technology traction validating Photonic Fabric based connectivity solutions for AI infrastructure",
+            "url": "https://www.celestial.ai/blog/celestial-ai-announces-photonic-fabric-adoption-by-lead-hyperscaler-customers",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Marvell Technology, a provider of data infrastructure semiconductor solutions, has reached an agreement to acquire Celestial AI, a developer of AI computing platforms, for an upfront sum of about $3.25bn.",
+            "url": "https://finance.yahoo.com/news/marvell-buy-celestial-ai-3-085104799.html",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 34,
+      "owned_claims": 4,
+      "external_evidence": 19,
+      "related_surface_evidence": 1,
+      "technical_signals": 4,
+      "trust_or_security_signals": 0,
+      "visual_or_internal_signals": 2,
+      "entity_ambiguity": 1,
+      "excluded_noise": 0,
+      "missing_evidence": 12,
+      "finding_eligible_evidence": 12,
+      "evidence_not_eligible_for_findings": 20,
+      "requires_human_review": 1
+    }
+  }
+}

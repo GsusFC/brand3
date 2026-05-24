@@ -1,0 +1,455 @@
+{
+  "comparison_count": 10,
+  "comparisons": [
+    {
+      "brand_name": "A24",
+      "category": "editorial/media",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.827
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "A24",
+        "category": "editorial/media",
+        "component_density": 0.708,
+        "cta_density": 0.25,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.598,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 0.083,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/a24.json",
+        "typography_complexity": 0.0,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://a24films.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://a24films.com"
+    },
+    {
+      "brand_name": "Allbirds",
+      "category": "ecommerce",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.846
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "Allbirds",
+        "category": "ecommerce",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.684,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 1.0,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/allbirds.json",
+        "typography_complexity": 0.18,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://www.allbirds.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "brand_name": "Headspace",
+      "category": "wellness/lifestyle",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.846
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "Headspace",
+        "category": "wellness/lifestyle",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.68,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 1.0,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/headspace.json",
+        "typography_complexity": 0.0,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://www.headspace.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://www.headspace.com"
+    },
+    {
+      "brand_name": "Hermes",
+      "category": "premium/luxury",
+      "category_relative_notes": [
+        "Payload is not interpretable and was excluded from category averages.",
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 0.0,
+        "limitations": [
+          "not_interpretable_excluded_from_baseline_averages",
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.0
+      },
+      "interpretation_status": "not_interpretable",
+      "metrics": {
+        "brand_name": "Hermes",
+        "category": "premium/luxury",
+        "component_density": 0.0,
+        "cta_density": 0.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.165,
+        "interpretation_status": "not_interpretable",
+        "limitations": [
+          "not_interpretable_excluded_from_baseline_averages",
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 0.0,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/hermes.json",
+        "typography_complexity": 0.0,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://www.hermes.com"
+      },
+      "outlier_flags": [
+        "not_interpretable_excluded_from_baseline",
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://www.hermes.com"
+    },
+    {
+      "brand_name": "Joe's Plumbing NYC",
+      "category": "weak/small business site",
+      "category_relative_notes": [
+        "Payload is not interpretable and was excluded from category averages.",
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 0.0,
+        "limitations": [
+          "not_interpretable_excluded_from_baseline_averages",
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.0
+      },
+      "interpretation_status": "not_interpretable",
+      "metrics": {
+        "brand_name": "Joe's Plumbing NYC",
+        "category": "weak/small business site",
+        "component_density": 0.0,
+        "cta_density": 0.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.034,
+        "interpretation_status": "not_interpretable",
+        "limitations": [
+          "not_interpretable_excluded_from_baseline_averages",
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 0.0,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/joe-s-plumbing-nyc.json",
+        "typography_complexity": 0.0,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://www.joesplumbingnyc.com"
+      },
+      "outlier_flags": [
+        "not_interpretable_excluded_from_baseline",
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://www.joesplumbingnyc.com"
+    },
+    {
+      "brand_name": "Linear",
+      "category": "SaaS",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.851
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "Linear",
+        "category": "SaaS",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.704,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 1.0,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/linear.json",
+        "typography_complexity": 0.72,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://linear.app"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://linear.app"
+    },
+    {
+      "brand_name": "Notion",
+      "category": "template-like SaaS",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.846
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "Notion",
+        "category": "template-like SaaS",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.68,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 0.917,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/notion.json",
+        "typography_complexity": 0.0,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://www.notion.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://www.notion.com"
+    },
+    {
+      "brand_name": "OpenAI",
+      "category": "AI-native",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.828
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "OpenAI",
+        "category": "AI-native",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.6,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 0.083,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/openai.json",
+        "typography_complexity": 0.0,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://openai.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://openai.com"
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "category": "developer-first",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.843
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "Stripe Docs",
+        "category": "developer-first",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.671,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 1.0,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/stripe-docs.json",
+        "typography_complexity": 0.88,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://docs.stripe.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://docs.stripe.com"
+    },
+    {
+      "brand_name": "The Verge",
+      "category": "editorial/media",
+      "category_relative_notes": [
+        "Category baseline has fewer than three interpretable payloads."
+      ],
+      "confidence": {
+        "baseline_coverage": 1.0,
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "score": 0.863
+      },
+      "interpretation_status": "interpretable",
+      "metrics": {
+        "brand_name": "The Verge",
+        "category": "editorial/media",
+        "component_density": 1.0,
+        "cta_density": 1.0,
+        "dom_viewport_agreement_level": "unknown",
+        "dom_viewport_agreement_score": null,
+        "extraction_confidence": 0.756,
+        "interpretation_status": "interpretable",
+        "limitations": [
+          "vision_payload_missing",
+          "agreement_payload_missing"
+        ],
+        "palette_complexity": 0.833,
+        "signal_coverage": 1.0,
+        "source_path": "examples/visual_signature/calibration_outputs/the-verge.json",
+        "typography_complexity": 0.52,
+        "viewport_composition": "unknown",
+        "viewport_density": "unknown",
+        "viewport_whitespace": null,
+        "vision_confidence": null,
+        "website_url": "https://www.theverge.com"
+      },
+      "outlier_flags": [
+        "category_sample_small"
+      ],
+      "version": "visual-signature-category-comparison-mvp-1",
+      "website_url": "https://www.theverge.com"
+    }
+  ],
+  "input_dir": "examples/visual_signature/calibration_outputs",
+  "version": "visual-signature-category-comparison-mvp-1"
+}

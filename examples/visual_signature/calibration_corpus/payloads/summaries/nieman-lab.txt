@@ -1,0 +1,39 @@
+Expected category: editorial_media
+Notes: Niche editorial site added to reduce major-publication overfitting.
+
+== Nieman Lab ==
+URL: https://www.niemanlab.org
+Interpretation status: interpretable
+Extraction confidence: 0.70 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.60, consistency_coverage=0.70]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.67
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.70
+
+Visual summaries:
+- palette preview: #333333[###] #2c2c2a[###] #c1dbd9[###] #882222[###] #939393[###] #882211[###] #dddddd[###] #5b6163[###]
+- typography: freight-sans-pro, freight-text-pro, freight-macro-pro, jubilat
+- layout: header=True; nav=True; hero=True; sections=0; density=balanced; patterns=single_column
+- components: cta=6, form=24
+- consistency: overall=0.56; color=0.48; type=0.65; component=0.64; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #c02020[###] #404040[###] #c0c0c0[###] #606060[###] #808080[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #a0a0a0[###] #c02020[###] #404040[###] #c0c0c0[###] #606060[###] #808080[###]
+- composition: density=balanced; whitespace=69%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=69%; classification=balanced_blocks
+- vision confidence: 0.76 (high)
+- viewport confidence: 0.76 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

@@ -1,0 +1,39 @@
+Expected category: saas
+Notes: Smaller SaaS candidate to reduce famous-brand overfitting.
+
+== Process Street ==
+URL: https://www.process.st
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.58, consistency_coverage=0.56]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.85
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.56
+
+Visual summaries:
+- palette preview: #ffffff[###] #1e2b36[###] #fff8e5[###] #eaf5ff[###] #003388[###] #cce6ff[###] #f5faff[###] #f5f5f5[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=24; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=2, cta=10, form=2, tabs=16, modal=2
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #ffffe0[###] #e0ffff[###] #e0ffe0[###] #e0e0ff[###] #e0e0e0[###] #202040[###] #a0a060[###]
+- viewport palette: #ffffff[###] #ffffe0[###] #e0ffff[###] #e0ffe0[###] #e0e0ff[###] #e0e0e0[###] #202040[###] #a0a060[###]
+- composition: density=dense; whitespace=28%; classification=dense_grid
+- viewport composition: density=dense; whitespace=28%; classification=dense_grid
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

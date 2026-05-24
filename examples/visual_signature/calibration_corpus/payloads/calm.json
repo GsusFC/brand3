@@ -1,0 +1,380 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:33:29.494393",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.calm.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 82,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": false,
+    "failures": [
+      "viewport_screenshot_quality_unusable"
+    ],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": false,
+  "brand_name": "Calm",
+  "calibration": {
+    "expected_category": "wellness_lifestyle",
+    "notes": "Mainstream wellness app with calm first-impression design patterns."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#f8d22d",
+      "#75f0f0",
+      "#7575f0",
+      "#9191ff",
+      "#f075c7",
+      "#75f094"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#000000"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#c6c6c6",
+      "#ffffff",
+      "#f8d22d",
+      "#000000",
+      "#75f0f0",
+      "#7575f0",
+      "#9191ff",
+      "#f075c7"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#c6c6c6",
+        "occurrences": 28,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 18,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f8d22d",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#000000",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#75f0f0",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#7575f0",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#9191ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f075c7",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#75f094",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#75b2f0",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#c6c6c6",
+      "#ffffff",
+      "#000000",
+      "#7575f0",
+      "#f075c7",
+      "#75b2f0"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 22,
+        "labels": [
+          "Try Calm for Free",
+          "Stress less. Get in-the-moment relief for stress and anxiety so you can get back",
+          "Sleep more. Fall asleep (and stay asleep) naturally and peacefully. Learn More",
+          "Live mindfully. Navigate life's ups and downs with resilience, confidence and gu",
+          "Yearly NOK&nbsp;478.00/yr. NOK&nbsp;39.83/mo. 14-Day Free Trial",
+          "Continue"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 9,
+        "labels": [
+          "Try Calm for Free",
+          "Stress less. Get in-the-moment relief for stress and anxiety so you can get back",
+          "Sleep more. Fall asleep (and stay asleep) naturally and peacefully. Learn More",
+          "Live mindfully. Navigate life's ups and downs with resilience, confidence and gu",
+          "Yearly NOK&nbsp;478.00/yr. NOK&nbsp;39.83/mo. 14-Day Free Trial",
+          "Continue",
+          "See all blogs",
+          "![Thumbnail for What is psychosis? Meaning, symptoms, and how to get help",
+          "Get 50% off Calm Premium for a limited time!Get Offer Now"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 58,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 28,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Try Calm for Free",
+      "Stress less. Get in-the-moment relief for stress and anxiety so you can get back",
+      "Sleep more. Fall asleep (and stay asleep) naturally and peacefully. Learn More",
+      "Live mindfully. Navigate life's ups and downs with resilience, confidence and gu",
+      "Yearly NOK&nbsp;478.00/yr. NOK&nbsp;39.83/mo. 14-Day Free Trial",
+      "Continue",
+      "See all blogs",
+      "![Thumbnail for What is psychosis? Meaning, symptoms, and how to get help"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.7,
+    "confidence": 0.573,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.519,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.573,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.507
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.651
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "single_column",
+      "sticky_nav"
+    ],
+    "section_count": 14,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "dom_density_higher_than_viewport",
+        "dom_palette_more_complex_than_viewport",
+        "dom_density_disagrees_with_viewport_first_fold"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "DOM suggests a denser page than the viewport first impression.",
+        "DOM palette is noisier than the viewport palette.",
+        "DOM suggests a denser page, but the viewport reads as spacious."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.254
+    },
+    "composition": {
+      "color_variance": 0.0,
+      "composition_classification": "blank",
+      "confidence": 0.6,
+      "edge_density": 0.0,
+      "visual_density": "sparse",
+      "whitespace_ratio": 1.0
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 5851,
+      "height": 900,
+      "limitations": [
+        "screenshot_has_single_color"
+      ],
+      "page_url": "https://www.calm.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/calm.png",
+      "quality": "blank",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 1,
+      "confidence": 0.555,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 20000,
+          "ratio": 1.0
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.0,
+      "composition_classification": "blank",
+      "confidence": 0.6,
+      "edge_density": 0.0,
+      "visual_density": "sparse",
+      "whitespace_ratio": 1.0
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.6,
+        "palette": 0.555,
+        "screenshot": 0.18
+      },
+      "level": "low",
+      "limitations": [
+        "screenshot_has_single_color",
+        "screenshot_quality_blank"
+      ],
+      "score": 0.4
+    },
+    "viewport_palette": {
+      "color_count": 1,
+      "confidence": 0.555,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 20000,
+          "ratio": 1.0
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 1.0,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.6,
+        "palette": 0.555,
+        "screenshot": 0.18
+      },
+      "level": "low",
+      "limitations": [
+        "screenshot_has_single_color",
+        "screenshot_quality_blank"
+      ],
+      "score": 0.4
+    }
+  },
+  "website_url": "https://www.calm.com"
+}

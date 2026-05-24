@@ -1,0 +1,49 @@
+{
+  "items": [
+    {
+      "description": "Raw viewport capture before any mutation or intervention.",
+      "key": "RAW_STATE",
+      "mutation_allowed": false,
+      "review_required": false,
+      "terminal": false
+    },
+    {
+      "description": "Viewport is obstructed by a visible overlay or blocking layer.",
+      "key": "OBSTRUCTED_STATE",
+      "mutation_allowed": false,
+      "review_required": false,
+      "terminal": false
+    },
+    {
+      "description": "A reversible, exact affordance is present and safe to attempt.",
+      "key": "ELIGIBLE_FOR_SAFE_INTERVENTION",
+      "mutation_allowed": true,
+      "review_required": false,
+      "terminal": false
+    },
+    {
+      "description": "A safe, reversible mutation succeeded and raw evidence is preserved.",
+      "key": "MINIMALLY_MUTATED_STATE",
+      "mutation_allowed": false,
+      "review_required": false,
+      "terminal": false
+    },
+    {
+      "description": "Intervention was blocked because the environment is protected or ambiguous.",
+      "key": "UNSAFE_MUTATION_BLOCKED",
+      "mutation_allowed": false,
+      "review_required": true,
+      "terminal": true
+    },
+    {
+      "description": "Perception exists but needs human validation before export or action.",
+      "key": "REVIEW_REQUIRED_STATE",
+      "mutation_allowed": false,
+      "review_required": true,
+      "terminal": true
+    }
+  ],
+  "registry_type": "state_registry",
+  "schema_version": "phase-zero-state-registry-1",
+  "taxonomy_version": "phase-zero-taxonomy-1"
+}

@@ -1,0 +1,696 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:57:26.102366",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": 200,
+    "warnings": []
+  },
+  "analyzed_url": "https://finchcare.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 0.55,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.771
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "consumer app",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 2,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 8,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Finch",
+  "calibration": {
+    "expected_category": "consumer_app",
+    "notes": "Lower-fame consumer self-care app added for ordinary app landing behavior."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#1863dc",
+      "#18963d",
+      "#e17a34",
+      "#0056a7",
+      "#168035",
+      "#293c5b"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#212121",
+      "#1863dc",
+      "#f4f4f4",
+      "#ebebeb",
+      "#000000"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#212121",
+      "#1863dc",
+      "#f4f4f4",
+      "#ebebeb",
+      "#000000",
+      "#4e4b66",
+      "#d0d5d2"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 56,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#212121",
+        "occurrences": 56,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#1863dc",
+        "occurrences": 36,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f4f4f4",
+        "occurrences": 16,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#ebebeb",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#000000",
+        "occurrences": 10,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#4e4b66",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#d0d5d2",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#18963d",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#b2b0b0",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f6f6f9",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#d3d4d6",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e17a34",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0056a7",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#acabab",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#dedfe0",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#858585",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e2f5e2",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f3f3f3",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#deeee3",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#168035",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#293c5b",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ededed",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#212121",
+      "#1863dc",
+      "#000000",
+      "#4e4b66",
+      "#0056a7",
+      "#168035"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 30,
+        "labels": [
+          "Customize",
+          "Reject All",
+          "Accept All",
+          "Show more",
+          "Necessary",
+          "Functional",
+          "Analytics",
+          "Performance",
+          "Advertisement",
+          "Others"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 11,
+        "labels": [
+          "Customize",
+          "Reject All",
+          "Accept All",
+          "Show more",
+          "Necessary",
+          "Functional",
+          "Analytics",
+          "Performance",
+          "Advertisement",
+          "Others"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 226,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 26,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Customize",
+      "Reject All",
+      "Accept All",
+      "Show more",
+      "Necessary",
+      "Functional",
+      "Analytics",
+      "Performance"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.7,
+    "confidence": 0.747,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.614,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.9,
+      "consistency_coverage": 0.747,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.657
+    },
+    "level": "high",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.792
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": false,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Cookieyes logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn-cookieyes.com/assets/images/poweredbtcky.svg"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": true,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Rubik",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      12.0,
+      12.0,
+      18.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      16.0,
+      12.0,
+      12.0,
+      18.0,
+      14.0,
+      14.0,
+      16.0,
+      14.0,
+      14.0,
+      12.0,
+      12.0,
+      14.0,
+      16.0,
+      12.0,
+      12.0,
+      14.0,
+      14.0
+    ],
+    "weight_range": {
+      "max": 700,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "dom_palette_more_complex_than_viewport"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "DOM palette is noisier than the viewport palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.7
+    },
+    "composition": {
+      "color_variance": 0.002,
+      "composition_classification": "blank",
+      "confidence": 0.601,
+      "edge_density": 0.002,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.995
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 10157,
+      "height": 900,
+      "limitations": [
+        "screenshot_has_low_color_detail"
+      ],
+      "page_url": "https://finchcare.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/finch.png",
+      "quality": "low_detail",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 6,
+      "confidence": 0.583,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19916,
+          "ratio": 0.9958
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 39,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#a0a0c0",
+          "occurrences": 24,
+          "ratio": 0.0012
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 12,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 8,
+          "ratio": 0.0004
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 1,
+          "ratio": 0.0001
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.002,
+      "composition_classification": "blank",
+      "confidence": 0.601,
+      "edge_density": 0.002,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.995
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.601,
+        "palette": 0.583,
+        "screenshot": 0.45
+      },
+      "level": "medium",
+      "limitations": [
+        "screenshot_has_low_color_detail",
+        "screenshot_quality_low_detail"
+      ],
+      "score": 0.529
+    },
+    "viewport_palette": {
+      "color_count": 6,
+      "confidence": 0.583,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19916,
+          "ratio": 0.9958
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 39,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#a0a0c0",
+          "occurrences": 24,
+          "ratio": 0.0012
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 12,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 8,
+          "ratio": 0.0004
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 1,
+          "ratio": 0.0001
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.995,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.601,
+        "palette": 0.583,
+        "screenshot": 0.45
+      },
+      "level": "medium",
+      "limitations": [
+        "screenshot_has_low_color_detail",
+        "screenshot_quality_low_detail"
+      ],
+      "score": 0.529
+    }
+  },
+  "website_url": "https://finchcare.com"
+}

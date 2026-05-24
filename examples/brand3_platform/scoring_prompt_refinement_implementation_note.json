@@ -1,0 +1,46 @@
+{
+  "scope": "low_risk_prompt_and_fallback_wording",
+  "source_documents": [
+    "examples/brand3_platform/brand3_report_voice_guide.md",
+    "examples/brand3_platform/scoring_prompt_refinement_plan.md",
+    "examples/brand3_platform/scoring_narrative_pipeline_audit.md"
+  ],
+  "files_updated": [
+    "src/reports/narrative.py"
+  ],
+  "changes": {
+    "synthesis": [
+      "Added observation / implication / tension ordering guidance.",
+      "Required a concrete evidence anchor before interpretation.",
+      "Discouraged score-led or generic report openings.",
+      "Preserved score suppression and §5 tension coherence rules.",
+      "Made the deterministic fallback more diagnostic without changing its contract."
+    ],
+    "findings": [
+      "Added an explicit observation / implication / tension model.",
+      "Required observation to begin from a concrete evidence anchor.",
+      "Made fallback prose more dimension-specific while keeping the title Available evidence.",
+      "Preserved JSON shape and validation behavior."
+    ],
+    "tensions": [
+      "Added evidence-anchor-first guidance.",
+      "Kept null as the preferred output when no real tension exists.",
+      "Reduced generic consultant-style phrasing."
+    ]
+  },
+  "non_goals": [
+    "No scoring logic changes",
+    "No rubric changes",
+    "No renderer structure changes",
+    "No Visual Signature changes",
+    "No persistence changes"
+  ],
+  "validation": {
+    "status": "passed",
+    "commands": [
+      "PYTHONPATH=. ./.venv/bin/python -m pytest tests/test_reports_narrative.py tests/test_reports_renderer.py tests/test_reports_dossier.py -q",
+      "python3 -m json.tool examples/brand3_platform/scoring_prompt_refinement_implementation_note.json",
+      "git diff --check"
+    ]
+  }
+}

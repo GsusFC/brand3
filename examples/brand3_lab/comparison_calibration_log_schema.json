@@ -1,0 +1,370 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://brand3.local/schemas/comparison_calibration_log_schema.json",
+  "title": "Brand3 Perceptual Narrative Comparison Calibration Log",
+  "description": "Experimental local-only schema for calibrating baseline vs perceptual narrative comparison reviews. This schema is for lab artifacts only and does not define production persistence, scoring integration, official records, prompt behavior, report rendering, or Visual Signature runtime.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "draft_only",
+    "official_record",
+    "persistence_scope",
+    "source_viewer",
+    "calibration_run",
+    "source_artifacts",
+    "normalization_rules",
+    "reviewer_agreement_model",
+    "confidence_aggregation_rules",
+    "case_reviews",
+    "aggregate_calibration"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": "brand3-comparison-calibration-log-1"
+    },
+    "record_type": {
+      "const": "perceptual_narrative_comparison_calibration_log"
+    },
+    "draft_only": {
+      "const": true
+    },
+    "official_record": {
+      "const": false
+    },
+    "persistence_scope": {
+      "const": "local_lab_only"
+    },
+    "scoring_integration": {
+      "const": false
+    },
+    "production_runtime_enabled": {
+      "const": false
+    },
+    "source_viewer": {
+      "type": "object",
+      "required": ["route", "export_schema_version", "export_record_type"],
+      "additionalProperties": false,
+      "properties": {
+        "route": {
+          "const": "/brand3-lab/perceptual-narrative-comparison"
+        },
+        "export_schema_version": {
+          "const": "brand3-perceptual-narrative-comparison-draft-1"
+        },
+        "export_record_type": {
+          "const": "perceptual_narrative_comparison_review_draft"
+        }
+      }
+    },
+    "calibration_run": {
+      "type": "object",
+      "required": ["calibration_id", "created_at", "review_window", "reviewer_count", "case_count"],
+      "additionalProperties": false,
+      "properties": {
+        "calibration_id": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "format": "date-time"},
+        "review_window": {
+          "type": "object",
+          "required": ["started_at", "ended_at"],
+          "additionalProperties": false,
+          "properties": {
+            "started_at": {"type": "string", "format": "date-time"},
+            "ended_at": {"type": "string", "format": "date-time"}
+          }
+        },
+        "reviewer_count": {"type": "integer", "minimum": 1},
+        "case_count": {"type": "integer", "minimum": 1},
+        "notes": {"type": "string"}
+      }
+    },
+    "source_artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["path", "artifact_role"],
+        "additionalProperties": false,
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "artifact_role": {
+            "enum": [
+              "paired_narrative_evaluation",
+              "reasoning_stress_test",
+              "overreach_taxonomy",
+              "viewer_export",
+              "normalized_export",
+              "calibration_summary"
+            ]
+          },
+          "content_hash": {"type": "string"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "normalization_rules": {
+      "$ref": "#/$defs/normalization_rules"
+    },
+    "reviewer_agreement_model": {
+      "$ref": "#/$defs/reviewer_agreement_model"
+    },
+    "confidence_aggregation_rules": {
+      "$ref": "#/$defs/confidence_aggregation_rules"
+    },
+    "case_reviews": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/case_review"
+      }
+    },
+    "aggregate_calibration": {
+      "$ref": "#/$defs/aggregate_calibration"
+    }
+  },
+  "$defs": {
+    "reviewer_decision": {
+      "enum": [
+        "baseline_better",
+        "perceptual_better",
+        "mixed",
+        "unsafe_overreach",
+        "unreviewed"
+      ]
+    },
+    "confidence_bucket": {
+      "enum": ["high", "medium", "low", "insufficient"]
+    },
+    "overreach_mode_id": {
+      "enum": [
+        "invented_intentionality",
+        "unsupported_emotional_projection",
+        "cinematic_inflation",
+        "false_sophistication_language",
+        "weak_evidence_amplification",
+        "aesthetic_hallucination",
+        "narrative_over_binding",
+        "perception_without_observable_grounding",
+        "tension_fabrication",
+        "generic_premium_projection"
+      ]
+    },
+    "normalization_rules": {
+      "type": "object",
+      "required": [
+        "input_export_contract",
+        "decision_mapping",
+        "case_identity_rules",
+        "notes_rules",
+        "overreach_tagging_rules",
+        "safe_zone_tagging_rules",
+        "draft_handling"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "input_export_contract": {
+          "type": "object",
+          "required": ["accepted_schema_version", "accepted_record_type", "required_flags"],
+          "additionalProperties": false,
+          "properties": {
+            "accepted_schema_version": {"const": "brand3-perceptual-narrative-comparison-draft-1"},
+            "accepted_record_type": {"const": "perceptual_narrative_comparison_review_draft"},
+            "required_flags": {
+              "type": "object",
+              "required": ["draft_only", "official_record", "persistence_status"],
+              "additionalProperties": false,
+              "properties": {
+                "draft_only": {"const": true},
+                "official_record": {"const": false},
+                "persistence_status": {"const": "not_persisted"}
+              }
+            }
+          }
+        },
+        "decision_mapping": {
+          "type": "object",
+          "required": ["baseline_better", "perceptual_better", "mixed", "unsafe_overreach", "unreviewed"],
+          "additionalProperties": false,
+          "properties": {
+            "baseline_better": {"type": "string"},
+            "perceptual_better": {"type": "string"},
+            "mixed": {"type": "string"},
+            "unsafe_overreach": {"type": "string"},
+            "unreviewed": {"type": "string"}
+          }
+        },
+        "case_identity_rules": {"type": "array", "items": {"type": "string"}},
+        "notes_rules": {"type": "array", "items": {"type": "string"}},
+        "overreach_tagging_rules": {"type": "array", "items": {"type": "string"}},
+        "safe_zone_tagging_rules": {"type": "array", "items": {"type": "string"}},
+        "draft_handling": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "reviewer_agreement_model": {
+      "type": "object",
+      "required": ["model_id", "agreement_levels", "decision_weights", "disagreement_patterns"],
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {"const": "majority_with_overreach_veto_v1"},
+        "agreement_levels": {
+          "type": "object",
+          "required": ["strong_agreement", "moderate_agreement", "split", "unsafe_veto"],
+          "additionalProperties": false,
+          "properties": {
+            "strong_agreement": {"type": "string"},
+            "moderate_agreement": {"type": "string"},
+            "split": {"type": "string"},
+            "unsafe_veto": {"type": "string"}
+          }
+        },
+        "decision_weights": {
+          "type": "object",
+          "required": ["baseline_better", "perceptual_better", "mixed", "unsafe_overreach", "unreviewed"],
+          "additionalProperties": false,
+          "properties": {
+            "baseline_better": {"type": "number"},
+            "perceptual_better": {"type": "number"},
+            "mixed": {"type": "number"},
+            "unsafe_overreach": {"type": "number"},
+            "unreviewed": {"type": "number"}
+          }
+        },
+        "disagreement_patterns": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["pattern_id", "definition", "calibration_action"],
+            "additionalProperties": false,
+            "properties": {
+              "pattern_id": {"type": "string"},
+              "definition": {"type": "string"},
+              "calibration_action": {"type": "string"}
+            }
+          }
+        }
+      }
+    },
+    "confidence_aggregation_rules": {
+      "type": "object",
+      "required": [
+        "model_id",
+        "inputs",
+        "case_confidence_rules",
+        "aggregate_confidence_rules",
+        "overreach_frequency_rules",
+        "feels_brand3_consistency_rules"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "model_id": {"const": "weighted_reviewer_consensus_v1"},
+        "inputs": {"type": "array", "items": {"type": "string"}},
+        "case_confidence_rules": {"type": "array", "items": {"type": "string"}},
+        "aggregate_confidence_rules": {"type": "array", "items": {"type": "string"}},
+        "overreach_frequency_rules": {"type": "array", "items": {"type": "string"}},
+        "feels_brand3_consistency_rules": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "reviewer_vote": {
+      "type": "object",
+      "required": ["reviewer_id", "decision", "confidence", "notes"],
+      "additionalProperties": false,
+      "properties": {
+        "reviewer_id": {"type": "string", "minLength": 1},
+        "decision": {"$ref": "#/$defs/reviewer_decision"},
+        "confidence": {"$ref": "#/$defs/confidence_bucket"},
+        "notes": {"type": "string"},
+        "overreach_modes": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/overreach_mode_id"}
+        },
+        "safe_augmentation_zone": {"type": "boolean"},
+        "feels_brand3_consistency": {
+          "enum": ["high", "medium", "low", "unrated"]
+        }
+      }
+    },
+    "case_review": {
+      "type": "object",
+      "required": [
+        "brand",
+        "brand_id",
+        "source_case_index",
+        "surface_class",
+        "reviewer_votes",
+        "agreement",
+        "calibration_signals"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "brand": {"type": "string", "minLength": 1},
+        "brand_id": {"type": "string", "minLength": 1},
+        "source_case_index": {"type": "integer", "minimum": 1},
+        "surface_class": {"type": "string"},
+        "reviewer_votes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/reviewer_vote"}
+        },
+        "agreement": {
+          "type": "object",
+          "required": ["level", "majority_decision", "unsafe_veto", "agreement_ratio"],
+          "additionalProperties": false,
+          "properties": {
+            "level": {"enum": ["strong_agreement", "moderate_agreement", "split", "unsafe_veto"]},
+            "majority_decision": {"$ref": "#/$defs/reviewer_decision"},
+            "unsafe_veto": {"type": "boolean"},
+            "agreement_ratio": {"type": "number", "minimum": 0, "maximum": 1},
+            "disagreement_pattern_ids": {"type": "array", "items": {"type": "string"}}
+          }
+        },
+        "calibration_signals": {
+          "type": "object",
+          "required": [
+            "overreach_detection_frequency",
+            "safe_augmentation_rate",
+            "perceptual_preference_rate",
+            "baseline_preference_rate",
+            "mixed_rate",
+            "feels_brand3_consistency"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "overreach_detection_frequency": {"type": "number", "minimum": 0, "maximum": 1},
+            "safe_augmentation_rate": {"type": "number", "minimum": 0, "maximum": 1},
+            "perceptual_preference_rate": {"type": "number", "minimum": 0, "maximum": 1},
+            "baseline_preference_rate": {"type": "number", "minimum": 0, "maximum": 1},
+            "mixed_rate": {"type": "number", "minimum": 0, "maximum": 1},
+            "feels_brand3_consistency": {"enum": ["high", "medium", "low", "unrated"]},
+            "dominant_overreach_modes": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/overreach_mode_id"}
+            },
+            "notes_summary": {"type": "string"}
+          }
+        }
+      }
+    },
+    "aggregate_calibration": {
+      "type": "object",
+      "required": [
+        "reviewer_agreement_summary",
+        "narrative_preference_trends",
+        "overreach_detection_summary",
+        "safe_augmentation_zones",
+        "unsafe_augmentation_zones",
+        "feels_brand3_consistency"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "reviewer_agreement_summary": {"type": "object"},
+        "narrative_preference_trends": {"type": "object"},
+        "overreach_detection_summary": {"type": "object"},
+        "safe_augmentation_zones": {"type": "array", "items": {"type": "string"}},
+        "unsafe_augmentation_zones": {"type": "array", "items": {"type": "string"}},
+        "feels_brand3_consistency": {"enum": ["high", "medium", "low", "mixed", "unrated"]},
+        "calibration_recommendation": {"type": "string"}
+      }
+    }
+  }
+}

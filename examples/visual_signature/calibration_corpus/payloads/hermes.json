@@ -1,0 +1,284 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:28:16.729600",
+    "adapter": "firecrawl",
+    "errors": [
+      "HTTP Error 403: Forbidden"
+    ],
+    "status_code": 403,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.hermes.com",
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.24,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": false,
+    "failures": [
+      "interpretation_status_not_interpretable",
+      "acquisition_errors_present"
+    ],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": false,
+  "brand_name": "Hermes",
+  "calibration": {
+    "expected_category": "premium_luxury",
+    "notes": "Luxury reference brand; useful for acquisition fallback testing if blocked."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [],
+    "confidence": 0.25,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": []
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.15,
+    "component_consistency": 0.25,
+    "confidence": 0.185,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.198,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.1,
+      "consistency_coverage": 0.185,
+      "html_coverage": 0.5,
+      "signal_coverage": 0.198
+    },
+    "level": "low",
+    "limitations": [
+      "acquisition_errors_present",
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.247
+  },
+  "interpretation_status": "not_interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": false,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "single_column"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "flat",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.88
+    },
+    "composition": {
+      "color_variance": 0.035,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.621,
+      "edge_density": 0.014,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.984
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 51431,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.hermes.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/hermes.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 9,
+      "confidence": 0.599,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19692,
+          "ratio": 0.9846
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 102,
+          "ratio": 0.0051
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 38,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 36,
+          "ratio": 0.0018
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 34,
+          "ratio": 0.0017
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 32,
+          "ratio": 0.0016
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 31,
+          "ratio": 0.0015
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 20,
+          "ratio": 0.001
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.035,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.621,
+      "edge_density": 0.014,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.984
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.621,
+        "palette": 0.599,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.741
+    },
+    "viewport_palette": {
+      "color_count": 9,
+      "confidence": 0.599,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19692,
+          "ratio": 0.9846
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 102,
+          "ratio": 0.0051
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 38,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 36,
+          "ratio": 0.0018
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 34,
+          "ratio": 0.0017
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 32,
+          "ratio": 0.0016
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 31,
+          "ratio": 0.0015
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 20,
+          "ratio": 0.001
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.984,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.621,
+        "palette": 0.599,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.741
+    }
+  },
+  "website_url": "https://www.hermes.com"
+}

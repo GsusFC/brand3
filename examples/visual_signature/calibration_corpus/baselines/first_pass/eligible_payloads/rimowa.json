@@ -1,0 +1,279 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:29:04.043676",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": 403,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.rimowa.com",
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.24,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Rimowa",
+  "calibration": {
+    "expected_category": "premium_luxury",
+    "notes": "Premium product brand with minimal product-focused visual language."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [],
+    "confidence": 0.25,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": []
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.15,
+    "component_consistency": 0.25,
+    "confidence": 0.185,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.198,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.185,
+      "html_coverage": 0.25,
+      "signal_coverage": 0.198
+    },
+    "level": "low",
+    "limitations": [
+      "screenshot_not_available",
+      "html_coverage_limited",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.322
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": false,
+    "has_navigation": false,
+    "layout_patterns": [
+      "single_column"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.88
+    },
+    "composition": {
+      "color_variance": 0.016,
+      "composition_classification": "blank",
+      "confidence": 0.61,
+      "edge_density": 0.007,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.993
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 26301,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.rimowa.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/rimowa.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 9,
+      "confidence": 0.599,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19875,
+          "ratio": 0.9938
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 39,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 17,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 16,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 15,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 15,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 11,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 7,
+          "ratio": 0.0003
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.016,
+      "composition_classification": "blank",
+      "confidence": 0.61,
+      "edge_density": 0.007,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.993
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.61,
+        "palette": 0.599,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.738
+    },
+    "viewport_palette": {
+      "color_count": 9,
+      "confidence": 0.599,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19875,
+          "ratio": 0.9938
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 39,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 17,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 16,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 15,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 15,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 11,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 7,
+          "ratio": 0.0003
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.993,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.61,
+        "palette": 0.599,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.738
+    }
+  },
+  "website_url": "https://www.rimowa.com"
+}

@@ -1,0 +1,527 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:29:43.848747",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.diptyqueparis.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "premium luxury",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.24,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Diptyque",
+  "calibration": {
+    "expected_category": "premium_luxury",
+    "notes": "Luxury fragrance ecommerce with campaign and product storytelling."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#000000",
+      "#f8f8f8"
+    ],
+    "confidence": 0.461,
+    "dominant_colors": [
+      "#000000",
+      "#f8f8f8"
+    ],
+    "palette": [
+      {
+        "confidence": 0.76,
+        "hex": "#000000",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f8f8f8",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#000000"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 274,
+        "labels": [
+          "gift sets",
+          "fragrances",
+          "new candle scents",
+          "candles &amp; home",
+          "bath &amp; body",
+          "home decor",
+          "see all",
+          "Add to bag",
+          "Create this set",
+          "1"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 19,
+        "labels": [
+          "Discover Mother's Day Gifts",
+          "Explore all gift ideas",
+          "Add to bag",
+          "Create this set",
+          "Leaves a nurturing, undetectable layer on the hands.",
+          "Notify me",
+          "Discover fragrance gifts",
+          "Explore all classic candles",
+          "Read more",
+          "Discover personalized engraving"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 546,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 78,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Discover Mother's Day Gifts",
+      "Explore all gift ideas",
+      "Add to bag",
+      "Create this set",
+      "Leaves a nurturing, undetectable layer on the hands.",
+      "Notify me",
+      "Discover fragrance gifts",
+      "Explore all classic candles"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.78,
+    "component_consistency": 0.7,
+    "confidence": 0.438,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.499,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.438,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.5
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "consistency_inference_limited"
+    ],
+    "score": 0.628
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 12,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Gift a signature scent",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/4sg0zck18nfj/6syErWnkYSK090XOmkLXY/a1032f32c1cadb37190b6debcfdf13e8/FETE-DES-MERES-2026_VISUEL_SECONDAIRE_PARFUM-L-OMBRE-DANS-L-EAU_NO_LOGO_sRGB_144DPI_2025X2430_DIPTYQUE.jpg?fm=avif&amp;w=708&amp;q=90"
+      },
+      {
+        "alt": "An ode to giving",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/4sg0zck18nfj/5eWTzXXxlufbxXAA3zy0Vr/85b7827eb8cc0482f93e2e70d8e10311/FETE-DES-MERES-2026_VISUEL_SECONDAIRE_GRAVURE_NO_LOGO_sRGB_144DPI_2025X2430_DIPTYQUE__1_.jpg?fm=avif&amp;w=708&amp;q=90"
+      },
+      {
+        "alt": "Fragrances",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/4sg0zck18nfj/4PVhOT8jqsCEcYzENlJjUe/501b5c4a2ca758262f0f78ecda9f3c11/LES-ESSENCES-DE-DIPTYQUE_2024_VISUEL_SECONDAIRE_CORAIL-OSCURO-ROCHE-ROCHE-SANS-LOGO_RVB_BD_2142x2142_DIPTYQUE.jpg?fm=avif&amp;w=482&amp;q=90"
+      },
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": "Diptyque",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 0.313,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.913
+    },
+    "composition": {
+      "color_variance": 0.562,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.037,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.224
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 805069,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.diptyqueparis.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/diptyque.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 29,
+      "confidence": 0.709,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 4527,
+          "ratio": 0.2263
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 3546,
+          "ratio": 0.1773
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 3006,
+          "ratio": 0.1503
+        },
+        {
+          "hex": "#402000",
+          "occurrences": 2937,
+          "ratio": 0.1469
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 1397,
+          "ratio": 0.0698
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 1352,
+          "ratio": 0.0676
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1069,
+          "ratio": 0.0534
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 704,
+          "ratio": 0.0352
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.562,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.037,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.224
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.709,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.837
+    },
+    "viewport_palette": {
+      "color_count": 29,
+      "confidence": 0.709,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 4527,
+          "ratio": 0.2263
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 3546,
+          "ratio": 0.1773
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 3006,
+          "ratio": 0.1503
+        },
+        {
+          "hex": "#402000",
+          "occurrences": 2937,
+          "ratio": 0.1469
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 1397,
+          "ratio": 0.0698
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 1352,
+          "ratio": 0.0676
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1069,
+          "ratio": 0.0534
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 704,
+          "ratio": 0.0352
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.224,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.709,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.837
+    }
+  },
+  "website_url": "https://www.diptyqueparis.com"
+}

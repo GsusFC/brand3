@@ -11,9 +11,13 @@ from unittest.mock import MagicMock
 
 from src.config import LLM_PREMIUM_MODEL
 from src.reports.derivation import DimensionEvidences, Evidence
+from src.reports.experimental_perceptual_narrative import (
+    build_perceptual_narrative_hints,
+)
 from src.reports.narrative import (
     Finding,
     SynthesisContext,
+    _build_findings_user_prompt,
     clear_cache,
     generate_all_findings,
     generate_dimension_findings,
@@ -121,16 +125,44 @@ class SynthesisTests(unittest.TestCase):
         mock = MagicMock()
         mock._call.return_value = ""
         out = generate_synthesis(_synthesis_ctx(), analyzer=mock)
-        self.assertIn("Netlify scores 72/100", out)
-        self.assertIn("Strongest dimension: Presence", out)
-        self.assertIn("Weakest dimension: Differentiation", out)
+        self.assertIn("Cross-dimension snapshot for Netlify.", out)
+        self.assertIn("Presence is the highest-scoring dimension at 82/100", out)
+        self.assertIn("Differentiation the lowest at 54/100", out)
+        self.assertNotIn("Netlify scores 72/100", out)
 
     def test_fallback_when_llm_raises(self):
         mock = MagicMock()
         mock._call.side_effect = RuntimeError("boom")
         out = generate_synthesis(_synthesis_ctx(), analyzer=mock)
         self.assertIn("Netlify", out)
-        self.assertIn("72/100", out)
+        self.assertIn("Cross-dimension snapshot", out)
+
+    def test_prompt_injects_analysis_date_anchor(self):
+        from src.reports.narrative import _build_synthesis_user_prompt
+
+        ctx = _synthesis_ctx()
+        ctx.analysis_date = "2026-05-07 12:34:56"
+
+        prompt = _build_synthesis_user_prompt(ctx)
+
+        self.assertIn("Today's date is 2026-05-07", prompt)
+        self.assertIn("NOT your training cutoff", prompt)
+        self.assertIn("before 2026-05-07 is past or present", prompt)
+
+    def test_prompt_includes_tension_text_when_available(self):
+        from src.reports.narrative import _build_synthesis_user_prompt
+
+        ctx = _synthesis_ctx()
+        ctx.tension_text = (
+            "The dimensions show self-description and external coverage diverging "
+            "around audience clarity."
+        )
+
+        prompt = _build_synthesis_user_prompt(ctx)
+
+        self.assertIn("Tension already identified by §5", prompt)
+        self.assertIn(ctx.tension_text, prompt)
+        self.assertIn("do not invent a different tension", prompt)
 
 
 class DimensionFindingsTests(unittest.TestCase):
@@ -185,7 +217,7 @@ class DimensionFindingsTests(unittest.TestCase):
         findings = generate_dimension_findings(dim, "Netlify", analyzer=mock)
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].title, "Available evidence")
-        self.assertIn("automatic synthesis unavailable", findings[0].prose)
+        self.assertIn("Editorial synthesis unavailable", findings[0].prose)
         self.assertEqual(len(findings[0].evidence_urls), 2)
 
     def test_filters_urls_not_in_input_evidences(self):
@@ -215,6 +247,81 @@ class DimensionFindingsTests(unittest.TestCase):
         findings = generate_dimension_findings(dim, "Netlify", analyzer=mock)
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].title, "Available evidence")
+
+    def test_findings_prompt_injects_analysis_date_anchor(self):
+        dim = _dim("presencia", 66.0, evidences=[
+            _ev("presencia", "Founded in 2025", "https://example.com/about"),
+        ])
+
+        prompt = _build_findings_user_prompt(
+            dim,
+            "Outcraft",
+            analysis_date="2026-05-07T08:00:00Z",
+        )
+
+        self.assertIn("Today's date is 2026-05-07", prompt)
+        self.assertIn("before 2026-05-07 is past or present", prompt)
+
+    def test_findings_prompt_omits_perceptual_hints_by_default(self):
+        dim = _dim("percepcion", 66.0, evidences=[
+            _ev("percepcion", "Build the best web experiences.", "https://www.netlify.com/about"),
+        ])
+
+        prompt = _build_findings_user_prompt(dim, "Netlify")
+
+        self.assertNotIn("EXPERIMENTAL PERCEPTUAL NARRATIVE HINTS", prompt)
+        self.assertNotIn("Category-To-Surface Translation", prompt)
+
+    def test_findings_prompt_injects_perceptual_hints_when_provided(self):
+        dim = _dim("percepcion", 66.0, evidences=[
+            _ev("percepcion", "Build the best web experiences.", "https://www.netlify.com/about"),
+        ])
+        hints = build_perceptual_narrative_hints("percepcion")
+
+        prompt = _build_findings_user_prompt(
+            dim,
+            "Netlify",
+            perceptual_hints=hints,
+        )
+
+        self.assertIn("EXPERIMENTAL PERCEPTUAL NARRATIVE HINTS", prompt)
+        self.assertIn("Category-To-Surface Translation", prompt)
+        self.assertIn("Claim / Signal Gap", prompt)
+        self.assertIn("Use these as reading lenses only", prompt)
+        self.assertIn("write it as a limitation or conditional implication", prompt)
+
+    def test_perceptual_hints_can_augment_findings_without_presenting_low_confidence_as_fact(self):
+        captured_prompts: list[str] = []
+
+        def _call_json(system, user, max_tokens=2000):
+            captured_prompts.append(user)
+            return {"findings": [{
+                "title": "Copy-Level Surface Claim",
+                "observation": "The brand says \"Build the best web experiences\" on its own site.",
+                "implication": "That copy could support a category-to-surface reading, but it remains self-description rather than observed product behavior.",
+                "typical_decision": "Teams in this position typically choose between clarifying evidence on the surface, adding third-party corroboration, or narrowing the claim; the right move depends on intent, strategy, and resources not observable from outside.",
+                "evidence_urls": ["https://www.netlify.com/about"],
+            }]}
+
+        mock = MagicMock()
+        mock._call_json.side_effect = _call_json
+        dim = _dim("percepcion", 66.0, evidences=[
+            _ev("percepcion", "Build the best web experiences.", "https://www.netlify.com/about"),
+        ])
+        hints = build_perceptual_narrative_hints("percepcion")
+
+        findings = generate_dimension_findings(
+            dim,
+            "Netlify",
+            analyzer=mock,
+            perceptual_hints=hints,
+        )
+
+        self.assertEqual(len(findings), 1)
+        self.assertIn("category-to-surface", findings[0].implication)
+        self.assertIn("self-description rather than observed product behavior", findings[0].implication)
+        self.assertIn("low:", captured_prompts[0])
+        self.assertIn("never as fact", captured_prompts[0])
 
 
 class TensionsTests(unittest.TestCase):
@@ -248,6 +355,20 @@ class TensionsTests(unittest.TestCase):
         out = generate_tensions(dims, "Netlify", analyzer=mock)
         self.assertIsNone(out)
 
+    def test_tensions_prompt_injects_analysis_date_anchor(self):
+        from src.reports.narrative import _build_tensions_user_prompt
+
+        dims = [_dim(d, 70.0) for d in ("coherencia", "presencia")]
+
+        prompt = _build_tensions_user_prompt(
+            dims,
+            "Outcraft",
+            analysis_date="2026-05-07",
+        )
+
+        self.assertIn("Today's date is 2026-05-07", prompt)
+        self.assertIn("NOT your training cutoff", prompt)
+
 
 class NoneCompositeScoreTests(unittest.TestCase):
     """Finding 2 — composite_score=None must not become 0/100 or band F."""
@@ -270,7 +391,7 @@ class NoneCompositeScoreTests(unittest.TestCase):
         mock = MagicMock()
         mock._call.return_value = ""  # force fallback
         out = generate_synthesis(self._ctx(None), analyzer=mock)
-        self.assertIn("global score unavailable", out)
+        self.assertIn("Cross-dimension snapshot for Acme.", out)
         # The composite score slot must not read "scores 0/100" or similar;
         # per-dimension scores (e.g. "70/100") are fine.
         self.assertNotIn("scores 0/100", out)
@@ -280,7 +401,8 @@ class NoneCompositeScoreTests(unittest.TestCase):
         mock = MagicMock()
         mock._call.return_value = ""
         out = generate_synthesis(self._ctx(72.0), analyzer=mock)
-        self.assertIn("72/100", out)
+        self.assertIn("Coherence is the highest-scoring dimension at 70/100", out)
+        self.assertNotIn("Acme scores 72/100", out)
         self.assertNotIn("global score unavailable", out)
 
     def test_prompt_does_not_lie_when_composite_is_none(self):
@@ -288,7 +410,7 @@ class NoneCompositeScoreTests(unittest.TestCase):
         from src.reports.narrative import _build_synthesis_user_prompt
 
         prompt = _build_synthesis_user_prompt(self._ctx(None))
-        self.assertIn("n/a", prompt)
+        self.assertIn("Per-dimension scores (for context only", prompt)
         self.assertNotIn("n/a/100", prompt)
         self.assertNotIn("(band F)", prompt)
         self.assertNotIn("(band ?)", prompt)
@@ -428,6 +550,57 @@ class CacheTests(unittest.TestCase):
         generate_dimension_findings(dim_b, "Netlify", analyzer=mock, run_id=99)
         generate_dimension_findings(dim_a, "Netlify", analyzer=mock, run_id=99)  # cache hit
         self.assertEqual(mock._call_json.call_count, 2)
+
+    def test_findings_cache_separates_base_and_perceptual_experiment(self):
+        mock = MagicMock()
+        mock._call_json.return_value = {"findings": [
+            {"title": "t", "prose": "p", "evidence_urls": ["https://example.com/a"]}
+        ]}
+        dim = _dim("percepcion", 70.0, evidences=[
+            _ev("percepcion", "q", "https://example.com/a")
+        ])
+        hints = build_perceptual_narrative_hints("percepcion")
+
+        generate_dimension_findings(dim, "Netlify", analyzer=mock, run_id=99)
+        generate_dimension_findings(
+            dim,
+            "Netlify",
+            analyzer=mock,
+            run_id=99,
+            perceptual_hints=hints,
+        )
+        generate_dimension_findings(dim, "Netlify", analyzer=mock, run_id=99)
+
+        self.assertEqual(mock._call_json.call_count, 2)
+
+    def test_findings_prompt_with_contradictions(self):
+        dim = _dim("coherencia", 70.0, evidences=[
+            Evidence(
+                dimension="coherencia",
+                quote="We are absolute leaders",
+                url="https://netlify.com",
+                source_type="owned",
+                source_domain="netlify.com",
+                sentiment=None,
+                feature_name="messaging_consistency",
+            )
+        ])
+        packet = {
+            "contradiction_candidates": [
+                {
+                    "type": "owned_claim_vs_external_source_mismatch",
+                    "feature_name": "messaging_consistency",
+                    "dimension": "coherencia",
+                }
+            ]
+        }
+        prompt = _build_findings_user_prompt(dim, "Netlify", packet=packet)
+        self.assertIn("ACTIVE CONTRADICTIONS / WARNINGS:", prompt)
+        self.assertIn("Warning: Discrepancy detected between owned claims and external sources for feature 'messaging_consistency'", prompt)
+
+        dim_other = _dim("presencia", 70.0, evidences=[])
+        prompt_other = _build_findings_user_prompt(dim_other, "Netlify", packet=packet)
+        self.assertNotIn("ACTIVE CONTRADICTIONS / WARNINGS:", prompt_other)
 
 
 if __name__ == "__main__":

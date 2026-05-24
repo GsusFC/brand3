@@ -1,0 +1,391 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:27:48.905526",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://code.org",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 4,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 62,
+    "video_count": 30
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Code.org",
+  "calibration": {
+    "expected_category": "nonprofit_education",
+    "notes": "Large education nonprofit with practical student/teacher navigation."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 48,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 32,
+        "labels": [
+          "Get started!",
+          "Get started",
+          "Let's move",
+          "Learn about Code.org",
+          "Explore more stats",
+          "Partner with us",
+          "Register",
+          "Explore curriculum catalog",
+          "Watch the video",
+          "Get started now"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.58,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "Get started!",
+      "Get started",
+      "Let's move",
+      "Learn about Code.org",
+      "Explore more stats",
+      "Partner with us",
+      "Register",
+      "Explore curriculum catalog"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.66,
+    "confidence": 0.302,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.35,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.302,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.385
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.568
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 104,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F7kVkHkrdKMTeHRD4ITT1g2%2F280afff5394d8dcc856a9a2e6a78a478%2Famazon-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F74IhWPTo1KlkJy5q1CgqDI%2Fc96b37026c80e70380063b29031d1dbb%2Fmicrosoft-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2FKwhKfTL8P9E1oKG8FQ0KF%2Fecfc7a1f1386aa79f8a3598c9edb7947%2Fgoogle-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F1aHgNHEYk0wz6kOA12iEK7%2F19de1bdf4c1a4d3a269d5192217c16c9%2Ffacebook-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F7olvgVV9n98qL7pcCKjIbK%2Ff765d6b7635b79c91580751e3b4d8008%2Fballmer-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F1Nv8lewbj6tJoLw6wa3hPE%2F38930fe12527cdc30f28b61ffd02a2ef%2Finfosys-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F2TNm3lRndNeuNdSdr24nd4%2F4474f053dc2f485b283a2ef8805e2737%2Fvista-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://code.org/_next/image?url=https%3A%2F%2Fcontentful-images.code.org%2F90t6bu6vlf76%2F48uqj11i0hLt8CsfIAPtbi%2F368500e75a4894b267adf4732b53a053%2Fgates-logo-block.jpg%3Ffm%3Davif&amp;w=3840&amp;q=75"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.955
+    },
+    "composition": {
+      "color_variance": 0.303,
+      "composition_classification": "dense_grid",
+      "confidence": 0.782,
+      "edge_density": 0.043,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.109
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 312699,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://code.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/code-org.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 55,
+      "confidence": 0.851,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 10011,
+          "ratio": 0.5006
+        },
+        {
+          "hex": "#000020",
+          "occurrences": 3347,
+          "ratio": 0.1673
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1928,
+          "ratio": 0.0964
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 1095,
+          "ratio": 0.0548
+        },
+        {
+          "hex": "#004060",
+          "occurrences": 1012,
+          "ratio": 0.0506
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 469,
+          "ratio": 0.0234
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 423,
+          "ratio": 0.0211
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 260,
+          "ratio": 0.013
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.303,
+      "composition_classification": "dense_grid",
+      "confidence": 0.782,
+      "edge_density": 0.043,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.109
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.782,
+        "palette": 0.851,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.852
+    },
+    "viewport_palette": {
+      "color_count": 55,
+      "confidence": 0.851,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 10011,
+          "ratio": 0.5006
+        },
+        {
+          "hex": "#000020",
+          "occurrences": 3347,
+          "ratio": 0.1673
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1928,
+          "ratio": 0.0964
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 1095,
+          "ratio": 0.0548
+        },
+        {
+          "hex": "#004060",
+          "occurrences": 1012,
+          "ratio": 0.0506
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 469,
+          "ratio": 0.0234
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 423,
+          "ratio": 0.0211
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 260,
+          "ratio": 0.013
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.109,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.782,
+        "palette": 0.851,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.852
+    }
+  },
+  "website_url": "https://code.org"
+}

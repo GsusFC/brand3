@@ -1,0 +1,17 @@
+{
+  "capture_id": "cap_phase_zero_example",
+  "notes": [
+    "Viewport obstruction is supported by evidence.",
+    "Uncertainty is explicitly acknowledged and accepted."
+  ],
+  "record_type": "review_record",
+  "review_id": "review_phase_zero_example",
+  "review_status": "approved",
+  "reviewed_at": "2026-05-11T10:00:00Z",
+  "reviewer_id": "reviewer_alpha",
+  "schema_version": "phase-zero-review-record-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty_accepted": true,
+  "unsupported_inference_present": false,
+  "visually_supported": "partial"
+}

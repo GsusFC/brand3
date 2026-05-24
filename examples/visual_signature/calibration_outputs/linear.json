@@ -1,0 +1,411 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-08T12:21:14.003596",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://linear.app",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 296,
+    "video_count": 0
+  },
+  "brand_name": "Linear",
+  "calibration": {
+    "expected_category": "SaaS",
+    "notes": "Modern SaaS with controlled dark visual system and product-led components."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#4354b8",
+      "#e5591d",
+      "#02b8cc",
+      "#6366f1",
+      "#eb5757",
+      "#8b5cf6"
+    ],
+    "background_candidates": [
+      "#08090a",
+      "#4354b8",
+      "#2e2e32",
+      "#ffffff",
+      "#3e3e44",
+      "#191d20"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#08090a",
+      "#e4e5e9",
+      "#4354b8",
+      "#e5591d",
+      "#8a8f98",
+      "#2e2e32",
+      "#ffffff",
+      "#62666d"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#08090a",
+        "occurrences": 628,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e4e5e9",
+        "occurrences": 400,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#4354b8",
+        "occurrences": 248,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e5591d",
+        "occurrences": 152,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#8a8f98",
+        "occurrences": 138,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#2e2e32",
+        "occurrences": 86,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 82,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#62666d",
+        "occurrences": 62,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#3e3e44",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d0d6e0",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#02b8cc",
+        "occurrences": 20,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#9c9da1",
+        "occurrences": 16,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#191d20",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#585a5c",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#6366f1",
+        "occurrences": 10,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#5b5c5a",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#080808",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#eb5757",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#8b5cf6",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#008d2c",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#f34e52",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#383b3f",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#27a644",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#b2d5ff",
+        "occurrences": 4,
+        "role": "surface",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#08090a",
+      "#4354b8",
+      "#2e2e32",
+      "#ffffff",
+      "#62666d",
+      "#3e3e44"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 118,
+        "labels": [
+          "Performance",
+          "iOS",
+          "1 . 1 Linear Agent +",
+          "1 . 2 Triage +",
+          "1 . 3 Customer Requests +",
+          "1 . 4 Linear Asks +",
+          "Core Product 99",
+          "APAC Expansion 21",
+          "2 . 1 Projects +",
+          "2 . 2 Documents +"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 26,
+        "labels": [
+          "Performance",
+          "iOS",
+          "1 . 1 Linear Agent +",
+          "1 . 2 Triage +",
+          "1 . 3 Customer Requests +",
+          "1 . 4 Linear Asks +",
+          "Core Product 99",
+          "APAC Expansion 21",
+          "2 . 1 Projects +",
+          "2 . 2 Documents +"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Performance",
+      "iOS",
+      "1 . 1 Linear Agent +",
+      "1 . 2 Triage +",
+      "1 . 3 Customer Requests +",
+      "1 . 4 Linear Asks +",
+      "Core Product 99",
+      "APAC Expansion 21"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.72,
+    "confidence": 0.635,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.464,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.635,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.632
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.704
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 18,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": "Linear",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.4,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      20.0,
+      11.0,
+      11.0,
+      11.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0
+    ],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "website_url": "https://linear.app"
+}

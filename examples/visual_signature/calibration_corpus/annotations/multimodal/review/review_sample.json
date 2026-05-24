@@ -1,0 +1,843 @@
+{
+  "items": [
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "zoho-projects",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/zoho-projects.json",
+      "annotation_status": "annotated",
+      "brand_name": "Zoho Projects",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "template_like_saas",
+      "sampling_reasons": [
+        "high_confidence_annotation",
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "template like saas",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "high",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.zoho.com/projects/"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "writer",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/writer.json",
+      "annotation_status": "annotated",
+      "brand_name": "Writer",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "ai_native",
+      "sampling_reasons": [
+        "high_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "ai native",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://writer.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "wrike",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/wrike.json",
+      "annotation_status": "annotated",
+      "brand_name": "Wrike",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "template_like_saas",
+      "sampling_reasons": [
+        "high_confidence_annotation",
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "template like saas",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "high",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.wrike.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "wise",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/wise.json",
+      "annotation_status": "annotated",
+      "brand_name": "Wise",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "finance_fintech",
+      "sampling_reasons": [
+        "high_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "finance fintech",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://wise.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "whoop",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/whoop.json",
+      "annotation_status": "annotated",
+      "brand_name": "Whoop",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "wellness_lifestyle",
+      "sampling_reasons": [
+        "high_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "wellness lifestyle",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.whoop.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "vox",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/vox.json",
+      "annotation_status": "annotated",
+      "brand_name": "Vox",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "editorial_media",
+      "sampling_reasons": [
+        "high_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "editorial media",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.vox.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "vercel",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/vercel.json",
+      "annotation_status": "annotated",
+      "brand_name": "Vercel",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "developer_first",
+      "sampling_reasons": [
+        "high_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "developer first",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://vercel.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "united-by-blue",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/united-by-blue.json",
+      "annotation_status": "annotated",
+      "brand_name": "United By Blue",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "ecommerce",
+      "sampling_reasons": [
+        "high_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "ecommerce",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://unitedbyblue.com"
+    },
+    {
+      "annotation_confidence": 0.771,
+      "annotation_id": "finch",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/finch.json",
+      "annotation_status": "annotated",
+      "brand_name": "Finch",
+      "disagreement_flags": [
+        "dom_palette_more_complex_than_viewport"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "consumer_app",
+      "sampling_reasons": [
+        "low_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "consumer app",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://finchcare.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "826-national",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/826-national.json",
+      "annotation_status": "annotated",
+      "brand_name": "826 National",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom",
+        "dom_consistency_conflicts_with_viewport_density"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "nonprofit_education",
+      "sampling_reasons": [
+        "low_confidence_annotation",
+        "disagreement_heavy_case",
+        "category_diverse_sample",
+        "filler_deterministic"
+      ],
+      "target_labels": {
+        "category_cues": "nonprofit education",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://826national.org"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "826-valencia",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/826-valencia.json",
+      "annotation_status": "annotated",
+      "brand_name": "826 Valencia",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "nonprofit_education",
+      "sampling_reasons": [
+        "low_confidence_annotation",
+        "filler_deterministic"
+      ],
+      "target_labels": {
+        "category_cues": "nonprofit education",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://826valencia.org"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "aesop",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/aesop.json",
+      "annotation_status": "annotated",
+      "brand_name": "Aesop",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "premium_luxury",
+      "sampling_reasons": [
+        "low_confidence_annotation",
+        "category_diverse_sample",
+        "filler_deterministic"
+      ],
+      "target_labels": {
+        "category_cues": "premium luxury",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.aesop.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "allbirds",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/allbirds.json",
+      "annotation_status": "annotated",
+      "brand_name": "Allbirds",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "ecommerce",
+      "sampling_reasons": [
+        "low_confidence_annotation",
+        "category_diverse_sample",
+        "filler_deterministic"
+      ],
+      "target_labels": {
+        "category_cues": "ecommerce",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "alo-yoga",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/alo-yoga.json",
+      "annotation_status": "annotated",
+      "brand_name": "Alo Yoga",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "wellness_lifestyle",
+      "sampling_reasons": [
+        "low_confidence_annotation",
+        "category_diverse_sample",
+        "filler_deterministic"
+      ],
+      "target_labels": {
+        "category_cues": "wellness lifestyle",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.aloyoga.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "anthropic",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/anthropic.json",
+      "annotation_status": "annotated",
+      "brand_name": "Anthropic",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "ai_native",
+      "sampling_reasons": [
+        "low_confidence_annotation",
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "ai native",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.anthropic.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "baggu",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/baggu.json",
+      "annotation_status": "annotated",
+      "brand_name": "Baggu",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "ecommerce",
+      "sampling_reasons": [
+        "low_confidence_annotation"
+      ],
+      "target_labels": {
+        "category_cues": "ecommerce",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.baggu.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "yousician",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/yousician.json",
+      "annotation_status": "annotated",
+      "brand_name": "Yousician",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "consumer_app",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "consumer app",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://yousician.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "toteme",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/toteme.json",
+      "annotation_status": "annotated",
+      "brand_name": "Toteme",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "premium_luxury",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "premium luxury",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://toteme-studio.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "the-marshall-project",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/the-marshall-project.json",
+      "annotation_status": "annotated",
+      "brand_name": "The Marshall Project",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "editorial_media",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "editorial media",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.themarshallproject.org"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "planetscale",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/planetscale.json",
+      "annotation_status": "annotated",
+      "brand_name": "PlanetScale",
+      "disagreement_flags": [
+        "dom_density_higher_than_viewport",
+        "viewport_palette_more_complex_than_dom",
+        "dom_density_disagrees_with_viewport_first_fold"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "developer_first",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "developer first",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://planetscale.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "pact",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/pact.json",
+      "annotation_status": "annotated",
+      "brand_name": "Pact",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "ecommerce",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "ecommerce",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://wearpact.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "novo",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/novo.json",
+      "annotation_status": "annotated",
+      "brand_name": "Novo",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "finance_fintech",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "finance fintech",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.novo.co"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "northone",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/northone.json",
+      "annotation_status": "annotated",
+      "brand_name": "NorthOne",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "finance_fintech",
+      "sampling_reasons": [
+        "disagreement_heavy_case"
+      ],
+      "target_labels": {
+        "category_cues": "finance fintech",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.northone.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "discord",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/discord.json",
+      "annotation_status": "annotated",
+      "brand_name": "Discord",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "consumer_app",
+      "sampling_reasons": [
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "consumer app",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://discord.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "fly-io",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/fly-io.json",
+      "annotation_status": "annotated",
+      "brand_name": "Fly.io",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "developer_first",
+      "sampling_reasons": [
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "developer first",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "low",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://fly.io"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "dezeen",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/dezeen.json",
+      "annotation_status": "annotated",
+      "brand_name": "Dezeen",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "editorial_media",
+      "sampling_reasons": [
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "editorial media",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.dezeen.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "bluevine",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/bluevine.json",
+      "annotation_status": "annotated",
+      "brand_name": "Bluevine",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "finance_fintech",
+      "sampling_reasons": [
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "finance fintech",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.bluevine.com"
+    },
+    {
+      "annotation_confidence": 0.865,
+      "annotation_id": "baked-by-melissa",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/baked-by-melissa.json",
+      "annotation_status": "annotated",
+      "brand_name": "Baked by Melissa",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "disagreement_level": "low",
+      "expected_category": "local_service_small_business",
+      "sampling_reasons": [
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "local service small business",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "photographic",
+        "logo_prominence": "unknown",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.bakedbymelissa.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "asana",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/asana.json",
+      "annotation_status": "annotated",
+      "brand_name": "Asana",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "disagreement_level": "medium",
+      "expected_category": "saas",
+      "sampling_reasons": [
+        "category_diverse_sample"
+      ],
+      "target_labels": {
+        "category_cues": "saas",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "medium",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://asana.com"
+    },
+    {
+      "annotation_confidence": 0.884,
+      "annotation_id": "airtable",
+      "annotation_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass/airtable.json",
+      "annotation_status": "annotated",
+      "brand_name": "Airtable",
+      "disagreement_flags": [],
+      "disagreement_level": "high",
+      "expected_category": "template_like_saas",
+      "sampling_reasons": [
+        "category_diverse_sample",
+        "filler_deterministic"
+      ],
+      "target_labels": {
+        "category_cues": "template like saas",
+        "category_fit": "aligned",
+        "human_presence": "unknown",
+        "imagery_style": "product_ui",
+        "logo_prominence": "clear",
+        "perceived_polish": "medium",
+        "product_presence": "unclear",
+        "template_likeness": "high",
+        "visual_distinctiveness": "moderate"
+      },
+      "website_url": "https://www.airtable.com"
+    }
+  ],
+  "notes": [
+    "Offline human review calibration sample.",
+    "Review decisions are evidence-only and do not affect scoring."
+  ],
+  "sample_strategy": "high_low_disagreement_category_diverse",
+  "source_dir": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/annotations/multimodal/mock_first_pass",
+  "version": "visual-signature-review-batch-1"
+}

@@ -1,0 +1,27 @@
+{
+  "capture_id": "allbirds",
+  "confidence": 0.89,
+  "created_at": "2026-05-11T17:46:01.414933",
+  "evidence_refs": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png"
+  ],
+  "from_state": "RAW_STATE",
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:allbirds",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+    "clean_attempt:/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+    "mutation:19b338a23e1f4d21af54be0ce7dc9c09"
+  ],
+  "mutation_ref": null,
+  "notes": [
+    "obstruction_present_but_confidence_or_first_impression_is_low",
+    "source_transition_reason:low_confidence_obstruction"
+  ],
+  "reason": "human_review_required",
+  "record_type": "transition_record",
+  "schema_version": "phase-zero-transition-record-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "to_state": "REVIEW_REQUIRED_STATE",
+  "transition_id": "transition_allbirds_human_review_required"
+}

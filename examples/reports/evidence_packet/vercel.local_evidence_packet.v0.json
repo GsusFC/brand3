@@ -1,0 +1,1978 @@
+{
+  "version": 0,
+  "case_id": "vercel",
+  "audit_url": "https://vercel.com",
+  "audited_surface": {
+    "url": "https://vercel.com",
+    "host": "vercel.com",
+    "root_domain": "vercel.com",
+    "evidence": [
+      {
+        "text": "# Vercel (Vercel Inc.) Vercel is a Software Development company. Vercel provides developers with frameworks, workflows, and infrastructure to build a",
+        "url": "https://vercel.com/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About Us Skip to content # Vercel enables the world to ship the best products. Vercel's Frontend Cloud provides the developer experience and infrastru",
+        "url": "https://vercel.com/about",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://vercel.com/changelog",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "You can now use native curl syntax with the Vercel CLI.",
+        "url": "https://vercel.com/changelog",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "build times went from 7m to 40s. saw a 95% reduction in page load times.",
+        "url": "https://vercel.com/blog/oss",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Vercel enables the world to ship the best products.",
+        "url": "https://vercel.com/about",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "vercel.com",
+    "confidence": "medium",
+    "evidence": [
+      {
+        "text": "# Vercel (Vercel Inc.) Vercel is a Software Development company. Vercel provides developers with frameworks, workflows, and infrastructure to build a",
+        "url": "https://vercel.com/",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "About Us Skip to content # Vercel enables the world to ship the best products. Vercel's Frontend Cloud provides the developer experience and infrastru",
+        "url": "https://vercel.com/about",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://vercel.com/changelog",
+        "dimension": "vitalidad",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "You can now use native curl syntax with the Vercel CLI.",
+        "url": "https://vercel.com/changelog",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "build times went from 7m to 40s. saw a 95% reduction in page load times.",
+        "url": "https://vercel.com/blog/oss",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Vercel enables the world to ship the best products.",
+        "url": "https://vercel.com/about",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "related_surfaces": [
+      {
+        "surface": "https://www.linkedin.com/company/vercel",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/vercel",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/vercel",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/vercel",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/vercel",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@vercel",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/vercel",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://vercel.com/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://en.wikipedia.org/wiki/Vercel",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://vercel.com/about",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://releasebot.io/updates/vercel",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://vercel.com/changelog",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://vercel.com/blog/oss",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://togithub.com/vercel/ai",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://vercel.com/sitemap.xml",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://vercel.com/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://vercel.com/llms.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://vercel.com",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://vercel.com",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://vercel.com",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://vercel.com/docs/ai-sdk",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/vercel",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://vercel.com",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://vercel.com",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=5"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "# Build and deploy on the AI Cloud. Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personaliz",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "Vercel Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework. Vercel provides",
+      "url": "https://en.wikipedia.org/wiki/Vercel",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://releasebot.io/updates/vercel",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://releasebot.io/updates/vercel",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "App host Vercel says it was hacked and customer data stolen",
+      "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Vercel says some of its customers’ data was stolen prior to its recent hack",
+      "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework.",
+      "url": "https://en.wikipedia.org/wiki/Vercel",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides developers with frameworks, workflows, and infrastructure to build a faster, more personalized web.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Build and deploy on the AI Cloud.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Netlify as the audited brand's closest measured competitor with measured distance 0.855; avg_distance=0.873; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887; avg_distance=0.873; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "The AI SDK is a free open-source library for building AI-powered applications and agents",
+      "url": "https://togithub.com/vercel/ai",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "sitemap.xml found with 6991 URLs",
+      "url": "https://vercel.com/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://vercel.com/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "llms.txt found",
+      "url": "https://vercel.com/llms.txt",
+      "dimension": "presencia",
+      "feature_name": "ai_discoverability",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Schema detected: SoftwareApplication",
+      "url": "https://vercel.com",
+      "dimension": "coherencia",
+      "feature_name": "structured_identity",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog, faq, pricing, docs, changelog, reviews, case_studies",
+      "url": "https://vercel.com",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.94; contrast signal 0.31.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/vercel",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [],
+  "missing_evidence": [
+    {
+      "text": "# Build and deploy on the AI Cloud. Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personaliz",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.94; contrast signal 0.31.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Vercel provides developers with frameworks, workflows, and infrastructure to build a faster, more personalized web.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Build and deploy on the AI Cloud.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "# Vercel (Vercel Inc.) Vercel is a Software Development company. Vercel provides developers with frameworks, workflows, and infrastructure to build a",
+      "url": "https://vercel.com/",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Vercel Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework. Vercel provides",
+      "url": "https://en.wikipedia.org/wiki/Vercel",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "About Us Skip to content # Vercel enables the world to ship the best products. Vercel's Frontend Cloud provides the developer experience and infrastru",
+      "url": "https://vercel.com/about",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "You can now use native curl syntax with the Vercel CLI.",
+      "url": "https://vercel.com/changelog",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "App host Vercel says it was hacked and customer data stolen",
+      "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Vercel says some of its customers’ data was stolen prior to its recent hack",
+      "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework.",
+      "url": "https://en.wikipedia.org/wiki/Vercel",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Netlify as the audited brand's closest measured competitor with measured distance 0.855; avg_distance=0.873; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887; avg_distance=0.873; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "build times went from 7m to 40s. saw a 95% reduction in page load times.",
+      "url": "https://vercel.com/blog/oss",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "The AI SDK is a free open-source library for building AI-powered applications and agents",
+      "url": "https://togithub.com/vercel/ai",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Vercel enables the world to ship the best products.",
+      "url": "https://vercel.com/about",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "# Build and deploy on the AI Cloud. Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personaliz",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/vercel",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://releasebot.io/updates/vercel",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://vercel.com/changelog",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.94; contrast signal 0.31.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Vercel provides developers with frameworks, workflows, and infrastructure to build a faster, more personalized web.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Build and deploy on the AI Cloud.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "sitemap.xml found with 6991 URLs",
+      "url": "https://vercel.com/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://vercel.com/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "llms.txt found",
+      "url": "https://vercel.com/llms.txt",
+      "dimension": "presencia",
+      "feature_name": "ai_discoverability",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Schema detected: SoftwareApplication",
+      "url": "https://vercel.com",
+      "dimension": "coherencia",
+      "feature_name": "structured_identity",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Key pages found: about, blog, faq, pricing, docs, changelog, reviews, case_studies",
+      "url": "https://vercel.com",
+      "dimension": "diferenciacion",
+      "feature_name": "content_depth",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/vercel",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "# Build and deploy on the AI Cloud. Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personaliz",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/vercel",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/vercel",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@vercel",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/vercel",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "# Vercel (Vercel Inc.) Vercel is a Software Development company. Vercel provides developers with frameworks, workflows, and infrastructure to build a",
+        "url": "https://vercel.com/",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Vercel Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework. Vercel provides",
+        "url": "https://en.wikipedia.org/wiki/Vercel",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "About Us Skip to content # Vercel enables the world to ship the best products. Vercel's Frontend Cloud provides the developer experience and infrastru",
+        "url": "https://vercel.com/about",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "sitemap.xml found with 6991 URLs",
+        "url": "https://vercel.com/sitemap.xml",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://vercel.com/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "llms.txt found",
+        "url": "https://vercel.com/llms.txt",
+        "feature_name": "ai_discoverability",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://releasebot.io/updates/vercel",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://vercel.com/changelog",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://releasebot.io/updates/vercel",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "You can now use native curl syntax with the Vercel CLI.",
+        "url": "https://vercel.com/changelog",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "App host Vercel says it was hacked and customer data stolen",
+        "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Vercel says some of its customers’ data was stolen prior to its recent hack",
+        "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.94; contrast signal 0.31.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework.",
+        "url": "https://en.wikipedia.org/wiki/Vercel",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Vercel provides developers with frameworks, workflows, and infrastructure to build a faster, more personalized web.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Schema detected: SoftwareApplication",
+        "url": "https://vercel.com",
+        "feature_name": "structured_identity",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "Build and deploy on the AI Cloud.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Netlify as the audited brand's closest measured competitor with measured distance 0.855; avg_distance=0.873; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887; avg_distance=0.873; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog, faq, pricing, docs, changelog, reviews, case_studies",
+        "url": "https://vercel.com",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "build times went from 7m to 40s. saw a 95% reduction in page load times.",
+        "url": "https://vercel.com/blog/oss",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "The AI SDK is a free open-source library for building AI-powered applications and agents",
+        "url": "https://togithub.com/vercel/ai",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Vercel enables the world to ship the best products.",
+        "url": "https://vercel.com/about",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "thin",
+      "eligible_count": 1,
+      "blocked_count": 6,
+      "review_required_count": 2,
+      "missing_evidence_count": 5,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "visual_brand_support_only",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "owned_textual_surface_coverage_thin"
+      ],
+      "readiness_reason": "Coherencia has some owned textual evidence, but not enough distinct surfaces for ready status.",
+      "recommended_action": "Collect additional owned textual surfaces before stronger coherence prose."
+    },
+    "presencia": {
+      "status": "thin",
+      "eligible_count": 3,
+      "blocked_count": 8,
+      "review_required_count": 1,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url"
+      ],
+      "readiness_reason": "Presencia has owned-surface evidence plus external channel evidence.",
+      "recommended_action": "Proceed with discoverability language bounded to detected channels."
+    },
+    "percepcion": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 0,
+      "review_required_count": 0,
+      "missing_evidence_count": 0,
+      "reason_codes": [],
+      "readiness_reason": "Percepcion has non-empty eligible evidence and at least one external perception source.",
+      "recommended_action": "Proceed only with source-bounded perception language."
+    },
+    "diferenciacion": {
+      "status": "ready",
+      "eligible_count": 2,
+      "blocked_count": 4,
+      "review_required_count": 2,
+      "missing_evidence_count": 3,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "competitor_corpus_present",
+        "bounded_comparison_evidence",
+        "no_strategy_inference"
+      ],
+      "readiness_reason": "Comparative or category-distinctive evidence is present, but should remain bounded to the cited sources.",
+      "recommended_action": "Use only the cited comparative evidence; do not infer category leadership."
+    },
+    "vitalidad": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 4,
+      "review_required_count": 0,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked"
+      ],
+      "readiness_reason": "Vitalidad has multiple non-empty temporal activity signals.",
+      "recommended_action": "Proceed with activity language without inferring traction or growth."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "# Build and deploy on the AI Cloud. Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personaliz",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "Vercel Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework. Vercel provides",
+        "url": "https://en.wikipedia.org/wiki/Vercel",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "App host Vercel says it was hacked and customer data stolen",
+        "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Vercel says some of its customers’ data was stolen prior to its recent hack",
+        "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework.",
+        "url": "https://en.wikipedia.org/wiki/Vercel",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Netlify as the audited brand's closest measured competitor with measured distance 0.855; avg_distance=0.873; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887; avg_distance=0.873; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "The AI SDK is a free open-source library for building AI-powered applications and agents",
+        "url": "https://togithub.com/vercel/ai",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "sitemap.xml found with 6991 URLs",
+        "url": "https://vercel.com/sitemap.xml",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://vercel.com/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "llms.txt found",
+        "url": "https://vercel.com/llms.txt",
+        "dimension": "presencia",
+        "feature_name": "ai_discoverability",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Schema detected: SoftwareApplication",
+        "url": "https://vercel.com",
+        "dimension": "coherencia",
+        "feature_name": "structured_identity",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Key pages found: about, blog, faq, pricing, docs, changelog, reviews, case_studies",
+        "url": "https://vercel.com",
+        "dimension": "diferenciacion",
+        "feature_name": "content_depth",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.94; contrast signal 0.31.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [],
+    "excluded_noise": [],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/vercel",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/vercel",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "search_visibility",
+        "owned_evidence": [
+          {
+            "text": "# Vercel (Vercel Inc.) Vercel is a Software Development company. Vercel provides developers with frameworks, workflows, and infrastructure to build a",
+            "url": "https://vercel.com/",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "About Us Skip to content # Vercel enables the world to ship the best products. Vercel's Frontend Cloud provides the developer experience and infrastru",
+            "url": "https://vercel.com/about",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Vercel Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework. Vercel provides",
+            "url": "https://en.wikipedia.org/wiki/Vercel",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "publication_cadence",
+        "owned_evidence": [
+          {
+            "text": "",
+            "url": "https://vercel.com/changelog",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "",
+            "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          },
+          {
+            "text": "",
+            "url": "https://releasebot.io/updates/vercel",
+            "classification_reason": "empty_text_evidence_blocked",
+            "eligibility": "blocked_empty_text"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "momentum",
+        "owned_evidence": [
+          {
+            "text": "You can now use native curl syntax with the Vercel CLI.",
+            "url": "https://vercel.com/changelog",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "App host Vercel says it was hacked and customer data stolen",
+            "url": "https://techcrunch.com/2026/04/20/app-host-vercel-confirms-security-incident-says-customer-data-was-stolen-via-breach-at-context-ai/",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Vercel says some of its customers’ data was stolen prior to its recent hack",
+            "url": "https://techcrunch.com/2026/04/23/vercel-says-some-of-its-customers-data-was-stolen-prior-to-its-recent-hack/",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "messaging_consistency",
+        "owned_evidence": [
+          {
+            "text": "Vercel provides the developer tools and cloud infrastructure to build, scale, and secure a faster, more personalized web.",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Vercel Inc. is an American cloud application company. The company created and maintains the Next.js web development framework.",
+            "url": "https://en.wikipedia.org/wiki/Vercel",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "brand_sentiment",
+        "owned_evidence": [
+          {
+            "text": "build times went from 7m to 40s. saw a 95% reduction in page load times.",
+            "url": "https://vercel.com/blog/oss",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Vercel enables the world to ship the best products.",
+            "url": "https://vercel.com/about",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "The AI SDK is a free open-source library for building AI-powered applications and agents",
+            "url": "https://togithub.com/vercel/ai",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 34,
+      "owned_claims": 3,
+      "external_evidence": 17,
+      "related_surface_evidence": 1,
+      "technical_signals": 5,
+      "trust_or_security_signals": 0,
+      "visual_or_internal_signals": 2,
+      "entity_ambiguity": 1,
+      "excluded_noise": 0,
+      "missing_evidence": 9,
+      "finding_eligible_evidence": 12,
+      "evidence_not_eligible_for_findings": 20,
+      "requires_human_review": 1
+    }
+  }
+}

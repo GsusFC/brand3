@@ -1,0 +1,742 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:30:45.910641",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://calendly.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 426,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Calendly",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Mainstream SaaS with simple conversion-led visual behavior."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#0b3558",
+      "#476788",
+      "#006bff",
+      "#004eba",
+      "#0a2540",
+      "#8247f5"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#0b3558",
+      "#e7edf6",
+      "#f8f9fb",
+      "#e6f0ff",
+      "#004eba"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#0b3558",
+      "#476788",
+      "#006bff",
+      "#e7edf6",
+      "#d4e0ed",
+      "#f8f9fb",
+      "#e6f0ff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 686,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0b3558",
+        "occurrences": 508,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#476788",
+        "occurrences": 278,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#006bff",
+        "occurrences": 234,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e7edf6",
+        "occurrences": 220,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d4e0ed",
+        "occurrences": 166,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f8f9fb",
+        "occurrences": 132,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e6f0ff",
+        "occurrences": 116,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#004eba",
+        "occurrences": 116,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0a2540",
+        "occurrences": 64,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#a6bbd1",
+        "occurrences": 58,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#848a8f",
+        "occurrences": 48,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#8247f5",
+        "occurrences": 42,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#fcefff",
+        "occurrences": 36,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#c4c4c4",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#004796",
+        "occurrences": 30,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#12b76a",
+        "occurrences": 30,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f0f3f8",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#5c4c9f",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffa600",
+        "occurrences": 22,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#14aa51",
+        "occurrences": 20,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#b8dcff",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#68819b",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0ae8f0",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#0b3558",
+      "#476788",
+      "#006bff",
+      "#004eba",
+      "#0a2540",
+      "#8247f5"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 64,
+        "labels": [
+          "Sign up with Google",
+          "Sign up with Microsoft",
+          "Connect your calendars",
+          "Add your availability",
+          "Connect conferencing tools",
+          "Customize your event types",
+          "Share your scheduling link",
+          "Browser extensions",
+          "Automated workflows",
+          "Routing forms"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 16,
+        "labels": [
+          "Sign up with Google",
+          "Sign up with Microsoft",
+          "Sign up free with email.",
+          "Sign up for free",
+          "View all integrations",
+          "Learn more",
+          "Billed yearly",
+          "Billed monthly",
+          "Get started",
+          "Try for Free"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 136,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 100,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Sign up with Google",
+      "Sign up with Microsoft",
+      "Sign up free with email.",
+      "Sign up for free",
+      "View all integrations",
+      "Learn more",
+      "Billed yearly",
+      "Billed monthly"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.7,
+    "confidence": 0.698,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.614,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.698,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.623
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.71
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 66,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Google logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://calendly.com/media/googleLogo.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/6fo1ntHspDIwlAN45IgxRU/fbba98755d036e6d87631d0c5eccab25/doordash-customer-logo.svg"
+      },
+      {
+        "alt": "Lyft Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/Y595RQBDR1fW5blQZfd9l/b9f3e2557c598b1ea51bb4e55f507833/lyft-customer-logo.svg"
+      },
+      {
+        "alt": "Compass Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/6PFPRWMRMxRXthyXYcDRiR/ee7cc3f3ca0ed78752db06ce662a95f8/compass-customer-logo.svg"
+      },
+      {
+        "alt": "L",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/42drnxHfXrNOGKnVE9iA3r/a7f1bea3f67ca614e359eb6de12d8ba1/loreal-customer-logo.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/4AUQ47IN6ZBtXtWXt65L3D/24dae32ff49baaf8feecf9471804420d/zendesk-customer-logo.svg"
+      },
+      {
+        "alt": "Dropbox",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/bOnLOncEyDdb8izczJggp/b98f4d8da30cfff0a87e8dce2bced46e/dropbox-customer-logo.svg"
+      },
+      {
+        "alt": "Gong",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/k0lk9kiuza3o/k5u1aoWgLdVtFfc4tsyg3/cae65a31428205e2b46b229963d3b41e/Gong-logo.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.7,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Gilroy",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {
+      "max": 500,
+      "min": 500
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.963
+    },
+    "composition": {
+      "color_variance": 0.342,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.805,
+      "edge_density": 0.063,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.773
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 202049,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://calendly.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/calendly.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 60,
+      "confidence": 0.878,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 15354,
+          "ratio": 0.7677
+        },
+        {
+          "hex": "#002040",
+          "occurrences": 1652,
+          "ratio": 0.0826
+        },
+        {
+          "hex": "#e060ff",
+          "occurrences": 675,
+          "ratio": 0.0338
+        },
+        {
+          "hex": "#004060",
+          "occurrences": 574,
+          "ratio": 0.0287
+        },
+        {
+          "hex": "#0060ff",
+          "occurrences": 407,
+          "ratio": 0.0204
+        },
+        {
+          "hex": "#00a0ff",
+          "occurrences": 366,
+          "ratio": 0.0183
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 144,
+          "ratio": 0.0072
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 124,
+          "ratio": 0.0062
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.342,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.805,
+      "edge_density": 0.063,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.773
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.805,
+        "palette": 0.878,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.866
+    },
+    "viewport_palette": {
+      "color_count": 60,
+      "confidence": 0.878,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 15354,
+          "ratio": 0.7677
+        },
+        {
+          "hex": "#002040",
+          "occurrences": 1652,
+          "ratio": 0.0826
+        },
+        {
+          "hex": "#e060ff",
+          "occurrences": 675,
+          "ratio": 0.0338
+        },
+        {
+          "hex": "#004060",
+          "occurrences": 574,
+          "ratio": 0.0287
+        },
+        {
+          "hex": "#0060ff",
+          "occurrences": 407,
+          "ratio": 0.0204
+        },
+        {
+          "hex": "#00a0ff",
+          "occurrences": 366,
+          "ratio": 0.0183
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 144,
+          "ratio": 0.0072
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 124,
+          "ratio": 0.0062
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.773,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.805,
+        "palette": 0.878,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.866
+    }
+  },
+  "website_url": "https://calendly.com"
+}

@@ -1,0 +1,239 @@
+{
+  "artifact_id": "brand3_perceptual_reading_semantics_v0_1",
+  "artifact_type": "perceptual_reasoning_specification",
+  "created_at": "2026-05-15",
+  "status": "conceptual_specification",
+  "scope": "perceptual_reasoning_layer_only",
+  "source_artifacts": [
+    "examples/perceptual_library/cases/charms/perceptual_case_record.json",
+    "examples/perceptual_library/cases/d4data/perceptual_case_record.json",
+    "examples/perceptual_library/cases/grandvalira/perceptual_case_record.json",
+    "examples/perceptual_library/patterns/perceptual_pattern_registry.md",
+    "examples/perceptual_library/patterns/perceptual_pattern_registry.json",
+    "examples/perceptual_library/patterns/first_three_case_pattern_audit.md",
+    "examples/perceptual_library/patterns/first_three_case_pattern_audit.json",
+    "examples/brand3_platform/brand3_surface_perception_language.md",
+    "examples/brand3_platform/brand3_surface_perception_language.json"
+  ],
+  "non_goals": {
+    "scoring_logic": true,
+    "report_rendering": true,
+    "visual_signature_runtime": true,
+    "prompt_implementation": true,
+    "runtime_changes": true
+  },
+  "reading_chain": [
+    "observable_signals",
+    "signal_clusters",
+    "perceptual_patterns",
+    "tensions",
+    "emotional_temperature",
+    "narrative_implications",
+    "uncertainty_handling",
+    "contradiction_handling",
+    "observation_vs_interpretation",
+    "perceptual_confidence"
+  ],
+  "definitions": {
+    "observable_signals": {
+      "definition": "Smallest evidence units Brand3 can point to. They may be visual, structural, motion-based, interaction-based, or copy-stated.",
+      "rules": [
+        "Name what is present before naming what it means.",
+        "Separate directly visible signals from copy-stated signals.",
+        "Treat absence as a signal only when anchored.",
+        "Do not turn source phrases into visual observations unless the surface confirms them."
+      ],
+      "examples": [
+        "repeated rounded light forms",
+        "large serif typography",
+        "gallery-first pacing",
+        "public copy naming Datamosh transitions",
+        "public copy claiming a hybrid design system"
+      ]
+    },
+    "signal_clusters": {
+      "definition": "Groups of signals pointing in the same perceptual direction.",
+      "rules": [
+        "Include at least two signals.",
+        "Label mixed evidence clusters as direct visual plus copy, copy-only, or unverified implementation.",
+        "Let clusters suggest patterns, not prove strategy by themselves."
+      ],
+      "examples": [
+        {
+          "case_id": "charms",
+          "cluster": ["soft light fields", "blue-white gradients", "serif wordmarks", "gallery pacing", "emotional ritual language"]
+        },
+        {
+          "case_id": "d4data",
+          "cluster": ["kendo language", "Datamosh", "MetaHuman", "intensity", "precision", "refined UI claim"]
+        },
+        {
+          "case_id": "grandvalira",
+          "cluster": ["hybrid design system", "multi-brand components", "foundations", "scalability", "visual cohesion", "unique personalities"]
+        }
+      ]
+    },
+    "perceptual_patterns": {
+      "definition": "Reusable reading models that explain how a signal cluster behaves.",
+      "rules": [
+        "Describe behavior, not merely topic.",
+        "Be reusable without importing a case-specific slogan.",
+        "List observable signals and anti-patterns.",
+        "Carry confidence based on supporting cases and evidence quality."
+      ],
+      "registered_examples": [
+        "Category-To-Surface Translation",
+        "Evidence-Bound Surface Behavior",
+        "Guided Movement",
+        "Concept-Bearing Motion",
+        "Cohesion With Preserved Difference",
+        "Claim / Signal Gap",
+        "Threshold Pacing"
+      ]
+    },
+    "tensions": {
+      "definition": "Perceptual contradictions, tradeoffs, or unresolved relationships. They are not automatically flaws.",
+      "rules": [
+        "Name both sides.",
+        "State whether the tension is productive, unresolved, or unverified.",
+        "Keep claim-level tensions separate from observed UX contradictions.",
+        "Do not resolve tensions with generic advice."
+      ],
+      "examples": [
+        "stated category / surface expression",
+        "claim / evidence gap",
+        "unity / differentiation",
+        "intensity / guidance",
+        "concept / implementation proof",
+        "premium restraint / expressive category"
+      ]
+    },
+    "emotional_temperature": {
+      "definition": "Felt quality of a surface or pattern derived from signals and clusters.",
+      "rules": [
+        "Tie temperature to evidence.",
+        "Avoid generic adjectives unless they explain a perceptual mechanism.",
+        "Do not use emotional temperature as quality scoring."
+      ],
+      "examples": [
+        {"case_id": "charms", "temperature": "atmospheric, soft, restrained, ritualized"},
+        {"case_id": "d4data", "temperature": "dynamic, intense, cinematic, controlled"},
+        {"case_id": "grandvalira", "temperature": "ordered, institutional, restrained, system-driven"},
+        {"pattern_id": "pattern_claim_signal_gap", "temperature": "diagnostic, cautious, restrained"}
+      ]
+    },
+    "narrative_implications": {
+      "definition": "What the perceptual pattern may make legible after signals and patterns are named.",
+      "rules": [
+        "Use implications only after evidence is named.",
+        "Keep strategic intent conditional unless directly stated.",
+        "Prefer supports a reading of over proves.",
+        "Preserve evidence status in the sentence."
+      ]
+    },
+    "uncertainty_handling": {
+      "definition": "Explicit source-status handling for direct, corroborated, copy-based, inferred, weak, unverified, and review-bound readings.",
+      "states": [
+        "direct",
+        "corroborated",
+        "copy_based",
+        "inferred",
+        "weak_inference",
+        "unverified",
+        "requires_human_review"
+      ],
+      "rules": [
+        "Low-confidence strategic interpretations must require human review.",
+        "Copy-based observations cannot become high-confidence visual observations.",
+        "Missing evidence should be recorded as missing evidence."
+      ]
+    },
+    "contradiction_handling": {
+      "definition": "Claim/signal pair handling for productive, unresolved, or unverified contradictions.",
+      "required_logic": [
+        "stated_claim",
+        "observed_signal",
+        "contradiction_level",
+        "confidence",
+        "review_status"
+      ],
+      "rules": [
+        "A contradiction can be productive.",
+        "A contradiction can be copy-only.",
+        "A contradiction can remain unverified.",
+        "Do not call a contradiction a defect without evidence of harm or incoherence."
+      ]
+    },
+    "observation_vs_interpretation": {
+      "definition": "Observation describes what the surface or source presents; interpretation explains what it may mean.",
+      "rules": [
+        "Do not hide interpretation inside observation.",
+        "Do not phrase interpretation as fact.",
+        "Do not use observation language to smuggle in strategic intent."
+      ],
+      "example_pairs": [
+        {
+          "observation": "The record names Datamosh transitions and MetaHuman character rendering.",
+          "interpretation": "The case may be using motion as an identity-bearing layer."
+        },
+        {
+          "observation": "The public copy says the system uses multi-brand components and foundations.",
+          "interpretation": "The project appears to use design-system work as governance across multiple resort identities."
+        }
+      ]
+    },
+    "perceptual_confidence": {
+      "definition": "Evidence quality, not writer intensity.",
+      "levels": {
+        "high": "Use when a signal is directly visible or directly stated, or a pattern is supported across multiple cases.",
+        "medium": "Use when a reading is reasonable but copy-based, or interpretation combines source language with observed behavior.",
+        "low": "Use when a reading depends on aesthetics alone, unstated intent, missing implementation evidence, or source copy implying more than the surface proves."
+      }
+    }
+  },
+  "valid_readings": [
+    {
+      "case_id": "charms",
+      "reading": "The Charms surface supports Category-To-Surface Translation: onchain games are framed through soft light, serif hierarchy, gallery pacing, and ritual language. The reading is stronger where local visual observations exist, and weaker where it infers audience or intent."
+    },
+    {
+      "case_id": "d4data",
+      "reading": "D4DATA supports a copy-based reading of Concept-Bearing Motion. Datamosh, MetaHuman, kendo intensity, and UI guidance create a motion-language cluster, but the visual behavior remains unverified until capture evidence exists."
+    },
+    {
+      "case_id": "grandvalira",
+      "reading": "Grandvalira supports Cohesion With Preserved Difference as a system claim: the source names a hybrid design system, multi-brand components, foundations, cohesion, and unique personalities. The pattern remains medium confidence until component or variant evidence confirms it."
+    }
+  ],
+  "overreach_examples": [
+    "Charms proves that Web3 gaming should be soft and emotional.",
+    "D4DATA uses glitch aesthetics to symbolize disruption.",
+    "Grandvalira has a scalable component system.",
+    "The brand is premium because it is restrained.",
+    "The product is intuitive because the case copy says so.",
+    "The system creates user empowerment."
+  ],
+  "generic_llm_interpretation_to_avoid": [
+    "The brand successfully communicates innovation and trust.",
+    "The design creates a seamless and engaging user experience.",
+    "This positions the company as a leader in the space.",
+    "The visual identity is modern, bold, and future-facing.",
+    "The strategy aligns with the needs of today's users.",
+    "The brand is differentiated through a cohesive ecosystem."
+  ],
+  "brand3_style_interpretation_examples": [
+    "The source states a seamless interface, but current evidence only supports a copy-level guidance claim.",
+    "The repeated motif creates a stronger reading of ritual than of modular component behavior.",
+    "The motion language is concept-bearing in the copy, but remains unverified as observed motion.",
+    "The design-system claim should remain medium confidence until component, token, or variant evidence exists.",
+    "The productive tension sits between category intensity and surface restraint.",
+    "The case translates an abstract domain into a perceptual system, but the implementation proof is incomplete."
+  ],
+  "boundary": {
+    "documentation_specification_only": true,
+    "runtime_changes": false,
+    "prompt_changes": false,
+    "scoring_integration": false,
+    "visual_signature_changes": false
+  }
+}

@@ -1,0 +1,495 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:56:54.775191",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://dust.tt",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 140,
+    "video_count": 2
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Dust",
+  "calibration": {
+    "expected_category": "ai_native",
+    "notes": "Smaller AI-native company to balance famous frontier AI brands."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ffaa0d",
+      "#e2f78c",
+      "#418b5c",
+      "#e14322",
+      "#3b82f6",
+      "#9fdbff"
+    ],
+    "background_candidates": [
+      "#e2f78c",
+      "#ffffff",
+      "#e9f7ff",
+      "#27303f"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffaa0d",
+      "#e2f78c",
+      "#ffc3df",
+      "#418b5c",
+      "#e14322",
+      "#3b82f6",
+      "#9fdbff",
+      "#ffffff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.68,
+        "hex": "#ffaa0d",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#e2f78c",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffc3df",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#418b5c",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#e14322",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#3b82f6",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#9fdbff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffffff",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#e9f7ff",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#27303f",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#27303f"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 46,
+        "labels": [
+          "Try for free",
+          "Get started",
+          "Join them",
+          "Learn more",
+          "Start Free Trial",
+          "Contact Sales",
+          "reject non-essential cookies",
+          "Accept All Cookies"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Sign in",
+          "Try for free",
+          "Learn more",
+          "Contact Sales",
+          "Start Free Trial",
+          "Pricing"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Sign in",
+      "Try for free",
+      "Learn more",
+      "Contact Sales",
+      "Start Free Trial",
+      "Pricing"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.7,
+    "confidence": 0.583,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.519,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.583,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.597
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.684
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 2,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "datadog",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/datadog.svg"
+      },
+      {
+        "alt": "clay",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/clay.svg"
+      },
+      {
+        "alt": "cursor",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/cursor.svg"
+      },
+      {
+        "alt": "assembled",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/assembled.svg"
+      },
+      {
+        "alt": "decagon",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/decagon.svg"
+      },
+      {
+        "alt": "evenup",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/evenup.svg"
+      },
+      {
+        "alt": "persona",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/persona.svg"
+      },
+      {
+        "alt": "1password",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dust.tt/static/landing/logos/gray/1password.svg"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.937
+    },
+    "composition": {
+      "color_variance": 0.404,
+      "composition_classification": "dense_grid",
+      "confidence": 0.843,
+      "edge_density": 0.043,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.464
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 172780,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://dust.tt",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/dust.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 44,
+      "confidence": 0.791,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 10509,
+          "ratio": 0.5254
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 4962,
+          "ratio": 0.2481
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 3269,
+          "ratio": 0.1635
+        },
+        {
+          "hex": "#20a0ff",
+          "occurrences": 294,
+          "ratio": 0.0147
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 259,
+          "ratio": 0.0129
+        },
+        {
+          "hex": "#606080",
+          "occurrences": 78,
+          "ratio": 0.0039
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 77,
+          "ratio": 0.0039
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 62,
+          "ratio": 0.0031
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.404,
+      "composition_classification": "dense_grid",
+      "confidence": 0.843,
+      "edge_density": 0.043,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.464
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.843,
+        "palette": 0.791,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.856
+    },
+    "viewport_palette": {
+      "color_count": 44,
+      "confidence": 0.791,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 10509,
+          "ratio": 0.5254
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 4962,
+          "ratio": 0.2481
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 3269,
+          "ratio": 0.1635
+        },
+        {
+          "hex": "#20a0ff",
+          "occurrences": 294,
+          "ratio": 0.0147
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 259,
+          "ratio": 0.0129
+        },
+        {
+          "hex": "#606080",
+          "occurrences": 78,
+          "ratio": 0.0039
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 77,
+          "ratio": 0.0039
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 62,
+          "ratio": 0.0031
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.464,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.843,
+        "palette": 0.791,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.856
+    }
+  },
+  "website_url": "https://dust.tt"
+}

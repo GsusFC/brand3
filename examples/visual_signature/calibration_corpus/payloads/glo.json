@@ -1,0 +1,542 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:34:30.657216",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.glo.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 92,
+    "video_count": 2
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Glo",
+  "calibration": {
+    "expected_category": "wellness_lifestyle",
+    "notes": "Lower-fame wellness subscription candidate for ordinary category behavior."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#1d1e28",
+      "#000000",
+      "#ffffff",
+      "#f5efe5",
+      "#f4f4f5",
+      "#5a5a66"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#1d1e28",
+      "#6a6e76",
+      "#000000",
+      "#ffffff",
+      "#f5efe5",
+      "#d9c29c",
+      "#f4f4f5",
+      "#5a5a66"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#1d1e28",
+        "occurrences": 70,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6a6e76",
+        "occurrences": 32,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 32,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 26,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f5efe5",
+        "occurrences": 14,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#d9c29c",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#f4f4f5",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#5a5a66",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#e5e4f2",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#cfcfd4",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#666666",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#fcfbf8",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f2f1f8",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e6e5e6",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e1e7ee",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f3d7d7",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#383539",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#cdcace",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f9f8f6",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#1d1e28",
+      "#6a6e76",
+      "#000000",
+      "#d9c29c",
+      "#5a5a66",
+      "#666666"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 48,
+        "labels": [
+          "Annual plan 20.42 /mo $245 per year, billed annually",
+          "Monthly plan 30 /mo $360 per year, billed monthly",
+          "svg]:px-4 text-lg rounded-full w-16 h-16 p-0\">",
+          "\u00d7",
+          "Accept All Cookies",
+          "Reject All Cookies",
+          "Manage Cookie Settings",
+          "Save Preferences"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 13,
+        "labels": [
+          "svg]:px-3 h-12 px-8 rounded-full\" href=\"https://www.glo.com/register\"> Try free ",
+          "svg]:px-3 h-12 rounded-full w-full\" href=\"https://www.glo.com/register\"> Try fre",
+          "svg]:px-3\" href=\"https://www.glo.com/styles\"> Explore all styles",
+          "svg]:px-3\" href=\"https://www.glo.com/teachers\"> Meet all teachers",
+          "svg]:px-3\" href=\"https://www.glo.com/programs\"> Explore all",
+          "Annual plan 20.42 /mo $245 per year, billed annually",
+          "Monthly plan 30 /mo $360 per year, billed monthly",
+          "svg]:px-3 h-12 min-w-[200px] rounded-[24px]\" href=\"https://www.glo.com/register\"",
+          "svg]:px-3 h-12 w-full rounded-[24px]\" href=\"https://www.glo.com/register\"> Choos",
+          "svg]:px-4 text-lg rounded-full w-16 h-16 p-0\">"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 24,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "modal"
+    ],
+    "primary_ctas": [
+      "svg]:px-3 h-12 px-8 rounded-full\" href=\"https://www.glo.com/register\"> Try free ",
+      "svg]:px-3 h-12 rounded-full w-full\" href=\"https://www.glo.com/register\"> Try fre",
+      "svg]:px-3\" href=\"https://www.glo.com/styles\"> Explore all styles",
+      "svg]:px-3\" href=\"https://www.glo.com/teachers\"> Meet all teachers",
+      "svg]:px-3\" href=\"https://www.glo.com/programs\"> Explore all",
+      "Annual plan 20.42 /mo $245 per year, billed annually",
+      "Monthly plan 30 /mo $360 per year, billed monthly",
+      "svg]:px-3 h-12 min-w-[200px] rounded-[24px]\" href=\"https://www.glo.com/register\""
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.68,
+    "confidence": 0.742,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.567,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.742,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.62
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.716
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": false,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 20,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Outfit",
+        "occurrences": 2,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "-apple-system",
+        "occurrences": 2,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "BlinkMacSystemFont",
+        "occurrences": 2,
+        "role": "display",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      26.0,
+      18.0,
+      15.0,
+      15.0,
+      16.0,
+      13.0,
+      16.0,
+      13.0,
+      16.0,
+      13.0,
+      16.0,
+      13.0,
+      16.0,
+      16.0,
+      15.0,
+      16.0,
+      26.0,
+      18.0,
+      15.0,
+      15.0,
+      16.0,
+      13.0,
+      16.0,
+      13.0
+    ],
+    "weight_range": {
+      "max": 600,
+      "min": 600
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.893
+    },
+    "composition": {
+      "color_variance": 0.033,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.62,
+      "edge_density": 0.005,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.915
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 19926,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.glo.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/glo.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 17,
+      "confidence": 0.643,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 18399,
+          "ratio": 0.92
+        },
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 1375,
+          "ratio": 0.0688
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 142,
+          "ratio": 0.0071
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 17,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#806060",
+          "occurrences": 11,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 11,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#c0a0a0",
+          "occurrences": 8,
+          "ratio": 0.0004
+        },
+        {
+          "hex": "#e0c0c0",
+          "occurrences": 5,
+          "ratio": 0.0003
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.033,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.62,
+      "edge_density": 0.005,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.915
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.62,
+        "palette": 0.643,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.752
+    },
+    "viewport_palette": {
+      "color_count": 17,
+      "confidence": 0.643,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 18399,
+          "ratio": 0.92
+        },
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 1375,
+          "ratio": 0.0688
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 142,
+          "ratio": 0.0071
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 17,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#806060",
+          "occurrences": 11,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 11,
+          "ratio": 0.0006
+        },
+        {
+          "hex": "#c0a0a0",
+          "occurrences": 8,
+          "ratio": 0.0004
+        },
+        {
+          "hex": "#e0c0c0",
+          "occurrences": 5,
+          "ratio": 0.0003
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.915,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.62,
+        "palette": 0.643,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.752
+    }
+  },
+  "website_url": "https://www.glo.com"
+}

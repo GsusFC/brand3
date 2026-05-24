@@ -1,0 +1,40 @@
+Expected category: consumer_app
+Notes: Lower-fame consumer app useful for avoiding famous-app overfitting.
+
+== PlantIn ==
+URL: https://myplantin.com
+Interpretation status: interpretable
+Extraction confidence: 0.65 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.53, consistency_coverage=0.52]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.64
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.52
+
+Visual summaries:
+- palette preview: #04bf94[###] #52c8ad[###] #06d3a4[###] #60e7c8[###] #a6a6a6[###] #becee6[###] #f3f7fe[###] #748aab[###]
+- typography: none
+- layout: header=False; nav=True; hero=True; sections=18; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=42, cta=4, card=24, pricing=2
+- consistency: overall=0.45; color=0.48; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #402020[###] #202000[###] #202020[###] #606040[###] #000000[###] #606060[###] #a0e0e0[###]
+- viewport palette: #ffffff[###] #402020[###] #202000[###] #202020[###] #606040[###] #000000[###] #606060[###] #a0e0e0[###]
+- composition: density=dense; whitespace=39%; classification=dense_grid
+- viewport composition: density=dense; whitespace=39%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

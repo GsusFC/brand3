@@ -1,0 +1,338 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:58:19.144040",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://elevateapp.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 22,
+    "video_count": 2
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Elevate",
+  "calibration": {
+    "expected_category": "consumer_app",
+    "notes": "Lower-fame consumer app for average app landing behavior."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#0a0a0b"
+    ],
+    "confidence": 0.406,
+    "dominant_colors": [
+      "#0a0a0b"
+    ],
+    "palette": [
+      {
+        "confidence": 0.64,
+        "hex": "#0a0a0b",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#0a0a0b"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 8,
+        "labels": [
+          "Try for free",
+          "Learn more"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 2,
+        "labels": [
+          "Try for free",
+          "Learn more"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      }
+    ],
+    "confidence": 0.73,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Try for free",
+      "Learn more"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.66,
+    "confidence": 0.429,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.539,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.429,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.494
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "consistency_inference_limited"
+    ],
+    "score": 0.625
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 38,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "body",
+        "source": "rendered_html",
+        "text": "Elevate",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "body",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.209,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.934
+    },
+    "composition": {
+      "color_variance": 0.305,
+      "composition_classification": "dense_grid",
+      "confidence": 0.783,
+      "edge_density": 0.046,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.002
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 58281,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://elevateapp.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/elevate.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 42,
+      "confidence": 0.78,
+      "dominant_colors": [
+        {
+          "hex": "#20a0ff",
+          "occurrences": 15408,
+          "ratio": 0.7704
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 4282,
+          "ratio": 0.2141
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 50,
+          "ratio": 0.0025
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 39,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#2080c0",
+          "occurrences": 23,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 21,
+          "ratio": 0.001
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 17,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 15,
+          "ratio": 0.0008
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.305,
+      "composition_classification": "dense_grid",
+      "confidence": 0.783,
+      "edge_density": 0.046,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.002
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.783,
+        "palette": 0.78,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.835
+    },
+    "viewport_palette": {
+      "color_count": 42,
+      "confidence": 0.78,
+      "dominant_colors": [
+        {
+          "hex": "#20a0ff",
+          "occurrences": 15408,
+          "ratio": 0.7704
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 4282,
+          "ratio": 0.2141
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 50,
+          "ratio": 0.0025
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 39,
+          "ratio": 0.0019
+        },
+        {
+          "hex": "#2080c0",
+          "occurrences": 23,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 21,
+          "ratio": 0.001
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 17,
+          "ratio": 0.0008
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 15,
+          "ratio": 0.0008
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.002,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.783,
+        "palette": 0.78,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.835
+    }
+  },
+  "website_url": "https://elevateapp.com"
+}

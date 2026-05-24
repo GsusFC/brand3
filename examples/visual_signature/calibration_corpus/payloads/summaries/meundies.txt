@@ -1,0 +1,40 @@
+Expected category: ecommerce
+Notes: Consumer ecommerce with playful product imagery and promotional density.
+
+== MeUndies ==
+URL: https://www.meundies.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.56, consistency_coverage=0.62]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.40
+- logo: missing, confidence=0.15
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.62
+
+Visual summaries:
+- palette preview: #000000[###] #d9ff6e[###] #e4d8c1[###] #1e1e1d[###] #222222[###] #717070[###] #fffbf1[###] #e5e2dc[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=14; density=balanced; patterns=flex,sticky_nav
+- components: button=60, cta=9, modal=2, pricing=4
+- consistency: overall=0.51; color=0.68; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #604020[###] #e0e0c0[###] #e0ff60[###] #202020[###] #804020[###] #ffe0e0[###] #c06040[###]
+- viewport palette: #ffffff[###] #604020[###] #e0e0c0[###] #e0ff60[###] #202020[###] #804020[###] #ffe0e0[###] #c06040[###]
+- composition: density=dense; whitespace=2%; classification=dense_grid
+- viewport composition: density=dense; whitespace=2%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

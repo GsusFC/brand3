@@ -1,0 +1,595 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:31:18.627165",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.pandadoc.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 262,
+    "video_count": 50
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "PandaDoc",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Conversion-heavy SaaS useful for average-market baseline behavior."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#136a50",
+      "#b02de9",
+      "#0098cf",
+      "#13426b",
+      "#ff00ff",
+      "#e80df9"
+    ],
+    "background_candidates": [
+      "#242424",
+      "#ffffff",
+      "#000000",
+      "#136a50",
+      "#292f2f",
+      "#13426b"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#242424",
+      "#ffffff",
+      "#000000",
+      "#136a50",
+      "#5b6772",
+      "#b02de9",
+      "#292f2f",
+      "#0098cf"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#242424",
+        "occurrences": 134,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 50,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 22,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#136a50",
+        "occurrences": 14,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#5b6772",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#b02de9",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#292f2f",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#0098cf",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#13426b",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ff00ff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#e80df9",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#c024ed",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#101820",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ff5721",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#000f00",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#179fda",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff7a59",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#33743e",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f62b54",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffcc00",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00ca72",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff4f00",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fffdf9",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#635bff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#242424",
+      "#ffffff",
+      "#000000",
+      "#136a50",
+      "#5b6772",
+      "#b02de9"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 44,
+        "labels": [
+          "Click for sound",
+          "Create",
+          "Collaborate",
+          "Automate",
+          "Sign",
+          "Analyze",
+          "Get paid",
+          "Previous Consensus",
+          "\" tabindex=\"3\">Next Wizehire",
+          "Norway +47"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 21,
+        "labels": [
+          "Get started",
+          "Click for sound",
+          "Request a demo",
+          "Create",
+          "Collaborate",
+          "Automate",
+          "Sign",
+          "Analyze",
+          "Get paid",
+          "Security and compliance"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 142,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Get started",
+      "Click for sound",
+      "Request a demo",
+      "Create",
+      "Collaborate",
+      "Automate",
+      "Sign",
+      "Analyze"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.75,
+    "confidence": 0.77,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.584,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.77,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.638
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.726
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 10,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Helvetica",
+        "occurrences": 4,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "WistiaPlayerInter",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "WistiaPlayerInterNumbersSemiBold",
+        "occurrences": 2,
+        "role": "display",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      18.0,
+      16.9,
+      18.0,
+      16.9
+    ],
+    "weight_range": {
+      "max": 500,
+      "min": 500
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.894
+    },
+    "composition": {
+      "color_variance": 0.165,
+      "composition_classification": "dense_grid",
+      "confidence": 0.699,
+      "edge_density": 0.048,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.1
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 102672,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.pandadoc.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/pandadoc.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 18,
+      "confidence": 0.648,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 14954,
+          "ratio": 0.7477
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1800,
+          "ratio": 0.09
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1447,
+          "ratio": 0.0723
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 1193,
+          "ratio": 0.0597
+        },
+        {
+          "hex": "#204040",
+          "occurrences": 328,
+          "ratio": 0.0164
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 33,
+          "ratio": 0.0016
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 23,
+          "ratio": 0.0011
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.165,
+      "composition_classification": "dense_grid",
+      "confidence": 0.699,
+      "edge_density": 0.048,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.1
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.699,
+        "palette": 0.648,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.777
+    },
+    "viewport_palette": {
+      "color_count": 18,
+      "confidence": 0.648,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 14954,
+          "ratio": 0.7477
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1800,
+          "ratio": 0.09
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1447,
+          "ratio": 0.0723
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 1193,
+          "ratio": 0.0597
+        },
+        {
+          "hex": "#204040",
+          "occurrences": 328,
+          "ratio": 0.0164
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 33,
+          "ratio": 0.0016
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 23,
+          "ratio": 0.0011
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.1,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.699,
+        "palette": 0.648,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.777
+    }
+  },
+  "website_url": "https://www.pandadoc.com"
+}

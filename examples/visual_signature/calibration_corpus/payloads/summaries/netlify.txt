@@ -1,0 +1,39 @@
+Expected category: developer_first
+Notes: Developer platform with established docs/product marketing patterns.
+
+== Netlify ==
+URL: https://www.netlify.com
+Interpretation status: interpretable
+Extraction confidence: 0.70 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.63, consistency_coverage=0.64]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.40
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.64
+
+Visual summaries:
+- palette preview: #89ddff[###] #defffe[###] #e4f0fb[###] #545a61[###] #c792ea[###] #add7ff[###] #2e51ed[###] #5fb3ff[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=34; density=sparse; patterns=grid,flex,multi_column
+- components: button=36, cta=15, form=2, card=40, tabs=46, modal=6
+- consistency: overall=0.46; color=0.48; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202020[###] #ffffff[###] #2060e0[###] #40e0e0[###] #e0e0ff[###] #ffc040[###] #e0e0e0[###] #202040[###]
+- viewport palette: #202020[###] #ffffff[###] #2060e0[###] #40e0e0[###] #e0e0ff[###] #ffc040[###] #e0e0e0[###] #202040[###]
+- composition: density=dense; whitespace=18%; classification=dense_grid
+- viewport composition: density=dense; whitespace=18%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

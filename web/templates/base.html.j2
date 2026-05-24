@@ -5,26 +5,71 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Brand3{% endblock %}</title>
 <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
-<link rel="stylesheet" href="/static/main.css">
+<script>
+  (() => {
+    try {
+      const stored = localStorage.getItem("brand3-theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.dataset.theme = stored || (prefersDark ? "dark" : "light");
+    } catch {
+      document.documentElement.dataset.theme = "light";
+    }
+  })();
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="/static/main.css?v=brand3-lab-mono-density-20260516">
 {% block extra_head %}{% endblock %}
 </head>
 <body>
 <div class="page">
   <pre class="term-head"><span class="prompt">❯</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· public observatory</span></pre>
+  <nav class="main-nav" aria-label="Brand3 primary navigation">
+    <a class="main-nav-link{% if request.url.path == '/' %} is-active{% endif %}" href="/">Brand Audit</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/reports') or request.url.path.startswith('/r/') or request.url.path.startswith('/brand/') %} is-active{% endif %}" href="/reports">Reports</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/visual-signature') %} is-active{% endif %}" href="/visual-signature">Visual Signature Lab</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/brand3-lab') %} is-active{% endif %}" href="/brand3-lab">Brand3 Lab</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/magnetism-scanner') %} is-active{% endif %}" href="/magnetism-scanner">Magnetism Scanner</a>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
+  </nav>
   <hr class="rule">
   {% block content %}{% endblock %}
   <hr class="rule">
   <footer class="footer">
     <div class="kv">
       <span class="k">engine</span>    <span class="v">brand3 v0.1.0</span>
-      <span class="k">about</span>     <span class="v"><a href="/">/</a> · <a href="/reports">/reports</a> · <a href="/takedown">/takedown</a></span>
+      <span class="k">about</span>     <span class="v"><a href="/">Brand Audit</a> · <a href="/reports">Reports</a> · <a href="/visual-signature">Visual Signature Lab</a> · <a href="/brand3-lab">Brand3 Lab</a> · <a href="/magnetism-scanner">Magnetism Scanner</a> · <a href="/takedown">/takedown</a></span>
     </div>
-    <div style="margin-top:8px" class="small">
-      Public observatory. Scores are opinions derived from heuristics + LLM analysis, not facts.
+    <div class="small footer-note">
+      Brand3 Scoring is the working audit product. Visual Signature Lab and Brand3 Lab are secondary evidence and research layers.
+      Scores are opinions derived from heuristics + LLM analysis, not facts.
       Own a brand and want the analysis removed? See <a href="/takedown">/takedown</a>.
     </div>
-    <div style="margin-top:10px"><span class="prompt">❯</span> _<span class="cursor"></span></div>
+    <div class="footer-cursor"><span class="prompt">❯</span> _<span class="cursor"></span></div>
   </footer>
 </div>
+<script>
+  (() => {
+    const button = document.querySelector("[data-theme-toggle]");
+    if (!button) return;
+
+    const setTheme = (theme) => {
+      document.documentElement.dataset.theme = theme;
+      button.textContent = theme === "dark" ? "Light" : "Dark";
+      button.setAttribute("aria-pressed", theme === "dark" ? "true" : "false");
+    };
+
+    setTheme(document.documentElement.dataset.theme || "light");
+    button.addEventListener("click", () => {
+      const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+      try {
+        localStorage.setItem("brand3-theme", next);
+      } catch {
+        // localStorage can be unavailable in strict/private contexts.
+      }
+      setTheme(next);
+    });
+  })();
+</script>
 </body>
 </html>

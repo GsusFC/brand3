@@ -1,0 +1,640 @@
+{
+  "version": 0,
+  "case_id": "notion",
+  "audit_url": "https://www.notion.so",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Notion is a productivity and note-taking application developed by Notion Labs, Inc.",
+          "url": "https://en.wikipedia.org/wiki/Notion_(productivity_software)",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        },
+        {
+          "text": "Notion is an all-in-one application that combines note-taking, task management, and project management in a single platform.",
+          "url": "https://smartbranding.com/moving-beyond-country-extensions-notions-upgrade-to-an-exact-brand-match-domain-notion-com/",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.82; contrast signal 0.70.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "NewNotion's developer platform: Any data. Any tool. Any agent. No infra required.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Meet your new 24/7 AI teammates.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Any data. Any tool. Any agent. No infra required.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Notion is a productivity and note-taking application developed by Notion Labs, Inc.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Hi there! If you’re reading this, you’re probably like me – spending most of your days in your office",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Any data. Any tool. Any agent. No infra required.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Notion is a productivity and note-taking application developed by Notion Labs, Inc.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Hi there! If you’re reading this, you’re probably like me – spending most of your days in your office",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "presencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Notion (productivity software) Notion is a productivity and note-taking application developed by Notion Labs, Inc. It was first released in 2016 and i",
+          "url": "https://en.wikipedia.org/wiki/Notion_(productivity_software)",
+          "source_class": "external_third_party",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "NewNotion's developer platform: Any data. Any tool. Any agent. No infra required. [Learn more→](https://notion.dev/) Pause Trusted by 98% of the Forbe",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/notion",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/notion",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@notion",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/notion",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "# Notion Notion is a Software Development company. Notion is a workspace that offers integrated AI assistant, docs, and projects for teams and individ",
+          "url": "https://notion.com/",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Why we built Notion – About # About Notion ## A story of tools and the future of work Hi there! If you’re reading this, you’re probably like me – spen",
+          "url": "https://www.notion.com/en-gb/about",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "sitemap.xml found with 211 URLs",
+          "url": "https://www.notion.so/sitemap.xml",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "robots.txt found",
+          "url": "https://www.notion.so/robots.txt",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "llms.txt found",
+          "url": "https://www.notion.so/llms.txt",
+          "source_class": "technical_internal",
+          "feature_name": "ai_discoverability",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/notion",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "# Notion Notion is a Software Development company. Notion is a workspace that offers integrated AI assistant, docs, and projects for teams and individ",
+          "url": "https://notion.com/",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Why we built Notion – About # About Notion ## A story of tools and the future of work Hi there! If you’re reading this, you’re probably like me – spen",
+          "url": "https://www.notion.com/en-gb/about",
+          "source_class": "related_unresolved",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "percepcion": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "The company maintains a deliberately lean team relative to its $10B valuation and 100M+ users",
+          "url": "https://jobsbyculture.com/blog/notion-employee-count-2026",
+          "source_class": "external_third_party",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Trusted by 98% of the Forbes Cloud 100",
+          "url": "https://notion.com/en-gb/product",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Discover the power of Notion and how it can help you become more organized, productive and fulfilled.",
+          "url": "https://www.notionavenue.co/post/what-is-notion",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Trusted by 98% of the Forbes Cloud 100",
+          "url": "https://notion.com/en-gb/product",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Discover the power of Notion and how it can help you become more organized, productive and fulfilled.",
+          "url": "https://www.notionavenue.co/post/what-is-notion",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "diferenciacion": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Existing Brand3 competitor comparison identifies Airtable as the audited brand's closest measured competitor with measured distance 0.742; avg_distance=0.81; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Linear as the audited brand's most different measured competitor with measured distance 0.895; avg_distance=0.81; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "NewNotion's developer platform",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Trusted by 98% of the Forbes Cloud 100",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Key pages found: about, blog, pricing, docs, changelog",
+          "url": "https://www.notion.so",
+          "source_class": "technical_internal",
+          "feature_name": "content_depth",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "NewNotion's developer platform",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Trusted by 98% of the Forbes Cloud 100",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Competitor comparison supports only relative positioning distance, not leadership.",
+        "Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "vitalidad": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Notion, a popular app that resembles a Wiki, has been criticised for its bloated design and inability to take notes.",
+          "url": "https://www.howtogeek.com/i-stopped-using-notion-for-everything-and-my-notes-are-better-because-of-it/",
+          "source_class": "external_third_party",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://dataconomy.com/2026/05/14/notion-launches-developer-platform-for-ai-workflows-and-agents/",
+          "source_class": "external_third_party",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://overcentral.com/en/notion-ai-agent-hub/",
+          "source_class": "external_third_party",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://blockainews.com/news/notion-developer-platform-ai-agent-runtime-workers-mcp-may-14/",
+          "source_class": "external_third_party",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "Introducing: the Notion Developer Platform. Now you (and your coding agents) can write code to sync any data and build any agent tool, all running on our infrastructure.",
+          "url": "https://www.notion.com/en-gb/releases/2026-05-13",
+          "source_class": "related_unresolved",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Teams have already built over 1 million Custom Agents so far – automating everything from Slack Q&A to weekly reporting and automated task routing.",
+          "url": "https://www.notion.com/en-gb/blog/introducing-developer-platform",
+          "source_class": "related_unresolved",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Introducing: the Notion Developer Platform. Now you (and your coding agents) can write code to sync any data and build any agent tool, all running on our infrastructure.",
+          "url": "https://www.notion.com/en-gb/releases/2026-05-13",
+          "source_class": "related_unresolved",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Teams have already built over 1 million Custom Agents so far – automating everything from Slack Q&A to weekly reporting and automated task routing.",
+          "url": "https://www.notion.com/en-gb/blog/introducing-developer-platform",
+          "source_class": "related_unresolved",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "coherencia",
+      "presencia",
+      "percepcion",
+      "diferenciacion",
+      "vitalidad"
+    ],
+    "excluded_dimensions": [],
+    "included_evidence_count": 7,
+    "excluded_evidence_count": 28,
+    "review_required_evidence_count": 12,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 9,
+      "presencia": 11,
+      "percepcion": 3,
+      "diferenciacion": 7,
+      "vitalidad": 7
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 2,
+      "presencia": 1,
+      "percepcion": 1,
+      "diferenciacion": 2,
+      "vitalidad": 1
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 9,
+        "candidate_inputs": 2,
+        "excluded_inputs": 7
+      },
+      "presencia": {
+        "current_inputs": 11,
+        "candidate_inputs": 1,
+        "excluded_inputs": 10
+      },
+      "percepcion": {
+        "current_inputs": 3,
+        "candidate_inputs": 1,
+        "excluded_inputs": 2
+      },
+      "diferenciacion": {
+        "current_inputs": 7,
+        "candidate_inputs": 2,
+        "excluded_inputs": 5
+      },
+      "vitalidad": {
+        "current_inputs": 7,
+        "candidate_inputs": 1,
+        "excluded_inputs": 6
+      }
+    }
+  }
+}

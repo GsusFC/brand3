@@ -1,0 +1,180 @@
+{
+  "created_at": "2026-05-18T08:39:58.965077+00:00",
+  "executed": true,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "created_at": "2026-05-18T08:39:58.995406+00:00",
+      "case_id": "linear",
+      "dimension": "coherencia",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "https://linear.app/",
+        "https://medium.com/linear-app/about"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If an organization seeks a tool for product planning and issue tracking, Linear's stated capabilities align with those functions.",
+            "evidence_anchor": "\"Linear is a purpose-built tool for planning and building products.\" and \"The issue tracking tool...\"",
+            "evidence_urls": [
+              "https://linear.app/",
+              "https://medium.com/linear-app/about"
+            ],
+            "limits": "Does not prove actual user enjoyment, adoption rates, market leadership, or specific feature depth.",
+            "observation": "Linear is described as a software development company and a tool for planning, building products, and tracking issues.",
+            "title": "Software development and issue tracking"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Software development and issue tracking"
+        ],
+        "risky_terms_detected": [
+          "leadership",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://linear.app/",
+          "https://medium.com/linear-app/about"
+        ],
+        "evidence_url_validity": true
+      }
+    },
+    {
+      "created_at": "2026-05-18T08:39:59.000621+00:00",
+      "case_id": "vercel",
+      "dimension": "coherencia",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "allowed_evidence_urls": [
+        "https://en.wikipedia.org/wiki/Vercel"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If an organization utilizes Next.js, they are using a framework maintained by Vercel.",
+            "evidence_anchor": "\"The company created and maintains the Next.js web development framework.\"",
+            "evidence_urls": [
+              "https://en.wikipedia.org/wiki/Vercel"
+            ],
+            "limits": "The evidence does not mention 'coherencia', nor does it provide information on Vercel's other products, user adoption, or framework capabilities.",
+            "observation": "Vercel Inc. is an American cloud application company that created and maintains the Next.js web development framework.",
+            "title": "Vercel maintains Next.js framework"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Vercel maintains Next.js framework"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://en.wikipedia.org/wiki/Vercel"
+        ],
+        "evidence_url_validity": true
+      }
+    },
+    {
+      "created_at": "2026-05-18T08:39:59.004941+00:00",
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "https://releasebot.io/updates/launchdarkly",
+        "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "Users interacting with change history have access to mechanisms for reverting feature flags to prior states.",
+            "evidence_anchor": "LaunchDarkly adds the ability to restore a feature flag to a previous version from change history",
+            "evidence_urls": [
+              "https://releasebot.io/updates/launchdarkly"
+            ],
+            "limits": "Does not prove frequency of use, user adoption rates, or comparative utility against other feature management platforms.",
+            "observation": "LaunchDarkly introduced functionality to restore feature flags to previous versions using change history, which includes code diffs and previews.",
+            "title": "Feature flag version restoration added"
+          },
+          {
+            "bounded_interpretation": "The online evaluations feature for AI Configs is accessible for general use by customers.",
+            "evidence_anchor": "Online evals in AI Configs is now GA",
+            "evidence_urls": [
+              "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/"
+            ],
+            "limits": "Does not prove customer demand, performance metrics, or competitive advantage in AI configuration management.",
+            "observation": "LaunchDarkly moved online evaluations within AI Configs to General Availability.",
+            "title": "Online evals in AI Configs"
+          },
+          {
+            "bounded_interpretation": "The organization is increasing its leadership headcount concurrently with stated AI-related market conditions.",
+            "evidence_anchor": "LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds",
+            "evidence_urls": [
+              "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+            ],
+            "limits": "Does not prove actual financial growth metrics, the specific operational impact of the new leaders, or sustained market traction.",
+            "observation": "A press release indicates LaunchDarkly is expanding its leadership team, attributing the change to growth and AI tailwinds.",
+            "title": "Leadership team expansion announced"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 3,
+        "titles": [
+          "Feature flag version restoration added",
+          "Online evals in AI Configs",
+          "Leadership team expansion announced"
+        ],
+        "risky_terms_detected": [
+          "leadership",
+          "advantage",
+          "traction",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+          "https://releasebot.io/updates/launchdarkly",
+          "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+        ],
+        "evidence_url_validity": true
+      }
+    }
+  ],
+  "skipped": [
+    {
+      "case_id": "watermelon",
+      "dimension": "vitalidad",
+      "status": "blocked",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "launchdarkly",
+      "dimension": "coherencia",
+      "status": "review_required",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+Expected category: editorial_media
+Notes: Dense editorial system with strong recurring modules.
+
+== The Verge ==
+URL: https://www.theverge.com
+Interpretation status: interpretable
+Extraction confidence: 0.69 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.60, consistency_coverage=0.59]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #ff0000[###] #00ff00[###] #0000ff[###] #ffff00[###] #ff00ff[###] #00ffff[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=48; density=dense; patterns=multi_column,sticky_nav
+- components: button=226, cta=67, form=44, card=258, accordion=42, tabs=38, modal=46, pricing=14
+- consistency: overall=0.53; color=0.68; type=0.20; component=0.75; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202020[###] #40ffc0[###] #000000[###] #e0c020[###] #002020[###] #e0c040[###] #ffe040[###] #ffffff[###]
+- viewport palette: #202020[###] #40ffc0[###] #000000[###] #e0c020[###] #002020[###] #e0c040[###] #ffe040[###] #ffffff[###]
+- composition: density=dense; whitespace=1%; classification=dense_grid
+- viewport composition: density=dense; whitespace=1%; classification=dense_grid
+- vision confidence: 0.88 (high)
+- viewport confidence: 0.88 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

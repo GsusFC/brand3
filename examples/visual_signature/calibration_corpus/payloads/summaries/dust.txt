@@ -1,0 +1,39 @@
+Expected category: ai_native
+Notes: Smaller AI-native company to balance famous frontier AI brands.
+
+== Dust ==
+URL: https://dust.tt
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.60, consistency_coverage=0.58]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.58
+
+Visual summaries:
+- palette preview: #ffaa0d[###] #e2f78c[###] #ffc3df[###] #418b5c[###] #e14322[###] #3b82f6[###] #9fdbff[###] #ffffff[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=2; density=dense; patterns=grid,flex,multi_column,sticky_nav
+- components: button=46, cta=6, form=4, accordion=2, pricing=6
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0ffff[###] #202040[###] #20a0ff[###] #202020[###] #606080[###] #e0e0e0[###] #e0e0ff[###]
+- viewport palette: #ffffff[###] #e0ffff[###] #202040[###] #20a0ff[###] #202020[###] #606080[###] #e0e0e0[###] #e0e0ff[###]
+- composition: density=dense; whitespace=46%; classification=dense_grid
+- viewport composition: density=dense; whitespace=46%; classification=dense_grid
+- vision confidence: 0.86 (high)
+- viewport confidence: 0.86 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

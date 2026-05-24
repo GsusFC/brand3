@@ -1,0 +1,334 @@
+{
+  "schema_version": "brand3-original-scoring-flow-audit-1",
+  "record_type": "original_scoring_flow_audit",
+  "generated_at": "2026-05-13",
+  "scope": "audit_only",
+  "guardrails": [
+    "no scoring logic changes",
+    "no rubric dimension changes",
+    "no Visual Signature changes",
+    "no capture behavior changes",
+    "no unified platform build in this audit"
+  ],
+  "summary": {
+    "pre_visual_signature_flow": "Brand3 accepted URLs through a FastAPI form or CLI, queued/runs analyses through the existing scoring service, persisted raw inputs/features/scores/runs to SQLite, wrote per-run JSON files under output/, and rendered local HTML reports from SQLite snapshots.",
+    "visual_signature_status": "must_remain_separate",
+    "missing_or_unknown": [
+      "No standalone stored generated_texts_per_dimension artifact was found in the JSON output shape inspected.",
+      "Generated report prose is derived/rendered from SQLite snapshots and report modules; it is not stored as a separate per-dimension text JSON artifact in the original output files inspected."
+    ]
+  },
+  "answers": {
+    "1_how_new_brand_or_url_was_accepted": {
+      "status": "found",
+      "mechanisms": [
+        {
+          "name": "web_form",
+          "entrypoint": "GET /",
+          "submit": "POST /analyze",
+          "files": [
+            "web/routes/index.py",
+            "web/templates/index.html.j2",
+            "web/routes/analyze.py",
+            "web/workers/url_validator.py",
+            "web/storage.py",
+            "migrations/005_web_requests.sql"
+          ],
+          "flow": "User submits a URL in the homepage form. POST /analyze validates the URL, creates a token and brand_slug, inserts a web_requests row, enqueues the token, and redirects to /r/{token}/status."
+        },
+        {
+          "name": "cli",
+          "entrypoint": "main.py",
+          "command": "python main.py analyze <url> [brand_name]",
+          "legacy_shim": "Passing a URL as the first non-command argument is normalized to analyze <url>.",
+          "files": [
+            "main.py",
+            "src/services/brand_service.py"
+          ]
+        },
+        {
+          "name": "cli_background_job",
+          "entrypoint": "main.py",
+          "command": "python main.py enqueue-job <url> [brand_name]",
+          "files": [
+            "main.py",
+            "src/services/brand_service.py",
+            "src/storage/sqlite_store.py"
+          ]
+        }
+      ]
+    },
+    "2_command_or_script_generated_initial_scoring": {
+      "status": "found",
+      "primary_commands": [
+        "python main.py analyze <url> [brand_name]",
+        "python main.py <url> [brand_name]"
+      ],
+      "web_execution": "FastAPI worker calls src.services.brand_service.run(url, use_social=True, use_llm=True).",
+      "core_pipeline_files": [
+        "main.py",
+        "web/workers/queue.py",
+        "src/services/brand_service.py",
+        "src/services/input_collection.py",
+        "src/services/feature_pipeline.py",
+        "src/services/scoring_pipeline.py",
+        "src/scoring/engine.py"
+      ]
+    },
+    "3_where_dimension_scores_are_stored": {
+      "status": "found",
+      "json_output": "output/<brand-slug>-<YYYYMMDD-HHMMSS>.json field dimensions",
+      "json_example_shape": {
+        "dimensions": {
+          "coherencia": "number_or_null",
+          "presencia": "number_or_null",
+          "percepcion": "number_or_null",
+          "diferenciacion": "number_or_null",
+          "vitalidad": "number_or_null"
+        }
+      },
+      "sqlite": {
+        "database": "data/brand3.sqlite3",
+        "table": "scores",
+        "columns": [
+          "run_id",
+          "dimension_name",
+          "score",
+          "insights_json",
+          "rules_json",
+          "created_at"
+        ],
+        "writer": "SQLiteStore.save_scores"
+      },
+      "snapshot_reader": "SQLiteStore.get_run_snapshot"
+    },
+    "4_where_generated_texts_per_dimension_are_stored": {
+      "status": "partially_found",
+      "stored_deterministic_summary": {
+        "location": "runs.summary",
+        "writer": "SQLiteStore.finalize_run",
+        "source": "ScoringEngine.generate_summary",
+        "granularity": "global summary with per-dimension score lines, weakest and strongest dimension"
+      },
+      "dimension_observations": {
+        "location": "scores.insights_json",
+        "writer": "SQLiteStore.save_scores",
+        "source": "DimensionScore.insights from scoring rules",
+        "note": "Often an empty list; this is not full generated prose."
+      },
+      "report_dimension_texts": {
+        "location": "derived at render time",
+        "files": [
+          "src/reports/derivation.py",
+          "src/reports/dossier.py",
+          "src/reports/narrative.py",
+          "src/reports/templates/report.html.j2"
+        ],
+        "source_data": [
+          "SQLite scores",
+          "SQLite features.raw_value",
+          "SQLite evidence_items",
+          "SQLite raw_inputs",
+          "runs.summary"
+        ],
+        "note": "Report prose/findings are built from a run snapshot. LLM narrative overlays are attempted by src/reports/narrative.py and fall back to deterministic text. No separate persisted generated_texts_per_dimension JSON artifact was found in inspected outputs."
+      },
+      "missing_or_unknown": "A dedicated persisted artifact for generated dimension prose is missing_or_unknown."
+    },
+    "5_artifacts_produced_per_brand": {
+      "status": "found",
+      "sqlite_artifacts": [
+        "brands row",
+        "runs row",
+        "raw_inputs rows",
+        "features rows",
+        "scores rows",
+        "evidence_items rows when available",
+        "run_audits row",
+        "web_requests row for web submissions",
+        "llm_cache rows when LLM calls are made"
+      ],
+      "file_artifacts": [
+        "output/<brand-slug>-<timestamp>.json",
+        "output/reports/<brand-slug>/<run_id>-<timestamp>/report.<theme>.html when render-report is executed",
+        "screenshots or screenshot paths may be referenced in raw collector data depending on the collectors used"
+      ],
+      "json_fields_observed": [
+        "brand",
+        "brand_profile",
+        "url",
+        "run_id",
+        "entity_discovery",
+        "discovery_search_plan",
+        "discovery_evidence_preview",
+        "discovery_enrichment",
+        "discovery_trust_basis",
+        "niche_classification",
+        "calibration_profile",
+        "profile_source",
+        "data_quality",
+        "data_sources",
+        "context_readiness",
+        "confidence_summary",
+        "dimension_confidence",
+        "evidence_summary",
+        "trust_summary",
+        "composite_score",
+        "composite_reliable",
+        "partial_score",
+        "partial_dimensions",
+        "dimensions",
+        "llm_used",
+        "social_scraped",
+        "audit",
+        "timestamp"
+      ]
+    },
+    "6_existing_ui_or_viewer_for_scoring": {
+      "status": "found",
+      "local_web_ui": {
+        "framework": "FastAPI + Jinja templates",
+        "files": [
+          "web/app.py",
+          "web/routes/index.py",
+          "web/routes/analyze.py",
+          "web/routes/status.py",
+          "web/routes/report.py",
+          "web/routes/reports_list.py",
+          "web/routes/brand.py",
+          "web/templates/index.html.j2",
+          "web/templates/status.html.j2",
+          "web/templates/reports_list.html.j2",
+          "web/templates/brand_history.html.j2",
+          "web/static/main.css"
+        ],
+        "routes": [
+          "/",
+          "/analyze",
+          "/r/{token}/status",
+          "/r/{token}",
+          "/reports",
+          "/brand/{domain}"
+        ],
+        "note": "The existing scoring UI is runtime-backed by SQLite and the web worker. It is separate from the static Visual Signature platform."
+      },
+      "static_report_renderer": {
+        "command": "python main.py render-report --run-id <id> --theme light|dark",
+        "output": "output/reports/<brand-slug>/<run_id>-<timestamp>/report.<theme>.html",
+        "files": [
+          "src/reports/renderer.py",
+          "src/reports/dossier.py",
+          "src/reports/derivation.py",
+          "src/reports/templates/report.html.j2"
+        ]
+      }
+    },
+    "7_files_unified_platform_should_read": {
+      "status": "recommended_read_set",
+      "read_only_sources": [
+        "data/brand3.sqlite3",
+        "output/*.json",
+        "output/reports/**/*.html",
+        "src/dimensions.py",
+        "src/scoring/engine.py",
+        "src/reports/renderer.py",
+        "src/reports/derivation.py",
+        "src/reports/dossier.py",
+        "src/reports/narrative.py",
+        "web/templates/*.html.j2",
+        "web/static/main.css",
+        "migrations/005_web_requests.sql",
+        "migrations/006_evidence_items.sql",
+        "examples/*.json"
+      ],
+      "queryable_sqlite_tables": [
+        "brands",
+        "runs",
+        "raw_inputs",
+        "features",
+        "scores",
+        "evidence_items",
+        "run_audits",
+        "web_requests",
+        "analysis_jobs",
+        "analysis_job_events",
+        "llm_cache"
+      ],
+      "avoid": [
+        "Do not call brand_service.run from the platform builder.",
+        "Do not invoke collectors/providers.",
+        "Do not recompute scores.",
+        "Do not render reports if that would trigger narrative/provider work."
+      ]
+    },
+    "8_what_must_remain_separate_from_visual_signature": {
+      "status": "found",
+      "must_remain_separate": [
+        "Initial scoring dimensions and composite_score",
+        "src/dimensions.py rubric weights/features/rules",
+        "src/scoring/engine.py scoring rules and composite calculation",
+        "src/services/scoring_pipeline.py",
+        "SQLite scoring tables: runs, features, scores",
+        "Production/local scoring report renderer and templates",
+        "Visual Signature captures, review queues, calibration, governance, corpus expansion",
+        "Any Visual Signature shadow-run or evidence persistence"
+      ],
+      "integration_boundary": "A unified platform may link to and summarize both layers, but Visual Signature must not feed Initial Scoring, alter dimension_scores, alter rubric dimensions, alter report copy, or enable runtime mutation."
+    }
+  },
+  "rubric_dimensions": [
+    {
+      "name": "coherencia",
+      "weight": 0.2,
+      "source": "src/dimensions.py"
+    },
+    {
+      "name": "presencia",
+      "weight": 0.2,
+      "source": "src/dimensions.py"
+    },
+    {
+      "name": "percepcion",
+      "weight": 0.25,
+      "source": "src/dimensions.py"
+    },
+    {
+      "name": "diferenciacion",
+      "weight": 0.2,
+      "source": "src/dimensions.py"
+    },
+    {
+      "name": "vitalidad",
+      "weight": 0.15,
+      "source": "src/dimensions.py"
+    }
+  ],
+  "inspected_files": [
+    "main.py",
+    "src/dimensions.py",
+    "src/models/brand.py",
+    "src/scoring/engine.py",
+    "src/services/brand_service.py",
+    "src/services/scoring_pipeline.py",
+    "src/storage/sqlite_store.py",
+    "src/reports/renderer.py",
+    "src/reports/derivation.py",
+    "src/reports/dossier.py",
+    "src/reports/narrative.py",
+    "web/routes/index.py",
+    "web/routes/analyze.py",
+    "web/routes/report.py",
+    "web/routes/reports_list.py",
+    "web/routes/brand.py",
+    "web/workers/queue.py",
+    "web/storage.py",
+    "web/templates/index.html.j2",
+    "web/templates/status.html.j2",
+    "web/templates/reports_list.html.j2",
+    "web/templates/brand_history.html.j2",
+    "migrations/005_web_requests.sql",
+    "migrations/006_evidence_items.sql",
+    "output/zora-20260419-100126.json",
+    "data/brand3.sqlite3"
+  ]
+}

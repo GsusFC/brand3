@@ -1,0 +1,85 @@
+{
+  "$defs": {
+    "ObservationDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "layer": {
+          "enum": [
+            "functional",
+            "editorial"
+          ],
+          "title": "Layer",
+          "type": "string"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "value_type": {
+          "enum": [
+            "categorical",
+            "numeric",
+            "boolean",
+            "text"
+          ],
+          "title": "Value Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "layer",
+        "description",
+        "value_type"
+      ],
+      "title": "ObservationDefinition",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "items": {
+        "$ref": "#/$defs/ObservationDefinition"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "registry_type": {
+      "const": "observation_registry",
+      "title": "Registry Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "phase-zero-observation-registry-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "registry_type",
+    "items"
+  ],
+  "title": "ObservationRegistry",
+  "type": "object"
+}

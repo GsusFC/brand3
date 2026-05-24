@@ -1,0 +1,39 @@
+Expected category: premium_luxury
+Notes: Premium apparel candidate with less conventional luxury signaling.
+
+== Noah ==
+URL: https://noahny.com
+Interpretation status: interpretable
+Extraction confidence: 0.72 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.65, consistency_coverage=0.71]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.68
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.71
+
+Visual summaries:
+- palette preview: #000000[###] #ffffff[###] #a3a3a3[###] #373f47[###] #141414[###] #0b1e2c[###]
+- typography: &quot, Arial, Archivo, Verdana, Geneva
+- layout: header=True; nav=False; hero=True; sections=40; density=balanced; patterns=flex,multi_column
+- components: button=60, cta=29, form=118, card=52, tabs=14, modal=8
+- consistency: overall=0.64; color=0.68; type=0.65; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #000000[###] #006080[###] #e0c0c0[###] #200000[###] #e0c0a0[###] #004080[###] #202020[###]
+- viewport palette: #ffffff[###] #000000[###] #006080[###] #e0c0c0[###] #200000[###] #e0c0a0[###] #004080[###] #202020[###]
+- composition: density=dense; whitespace=22%; classification=dense_grid
+- viewport composition: density=dense; whitespace=22%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

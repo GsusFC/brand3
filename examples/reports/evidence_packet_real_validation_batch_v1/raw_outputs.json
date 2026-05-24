@@ -1,0 +1,393 @@
+{
+  "created_at": "2026-05-18T10:34:52.602359+00:00",
+  "executed": true,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "created_at": "2026-05-18T10:34:52.619735+00:00",
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "The audited brand's positioning is relatively closer to Wrike than to the other measured competitors in the sample.",
+            "evidence_anchor": "Wrike as the audited brand's closest measured competitor with measured distance 0.752",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, Wrike has the closest measured positioning distance to the audited brand at 0.752, which is below the average distance of 0.821.",
+            "title": "Closest measured competitor positioning distance"
+          },
+          {
+            "bounded_interpretation": "The audited brand's positioning is relatively furthest from ProjectManager within the measured competitor sample.",
+            "evidence_anchor": "ProjectManager as the audited brand's most different measured competitor with measured distance 0.872",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, ProjectManager has the most different measured positioning distance from the audited brand at 0.872, which is above the average distance of 0.821.",
+            "title": "Most different competitor positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.635861+00:00",
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If the measured distance reflects positioning, the audited brand shares more positioning similarities with Netlify than with the other analyzed competitors.",
+            "evidence_anchor": "Netlify as the audited brand's closest measured competitor with measured distance 0.855",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "A competitor comparison of 5 competitors identifies Netlify as the closest measured competitor to the audited brand, with a distance of 0.855 against an average distance of 0.873.",
+            "title": "Netlify measured as closest competitor"
+          },
+          {
+            "bounded_interpretation": "If the measured distance reflects positioning, the audited brand shares the fewest positioning similarities with Qoddi App Platform among the analyzed set.",
+            "evidence_anchor": "Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "A competitor comparison of 5 competitors identifies Qoddi App Platform as the most different measured competitor to the audited brand, with a distance of 0.887 against an average distance of 0.873.",
+            "title": "Qoddi measured as most different"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.644452+00:00",
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 3,
+      "allowed_evidence_urls": [
+        "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "https://releasebot.io/updates/launchdarkly",
+        "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "Indicates ongoing development of version control and rollback mechanisms within the core feature flag product.",
+            "evidence_anchor": "\"LaunchDarkly adds the ability to restore a feature flag to a previous version from change history...\"",
+            "evidence_urls": [
+              "https://releasebot.io/updates/launchdarkly"
+            ],
+            "limits": "Does not prove adoption rates, user preference, or superiority over competing rollback features.",
+            "observation": "LaunchDarkly introduced a feature allowing users to restore feature flags to previous versions, which includes code diffs and previews.",
+            "title": "Feature flag restoration capability added"
+          },
+          {
+            "bounded_interpretation": "Shows progression of AI-related configuration features from pre-release to general availability.",
+            "evidence_anchor": "\"Online evals in AI Configs is now GA\"",
+            "evidence_urls": [
+              "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/"
+            ],
+            "limits": "Does not prove market traction, customer adoption of AI Configs, or future roadmap direction.",
+            "observation": "The online evaluations feature within AI Configs has reached General Availability status.",
+            "title": "AI Configs online evals GA"
+          },
+          {
+            "bounded_interpretation": "Reflects organizational changes communicated externally in connection with AI-related market conditions.",
+            "evidence_anchor": "\"LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds\"",
+            "evidence_urls": [
+              "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+            ],
+            "limits": "Does not verify the claimed accelerated growth metrics, nor does it prove actual market advantage or specific strategic intent.",
+            "observation": "A press release states LaunchDarkly expanded its leadership team, citing growth and AI tailwinds.",
+            "title": "Leadership team expansion announced externally"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 3,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.649314+00:00",
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "allowed_evidence_urls": [
+        "https://watermelon.sh/"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "The entity's self-published positioning targets modern startups seeking design infrastructure solutions.",
+            "evidence_anchor": "\"Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.\"",
+            "evidence_urls": [
+              "https://watermelon.sh/"
+            ],
+            "limits": "This evidence does not prove external market perception, actual product capabilities, customer adoption, or competitive advantage.",
+            "observation": "The audited surface explicitly describes the entity as building design infrastructure for modern startups.",
+            "title": "Design infrastructure for modern startups"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.658841+00:00",
+      "case_id": "notion",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "The audited brand's positioning is relatively closer to Airtable than to the other measured competitors in the sample.",
+            "evidence_anchor": "Airtable as the audited brand's closest measured competitor with measured distance 0.742",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Does not prove product superiority, market advantage, customer preference, adoption, or durable defensibility.",
+            "observation": "Among 5 analyzed competitors, Airtable has the lowest measured positioning distance at 0.742, compared to an average distance of 0.81.",
+            "title": "Airtable shows closest positioning distance"
+          },
+          {
+            "bounded_interpretation": "The audited brand's positioning is relatively further from Linear than from the other measured competitors in the sample.",
+            "evidence_anchor": "Linear as the audited brand's most different measured competitor with measured distance 0.895",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Does not prove product superiority, market advantage, customer preference, adoption, or durable defensibility.",
+            "observation": "Among 5 analyzed competitors, Linear has the highest measured positioning distance at 0.895, compared to an average distance of 0.81.",
+            "title": "Linear shows greatest positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.664941+00:00",
+      "case_id": "stripe",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If the snapshot is representative, the brand's positioning shares the most similarities with Kadima Payments relative to the measured set.",
+            "evidence_anchor": "Kadima Payments as the audited brand's closest measured competitor with measured distance 0.695; avg_distance=0.767; competitors_analyzed=5.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, Kadima Payments has the closest measured positioning distance at 0.695, which is below the average distance of 0.767.",
+            "title": "Closest measured competitor positioning distance"
+          },
+          {
+            "bounded_interpretation": "If the snapshot is representative, the brand's positioning diverges most from Finix within the measured set.",
+            "evidence_anchor": "Finix as the audited brand's most different measured competitor with measured distance 0.827; avg_distance=0.767; competitors_analyzed=5.",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, Finix has the greatest measured positioning distance at 0.827, which is above the average distance of 0.767.",
+            "title": "Most different competitor positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.682857+00:00",
+      "case_id": "figma",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If the measured snapshot reflects current market positioning, the audited brand's messaging is most proximate to Builder.io within this specific competitor set.",
+            "evidence_anchor": "Builder.io as the audited brand's closest measured competitor with measured distance 0.85",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Out of 5 analyzed competitors, Builder.io represents the closest measured positioning distance at 0.85, which is below the average distance of 0.886.",
+            "title": "Closest measured competitor positioning distance"
+          },
+          {
+            "bounded_interpretation": "If the measured snapshot reflects current market positioning, the audited brand's messaging diverges the most from Noon within this specific competitor set.",
+            "evidence_anchor": "Noon as the audited brand's most different measured competitor with measured distance 0.921",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "This snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Out of 5 analyzed competitors, Noon represents the most different measured positioning distance at 0.921, which is above the average distance of 0.886.",
+            "title": "Most different competitor positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    },
+    {
+      "created_at": "2026-05-18T10:34:52.696461+00:00",
+      "case_id": "datadog",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If positioning distance reflects messaging similarity, the audited brand shares more positioning traits with MetricsHub than with the other measured competitors.",
+            "evidence_anchor": "MetricsHub as the audited brand's closest measured competitor with measured distance 0.775",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Does not prove product superiority, market advantage, customer preference, or actual feature parity.",
+            "observation": "Out of 5 competitors analyzed, MetricsHub has a measured positioning distance of 0.775 from the audited brand, which is below the average distance of 0.845.",
+            "title": "Closest measured competitor positioning distance"
+          },
+          {
+            "bounded_interpretation": "If positioning distance reflects messaging divergence, the audited brand's positioning is most distinct from SigLens among the measured set.",
+            "evidence_anchor": "SigLens as the audited brand's most different measured competitor with measured distance 0.967",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Does not prove a competitive moat, strategic advantage, product quality, or adoption rates.",
+            "observation": "Out of 5 competitors analyzed, SigLens has a measured positioning distance of 0.967 from the audited brand, which is above the average distance of 0.845.",
+            "title": "Most different competitor positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "has_typical_decision": false,
+        "limits_present": true,
+        "risky_terms_outside_limits": [],
+        "evidence_urls_valid": true,
+        "invalid_evidence_urls": []
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false
+    }
+  ],
+  "skipped": [
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

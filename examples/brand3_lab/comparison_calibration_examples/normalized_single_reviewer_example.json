@@ -1,0 +1,191 @@
+{
+  "schema_version": "brand3-comparison-calibration-log-1",
+  "record_type": "perceptual_narrative_comparison_calibration_log",
+  "draft_only": true,
+  "official_record": false,
+  "persistence_scope": "local_lab_only",
+  "scoring_integration": false,
+  "production_runtime_enabled": false,
+  "source_viewer": {
+    "route": "/brand3-lab/perceptual-narrative-comparison",
+    "export_schema_version": "brand3-perceptual-narrative-comparison-draft-1",
+    "export_record_type": "perceptual_narrative_comparison_review_draft"
+  },
+  "calibration_run": {
+    "calibration_id": "comparison-calibration-20260515-single-reviewer-example",
+    "created_at": "2026-05-15T16:30:00Z",
+    "review_window": {
+      "started_at": "2026-05-15T16:20:00Z",
+      "ended_at": "2026-05-15T16:28:00Z"
+    },
+    "reviewer_count": 1,
+    "case_count": 3,
+    "notes": "Single-reviewer example is insufficient for agreement calibration but useful for normalization validation."
+  },
+  "source_artifacts": [
+    {
+      "path": "examples/brand3_platform/perceptual_narrative_evaluation.json",
+      "artifact_role": "paired_narrative_evaluation"
+    },
+    {
+      "path": "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.json",
+      "artifact_role": "overreach_taxonomy"
+    },
+    {
+      "path": "examples/brand3_lab/comparison_calibration_examples/viewer_export_draft_example.json",
+      "artifact_role": "viewer_export"
+    }
+  ],
+  "normalization_rules": {
+    "input_export_contract": {
+      "accepted_schema_version": "brand3-perceptual-narrative-comparison-draft-1",
+      "accepted_record_type": "perceptual_narrative_comparison_review_draft",
+      "required_flags": {
+        "draft_only": true,
+        "official_record": false,
+        "persistence_status": "not_persisted"
+      }
+    },
+    "decision_mapping": {
+      "baseline_better": "Baseline is clearer, safer, or more proportionate.",
+      "perceptual_better": "Perceptual narrative improves specificity without unsafe overreach.",
+      "mixed": "Perceptual narrative helps and harms in the same case.",
+      "unsafe_overreach": "Perceptual narrative introduces unsupported interpretation or unsafe inference.",
+      "unreviewed": "No reviewer decision was provided."
+    },
+    "case_identity_rules": [
+      "Use brand_id as stable case key.",
+      "Keep brand as display label.",
+      "Do not merge cases across source artifacts without matching brand_id."
+    ],
+    "notes_rules": [
+      "Preserve reviewer notes verbatim.",
+      "Treat notes as reviewer evidence, not brand facts.",
+      "Use notes to tag overreach modes only when explicit."
+    ],
+    "overreach_tagging_rules": [
+      "Map authority/trust/leadership concerns to invented_intentionality when intent is implied.",
+      "Map wellness outcome concerns to unsupported_emotional_projection.",
+      "Map generic prestige language to false_sophistication_language or generic_premium_projection."
+    ],
+    "safe_zone_tagging_rules": [
+      "Safe augmentation requires no unsafe veto.",
+      "Safe augmentation requires at least medium reviewer confidence.",
+      "Perceptual preference alone is not enough to mark a safe zone."
+    ],
+    "draft_handling": [
+      "Keep normalized logs local-only.",
+      "Do not import into production storage.",
+      "Do not use for scoring."
+    ]
+  },
+  "reviewer_agreement_model": {
+    "model_id": "majority_with_overreach_veto_v1",
+    "agreement_levels": {
+      "strong_agreement": "At least 75% of reviewed votes select the same non-unsafe decision.",
+      "moderate_agreement": "More than 50% of reviewed votes select the same non-unsafe decision.",
+      "split": "No majority decision.",
+      "unsafe_veto": "At least one reviewed vote selects unsafe_overreach."
+    },
+    "decision_weights": {
+      "baseline_better": -1,
+      "perceptual_better": 1,
+      "mixed": 0,
+      "unsafe_overreach": -2,
+      "unreviewed": 0
+    },
+    "disagreement_patterns": [
+      {
+        "pattern_id": "single_reviewer_insufficient_agreement",
+        "definition": "Only one reviewer is present, so agreement cannot be calibrated.",
+        "calibration_action": "Collect at least one additional independent review."
+      }
+    ]
+  },
+  "confidence_aggregation_rules": {
+    "model_id": "weighted_reviewer_consensus_v1",
+    "inputs": [
+      "reviewer decision",
+      "reviewer confidence",
+      "unsafe overreach flags",
+      "safe augmentation labels",
+      "feels Brand3 consistency"
+    ],
+    "case_confidence_rules": [
+      "Single-reviewer cases are insufficient for high confidence.",
+      "Unsafe overreach produces low confidence for deployment even if specificity improves.",
+      "Mixed decisions require reviewer notes before action."
+    ],
+    "aggregate_confidence_rules": [
+      "Do not generalize from fewer than six reviewed pairs.",
+      "Do not generalize from one reviewer.",
+      "Treat trend-level confidence as separate from case-level confidence."
+    ],
+    "overreach_frequency_rules": [
+      "unsafe_overreach decisions count as direct overreach detections.",
+      "mixed decisions count as partial overreach only when notes identify a failure mode."
+    ],
+    "feels_brand3_consistency_rules": [
+      "High consistency requires evidence-bound specificity in notes.",
+      "Low consistency applies when reviewers describe the prose as stylized, generic, or unsupported."
+    ]
+  },
+  "case_reviews": [
+    {
+      "brand": "Linear",
+      "brand_id": "linear",
+      "source_case_index": 2,
+      "surface_class": "generic_template_saas",
+      "reviewer_votes": [
+        {
+          "reviewer_id": "reviewer-01",
+          "decision": "perceptual_better",
+          "confidence": "medium",
+          "notes": "Guided movement and claim/signal gap are more useful than generic SaaS praise.",
+          "overreach_modes": [],
+          "safe_augmentation_zone": true,
+          "feels_brand3_consistency": "high"
+        }
+      ],
+      "agreement": {
+        "level": "split",
+        "majority_decision": "perceptual_better",
+        "unsafe_veto": false,
+        "agreement_ratio": 1,
+        "disagreement_pattern_ids": ["single_reviewer_insufficient_agreement"]
+      },
+      "calibration_signals": {
+        "overreach_detection_frequency": 0,
+        "safe_augmentation_rate": 1,
+        "perceptual_preference_rate": 1,
+        "baseline_preference_rate": 0,
+        "mixed_rate": 0,
+        "feels_brand3_consistency": "high",
+        "dominant_overreach_modes": [],
+        "notes_summary": "Reviewer preferred perceptual version for evidence-bound specificity."
+      }
+    }
+  ],
+  "aggregate_calibration": {
+    "reviewer_agreement_summary": {
+      "reviewer_count": 1,
+      "agreement_status": "insufficient_for_agreement"
+    },
+    "narrative_preference_trends": {
+      "perceptual_better_rate": 1,
+      "baseline_better_rate": 0,
+      "mixed_rate": 0,
+      "unsafe_overreach_rate": 0
+    },
+    "overreach_detection_summary": {
+      "unsafe_overreach_rate": 0,
+      "dominant_overreach_modes": []
+    },
+    "safe_augmentation_zones": [
+      "generic SaaS with explicit claim/signal gap and no unsafe reviewer veto"
+    ],
+    "unsafe_augmentation_zones": [],
+    "feels_brand3_consistency": "high",
+    "calibration_recommendation": "Use only as normalization example; collect multi-reviewer data before calibration decisions."
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "agent": "deep-research-preview-04-2026",
+  "automation_recommendation": "manual_review_required_before_any_automation",
+  "case_id": "watermelon",
+  "cost_observability": "observable",
+  "created_at": "2026-05-17T22:30:05.552721+00:00",
+  "deep_research_max_enabled": false,
+  "default_agent_tools_used": true,
+  "error": "completed_but_no_parseable_evidence_packet",
+  "estimate_basis": "approx_gemini_3_1_pro_preview_standard_rates_long_context_when_input_exceeds_200k_counts_thought_tokens_as_output_excludes_search_tool_charges",
+  "estimated_billed_output_tokens": 48547,
+  "estimated_usd": 2.505606,
+  "executed": true,
+  "input_tokens": 407940,
+  "interaction_id": "v1_Chc0VDhLYXBTX0dmXzN4TjhQNnRLODBRMBIXNFQ4S2FwU19HZl8zeE44UDZ0SzgwUTA",
+  "open_google_search_enabled": true,
+  "output_tokens": 17095,
+  "previous_brand3_evidence_provided": false,
+  "retries": 0,
+  "seed_urls_provided": false,
+  "thought_tokens": 31452,
+  "tools": null,
+  "total_tokens": 725538,
+  "trial_mode": "watermelon-prism",
+  "url_context_enabled": true,
+  "usage_metadata": {
+    "input_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 407940
+      }
+    ],
+    "output_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 17095
+      }
+    ],
+    "total_cached_tokens": 69632,
+    "total_input_tokens": 407940,
+    "total_output_tokens": 17095,
+    "total_thought_tokens": 31452,
+    "total_tokens": 725538,
+    "total_tool_use_tokens": 269051
+  },
+  "usage_metadata_found": true
+}

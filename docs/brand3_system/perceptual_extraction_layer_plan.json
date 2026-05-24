@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-05-15",
+  "scope": "planning_only",
+  "goal": "define_how_floc_notion_knowledge_becomes_local_versioned_brand3_perceptual_knowledge_artifacts_without_runtime_scoring_changes",
+  "source_documents": [
+    "docs/brand3_system/notion_workspace_exploration.md",
+    "docs/brand3_system/notion_workspace_exploration.json",
+    "examples/brand3_platform/brand3_surface_perception_language.md",
+    "examples/brand3_platform/brand3_surface_perception_language.json"
+  ],
+  "extract_from_notion": {
+    "eligible_targets": [
+      "terminology and naming conventions",
+      "methodology and framework language",
+      "service model descriptions",
+      "public case-study summaries",
+      "pattern language about brand behavior",
+      "coarse project metadata for classification"
+    ],
+    "extractable_abstractions": [
+      "perceptual vocabulary candidates",
+      "surface behavior descriptors",
+      "tension patterns",
+      "premium / commodity signal language",
+      "report voice rules",
+      "Visual Signature review guidance"
+    ],
+    "safe_metadata": [
+      "workspace source name",
+      "page or database name",
+      "page identifier",
+      "published/public status",
+      "date captured",
+      "content hash",
+      "review status"
+    ]
+  },
+  "must_not_extract": [
+    "contacts and person records",
+    "mail threads",
+    "budgets and pricing details",
+    "loss reasons and sales-stage notes",
+    "legal/admin account data",
+    "private task assignments",
+    "personal phone/email/address fields",
+    "unpublished proposal content",
+    "raw Drive/Figma/Pinterest asset payloads",
+    "private team notes",
+    "runtime-linked Notion content"
+  ],
+  "privacy_guardrails": [
+    "prefer public or explicitly approved pages only",
+    "redact or drop PII, CRM data, and operational notes",
+    "convert examples into patterns, not transcripts",
+    "treat links and assets as pointers only unless separately approved",
+    "keep an audit trail of included and excluded material",
+    "never require live Notion access for runtime use"
+  ],
+  "project_selection_criteria": [
+    "directly related to FLOC*, BrandOS, Brand3, or a public case study",
+    "explicit about methodology, naming, or visual / strategic framing",
+    "public-facing or approved for reuse",
+    "stable enough to version as a reference artifact",
+    "useful for perceptual language rather than operational management"
+  ],
+  "extraction_schema": {
+    "fields": [
+      "artifact_id",
+      "artifact_type",
+      "source_workspace",
+      "source_name",
+      "source_kind",
+      "source_ref",
+      "captured_at",
+      "version",
+      "status",
+      "visibility",
+      "summary",
+      "perceptual_tags",
+      "vocabulary_terms",
+      "surface_behaviors",
+      "tension_patterns",
+      "premium_signals",
+      "report_voice_rules",
+      "visual_signature_guidance",
+      "excluded_fields",
+      "redaction_notes",
+      "hash"
+    ],
+    "status_values": [
+      "draft",
+      "reviewed",
+      "approved",
+      "archived"
+    ],
+    "visibility_values": [
+      "public",
+      "approved_private",
+      "restricted"
+    ]
+  },
+  "proposed_local_folders": [
+    "examples/perceptual_library/",
+    "examples/perceptual_library/README.md",
+    "examples/perceptual_library/cases/",
+    "examples/perceptual_library/patterns/",
+    "examples/perceptual_library/tensions/",
+    "examples/perceptual_library/vocabulary/"
+  ],
+  "versioning_strategy": [
+    "use semantic versioning for the library overall",
+    "assign a per-artifact version",
+    "store a content hash for every extracted file",
+    "keep source reference and capture date on every record",
+    "never overwrite approved artifacts; supersede them with a new version"
+  ],
+  "review_approval_workflow": [
+    "select candidate Notion sources",
+    "export or fetch them in a read-only, non-runtime step",
+    "normalize into local draft artifacts",
+    "redact excluded fields",
+    "map content to the perceptual schema",
+    "human review for privacy and abstraction quality",
+    "approve or reject",
+    "version approved artifact",
+    "allow downstream consumers only after approval"
+  ],
+  "mapping_targets": {
+    "perceptual_vocabulary": [
+      "editorial restraint",
+      "recognition density",
+      "visual entropy",
+      "ritual familiarity",
+      "narrative compression",
+      "systemic coherence",
+      "aesthetic fatigue"
+    ],
+    "surface_behaviors": [
+      "hierarchy",
+      "spacing",
+      "typography",
+      "motion",
+      "cadence",
+      "repetition",
+      "navigation",
+      "launch patterns",
+      "visual rhythm"
+    ],
+    "tension_patterns": [
+      "premium ambition / commodity execution",
+      "polished UI / weak identity",
+      "expressive campaigns / rigid product system",
+      "high activity / low evolution",
+      "coherent system / low memorability"
+    ],
+    "premium_commodity_signals": [
+      "restraint versus overstatement",
+      "polish versus theatricality",
+      "system coherence versus fragmentation",
+      "memorability versus genericity",
+      "premium intent versus commodity execution"
+    ],
+    "report_voice": [
+      "observation-first phrasing",
+      "tension-aware language",
+      "anti-consultant phrasing",
+      "controlled use of abstract language"
+    ],
+    "visual_signature_review_guidance": [
+      "how reviewers describe evidence",
+      "what counts as a meaningful pattern",
+      "how tensions are named",
+      "how to avoid overclaiming from screenshots"
+    ]
+  },
+  "separation_from_scoring": [
+    "no runtime dependency on Notion",
+    "no automatic influence on score formulas",
+    "no hidden rewrite of rubric dimensions",
+    "no prompt edits that assume the extraction layer is authoritative by default",
+    "no score changes based on extracted perceptual artifacts unless explicitly approved"
+  ],
+  "operational_constraints": [
+    "plan only",
+    "no Notion ingestion yet",
+    "no runtime dependency on Notion",
+    "no scoring changes",
+    "no prompt changes",
+    "no report changes",
+    "no Visual Signature changes"
+  ],
+  "recommended_next_step": "Create the local library scaffold under examples/perceptual_library/ as empty structure and documentation only, then define the first extraction schema and approval template before any content import."
+}

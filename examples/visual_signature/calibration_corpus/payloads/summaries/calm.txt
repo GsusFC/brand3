@@ -1,0 +1,40 @@
+Expected category: wellness_lifestyle
+Notes: Mainstream wellness app with calm first-impression design patterns.
+
+== Calm ==
+URL: https://www.calm.com
+Interpretation status: interpretable
+Extraction confidence: 0.65 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.51, consistency_coverage=0.57]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.57
+
+Visual summaries:
+- palette preview: #c6c6c6[###] #ffffff[###] #f8d22d[###] #000000[###] #75f0f0[###] #7575f0[###] #9191ff[###] #f075c7[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=14; density=dense; patterns=single_column,sticky_nav
+- components: button=22, cta=9, card=58, accordion=28, pricing=4
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=blank; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###]
+- viewport palette: #ffffff[###]
+- composition: density=sparse; whitespace=100%; classification=blank
+- viewport composition: density=sparse; whitespace=100%; classification=blank
+- vision confidence: 0.40 (low)
+- viewport confidence: 0.40 (low)
+- agreement: low; flags=dom_density_higher_than_viewport,dom_palette_more_complex_than_viewport,dom_density_disagrees_with_viewport_first_fold
+- agreement notes: DOM suggests a denser page than the viewport first impression.; DOM palette is noisier than the viewport palette.; DOM suggests a denser page, but the viewport reads as spacious.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

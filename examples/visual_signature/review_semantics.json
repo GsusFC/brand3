@@ -1,0 +1,441 @@
+{
+  "schema_version": "visual-signature-review-semantics-1",
+  "record_type": "review_semantics_model",
+  "status": "design_only",
+  "core_intent": "Define reviewer answers as structured human visual perception, not classification alone.",
+  "guardrails": [
+    "no ML implementation",
+    "no embeddings implementation",
+    "no scoring integration",
+    "no persistence changes",
+    "no prompt changes",
+    "no rubric dimension changes",
+    "no provider execution",
+    "no model training",
+    "no capture behavior changes",
+    "no production UI/report changes",
+    "no runtime mutation enablement",
+    "no fabricated review decisions"
+  ],
+  "source_documents": [
+    "examples/visual_signature/human_review_workflow_map.md",
+    "examples/visual_signature/human_review_workflow_map.json",
+    "examples/visual_signature/human_review_ui_design.md",
+    "examples/visual_signature/human_review_ui_design.json"
+  ],
+  "semantic_layers": [
+    {
+      "id": "evidence_reference",
+      "meaning": "Pointers to artifacts used by the reviewer; source material and provenance, not meaning by themselves.",
+      "examples": [
+        "raw viewport screenshot",
+        "clean-attempt screenshot",
+        "full-page screenshot",
+        "capture manifest row",
+        "dismissal audit row",
+        "mutation audit row",
+        "annotation claim"
+      ]
+    },
+    {
+      "id": "observation",
+      "meaning": "A human-visible statement grounded directly in evidence.",
+      "examples": [
+        "newsletter modal visibly blocking the viewport",
+        "logo visible in the top-left header",
+        "product imagery visible above the fold",
+        "clean attempt missing"
+      ]
+    },
+    {
+      "id": "interpretation",
+      "meaning": "A meaning assigned to one or more observations while staying traceable to evidence.",
+      "examples": [
+        "raw viewport is not usable for first-impression review",
+        "obstruction severity is blocking",
+        "page appears ecommerce-oriented from visible product and cart cues",
+        "system claim is contradicted"
+      ]
+    },
+    {
+      "id": "calibration_signal",
+      "meaning": "Structured comparison between a system claim or annotation and a human review answer.",
+      "values": [
+        "confirmed",
+        "contradicted",
+        "unresolved",
+        "insufficient_review"
+      ]
+    },
+    {
+      "id": "reusable_perceptual_knowledge",
+      "meaning": "A reviewed perceptual pattern that can be compared across captures after enough evidence, confidence semantics, and reviewer agreement exist."
+    }
+  ],
+  "question_taxonomy": [
+    {
+      "id": "evidence_availability",
+      "purpose": "Determine whether evidence exists and is usable.",
+      "example_questions": [
+        "Does the raw viewport exist?",
+        "Is the raw viewport usable for first-impression visual judgment?",
+        "Is any required screenshot missing, broken, cropped, or ambiguous?"
+      ],
+      "typical_answer_type": "binary_or_categorical"
+    },
+    {
+      "id": "evidence_support",
+      "purpose": "Determine whether visible evidence supports the current claim.",
+      "example_questions": [
+        "Is the current perception claim visually supported by the screenshot evidence?",
+        "Did the system infer anything not visible in the evidence?",
+        "Is the claim contradicted by visible evidence?"
+      ],
+      "typical_answer_type": "graded_judgment_plus_outcome"
+    },
+    {
+      "id": "obstruction",
+      "purpose": "Describe whether obstruction is visible and how it affects review.",
+      "example_questions": [
+        "Is the viewport materially obstructed?",
+        "What obstruction type is visible?",
+        "Is obstruction severity supported by the image?"
+      ],
+      "typical_answer_type": "binary_categorical_and_graded_severity"
+    },
+    {
+      "id": "supplemental_evidence",
+      "purpose": "Compare raw viewport evidence with clean-attempt and full-page evidence.",
+      "example_questions": [
+        "Does a clean attempt exist?",
+        "If present, is it supplemental rather than primary?",
+        "Does the full-page screenshot change the interpretation?"
+      ],
+      "typical_answer_type": "binary_categorical_and_notes"
+    },
+    {
+      "id": "visual_perception",
+      "purpose": "Capture human perception of visible visual traits.",
+      "example_questions": [
+        "Is logo prominence supported by visible placement and scale?",
+        "Is imagery style supported by visible imagery?",
+        "Is product or service presence visible?",
+        "Does the visible page look template-like?",
+        "Does the visible system have distinctive visual traits?"
+      ],
+      "typical_answer_type": "graded_judgment_with_confidence"
+    },
+    {
+      "id": "contradiction_and_unresolved",
+      "purpose": "Capture failure modes and uncertainty.",
+      "example_questions": [
+        "Is the claim directly contradicted by visible evidence?",
+        "Is the evidence insufficient to resolve the claim?",
+        "What additional evidence would resolve uncertainty?"
+      ],
+      "typical_answer_type": "outcome_notes_and_missing_evidence_fields"
+    }
+  ],
+  "observation_types": [
+    "evidence_available",
+    "evidence_missing",
+    "evidence_broken",
+    "viewport_usable",
+    "viewport_obstructed",
+    "obstruction_type_visible",
+    "obstruction_severity_visible",
+    "clean_attempt_available",
+    "clean_attempt_effect_visible",
+    "full_page_context_available",
+    "visual_element_present",
+    "visual_element_absent",
+    "layout_trait_visible",
+    "category_cue_visible",
+    "unsupported_inference_present",
+    "claim_supported",
+    "claim_contradicted",
+    "claim_unresolved"
+  ],
+  "answer_semantics": {
+    "binary_judgment": {
+      "use_when": [
+        "raw viewport exists",
+        "clean attempt exists",
+        "logo visible",
+        "modal visible",
+        "evidence broken"
+      ],
+      "values": [
+        "yes",
+        "no",
+        "unknown"
+      ]
+    },
+    "graded_judgment": {
+      "use_when": [
+        "support strength",
+        "obstruction severity",
+        "viewport usability",
+        "visual distinctiveness",
+        "template-likeness",
+        "polish"
+      ],
+      "values": [
+        "yes",
+        "partial",
+        "no",
+        "uncertain"
+      ]
+    },
+    "severity": {
+      "values": [
+        "none",
+        "low",
+        "medium",
+        "blocking",
+        "unknown"
+      ]
+    }
+  },
+  "confidence_semantics": {
+    "meaning": "Reviewer certainty that the answer follows from available evidence; not brand quality, scoring confidence, or model confidence.",
+    "buckets": {
+      "unknown": "Reviewer cannot estimate certainty.",
+      "low": "Evidence is weak, partial, ambiguous, obstructed, or internally inconsistent.",
+      "medium": "Evidence supports the answer, but some uncertainty remains.",
+      "high": "Evidence clearly supports the answer with minimal ambiguity."
+    },
+    "decrease_when": [
+      "evidence is missing or broken",
+      "raw and supplemental screenshots disagree",
+      "obstruction blocks relevant visual material",
+      "question asks for interpretation beyond direct visibility",
+      "reviewer notes mention ambiguity"
+    ],
+    "must_not_increase_from": [
+      "brand familiarity",
+      "system metadata",
+      "governance readiness"
+    ]
+  },
+  "contradiction_semantics": {
+    "meaning": "Visible evidence conflicts with a claim, annotation, or prior system interpretation.",
+    "use_when": [
+      "claim says a visual element is present but it is not visible",
+      "claim says no obstruction exists but a blocking obstruction is visible",
+      "system infers category cues that are not visible",
+      "clean-attempt evidence invalidates the claim",
+      "annotation label conflicts with the screenshot"
+    ],
+    "must_preserve": [
+      "original claim",
+      "reviewer answer",
+      "evidence refs",
+      "contradiction notes",
+      "confidence bucket"
+    ],
+    "meaning_not": [
+      "deletion",
+      "scoring change",
+      "rubric change"
+    ]
+  },
+  "unresolved_semantics": {
+    "unresolved": {
+      "meaning": "Reviewer cannot responsibly confirm or contradict the claim from available evidence.",
+      "use_when": [
+        "evidence is ambiguous",
+        "raw and supplemental screenshots conflict without clear resolution",
+        "obstruction prevents review",
+        "claim is plausible but not directly visible",
+        "needed screenshot variant is missing",
+        "reviewer confidence is too low"
+      ]
+    },
+    "insufficient_review": {
+      "meaning": "Evidence or required review metadata is missing enough that a review cannot be completed.",
+      "use_when": [
+        "evidence is missing",
+        "evidence is broken",
+        "reviewer identity is missing",
+        "required fields are missing",
+        "case has not been reviewed by a human"
+      ]
+    },
+    "must_not_be_treated_as": [
+      "confirmation",
+      "contradiction",
+      "negative scoring"
+    ]
+  },
+  "reviewer_agreement": {
+    "meaning": "Whether multiple human reviewers perceive the same evidence similarly.",
+    "future_inputs": [
+      "matching outcomes",
+      "matching binary answers",
+      "compatible graded answers",
+      "similar obstruction type and severity",
+      "similar confidence buckets",
+      "absence of conflicting contradiction notes"
+    ],
+    "states": {
+      "strong_agreement": "Compatible outcomes and high/medium confidence.",
+      "partial_agreement": "Core observation agrees, but degree, notes, or confidence differs.",
+      "disagreement": "Reviewers conflict on support, contradiction, obstruction, or category cues.",
+      "insufficient_overlap": "Not enough comparable answers exist."
+    }
+  },
+  "perceptual_dimensions": [
+    "evidence_quality",
+    "viewport_usability",
+    "obstruction_presence",
+    "obstruction_severity",
+    "obstruction_type",
+    "raw_to_clean_delta",
+    "logo_prominence",
+    "typography_character",
+    "palette_character",
+    "imagery_style",
+    "people_presence",
+    "product_service_visibility",
+    "category_cues",
+    "layout_density",
+    "template_likeness",
+    "visual_distinctiveness",
+    "perceived_polish",
+    "claim_support",
+    "unsupported_inference",
+    "review_uncertainty"
+  ],
+  "evidence_linkage": {
+    "required": [
+      "capture_id",
+      "evidence_refs",
+      "screenshot variant labels used",
+      "target question or claim id",
+      "reviewer id",
+      "reviewed timestamp once persistence exists"
+    ],
+    "roles": {
+      "primary": "raw viewport screenshot",
+      "supplemental": "clean-attempt or full-page screenshot",
+      "provenance": "capture manifest, dismissal audit, mutation audit",
+      "claim_source": "annotation claim, perception claim, or queue item"
+    },
+    "raw_viewport_rule": "Clean attempts and full-page screenshots may support interpretation, but they do not replace the raw viewport as primary evidence."
+  },
+  "notes_semantics": {
+    "interpret_as": [
+      "evidence-grounded rationale",
+      "contradiction explanation",
+      "unresolved or missing-evidence explanation",
+      "reviewer caveat",
+      "suggested corrected interpretation"
+    ],
+    "do_not_interpret_as": [
+      "hidden score",
+      "replacement for structured answers",
+      "external brand knowledge",
+      "command to mutate evidence",
+      "prompt for provider execution"
+    ]
+  },
+  "canonical_review_record_meaning": {
+    "means": "A named reviewer inspected specific Visual Signature evidence for a specific capture and recorded structured, evidence-bound visual judgments with outcome, confidence, notes, and evidence references.",
+    "does_not_mean": [
+      "brand was rescored",
+      "rubric changed",
+      "report changed",
+      "model was trained",
+      "evidence was modified",
+      "claim was deleted",
+      "review is globally reusable without calibration"
+    ],
+    "canonical_fields": [
+      "schema_version",
+      "record_type",
+      "review_id",
+      "queue_id",
+      "capture_id",
+      "brand_name",
+      "reviewer_id",
+      "reviewed_at",
+      "review_status",
+      "review_outcome",
+      "confidence_bucket",
+      "evidence_refs",
+      "question_answers",
+      "observations",
+      "interpretations",
+      "contradictions",
+      "missing_evidence",
+      "notes"
+    ]
+  },
+  "observation_vs_interpretation": {
+    "observation": {
+      "definition": "Tied directly to visible evidence; concrete and local; lower semantic risk.",
+      "example": "newsletter modal visible"
+    },
+    "interpretation": {
+      "definition": "Derives meaning from observations; may combine multiple observations; higher semantic risk.",
+      "example": "viewport is blocked for first-impression review"
+    },
+    "rule": "Future systems should not treat interpretations as raw facts without their supporting observations."
+  },
+  "reusable_perceptual_knowledge": {
+    "requires": [
+      "stable question taxonomy",
+      "normalized answer values",
+      "evidence refs",
+      "reviewer identity and timestamp",
+      "confidence semantics",
+      "contradiction/unresolved handling",
+      "enough coverage across captures or categories",
+      "acceptable reviewer agreement"
+    ],
+    "can_support_future": [
+      "evidence search",
+      "reviewed corpus filtering",
+      "reliability reporting",
+      "readiness assessment",
+      "clustering",
+      "embedding/search experiments",
+      "scoring research if explicitly approved"
+    ],
+    "cannot_currently_support": [
+      "active scoring changes",
+      "rubric changes",
+      "production report changes",
+      "provider calls",
+      "model training",
+      "runtime mutation enablement"
+    ]
+  },
+  "future_compatibility": {
+    "clustering_embedding_search": {
+      "requirements": [
+        "separate stable ids from display labels",
+        "separate structured answers from free text",
+        "separate observations from interpretations",
+        "separate evidence refs from system metadata",
+        "separate confidence from outcome",
+        "separate contradiction from unresolved"
+      ],
+      "source_of_truth": "JSON review records and evidence artifacts remain source of truth; derived indexes are secondary."
+    },
+    "scoring_non_active": {
+      "status": "non_active",
+      "future_requirements": [
+        "explicit signal contract",
+        "reviewed and calibrated sample base",
+        "scoring/rubric owner approval",
+        "no accidental score drift tests",
+        "report language explaining use of visual evidence",
+        "governance review",
+        "conservative handling of unresolved and contradicted evidence"
+      ],
+      "current_impact": "none"
+    }
+  }
+}

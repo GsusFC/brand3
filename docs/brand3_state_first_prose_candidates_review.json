@@ -1,0 +1,205 @@
+{
+  "version": "brand3_state_first_prose_candidates_review.v0",
+  "created_at": "2026-05-17",
+  "status": {
+    "review_only": true,
+    "generator_implementation": false,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false
+  },
+  "reviewed_candidates": [
+    {
+      "case_id": "iris",
+      "pressure_subtype": "name_collision",
+      "mode": "strong",
+      "primary_improvement": "prevents similarly named Iris surfaces from becoming aliases, ownership or one implied strategy",
+      "generator_readiness": "medium",
+      "reason": "The move is structurally repeatable: audited surface first, ambiguous surfaces second, explicit no-alias rule."
+    },
+    {
+      "case_id": "watermelon",
+      "pressure_subtype": "ecosystem_surface_pressure",
+      "mode": "strong",
+      "primary_improvement": "prevents adjacent domains, repositories and marketplace surfaces from becoming false ecosystem architecture",
+      "generator_readiness": "medium",
+      "reason": "The move is structurally repeatable, but relation types need careful evidence labeling."
+    },
+    {
+      "case_id": "launchdarkly",
+      "pressure_subtype": "stable_entity_evidence_binding",
+      "mode": "light",
+      "primary_improvement": "preserves a stable case while tightening proof distribution and local evidence boundaries",
+      "generator_readiness": "medium_high",
+      "reason": "The move is simpler and safer: do less, keep claims close to source type, do not invent tension."
+    }
+  ],
+  "answer": {
+    "are_improvements_structural": true,
+    "are_improvements_manual_editorial_only": false,
+    "summary": "The prose quality benefits from manual writing, but the core improvements follow repeatable state-first moves: identify the audited surface, separate related or external surfaces, centralize uncertainty, bind claims to evidence, and suppress overreach by pressure subtype."
+  },
+  "repeatable_prose_moves": [
+    {
+      "move": "global_caveat",
+      "description": "State the governing uncertainty once before dimension findings.",
+      "automation_readiness": "high",
+      "risk": "Could become boilerplate if too templated."
+    },
+    {
+      "move": "audited_surface_anchor",
+      "description": "Name the audited surface as the primary evidence anchor.",
+      "automation_readiness": "high",
+      "risk": "Unsafe if target/entity metadata is missing or wrong."
+    },
+    {
+      "move": "related_surface_boundary",
+      "description": "Describe related surfaces as pressure/context, not aliases or ownership.",
+      "automation_readiness": "medium",
+      "risk": "Requires explicit relation_type metadata; unsafe from URLs alone."
+    },
+    {
+      "move": "owned_claim_boundary",
+      "description": "Treat owned claims as positioning unless external corroboration exists.",
+      "automation_readiness": "high",
+      "risk": "Can become repetitive if every finding restates it."
+    },
+    {
+      "move": "missing_evidence_boundary",
+      "description": "Mark findings without evidence URLs as limited rather than turning them into weakness.",
+      "automation_readiness": "high",
+      "risk": "May understate useful findings if source extraction is incomplete."
+    },
+    {
+      "move": "overreach_avoided",
+      "description": "Explicitly list what the candidate did not infer.",
+      "automation_readiness": "medium_high",
+      "risk": "Can sound like meta-disclaimer if rendered directly in reports."
+    },
+    {
+      "move": "dimension_specific_state_application",
+      "description": "Apply the same global uncertainty differently by dimension.",
+      "automation_readiness": "medium",
+      "risk": "Requires dimension-aware phrasing; generic templates would regress."
+    }
+  ],
+  "case_specific_moves": [
+    {
+      "pressure_subtype": "name_collision",
+      "case": "iris",
+      "moves": [
+        "do not treat similarly named domains as aliases",
+        "separate perceptual visibility from evidentiary ownership",
+        "withhold AI/open-source vitality from audited design surface"
+      ]
+    },
+    {
+      "pressure_subtype": "ecosystem_surface_pressure",
+      "case": "watermelon",
+      "moves": [
+        "separate owned site, adjacent domains, repositories, marketplace listings and unrelated mentions",
+        "avoid roadmap inference from repositories",
+        "avoid traction inference from marketplace presence"
+      ]
+    },
+    {
+      "pressure_subtype": "stable_entity_evidence_binding",
+      "case": "launchdarkly",
+      "moves": [
+        "keep stable entity signal intact",
+        "do not invent hidden tension",
+        "demote weak support claims rather than rewriting the case"
+      ]
+    }
+  ],
+  "pressure_subtype_readiness": {
+    "name_collision": {
+      "enough_to_guide_generation": true,
+      "conditions": [
+        "explicit related surfaces exist",
+        "relation_type is ambiguous_name_match",
+        "requires_human_review remains true"
+      ]
+    },
+    "ecosystem_surface_pressure": {
+      "enough_to_guide_generation": true,
+      "conditions": [
+        "related surfaces include reviewed relation types",
+        "repository and marketplace surfaces are marked as such",
+        "ownership and roadmap inference are blocked"
+      ]
+    },
+    "stable_entity_evidence_binding": {
+      "enough_to_guide_generation": true,
+      "conditions": [
+        "entity boundary and related-surface pressure are inactive",
+        "healthy_case_restraint is active",
+        "generator uses light mode only"
+      ]
+    },
+    "fallback_compression": {
+      "enough_to_guide_generation": "not_reviewed_in_prose_candidates",
+      "conditions": [
+        "needs Netlify-style prose candidate before implementation confidence"
+      ]
+    },
+    "entity_boundary_collision": {
+      "enough_to_guide_generation": "not_reviewed_in_prose_candidates",
+      "conditions": [
+        "needs Builtwith-style prose candidate before implementation confidence"
+      ]
+    }
+  },
+  "safe_to_generate": {
+    "global_caveat": true,
+    "dimension_finding": "limited",
+    "evidence_boundary": true,
+    "uncertainty_retained": true,
+    "overreach_avoided": true,
+    "verdict": "lab_only_summary"
+  },
+  "must_remain_human_written_or_review_gated": [
+    "final report prose",
+    "strategic recommendations",
+    "category leadership or market position claims",
+    "intentional brand architecture claims",
+    "ownership resolution among related surfaces",
+    "visual/perceptual interpretation beyond explicit surface signals",
+    "public reputation claims",
+    "production verdicts"
+  ],
+  "unsafe_automation_zones": [
+    "inferring ownership from domain similarity",
+    "inferring roadmap from repository presence",
+    "inferring traction from marketplace listings",
+    "using visual confidence as evidence confidence",
+    "turning missing evidence into a negative finding",
+    "writing a stronger narrative than the evidence map supports",
+    "applying strong mode to stable cases to justify the system"
+  ],
+  "recommendation": {
+    "decision": "implement_lab_only_prose_generator_v0",
+    "rationale": "The candidates show enough repeatable structure to justify a constrained lab-only generator, provided it generates candidates with explicit evidence boundaries and keeps high-risk fields review-gated.",
+    "required_before_runtime": [
+      "automated outputs must be compared against manual candidates",
+      "Netlify and Builtwith should be tested before any production discussion",
+      "human review should remain required for strong-mode ambiguity cases",
+      "no official report replacement until generated prose beats baseline without hiding uncertainty"
+    ]
+  },
+  "required_guardrails": [
+    "generator must abstain when audited surface is unknown",
+    "generator must not infer related surfaces from arbitrary evidence URLs",
+    "strong mode must keep requires_human_review true",
+    "light mode must not invent ambiguity",
+    "every dimension candidate must include evidence_used or missing_evidence_note",
+    "every dimension candidate must include uncertainty_retained",
+    "every dimension candidate must include overreach_avoided",
+    "generated prose must not contain generic Decision Space language",
+    "generated prose must not use scores as evidence",
+    "generated prose must not claim production readiness"
+  ]
+}

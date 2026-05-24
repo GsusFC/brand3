@@ -1,0 +1,597 @@
+{
+  "version": 0,
+  "case_id": "lightmatter",
+  "audit_url": "https://lightmatter.co",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Lightmatter develops photonic computing technologies.",
+          "url": "https://www.cbinsights.com/company/lightmatter",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        },
+        {
+          "text": "Lightmatter is a company that merges photonics and computing to build a future where speed, efficiency, and intelligence converge.",
+          "url": "https://lightmatter.co/?tpcc=NL_Marketing",
+          "source_class": "audited_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.71; contrast signal 1.00.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Photonic interconnects that scale AI supercomputers.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "We’ve reinvented how chips talk and calculate to power the AI revolution (with light).",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "A rack-level 3D photonic interposer reference platform delivering 114 Tbps across a 4,000 mm² footprint.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Lightmatter is a company that merges photonics and computing to build a future where speed, efficiency, and intelligence converge.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "This Lightmatter breakthrough represents an 8X leap in bidirectional fiber bandwidth density",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Schema detected: Organization, WebPage, WebSite",
+          "url": "https://lightmatter.co",
+          "source_class": "technical_internal",
+          "feature_name": "structured_identity",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "A rack-level 3D photonic interposer reference platform delivering 114 Tbps across a 4,000 mm² footprint.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Lightmatter is a company that merges photonics and computing to build a future where speed, efficiency, and intelligence converge.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "This Lightmatter breakthrough represents an 8X leap in bidirectional fiber bandwidth density",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "presencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "About - Lightmatter® # We’re making sure computers keep getting better. With light. Founded by MIT researchers in 2017. $850M raised. $4.4B valuation.",
+          "url": "https://lightmatter.co/about/",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "# Lightmatter (Lightmatter, Inc.) Lightmatter is a Computer Hardware Manufacturing company. Lightmatter is a company that merges photonics and computi",
+          "url": "https://lightmatter.co/",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Lightmatter® - The photonic (super)computer company. # PHOTONIC CHIPS FOR AI Photonic interconnects that scale AI supercomputers. ## Interconnects Bui",
+          "url": "https://lightmatter.co/?tpcc=NL_Marketing",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "# PHOTONIC CHIPS FOR AI Photonic interconnects that scale AI supercomputers. ## Interconnects Built for AI Scale Lightmatter’s photonic chips form a c",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/lightmatter",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/lightmatter",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@lightmatter",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/lightmatter",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "sitemap.xml found with 241 URLs",
+          "url": "https://lightmatter.co/sitemap.xml",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "robots.txt found",
+          "url": "https://lightmatter.co/robots.txt",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "llms.txt found",
+          "url": "https://lightmatter.co/llms.txt",
+          "source_class": "technical_internal",
+          "feature_name": "ai_discoverability",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/lightmatter",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "percepcion": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "$850M raised. $4.4B valuation. Building the photonic technologies that will power the next era of AI infrastructure.",
+          "url": "https://lightmatter.co/about/",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Lightmatter is leading the evolution of computing to reduce its impact on our planet, while also ena",
+          "url": "https://www.ventureradar.com/organisation/Lightmatter%20(lightmatter_[dot]_co)/1bdc5e63-2ca7-40ac-9010-564c89853819",
+          "source_class": "external_third_party",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        },
+        {
+          "text": "Fortune 50 AI Innovators",
+          "url": "https://fortune.com/company/lightmatter/",
+          "source_class": "external_third_party",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "External evidence is source-bounded and must be cited."
+      ],
+      "abstention_reason": ""
+    },
+    "diferenciacion": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Existing Brand3 competitor comparison identifies QuiX Quantum as the audited brand's closest measured competitor with measured distance 0.815; avg_distance=0.883; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Anyon Systems Inc. as the audited brand's most different measured competitor with measured distance 0.959; avg_distance=0.883; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Photonic interconnects that scale AI supercomputers.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "This Lightmatter breakthrough represents an 8X leap in bidirectional fiber bandwidth density and a doubling of radix",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Edgeless I/O architecture enabling unlimited bandwidth scaling.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Key pages found: about, blog",
+          "url": "https://lightmatter.co",
+          "source_class": "technical_internal",
+          "feature_name": "content_depth",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Photonic interconnects that scale AI supercomputers.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "This Lightmatter breakthrough represents an 8X leap in bidirectional fiber bandwidth density and a doubling of radix",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Edgeless I/O architecture enabling unlimited bandwidth scaling.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Competitor comparison supports only relative positioning distance, not leadership.",
+        "Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "vitalidad": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Lightmatter Achieves Record 1.6 Tbps Per Fiber to Accelerate AI Optical Interconnect",
+          "url": "https://lightmatter.co/press-release/lightmatter-achieves-record-1-6-tbps-per-fiber-to-accelerate-ai-optical-interconnect/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Lightmatter Expands Photonic Interconnect Roadmap with Passage™ L20 Unified Optical Engine for NPO and OBO Applications",
+          "url": "https://lightmatter.co/press-release/lightmatter-expands-photonic-interconnect-roadmap-with-passage-l20-unified-optical-engine-for-npo-and-obo-applications/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Lightmatter Introduces Guide Light Engine for AI, Featuring VLSP Technology",
+          "url": "https://www.businesswire.com/news/home/20260126920594/en/Lightmatter-Introduces-Guide-Light-Engine-for-AI-Featuring-VLSP-Technology",
+          "source_class": "external_third_party",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://www.owler.com/company/lightmatter1/competitors",
+          "source_class": "external_third_party",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://www.businesswire.com/news/home/20260311551229/en/Lightmatter-Achieves-Record-1.6-Tbps-Per-Fiber-to-Accelerate-AI-Optical-Interconnect",
+          "source_class": "external_third_party",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://lightmatter.co/press-release/lightmatter-joins-xpo-msa-as-founding-member-to-accelerate-high-density-optical-interconnects-for-ai-data-centers/",
+          "source_class": "audited_surface",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "External evidence is source-bounded and must be cited."
+      ],
+      "abstention_reason": ""
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "coherencia",
+      "presencia",
+      "percepcion",
+      "diferenciacion",
+      "vitalidad"
+    ],
+    "excluded_dimensions": [],
+    "included_evidence_count": 13,
+    "excluded_evidence_count": 24,
+    "review_required_evidence_count": 7,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 10,
+      "presencia": 11,
+      "percepcion": 3,
+      "diferenciacion": 7,
+      "vitalidad": 7
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 2,
+      "presencia": 3,
+      "percepcion": 3,
+      "diferenciacion": 2,
+      "vitalidad": 3
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 10,
+        "candidate_inputs": 2,
+        "excluded_inputs": 8
+      },
+      "presencia": {
+        "current_inputs": 11,
+        "candidate_inputs": 3,
+        "excluded_inputs": 8
+      },
+      "percepcion": {
+        "current_inputs": 3,
+        "candidate_inputs": 3,
+        "excluded_inputs": 0
+      },
+      "diferenciacion": {
+        "current_inputs": 7,
+        "candidate_inputs": 2,
+        "excluded_inputs": 5
+      },
+      "vitalidad": {
+        "current_inputs": 7,
+        "candidate_inputs": 3,
+        "excluded_inputs": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+Expected category: nonprofit_education
+Notes: Local education nonprofit candidate to reduce famous-institution overfitting.
+
+== 826 Valencia ==
+URL: https://826valencia.org
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.44, consistency_coverage=0.47]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.46
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.47
+
+Visual summaries:
+- palette preview: #a1dfdb[###] #ef3114[###]
+- typography: none
+- layout: header=True; nav=False; hero=False; sections=12; density=balanced; patterns=flex,multi_column,sticky_nav
+- components: button=14, cta=15, form=10, card=58, accordion=54, modal=12
+- consistency: overall=0.55; color=0.78; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #606060[###] #404040[###] #202020[###] #406060[###] #e02000[###] #000000[###] #604040[###]
+- viewport palette: #ffffff[###] #606060[###] #404040[###] #202020[###] #406060[###] #e02000[###] #000000[###] #604040[###]
+- composition: density=dense; whitespace=32%; classification=dense_grid
+- viewport composition: density=dense; whitespace=32%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

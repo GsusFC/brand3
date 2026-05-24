@@ -1,0 +1,39 @@
+Expected category: developer_first
+Notes: Developer tooling with distinctive brand voice and dense product explanation.
+
+== Sentry ==
+URL: https://sentry.io
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.59, consistency_coverage=0.57]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.57
+
+Visual summaries:
+- palette preview: #181225[###] #fd44b0[###] #c2ef4e[###] #1f1633[###] #7553ff[###] #a48977[###] #30145f[###] #ffffff[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=26; density=dense; patterns=grid,flex,multi_column
+- components: button=100, cta=23, form=8, accordion=4, tabs=132
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #402080[###] #202040[###] #4040a0[###] #402060[###] #404080[###] #ffffff[###] #4020a0[###] #8060ff[###]
+- viewport palette: #402080[###] #202040[###] #4040a0[###] #402060[###] #404080[###] #ffffff[###] #4020a0[###] #8060ff[###]
+- composition: density=dense; whitespace=3%; classification=dense_grid
+- viewport composition: density=dense; whitespace=3%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

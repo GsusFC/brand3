@@ -1,0 +1,44 @@
+Expected category: template_like_saas
+Notes: Workspace SaaS with familiar template/product storytelling patterns.
+
+== Coda ==
+URL: https://coda.io
+Interpretation status: interpretable
+Extraction confidence: 0.56 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.36, consistency_coverage=0.30]
+
+Signal coverage: 71%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.58
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.30
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=6; density=dense; patterns=multi_column
+- components: button=12, cta=6, pricing=12
+- consistency: overall=0.35; color=0.15; type=0.20; component=0.66; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffe0c0[###] #ffffff[###] #202020[###] #000000[###] #e0e0e0[###] #406040[###] #e0e0ff[###] #606060[###]
+- viewport palette: #ffe0c0[###] #ffffff[###] #202020[###] #000000[###] #e0e0e0[###] #406040[###] #e0e0ff[###] #606060[###]
+- composition: density=dense; whitespace=33%; classification=dense_grid
+- viewport composition: density=dense; whitespace=33%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- consistency: weak confidence (0.30)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

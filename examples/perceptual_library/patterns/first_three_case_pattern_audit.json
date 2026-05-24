@@ -1,0 +1,233 @@
+{
+  "artifact_id": "first_three_case_pattern_audit",
+  "artifact_type": "cross_case_perceptual_pattern_audit",
+  "created_at": "2026-05-15",
+  "scope": "audit_only",
+  "source_records": [
+    "examples/perceptual_library/cases/charms/perceptual_case_record.json",
+    "examples/perceptual_library/cases/d4data/perceptual_case_record.json",
+    "examples/perceptual_library/cases/grandvalira/perceptual_case_record.json"
+  ],
+  "source_friction_log": "examples/perceptual_library/schema/perceptual_case_record_schema_friction_log.md",
+  "guardrails": {
+    "schema_modified": false,
+    "case_records_modified": false,
+    "scoring_modified": false,
+    "reports_modified": false,
+    "visual_signature_modified": false,
+    "runtime_modified": false
+  },
+  "case_roles": [
+    {
+      "case_id": "charms",
+      "role": "editorial_minimal_atmospheric",
+      "primary_pressure": "softness, ritual, silence, visual rhythm, threshold-like interaction"
+    },
+    {
+      "case_id": "d4data",
+      "role": "experimental_motion_heavy",
+      "primary_pressure": "motion, production-method copy, conceptual metaphor, data-economy interpretation"
+    },
+    {
+      "case_id": "grandvalira",
+      "role": "corporate_system",
+      "primary_pressure": "multi-brand system, components, foundations, scalability, cohesion and differentiation"
+    }
+  ],
+  "emerging_grammar_summary": "The first three cases suggest a Brand3/FLOC* grammar of evidence-bound translation: abstract domains become readable through surface behavior, motion behavior, or system behavior, while claims and interpretations remain separated by confidence and review boundaries.",
+  "recurring_vocabulary": {
+    "shared_or_reusable": [
+      "system",
+      "foundations",
+      "strategy",
+      "identity",
+      "visual direction",
+      "UX/UI",
+      "motion",
+      "guidance",
+      "cohesion",
+      "modularity",
+      "rhythm",
+      "hierarchy",
+      "surface behavior",
+      "interaction feeling",
+      "scalability",
+      "digital universe",
+      "ritual",
+      "metaphor",
+      "transition",
+      "evidence",
+      "human review"
+    ],
+    "case_weighted": [
+      {
+        "case_id": "charms",
+        "terms": ["social ritual", "belonging", "soft", "atmospheric", "editorial pacing"],
+        "reuse_status": "reusable only when anchored to visible behavior"
+      },
+      {
+        "case_id": "d4data",
+        "terms": ["kendo", "Datamosh", "MetaHuman", "intensity", "precision"],
+        "reuse_status": "mostly case-specific; reusable as examples of concept-bearing motion"
+      },
+      {
+        "case_id": "grandvalira",
+        "terms": ["hybrid design system", "multi-brand components", "foundations", "cohesion", "unique personalities"],
+        "reuse_status": "reusable for system cases with stronger evidence standards"
+      }
+    ]
+  },
+  "recurring_surface_behaviors": [
+    {
+      "pattern": "concept_to_surface_translation",
+      "confidence": "high",
+      "cases": ["charms", "d4data", "grandvalira"],
+      "description": "Each case translates an abstract category into a perceptual frame.",
+      "reusable_language": [
+        "translates an abstract category into a legible surface system",
+        "uses a conceptual source to organize visible behavior",
+        "turns category complexity into a guided perceptual frame"
+      ]
+    },
+    {
+      "pattern": "system_behavior_before_quality_judgment",
+      "confidence": "high",
+      "cases": ["charms", "d4data", "grandvalira"],
+      "description": "The fixtures describe behavior before evaluating quality.",
+      "reusable_language": [
+        "surface behavior",
+        "system behavior",
+        "visible-system property",
+        "copy-stated system behavior",
+        "observed visual behavior"
+      ]
+    },
+    {
+      "pattern": "guided_movement",
+      "confidence": "medium",
+      "cases": ["charms", "d4data", "grandvalira"],
+      "description": "Each case implies a form of guidance: gallery threshold, seamless UI guidance, or design system guidance.",
+      "reusable_language": [
+        "guided surface",
+        "threshold behavior",
+        "guided system navigation",
+        "movement as perceptual organization"
+      ]
+    }
+  ],
+  "recurring_tensions": [
+    {
+      "tension": "stated_category / surface_expression",
+      "cases": ["charms", "d4data", "grandvalira"],
+      "confidence": "high"
+    },
+    {
+      "tension": "claim / evidence_gap",
+      "cases": ["charms", "d4data", "grandvalira"],
+      "confidence": "high"
+    },
+    {
+      "tension": "unity / differentiation",
+      "cases": ["grandvalira", "charms"],
+      "confidence": "medium"
+    },
+    {
+      "tension": "intensity / guidance",
+      "cases": ["d4data", "charms"],
+      "confidence": "medium"
+    },
+    {
+      "tension": "concept / implementation_proof",
+      "cases": ["d4data", "grandvalira"],
+      "confidence": "high"
+    },
+    {
+      "tension": "premium_restraint / expressive_category",
+      "cases": ["charms", "d4data"],
+      "confidence": "medium"
+    }
+  ],
+  "case_differences": [
+    {
+      "case_id": "charms",
+      "schema_fit": "strong",
+      "reason": "Has local visual artifacts, allowing high-confidence visual observations.",
+      "primary_risk": "Overgeneralizing softness as a Brand3/FLOC* default."
+    },
+    {
+      "case_id": "d4data",
+      "schema_fit": "workable_but_frictional",
+      "reason": "Motion and metaphor are mostly copy-based in first pass.",
+      "primary_risk": "Treating production-method copy as observed motion."
+    },
+    {
+      "case_id": "grandvalira",
+      "schema_fit": "workable_but_incomplete",
+      "reason": "System claims need component, token, variant, or multi-screen evidence.",
+      "primary_risk": "Treating design-system claims as validated system performance."
+    }
+  ],
+  "where_schema_works": [
+    "Separates facts, observations, interpretations, weak inferences, and contradictions.",
+    "Evidence anchoring prevents copy claims from silently becoming visual truth.",
+    "Confidence semantics keep copy-only interpretations out of high confidence.",
+    "Human review flags contain unsupported interpretation.",
+    "Contradictions can represent productive tensions rather than only failures.",
+    "The same schema can hold atmospheric, motion-heavy, and system-heavy cases."
+  ],
+  "where_schema_creates_friction": [
+    "visual_observations currently holds both observed visual behavior and stated visual behavior.",
+    "Motion evidence needs evidence-medium distinctions.",
+    "Conceptual metaphor may deserve its own layer.",
+    "Contradictions need basis metadata such as copy_only, capture_only, copy_vs_capture, or mixed.",
+    "Human review needs per-item resolution states.",
+    "Multi-brand system records need variant or sub-brand evidence.",
+    "Corporate system cases need evidence standards for scalability, cohesion, foundations, and components."
+  ],
+  "reusable_brand3_perceptual_language": [
+    "surface behavior",
+    "system behavior",
+    "visible-system property",
+    "concept-bearing motion",
+    "copy-stated behavior",
+    "observed behavior",
+    "evidence gap",
+    "productive tension",
+    "category-to-surface translation",
+    "guided surface",
+    "threshold behavior",
+    "interaction feeling",
+    "visual rhythm",
+    "hierarchy through silence",
+    "multi-brand cohesion",
+    "variant evidence",
+    "system governance",
+    "claim / signal pair",
+    "review boundary"
+  ],
+  "case_specific_language": {
+    "charms": ["social ritual", "agentic games", "Feel. Play. Belong.", "soft orbs", "emotional play"],
+    "d4data": ["kendo", "Datamosh", "MetaHuman", "Path of the DATA", "martial precision"],
+    "grandvalira": ["infinite winter", "three Andorran resorts", "resort personalities", "ski-resort ecosystem"]
+  },
+  "future_report_prompt_implications": [
+    "Ask for fact/observation/interpretation separation.",
+    "Require evidence anchors for every perceptual claim.",
+    "Require confidence semantics in prose: direct, copy-based, inferred, weak.",
+    "Ask for productive tensions, not only strengths and weaknesses.",
+    "Prevent copy-only claims from becoming confirmed visual conclusions.",
+    "Use source-status phrases such as stated by the source, visible in the surface, inferred from copy, and requires review.",
+    "Add a warning that scalability, cohesion, modularity, and component claims need multi-surface evidence."
+  ],
+  "visual_signature_review_questions": [
+    "What is directly visible versus only stated in copy?",
+    "Which repeated signals create a system rather than decoration?",
+    "Is the concept visible in hierarchy, motion, components, or interaction?",
+    "Does motion reinforce a concept, or is motion only claimed?",
+    "Does a design-system claim show components, variants, tokens, or multi-screen consistency?",
+    "Where does the surface preserve difference while creating cohesion?",
+    "What productive contradiction appears between stated claim and observed signal?",
+    "Which low-confidence inferences need human review before reuse?"
+  ],
+  "audit_conclusion": "The most reusable layer is not any one style. It is the disciplined distinction between what the source states, what the surface shows, what Brand3 infers, and what still needs human review."
+}

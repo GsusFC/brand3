@@ -1,0 +1,618 @@
+{
+  "version": 0,
+  "case_id": "builtwith_kit_com",
+  "audit_url": "https://builtwith.kit.com",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Kit is a platform that provides email, mobile, and social list management tools for organizing, managing, and engaging contact audiences",
+          "url": "https://www.wappalyzer.com/technologies/marketing-automation/kit/",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.27; contrast signal 0.98.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Kit is the email-first operating system for creators who mean business",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform",
+          "url": "https://builtwith.com/about",
+          "source_class": "related_unresolved",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Email Platform for Creators – Launch & Grow with Kit",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Make email your most valuable channel. Launch your newsletter this week with a free 7 day guide",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0",
+          "url": "",
+          "source_class": "trust_security",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        },
+        {
+          "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "BuiltWith® is a leading website profiling, lead generation, competitive analysis, and business intelligence platform",
+          "url": "https://builtwith.com/about",
+          "source_class": "related_unresolved",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0",
+          "url": "",
+          "source_class": "trust_security",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        },
+        {
+          "text": "BuiltWith is a Technology, Information and Internet company. BuiltWith is a company that provides lead list sales teams",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "presencia": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "# Email Platform for Creators – Launch & Grow with Kit Make email your most valuable channel. Launch your newsletter this week with a free 7 day guide",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/builtwithkitcom",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/builtwithkitcom",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@builtwithkitcom",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/builtwithkitcom",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+          "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+          "source_class": "trust_security",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        },
+        {
+          "text": "�5\u000fQT�~\b���p�~���ߓ��;�[� �\b�M�,�B\"-�\u0007���ʭ����Ŭ�lDa�^L�@�& \u001b\u0002 $د�w?L\u00180rFNNe\u000e��r�MG \u0007i~�9Bp\u0000l�(\u0000�'�=\u001bc�\u0017 �@Z�h��\u0004|P+����|�\u0000�t���\u000f�~*�D���� ߯�0�b�SC@\u0011D�݁",
+          "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+          "source_class": "trust_security",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        },
+        {
+          "text": "robots.txt found",
+          "url": "https://builtwith.kit.com/robots.txt",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/builtwithkitcom",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "builtwith.kit.com Reviews | scam, legit or safe check | Scamadviser WebsitePhoneCryptoIBAN en WebsitePhoneCryptoIBAN en # Very Likely Safe Copied - Wh",
+          "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+          "source_class": "trust_security",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        },
+        {
+          "text": "�5\u000fQT�~\b���p�~���ߓ��;�[� �\b�M�,�B\"-�\u0007���ʭ����Ŭ�lDa�^L�@�& \u001b\u0002 $د�w?L\u00180rFNNe\u000e��r�MG \u0007i~�9Bp\u0000l�(\u0000�'�=\u001bc�\u0017 �@Z�h��\u0004|P+����|�\u0000�t���\u000f�~*�D���� ߯�0�b�SC@\u0011D�݁",
+          "url": "https://www.joesandbox.com/analysis/1719754/0/html",
+          "source_class": "trust_security",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    },
+    "percepcion": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0 Last Update: 1 month ago Warning This website hasn't been scanned in more than 30 days ago.",
+          "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+          "source_class": "trust_security",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        },
+        {
+          "text": "The 'Built With Kit' badge | Kit Help Center",
+          "url": "https://help.kit.com/en/articles/4375211-the-built-with-kit-badge",
+          "source_class": "owned_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "builtwith.kit.com has an average to good trust score. Why? ScamAdviser Trust Score 0 Last Update: 1 month ago Warning This website hasn't been scanned in more than 30 days ago.",
+          "url": "https://www.scamadviser.com/check-website/builtwith.kit.com",
+          "source_class": "trust_security",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "trust_or_security_source_requires_review",
+          "limits": "",
+          "exclusion_reason": "trust_security_review_only"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    },
+    "diferenciacion": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "Make email your most valuable channel.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Automate Do more with less while your business runs itself",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies 6 Best BuiltWith Alternatives (for Technology Profiling) Today as the audited brand's closest measured competitor with measured distance 0.932; avg_distance=0.962; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Wappalyzer Paywalled Itself in 2023. Here's the OSS as the audited brand's most different measured competitor with measured distance 0.992; avg_distance=0.962; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Automate Do more with less while your business runs itself",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+          "source_class": "related_unresolved",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "",
+          "url": "https://world.org/blog/announcements/now-available-agentkit-proof-of-human-for-the-agentic-web",
+          "source_class": "external_third_party",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://builtwith.com/",
+          "source_class": "related_unresolved",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to introduce three major additions to our API ecosystem: MCP Stream, LLMS.TXT support, and our new WHOAMI endpoints.",
+          "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+          "source_class": "related_unresolved",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "How Kit Helped Creators Work Less & Earn More in 2025",
+          "url": "https://kit.com/resources/blog/kit-2025-year-in-review",
+          "source_class": "owned_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_root_or_subdomain_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "",
+          "url": "https://kb.builtwith.com/account-management/all-builtwith-products/",
+          "source_class": "related_unresolved",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "",
+          "url": "https://builtwith.com/",
+          "source_class": "related_unresolved",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "At BuiltWith Pty Ltd, we’re building the future of web intelligence for developers, data teams, and AI systems. Today we’re excited to introduce three major additions to our API ecosystem: MCP Stream, LLMS.TXT support, and our new WHOAMI endpoints.",
+          "url": "https://blog.builtwith.com/2026/02/25/llms-and-mcp/",
+          "source_class": "related_unresolved",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "presencia",
+      "status": "blocked",
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    },
+    {
+      "dimension": "percepcion",
+      "status": "blocked",
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    },
+    {
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    {
+      "dimension": "vitalidad",
+      "status": "blocked",
+      "reason_codes": [
+        "empty_text_evidence_blocked",
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "entity_ambiguity_blocks_readiness"
+      ],
+      "reason": "Evidence is dominated by unresolved entity or surface ambiguity. Recommended action: Resolve entity boundaries before narrative generation."
+    }
+  ],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "coherencia"
+    ],
+    "excluded_dimensions": [
+      "presencia",
+      "percepcion",
+      "diferenciacion",
+      "vitalidad"
+    ],
+    "included_evidence_count": 1,
+    "excluded_evidence_count": 28,
+    "review_required_evidence_count": 11,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 9,
+      "presencia": 8,
+      "percepcion": 3,
+      "diferenciacion": 6,
+      "vitalidad": 6
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 1,
+      "presencia": 0,
+      "percepcion": 0,
+      "diferenciacion": 0,
+      "vitalidad": 0
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 9,
+        "candidate_inputs": 1,
+        "excluded_inputs": 8
+      },
+      "presencia": {
+        "current_inputs": 8,
+        "candidate_inputs": 0,
+        "excluded_inputs": 8
+      },
+      "percepcion": {
+        "current_inputs": 3,
+        "candidate_inputs": 0,
+        "excluded_inputs": 3
+      },
+      "diferenciacion": {
+        "current_inputs": 6,
+        "candidate_inputs": 0,
+        "excluded_inputs": 6
+      },
+      "vitalidad": {
+        "current_inputs": 6,
+        "candidate_inputs": 0,
+        "excluded_inputs": 6
+      }
+    }
+  }
+}

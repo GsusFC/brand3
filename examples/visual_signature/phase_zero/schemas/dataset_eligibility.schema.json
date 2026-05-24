@@ -1,0 +1,142 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "blocked_reasons": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Blocked Reasons",
+      "type": "array"
+    },
+    "brand_name": {
+      "minLength": 1,
+      "title": "Brand Name",
+      "type": "string"
+    },
+    "capture_id": {
+      "minLength": 1,
+      "title": "Capture Id",
+      "type": "string"
+    },
+    "confidence_threshold": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence Threshold",
+      "type": "number"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "eligible": {
+      "title": "Eligible",
+      "type": "boolean"
+    },
+    "evidence_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "lineage_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Lineage Refs",
+      "type": "array"
+    },
+    "mutation_lineage_preserved": {
+      "title": "Mutation Lineage Preserved",
+      "type": "boolean"
+    },
+    "observed_confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Observed Confidence",
+      "type": "number"
+    },
+    "raw_evidence_preserved": {
+      "title": "Raw Evidence Preserved",
+      "type": "boolean"
+    },
+    "reasons": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "record_id": {
+      "minLength": 1,
+      "title": "Record Id",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "dataset_eligibility",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "review_completed": {
+      "title": "Review Completed",
+      "type": "boolean"
+    },
+    "review_required": {
+      "title": "Review Required",
+      "type": "boolean"
+    },
+    "schema_valid": {
+      "title": "Schema Valid",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "phase-zero-dataset-eligibility-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    },
+    "uncertainty_below_threshold": {
+      "title": "Uncertainty Below Threshold",
+      "type": "boolean"
+    },
+    "unsupported_inference_found": {
+      "title": "Unsupported Inference Found",
+      "type": "boolean"
+    },
+    "website_url": {
+      "minLength": 1,
+      "title": "Website Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "record_type",
+    "record_id",
+    "capture_id",
+    "brand_name",
+    "website_url",
+    "eligible",
+    "raw_evidence_preserved",
+    "mutation_lineage_preserved",
+    "schema_valid",
+    "review_required",
+    "review_completed",
+    "uncertainty_below_threshold",
+    "confidence_threshold",
+    "observed_confidence",
+    "unsupported_inference_found"
+  ],
+  "title": "DatasetEligibilityRecord",
+  "type": "object"
+}

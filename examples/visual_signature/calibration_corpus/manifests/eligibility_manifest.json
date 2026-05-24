@@ -1,0 +1,2844 @@
+{
+  "eligible": 139,
+  "eligible_payloads_dir": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/eligible_payloads",
+  "generated_at": "2026-05-09T02:34:36.175608",
+  "ineligible": 5,
+  "per_category": {
+    "ai_native": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "consumer_app": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "developer_first": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "ecommerce": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "editorial_media": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "finance_fintech": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "local_service_small_business": {
+      "eligibility_rate": 0.833,
+      "eligible": 10,
+      "ineligible": 2,
+      "total": 12
+    },
+    "nonprofit_education": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "premium_luxury": {
+      "eligibility_rate": 0.917,
+      "eligible": 11,
+      "ineligible": 1,
+      "total": 12
+    },
+    "saas": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "template_like_saas": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "ineligible": 0,
+      "total": 12
+    },
+    "wellness_lifestyle": {
+      "eligibility_rate": 0.833,
+      "eligible": 10,
+      "ineligible": 2,
+      "total": 12
+    }
+  },
+  "results": [
+    {
+      "baseline_eligible": true,
+      "brand_name": "826 National",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/826-national.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://826national.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "826 Valencia",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/826-valencia.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://826valencia.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Aesop",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/aesop.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.aesop.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Airtable",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/airtable.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.airtable.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Allbirds",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/allbirds.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Alo Yoga",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/alo-yoga.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.aloyoga.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Anthropic",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/anthropic.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.anthropic.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Asana",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/asana.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://asana.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Baggu",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/baggu.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.baggu.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Baked by Melissa",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/baked-by-melissa.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.bakedbymelissa.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Bang & Olufsen",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/bang-olufsen.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.bang-olufsen.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Basecamp",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/basecamp.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://basecamp.com"
+    },
+    {
+      "baseline_eligible": false,
+      "brand_name": "Big Gay Ice Cream",
+      "category": "local_service_small_business",
+      "failures": [
+        "interpretation_status_not_interpretable",
+        "acquisition_errors_present",
+        "viewport_screenshot_missing",
+        "viewport_screenshot_quality_unusable"
+      ],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": null,
+        "viewport_width": null
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/big-gay-ice-cream.json",
+      "signal_coverage": 1.0,
+      "warnings": [
+        "capture_type_unknown"
+      ],
+      "website_url": "https://biggayicecream.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Bitrix24",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/bitrix24.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.bitrix24.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Bluevine",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/bluevine.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.bluevine.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Bombas",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/bombas.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://bombas.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Bottega Veneta",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/bottega-veneta.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.bottegaveneta.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Brex",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/brex.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.brex.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Brooklinen",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/brooklinen.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.brooklinen.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Brooklyn Boulders",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/brooklyn-boulders.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://brooklynboulders.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Calendly",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/calendly.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://calendly.com"
+    },
+    {
+      "baseline_eligible": false,
+      "brand_name": "Calm",
+      "category": "wellness_lifestyle",
+      "failures": [
+        "viewport_screenshot_quality_unusable"
+      ],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/calm.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.calm.com"
+    },
+    {
+      "baseline_eligible": false,
+      "brand_name": "Care/of",
+      "category": "wellness_lifestyle",
+      "failures": [
+        "interpretation_status_not_interpretable",
+        "acquisition_errors_present",
+        "viewport_screenshot_missing",
+        "viewport_screenshot_quality_unusable"
+      ],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": null,
+        "viewport_width": null
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/care-of.json",
+      "signal_coverage": 1.0,
+      "warnings": [
+        "capture_type_unknown"
+      ],
+      "website_url": "https://takecareof.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Charity Water",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/charity-water.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.charitywater.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "ClickUp",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/clickup.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://clickup.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Coda",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/coda.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://coda.io"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Code.org",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/code-org.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://code.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Codecademy",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/codecademy.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.codecademy.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Cohere",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/cohere.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://cohere.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Coursera",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/coursera.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.coursera.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Current",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/current.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://current.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Dezeen",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/dezeen.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.dezeen.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Diptyque",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/diptyque.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.diptyqueparis.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Discord",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/discord.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://discord.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "DonorsChoose",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/donorschoose.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.donorschoose.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Duolingo",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/duolingo.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.duolingo.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Dust",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/dust.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://dust.tt"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "edX",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/edx.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.edx.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Elevate",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/elevate.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://elevateapp.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Everlane",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/everlane.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.everlane.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Fabulous",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/fabulous.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.thefabulous.co"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Finch",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/finch.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://finchcare.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Fly.io",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/fly-io.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://fly.io"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Found",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/found.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://found.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "freeCodeCamp",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/freecodecamp.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.freecodecamp.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Freshworks",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/freshworks.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.freshworks.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Girls Who Code",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/girls-who-code.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://girlswhocode.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Glo",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/glo.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.glo.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Glossier",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/glossier.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.glossier.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Granola",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/granola.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.granola.ai"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Gymshark",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/gymshark.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.gymshark.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Handy",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/handy.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.handy.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Harvey",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/harvey.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.harvey.ai"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Hasura",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/hasura.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://hasura.io"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Headspace",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/headspace.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.headspace.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Headway",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/headway.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://makeheadway.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Hebbia",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/hebbia.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.hebbia.ai"
+    },
+    {
+      "baseline_eligible": false,
+      "brand_name": "Hermes",
+      "category": "premium_luxury",
+      "failures": [
+        "interpretation_status_not_interpretable",
+        "acquisition_errors_present"
+      ],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/hermes.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.hermes.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Hive",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/hive.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://hive.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Hyperallergic",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/hyperallergic.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://hyperallergic.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "It's Nice That",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/it-s-nice-that.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.itsnicethat.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Khan Academy",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/khan-academy.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.khanacademy.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Lawn Love",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/lawn-love.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://lawnlove.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Le Labo",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/le-labo.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.lelabofragrances.com"
+    },
+    {
+      "baseline_eligible": false,
+      "brand_name": "Len The Plumber",
+      "category": "local_service_small_business",
+      "failures": [
+        "viewport_screenshot_missing",
+        "viewport_screenshot_quality_unusable"
+      ],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": null,
+        "viewport_width": null
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/len-the-plumber.json",
+      "signal_coverage": 1.0,
+      "warnings": [
+        "capture_type_unknown"
+      ],
+      "website_url": "https://lentheplumber.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Lindy",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/lindy.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.lindy.ai"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Linear",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/linear.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://linear.app"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Loewe",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/loewe.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.loewe.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Loom",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/loom.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.loom.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Magnolia Bakery",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/magnolia-bakery.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.magnoliabakery.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "MaidPro",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/maidpro.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.maidpro.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Mercury",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/mercury.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://mercury.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "MeUndies",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/meundies.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.meundies.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Miro",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/miro.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://miro.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Misen",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/misen.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://misen.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Moises",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/moises.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://moises.ai"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Monday.com",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/monday-com.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://monday.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Monzo",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/monzo.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://monzo.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Mr. Handyman",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/mr-handyman.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.mrhandyman.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Netlify",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/netlify.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.netlify.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Nhost",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/nhost.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://nhost.io"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Nieman Lab",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/nieman-lab.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.niemanlab.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Nifty",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/nifty.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://niftypm.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Noah",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/noah.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://noahny.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Noom",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/noom.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.noom.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "NorthOne",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/northone.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.northone.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Notion",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/notion.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.notion.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Novo",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/novo.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.novo.co"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "One Tree Planted",
+      "category": "nonprofit_education",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/one-tree-planted.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://onetreeplanted.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Open",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/open.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://o-p-e-n.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "OpenAI",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/openai.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://openai.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Our Legacy",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/our-legacy.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.ourlegacy.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Oura",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/oura.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://ouraring.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Pact",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/pact.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://wearpact.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "PandaDoc",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/pandadoc.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.pandadoc.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Peloton",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/peloton.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.onepeloton.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Perplexity",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/perplexity.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.perplexity.ai"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Pika",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/pika.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://pika.art"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Pipefy",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/pipefy.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.pipefy.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Plaky",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/plaky.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://plaky.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "PlanetScale",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/planetscale.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://planetscale.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "PlantIn",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/plantin.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://myplantin.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Pocket Casts",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/pocket-casts.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://pocketcasts.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Polygon",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/polygon.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.polygon.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "PostHog",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/posthog.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://posthog.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Process Street",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/process-street.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.process.st"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Railway",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/railway.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://railway.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Ramp",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/ramp.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://ramp.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Render",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/render.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://render.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Rest of World",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/rest-of-world.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://restofworld.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Rimowa",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/rimowa.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.rimowa.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Ritual",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/ritual.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://ritual.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Roto-Rooter",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/roto-rooter.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.rotorooter.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Runway",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/runway.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://runwayml.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Scoro",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/scoro.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.scoro.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Sentry",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/sentry.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://sentry.io"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Sifted",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/sifted.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://sifted.eu"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Sleep Cycle",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/sleep-cycle.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.sleepcycle.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Smartsheet",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/smartsheet.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.smartsheet.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Stash",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/stash.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.stash.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Strava",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/strava.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.strava.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Stripe Docs",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/stripe-docs.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://docs.stripe.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Supabase",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/supabase.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://supabase.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Tattly",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/tattly.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://tattly.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Teamwork",
+      "category": "saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/teamwork.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.teamwork.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Teller",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/teller.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://teller.io"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "The 19th",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/the-19th.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://19thnews.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "The Atlantic",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/the-atlantic.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.theatlantic.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "The Marshall Project",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/the-marshall-project.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.themarshallproject.org"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "The Meatball Shop",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/the-meatball-shop.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.themeatballshop.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "The Verge",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/the-verge.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.theverge.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Thrive Market",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/thrive-market.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://thrivemarket.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Toteme",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/toteme.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://toteme-studio.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Tumi",
+      "category": "premium_luxury",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/tumi.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.tumi.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "United By Blue",
+      "category": "ecommerce",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/united-by-blue.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://unitedbyblue.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Van Leeuwen Ice Cream",
+      "category": "local_service_small_business",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/van-leeuwen-ice-cream.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://vanleeuwenicecream.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Vercel",
+      "category": "developer_first",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/vercel.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://vercel.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Vox",
+      "category": "editorial_media",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/vox.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.vox.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Whoop",
+      "category": "wellness_lifestyle",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/whoop.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.whoop.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Wise",
+      "category": "finance_fintech",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/wise.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://wise.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Wrike",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/wrike.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.wrike.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Writer",
+      "category": "ai_native",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/writer.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://writer.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Yousician",
+      "category": "consumer_app",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/yousician.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://yousician.com"
+    },
+    {
+      "baseline_eligible": true,
+      "brand_name": "Zoho Projects",
+      "category": "template_like_saas",
+      "failures": [],
+      "minimums": {
+        "signal_coverage": 0.7,
+        "viewport_height": 750,
+        "viewport_width": 1200
+      },
+      "observed": {
+        "viewport_height": 900,
+        "viewport_width": 1440
+      },
+      "payload_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/zoho-projects.json",
+      "signal_coverage": 1.0,
+      "warnings": [],
+      "website_url": "https://www.zoho.com/projects/"
+    }
+  ],
+  "schema_version": "visual-signature-corpus-eligibility-1",
+  "total": 144
+}

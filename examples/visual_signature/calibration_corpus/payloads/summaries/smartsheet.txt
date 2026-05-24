@@ -1,0 +1,39 @@
+Expected category: template_like_saas
+Notes: Enterprise SaaS with conventional sectioning and feature density.
+
+== Smartsheet ==
+URL: https://www.smartsheet.com
+Interpretation status: interpretable
+Extraction confidence: 0.71 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.63, consistency_coverage=0.67]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.67
+
+Visual summaries:
+- palette preview: #ffffff[###] #000f33[###] #ff0000[###] #000000[###] #dee0e3[###] #f4f5f9[###] #2a2930[###] #0244d1[###]
+- typography: &quot
+- layout: header=True; nav=False; hero=True; sections=46; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=96, cta=12, card=22, accordion=12, tabs=110
+- consistency: overall=0.61; color=0.48; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #2040c0[###] #ffffff[###] #4040e0[###] #c0c0ff[###] #8060e0[###] #6040e0[###] #8080a0[###] #e0e0ff[###]
+- viewport palette: #2040c0[###] #ffffff[###] #4040e0[###] #c0c0ff[###] #8060e0[###] #6040e0[###] #8080a0[###] #e0e0ff[###]
+- composition: density=dense; whitespace=22%; classification=dense_grid
+- viewport composition: density=dense; whitespace=22%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

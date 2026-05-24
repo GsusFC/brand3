@@ -1,0 +1,748 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:31:11.733819",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.freshworks.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 6,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 126,
+    "video_count": 6
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Freshworks",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Mid-market operational SaaS with more conventional enterprise layout."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#101828",
+      "#7909da",
+      "#8512e0",
+      "#75baf1",
+      "#7fe5b6"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#000000",
+      "#1d2026",
+      "#101828",
+      "#7909da",
+      "#8512e0"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#000000",
+      "#1d2026",
+      "#101828",
+      "#7909da",
+      "#8512e0",
+      "#858585",
+      "#75baf1"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 128,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 54,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#1d2026",
+        "occurrences": 52,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#101828",
+        "occurrences": 42,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#7909da",
+        "occurrences": 32,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#8512e0",
+        "occurrences": 28,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#858585",
+        "occurrences": 16,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#75baf1",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#a8d8f8",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#daf6ff",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#7fe5b6",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#b8eccf",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#e3f6ea",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#ebeff2",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#5d6575",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#3f4551",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e0e4e8",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#8b909c",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#000000",
+      "#1d2026",
+      "#101828",
+      "#7909da",
+      "#8512e0",
+      "#858585"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 80,
+        "labels": [
+          "IT and Employee Service",
+          "Customer Service",
+          "Submit",
+          "Start new trial",
+          "Click for sound"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 18,
+        "labels": [
+          "Skip to main content",
+          "Try it free",
+          "Book a demo",
+          "IT and Employee Service",
+          "Customer Service",
+          "Learn more",
+          "Contact us",
+          "Explore Freddy AI Agent",
+          "View all customer stories",
+          "Read the story"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 1024,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 52,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Skip to main content",
+      "Try it free",
+      "Book a demo",
+      "IT and Employee Service",
+      "Customer Service",
+      "Learn more",
+      "Contact us",
+      "Explore Freddy AI Agent"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.74,
+    "confidence": 0.77,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.582,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.77,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.697
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.747
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex"
+    ],
+    "section_count": 14,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "RingCentral-Trustbar-Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/m/74d677669a2ca8b8/webimage-Ring-Central-Trustbar-Logo.jpg"
+      },
+      {
+        "alt": "McLaren Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/asset/583b9136-ad3d-4ccf-82ab-2bcada368026/thumbnail/webimage-McLarenMastercard_F1Team_Primary_Lockup_Colour_Black-920x450"
+      },
+      {
+        "alt": "New Balance Trust Bar Logo Image",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/asset/c40cc084-b6ee-4482-9188-9e62ed2e7ebb/thumbnail/webimage-new-balance-logo-100x50"
+      },
+      {
+        "alt": "American Express Trustbar Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/m/692e8a15c3011f28/webimage-AE-GlobalBusiness-Trustbar-logo.jpg"
+      },
+      {
+        "alt": "TaylorMade Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/asset/a0625847-914c-4eb9-8138-c513b7a719c1/thumbnail/webimage-taylormade_black"
+      },
+      {
+        "alt": "Forbes Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/m/686b5fb695a93fdf/webimage-Forbes-Trustbar-logo.jpg"
+      },
+      {
+        "alt": "Pepsico Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/m/65934d5b088a71e4/webimage-Pepsico-Trustbar-logo.jpg"
+      },
+      {
+        "alt": "Ingram Micro Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dam.freshworks.com/m/716392be1c61bd75/webimage-Ingram-Trustbar-logo.jpg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Helvetica",
+        "occurrences": 12,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "WistiaPlayerInter",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "WistiaPlayerInterNumbersSemiBold",
+        "occurrences": 6,
+        "role": "display",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      14.0,
+      16.0,
+      30.0,
+      18.0,
+      18.0,
+      30.0,
+      30.0,
+      16.0,
+      30.0,
+      18.0,
+      18.0,
+      30.0,
+      30.0,
+      16.0,
+      30.0,
+      18.0,
+      18.0,
+      30.0,
+      30.0,
+      16.0,
+      30.0,
+      18.0,
+      18.0,
+      30.0
+    ],
+    "weight_range": {
+      "max": 700,
+      "min": 500
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.893
+    },
+    "composition": {
+      "color_variance": 0.009,
+      "composition_classification": "dense_grid",
+      "confidence": 0.606,
+      "edge_density": 0.0,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.0
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 174434,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.freshworks.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/freshworks.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 17,
+      "confidence": 0.643,
+      "dominant_colors": [
+        {
+          "hex": "#404040",
+          "occurrences": 14242,
+          "ratio": 0.7121
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 1496,
+          "ratio": 0.0748
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1422,
+          "ratio": 0.0711
+        },
+        {
+          "hex": "#204040",
+          "occurrences": 1151,
+          "ratio": 0.0575
+        },
+        {
+          "hex": "#402040",
+          "occurrences": 962,
+          "ratio": 0.0481
+        },
+        {
+          "hex": "#200020",
+          "occurrences": 286,
+          "ratio": 0.0143
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 237,
+          "ratio": 0.0118
+        },
+        {
+          "hex": "#000040",
+          "occurrences": 42,
+          "ratio": 0.0021
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.009,
+      "composition_classification": "dense_grid",
+      "confidence": 0.606,
+      "edge_density": 0.0,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.0
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.606,
+        "palette": 0.643,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.748
+    },
+    "viewport_palette": {
+      "color_count": 17,
+      "confidence": 0.643,
+      "dominant_colors": [
+        {
+          "hex": "#404040",
+          "occurrences": 14242,
+          "ratio": 0.7121
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 1496,
+          "ratio": 0.0748
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1422,
+          "ratio": 0.0711
+        },
+        {
+          "hex": "#204040",
+          "occurrences": 1151,
+          "ratio": 0.0575
+        },
+        {
+          "hex": "#402040",
+          "occurrences": 962,
+          "ratio": 0.0481
+        },
+        {
+          "hex": "#200020",
+          "occurrences": 286,
+          "ratio": 0.0143
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 237,
+          "ratio": 0.0118
+        },
+        {
+          "hex": "#000040",
+          "occurrences": 42,
+          "ratio": 0.0021
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.0,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.606,
+        "palette": 0.643,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.748
+    }
+  },
+  "website_url": "https://www.freshworks.com"
+}

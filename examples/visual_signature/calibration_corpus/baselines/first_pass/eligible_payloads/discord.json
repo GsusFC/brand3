@@ -1,0 +1,346 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:57:37.699426",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://discord.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 12,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 224,
+    "video_count": 40
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Discord",
+  "calibration": {
+    "expected_category": "consumer_app",
+    "notes": "Consumer/community app with expressive illustration and CTA flows."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#e5ce5f"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#000000"
+    ],
+    "confidence": 0.517,
+    "dominant_colors": [
+      "#ffffff",
+      "#000000",
+      "#e5ce5f"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 70,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#e5ce5f",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#000000"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.62,
+        "count": 4,
+        "labels": [
+          "Download",
+          "Download for Linux",
+          "always have something to do together",
+          "![Facebook"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      }
+    ],
+    "confidence": 0.67,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Download",
+      "Download for Linux",
+      "always have something to do together",
+      "![Facebook"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.64,
+    "confidence": 0.442,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.534,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.442,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.478
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "consistency_inference_limited"
+    ],
+    "score": 0.621
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex"
+    ],
+    "section_count": 6,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Discord",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/67ac9b4644222140ae614b06_Wordmark.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.418,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.429,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.07,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.148
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 497956,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://discord.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/discord.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 209,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202080",
+          "occurrences": 3182,
+          "ratio": 0.1591
+        },
+        {
+          "hex": "#000040",
+          "occurrences": 3028,
+          "ratio": 0.1514
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2619,
+          "ratio": 0.131
+        },
+        {
+          "hex": "#000020",
+          "occurrences": 2253,
+          "ratio": 0.1127
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1627,
+          "ratio": 0.0814
+        },
+        {
+          "hex": "#202060",
+          "occurrences": 1380,
+          "ratio": 0.069
+        },
+        {
+          "hex": "#2020a0",
+          "occurrences": 809,
+          "ratio": 0.0404
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 696,
+          "ratio": 0.0348
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.429,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.07,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.148
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 209,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202080",
+          "occurrences": 3182,
+          "ratio": 0.1591
+        },
+        {
+          "hex": "#000040",
+          "occurrences": 3028,
+          "ratio": 0.1514
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2619,
+          "ratio": 0.131
+        },
+        {
+          "hex": "#000020",
+          "occurrences": 2253,
+          "ratio": 0.1127
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1627,
+          "ratio": 0.0814
+        },
+        {
+          "hex": "#202060",
+          "occurrences": 1380,
+          "ratio": 0.069
+        },
+        {
+          "hex": "#2020a0",
+          "occurrences": 809,
+          "ratio": 0.0404
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 696,
+          "ratio": 0.0348
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.148,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://discord.com"
+}

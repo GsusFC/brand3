@@ -1,0 +1,24 @@
+{
+  "acquisition_failures": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/failures/acquisition_failures.json",
+  "baseline_result": {
+    "brand_comparisons_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/brand_comparisons.json",
+    "brand_comparisons_md": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/brand_comparisons.md",
+    "category_baselines_json": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/category_baselines.json",
+    "category_baselines_md": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/category_baselines.md",
+    "category_count": 12,
+    "comparison_count": 139,
+    "input_dir": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass/eligible_payloads",
+    "output_dir": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/baselines/first_pass",
+    "payload_count": 139
+  },
+  "calibration_manifest": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/payloads/manifest.json",
+  "capture_manifest": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/manifests/viewport_capture_manifest.json",
+  "completed_at": "2026-05-09T02:34:36.232805",
+  "corpus_metrics": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/manifests/corpus_metrics.json",
+  "corpus_root": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus",
+  "eligibility_manifest": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/manifests/eligibility_manifest.json",
+  "record_count": 144,
+  "schema_version": "visual-signature-corpus-pass-1",
+  "screenshot_failures": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/failures/screenshot_failures.json",
+  "started_at": "2026-05-09T00:35:54.469009"
+}

@@ -1,0 +1,582 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:31:48.980759",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.notion.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 178,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Notion",
+  "calibration": {
+    "expected_category": "template_like_saas",
+    "notes": "Common modular SaaS homepage structure with broad product modules."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#2537b1",
+      "#097fe8",
+      "#ffb110",
+      "#f64932",
+      "#ff8a33",
+      "#ad6ded"
+    ],
+    "background_candidates": [
+      "#2537b1",
+      "#ffffff",
+      "#000000"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#2537b1",
+      "#097fe8",
+      "#ffb110",
+      "#f64932",
+      "#ff8a33",
+      "#ad6ded",
+      "#2a9d99",
+      "#ff83dd"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#2537b1",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#097fe8",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffb110",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f64932",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff8a33",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ad6ded",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#2a9d99",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ff83dd",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1aae39",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffffff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#000000",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#2537b1",
+      "#097fe8",
+      "#ffb110",
+      "#f64932",
+      "#ff8a33",
+      "#ad6ded"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 30,
+        "labels": [
+          "Pause",
+          "Q&amp;A agents Answers questions instantly using knowledge you already have.",
+          "Task routing agents Assigns, prioritizes, and routes tasks on its own.",
+          "Reporting agents Summarizes, writes, and sends reports for you.",
+          "Create your own Make a Custom Agent for any work that repeats.",
+          "View the video"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 13,
+        "labels": [
+          "Register today \u2192",
+          "Q&amp;A agents Answers questions instantly using knowledge you already have.",
+          "Task routing agents Assigns, prioritizes, and routes tasks on its own.",
+          "Reporting agents Summarizes, writes, and sends reports for you.",
+          "Create your own Make a Custom Agent for any work that repeats.",
+          "&nbsp;",
+          "See pricing plans \u2192",
+          "View the video",
+          "Download for Mac",
+          "Download"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 28,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 30,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 20,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Register today \u2192",
+      "Q&amp;A agents Answers questions instantly using knowledge you already have.",
+      "Task routing agents Assigns, prioritizes, and routes tasks on its own.",
+      "Reporting agents Summarizes, writes, and sends reports for you.",
+      "Create your own Make a Custom Agent for any work that repeats.",
+      "&nbsp;",
+      "See pricing plans \u2192",
+      "View the video"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.74,
+    "confidence": 0.77,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.642,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.77,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.697
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.747
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 14,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "OpenAI",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/4MHGeZRO6fDOLPVyJsLoyQ/73cf5bcef2edb384dc8989ebddd7975e/Company_openai__Colorway_White.svg"
+      },
+      {
+        "alt": "Figma",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/5JgmuggsW4KO8pYqbKUUeW/9d4781445ff35516224384dc1c4f417c/figma-white.svg"
+      },
+      {
+        "alt": "Ramp",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/1DEacqNIZ316cGgB4hhZRL/d77ff0228469f25ee2c76af41ef2e6ac/Company_Ramp__Colorway_White.svg"
+      },
+      {
+        "alt": "Cursor",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/OJRQbA3XzRNfCfMh3UWf4/76408a06d9d9a1ed52fcd109b264de80/Company_Cursor__Colorway_White.svg"
+      },
+      {
+        "alt": "Vercel",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/4Q8UO6GLVXAipkW53CHm33/8ccdeeb5bf1834ead706299d665eac72/Company_Vercel__Colorway_White.svg"
+      },
+      {
+        "alt": "Nvidia",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/1Y4mbag3O14GsqnVtxgyZn/93c685d16fde556fff58eeeade5b49a7/Company_Nvidia__Colorway_White.svg"
+      },
+      {
+        "alt": "Volvo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/7ciuOUOhooC7cNnVsY107S/094eda50eab266d434b98ae4d02058bc/Company_Volvo__Colorway_White.svg"
+      },
+      {
+        "alt": "L",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/spoqsaf9291f/59zguR94wceWZDPFJKVIW6/a8c6beae3ee7122dccfcb4c01d9fcb81/Loreal-w.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "ui-sans-serif",
+        "occurrences": 6,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "-apple-system",
+        "occurrences": 6,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "BlinkMacSystemFont",
+        "occurrences": 6,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 6,
+        "role": "display",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "expressive",
+    "size_samples_px": [
+      40.0,
+      16.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      14.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0
+    ],
+    "weight_range": {
+      "max": 700,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.675,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.056,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.354
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 796950,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.notion.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/notion.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 125,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7032,
+          "ratio": 0.3516
+        },
+        {
+          "hex": "#000040",
+          "occurrences": 6922,
+          "ratio": 0.3461
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 2465,
+          "ratio": 0.1232
+        },
+        {
+          "hex": "#002040",
+          "occurrences": 608,
+          "ratio": 0.0304
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 474,
+          "ratio": 0.0237
+        },
+        {
+          "hex": "#202060",
+          "occurrences": 370,
+          "ratio": 0.0185
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 300,
+          "ratio": 0.015
+        },
+        {
+          "hex": "#404060",
+          "occurrences": 164,
+          "ratio": 0.0082
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.675,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.056,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.354
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 125,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7032,
+          "ratio": 0.3516
+        },
+        {
+          "hex": "#000040",
+          "occurrences": 6922,
+          "ratio": 0.3461
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 2465,
+          "ratio": 0.1232
+        },
+        {
+          "hex": "#002040",
+          "occurrences": 608,
+          "ratio": 0.0304
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 474,
+          "ratio": 0.0237
+        },
+        {
+          "hex": "#202060",
+          "occurrences": 370,
+          "ratio": 0.0185
+        },
+        {
+          "hex": "#204060",
+          "occurrences": 300,
+          "ratio": 0.015
+        },
+        {
+          "hex": "#404060",
+          "occurrences": 164,
+          "ratio": 0.0082
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.354,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.notion.com"
+}

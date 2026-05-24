@@ -1,0 +1,751 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:30:34.465056",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://clickup.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 6,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 424,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "ClickUp",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "High-density SaaS homepage with broad feature and CTA structure."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#ffffff",
+      "#1ed760",
+      "#0091ff",
+      "#7f187f",
+      "#437d88",
+      "#6647f0"
+    ],
+    "background_candidates": [
+      "#202020",
+      "#ffffff",
+      "#484343",
+      "#221f1f",
+      "#7f187f",
+      "#060606"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#202020",
+      "#646464",
+      "#838383",
+      "#ffffff",
+      "#1ed760",
+      "#484343",
+      "#0091ff",
+      "#221f1f"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#202020",
+        "occurrences": 310,
+        "role": "surface",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#646464",
+        "occurrences": 270,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#838383",
+        "occurrences": 212,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 64,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#1ed760",
+        "occurrences": 36,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#484343",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0091ff",
+        "occurrences": 28,
+        "role": "surface",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#221f1f",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#7f187f",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#b4b4b4",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#060606",
+        "occurrences": 18,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#437d88",
+        "occurrences": 16,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#6647f0",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#000000",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#f50a23",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#7b7b7b",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#d0d0d0",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#f76808",
+        "occurrences": 10,
+        "role": "surface",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#ff02f0",
+        "occurrences": 10,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#ff9900",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#82d170",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#f8cf1c",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#c6d636",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#d57dea",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#202020",
+      "#646464",
+      "#484343",
+      "#221f1f",
+      "#7f187f",
+      "#060606"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 168,
+        "labels": [
+          "Get started. It's FREE",
+          "Get started",
+          "Get started. It's FREE!",
+          "Activate \u2192",
+          "Projects",
+          "Chat",
+          "Brain MAX",
+          "AI Agents",
+          "Sprints",
+          "Time Tracking"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 125,
+        "labels": [
+          "NEW AI Super Agents",
+          "Get started. It's FREE",
+          "New ClickUp 4.0",
+          "New Agents",
+          "Projects",
+          "Brain (AI)",
+          "Time Tracking",
+          "Chat",
+          "Calendar",
+          "Docs"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "NEW AI Super Agents",
+      "Get started. It's FREE",
+      "New ClickUp 4.0",
+      "New Agents",
+      "Projects",
+      "Brain (AI)",
+      "Time Tracking",
+      "Chat"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.74,
+    "confidence": 0.635,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.469,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.635,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.607
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.695
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 14,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Chat conversation. Maggie:",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/home_2026/brain-2.webp"
+      },
+      {
+        "alt": "Brain MAX Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/brand/v4/BrainMax-gradient-on-dark.svg"
+      },
+      {
+        "alt": "AI logos - ClickUp Brain, Claud, ChatGPT, Gemini",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/home_2026/brain-section-card-3.webp"
+      },
+      {
+        "alt": "diggs",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/home_2026/home_diggs_logo.png"
+      },
+      {
+        "alt": "finastra",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/home_2026/home_finastra_logo.png"
+      },
+      {
+        "alt": "hawke",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/home_2026/home_hawke_logo.png"
+      },
+      {
+        "alt": "ISO 27001 Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://clickup.com/assets/v4/schellman_iso27001.png"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.web.clickup.com/assets/ui/v5/logos/logo-icon-linkedin-light.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.4,
+    "font_families": [],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      44.0,
+      50.0,
+      44.0,
+      50.0
+    ],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.947
+    },
+    "composition": {
+      "color_variance": 0.082,
+      "composition_classification": "dense_grid",
+      "confidence": 0.649,
+      "edge_density": 0.048,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.019
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 171426,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://clickup.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/clickup.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 50,
+      "confidence": 0.823,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 16382,
+          "ratio": 0.8191
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 1903,
+          "ratio": 0.0951
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 399,
+          "ratio": 0.0199
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 303,
+          "ratio": 0.0152
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 264,
+          "ratio": 0.0132
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 249,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 232,
+          "ratio": 0.0116
+        },
+        {
+          "hex": "#004080",
+          "occurrences": 43,
+          "ratio": 0.0022
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.082,
+      "composition_classification": "dense_grid",
+      "confidence": 0.649,
+      "edge_density": 0.048,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.019
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.649,
+        "palette": 0.823,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.805
+    },
+    "viewport_palette": {
+      "color_count": 50,
+      "confidence": 0.823,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 16382,
+          "ratio": 0.8191
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 1903,
+          "ratio": 0.0951
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 399,
+          "ratio": 0.0199
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 303,
+          "ratio": 0.0152
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 264,
+          "ratio": 0.0132
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 249,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 232,
+          "ratio": 0.0116
+        },
+        {
+          "hex": "#004080",
+          "occurrences": 43,
+          "ratio": 0.0022
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.019,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.649,
+        "palette": 0.823,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.805
+    }
+  },
+  "website_url": "https://clickup.com"
+}

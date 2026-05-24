@@ -1,0 +1,235 @@
+{
+  "version": 0,
+  "case_id": "netlify_snapshot_mock",
+  "brand": "Netlify",
+  "status": {
+    "stage": "experimental_offline_fixture",
+    "runtime_enabled": false,
+    "used_by_scoring": false,
+    "used_by_prompts": false,
+    "used_by_rendering": false,
+    "persisted_report_narrative": false,
+    "builder_exists": false,
+    "manual_fixture": true
+  },
+  "metadata": {
+    "created_at": "2026-05-16",
+    "created_from": [
+      "examples/reports/narrative_harness/netlify_snapshot_mock.payload.json",
+      "examples/reports/narrative_harness/netlify_snapshot_mock.diagnostic.json",
+      "examples/reports/narrative_harness/netlify_snapshot_mock.render_aware.diagnostic.json",
+      "docs/brand3_entity_narrative_state_fixture_review.md"
+    ],
+    "source_payload_run_id": 1,
+    "source_payload_version": 1,
+    "derivation_method": "manual_estimate_from_existing_payload_and_diagnostics",
+    "notes": "Second offline EntityNarrativeState fixture. Used to test whether the shape generalizes to a simpler fallback/control case rather than a Builtwith-style owned-claim/entity-ambiguity case."
+  },
+  "primary_entity_signal": {
+    "label": "Netlify is represented as a serverless/builder platform with consistent external coverage and limited differentiation evidence.",
+    "confidence": "medium",
+    "supporting_sources": [
+      "https://en.wikipedia.org/wiki/Netlify",
+      "https://techcrunch.com/2025/netlify-series-d",
+      "https://www.netlify.com/blog/enterprise/",
+      "https://www.netlify.com/blog/2026-04-01-release/"
+    ],
+    "supporting_payload_excerpt": "Netlify presents a clear message backed by consistent external coverage. Press and encyclopedic sources reinforce its serverless positioning.",
+    "uncertainty": "This fixture is derived from a compact mock/control payload, not a full live report evidence set."
+  },
+  "entity_aliases": {
+    "primary_entity": "Netlify",
+    "observed_related_surfaces": [
+      "netlify.com",
+      "en.wikipedia.org/wiki/Netlify",
+      "techcrunch.com/2025/netlify-series-d"
+    ],
+    "entity_ambiguity_detected": false,
+    "confidence": "medium",
+    "requires_human_review": false,
+    "notes": "Unlike builtwith.kit.com, the available payload does not show meaningful entity drift or adjacent-surface ambiguity."
+  },
+  "owned_claim_density": {
+    "level": "low",
+    "safe_attribution_total": 0,
+    "visible_safe_attribution_total": 0,
+    "safe_attribution_phrase_counts": {},
+    "confidence": "high",
+    "notes": "The Netlify control case does not rely on repeated owned-claim attribution."
+  },
+  "source_ownership_summary": {
+    "method": "manual_estimate",
+    "owned_or_self_description": {
+      "count_estimate": 2,
+      "confidence": "medium",
+      "sources": [
+        "https://www.netlify.com/blog/enterprise/",
+        "https://www.netlify.com/blog/2026-04-01-release/"
+      ],
+      "notes": "Owned Netlify surfaces appear in the payload evidence URLs, but the narrative does not repeatedly frame findings as owned claims."
+    },
+    "third_party_or_external_assessment": {
+      "count_estimate": 2,
+      "confidence": "medium",
+      "sources": [
+        "https://en.wikipedia.org/wiki/Netlify",
+        "https://techcrunch.com/2025/netlify-series-d"
+      ],
+      "notes": "External coverage supports the payload's presence and perception statements."
+    },
+    "technical_or_configuration": {
+      "count_estimate": 0,
+      "confidence": "medium",
+      "sources": [],
+      "notes": "No technical/configuration source bucket is visible in the compact mock payload."
+    },
+    "uncited_or_missing_evidence_url": {
+      "count_estimate": 2,
+      "confidence": "high",
+      "sources": [
+        "findings_by_dimension.coherencia[0]",
+        "findings_by_dimension.diferenciacion[0]"
+      ],
+      "notes": "Two findings contain narrative text but no evidence URLs."
+    }
+  },
+  "repeated_opener_budget": {
+    "budget_type": "diagnostic_only",
+    "recommended_max_same_opening": 2,
+    "payload_openings": {
+      "consolidated evidence": 5,
+      "the available sources": 5
+    },
+    "visible_openings": {
+      "the available sources": 5
+    },
+    "over_budget": true,
+    "confidence": "high",
+    "notes": "Rendering suppresses the repeated title opening, but the observation opening remains visible across all five dimensions."
+  },
+  "attribution_budget": {
+    "applicable": false,
+    "observed_total": 0,
+    "global_caveat_preferred": false,
+    "confidence": "high",
+    "notes": "Safe attribution repetition is not the dominant failure mode in this fixture."
+  },
+  "corroboration_caveat_budget": {
+    "applicable": false,
+    "observed_total": 0,
+    "global_caveat_preferred": false,
+    "confidence": "high",
+    "notes": "No external-corroboration caveat repetition is visible in the Netlify control diagnostics."
+  },
+  "fallback_language_budget": {
+    "mode": "fallback_mode",
+    "fallback_mode": true,
+    "fallback_like_repetition": true,
+    "recommended_max_same_phrase": 2,
+    "observed_total": 5,
+    "phrases": {
+      "the available sources": 5
+    },
+    "over_budget": true,
+    "confidence": "high",
+    "notes": "This is the primary measured cohesion risk in the Netlify fixture."
+  },
+  "evidence_url_coverage": {
+    "findings_total": 5,
+    "findings_with_evidence_urls": 3,
+    "findings_without_evidence_urls": 2,
+    "coverage_ratio": 0.6,
+    "visible_evidence_chip_link_count": 4,
+    "coverage_level": "mixed",
+    "confidence": "high",
+    "missing_evidence_paths": [
+      "findings_by_dimension.coherencia[0].evidence_urls",
+      "findings_by_dimension.diferenciacion[0].evidence_urls"
+    ],
+    "notes": "Coverage is stronger than a no-evidence fallback, but not complete enough to justify identical evidence-opening language in every finding."
+  },
+  "primary_tension": {
+    "summary": "The payload states a clear platform presence with still-limited differentiation versus alternatives.",
+    "source": "manual_synthesis_from_payload_summary",
+    "confidence": "low",
+    "requires_human_review": true,
+    "supporting_payload_excerpt": "Main tension: strong presence but still-limited differentiation versus alternatives.",
+    "uncertainty": "No separate tensions_prose field exists in the source payload, so this remains a weak manually consolidated tension rather than a validated entity-level state."
+  },
+  "contradiction_candidates": [],
+  "contradiction_candidates_status": {
+    "present": false,
+    "confidence": "medium",
+    "requires_human_review": false,
+    "notes": "No explicit stated-claim-versus-observed-signal contradiction appears in the compact Netlify control payload."
+  },
+  "decision_space_mode": {
+    "recommended_mode": "not_applicable_empty",
+    "observed_typical_decision_count": 0,
+    "visible_decision_space_count": 0,
+    "confidence": "high",
+    "suggested_only": true,
+    "notes": "The payload does not contain typical_decision text, so this fixture does not test Decision Space suppression."
+  },
+  "compression_candidates": [
+    {
+      "candidate_id": "netlify_fallback_observation_repetition",
+      "scope": "all_findings",
+      "dimensions": [
+        "coherencia",
+        "presencia",
+        "percepcion",
+        "diferenciacion",
+        "vitalidad"
+      ],
+      "measured_reason": "fallback_evidence_opening_repetition",
+      "observed_phrase": "the available sources",
+      "observed_count": 5,
+      "editorial_reason": "The same fallback observation is visible across all dimensions, making the report feel assembled even though the payload is structurally valid.",
+      "suggested_action": "Compress the shared fallback condition into a single entity-level caveat or replace repeated observations with dimension-specific evidence statements.",
+      "confidence": "high",
+      "requires_human_review": true,
+      "suggested_only": true
+    },
+    {
+      "candidate_id": "netlify_missing_evidence_findings",
+      "scope": "specific_findings",
+      "dimensions": [
+        "coherencia",
+        "diferenciacion"
+      ],
+      "measured_reason": "missing_evidence_urls",
+      "observed_count": 2,
+      "editorial_reason": "Findings without evidence URLs should avoid language that implies consolidated corroboration.",
+      "suggested_action": "Either attach evidence URLs or render these findings with more cautious fallback language.",
+      "confidence": "high",
+      "requires_human_review": true,
+      "suggested_only": true
+    }
+  ],
+  "fields_not_applicable_or_empty": [
+    {
+      "field": "attribution_budget",
+      "reason": "No safe attribution overuse detected."
+    },
+    {
+      "field": "corroboration_caveat_budget",
+      "reason": "No external corroboration caveat repetition detected."
+    },
+    {
+      "field": "contradiction_candidates",
+      "reason": "No contradiction candidate is supported by the compact payload."
+    },
+    {
+      "field": "decision_space_mode",
+      "reason": "No typical_decision text exists in the fixture payload."
+    }
+  ],
+  "explicit_non_goals": [
+    "Do not use this fixture for scoring.",
+    "Do not use this fixture to change prompts.",
+    "Do not use this fixture to change report rendering.",
+    "Do not treat compression candidates as automated rewrite instructions.",
+    "Do not infer brand intent, archetype, audience psychology, or market strategy from this fixture."
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "records": [
+    {
+      "capture_id": "allbirds",
+      "notes": [
+        "Obstruction is visible and the safe affordance is plausible.",
+        "Partial visual support is sufficient for this dataset gate."
+      ],
+      "record_type": "review_record",
+      "review_id": "review_allbirds",
+      "review_status": "approved",
+      "reviewed_at": "2026-05-11T18:00:00Z",
+      "reviewer_id": "reviewer_alpha",
+      "schema_version": "phase-zero-review-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_accepted": true,
+      "unsupported_inference_present": false,
+      "visually_supported": "partial"
+    },
+    {
+      "capture_id": "headspace",
+      "notes": [
+        "Protected environment classification is not a dataset-eligible capture."
+      ],
+      "record_type": "review_record",
+      "review_id": "review_headspace",
+      "review_status": "rejected",
+      "reviewed_at": "2026-05-11T18:20:00Z",
+      "reviewer_id": "reviewer_beta",
+      "schema_version": "phase-zero-review-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_accepted": false,
+      "unsupported_inference_present": false,
+      "visually_supported": "no"
+    },
+    {
+      "capture_id": "linear",
+      "notes": [
+        "The capture remains dominated by obstruction and candidate target discovery is weak."
+      ],
+      "record_type": "review_record",
+      "review_id": "review_linear",
+      "review_status": "rejected",
+      "reviewed_at": "2026-05-11T18:05:00Z",
+      "reviewer_id": "reviewer_beta",
+      "schema_version": "phase-zero-review-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_accepted": false,
+      "unsupported_inference_present": false,
+      "visually_supported": "no"
+    },
+    {
+      "capture_id": "openai",
+      "notes": [
+        "The evidence is incomplete for a stable approval decision."
+      ],
+      "record_type": "review_record",
+      "review_id": "review_openai",
+      "review_status": "needs_more_evidence",
+      "reviewed_at": "2026-05-11T18:10:00Z",
+      "reviewer_id": "reviewer_gamma",
+      "schema_version": "phase-zero-review-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_accepted": false,
+      "unsupported_inference_present": false,
+      "visually_supported": "partial"
+    },
+    {
+      "capture_id": "the-verge",
+      "notes": [
+        "Review confirms the evidence is visually supported without unsupported inference."
+      ],
+      "record_type": "review_record",
+      "review_id": "review_the_verge",
+      "review_status": "approved",
+      "reviewed_at": "2026-05-11T18:15:00Z",
+      "reviewer_id": "reviewer_alpha",
+      "schema_version": "phase-zero-review-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_accepted": true,
+      "unsupported_inference_present": false,
+      "visually_supported": "yes"
+    }
+  ],
+  "version": "phase-two-review-records-1"
+}

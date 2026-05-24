@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "status": "pass",
+  "summary": {
+    "payload_status": "pass",
+    "visible_render_status": "pass",
+    "suppressed_risk_count": 0,
+    "still_visible_risk_count": 0
+  },
+  "payload_metrics": {
+    "findings_count": 2,
+    "findings_without_evidence_urls": 0,
+    "sentence_opening_counts": {
+      "external coverage describes": 1,
+      "external language continuity": 1,
+      "homepage workflow language": 1,
+      "owned documentation and": 2,
+      "teams may compare": 2,
+      "that pattern may": 1,
+      "that repetition could": 1,
+      "the homepage copy": 1
+    },
+    "generic_phrase_counts": {},
+    "unsupported_prescription_counts": {},
+    "safe_attribution_phrase_counts": {},
+    "safe_attribution_total": 0,
+    "observation_repetition_family_counts": {},
+    "warning_count": 0,
+    "error_count": 0
+  },
+  "visible_render_metrics": {
+    "visible_text_chars": 5409,
+    "visible_link_count": 11,
+    "visible_evidence_chip_link_count": 2,
+    "visible_decision_space_count": 2,
+    "visible_teams_in_this_position_typically_count": 0,
+    "visible_the_brand_count": 0,
+    "visible_no_external_corroboration_count": 0,
+    "sentence_opening_counts": {
+      "clean control scores": 1,
+      "decision space teams": 2,
+      "external coverage describes": 1,
+      "owned documentation and": 2,
+      "the homepage copy": 1
+    },
+    "repeated_sentence_opening_counts": {},
+    "generic_phrase_counts": {},
+    "safe_attribution_phrase_counts": {},
+    "safe_attribution_total": 0,
+    "observation_repetition_family_counts": {},
+    "warning_signals": {
+      "repeated_sentence_openings": {},
+      "phrase_matches": []
+    }
+  },
+  "suppressed_by_rendering": [],
+  "still_visible_risks": [],
+  "payload_diagnostic_summary": {
+    "total_checks": 8,
+    "passed": 8,
+    "warnings": 0,
+    "errors": 0
+  },
+  "input_metadata": {
+    "payload_version": 1,
+    "payload_source": "report_narrative",
+    "run_id": "control-clean",
+    "brand": "Clean Control",
+    "has_base_dossier": true,
+    "has_synthesis": true,
+    "has_tension": true,
+    "dimensions_count": 2,
+    "findings_count": 2,
+    "rendered_as_html": true,
+    "visible_text_chars": 5409
+  }
+}

@@ -1,0 +1,2085 @@
+{
+  "version": 0,
+  "case_id": "locomotive",
+  "audit_url": "https://locomotive.ca",
+  "audited_surface": {
+    "url": "https://locomotive.ca",
+    "host": "locomotive.ca",
+    "root_domain": "locomotive.ca",
+    "evidence": [
+      {
+        "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+        "url": "https://locomotive.ca/en",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+        "url": "https://locomotive.ca/index.php/en",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency",
+        "url": "https://locomotive.ca/en",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® Digital-first Design Agency",
+        "url": "https://locomotive.ca/en",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "We are an independent agency with a deep skill set, big ideas, lots of heart and a global reputation.",
+        "url": "https://locomotive.ca/en/agency",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "confidence": "medium"
+  },
+  "entity_resolution": {
+    "primary_entity": "locomotive.ca",
+    "confidence": "medium",
+    "evidence": [
+      {
+        "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+        "url": "https://locomotive.ca/en",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+        "url": "https://locomotive.ca/index.php/en",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency",
+        "url": "https://locomotive.ca/en",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® Digital-first Design Agency",
+        "url": "https://locomotive.ca/en",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "We are an independent agency with a deep skill set, big ideas, lots of heart and a global reputation.",
+        "url": "https://locomotive.ca/en/agency",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ],
+    "related_surfaces": [
+      {
+        "surface": "https://hello.locomotive.ca/",
+        "relation_type": "same_root_surface",
+        "relationship": "explicitly_related",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "text": "Locomotive nominated for the Annual Awards 2021",
+            "url": "https://hello.locomotive.ca/",
+            "classification_reason": "same_root_or_subdomain_not_external_validation",
+            "eligibility": "observation_only"
+          }
+        ],
+        "requires_human_review": false
+      },
+      {
+        "surface": "https://www.linkedin.com/company/locomotive",
+        "relation_type": "ambiguous_name_match",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "linkedin profile candidate",
+            "url": "https://www.linkedin.com/company/locomotive",
+            "classification_reason": "same_name_external_profile_not_alias",
+            "eligibility": "requires_human_review"
+          }
+        ],
+        "requires_human_review": true
+      },
+      {
+        "surface": "https://github.com/OpenLoco/OpenLoco/releases/tag/v26.04",
+        "relation_type": "repository",
+        "relationship": "unresolved",
+        "confidence": "unresolved",
+        "evidence": [
+          {
+            "text": "",
+            "url": "https://github.com/OpenLoco/OpenLoco/releases/tag/v26.04",
+            "classification_reason": "repository_activity_not_adoption",
+            "eligibility": "observation_only"
+          }
+        ],
+        "requires_human_review": true
+      }
+    ],
+    "ambiguities": [
+      {
+        "surface": "https://www.linkedin.com/company/locomotive",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "source_inventory": [
+    {
+      "url": "https://www.instagram.com/locomotive",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://www.linkedin.com/company/locomotive",
+      "source_type": "unknown",
+      "source_quality": "low",
+      "role": "related_surface_unresolved",
+      "notes": "same_name_external_profile_not_alias"
+    },
+    {
+      "url": "https://www.tiktok.com/@locomotive",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://x.com/locomotive",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "social_profile_candidate_not_external_validation"
+    },
+    {
+      "url": "https://locomotive.ca/en",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://locomotive.ca/index.php/en",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://rocketreach.co/locomotiver-profile_b5e45b7af42e64f4",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://www.tektracking.com/locomotive-csma/",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "empty_text_evidence_blocked"
+    },
+    {
+      "url": "https://github.com/OpenLoco/OpenLoco/releases/tag/v26.04",
+      "source_type": "repository",
+      "source_quality": "high",
+      "role": "repository_or_developer_surface",
+      "notes": "repository_activity_not_adoption"
+    },
+    {
+      "url": "https://weeklyvoice.com/locomotive-returns-to-iroquois-falls-abitibi-connex-to-power-large-scale-development-across-northern-ontario-2/",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "https://puddding.com/locomotive.ca",
+      "source_type": "external",
+      "source_quality": "medium",
+      "role": "external_evidence_candidate",
+      "notes": "source_classified_external_candidate"
+    },
+    {
+      "url": "snapshot://feature/competitor_web_comparison",
+      "source_type": "comparison",
+      "source_quality": "medium",
+      "role": "bounded_competitor_comparison",
+      "notes": "bounded_competitor_comparison_snapshot"
+    },
+    {
+      "url": "https://hello.locomotive.ca/",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "same_root_or_subdomain_surface",
+      "notes": "same_root_or_subdomain_not_external_validation"
+    },
+    {
+      "url": "https://locomotive.ca/en/agency",
+      "source_type": "owned",
+      "source_quality": "high",
+      "role": "audited_surface",
+      "notes": "audited_surface_evidence"
+    },
+    {
+      "url": "https://locomotive.ca/sitemap.xml",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://locomotive.ca/robots.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://locomotive.ca/llms.txt",
+      "source_type": "technical",
+      "source_quality": "unknown",
+      "role": "technical_signal",
+      "notes": "technical_context_not_brand_narrative_evidence"
+    },
+    {
+      "url": "https://locomotive.ca",
+      "source_type": "context",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://locomotive.ca",
+      "source_type": "web",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://locomotive.ca/index.php/en",
+      "source_type": "exa",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://www.instagram.com/locomotive",
+      "source_type": "social",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://locomotive.ca",
+      "source_type": "competitors",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "https://locomotive.ca/en/agency",
+      "source_type": "report_narrative",
+      "source_quality": "unknown",
+      "role": "raw_input",
+      "notes": "available=True; payload_type=dict"
+    },
+    {
+      "url": "",
+      "source_type": "features:competitor_web_comparison",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:content_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=2"
+    },
+    {
+      "url": "",
+      "source_type": "features:context",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=5"
+    },
+    {
+      "url": "",
+      "source_type": "features:exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=6"
+    },
+    {
+      "url": "",
+      "source_type": "features:llm",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=7"
+    },
+    {
+      "url": "",
+      "source_type": "features:social_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:visual_analysis",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "features:web_scrape+exa",
+      "source_quality": "unknown",
+      "role": "feature_source_summary",
+      "notes": "count=1"
+    },
+    {
+      "url": "",
+      "source_type": "evidence_items",
+      "source_quality": "unknown",
+      "role": "evidence_item_summary",
+      "notes": "count=3"
+    }
+  ],
+  "owned_claims": [
+    {
+      "text": "# 🔶 Locomotive® Digital-first Design Agency🍺🔞 ©2008-2026 Seven YearsRunning2018-2024 ## Featured work - ### Theory Verse Theory Verse - ### Scout Moto",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive® Digital-first Design Agency",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive® has become a go-to for meaningful, innovative, results-driven digital experiences, web design and branding.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive nominated for the Annual Awards 2021",
+      "url": "https://hello.locomotive.ca/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "same_root_or_subdomain_not_external_validation",
+      "limits": ""
+    }
+  ],
+  "external_evidence": [
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive® Information ![stars 1](https://static.rocketreach.co/images/splashRR2018/Comp_Starlayer1.svg)![stars 2](https://static.rocketreach.co/imag",
+      "url": "https://rocketreach.co/locomotiver-profile_b5e45b7af42e64f4",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.tektracking.com/locomotive-csma/",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://github.com/OpenLoco/OpenLoco/releases/tag/v26.04",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.tektracking.com/locomotive-csma/",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "OpenLoco v26.04 is out! This month’s release introduces the first version of a new feature that has been in the works for a few months: blueprints!",
+      "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive CSMA captures mechanical inspections and uses AI to detect recurring component failures and fleet-wide defect hotspots.",
+      "url": "https://www.tektracking.com/locomotive-csma/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "For the first time in more than a decade, a locomotive has returned to Iroquois Falls, marking a significant milestone in the reactivation of the Abitibi Connex industrial site",
+      "url": "https://weeklyvoice.com/locomotive-returns-to-iroquois-falls-abitibi-connex-to-power-large-scale-development-across-northern-ontario-2/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+      "url": "https://puddding.com/locomotive.ca",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Digital-first Design Agency🍺🔞",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Freshness guaranteed.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We design, develop and ship digital products that drive success for our clients",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We’re a small group of creative thinkers who craft bespoke digital-first brand identities and experiences, tailor-made for you and your audience.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Design and code are only tools of expression. What sets us and our work apart is people.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "From strategy to deployment and maintenance, we're the ultimate digital one-stop shop.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Nash as the audited brand's closest measured competitor with measured distance 0.897; avg_distance=0.922; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies LoadBetter Inc. as the audited brand's most different measured competitor with measured distance 0.961; avg_distance=0.922; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+      "url": "https://puddding.com/locomotive.ca",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    }
+  ],
+  "related_surface_evidence": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": "",
+      "relationship": "unresolved"
+    }
+  ],
+  "technical_signals": [
+    {
+      "text": "sitemap.xml found with 65 URLs",
+      "url": "https://locomotive.ca/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://locomotive.ca/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "llms.txt found",
+      "url": "https://locomotive.ca/llms.txt",
+      "dimension": "presencia",
+      "feature_name": "ai_discoverability",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "trust_or_security_signals": [],
+  "visual_or_internal_signals": [
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.73; contrast signal 1.00.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    }
+  ],
+  "entity_ambiguity": [
+    {
+      "ambiguity": "same_name_different_root",
+      "surface": "https://www.linkedin.com/company/locomotive",
+      "text": "linkedin profile candidate",
+      "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+      "requires_human_review": true
+    }
+  ],
+  "excluded_noise": [],
+  "missing_evidence": [
+    {
+      "text": "# 🔶 Locomotive® Digital-first Design Agency🍺🔞 ©2008-2026 Seven YearsRunning2018-2024 ## Featured work - ### Theory Verse Theory Verse - ### Scout Moto",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Whitespace ratio 0.73; contrast signal 1.00.",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "technical_only"
+    },
+    {
+      "text": "Locomotive® Digital-first Design Agency",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Locomotive® has become a go-to for meaningful, innovative, results-driven digital experiences, web design and branding.",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    },
+    {
+      "text": "Digital-first Design Agency🍺🔞",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Freshness guaranteed.",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "We design, develop and ship digital products that drive success for our clients",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "We’re a small group of creative thinkers who craft bespoke digital-first brand identities and experiences, tailor-made for you and your audience.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Design and code are only tools of expression. What sets us and our work apart is people.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "From strategy to deployment and maintenance, we're the ultimate digital one-stop shop.",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "requires_human_review"
+    },
+    {
+      "text": "Content feels original and human-written",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "reason": "evidence_has_no_url",
+      "eligibility": "observation_only"
+    }
+  ],
+  "finding_eligible_evidence": [
+    {
+      "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+      "url": "https://locomotive.ca/en",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+      "url": "https://locomotive.ca/index.php/en",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive® Information ![stars 1](https://static.rocketreach.co/images/splashRR2018/Comp_Starlayer1.svg)![stars 2](https://static.rocketreach.co/imag",
+      "url": "https://rocketreach.co/locomotiver-profile_b5e45b7af42e64f4",
+      "dimension": "presencia",
+      "feature_name": "search_visibility",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "OpenLoco v26.04 is out! This month’s release introduces the first version of a new feature that has been in the works for a few months: blueprints!",
+      "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive CSMA captures mechanical inspections and uses AI to detect recurring component failures and fleet-wide defect hotspots.",
+      "url": "https://www.tektracking.com/locomotive-csma/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "For the first time in more than a decade, a locomotive has returned to Iroquois Falls, marking a significant milestone in the reactivation of the Abitibi Connex industrial site",
+      "url": "https://weeklyvoice.com/locomotive-returns-to-iroquois-falls-abitibi-connex-to-power-large-scale-development-across-northern-ontario-2/",
+      "dimension": "vitalidad",
+      "feature_name": "momentum",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive | Montreal web agency",
+      "url": "https://locomotive.ca/en",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+      "url": "https://puddding.com/locomotive.ca",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "source_classified_external_candidate",
+      "limits": ""
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies Nash as the audited brand's closest measured competitor with measured distance 0.897; avg_distance=0.922; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Existing Brand3 competitor comparison identifies LoadBetter Inc. as the audited brand's most different measured competitor with measured distance 0.961; avg_distance=0.922; competitors_analyzed=5.",
+      "url": "snapshot://feature/competitor_web_comparison",
+      "dimension": "diferenciacion",
+      "feature_name": "competitor_distance",
+      "feature_source": "competitor_web_comparison",
+      "source_class": "competitor_comparison",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "bounded_competitor_comparison_snapshot",
+      "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+    },
+    {
+      "text": "Locomotive® Digital-first Design Agency",
+      "url": "https://locomotive.ca/en",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    },
+    {
+      "text": "We are an independent agency with a deep skill set, big ideas, lots of heart and a global reputation.",
+      "url": "https://locomotive.ca/en/agency",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "audited_surface",
+      "eligibility": "eligible_for_narrative_finding",
+      "classification_reason": "audited_surface_evidence",
+      "limits": ""
+    }
+  ],
+  "evidence_not_eligible_for_findings": [
+    {
+      "text": "# 🔶 Locomotive® Digital-first Design Agency🍺🔞 ©2008-2026 Seven YearsRunning2018-2024 ## Featured work - ### Theory Verse Theory Verse - ### Scout Moto",
+      "url": "",
+      "dimension": "presencia",
+      "feature_name": "web_presence",
+      "feature_source": "web_scrape",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "instagram profile candidate",
+      "url": "https://www.instagram.com/locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "related_unresolved",
+      "eligibility": "requires_human_review",
+      "classification_reason": "same_name_external_profile_not_alias",
+      "limits": ""
+    },
+    {
+      "text": "tiktok profile candidate",
+      "url": "https://www.tiktok.com/@locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "twitter profile candidate",
+      "url": "https://x.com/locomotive",
+      "dimension": "presencia",
+      "feature_name": "social_footprint",
+      "feature_source": "social_scrape",
+      "source_class": "external_third_party",
+      "eligibility": "observation_only",
+      "classification_reason": "social_profile_candidate_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://www.tektracking.com/locomotive-csma/",
+      "dimension": "vitalidad",
+      "feature_name": "content_recency",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "external_third_party",
+      "eligibility": "blocked_empty_text",
+      "classification_reason": "empty_text_evidence_blocked",
+      "limits": ""
+    },
+    {
+      "text": "",
+      "url": "https://github.com/OpenLoco/OpenLoco/releases/tag/v26.04",
+      "dimension": "vitalidad",
+      "feature_name": "publication_cadence",
+      "feature_source": "exa",
+      "source_class": "repository",
+      "eligibility": "observation_only",
+      "classification_reason": "repository_activity_not_adoption",
+      "limits": ""
+    },
+    {
+      "text": "Local image analysis found 6 dominant color groups.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Whitespace ratio 0.73; contrast signal 1.00.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "visual_consistency",
+      "feature_source": "visual_analysis",
+      "source_class": "visual_internal_metric",
+      "eligibility": "technical_only",
+      "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive® Digital-first Design Agency",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive® has become a go-to for meaningful, innovative, results-driven digital experiences, web design and branding.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "messaging_consistency",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Digital-first Design Agency🍺🔞",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Freshness guaranteed.",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We design, develop and ship digital products that drive success for our clients",
+      "url": "",
+      "dimension": "coherencia",
+      "feature_name": "tone_consistency",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "We’re a small group of creative thinkers who craft bespoke digital-first brand identities and experiences, tailor-made for you and your audience.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Design and code are only tools of expression. What sets us and our work apart is people.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "From strategy to deployment and maintenance, we're the ultimate digital one-stop shop.",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "positioning_clarity",
+      "feature_source": "llm",
+      "source_class": "external_third_party",
+      "eligibility": "requires_human_review",
+      "classification_reason": "missing_evidence_url",
+      "limits": ""
+    },
+    {
+      "text": "Content feels original and human-written",
+      "url": "",
+      "dimension": "diferenciacion",
+      "feature_name": "content_authenticity",
+      "feature_source": "content_analysis",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "owned_claim_without_url",
+      "limits": ""
+    },
+    {
+      "text": "Locomotive nominated for the Annual Awards 2021",
+      "url": "https://hello.locomotive.ca/",
+      "dimension": "percepcion",
+      "feature_name": "brand_sentiment",
+      "feature_source": "llm",
+      "source_class": "owned_surface",
+      "eligibility": "observation_only",
+      "classification_reason": "same_root_or_subdomain_not_external_validation",
+      "limits": ""
+    },
+    {
+      "text": "sitemap.xml found with 65 URLs",
+      "url": "https://locomotive.ca/sitemap.xml",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "robots.txt found",
+      "url": "https://locomotive.ca/robots.txt",
+      "dimension": "presencia",
+      "feature_name": "site_structure",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    },
+    {
+      "text": "llms.txt found",
+      "url": "https://locomotive.ca/llms.txt",
+      "dimension": "presencia",
+      "feature_name": "ai_discoverability",
+      "feature_source": "context",
+      "source_class": "technical_internal",
+      "eligibility": "technical_only",
+      "classification_reason": "technical_context_not_brand_narrative_evidence",
+      "limits": ""
+    }
+  ],
+  "requires_human_review": [
+    {
+      "text": "linkedin profile candidate",
+      "url": "https://www.linkedin.com/company/locomotive",
+      "reason": "same_name_different_root_requires_review",
+      "source_class": "related_unresolved"
+    }
+  ],
+  "dimension_evidence_inputs": {
+    "presencia": [
+      {
+        "text": "# 🔶 Locomotive® Digital-first Design Agency🍺🔞 ©2008-2026 Seven YearsRunning2018-2024 ## Featured work - ### Theory Verse Theory Verse - ### Scout Moto",
+        "url": "",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "instagram profile candidate",
+        "url": "https://www.instagram.com/locomotive",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "linkedin profile candidate",
+        "url": "https://www.linkedin.com/company/locomotive",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "related_unresolved",
+        "eligibility": "requires_human_review",
+        "classification_reason": "same_name_external_profile_not_alias",
+        "limits": ""
+      },
+      {
+        "text": "tiktok profile candidate",
+        "url": "https://www.tiktok.com/@locomotive",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "twitter profile candidate",
+        "url": "https://x.com/locomotive",
+        "feature_name": "social_footprint",
+        "feature_source": "social_scrape",
+        "source_class": "external_third_party",
+        "eligibility": "observation_only",
+        "classification_reason": "social_profile_candidate_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+        "url": "https://locomotive.ca/en",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+        "url": "https://locomotive.ca/index.php/en",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® Information ![stars 1](https://static.rocketreach.co/images/splashRR2018/Comp_Starlayer1.svg)![stars 2](https://static.rocketreach.co/imag",
+        "url": "https://rocketreach.co/locomotiver-profile_b5e45b7af42e64f4",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "sitemap.xml found with 65 URLs",
+        "url": "https://locomotive.ca/sitemap.xml",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://locomotive.ca/robots.txt",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "llms.txt found",
+        "url": "https://locomotive.ca/llms.txt",
+        "feature_name": "ai_discoverability",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      }
+    ],
+    "vitalidad": [
+      {
+        "text": "",
+        "url": "https://www.tektracking.com/locomotive-csma/",
+        "feature_name": "content_recency",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://github.com/OpenLoco/OpenLoco/releases/tag/v26.04",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "repository",
+        "eligibility": "observation_only",
+        "classification_reason": "repository_activity_not_adoption",
+        "limits": ""
+      },
+      {
+        "text": "",
+        "url": "https://www.tektracking.com/locomotive-csma/",
+        "feature_name": "publication_cadence",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "blocked_empty_text",
+        "classification_reason": "empty_text_evidence_blocked",
+        "limits": ""
+      },
+      {
+        "text": "OpenLoco v26.04 is out! This month’s release introduces the first version of a new feature that has been in the works for a few months: blueprints!",
+        "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive CSMA captures mechanical inspections and uses AI to detect recurring component failures and fleet-wide defect hotspots.",
+        "url": "https://www.tektracking.com/locomotive-csma/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "For the first time in more than a decade, a locomotive has returned to Iroquois Falls, marking a significant milestone in the reactivation of the Abitibi Connex industrial site",
+        "url": "https://weeklyvoice.com/locomotive-returns-to-iroquois-falls-abitibi-connex-to-power-large-scale-development-across-northern-ontario-2/",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "coherencia": [
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.73; contrast signal 1.00.",
+        "url": "",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® Digital-first Design Agency",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive | Montreal web agency",
+        "url": "https://locomotive.ca/en",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® has become a go-to for meaningful, innovative, results-driven digital experiences, web design and branding.",
+        "url": "",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+        "url": "https://puddding.com/locomotive.ca",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Digital-first Design Agency🍺🔞",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Freshness guaranteed.",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "We design, develop and ship digital products that drive success for our clients",
+        "url": "",
+        "feature_name": "tone_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      }
+    ],
+    "diferenciacion": [
+      {
+        "text": "We’re a small group of creative thinkers who craft bespoke digital-first brand identities and experiences, tailor-made for you and your audience.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Design and code are only tools of expression. What sets us and our work apart is people.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "From strategy to deployment and maintenance, we're the ultimate digital one-stop shop.",
+        "url": "",
+        "feature_name": "positioning_clarity",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "requires_human_review",
+        "classification_reason": "missing_evidence_url",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Nash as the audited brand's closest measured competitor with measured distance 0.897; avg_distance=0.922; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies LoadBetter Inc. as the audited brand's most different measured competitor with measured distance 0.961; avg_distance=0.922; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      }
+    ],
+    "percepcion": [
+      {
+        "text": "Locomotive® Digital-first Design Agency",
+        "url": "https://locomotive.ca/en",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+        "url": "https://puddding.com/locomotive.ca",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive nominated for the Annual Awards 2021",
+        "url": "https://hello.locomotive.ca/",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "same_root_or_subdomain_not_external_validation",
+        "limits": ""
+      },
+      {
+        "text": "We are an independent agency with a deep skill set, big ideas, lots of heart and a global reputation.",
+        "url": "https://locomotive.ca/en/agency",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "audited_surface",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "audited_surface_evidence",
+        "limits": ""
+      }
+    ]
+  },
+  "dimension_readiness": {
+    "coherencia": {
+      "status": "ready",
+      "eligible_count": 2,
+      "blocked_count": 7,
+      "review_required_count": 3,
+      "missing_evidence_count": 7,
+      "reason_codes": [
+        "visual_technical_metric_blocked",
+        "visual_brand_support_only",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url"
+      ],
+      "readiness_reason": "Coherencia has multiple owned textual surfaces and at least one usable non-review-gated evidence item.",
+      "recommended_action": "Proceed with intra-entity consistency language only."
+    },
+    "presencia": {
+      "status": "thin",
+      "eligible_count": 3,
+      "blocked_count": 8,
+      "review_required_count": 1,
+      "missing_evidence_count": 1,
+      "reason_codes": [
+        "official_profile_requires_link_verification",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url"
+      ],
+      "readiness_reason": "Presencia has owned-surface evidence plus external channel evidence.",
+      "recommended_action": "Proceed with discoverability language bounded to detected channels."
+    },
+    "percepcion": {
+      "status": "ready",
+      "eligible_count": 3,
+      "blocked_count": 1,
+      "review_required_count": 0,
+      "missing_evidence_count": 0,
+      "reason_codes": [],
+      "readiness_reason": "Percepcion has non-empty eligible evidence and at least one external perception source.",
+      "recommended_action": "Proceed only with source-bounded perception language."
+    },
+    "diferenciacion": {
+      "status": "ready",
+      "eligible_count": 2,
+      "blocked_count": 4,
+      "review_required_count": 3,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "competitor_corpus_present",
+        "bounded_comparison_evidence",
+        "no_strategy_inference"
+      ],
+      "readiness_reason": "Comparative or category-distinctive evidence is present, but should remain bounded to the cited sources.",
+      "recommended_action": "Use only the cited comparative evidence; do not infer category leadership."
+    },
+    "vitalidad": {
+      "status": "thin",
+      "eligible_count": 3,
+      "blocked_count": 4,
+      "review_required_count": 0,
+      "missing_evidence_count": 4,
+      "reason_codes": [
+        "empty_text_evidence_blocked",
+        "temporal_activity_coverage_thin"
+      ],
+      "readiness_reason": "Vitalidad has activity evidence, but the temporal basis is thin.",
+      "recommended_action": "Acquire changelog, release, news, or repository recency evidence."
+    }
+  },
+  "cross_dimension_evidence": {
+    "owned_claims": [
+      {
+        "text": "# 🔶 Locomotive® Digital-first Design Agency🍺🔞 ©2008-2026 Seven YearsRunning2018-2024 ## Featured work - ### Theory Verse Theory Verse - ### Scout Moto",
+        "url": "",
+        "dimension": "presencia",
+        "feature_name": "web_presence",
+        "feature_source": "web_scrape",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® Digital-first Design Agency",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive® has become a go-to for meaningful, innovative, results-driven digital experiences, web design and branding.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Content feels original and human-written",
+        "url": "",
+        "dimension": "diferenciacion",
+        "feature_name": "content_authenticity",
+        "feature_source": "content_analysis",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "owned_claim_without_url",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive nominated for the Annual Awards 2021",
+        "url": "https://hello.locomotive.ca/",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "owned_surface",
+        "eligibility": "observation_only",
+        "classification_reason": "same_root_or_subdomain_not_external_validation",
+        "limits": ""
+      }
+    ],
+    "external_validation": [
+      {
+        "text": "Locomotive® Information ![stars 1](https://static.rocketreach.co/images/splashRR2018/Comp_Starlayer1.svg)![stars 2](https://static.rocketreach.co/imag",
+        "url": "https://rocketreach.co/locomotiver-profile_b5e45b7af42e64f4",
+        "dimension": "presencia",
+        "feature_name": "search_visibility",
+        "feature_source": "exa",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "OpenLoco v26.04 is out! This month’s release introduces the first version of a new feature that has been in the works for a few months: blueprints!",
+        "url": "https://openloco.io/news/2026/04/openloco-v26.04.html",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive CSMA captures mechanical inspections and uses AI to detect recurring component failures and fleet-wide defect hotspots.",
+        "url": "https://www.tektracking.com/locomotive-csma/",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "For the first time in more than a decade, a locomotive has returned to Iroquois Falls, marking a significant milestone in the reactivation of the Abitibi Connex industrial site",
+        "url": "https://weeklyvoice.com/locomotive-returns-to-iroquois-falls-abitibi-connex-to-power-large-scale-development-across-northern-ontario-2/",
+        "dimension": "vitalidad",
+        "feature_name": "momentum",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+        "url": "https://puddding.com/locomotive.ca",
+        "dimension": "coherencia",
+        "feature_name": "messaging_consistency",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies Nash as the audited brand's closest measured competitor with measured distance 0.897; avg_distance=0.922; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Existing Brand3 competitor comparison identifies LoadBetter Inc. as the audited brand's most different measured competitor with measured distance 0.961; avg_distance=0.922; competitors_analyzed=5.",
+        "url": "snapshot://feature/competitor_web_comparison",
+        "dimension": "diferenciacion",
+        "feature_name": "competitor_distance",
+        "feature_source": "competitor_web_comparison",
+        "source_class": "competitor_comparison",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "bounded_competitor_comparison_snapshot",
+        "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction."
+      },
+      {
+        "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+        "url": "https://puddding.com/locomotive.ca",
+        "dimension": "percepcion",
+        "feature_name": "brand_sentiment",
+        "feature_source": "llm",
+        "source_class": "external_third_party",
+        "eligibility": "eligible_for_narrative_finding",
+        "classification_reason": "source_classified_external_candidate",
+        "limits": ""
+      }
+    ],
+    "technical_only": [
+      {
+        "text": "sitemap.xml found with 65 URLs",
+        "url": "https://locomotive.ca/sitemap.xml",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "robots.txt found",
+        "url": "https://locomotive.ca/robots.txt",
+        "dimension": "presencia",
+        "feature_name": "site_structure",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "llms.txt found",
+        "url": "https://locomotive.ca/llms.txt",
+        "dimension": "presencia",
+        "feature_name": "ai_discoverability",
+        "feature_source": "context",
+        "source_class": "technical_internal",
+        "eligibility": "technical_only",
+        "classification_reason": "technical_context_not_brand_narrative_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Local image analysis found 6 dominant color groups.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      },
+      {
+        "text": "Whitespace ratio 0.73; contrast signal 1.00.",
+        "url": "",
+        "dimension": "coherencia",
+        "feature_name": "visual_consistency",
+        "feature_source": "visual_analysis",
+        "source_class": "visual_internal_metric",
+        "eligibility": "technical_only",
+        "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+        "limits": ""
+      }
+    ],
+    "trust_or_security": [],
+    "excluded_noise": [],
+    "entity_ambiguity": [
+      {
+        "ambiguity": "same_name_different_root",
+        "surface": "https://www.linkedin.com/company/locomotive",
+        "text": "linkedin profile candidate",
+        "reason": "Name/token overlap with audited surface does not prove alias, ownership, or entity relationship.",
+        "requires_human_review": true
+      }
+    ],
+    "contradiction_candidates": [
+      {
+        "type": "same_name_different_root_ambiguity",
+        "surface": "https://www.linkedin.com/company/locomotive",
+        "evidence": "linkedin profile candidate",
+        "reason": "Same-name or token overlap can create false entity coherence.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "search_visibility",
+        "owned_evidence": [
+          {
+            "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+            "url": "https://locomotive.ca/en",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Locomotive | Montreal web agency # Locomotive® Digital-first Design Agency ©2008-2026 Seven Years Running 2018-2024 ## Featured work ### Theory Verse",
+            "url": "https://locomotive.ca/index.php/en",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Locomotive® Information ![stars 1](https://static.rocketreach.co/images/splashRR2018/Comp_Starlayer1.svg)![stars 2](https://static.rocketreach.co/imag",
+            "url": "https://rocketreach.co/locomotiver-profile_b5e45b7af42e64f4",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "messaging_consistency",
+        "owned_evidence": [
+          {
+            "text": "Locomotive® Digital-first Design Agency",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "Locomotive | Montreal web agency",
+            "url": "https://locomotive.ca/en",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Locomotive® has become a go-to for meaningful, innovative, results-driven digital experiences, web design and branding.",
+            "url": "",
+            "classification_reason": "owned_claim_without_url",
+            "eligibility": "observation_only"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+            "url": "https://puddding.com/locomotive.ca",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      },
+      {
+        "type": "owned_claim_vs_external_source_mismatch",
+        "surface": "",
+        "feature_name": "brand_sentiment",
+        "owned_evidence": [
+          {
+            "text": "Locomotive® Digital-first Design Agency",
+            "url": "https://locomotive.ca/en",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          },
+          {
+            "text": "Locomotive nominated for the Annual Awards 2021",
+            "url": "https://hello.locomotive.ca/",
+            "classification_reason": "same_root_or_subdomain_not_external_validation",
+            "eligibility": "observation_only"
+          },
+          {
+            "text": "We are an independent agency with a deep skill set, big ideas, lots of heart and a global reputation.",
+            "url": "https://locomotive.ca/en/agency",
+            "classification_reason": "audited_surface_evidence",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "external_evidence": [
+          {
+            "text": "Locomotive has become a leader in digital experiences, web design and branding.",
+            "url": "https://puddding.com/locomotive.ca",
+            "classification_reason": "source_classified_external_candidate",
+            "eligibility": "eligible_for_narrative_finding"
+          }
+        ],
+        "reason": "Owned and external/related evidence appear in the same feature pool and must not be smoothed into one entity story.",
+        "requires_human_review": true
+      }
+    ]
+  },
+  "metadata": {
+    "source": "existing_exa_web_pipeline",
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "scoring_effect": false,
+    "prompt_effect": false,
+    "render_effect": false,
+    "visual_signature_effect": false,
+    "network_required": false,
+    "builder": "build_evidence_packet_v0",
+    "counts": {
+      "source_inventory": 34,
+      "owned_claims": 5,
+      "external_evidence": 21,
+      "related_surface_evidence": 1,
+      "technical_signals": 3,
+      "trust_or_security_signals": 0,
+      "visual_or_internal_signals": 2,
+      "entity_ambiguity": 1,
+      "excluded_noise": 0,
+      "missing_evidence": 12,
+      "finding_eligible_evidence": 12,
+      "evidence_not_eligible_for_findings": 23,
+      "requires_human_review": 1
+    }
+  }
+}

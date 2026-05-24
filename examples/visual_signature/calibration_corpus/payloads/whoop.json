@@ -1,0 +1,486 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:33:59.194168",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.whoop.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 30,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 82,
+    "video_count": 8
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Whoop",
+  "calibration": {
+    "expected_category": "wellness_lifestyle",
+    "notes": "Performance wellness brand with product-led technical visuals."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#00f19f",
+      "#479ac2"
+    ],
+    "background_candidates": [
+      "#000000",
+      "#ffffff",
+      "#aaaaaa",
+      "#eeeeee",
+      "#adc2cd",
+      "#b7e6db"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#000000",
+      "#ffffff",
+      "#00f19f",
+      "#999999",
+      "#aaaaaa",
+      "#eeeeee",
+      "#dddddd",
+      "#bbbbbb"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 40,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#ffffff",
+        "occurrences": 12,
+        "role": "surface",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#00f19f",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#999999",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#aaaaaa",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#eeeeee",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#dddddd",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#bbbbbb",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#adc2cd",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#b7e6db",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f6feec",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#bdb0be",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#479ac2",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#000000",
+      "#00f19f"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 60,
+        "labels": [
+          "LeatherLuxe",
+          "SportFlex",
+          "CloudKnit",
+          "SuperKnit",
+          "CoreKnit",
+          "WHOOP Body"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 14,
+        "labels": [
+          "Join Now",
+          "TRY WHOOP FOR FREE",
+          "START WITH ONE",
+          "LEARN MORE",
+          "START WITH PEAK",
+          "START WITH LIFE",
+          "Gift WHOOP",
+          "LeatherLuxe",
+          "SportFlex",
+          "CloudKnit"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 304,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 38,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "accordion",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Join Now",
+      "TRY WHOOP FOR FREE",
+      "START WITH ONE",
+      "LEARN MORE",
+      "START WITH PEAK",
+      "START WITH LIFE",
+      "Gift WHOOP",
+      "LeatherLuxe"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.72,
+    "confidence": 0.595,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.524,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.595,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.58
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.68
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 14,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/rbzqg6pelgqa/6zMC24dqM0l1wj69ZUOoV/64668a514c6510d5194f9402ed222013/ONE-logo.png?fm=webp&amp;q=75&amp;w=384"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/rbzqg6pelgqa/1XpiU4lN9ZNRFmP3ZCJOhM/8469375c9f8a34063d670f1e376658ac/PEAK-logo.png?fm=webp&amp;q=75&amp;w=640"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://images.ctfassets.net/rbzqg6pelgqa/7K8f7AFHrd9yFQZGNmPqYL/52779d1c6c2466e5db6d673c278ce75b/LIFE-logo.png?fm=webp&amp;q=75&amp;w=384"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.319,
+      "composition_classification": "dense_grid",
+      "confidence": 0.791,
+      "edge_density": 0.073,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.161
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 401244,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.whoop.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/whoop.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 72,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#606060",
+          "occurrences": 3374,
+          "ratio": 0.1687
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 3271,
+          "ratio": 0.1636
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 3094,
+          "ratio": 0.1547
+        },
+        {
+          "hex": "#406060",
+          "occurrences": 2854,
+          "ratio": 0.1427
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1420,
+          "ratio": 0.071
+        },
+        {
+          "hex": "#4060ff",
+          "occurrences": 1190,
+          "ratio": 0.0595
+        },
+        {
+          "hex": "#806040",
+          "occurrences": 1013,
+          "ratio": 0.0507
+        },
+        {
+          "hex": "#404060",
+          "occurrences": 910,
+          "ratio": 0.0455
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.319,
+      "composition_classification": "dense_grid",
+      "confidence": 0.791,
+      "edge_density": 0.073,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.161
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.791,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.867
+    },
+    "viewport_palette": {
+      "color_count": 72,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#606060",
+          "occurrences": 3374,
+          "ratio": 0.1687
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 3271,
+          "ratio": 0.1636
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 3094,
+          "ratio": 0.1547
+        },
+        {
+          "hex": "#406060",
+          "occurrences": 2854,
+          "ratio": 0.1427
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1420,
+          "ratio": 0.071
+        },
+        {
+          "hex": "#4060ff",
+          "occurrences": 1190,
+          "ratio": 0.0595
+        },
+        {
+          "hex": "#806040",
+          "occurrences": 1013,
+          "ratio": 0.0507
+        },
+        {
+          "hex": "#404060",
+          "occurrences": 910,
+          "ratio": 0.0455
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.161,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.791,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.867
+    }
+  },
+  "website_url": "https://www.whoop.com"
+}

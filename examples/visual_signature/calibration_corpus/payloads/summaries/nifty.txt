@@ -1,0 +1,40 @@
+Expected category: template_like_saas
+Notes: Smaller SaaS with familiar template-first marketing structure.
+
+== Nifty ==
+URL: https://niftypm.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.57, consistency_coverage=0.58]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.58
+
+Visual summaries:
+- palette preview: #ffffff[###] #252530[###] #acbad0[###] #019b8e[###] #f2f3f2[###] #dcdedc[###] #ff492c[###] #0ee3d1[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=26; density=balanced; patterns=single_column
+- components: button=30, cta=29, form=12, card=8, accordion=76, tabs=152, modal=36, pricing=10
+- consistency: overall=0.47; color=0.48; type=0.20; component=0.75; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0ffff[###] #e0e0e0[###] #ffe0e0[###] #ffffe0[###] #000000[###] #e0ffe0[###] #202020[###]
+- viewport palette: #ffffff[###] #e0ffff[###] #e0e0e0[###] #ffe0e0[###] #ffffe0[###] #000000[###] #e0ffe0[###] #202020[###]
+- composition: density=balanced; whitespace=68%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=68%; classification=balanced_blocks
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

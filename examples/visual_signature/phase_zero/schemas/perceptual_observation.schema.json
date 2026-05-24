@@ -1,0 +1,291 @@
+{
+  "$defs": {
+    "ReasoningStatement": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "evidence_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Evidence Refs",
+          "type": "array"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        },
+        "warnings": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "statement",
+        "confidence"
+      ],
+      "title": "ReasoningStatement",
+      "type": "object"
+    },
+    "ReasoningTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        },
+        "lineage_refs": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Lineage Refs",
+          "type": "array"
+        },
+        "record_type": {
+          "const": "reasoning_trace",
+          "title": "Record Type",
+          "type": "string"
+        },
+        "review_required": {
+          "default": false,
+          "title": "Review Required",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "phase-zero-reasoning-trace-1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "statements": {
+          "items": {
+            "$ref": "#/$defs/ReasoningStatement"
+          },
+          "title": "Statements",
+          "type": "array"
+        },
+        "summary": {
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "taxonomy_version": {
+          "const": "phase-zero-taxonomy-1",
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "trace_id": {
+          "minLength": 1,
+          "title": "Trace Id",
+          "type": "string"
+        },
+        "unsupported_inference_warnings": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Unsupported Inference Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "schema_version",
+        "taxonomy_version",
+        "record_type",
+        "trace_id",
+        "summary",
+        "statements"
+      ],
+      "title": "ReasoningTrace",
+      "type": "object"
+    },
+    "UncertaintyProfile": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Confidence",
+          "type": "number"
+        },
+        "confidence_level": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ],
+          "title": "Confidence Level",
+          "type": "string"
+        },
+        "known_unknowns": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Known Unknowns",
+          "type": "array"
+        },
+        "record_type": {
+          "const": "uncertainty_profile",
+          "title": "Record Type",
+          "type": "string"
+        },
+        "reviewer_required": {
+          "default": false,
+          "title": "Reviewer Required",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "phase-zero-uncertainty-profile-1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "taxonomy_version": {
+          "const": "phase-zero-taxonomy-1",
+          "title": "Taxonomy Version",
+          "type": "string"
+        },
+        "uncertainty_reasons": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Uncertainty Reasons",
+          "type": "array"
+        },
+        "unsupported_inference": {
+          "default": false,
+          "title": "Unsupported Inference",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "schema_version",
+        "taxonomy_version",
+        "record_type",
+        "confidence",
+        "confidence_level"
+      ],
+      "title": "UncertaintyProfile",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "brand_name": {
+      "minLength": 1,
+      "title": "Brand Name",
+      "type": "string"
+    },
+    "capture_id": {
+      "minLength": 1,
+      "title": "Capture Id",
+      "type": "string"
+    },
+    "confidence": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence",
+      "type": "number"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "evidence_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Evidence Refs",
+      "type": "array"
+    },
+    "lineage_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Lineage Refs",
+      "type": "array"
+    },
+    "observation_key": {
+      "minLength": 1,
+      "title": "Observation Key",
+      "type": "string"
+    },
+    "observation_value": {
+      "minLength": 1,
+      "title": "Observation Value",
+      "type": "string"
+    },
+    "perception_layer": {
+      "enum": [
+        "functional",
+        "editorial"
+      ],
+      "title": "Perception Layer",
+      "type": "string"
+    },
+    "reasoning_trace": {
+      "$ref": "#/$defs/ReasoningTrace"
+    },
+    "record_id": {
+      "minLength": 1,
+      "title": "Record Id",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "perceptual_observation",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "phase-zero-perceptual-observation-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    },
+    "uncertainty": {
+      "$ref": "#/$defs/UncertaintyProfile"
+    },
+    "website_url": {
+      "minLength": 1,
+      "title": "Website Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "record_type",
+    "record_id",
+    "capture_id",
+    "brand_name",
+    "website_url",
+    "perception_layer",
+    "observation_key",
+    "observation_value",
+    "confidence",
+    "uncertainty",
+    "reasoning_trace"
+  ],
+  "title": "PerceptualObservationRecord",
+  "type": "object"
+}

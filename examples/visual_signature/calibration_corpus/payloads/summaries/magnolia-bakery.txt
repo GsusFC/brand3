@@ -1,0 +1,40 @@
+Expected category: local_service_small_business
+Notes: Local-origin brand with ecommerce/service blend and moderate polish.
+
+== Magnolia Bakery ==
+URL: https://www.magnoliabakery.com
+Interpretation status: interpretable
+Extraction confidence: 0.63 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.47, consistency_coverage=0.52]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.68
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.52
+
+Visual summaries:
+- palette preview: #ffffff[###] #333333[###] #00211a[###] #161616[###] #bae8d4[###] #e7cbef[###]
+- typography: none
+- layout: header=False; nav=True; hero=True; sections=34; density=balanced; patterns=flex
+- components: button=20, cta=10, accordion=2, tabs=36, modal=30
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #606060[###] #a0c0a0[###] #808080[###] #ffffff[###] #c0e0e0[###] #000000[###] #c0e0c0[###] #a0e0a0[###]
+- viewport palette: #606060[###] #a0c0a0[###] #808080[###] #ffffff[###] #c0e0e0[###] #000000[###] #c0e0c0[###] #a0e0a0[###]
+- composition: density=dense; whitespace=6%; classification=dense_grid
+- viewport composition: density=dense; whitespace=6%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

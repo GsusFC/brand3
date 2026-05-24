@@ -12,7 +12,7 @@ from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
 from statistics import mean
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import unquote, urlparse, urlunparse
 
 from src.collectors.competitor_collector import (
     ComparisonResult,
@@ -38,6 +38,13 @@ from src.config import (
     SCREENSHOT_PROVIDER,
     VISION_MODEL,
 )
+from src.discovery.entity_discovery import discover_entity
+from src.discovery.enrichment import build_discovery_enrichment
+from src.discovery.evidence_preview import build_discovery_evidence_preview
+from src.discovery.calibration import apply_discovery_calibration_hint, build_discovery_calibration_hint
+from src.discovery.search_plan import build_discovery_search_plan
+from src.discovery.summary import format_discovery_summary
+from src.discovery.trust_basis import build_discovery_trust_basis
 from src.niche import (
     classify_brand_niche,
     get_calibration_profile,
@@ -62,7 +69,18 @@ from src.quality.trust import (
     quality_label,
 )
 from src.scoring.engine import ScoringEngine
+from src.services.feature_pipeline import run_feature_pipeline
+from src.services.input_collection import collect_raw_inputs, start_analysis_run, store_safely as _store_safely
+from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
+from src.services.scoring_pipeline import score_features
 from src.storage.sqlite_store import SQLiteStore
+from src.visual_signature import extract_visual_signature
+from src.visual_signature.persistence import (
+    build_visual_signature_persistence_bundle,
+    persist_visual_signature_bundle,
+    persist_visual_signature_result,
+)
+from src.visual_signature.vision import enrich_visual_signature_with_vision
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -152,6 +170,75 @@ def _to_jsonable(value):
     return value
 
 
+def _entity_discovery_payload(
+    *,
+    brand_name: str,
+    url: str,
+    web_data: WebData | None,
+    exa_data: ExaData | None,
+    context_data: ContextData | None,
+) -> dict[str, object]:
+    try:
+        return _to_jsonable(
+            discover_entity(
+                brand_name=brand_name,
+                url=url,
+                web_data=web_data,
+                exa_data=exa_data,
+                context_data=context_data,
+            )
+        )
+    except Exception:
+        return {
+            "entity_type": "unknown",
+            "analysis_scope": "url_only",
+            "confidence": 0.0,
+            "warnings": ["entity_discovery_failed"],
+        }
+
+
+def _discovery_search_plan_payload(
+    *, entity_discovery: dict[str, object], brand_name: str, url: str
+) -> dict[str, object]:
+    try:
+        return _to_jsonable(
+            build_discovery_search_plan(
+                entity_discovery=entity_discovery, brand_name=brand_name, url=url
+            )
+        )
+    except Exception:
+        primary_entity = brand_name or url or "Unknown"
+        return {
+            "primary_entity": primary_entity,
+            "requested_entity": brand_name or primary_entity,
+            "analysis_mode": "url_only",
+            "queries": [
+                f"{primary_entity} brand positioning",
+                f"{primary_entity} latest updates",
+                f"{primary_entity} reviews reputation",
+                f"{primary_entity} competitors",
+            ],
+            "owned_urls": [url] if url else [],
+        }
+
+
+def _print_feature_details(brand_score) -> None:
+    print("\n--- Feature Details ---")
+    for dim_name, dim_score in brand_score.dimensions.items():
+        print(f"\n[{dim_name}]")
+        if dim_score.score is None:
+            print("  score unavailable  reason=insufficient_data")
+            continue
+        for feat_name, feat in dim_score.features.items():
+            conf = f"(conf: {feat.confidence:.0%})" if feat.confidence < 1 else ""
+            src = f"src={feat.source}"
+            print(f"  {feat_name:30s} {feat.value:6.1f}  {conf}  {src}")
+            if feat.raw_value:
+                raw_str = str(feat.raw_value)
+                raw = raw_str[:120] + "..." if len(raw_str) > 120 else raw_str
+                print(f"    raw: {raw}")
+
+
 def _save_result(result: dict) -> Path:
     output_dir = PROJECT_ROOT / "output"
     output_dir.mkdir(exist_ok=True)
@@ -184,12 +271,6 @@ def _save_benchmark_comparison_result(result: dict) -> Path:
     output_path = output_dir / f"{after_name}-vs-{before_name}-{timestamp}.json"
     output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     return output_path
-
-
-def _from_web_payload(payload: dict | None) -> WebData | None:
-    if not payload:
-        return None
-    return WebData(**payload)
 
 
 def _effective_brand_url(original_url: str, web_data: WebData | None) -> str:
@@ -750,36 +831,6 @@ def _should_skip_llm_for_low_context(
     return bool(context_data and context_data.coverage < 0.3)
 
 
-def _from_exa_payload(payload: dict | None) -> ExaData | None:
-    if not payload:
-        return None
-    return ExaData(
-        brand_name=payload.get("brand_name", ""),
-        mentions=[ExaResult(**item) for item in payload.get("mentions", [])],
-        competitors=[ExaResult(**item) for item in payload.get("competitors", [])],
-        ai_visibility_results=[ExaResult(**item) for item in payload.get("ai_visibility_results", [])],
-        news=[ExaResult(**item) for item in payload.get("news", [])],
-        raw_responses=payload.get("raw_responses", {}),
-    )
-
-
-def _from_social_payload(payload: dict | None) -> SocialData | None:
-    if not payload:
-        return None
-    return SocialData(
-        brand_name=payload.get("brand_name", ""),
-        platforms={
-            name: PlatformMetrics(**metrics)
-            for name, metrics in payload.get("platforms", {}).items()
-        },
-        profiles_found=payload.get("profiles_found", []),
-        total_followers=payload.get("total_followers", 0),
-        avg_post_frequency=payload.get("avg_post_frequency", 0.0),
-        most_active_platform=payload.get("most_active_platform", ""),
-        error=payload.get("error", ""),
-    )
-
-
 def _social_collect_worker(
     output_queue,
     api_key: str | None,
@@ -806,7 +857,9 @@ def _collect_social_with_budget(
         except Exception as exc:
             return SocialData(brand_name=brand_name, error=str(exc)), "error"
 
-    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    import sys
+    method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    ctx = mp.get_context(method)
     output_queue = ctx.Queue(maxsize=1)
     process = ctx.Process(
         target=_social_collect_worker,
@@ -937,7 +990,9 @@ def _take_screenshot_with_budget(
         except Exception as exc:
             return {"error": str(exc), "screenshot_provider": "firecrawl_screenshot"}, "error"
 
-    ctx = mp.get_context("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    import sys
+    method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
+    ctx = mp.get_context(method)
     output_queue = ctx.Queue(maxsize=1)
     process = ctx.Process(target=_screenshot_capture_worker, args=(output_queue, url, provider_name))
     process.start()
@@ -1026,63 +1081,154 @@ def _classify_screenshot_error(error_message: str) -> str:
     return "capture_error"
 
 
-def _from_competitor_payload(payload: dict | None) -> CompetitorData | None:
-    if not payload:
+def _visual_signature_shadow_screenshot_payload(
+    screenshot_capture: dict[str, object] | None,
+    *,
+    page_url: str,
+) -> dict[str, object] | None:
+    if not isinstance(screenshot_capture, dict):
         return None
-    return CompetitorData(
-        brand_name=payload.get("brand_name", ""),
-        brand_url=payload.get("brand_url", ""),
-        competitors=[
-            CompetitorInfo(
-                name=item.get("name", ""),
-                url=item.get("url", ""),
-                exa_result=ExaResult(**item["exa_result"]) if item.get("exa_result") else None,
-                web_data=WebData(**item["web_data"]) if item.get("web_data") else None,
-                error=item.get("error", ""),
-            )
-            for item in payload.get("competitors", [])
-        ],
-        comparisons=[ComparisonResult(**item) for item in payload.get("comparisons", [])],
-        brand_web=WebData(**payload["brand_web"]) if payload.get("brand_web") else None,
-        errors=payload.get("errors", []),
+    screenshot_url = str(screenshot_capture.get("screenshot_url") or "").strip()
+    if not screenshot_url:
+        return None
+    parsed = urlparse(screenshot_url)
+    payload: dict[str, object] = {
+        "screenshot_url": screenshot_url,
+        "page_url": page_url,
+        "source": screenshot_capture.get("source") or "existing_brand3_screenshot",
+    }
+    if parsed.scheme == "file":
+        payload["path"] = unquote(parsed.path)
+        payload["capture_type"] = "full_page"
+        payload["viewport_width"] = 1440
+        payload["viewport_height"] = 1200
+    return payload
+
+
+def _visual_signature_shadow_failure_payload(
+    *,
+    brand_name: str,
+    url: str,
+    error: str,
+) -> dict[str, object]:
+    return {
+        "brand_name": brand_name,
+        "website_url": url,
+        "analyzed_url": url,
+        "interpretation_status": "not_interpretable",
+        "acquisition": {
+            "adapter": "visual_signature_shadow_run",
+            "status_code": None,
+            "warnings": [],
+            "errors": [error],
+        },
+        "extraction_confidence": {
+            "score": 0.0,
+            "level": "low",
+            "factors": {},
+            "limitations": ["shadow_run_extraction_failed"],
+        },
+        "version": "visual-signature-mvp-1",
+    }
+
+
+def _run_visual_signature_shadow(
+    *,
+    enabled: bool,
+    store: SQLiteStore | None,
+    run_id: int | None,
+    brand_name: str,
+    url: str,
+    web_data: WebData | None,
+    content_web: WebData | None,
+    screenshot_capture: dict[str, object] | None,
+    extractor=extract_visual_signature,
+    vision_enricher=enrich_visual_signature_with_vision,
+    persistence_fn=persist_visual_signature_bundle,
+) -> dict[str, object]:
+    events: list[str] = []
+    if not enabled:
+        print("  Visual Signature shadow: skipped")
+        return {"status": "skipped", "events": ["skipped"], "persisted": False}
+
+    print("  Visual Signature shadow: started")
+    events.append("started")
+    screenshot_payload = _visual_signature_shadow_screenshot_payload(
+        screenshot_capture,
+        page_url=url,
     )
+    payload: dict[str, object]
+    status = "completed"
 
-
-def _from_context_payload(payload: dict | None) -> ContextData | None:
-    if not payload:
-        return None
-    return ContextData(**payload)
-
-
-def _load_cached(store, brand_name: str, url: str, source: str, ttl_hours: int, decoder):
-    if not store:
-        return None
     try:
-        payload = store.get_latest_raw_input(
+        payload = extractor(
+            brand_name=brand_name,
+            website_url=url,
+            web_data=web_data,
+            content_web=content_web,
+            screenshot_payload=screenshot_payload,
+        )
+    except Exception as exc:
+        status = "acquisition_failed"
+        events.append("acquisition_failed")
+        payload = _visual_signature_shadow_failure_payload(
             brand_name=brand_name,
             url=url,
-            source=source,
-            max_age_hours=ttl_hours,
+            error=str(exc),
         )
-    except Exception as e:
-        print(f"  Cache {source}: skipped ({e})")
-        return None
-    if not payload:
-        return None
-    try:
-        return decoder(payload)
-    except Exception as e:
-        print(f"  Cache {source}: invalid payload ({e})")
-        return None
+        print(f"  Visual Signature shadow: acquisition_failed ({exc})")
 
+    if payload.get("interpretation_status") == "not_interpretable" and "acquisition_failed" not in events:
+        status = "acquisition_failed"
+        events.append("acquisition_failed")
+        print("  Visual Signature shadow: acquisition_failed")
 
-def _store_safely(store, action: str, fn) -> None:
-    if not store:
-        return
+    if screenshot_payload:
+        try:
+            payload = vision_enricher(
+                visual_signature_payload=payload,
+                screenshot_path=str(screenshot_payload.get("path") or "") or None,
+                screenshot_payload=screenshot_payload,
+            )
+        except Exception as exc:
+            events.append("vision_skipped")
+            print(f"  Visual Signature shadow: vision skipped ({exc})")
+    else:
+        events.append("vision_skipped")
+
+    vision = payload.get("vision") if isinstance(payload.get("vision"), dict) else None
+    screenshot = (vision or {}).get("screenshot") if isinstance(vision, dict) else {}
+    bundle = build_visual_signature_persistence_bundle(
+        raw_visual_signature_payload=payload,
+        vision_payload=vision,
+        agreement_payload=(vision or {}).get("agreement") if isinstance(vision, dict) else None,
+        run_id=run_id,
+        brand_name=brand_name,
+        website_url=url,
+        screenshot_path=(screenshot or {}).get("path") if isinstance(screenshot, dict) else (screenshot_payload or {}).get("path"),
+        capture_type=(screenshot or {}).get("capture_type") if isinstance(screenshot, dict) else (screenshot_payload or {}).get("capture_type"),
+    )
+
+    persisted = False
     try:
-        fn()
-    except Exception as e:
-        print(f"  Storage {action}: skipped ({e})")
+        persistence_fn(store, run_id, bundle)
+        persisted = bool(store and run_id is not None)
+        if persisted:
+            events.append("persisted")
+            print("  Visual Signature shadow: persisted")
+    except Exception as exc:
+        events.append("persistence_skipped")
+        print(f"  Visual Signature shadow: persistence skipped ({exc})")
+
+    events.append("completed")
+    print("  Visual Signature shadow: completed")
+    return {
+        "status": status,
+        "events": events,
+        "persisted": persisted,
+        "interpretation_status": payload.get("interpretation_status"),
+        "agreement_level": ((vision or {}).get("agreement") or {}).get("agreement_level") if isinstance(vision, dict) else None,
+    }
 
 
 def _emit_progress(progress_cb, phase: str) -> None:
@@ -1563,6 +1709,7 @@ def run(
     use_competitors: bool = True,
     calibration_profile_override: str | None = None,
     skip_visual_analysis: bool = False,
+    enable_visual_signature_shadow_run: bool = False,
     refresh: bool = False,
     progress_cb=None,
     cancel_check=None,
@@ -1570,380 +1717,172 @@ def run(
     if not brand_name:
         brand_name = url.replace("https://", "").replace("http://", "").split("/")[0]
 
-    store = None
-    run_id = None
-    try:
-        store = SQLiteStore(BRAND3_DB_PATH)
-        brand_id = store.upsert_brand(brand_name, url)
-        run_id = store.create_run(brand_id, brand_name, url, use_llm, use_social)
-    except Exception as e:
-        print(f"  Storage: disabled ({e})")
+    storage = start_analysis_run(
+        brand_name,
+        url,
+        use_llm=use_llm,
+        use_social=use_social,
+        db_path=BRAND3_DB_PATH,
+    )
+    store = storage.store
+    run_id = storage.run_id
 
     try:
         _check_cancel(cancel_check)
         print(f"[1/4] Collecting data for {brand_name}...")
 
-        raw_input_cache: dict[str, str] = {}
-
-        def cache_read(source: str, ttl_hours: int, decoder):
-            if refresh:
-                return None
-            return _load_cached(store, brand_name, url, source, ttl_hours, decoder)
-
-        context_data = cache_read("context", 24, _from_context_payload)
-        if context_data:
-            raw_input_cache["context"] = "hit"
-            print(
-                "  Context: cache hit"
-                f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
-            )
-            if run_id:
-                _store_safely(store, "context cache save", lambda: store.save_raw_input(run_id, "context", context_data))
-                _store_safely(
-                    store,
-                    "context cache evidence save",
-                    lambda: store.save_evidence_items(run_id, _context_evidence_items(context_data)),
-                )
-        else:
-            raw_input_cache["context"] = "miss"
-            context_data = ContextCollector().scan(url)
-            print(
-                "  Context:"
-                f" score={context_data.context_score:.0f}"
-                f" coverage={context_data.coverage:.2f}"
-                f" confidence={context_data.confidence:.2f}"
-            )
-            if run_id:
-                _store_safely(store, "context save", lambda: store.save_raw_input(run_id, "context", context_data))
-                _store_safely(
-                    store,
-                    "context evidence save",
-                    lambda: store.save_evidence_items(run_id, _context_evidence_items(context_data)),
-                )
-
-        web_collector = WebCollector(api_key=FIRECRAWL_API_KEY)
-        web_data = cache_read("web", BRAND3_CACHE_TTL_HOURS, _from_web_payload)
-        if web_data:
-            raw_input_cache["web"] = "hit"
-            print(f"  Web: cache hit ({len(web_data.markdown_content)} chars)")
-            if run_id:
-                _store_safely(store, "web cache save", lambda: store.save_raw_input(run_id, "web", web_data))
-        else:
-            raw_input_cache["web"] = "miss"
-            web_data = web_collector.scrape(url)
-            print(f"  Web: {len(web_data.markdown_content)} chars scraped")
-            if run_id:
-                _store_safely(store, "web save", lambda: store.save_raw_input(run_id, "web", web_data))
-        effective_brand_url = _effective_brand_url(url, web_data)
-
-        exa_collector = ExaCollector(api_key=EXA_API_KEY)
-        exa_data = cache_read("exa", BRAND3_CACHE_TTL_HOURS, _from_exa_payload)
-        if exa_data:
-            raw_input_cache["exa"] = "hit"
-            print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
-            if run_id:
-                _store_safely(store, "exa cache save", lambda: store.save_raw_input(run_id, "exa", exa_data))
-        else:
-            raw_input_cache["exa"] = "miss"
-            exa_data = exa_collector.collect_brand_data(brand_name, effective_brand_url)
-            print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
-            if run_id:
-                _store_safely(store, "exa save", lambda: store.save_raw_input(run_id, "exa", exa_data))
-
-        social_data = None
-        social_limitation = None
-        if use_social:
-            social_data = cache_read("social", BRAND3_CACHE_TTL_HOURS, _from_social_payload)
-            if social_data:
-                raw_input_cache["social"] = "hit"
-                print(f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)")
-                if run_id:
-                    _store_safely(store, "social cache save", lambda: store.save_raw_input(run_id, "social", social_data))
-            else:
-                raw_input_cache["social"] = "miss"
-                try:
-                    social_data, social_limitation = _collect_social_with_budget(
-                        brand_name,
-                        web_data.markdown_content,
-                        api_key=FIRECRAWL_API_KEY,
-                    )
-                    platforms_count = len(social_data.platforms)
-                    if social_limitation:
-                        raw_input_cache["social"] = social_limitation
-                        print(f"  Social: {social_limitation} - continuing without blocking analysis")
-                    else:
-                        print(f"  Social: {platforms_count} platforms, {social_data.total_followers:,} total followers")
-                    if run_id:
-                        _store_safely(store, "social save", lambda: store.save_raw_input(run_id, "social", social_data))
-                except Exception as e:
-                    social_limitation = "error"
-                    raw_input_cache["social"] = "error"
-                    print(f"  Social: error - {e}")
-                    social_data = SocialData(brand_name=brand_name, error=str(e))
-                    if run_id:
-                        _store_safely(store, "social error save", lambda: store.save_raw_input(run_id, "social", social_data))
-        else:
-            raw_input_cache["social"] = "skipped"
-
-        competitor_data = None
-        if use_competitors:
-            competitor_collector = CompetitorCollector(
-                exa_collector=exa_collector,
-                web_collector=web_collector,
-                max_competitors=5,
-            )
-            competitor_data = cache_read("competitors", BRAND3_CACHE_TTL_HOURS, _from_competitor_payload)
-            if competitor_data:
-                raw_input_cache["competitors"] = "hit"
-                print(f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)")
-                if run_id:
-                    _store_safely(
-                        store,
-                        "competitor cache save",
-                        lambda: store.save_raw_input(run_id, "competitors", competitor_data),
-                    )
-            else:
-                raw_input_cache["competitors"] = "miss"
-                competitor_data = competitor_collector.collect(
-                    brand_name=brand_name,
-                    brand_url=effective_brand_url,
-                    brand_web=web_data,
-                    exa_data=exa_data,
-                )
-                if run_id:
-                    _store_safely(
-                        store,
-                        "competitor save",
-                        lambda: store.save_raw_input(run_id, "competitors", competitor_data),
-                    )
-        else:
-            raw_input_cache["competitors"] = "skipped"
-            print("  Competitors: skipped (--fast mode)")
-
-        exa_texts = []
-        if exa_data:
-            # Keep niche classification high-precision: full mention bodies are noisy and
-            # regularly include unrelated keywords from long-form pages.
-            exa_texts.extend([item.title for item in exa_data.mentions if item.title])
-            exa_texts.extend([item.summary for item in exa_data.mentions if item.summary])
-            for item in exa_data.mentions:
-                if not item.highlights:
-                    continue
-                exa_texts.extend(
-                    str(highlight).strip()
-                    for highlight in item.highlights[:2]
-                    if str(highlight).strip()
-                )
-            exa_texts.extend([item.title for item in exa_data.news if item.title])
-        competitor_names = []
-        if competitor_data:
-            competitor_names = [item.name for item in competitor_data.competitors if item.name]
-        niche_classification = classify_brand_niche(
-            brand_name,
-            url,
-            web_title=web_data.title if web_data else None,
-            web_content=web_data.markdown_content if web_data else None,
-            exa_texts=exa_texts,
-            competitor_names=competitor_names,
+        raw_inputs = collect_raw_inputs(
+            store=store,
+            run_id=run_id,
+            brand_name=brand_name,
+            url=url,
+            refresh=refresh,
+            use_social=use_social,
+            use_competitors=use_competitors,
+            effective_brand_url_builder=_effective_brand_url,
+            context_evidence_builder=_context_evidence_items,
+            social_collector=_collect_social_with_budget,
+            context_collector_cls=ContextCollector,
+            web_collector_cls=WebCollector,
+            exa_collector_cls=ExaCollector,
         )
-        if calibration_profile_override:
-            calibration_profile = calibration_profile_override
-            profile_source = "manual"
-        else:
-            calibration_profile, profile_source = select_calibration_profile(
-                niche_classification,
-                min_confidence=BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE,
-            )
-        print(
-            "  Niche:"
-            f" {niche_classification['predicted_niche']}"
-            f"/{niche_classification.get('predicted_subtype') or '-'}"
-            f" ({niche_classification['confidence']:.2f})"
-            f" -> profile {calibration_profile} [{profile_source}]"
+        context_data = raw_inputs.context_data
+        web_data = raw_inputs.web_data
+        effective_brand_url = raw_inputs.effective_brand_url
+        exa_data = raw_inputs.exa_data
+        social_data = raw_inputs.social_data
+        social_limitation = raw_inputs.social_limitation
+        competitor_data = raw_inputs.competitor_data
+        raw_input_cache = raw_inputs.raw_input_cache
+        web_collector = raw_inputs.web_collector
+
+        niche = select_niche_profile(
+            brand_name=brand_name,
+            url=url,
+            web_data=web_data,
+            exa_data=exa_data,
+            competitor_data=competitor_data,
+            calibration_profile_override=calibration_profile_override,
+            min_confidence=BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE,
+            classify_brand_niche=classify_brand_niche,
+            select_calibration_profile=select_calibration_profile,
         )
+        niche_classification = niche.classification
+        calibration_profile = niche.calibration_profile
+        profile_source = niche.profile_source
         if run_id:
-            _store_safely(
-                store,
-                "run classification",
-                lambda: store.update_run_classification(
-                    run_id,
-                    niche_classification,
-                    calibration_profile,
-                    profile_source,
-                ),
-            )
+            _store_safely(store, "run classification", lambda: store.update_run_classification(run_id, niche_classification, calibration_profile, profile_source))
 
-        content_web, content_source, data_sources = _build_content_web(
-            url,
-            brand_name,
-            _recover_owned_web_content(url, web_data, web_collector) or web_data,
-            exa_data,
+        content_plan = plan_content(
+            url=url,
+            brand_name=brand_name,
+            web_data=web_data,
+            web_collector=web_collector,
+            exa_data=exa_data,
+            recover_owned_web_content=_recover_owned_web_content,
+            build_content_web=_build_content_web,
+            compute_data_quality=_compute_data_quality,
+            partial_dimensions=_PARTIAL_DIMENSIONS,
         )
-        data_quality = _compute_data_quality(exa_data, content_source)
-        partial_dimensions = list(_PARTIAL_DIMENSIONS) if data_quality == "insufficient" else []
-        if content_source == "owned_fallback" and content_web:
-            print(
-                "  Web fallback:"
-                f" using {len(data_sources.get('owned_fallback_urls') or [])} owned same-domain pages"
-                f" as content source ({len(content_web.markdown_content)} chars aggregate)"
-            )
-        elif content_source == "exa_fallback" and content_web:
-            print(
-                "  Web fallback:"
-                f" using {data_sources['exa_fallback_mentions_used']} Exa mentions"
-                f" as content source ({len(content_web.markdown_content)} chars aggregate)"
-            )
-        elif content_source == "none":
-            print("  Web fallback: no usable Firecrawl, owned fallback, or Exa content available")
-        print(f"  Data quality: {data_quality}")
+        content_web = content_plan.content_web
+        content_source = content_plan.content_source
+        data_sources = content_plan.data_sources
+        data_quality = content_plan.data_quality
+        partial_dimensions = content_plan.partial_dimensions
+        entity_discovery = _entity_discovery_payload(brand_name=brand_name, url=url, web_data=content_web or web_data, exa_data=exa_data, context_data=context_data)
+        discovery_search_plan = _discovery_search_plan_payload(entity_discovery=entity_discovery, brand_name=brand_name, url=url)
+        discovery_evidence_preview = _to_jsonable(build_discovery_evidence_preview(discovery_search_plan, exa_data=exa_data, web_data=content_web or web_data, context_data=context_data))
+        discovery_enrichment = build_discovery_enrichment(discovery_search_plan, discovery_evidence_preview, exa_data=exa_data, web_data=content_web or web_data, web_collector=web_collector, exa_collector=raw_inputs.exa_collector)
+        exa_data = discovery_enrichment.exa_data
+        content_web = discovery_enrichment.web_data or content_web
+        web_data = discovery_enrichment.web_data or web_data
+        discovery_enrichment_payload = discovery_enrichment.payload
+        discovery_trust_basis = build_discovery_trust_basis(entity_discovery, discovery_search_plan, discovery_evidence_preview, discovery_enrichment_payload)
+        discovery_calibration_hint = build_discovery_calibration_hint(entity_discovery, discovery_trust_basis, niche_classification)
+        available_profiles = {item["profile_id"] for item in list_calibration_profiles()}
+        discovery_calibration_decision = apply_discovery_calibration_hint(current_profile=calibration_profile, current_profile_source=profile_source, discovery_calibration_hint=discovery_calibration_hint, discovery_evidence_preview=discovery_evidence_preview, discovery_enrichment=discovery_enrichment_payload, available_profiles=available_profiles)
+        calibration_profile = str(discovery_calibration_decision["calibration_profile"])
+        profile_source = str(discovery_calibration_decision["profile_source"])
+        discovery_payload = {"entity_discovery": entity_discovery, "discovery_search_plan": discovery_search_plan, "discovery_evidence_preview": discovery_evidence_preview, "discovery_trust_basis": discovery_trust_basis, "discovery_calibration_hint": discovery_calibration_hint}
 
-        llm = None
-        skip_llm_for_low_context = _should_skip_llm_for_low_context(
-            context_data,
-            content_web,
-            content_source,
+        llm_setup = setup_llm(
+            use_llm=use_llm,
+            context_data=context_data,
+            content_web=content_web,
+            content_source=content_source,
+            llm_cls=LLMAnalyzer,
+            cheap_model=LLM_CHEAP_MODEL,
+            provider_payload_builder=_llm_provider_payload,
+            should_skip_llm_for_low_context=_should_skip_llm_for_low_context,
         )
-        llm_skipped_reason = None
-        llm_provider = None
-        if use_llm and not skip_llm_for_low_context:
-            llm = LLMAnalyzer(model=LLM_CHEAP_MODEL)
-            llm_provider = _llm_provider_payload(llm)
-            if llm.api_key:
-                print(f"  LLM: {llm.model} via {llm_provider['provider']}")
-            else:
-                print("  LLM: disabled (no key found)")
-                llm_skipped_reason = "missing_api_key"
-                llm = None
-        elif use_llm and skip_llm_for_low_context:
-            print("  LLM: skipped (insufficient context coverage)")
-            llm_skipped_reason = "insufficient_context_coverage"
+        llm = llm_setup.llm
+        llm_provider = llm_setup.provider
+        llm_skipped_reason = llm_setup.skipped_reason
 
         _emit_progress(progress_cb, "extracting")
         _check_cancel(cancel_check)
         print("[2/4] Extracting features...")
 
-        screenshot_url = None
-        screenshot_limitation = None
-        screenshot_data: dict[str, object] = {}
-        screenshot_capture = _screenshot_capture_diagnostic(
-            attempted=False,
-            skipped_reason="visual_analysis_disabled",
+        feature_result = run_feature_pipeline(
+            url=url,
+            skip_visual_analysis=skip_visual_analysis,
+            web_data=web_data,
+            content_web=content_web,
+            exa_data=exa_data,
+            social_data=social_data,
+            context_data=context_data,
+            competitor_data=competitor_data,
+            llm=llm,
+            use_llm=use_llm,
+            data_quality=data_quality,
+            content_source=content_source,
+            take_screenshot_with_budget=_take_screenshot_with_budget,
+            screenshot_capture_diagnostic=_screenshot_capture_diagnostic,
+            presencia_cls=PresenciaExtractor,
+            vitalidad_cls=VitalidadExtractor,
+            coherencia_cls=CoherenciaExtractor,
+            diferenciacion_cls=DiferenciacionExtractor,
+            percepcion_cls=PercepcionExtractor,
+            annotate_content_source=_annotate_content_source,
         )
-        if not skip_visual_analysis:
-            try:
-                screenshot_data, screenshot_limitation = _take_screenshot_with_budget(url)
-                screenshot_url = screenshot_data.get("screenshot_url")
-                screenshot_capture = _screenshot_capture_diagnostic(
-                    attempted=True,
-                    screenshot_data=screenshot_data,
-                    limitation=screenshot_limitation,
-                )
-                if screenshot_url:
-                    print("  Screenshot: captured")
-                elif screenshot_limitation:
-                    print(f"  Screenshot: skipped ({screenshot_limitation})")
-                else:
-                    print(f"  Screenshot: skipped ({screenshot_capture['error_type']})")
-            except Exception as e:
-                print(f"  Screenshot: skipped ({e})")
-                screenshot_capture = _screenshot_capture_diagnostic(
-                    attempted=True,
-                    screenshot_data={"error": str(e)},
-                    limitation="error",
-                )
-        else:
-            print("  Screenshot: skipped (benchmark mode)")
-            screenshot_capture = _screenshot_capture_diagnostic(
-                attempted=False,
-                skipped_reason="benchmark_mode",
-            )
-
-        features_by_dim = {}
-        presencia_ext = PresenciaExtractor()
-        features_by_dim["presencia"] = presencia_ext.extract(
-            web=web_data,
-            exa=exa_data,
-            social=social_data,
-            context=context_data,
+        features_by_dim = feature_result.features_by_dim
+        screenshot_capture = feature_result.screenshot_capture
+        _run_visual_signature_shadow(
+            enabled=enable_visual_signature_shadow_run,
+            store=store,
+            run_id=run_id,
+            brand_name=brand_name,
+            url=url,
+            web_data=web_data,
+            content_web=content_web,
+            screenshot_capture=screenshot_capture,
         )
-
-        vitalidad_ext = VitalidadExtractor(llm=llm)
-        features_by_dim["vitalidad"] = vitalidad_ext.extract(web=web_data, exa=exa_data, context=context_data)
-
-        if llm:
-            coherencia_ext = CoherenciaExtractor(
-                llm=llm,
-                skip_visual_analysis=skip_visual_analysis or bool(screenshot_limitation),
-            )
-            diferenciacion_ext = DiferenciacionExtractor(llm=llm)
-            percepcion_ext = PercepcionExtractor(llm=llm)
-        else:
-            coherencia_ext = CoherenciaExtractor(
-                skip_visual_analysis=skip_visual_analysis or bool(screenshot_limitation),
-            )
-            diferenciacion_ext = DiferenciacionExtractor()
-            percepcion_ext = PercepcionExtractor()
-            if use_llm:
-                print("  LLM: disabled (no API key)")
-
-        if data_quality == "insufficient":
-            features_by_dim["coherencia"] = {}
-            features_by_dim["diferenciacion"] = {}
-        else:
-            features_by_dim["coherencia"] = coherencia_ext.extract(
-                web=content_web,
-                exa=exa_data,
-                context=context_data,
-                screenshot_url=screenshot_url,
-            )
-            features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
-                web=content_web, exa=exa_data, competitor_data=competitor_data, screenshot_url=screenshot_url, context=context_data
-            )
-        features_by_dim["percepcion"] = percepcion_ext.extract(web=web_data, exa=exa_data, context=context_data)
-        _annotate_content_source(features_by_dim, content_source)
-
-        for dim, feats in features_by_dim.items():
-            llm_feats = sum(1 for f in feats.values() if f.source == "llm")
-            heuristic_feats = len(feats) - llm_feats
-            src_info = f"{heuristic_feats}h" + (f"+{llm_feats}llm" if llm_feats else "")
-            print(f"  {dim}: {len(feats)} features ({src_info})")
 
         _emit_progress(progress_cb, "scoring")
         _check_cancel(cancel_check)
         print("[3/4] Scoring...")
-        engine = ScoringEngine(calibration_profile=calibration_profile)
-        brand_score = engine.score_brand(
-            url,
-            brand_name,
-            features_by_dim,
-            unavailable_dimensions=set(partial_dimensions),
+        scoring = score_features(
+            url=url,
+            brand_name=brand_name,
+            features_by_dim=features_by_dim,
+            partial_dimensions=partial_dimensions,
+            data_quality=data_quality,
+            calibration_profile=calibration_profile,
+            store=store,
+            run_id=run_id,
+            scoring_engine_cls=ScoringEngine,
+            store_safely=_store_safely,
         )
-        if data_quality == "insufficient":
-            brand_score.composite_score = None
-        if run_id:
-            _store_safely(store, "feature save", lambda: store.save_features(run_id, features_by_dim))
-            _store_safely(store, "score save", lambda: store.save_scores(run_id, brand_score))
+        engine = scoring.engine
+        brand_score = scoring.brand_score
 
         _emit_progress(progress_cb, "finalizing")
         _check_cancel(cancel_check)
         print("[4/4] Generating report...\n")
         summary = engine.generate_summary(brand_score)
         print(summary)
-
-        print("\n--- Feature Details ---")
-        for dim_name, dim_score in brand_score.dimensions.items():
-            print(f"\n[{dim_name}]")
-            if dim_score.score is None:
-                print("  score unavailable  reason=insufficient_data")
-                continue
-            for feat_name, feat in dim_score.features.items():
-                conf = f"(conf: {feat.confidence:.0%})" if feat.confidence < 1 else ""
-                src = f"src={feat.source}"
-                print(f"  {feat_name:30s} {feat.value:6.1f}  {conf}  {src}")
-                if feat.raw_value:
-                    raw_str = str(feat.raw_value)
-                    raw = raw_str[:120] + "..." if len(raw_str) > 120 else raw_str
-                    print(f"    raw: {raw}")
+        print("\n".join([""] + format_discovery_summary(discovery_payload)))
+        _print_feature_details(brand_score)
 
         dimension_confidence = _dimension_confidence_summary(
             features_by_dim,
@@ -1974,20 +1913,20 @@ def run(
             public_presence_inventory=public_presence_inventory,
             context_summary=confidence_summary,
         )
-        trust_summary = _trust_summary_payload(
-            data_quality=data_quality,
-            context_summary=confidence_summary,
-            evidence_summary=evidence_summary,
-            dimension_confidence=dimension_confidence,
-            context_enrichment_summary=context_enrichment_summary,
-            context_effective_readiness=context_effective_readiness,
-        )
-
+        trust_summary = _trust_summary_payload(data_quality=data_quality, context_summary=confidence_summary, evidence_summary=evidence_summary, dimension_confidence=dimension_confidence, context_enrichment_summary=context_enrichment_summary, context_effective_readiness=context_effective_readiness)
+        trust_summary["evidence_basis_summary"] = discovery_trust_basis["user_message"]
         result = {
             "brand": brand_score.brand_name,
             "brand_profile": _build_brand_profile(brand_score.brand_name, brand_score.url, store),
             "url": brand_score.url,
             "run_id": run_id,
+            "entity_discovery": entity_discovery,
+            "discovery_search_plan": discovery_search_plan,
+            "discovery_evidence_preview": discovery_evidence_preview,
+            "discovery_enrichment": discovery_enrichment_payload,
+            "discovery_trust_basis": discovery_trust_basis,
+            "discovery_calibration_hint": discovery_calibration_hint,
+            "discovery_calibration_decision": discovery_calibration_decision,
             "niche_classification": niche_classification,
             "calibration_profile": calibration_profile,
             "profile_source": profile_source,
@@ -2041,6 +1980,7 @@ def run(
             ),
             "timestamp": datetime.now().isoformat(),
         }
+        result["audit"]["discovery_calibration_decision"] = discovery_calibration_decision
         if run_id:
             _store_safely(store, "run audit save", lambda: store.save_run_audit(run_id, result["audit"]))
 
@@ -2048,6 +1988,12 @@ def run(
         print(json.dumps(result, indent=2))
         output_path = _save_result(result)
         print(f"\nSaved result to: {output_path}")
+        if run_id:
+            _store_safely(
+                store,
+                "visual signature persistence",
+                lambda: persist_visual_signature_result(store, run_id, result),
+            )
         if run_id:
             _store_safely(
                 store,
@@ -2061,6 +2007,23 @@ def run(
                     summary=summary,
                 ),
             )
+        if run_id and llm is not None:
+            def _persist_report_narrative() -> None:
+                from src.reports.dossier import (
+                    REPORT_NARRATIVE_SOURCE,
+                    build_report_narrative_payload,
+                )
+
+                snapshot = store.get_run_snapshot(run_id)
+                if not snapshot:
+                    return
+                store.save_raw_input(
+                    run_id,
+                    REPORT_NARRATIVE_SOURCE,
+                    build_report_narrative_payload(snapshot, analyzer=llm),
+                )
+
+            _store_safely(store, "report narrative persistence", _persist_report_narrative)
         return result
     finally:
         if store:

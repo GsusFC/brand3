@@ -1,0 +1,31 @@
+Expected category: premium/luxury
+Notes: Luxury house with strong editorial product presentation and distinctive palette.
+
+== Hermes ==
+URL: https://www.hermes.com
+Interpretation status: not_interpretable
+Extraction confidence: 0.17 (low) [acquisition=0.10, html_coverage=0.25, signal_coverage=0.17, consistency_coverage=0.14]
+
+Signal coverage: 29%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: missing, confidence=0.45
+- components: missing, confidence=0.25
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.14
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=False; hero=False; sections=0; density=sparse; patterns=single_column
+- components: none
+- consistency: overall=0.20; color=0.15; type=0.20; component=0.25; asset=0.20
+
+Acquisition failure:
+- acquisition error: HTTP Error 403: Forbidden
+- extraction limitation: acquisition_errors_present
+- extraction limitation: screenshot_not_available
+- extraction limitation: html_coverage_limited
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

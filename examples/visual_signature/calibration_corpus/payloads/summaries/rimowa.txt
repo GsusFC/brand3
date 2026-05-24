@@ -1,0 +1,47 @@
+Expected category: premium_luxury
+Notes: Premium product brand with minimal product-focused visual language.
+
+== Rimowa ==
+URL: https://www.rimowa.com
+Interpretation status: interpretable
+Extraction confidence: 0.32 (low) [acquisition=0.65, html_coverage=0.25, signal_coverage=0.20, consistency_coverage=0.18]
+
+Signal coverage: 29%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: missing, confidence=0.45
+- components: missing, confidence=0.25
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.18
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=0; density=sparse; patterns=single_column
+- components: none
+- consistency: overall=0.20; color=0.15; type=0.20; component=0.25; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #000000[###] #c0c0c0[###] #404040[###] #a0a0a0[###] #e0e0e0[###] #808080[###] #606060[###]
+- viewport palette: #ffffff[###] #000000[###] #c0c0c0[###] #404040[###] #a0a0a0[###] #e0e0e0[###] #808080[###] #606060[###]
+- composition: density=sparse; whitespace=99%; classification=blank
+- viewport composition: density=sparse; whitespace=99%; classification=blank
+- vision confidence: 0.74 (medium)
+- viewport confidence: 0.74 (medium)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: missing primary signal
+- layout: missing primary signal
+- components: missing primary signal
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.18)
+- extraction limitation: screenshot_not_available
+- extraction limitation: html_coverage_limited
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

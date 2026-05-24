@@ -1,39 +1,60 @@
 {% extends "base.html.j2" %}
-{% block title %}Brand3 — free brand health scorer{% endblock %}
+{% block title %}Brand3 — brand audit{% endblock %}
 {% block content %}
 <section>
-  <h1 style="font-size:18px;margin-bottom:14px">brand3 — free brand health scorer</h1>
-  <p class="prose dim" style="margin:0 0 18px">
-    Paste a URL, get a 5-dimension analysis (coherencia · presencia · percepción · diferenciación · vitalidad).
-    Results are public and listed in the observatory below.
+  <div class="section-head">
+    <span class="label">brand_audit</span>
+    <span class="tag">// primary product · scoring first</span>
+  </div>
+
+  <h1 class="page-title">brand3 — brand audit</h1>
+  <p class="prose dim intro-copy">
+    Brand3 Scoring is the working audit product. Paste a URL to generate a public brand audit with dimension scores, report prose, and listed results.
   </p>
 
   <form action="/analyze" method="post" class="form-row">
     <input type="url" name="url" placeholder="https://your-brand.com" required autofocus spellcheck="false" autocomplete="off">
-    <button type="submit">analyze</button>
+    <button type="submit">run brand audit</button>
   </form>
 
-  <p class="small dim" style="margin-top:8px">
-    Limit: 5 analyses per IP every 24h · FLOC team: <a href="/team/unlock?token=...">/team/unlock?token=...</a>
+  <p class="small dim form-note">
+    Brand Audit produces dimension scores, public report prose, and a shareable result page. Limit: 5 analyses per IP every 24h · FLOC team: <a href="/team/unlock?token=...">/team/unlock?token=...</a>
   </p>
+
+  <div class="home-feature-strip">
+    <article class="home-feature">
+      <h2>Dimension scores</h2>
+      <p>See the five scoring dimensions and the rendered explanation that comes with each analysis.</p>
+    </article>
+    <article class="home-feature">
+      <h2>Reports</h2>
+      <p>Open the public observatory and per-brand report pages from the same product surface.</p>
+    </article>
+    <article class="home-feature home-feature-lab">
+      <h2>Visual Signature Lab</h2>
+      <p>Secondary research area for evidence-only human visual perception. Accessible, but not foregrounded.</p>
+      <a class="source-link" href="/visual-signature">open lab</a>
+    </article>
+  </div>
 </section>
 
 <hr class="rule-thin">
 
 <section>
   <div class="section-head">
-    <span class="label">latest_analyses</span>
+    <span class="label">latest_brand_audits</span>
     <span class="tag">// last {{ latest_analyses|length }} public</span>
   </div>
   {% if latest_analyses %}
+  <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th style="width:14%">date</th>
-        <th style="width:26%">brand</th>
-        <th style="width:8%" class="num">score</th>
-        <th style="width:28%">bar</th>
-        <th style="width:16%">band</th>
+        <th class="col-date">date</th>
+        <th class="col-brand">brand</th>
+        <th class="num col-score">score</th>
+        <th class="col-bar">bar</th>
+        <th class="col-band">band</th>
         <th></th>
       </tr>
     </thead>
@@ -50,9 +71,10 @@
     {% endfor %}
     </tbody>
   </table>
-  <p class="small dim" style="margin-top:10px"><a href="/reports">→ browse full observatory</a></p>
+  </div>
+  <p class="small dim block-note"><a href="/reports">→ browse full reports</a> · <a href="/visual-signature">Visual Signature Lab</a></p>
   {% else %}
-  <div class="empty">// no public analyses yet — submit the first one above.</div>
+  <div class="empty">// no public audits yet — submit the first one above.</div>
   {% endif %}
 </section>
 {% endblock %}

@@ -1,0 +1,44 @@
+Expected category: saas
+Notes: Established SaaS with pragmatic less trend-led visual language.
+
+== Basecamp ==
+URL: https://basecamp.com
+Interpretation status: interpretable
+Extraction confidence: 0.55 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.32, consistency_coverage=0.30]
+
+Signal coverage: 57%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.30
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=6; density=dense; patterns=grid,multi_column
+- components: button=52, cta=32, form=2, card=54, modal=48, pricing=2
+- consistency: overall=0.32; color=0.15; type=0.20; component=0.72; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #c0e0e0[###] #002020[###] #e0e0e0[###] #a0c0e0[###] #202020[###] #a06020[###] #404020[###]
+- viewport palette: #ffffff[###] #c0e0e0[###] #002020[###] #e0e0e0[###] #a0c0e0[###] #202020[###] #a06020[###] #404020[###]
+- composition: density=balanced; whitespace=73%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=73%; classification=balanced_blocks
+- vision confidence: 0.86 (high)
+- viewport confidence: 0.86 (high)
+- agreement: low; flags=dom_density_higher_than_viewport,viewport_palette_more_complex_than_dom,dom_density_disagrees_with_viewport_first_fold
+- agreement notes: DOM suggests a denser page than the viewport first impression.; Viewport palette is noisier than the DOM palette.; DOM suggests a denser page, but the viewport reads as spacious.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.30)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

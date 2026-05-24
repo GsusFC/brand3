@@ -1,0 +1,522 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:28:02.224431",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://826national.org",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.616,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.865
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "nonprofit education",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 62,
+    "video_count": 6
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "826 National",
+  "calibration": {
+    "expected_category": "nonprofit_education",
+    "notes": "Lower-fame education nonprofit with modest but distinctive visual system."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#1a73e8"
+    ],
+    "background_candidates": [
+      "#e5e3df"
+    ],
+    "confidence": 0.461,
+    "dominant_colors": [
+      "#e5e3df",
+      "#1a73e8"
+    ],
+    "palette": [
+      {
+        "confidence": 0.64,
+        "hex": "#e5e3df",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#1a73e8",
+        "occurrences": 2,
+        "role": "border",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#1a73e8"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 2,
+        "labels": [
+          "Submit"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 14,
+        "labels": [
+          "Skip to content",
+          "All student writing",
+          "Surprise me",
+          "Play Video",
+          "Read our Theory of Change",
+          "826 Network",
+          "Join the Movement",
+          "Learn more",
+          "Sign up for free",
+          "Research"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 90,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Skip to content",
+      "All student writing",
+      "Surprise me",
+      "Play Video",
+      "Read our Theory of Change",
+      "826 Network",
+      "Join the Movement",
+      "Learn more"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.74,
+    "confidence": 0.573,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.714,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.573,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.507
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.651
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 24,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.55,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Roboto",
+        "occurrences": 2,
+        "role": "body",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "Arial",
+        "occurrences": 2,
+        "role": "body",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom",
+        "dom_consistency_conflicts_with_viewport_density"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.313,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests.",
+        "DOM consistency suggests order, but the viewport is visually dense."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.318,
+      "composition_classification": "dense_grid",
+      "confidence": 0.791,
+      "edge_density": 0.088,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.025
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 867460,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://826national.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/nonprofit_education/826-national.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 172,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202040",
+          "occurrences": 8359,
+          "ratio": 0.4179
+        },
+        {
+          "hex": "#000020",
+          "occurrences": 2003,
+          "ratio": 0.1002
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1342,
+          "ratio": 0.0671
+        },
+        {
+          "hex": "#ffc000",
+          "occurrences": 1099,
+          "ratio": 0.0549
+        },
+        {
+          "hex": "#a0c0c0",
+          "occurrences": 926,
+          "ratio": 0.0463
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 571,
+          "ratio": 0.0285
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 543,
+          "ratio": 0.0272
+        },
+        {
+          "hex": "#ffa040",
+          "occurrences": 392,
+          "ratio": 0.0196
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.318,
+      "composition_classification": "dense_grid",
+      "confidence": 0.791,
+      "edge_density": 0.088,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.025
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.791,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.867
+    },
+    "viewport_palette": {
+      "color_count": 172,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202040",
+          "occurrences": 8359,
+          "ratio": 0.4179
+        },
+        {
+          "hex": "#000020",
+          "occurrences": 2003,
+          "ratio": 0.1002
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1342,
+          "ratio": 0.0671
+        },
+        {
+          "hex": "#ffc000",
+          "occurrences": 1099,
+          "ratio": 0.0549
+        },
+        {
+          "hex": "#a0c0c0",
+          "occurrences": 926,
+          "ratio": 0.0463
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 571,
+          "ratio": 0.0285
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 543,
+          "ratio": 0.0272
+        },
+        {
+          "hex": "#ffa040",
+          "occurrences": 392,
+          "ratio": 0.0196
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.025,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.791,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.867
+    }
+  },
+  "website_url": "https://826national.org"
+}

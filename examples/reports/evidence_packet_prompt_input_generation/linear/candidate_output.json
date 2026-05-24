@@ -1,0 +1,29 @@
+{
+  "label": "evidence_packet_prompt_input_candidate",
+  "created_at": "2026-05-18T08:11:33.783201+00:00",
+  "started_at": "2026-05-18T08:11:24.394262+00:00",
+  "model": "gemini-3.1-pro-preview",
+  "dimension": "diferenciacion",
+  "raw_response": {
+    "findings": [
+      {
+        "title": "Relative Positioning Distance Among Measured Competitors",
+        "observation": "According to a bounded competitor comparison snapshot analyzing five competitors, the audited brand's closest measured competitor is Wrike, with a measured distance of 0.752 against an average distance of 0.821. The same snapshot identifies ProjectManager as the most different measured competitor, with a measured distance of 0.872.",
+        "implication": "This relative positioning distance suggests that the brand's external messaging and web presence share more structural or thematic similarities with Wrike than with ProjectManager within the analyzed set. It may indicate a clustering of positioning language around specific category conventions that Wrike also utilizes, while diverging from the terminology or framing employed by ProjectManager.",
+        "typical_decision": "Teams reviewing relative positioning distance typically consider either leaning into the similarities with closest competitors to capture existing category demand, or deliberately adjusting messaging to increase distance and differentiate from the cluster. Ultimately, the choice to converge or diverge depends on internal variables such as product strategy, target audience intent, and available resources, which are not observable from the outside.",
+        "evidence_urls": [
+          "snapshot://feature/competitor_web_comparison"
+        ]
+      }
+    ]
+  },
+  "summary": {
+    "finding_count": 1,
+    "titles": [
+      "Relative Positioning Distance Among Measured Competitors"
+    ],
+    "risky_terms_detected": [
+      "strategy"
+    ]
+  }
+}

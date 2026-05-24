@@ -1,0 +1,587 @@
+{
+  "version": 0,
+  "case_id": "raycast",
+  "audit_url": "https://www.raycast.com",
+  "source": "evidence_packet_v0",
+  "runtime_effect": false,
+  "prompt_effect": false,
+  "dimensions": {
+    "coherencia": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Raycast is an application launcher and productivity software developed for macOS and Windows",
+          "url": "https://en.wikipedia.org/wiki/Raycast_(software)",
+          "source_class": "external_third_party",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        },
+        {
+          "text": "Raycast is a collection of powerful productivity tools within an extendable launcher.",
+          "url": "https://raycast.com/",
+          "source_class": "audited_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "Local image analysis found 6 dominant color groups.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Whitespace ratio 0.00; contrast signal 0.22.",
+          "url": "",
+          "source_class": "visual_internal_metric",
+          "feature_name": "visual_consistency",
+          "feature_source": "visual_analysis",
+          "classification_reason": "visual_or_internal_analysis_not_market_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "A collection of powerful productivity tools all within an extendable launcher.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Your shortcut to everything.",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "messaging_consistency",
+          "feature_source": "llm",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Take shortcuts, not detours.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Fast, ergonomic and reliable.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Raycast is an application launcher and productivity software developed for macOS and Windows",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "Take shortcuts, not detours.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Fast, ergonomic and reliable.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Raycast is an application launcher and productivity software developed for macOS and Windows",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "tone_consistency",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "presencia": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "# Raycast (Raycast Technologies Ltd.) Raycast is a IT Services and IT Consulting company. Raycast is a collection of powerful productivity tools withi",
+          "url": "https://raycast.com/",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Raycast - Your shortcut to everything # Terms of Service Last Updated: April 8, 2026 Raycast Technologies, Ltd., a private limited company registered",
+          "url": "https://www.raycast.com/terms-of-service",
+          "source_class": "audited_surface",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Raycast - Products, Competitors, Financials, Employees, Headquarters Locations ## Founded Year 2020 ## Stage Series B | Alive ## Total Raised $47.85M",
+          "url": "https://www.cbinsights.com/company/raycast",
+          "source_class": "external_third_party",
+          "feature_name": "search_visibility",
+          "feature_source": "exa",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "# Your shortcut to everything. A collection of powerful productivity tools all within an extendable launcher. Fast, ergonomic and reliable. Download f",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "web_presence",
+          "feature_source": "web_scrape",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "instagram profile candidate",
+          "url": "https://www.instagram.com/raycast",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/raycast",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "tiktok profile candidate",
+          "url": "https://www.tiktok.com/@raycast",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "twitter profile candidate",
+          "url": "https://x.com/raycast",
+          "source_class": "external_third_party",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "social_profile_candidate_not_external_validation",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "sitemap.xml found with 94 URLs",
+          "url": "https://www.raycast.com/sitemap.xml",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "robots.txt found",
+          "url": "https://www.raycast.com/robots.txt",
+          "source_class": "technical_internal",
+          "feature_name": "site_structure",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "linkedin profile candidate",
+          "url": "https://www.linkedin.com/company/raycast",
+          "source_class": "related_unresolved",
+          "feature_name": "social_footprint",
+          "feature_source": "social_scrape",
+          "classification_reason": "same_name_external_profile_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Owned claims remain attributed to owned surfaces and are not external validation.",
+        "External evidence is source-bounded and must be cited.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "percepcion": {
+      "readiness_status": "thin",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "At Raycast, we make developers more productive.",
+          "url": "https://www.raycast.com/blog/hello-world",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "It offers fast, ergonomic, and reliable tools for users.",
+          "url": "https://raycast.com/",
+          "source_class": "audited_surface",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "owned_usage_or_traction_claim_requires_independent_support",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "A collection of powerful productivity tools all within an extendable launcher. Fast, ergonomic and reliable.",
+          "url": "https://raycast.co.uk/",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "A collection of powerful productivity tools all within an extendable launcher. Fast, ergonomic and reliable.",
+          "url": "https://raycast.co.uk/",
+          "source_class": "related_unresolved",
+          "feature_name": "brand_sentiment",
+          "feature_source": "llm",
+          "classification_reason": "same_name_different_root_not_alias",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Dimension is thin; qualify evidence limits and avoid strong conclusions.",
+        "Perception evidence must not be generalized beyond cited sources.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": ""
+    },
+    "diferenciacion": {
+      "readiness_status": "blocked",
+      "include_in_prompt": false,
+      "evidence": [],
+      "excluded_evidence": [
+        {
+          "text": "A collection of powerful productivity tools all within an extendable launcher.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "One interface, everything you need.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "Content feels original and human-written",
+          "url": "",
+          "source_class": "owned_surface",
+          "feature_name": "content_authenticity",
+          "feature_source": "content_analysis",
+          "classification_reason": "owned_claim_without_url",
+          "limits": "",
+          "exclusion_reason": "observation_only"
+        },
+        {
+          "text": "Key pages found: blog, faq, pricing, changelog, case_studies",
+          "url": "https://www.raycast.com",
+          "source_class": "technical_internal",
+          "feature_name": "content_depth",
+          "feature_source": "context",
+          "classification_reason": "technical_context_not_brand_narrative_evidence",
+          "limits": "",
+          "exclusion_reason": "technical_only"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Raycast as the audited brand's closest measured competitor with measured distance 0.0; avg_distance=0.688; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        },
+        {
+          "text": "Existing Brand3 competitor comparison identifies Tasklet as the audited brand's most different measured competitor with measured distance 0.899; avg_distance=0.688; competitors_analyzed=5.",
+          "url": "snapshot://feature/competitor_web_comparison",
+          "source_class": "competitor_comparison",
+          "feature_name": "competitor_distance",
+          "feature_source": "competitor_web_comparison",
+          "classification_reason": "bounded_competitor_comparison_snapshot",
+          "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+          "exclusion_reason": "excluded_by_prompt_input_contract"
+        }
+      ],
+      "review_required_evidence": [
+        {
+          "text": "A collection of powerful productivity tools all within an extendable launcher.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        },
+        {
+          "text": "One interface, everything you need.",
+          "url": "",
+          "source_class": "external_third_party",
+          "feature_name": "positioning_clarity",
+          "feature_source": "llm",
+          "classification_reason": "missing_evidence_url",
+          "limits": "",
+          "exclusion_reason": "requires_human_review"
+        }
+      ],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Do not generate this dimension.",
+        "Owned claims lack external corroboration; keep attribution visible.",
+        "Review-gated evidence cannot enter the prompt without manual approval."
+      ],
+      "abstention_reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    },
+    "vitalidad": {
+      "readiness_status": "ready",
+      "include_in_prompt": true,
+      "evidence": [
+        {
+          "text": "Introducing the next generation of Raycast for macOS.",
+          "url": "https://raycast.com/blog/the-new-raycast",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        },
+        {
+          "text": "Raycast confirmed during a livestream on Friday that its AI-powered app builder Glaze will ship as a deep integration inside the Raycast launcher in an April update",
+          "url": "https://www.implicator.ai/raycast-bakes-its-ai-app-builder-glaze-into-the-launcher-this-month/",
+          "source_class": "external_third_party",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "source_classified_external_candidate",
+          "limits": ""
+        },
+        {
+          "text": "Raycast employs 41 people (+12.5% YoY, +5 people)",
+          "url": "https://raycast.com/",
+          "source_class": "audited_surface",
+          "feature_name": "momentum",
+          "feature_source": "llm",
+          "classification_reason": "audited_surface_evidence",
+          "limits": ""
+        }
+      ],
+      "excluded_evidence": [
+        {
+          "text": "",
+          "url": "https://www.raycast.com/blog/the-new-raycast",
+          "source_class": "audited_surface",
+          "feature_name": "content_recency",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://www.implicator.ai/raycast-bakes-its-ai-app-builder-glaze-into-the-launcher-this-month/",
+          "source_class": "external_third_party",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        },
+        {
+          "text": "",
+          "url": "https://raycast.com/",
+          "source_class": "audited_surface",
+          "feature_name": "publication_cadence",
+          "feature_source": "exa",
+          "classification_reason": "empty_text_evidence_blocked",
+          "limits": "",
+          "exclusion_reason": "blocked_empty_text"
+        }
+      ],
+      "review_required_evidence": [],
+      "prompt_constraints": [
+        "Use only included evidence for this dimension.",
+        "Do not use excluded or review-required evidence.",
+        "Do not invent strategy, intent, ownership, traction, or entity relationships.",
+        "Temporal evidence supports visible activity, not traction or growth.",
+        "External evidence is source-bounded and must be cited."
+      ],
+      "abstention_reason": ""
+    }
+  },
+  "global_constraints": [
+    "This candidate is lab-only and must not be treated as production prompt input.",
+    "Generate no prose from blocked, abstain, or review-required dimensions.",
+    "Use cited evidence only; do not fill gaps with general knowledge.",
+    "Preserve uncertainty, source attribution, and entity boundaries.",
+    "Technical, visual-metric, trust/security, noise, unresolved, and review-gated evidence is excluded unless manually approved outside this artifact."
+  ],
+  "excluded_dimensions": [
+    {
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "reason_codes": [
+        "owned_claim_without_external_corroboration",
+        "review_gated_evidence_not_ready",
+        "missing_evidence_url",
+        "entity_ambiguity_blocks_readiness",
+        "competitor_comparison_requires_resolved_entity"
+      ],
+      "reason": "Competitor comparison evidence exists, but unresolved entity ambiguity is too strong for safe differentiation readiness. Recommended action: Resolve audited-entity boundaries before enabling differentiation from comparison evidence."
+    }
+  ],
+  "review_required_dimensions": [],
+  "metadata": {
+    "llm_required": false,
+    "deep_research_required": false,
+    "runtime_effect": false,
+    "prompt_effect": false,
+    "source_packet_version": 0,
+    "included_dimensions": [
+      "coherencia",
+      "presencia",
+      "percepcion",
+      "vitalidad"
+    ],
+    "excluded_dimensions": [
+      "diferenciacion"
+    ],
+    "included_evidence_count": 9,
+    "excluded_evidence_count": 25,
+    "review_required_evidence_count": 7,
+    "current_dimension_evidence_input_counts": {
+      "coherencia": 9,
+      "presencia": 10,
+      "percepcion": 3,
+      "diferenciacion": 7,
+      "vitalidad": 7
+    },
+    "candidate_dimension_evidence_input_counts": {
+      "coherencia": 2,
+      "presencia": 3,
+      "percepcion": 1,
+      "diferenciacion": 0,
+      "vitalidad": 3
+    },
+    "noise_reduction_by_dimension": {
+      "coherencia": {
+        "current_inputs": 9,
+        "candidate_inputs": 2,
+        "excluded_inputs": 7
+      },
+      "presencia": {
+        "current_inputs": 10,
+        "candidate_inputs": 3,
+        "excluded_inputs": 7
+      },
+      "percepcion": {
+        "current_inputs": 3,
+        "candidate_inputs": 1,
+        "excluded_inputs": 2
+      },
+      "diferenciacion": {
+        "current_inputs": 7,
+        "candidate_inputs": 0,
+        "excluded_inputs": 7
+      },
+      "vitalidad": {
+        "current_inputs": 7,
+        "candidate_inputs": 3,
+        "excluded_inputs": 4
+      }
+    }
+  }
+}

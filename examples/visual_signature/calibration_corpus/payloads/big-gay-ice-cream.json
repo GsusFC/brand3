@@ -1,0 +1,215 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:08:34.996505",
+    "adapter": "firecrawl",
+    "errors": [
+      "Request Timeout: Failed to scrape as the request timed out. The scrape operation timed out before completing. This happens when a page takes too long to load, render, or process. Possible causes: (1) The website is slow or unresponsive, (2) The page has heavy JavaScript that takes time to execute, (3) The page is very large or has many resources to load, (4) Network latency is high. To fix this, try increasing the timeout parameter in your scrape request, or if using actions, ensure your selectors are correct and the page is ready before actions are executed. - No additional error details provided."
+    ],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://biggayicecream.com",
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.04,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": false,
+    "failures": [
+      "interpretation_status_not_interpretable",
+      "acquisition_errors_present",
+      "viewport_screenshot_missing",
+      "viewport_screenshot_quality_unusable"
+    ],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": null,
+      "viewport_width": null
+    },
+    "signal_coverage": 1.0,
+    "warnings": [
+      "capture_type_unknown"
+    ]
+  },
+  "baseline_eligible": false,
+  "brand_name": "Big Gay Ice Cream",
+  "calibration": {
+    "expected_category": "local_service_small_business",
+    "notes": "Small hospitality brand with expressive but simple visual surface."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [],
+    "confidence": 0.0,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": []
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.15,
+    "component_consistency": 0.25,
+    "confidence": 0.022,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.198,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.1,
+      "consistency_coverage": 0.022,
+      "html_coverage": 0.0,
+      "signal_coverage": 0.015
+    },
+    "level": "low",
+    "limitations": [
+      "acquisition_errors_present",
+      "screenshot_not_available",
+      "html_coverage_limited",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.034
+  },
+  "interpretation_status": "not_interpretable",
+  "layout": {
+    "confidence": 0.0,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": false,
+    "has_main_content": false,
+    "has_navigation": false,
+    "layout_patterns": [
+      "unknown"
+    ],
+    "section_count": 0,
+    "visual_density": "unknown"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.0,
+    "font_families": [],
+    "heading_scale": "unknown",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "unknown",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [],
+      "viewport_density": "unknown",
+      "viewport_palette_complexity": 0.0
+    },
+    "composition": {
+      "color_variance": null,
+      "composition_classification": "unknown",
+      "confidence": 0.0,
+      "edge_density": null,
+      "visual_density": "unknown",
+      "whitespace_ratio": null
+    },
+    "screenshot": {
+      "available": false,
+      "capture_type": "unknown",
+      "file_size_bytes": null,
+      "height": null,
+      "limitations": [
+        "screenshot_file_not_found"
+      ],
+      "page_url": null,
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/local_service_small_business/big-gay-ice-cream.png",
+      "quality": "missing",
+      "source": "local_file",
+      "viewport_height": null,
+      "viewport_width": null,
+      "width": null
+    },
+    "screenshot_palette": {
+      "color_count": 0,
+      "confidence": 0.0,
+      "dominant_colors": []
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": null,
+      "composition_classification": "unknown",
+      "confidence": 0.0,
+      "edge_density": null,
+      "visual_density": "unknown",
+      "whitespace_ratio": null
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.0,
+        "palette": 0.0,
+        "screenshot": 0.0
+      },
+      "level": "low",
+      "limitations": [
+        "screenshot_file_not_found",
+        "screenshot_not_available",
+        "palette_confidence_limited",
+        "composition_confidence_limited"
+      ],
+      "score": 0.0
+    },
+    "viewport_palette": {
+      "color_count": 0,
+      "confidence": 0.0,
+      "dominant_colors": []
+    },
+    "viewport_visual_density": "unknown",
+    "viewport_whitespace_ratio": null,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.0,
+        "palette": 0.0,
+        "screenshot": 0.0
+      },
+      "level": "low",
+      "limitations": [
+        "screenshot_file_not_found",
+        "screenshot_not_available",
+        "palette_confidence_limited",
+        "composition_confidence_limited"
+      ],
+      "score": 0.0
+    }
+  },
+  "website_url": "https://biggayicecream.com"
+}

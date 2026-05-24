@@ -1,0 +1,230 @@
+{
+  "schema_version": "brand3-scoring-prompt-refinement-plan-1",
+  "record_type": "scoring_prompt_refinement_plan",
+  "generated_at": "2026-05-14",
+  "scope": "planning_only",
+  "goal": "Make report prose more diagnostic and less repetitive by tightening existing narrative prompts, fallback text, and output contracts.",
+  "prompt_targets": {
+    "synthesis": {
+      "functions": [
+        "generate_synthesis(context)",
+        "_SYNTHESIS_SYSTEM",
+        "_build_synthesis_user_prompt"
+      ],
+      "fallback": [
+        "_fallback_synthesis"
+      ]
+    },
+    "findings": {
+      "functions": [
+        "generate_dimension_findings(dim, brand)",
+        "_FINDINGS_SYSTEM",
+        "_build_findings_user_prompt"
+      ],
+      "fallback": [
+        "_fallback_findings"
+      ]
+    },
+    "tensions": {
+      "functions": [
+        "generate_tensions(dimensions, brand)",
+        "_TENSIONS_SYSTEM",
+        "_build_tensions_user_prompt"
+      ]
+    }
+  },
+  "low_risk_changes_first": [
+    {
+      "name": "tighten_synthesis_prompt",
+      "target": [
+        "_SYNTHESIS_SYSTEM",
+        "_build_synthesis_user_prompt"
+      ],
+      "future_rules": [
+        "forbid score-first openings explicitly",
+        "require one concrete evidence anchor in the opening sentence",
+        "require a named pattern rather than a praise phrase",
+        "require either one real tension or an explicit no-tension statement",
+        "reduce generic strategic phrases such as clear message and strong presence"
+      ],
+      "expected_effect": [
+        "less score-led prose",
+        "more evidence-linked opening",
+        "less consultant-style padding"
+      ]
+    },
+    {
+      "name": "tighten_findings_prompt",
+      "target": [
+        "_FINDINGS_SYSTEM",
+        "_build_findings_user_prompt"
+      ],
+      "future_rules": [
+        "preserve observation / implication / typical_decision structure",
+        "forbid closed evaluative adjectives unless directly quoted",
+        "require dimension-specific observations",
+        "make single-source or thin-evidence limitations explicit",
+        "prevent fallback from collapsing to the same sentence for every dimension"
+      ],
+      "expected_effect": [
+        "more useful per-dimension findings",
+        "fewer generic consolidated evidence blocks",
+        "clearer evidence limits"
+      ]
+    },
+    {
+      "name": "tighten_tension_prompt",
+      "target": [
+        "_TENSIONS_SYSTEM",
+        "_build_tensions_user_prompt"
+      ],
+      "future_rules": [
+        "keep null as preferred when no real tension exists",
+        "require a concrete evidence delta when a tension is produced",
+        "ban generic compelling story and strong positioning phrases",
+        "keep the strategic question space narrow and evidence-based"
+      ],
+      "expected_effect": [
+        "fewer forced tensions",
+        "fewer inflated strategic statements"
+      ]
+    },
+    {
+      "name": "refine_fallback_text",
+      "target": [
+        "_fallback_synthesis",
+        "_fallback_findings"
+      ],
+      "future_rules": [
+        "make fallback paragraphs dimension-specific",
+        "avoid the repeated phrase available evidence",
+        "avoid automatic synthesis unavailable as a generic ending",
+        "keep the score out of the opening sentence",
+        "be honest about missing evidence or missing signal types"
+      ],
+      "expected_effect": [
+        "better honesty when LLM output is unavailable",
+        "less repetition across degraded runs"
+      ]
+    }
+  ],
+  "medium_risk_changes_later": [
+    {
+      "name": "reduce_duplicate_narrative_surface",
+      "files": [
+        "src/reports/templates/report.html.j2",
+        "src/reports/derivation.py"
+      ],
+      "future_change": [
+        "reduce repeated prose rendered in both current-reading and synthesis tabs",
+        "make current-reading and synthesis intentionally different in function"
+      ],
+      "expected_effect": [
+        "less duplication of the same story in two places",
+        "clearer reader experience"
+      ]
+    },
+    {
+      "name": "split_narrative_into_signal_layers",
+      "files": [
+        "src/reports/narrative.py"
+      ],
+      "future_change": [
+        "separate observation, implication, tension, and recommendation-space into stronger contracts",
+        "keep each layer from collapsing into the others"
+      ],
+      "expected_effect": [
+        "less generic prose",
+        "better structure for future reuse"
+      ]
+    },
+    {
+      "name": "make_fallbacks_dimension_specific",
+      "files": [
+        "src/reports/narrative.py"
+      ],
+      "future_change": [
+        "fallback copy should explain what signal failed for each dimension",
+        "each dimension should have a distinct fallback style"
+      ],
+      "expected_effect": [
+        "more precise failure modes",
+        "easier debugging"
+      ]
+    }
+  ],
+  "prompt_changes_by_file_function": {
+    "src/reports/narrative.py": {
+      "synthesis": [
+        "_SYNTHESIS_SYSTEM",
+        "_build_synthesis_user_prompt"
+      ],
+      "findings": [
+        "_FINDINGS_SYSTEM",
+        "_build_findings_user_prompt"
+      ],
+      "tensions": [
+        "_TENSIONS_SYSTEM",
+        "_build_tensions_user_prompt"
+      ],
+      "fallbacks": [
+        "_fallback_synthesis",
+        "_fallback_findings"
+      ]
+    },
+    "src/reports/templates/report.html.j2": {
+      "role": "future structural follow-up only",
+      "note": "No prompt change yet. Use later to reduce duplicated prose between tabs."
+    }
+  },
+  "dimension_specific_prompt_rules": {
+    "coherencia": [
+      "require explicit touchpoints",
+      "distinguish visual, message, tone, and cross-channel signals",
+      "avoid generic clear message wording"
+    ],
+    "presencia": [
+      "separate owned web presence from external discoverability",
+      "mention missing social or directory signals explicitly"
+    ],
+    "percepcion": [
+      "separate awareness, sentiment, controversy, and review surface",
+      "avoid collapsing sparse mentions into a generic positive or negative claim"
+    ],
+    "diferenciacion": [
+      "require ownable vocabulary and competitor compression language",
+      "keep strong positioning out unless evidence truly supports it"
+    ],
+    "vitalidad": [
+      "separate recency, cadence, momentum, and lifecycle stage",
+      "avoid life/death metaphors unless the evidence is strong"
+    ]
+  },
+  "validation_method": {
+    "method": [
+      "re-render a small set of sample reports after prompt edits",
+      "compare synthesis openings against the old score-led template",
+      "check whether each dimension names a more specific evidence pattern",
+      "check whether fallback text is dimension-specific and non-repetitive",
+      "check whether the report still repeats the same summary twice"
+    ],
+    "sample_reports": [
+      "tests/snapshots/report-netlify-light.html",
+      "output/reports/manual-preview.html",
+      "output/reports/manual-preview-real.html",
+      "output/reports/manual-preview-real-actual.html",
+      "output/reports/charms-real.html",
+      "output/reports/charms-real-actual.html",
+      "output/reports/elevenlabs/13-20260430-230043/report.dark.html",
+      "output/reports/floc/9-20260430-064008/report.light.html",
+      "output/reports/a16z/42-20260419-144049/report.light.html"
+    ]
+  },
+  "success_criteria": [
+    "synthesis no longer opens with the score",
+    "findings stop defaulting to generic available evidence",
+    "tensions are only produced when real evidence supports them",
+    "fallback prose is honest and dimension-aware",
+    "sample reports sound more diagnostic and less consultant-like"
+  ]
+}

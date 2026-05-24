@@ -32,17 +32,488 @@ from src.services.brand_service import (
     _llm_provider_payload,
     _public_presence_inventory_summary,
     _recover_owned_web_content,
+    _run_visual_signature_shadow,
     _screenshot_capture_diagnostic,
     _take_screenshot_with_budget,
     _should_skip_llm_for_low_context,
     _trust_summary_payload,
 )
+from src.discovery.summary import format_discovery_summary
 from src.models.brand import FeatureValue
 from src.quality.evidence_summary import summarize_evidence_from_features
 from src.storage.sqlite_store import SQLiteStore
 
 
+class _VisualSignatureStore:
+    def __init__(self, *, should_fail: bool = False):
+        self.should_fail = should_fail
+        self.saved = []
+
+    def save_visual_signature_evidence(self, run_id, payload):
+        if self.should_fail:
+            raise RuntimeError("fixture persistence failure")
+        self.saved.append((run_id, payload))
+
+
+class VisualSignatureShadowRunTests(unittest.TestCase):
+    def test_shadow_run_disabled_skips_without_extraction_or_persistence(self):
+        calls = {"extractor": 0}
+
+        def extractor(**_kwargs):
+            calls["extractor"] += 1
+            return {}
+
+        store = _VisualSignatureStore()
+
+        result = _run_visual_signature_shadow(
+            enabled=False,
+            store=store,
+            run_id=1,
+            brand_name="Example",
+            url="https://example.com",
+            web_data=None,
+            content_web=None,
+            screenshot_capture=None,
+            extractor=extractor,
+        )
+
+        self.assertEqual(result["status"], "skipped")
+        self.assertEqual(result["events"], ["skipped"])
+        self.assertEqual(calls["extractor"], 0)
+        self.assertEqual(store.saved, [])
+
+    def test_shadow_run_extracts_enriches_and_persists_evidence(self):
+        store = _VisualSignatureStore()
+
+        def extractor(**kwargs):
+            self.assertEqual(kwargs["brand_name"], "Example")
+            self.assertEqual(kwargs["website_url"], "https://example.com")
+            self.assertIsNotNone(kwargs["screenshot_payload"])
+            return {
+                "brand_name": "Example",
+                "website_url": "https://example.com",
+                "interpretation_status": "interpretable",
+                "acquisition": {"adapter": "existing_web_data", "status_code": 200, "warnings": [], "errors": []},
+                "version": "visual-signature-mvp-1",
+            }
+
+        def enricher(**kwargs):
+            payload = dict(kwargs["visual_signature_payload"])
+            payload["vision"] = {
+                "screenshot": {
+                    "available": True,
+                    "path": kwargs["screenshot_path"],
+                    "capture_type": "full_page",
+                    "quality": "usable",
+                },
+                "viewport_composition": {"visual_density": "balanced"},
+                "agreement": {"agreement_level": "high", "disagreement_flags": [], "summary_notes": []},
+            }
+            return payload
+
+        result = _run_visual_signature_shadow(
+            enabled=True,
+            store=store,
+            run_id=7,
+            brand_name="Example",
+            url="https://example.com",
+            web_data=None,
+            content_web=None,
+            screenshot_capture={
+                "success": True,
+                "source": "playwright",
+                "screenshot_url": "file:///tmp/example.png",
+            },
+            extractor=extractor,
+            vision_enricher=enricher,
+        )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertTrue(result["persisted"])
+        self.assertIn("persisted", result["events"])
+        self.assertEqual(result["agreement_level"], "high")
+        self.assertEqual(len(store.saved), 1)
+        run_id, payload = store.saved[0]
+        self.assertEqual(run_id, 7)
+        self.assertEqual(payload["run_metadata"]["acquisition_status"], "ok")
+        self.assertTrue(payload["run_metadata"]["screenshot_available"])
+        self.assertTrue(payload["run_metadata"]["full_page_available"])
+        self.assertEqual(payload["run_metadata"]["agreement_level"], "high")
+        self.assertEqual(payload["artifact_refs"]["screenshot_path"], "/tmp/example.png")
+
+    def test_shadow_run_persists_not_interpretable_payload_on_extraction_failure(self):
+        store = _VisualSignatureStore()
+
+        def extractor(**_kwargs):
+            raise RuntimeError("fixture acquisition failure")
+
+        result = _run_visual_signature_shadow(
+            enabled=True,
+            store=store,
+            run_id=11,
+            brand_name="Failed",
+            url="https://failed.example",
+            web_data=None,
+            content_web=None,
+            screenshot_capture=None,
+            extractor=extractor,
+        )
+
+        self.assertEqual(result["status"], "acquisition_failed")
+        self.assertEqual(result["interpretation_status"], "not_interpretable")
+        self.assertIn("acquisition_failed", result["events"])
+        self.assertEqual(len(store.saved), 1)
+        payload = store.saved[0][1]
+        self.assertEqual(payload["run_metadata"]["acquisition_status"], "error")
+        self.assertEqual(payload["run_metadata"]["interpretation_status"], "not_interpretable")
+        self.assertEqual(payload["raw_visual_signature_payload"]["acquisition"]["errors"][0], "fixture acquisition failure")
+
+    def test_shadow_run_degrades_gracefully_when_persistence_fails(self):
+        store = _VisualSignatureStore(should_fail=True)
+
+        def extractor(**_kwargs):
+            return {
+                "brand_name": "Example",
+                "website_url": "https://example.com",
+                "interpretation_status": "interpretable",
+                "acquisition": {"adapter": "existing_web_data", "status_code": 200, "warnings": [], "errors": []},
+                "version": "visual-signature-mvp-1",
+            }
+
+        result = _run_visual_signature_shadow(
+            enabled=True,
+            store=store,
+            run_id=13,
+            brand_name="Example",
+            url="https://example.com",
+            web_data=None,
+            content_web=None,
+            screenshot_capture=None,
+            extractor=extractor,
+        )
+
+        self.assertEqual(result["status"], "completed")
+        self.assertFalse(result["persisted"])
+        self.assertIn("persistence_skipped", result["events"])
+
+
 class BrandServiceContentFallbackTests(unittest.TestCase):
+    def _run_with_mocked_inputs(self, *, brand_name: str, url: str) -> dict:
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(
+                url=url,
+                robots_found=True,
+                sitemap_found=True,
+                sitemap_url_count=3,
+                coverage=0.8,
+                confidence=0.8,
+            )
+            web = WebData(
+                url=url,
+                title=brand_name,
+                markdown_content=f"{brand_name} builds useful brand intelligence. " * 12,
+            )
+            exa = ExaData(
+                brand_name=brand_name,
+                mentions=[
+                    ExaResult(url=f"https://source{i}.com", title=f"{brand_name} mention", text=f"{brand_name} mention.")
+                    for i in range(5)
+                ],
+            )
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                            return brand_service.run(
+                                url,
+                                brand_name,
+                                use_llm=False,
+                                use_social=False,
+                                use_competitors=False,
+                                skip_visual_analysis=True,
+                                refresh=True,
+                            )
+
+    def _run_with_discovery_evidence(self, *, brand_name: str, url: str, exa: ExaData) -> dict:
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(url=url, robots_found=True, sitemap_found=True, sitemap_url_count=3, coverage=0.8, confidence=0.8)
+            web = WebData(url=url, title=brand_name, markdown_content=f"{brand_name} owned product evidence. " * 12)
+            pages = [WebData(url=url, title=brand_name, markdown_content=f"{brand_name} discovery owned page. " * 12)]
+
+            def fake_search(query, num_results=5, **kwargs):
+                suffix = sum(ord(ch) for ch in query) % 10000
+                return [ExaResult(url=f"https://extra.example.com/{suffix}", title=query)]
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
+                        with patch("src.services.brand_service.WebCollector.scrape_multiple", return_value=pages):
+                            with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                                with patch("src.services.brand_service.ExaCollector.search", side_effect=fake_search):
+                                    return brand_service.run(
+                                        url,
+                                        brand_name,
+                                        use_llm=False,
+                                        use_social=False,
+                                        use_competitors=False,
+                                        skip_visual_analysis=True,
+                                        refresh=True,
+                                    )
+
+    def test_run_json_includes_entity_discovery(self):
+        result = self._run_with_mocked_inputs(brand_name="Example", url="https://example.com")
+
+        self.assertIn("entity_discovery", result)
+        self.assertEqual(result["entity_discovery"]["entity_type"], "company")
+        self.assertEqual(result["entity_discovery"]["analysis_scope"], "company_brand")
+
+    def test_run_json_includes_discovery_search_plan(self):
+        result = self._run_with_mocked_inputs(brand_name="ChatGPT", url="https://chatgpt.com")
+
+        self.assertIn("discovery_search_plan", result)
+        self.assertEqual(result["discovery_search_plan"]["primary_entity"], "OpenAI")
+        self.assertEqual(result["discovery_search_plan"]["requested_entity"], "ChatGPT")
+        self.assertEqual(result["discovery_search_plan"]["analysis_mode"], "product_with_parent")
+        self.assertEqual(
+            result["discovery_search_plan"]["queries"],
+            [
+                "OpenAI ChatGPT brand positioning",
+                "OpenAI ChatGPT product updates",
+                "OpenAI ChatGPT reviews",
+                "OpenAI ChatGPT competitors",
+            ],
+        )
+
+    def test_run_json_includes_discovery_evidence_preview(self):
+        result = self._run_with_mocked_inputs(brand_name="ChatGPT", url="https://chatgpt.com")
+
+        self.assertIn("discovery_evidence_preview", result)
+        self.assertTrue(result["discovery_evidence_preview"]["attempted"])
+        self.assertEqual(result["discovery_evidence_preview"]["queries_used"], result["discovery_search_plan"]["queries"])
+        self.assertIn("recommended_to_use_for_scoring", result["discovery_evidence_preview"])
+
+    def test_run_json_includes_discovery_calibration_hint(self):
+        result = self._run_with_mocked_inputs(brand_name="ChatGPT", url="https://chatgpt.com")
+
+        self.assertIn("discovery_calibration_hint", result)
+        self.assertEqual(result["discovery_calibration_hint"]["recommended_profile"], "product_with_parent")
+        self.assertFalse(result["discovery_calibration_hint"]["applied"])
+
+    def test_discovery_enrichment_chatgpt_uses_openai_and_chatgpt(self):
+        exa = ExaData(brand_name="ChatGPT", mentions=[
+            ExaResult(url="https://openai.com/blog/chatgpt", title="OpenAI ChatGPT updates"),
+            ExaResult(url="https://chatgpt.com", title="ChatGPT by OpenAI"),
+            ExaResult(url="https://techcrunch.com/chatgpt", title="OpenAI ChatGPT reviews"),
+            ExaResult(url="https://theverge.com/chatgpt", title="ChatGPT competitors"),
+            ExaResult(url="https://wired.com/chatgpt", title="OpenAI ChatGPT positioning"),
+        ])
+        result = self._run_with_discovery_evidence(brand_name="ChatGPT", url="https://chatgpt.com", exa=exa)
+
+        self.assertTrue(result["discovery_enrichment"]["applied"])
+        self.assertEqual(result["discovery_enrichment"]["urls_used"], ["https://openai.com", "https://chatgpt.com"])
+        self.assertEqual(result["discovery_enrichment"]["queries_used"][0], "OpenAI ChatGPT brand positioning")
+        self.assertGreater(result["discovery_enrichment"]["added_third_party_evidence"], 0)
+        self.assertEqual(result["discovery_trust_basis"]["basis"], "product_with_parent_enriched")
+        self.assertEqual(result["discovery_trust_basis"]["primary_entity"], "OpenAI")
+        self.assertIn("not only https://chatgpt.com", result["discovery_trust_basis"]["user_message"])
+        self.assertEqual(result["trust_summary"]["evidence_basis_summary"], result["discovery_trust_basis"]["user_message"])
+        self.assertTrue(result["discovery_calibration_decision"]["applied"])
+        self.assertEqual(result["calibration_profile"], "product_with_parent")
+        self.assertEqual(result["profile_source"], "discovery")
+        self.assertEqual(result["audit"]["calibration_profile_config"]["label"], "Product with Parent")
+
+    def test_discovery_enrichment_claude_uses_anthropic_and_claude(self):
+        exa = ExaData(brand_name="Claude", mentions=[
+            ExaResult(url="https://anthropic.com/news/claude", title="Anthropic Claude updates"),
+            ExaResult(url="https://claude.ai", title="Claude by Anthropic"),
+            ExaResult(url="https://techcrunch.com/claude", title="Anthropic Claude reviews"),
+            ExaResult(url="https://theverge.com/claude", title="Claude competitors"),
+            ExaResult(url="https://wired.com/claude", title="Anthropic Claude positioning"),
+        ])
+        result = self._run_with_discovery_evidence(brand_name="Claude", url="https://claude.ai", exa=exa)
+
+        self.assertTrue(result["discovery_enrichment"]["applied"])
+        self.assertEqual(result["discovery_search_plan"]["primary_entity"], "Anthropic")
+        self.assertEqual(result["discovery_enrichment"]["queries_used"][0], "Anthropic Claude brand positioning")
+        self.assertEqual(result["discovery_trust_basis"]["basis"], "product_with_parent_enriched")
+        self.assertEqual(result["discovery_trust_basis"]["primary_entity"], "Anthropic")
+        self.assertIn("not only https://claude.ai", result["discovery_trust_basis"]["user_message"])
+        self.assertTrue(result["discovery_calibration_decision"]["applied"])
+        self.assertEqual(result["calibration_profile"], "product_with_parent")
+        self.assertEqual(result["profile_source"], "discovery")
+        self.assertIn("previous_calibration_profile", result["discovery_calibration_decision"])
+        self.assertEqual(result["audit"]["calibration_profile_config"]["label"], "Product with Parent")
+
+    def test_discovery_enrichment_base_uses_ecosystem_protocol_queries(self):
+        exa = ExaData(brand_name="Base", mentions=[
+            ExaResult(url="https://base.org", title="Base protocol updates"),
+            ExaResult(url="https://cointelegraph.com/base", title="Base ecosystem positioning"),
+            ExaResult(url="https://decrypt.co/base", title="Base competitors alternatives"),
+            ExaResult(url="https://blockworks.co/base", title="Base developer community"),
+            ExaResult(url="https://example.com/base", title="Base protocol community"),
+        ])
+        result = self._run_with_discovery_evidence(brand_name="Base", url="https://base.org", exa=exa)
+
+        self.assertTrue(result["discovery_enrichment"]["applied"])
+        self.assertEqual(result["discovery_search_plan"]["analysis_mode"], "ecosystem_or_protocol")
+        self.assertEqual(result["discovery_enrichment"]["queries_used"][0], "Base ecosystem positioning")
+        self.assertEqual(result["discovery_trust_basis"]["basis"], "ecosystem_or_protocol_enriched")
+        self.assertTrue(result["discovery_calibration_decision"]["applied"])
+        self.assertEqual(result["calibration_profile"], "ecosystem_or_protocol")
+        self.assertEqual(result["profile_source"], "discovery")
+        self.assertEqual(result["audit"]["calibration_profile_config"]["label"], "Ecosystem / Protocol")
+
+    def test_discovery_enrichment_not_applied_when_preview_insufficient(self):
+        result = self._run_with_mocked_inputs(brand_name="Unknown", url="https://example.com")
+
+        self.assertFalse(result["discovery_enrichment"]["applied"])
+        self.assertEqual(result["discovery_enrichment"]["urls_used"], [])
+        self.assertEqual(result["discovery_enrichment"]["queries_used"], [])
+        self.assertEqual(result["discovery_trust_basis"]["basis"], "url_only")
+        self.assertFalse(result["discovery_trust_basis"]["uses_enriched_evidence"])
+
+    def test_discovery_trust_basis_openai_company_brand(self):
+        result = self._run_with_mocked_inputs(brand_name="OpenAI", url="https://openai.com")
+
+        self.assertIn(result["discovery_trust_basis"]["basis"], {"company_brand", "company_brand_enriched"})
+        self.assertEqual(result["discovery_trust_basis"]["primary_entity"], "OpenAI")
+
+    def test_discovery_calibration_gate_applies_openai_frontier_ai(self):
+        exa = ExaData(brand_name="OpenAI", mentions=[
+            ExaResult(url="https://openai.com/news", title="OpenAI frontier AI updates"),
+            ExaResult(url="https://techcrunch.com/openai", title="OpenAI frontier AI reviews"),
+            ExaResult(url="https://theverge.com/openai", title="OpenAI competitors"),
+            ExaResult(url="https://wired.com/openai", title="OpenAI brand positioning"),
+            ExaResult(url="https://example.com/openai", title="OpenAI latest product updates"),
+        ])
+        niche = {"predicted_niche": "frontier_ai", "confidence": 0.91, "alternatives": [], "evidence": ["test"]}
+        with patch("src.services.brand_service.classify_brand_niche", return_value=niche):
+            result = self._run_with_discovery_evidence(brand_name="OpenAI", url="https://openai.com", exa=exa)
+
+        self.assertEqual(result["discovery_calibration_decision"]["calibration_profile"], "frontier_ai")
+        self.assertEqual(result["discovery_calibration_decision"]["profile_source"], "discovery")
+        self.assertTrue(result["discovery_calibration_decision"]["applied"])
+        self.assertEqual(result["discovery_calibration_decision"]["reason"], "discovery_calibration_gate_passed")
+        self.assertIn("previous_calibration_profile", result["discovery_calibration_decision"])
+        self.assertEqual(result["profile_source"], "discovery")
+        self.assertEqual(result["audit"]["discovery_calibration_decision"], result["discovery_calibration_decision"])
+
+    def test_format_discovery_summary_product_with_parent(self):
+        lines = format_discovery_summary({
+            "entity_discovery": {"entity_name": "ChatGPT"},
+            "discovery_search_plan": {"primary_entity": "OpenAI", "analysis_mode": "product_with_parent"},
+            "discovery_evidence_preview": {
+                "recommended_to_use_for_scoring": True,
+                "owned_results_count": 5,
+                "third_party_results_count": 7,
+                "top_domains": ["openai.com", "help.openai.com", "techcrunch.com"],
+            },
+            "discovery_trust_basis": {
+                "basis": "product_with_parent_enriched",
+                "user_message": "Audit basis covers ChatGPT as a product of OpenAI; it is not only https://chatgpt.com.",
+            },
+        })
+
+        self.assertEqual(lines[0], "--- Discovery ---")
+        self.assertIn("Entity: ChatGPT", lines)
+        self.assertIn("Primary entity: OpenAI", lines)
+        self.assertIn("Mode: product_with_parent", lines)
+        self.assertIn("Search scope: product + parent company", lines)
+        self.assertIn("Evidence preview: recommended", lines)
+        self.assertIn("Owned evidence: 5", lines)
+        self.assertIn("Third-party evidence: 7", lines)
+        self.assertIn("Top domains: openai.com, help.openai.com, techcrunch.com", lines)
+        self.assertIn("Evidence basis: product_with_parent_enriched", lines)
+
+    def test_format_discovery_summary_company_brand(self):
+        lines = format_discovery_summary({
+            "entity_discovery": {"entity_name": "OpenAI"},
+            "discovery_search_plan": {"primary_entity": "OpenAI", "analysis_mode": "company_brand"},
+            "discovery_evidence_preview": {
+                "recommended_to_use_for_scoring": True,
+                "owned_results_count": 2,
+                "third_party_results_count": 4,
+            },
+        })
+
+        self.assertIn("Entity: OpenAI", lines)
+        self.assertIn("Primary entity: OpenAI", lines)
+        self.assertIn("Mode: company_brand", lines)
+        self.assertIn("Search scope: company brand", lines)
+        self.assertIn("Evidence preview: recommended", lines)
+
+    def test_format_discovery_summary_insufficient_limitations(self):
+        lines = format_discovery_summary({
+            "entity_discovery": {"entity_name": "Obscure Thing"},
+            "discovery_search_plan": {"primary_entity": "Obscure Thing", "analysis_mode": "url_only"},
+            "discovery_evidence_preview": {
+                "recommended_to_use_for_scoring": False,
+                "owned_results_count": 0,
+                "third_party_results_count": 1,
+                "limitations": ["insufficient_results", "owned_evidence_missing"],
+            },
+        })
+
+        self.assertIn("Evidence preview: insufficient", lines)
+        self.assertIn("Limitations: insufficient_results, owned_evidence_missing", lines)
+
+    def test_run_entity_discovery_chatgpt_parent(self):
+        result = self._run_with_mocked_inputs(brand_name="ChatGPT", url="https://chatgpt.com")
+
+        self.assertEqual(result["entity_discovery"]["parent_brand_name"], "OpenAI")
+        self.assertEqual(result["entity_discovery"]["analysis_scope"], "product_with_parent")
+
+    def test_run_entity_discovery_claude_parent(self):
+        result = self._run_with_mocked_inputs(brand_name="Claude", url="https://claude.ai")
+
+        self.assertEqual(result["entity_discovery"]["parent_brand_name"], "Anthropic")
+        self.assertEqual(result["entity_discovery"]["analysis_scope"], "product_with_parent")
+
+    def test_run_entity_discovery_openai_company(self):
+        result = self._run_with_mocked_inputs(brand_name="OpenAI", url="https://openai.com")
+
+        self.assertEqual(result["entity_discovery"]["entity_type"], "company")
+        self.assertEqual(result["entity_discovery"]["analysis_scope"], "company_brand")
+
+    def test_entity_discovery_does_not_change_scoring_outputs(self):
+        result = self._run_with_mocked_inputs(brand_name="ChatGPT", url="https://chatgpt.com")
+        result_without_discovery = dict(result)
+        result_without_discovery.pop("entity_discovery")
+        result_without_discovery.pop("discovery_search_plan")
+        result_without_discovery.pop("discovery_evidence_preview")
+        result_without_discovery.pop("discovery_enrichment")
+        result_without_discovery.pop("discovery_trust_basis")
+        result_without_discovery.pop("discovery_calibration_hint")
+        result_without_discovery.pop("discovery_calibration_decision")
+
+        self.assertIsNotNone(result["composite_score"])
+        self.assertEqual(
+            set(result["dimensions"]),
+            {"coherencia", "presencia", "percepcion", "diferenciacion", "vitalidad"},
+        )
+        self.assertEqual(result["composite_score"], result_without_discovery["composite_score"])
+        self.assertEqual(result["dimensions"], result_without_discovery["dimensions"])
+
+    def test_discovery_calibration_hint_does_not_change_selected_profile(self):
+        result = self._run_with_mocked_inputs(brand_name="ChatGPT", url="https://chatgpt.com")
+
+        self.assertEqual(result["discovery_calibration_hint"]["recommended_profile"], "product_with_parent")
+        self.assertNotEqual(result["calibration_profile"], "product_with_parent")
+        self.assertEqual(result["calibration_profile"], "base")
+        self.assertEqual(result["profile_source"], "fallback")
+
+    def test_entity_discovery_failure_does_not_fail_run(self):
+        with patch("src.services.brand_service.discover_entity", side_effect=RuntimeError("boom")):
+            result = self._run_with_mocked_inputs(brand_name="Example", url="https://example.com")
+
+        self.assertEqual(result["entity_discovery"]["entity_type"], "unknown")
+        self.assertEqual(result["entity_discovery"]["analysis_scope"], "url_only")
+        self.assertEqual(result["entity_discovery"]["confidence"], 0.0)
+        self.assertEqual(result["entity_discovery"]["warnings"], ["entity_discovery_failed"])
+
     def test_owned_fallback_recovers_same_domain_pages_before_exa_fallback(self):
         initial = WebData(url="https://example.com", title="Example", markdown_content="", error="blocked")
         about = WebData(
@@ -589,21 +1060,21 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
     def test_llm_provider_payload_exposes_provider_without_api_key(self):
         class FakeLLM:
             api_key = "secret-key"
-            model = "gemini-2.5-pro"
+            model = "gemini-3.1-pro-preview"
             base_url = "https://generativelanguage.googleapis.com/v1beta/openai"
 
         payload = _llm_provider_payload(FakeLLM())
 
         self.assertEqual(payload["provider"], "Google AI Studio / Gemini")
-        self.assertEqual(payload["model"], "gemini-2.5-pro")
+        self.assertEqual(payload["model"], "gemini-3.1-pro-preview")
         self.assertEqual(payload["base_url"], "https://generativelanguage.googleapis.com/v1beta/openai")
         self.assertTrue(payload["openai_compatible"])
         self.assertNotIn("api_key", payload)
 
     def test_llm_model_role_defaults_are_documented(self):
-        self.assertEqual(DEFAULT_LLM_MODEL, "gemini-2.5-flash")
-        self.assertEqual(DEFAULT_LLM_CHEAP_MODEL, "gemini-2.5-flash-lite")
-        self.assertEqual(DEFAULT_LLM_PREMIUM_MODEL, "gemini-2.5-pro")
+        self.assertEqual(DEFAULT_LLM_MODEL, "gemini-3.1-pro-preview")
+        self.assertEqual(DEFAULT_LLM_CHEAP_MODEL, "gemini-3.1-flash-lite")
+        self.assertEqual(DEFAULT_LLM_PREMIUM_MODEL, "gemini-3.1-pro-preview")
         self.assertEqual(DEFAULT_VISION_MODEL, "gemini-2.5-flash")
 
     def test_llm_model_roles_payload_exposes_models_without_secrets(self):
@@ -959,16 +1430,18 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
                 with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
                     with patch("src.services.brand_service.WebCollector.scrape", return_value=web):
-                        with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
-                            result = brand_service.run(
-                                "https://claude.ai",
-                                "Claude",
-                                use_llm=False,
-                                use_social=False,
-                                use_competitors=False,
-                                skip_visual_analysis=True,
-                                refresh=True,
-                            )
+                        with patch("src.services.brand_service.WebCollector.scrape_multiple", return_value=[]):
+                            with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                                with patch("src.services.brand_service.ExaCollector.search", return_value=[]):
+                                    result = brand_service.run(
+                                        "https://claude.ai",
+                                        "Claude",
+                                        use_llm=False,
+                                        use_social=False,
+                                        use_competitors=False,
+                                        skip_visual_analysis=True,
+                                        refresh=True,
+                                    )
 
         self.assertEqual(result["context_readiness"]["coverage"], 0.0)
         self.assertEqual(result["context_readiness"]["homepage_status"], 403)

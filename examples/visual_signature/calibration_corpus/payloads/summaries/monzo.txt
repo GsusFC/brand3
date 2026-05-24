@@ -1,0 +1,40 @@
+Expected category: finance_fintech
+Notes: Consumer bank with distinctive brand color and app-first page behavior.
+
+== Monzo ==
+URL: https://monzo.com
+Interpretation status: interpretable
+Extraction confidence: 0.66 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.52, consistency_coverage=0.59]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #f2f8f3[###] #dcdce6[###] #75817e[###] #ff4f40[###] #ffffff[###] #112231[###] #191919[###] #00b67a[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=44; density=balanced; patterns=flex,multi_column
+- components: button=44, cta=25, form=12, card=86, tabs=56, pricing=2
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #c0c0c0[###] #ffffff[###] #000000[###] #202020[###] #402020[###] #200000[###] #202000[###] #806040[###]
+- viewport palette: #c0c0c0[###] #ffffff[###] #000000[###] #202020[###] #402020[###] #200000[###] #202000[###] #806040[###]
+- composition: density=dense; whitespace=14%; classification=dense_grid
+- viewport composition: density=dense; whitespace=14%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

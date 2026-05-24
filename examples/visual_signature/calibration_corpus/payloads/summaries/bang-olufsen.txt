@@ -1,0 +1,42 @@
+Expected category: premium_luxury
+Notes: Premium electronics with product imagery and luxury positioning.
+
+== Bang & Olufsen ==
+URL: https://www.bang-olufsen.com
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.46, consistency_coverage=0.45]
+
+Signal coverage: 86%
+- colors: missing, confidence=0.05
+- typography: ok, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.45
+
+Visual summaries:
+- palette preview: none
+- typography: HelveticaNeueW0175Bold, helveticaneueltstdRoman, HelveticaNeueW01-45Ligh
+- layout: header=False; nav=False; hero=True; sections=0; density=sparse; patterns=multi_column
+- components: button=2, cta=6, form=8, card=38, tabs=8
+- consistency: overall=0.47; color=0.15; type=0.65; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #404040[###] #404020[###] #202000[###] #402020[###] #000000[###] #200000[###]
+- viewport palette: #ffffff[###] #202020[###] #404040[###] #404020[###] #202000[###] #402020[###] #000000[###] #200000[###]
+- composition: density=dense; whitespace=37%; classification=dense_grid
+- viewport composition: density=dense; whitespace=37%; classification=dense_grid
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_palette_more_complex_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport palette is noisier than the DOM palette.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- colors: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.45)
+- extraction limitation: screenshot_not_available
+- extraction limitation: consistency_inference_limited

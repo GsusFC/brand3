@@ -1,0 +1,504 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:59:20.247017",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://sentry.io",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 4,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 184,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Sentry",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Developer tooling with distinctive brand voice and dense product explanation."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#181225",
+      "#fd44b0",
+      "#c2ef4e",
+      "#1f1633",
+      "#7553ff",
+      "#30145f"
+    ],
+    "background_candidates": [
+      "#181225",
+      "#c2ef4e",
+      "#1f1633",
+      "#30145f",
+      "#ffffff",
+      "#2d2340"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#181225",
+      "#fd44b0",
+      "#c2ef4e",
+      "#1f1633",
+      "#7553ff",
+      "#a48977",
+      "#30145f",
+      "#ffffff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#181225",
+        "occurrences": 56,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#fd44b0",
+        "occurrences": 48,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#c2ef4e",
+        "occurrences": 32,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#1f1633",
+        "occurrences": 20,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#7553ff",
+        "occurrences": 16,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#a48977",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#30145f",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffffff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#2d2340",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#433458",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#362d4a",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#4d3f5f",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ececf1",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ad6caa",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#181225",
+      "#fd44b0",
+      "#1f1633",
+      "#7553ff",
+      "#30145f",
+      "#2d2340"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 100,
+        "labels": [
+          "Previous",
+          "Next",
+          "Debug 500's, trace slow requests, replay fetch() failures, and fix the broken co",
+          "Catch slow queries, N+1s, and request timeouts before the \u2018why is this so slow?\u2019",
+          "Map every incident to the release, PR, and owner -- automatically.",
+          "Analyzes every signal to explain why your code failed, not just where.",
+          "Fixes what\u2019s broken while you ship what\u2019s next \u2013 generating precise, merge-ready",
+          "Stops bad code before it starts bad days. Correlating PRs against real error and",
+          "Sign Up"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 23,
+        "labels": [
+          "Get started with Sentry",
+          "Try Application Metrics",
+          "Get Started",
+          "See How In Sandbox",
+          "Debug 500's, trace slow requests, replay fetch() failures, and fix the broken co",
+          "Catch slow queries, N+1s, and request timeouts before the \u2018why is this so slow?\u2019",
+          "Map every incident to the release, PR, and owner -- automatically.",
+          "Analyzes every signal to explain why your code failed, not just where.",
+          "Fixes what\u2019s broken while you ship what\u2019s next \u2013 generating precise, merge-ready",
+          "Stops bad code before it starts bad days. Correlating PRs against real error and"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 132,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Get started with Sentry",
+      "Try Application Metrics",
+      "Get Started",
+      "See How In Sandbox",
+      "Debug 500's, trace slow requests, replay fetch() failures, and fix the broken co",
+      "Catch slow queries, N+1s, and request timeouts before the \u2018why is this so slow?\u2019",
+      "Map every incident to the release, PR, and owner -- automatically.",
+      "Analyzes every signal to explain why your code failed, not just where."
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.7,
+    "confidence": 0.573,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.519,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.573,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.59
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.68
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 26,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Disney+",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sentry.io/_vercel/image?url=_astro%2Flogo.Bb9Pljse.png&amp;w=640&amp;q=100"
+      },
+      {
+        "alt": "Instacart",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sentry.io/_vercel/image?url=_astro%2Flogo-instacart.DZ7svSOB.webp&amp;w=640&amp;q=100"
+      },
+      {
+        "alt": "Cartoon showing the Sentry logo as a distressed character watching one person stuck in a smartphone and another diving headfirst into a retro computer\u2014illustrating developers getting lost in debugging chaos.",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sentry.io/_vercel/image?url=_astro%2Fhome-spot-404.C766tHib.webp&amp;w=640&amp;q=100"
+      },
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": "Sentry",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.159,
+      "composition_classification": "dense_grid",
+      "confidence": 0.696,
+      "edge_density": 0.077,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.031
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 983144,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://sentry.io",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/sentry.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 163,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#402080",
+          "occurrences": 6227,
+          "ratio": 0.3114
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 4517,
+          "ratio": 0.2258
+        },
+        {
+          "hex": "#4040a0",
+          "occurrences": 3476,
+          "ratio": 0.1738
+        },
+        {
+          "hex": "#402060",
+          "occurrences": 1932,
+          "ratio": 0.0966
+        },
+        {
+          "hex": "#404080",
+          "occurrences": 689,
+          "ratio": 0.0345
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 493,
+          "ratio": 0.0246
+        },
+        {
+          "hex": "#4020a0",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#8060ff",
+          "occurrences": 165,
+          "ratio": 0.0083
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.159,
+      "composition_classification": "dense_grid",
+      "confidence": 0.696,
+      "edge_density": 0.077,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.031
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.696,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.839
+    },
+    "viewport_palette": {
+      "color_count": 163,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#402080",
+          "occurrences": 6227,
+          "ratio": 0.3114
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 4517,
+          "ratio": 0.2258
+        },
+        {
+          "hex": "#4040a0",
+          "occurrences": 3476,
+          "ratio": 0.1738
+        },
+        {
+          "hex": "#402060",
+          "occurrences": 1932,
+          "ratio": 0.0966
+        },
+        {
+          "hex": "#404080",
+          "occurrences": 689,
+          "ratio": 0.0345
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 493,
+          "ratio": 0.0246
+        },
+        {
+          "hex": "#4020a0",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#8060ff",
+          "occurrences": 165,
+          "ratio": 0.0083
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.031,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.696,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.839
+    }
+  },
+  "website_url": "https://sentry.io"
+}

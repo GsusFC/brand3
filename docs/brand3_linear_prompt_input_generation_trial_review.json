@@ -1,0 +1,69 @@
+{
+  "document": "brand3_linear_prompt_input_generation_trial_review",
+  "version": 0,
+  "created_at": "2026-05-18T08:12:34.512171+00:00",
+  "scope": "controlled_non_runtime_generation_trial",
+  "case": {
+    "brand": "Linear",
+    "run_id": 80,
+    "dimension": "diferenciacion"
+  },
+  "artifacts": {
+    "script": "scripts/evidence_packet_prompt_input_generation_trial.py",
+    "current_prompt": "examples/reports/evidence_packet_prompt_input_generation/linear/current_prompt.json",
+    "candidate_prompt": "examples/reports/evidence_packet_prompt_input_generation/linear/candidate_prompt.json",
+    "current_output": "examples/reports/evidence_packet_prompt_input_generation/linear/current_output.json",
+    "candidate_output": "examples/reports/evidence_packet_prompt_input_generation/linear/candidate_output.json",
+    "comparison": "examples/reports/evidence_packet_prompt_input_generation/linear/comparison.json",
+    "cost_observation": "examples/reports/evidence_packet_prompt_input_generation/linear/cost_observation.json"
+  },
+  "result": {
+    "current_input_evidence_count": 5,
+    "candidate_input_evidence_count": 2,
+    "current_finding_count": 2,
+    "candidate_finding_count": 1,
+    "current_titles": [
+      "Self-Description as Agent Collaborative System",
+      "Contrast Between Product Pitch and Content Tone"
+    ],
+    "candidate_titles": [
+      "Relative Positioning Distance Among Measured Competitors"
+    ],
+    "current_risky_terms": [
+      "strategy",
+      "strategic"
+    ],
+    "candidate_risky_terms": [
+      "strategy"
+    ]
+  },
+  "assessment": {
+    "candidate_reduced_input_noise": true,
+    "candidate_preserved_relevant_comparison_signal": true,
+    "candidate_output_more_evidence_specific": true,
+    "candidate_output_fully_safe": false,
+    "why_not_fully_safe": [
+      "The shared findings system still requires typical_decision, which pulls output back toward strategic option framing.",
+      "The candidate output obeys relative-comparison evidence better, but still mentions strategy in typical_decision/internal-variable language.",
+      "The current output creates two broader themes from five mixed evidence items and includes stronger strategic interpretation than the candidate."
+    ],
+    "deep_research_gap_remaining": [
+      "Deep Research supplies source-grounded context; candidate uses snapshot comparison provenance.",
+      "Deep Research can explain source quality and relation; candidate only constrains prompt input.",
+      "Prompt contract still includes a prose schema that asks for typical_decision even when evidence is narrow."
+    ]
+  },
+  "decision": {
+    "evidence_packet_prompt_input_is_materially_better_than_current_input": true,
+    "ready_for_runtime_integration": false,
+    "next_step": "Design a lab-only candidate findings prompt/schema without typical_decision for evidence-packet inputs, then rerun Linear diferenciacion only."
+  },
+  "non_goals_preserved": [
+    "no_report_mutation",
+    "no_runtime_integration",
+    "no_prompt_rollout",
+    "no_scoring_change",
+    "no_renderer_change",
+    "no_visual_signature_change"
+  ]
+}

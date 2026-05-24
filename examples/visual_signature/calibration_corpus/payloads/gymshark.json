@@ -1,0 +1,335 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:59:57.194580",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.gymshark.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 18,
+    "video_count": 8
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Gymshark",
+  "calibration": {
+    "expected_category": "ecommerce",
+    "notes": "High-conversion apparel ecommerce with campaign and product emphasis."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#f5f5f5"
+    ],
+    "confidence": 0.406,
+    "dominant_colors": [
+      "#f5f5f5"
+    ],
+    "palette": [
+      {
+        "confidence": 0.64,
+        "hex": "#f5f5f5",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 102,
+        "labels": [
+          "Pause slide rotation"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 5,
+        "labels": [
+          "Pause slide rotation",
+          "Shop New In",
+          "Explore The Collection",
+          "THE BEST OF THE BEST Versatile and comfy lifting staples &amp; studio styles tha",
+          "READY FOR LIFT(ING) OFF These new rest day essentials make for perfect travel fi"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 696,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 32,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Pause slide rotation",
+      "Shop New In",
+      "Explore The Collection",
+      "THE BEST OF THE BEST Versatile and comfy lifting staples &amp; studio styles tha",
+      "READY FOR LIFT(ING) OFF These new rest day essentials make for perfect travel fi"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.68,
+    "confidence": 0.444,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.544,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.444,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.421
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.601
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "multi_column"
+    ],
+    "section_count": 38,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.209,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.921
+    },
+    "composition": {
+      "color_variance": 0.286,
+      "composition_classification": "dense_grid",
+      "confidence": 0.772,
+      "edge_density": 0.024,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.087
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 717757,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.gymshark.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/gymshark.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 34,
+      "confidence": 0.736,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 5413,
+          "ratio": 0.2707
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 2779,
+          "ratio": 0.1389
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 2566,
+          "ratio": 0.1283
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1778,
+          "ratio": 0.0889
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1600,
+          "ratio": 0.08
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 1186,
+          "ratio": 0.0593
+        },
+        {
+          "hex": "#808060",
+          "occurrences": 1075,
+          "ratio": 0.0537
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 779,
+          "ratio": 0.0389
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.286,
+      "composition_classification": "dense_grid",
+      "confidence": 0.772,
+      "edge_density": 0.024,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.087
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.772,
+        "palette": 0.736,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.821
+    },
+    "viewport_palette": {
+      "color_count": 34,
+      "confidence": 0.736,
+      "dominant_colors": [
+        {
+          "hex": "#808080",
+          "occurrences": 5413,
+          "ratio": 0.2707
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 2779,
+          "ratio": 0.1389
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 2566,
+          "ratio": 0.1283
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 1778,
+          "ratio": 0.0889
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 1600,
+          "ratio": 0.08
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 1186,
+          "ratio": 0.0593
+        },
+        {
+          "hex": "#808060",
+          "occurrences": 1075,
+          "ratio": 0.0537
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 779,
+          "ratio": 0.0389
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.087,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.772,
+        "palette": 0.736,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.821
+    }
+  },
+  "website_url": "https://www.gymshark.com"
+}

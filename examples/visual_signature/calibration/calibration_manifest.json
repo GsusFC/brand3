@@ -1,0 +1,69 @@
+{
+  "calibration_run_id": "6bf278708eea4c4887aaebe799477f59",
+  "generated_at": "2026-05-11T22:27:42.269547Z",
+  "generated_files": [
+    {
+      "path": "examples/visual_signature/calibration/calibration_records.json",
+      "record_type": "generated_file",
+      "schema_version": "visual-signature-calibration-generated-file-1",
+      "sha256": "52176df56c0c0aeeb5be7ead5970a2eabfdb9035a7e67e24932efb1130a36461",
+      "size_bytes": 24441,
+      "taxonomy_version": "phase-zero-taxonomy-1"
+    },
+    {
+      "path": "examples/visual_signature/calibration/calibration_summary.json",
+      "record_type": "generated_file",
+      "schema_version": "visual-signature-calibration-generated-file-1",
+      "sha256": "d5c3bb1cfd9282448487062719ac7214dd9af7cc6ffd431ea26653e8f596589c",
+      "size_bytes": 7560,
+      "taxonomy_version": "phase-zero-taxonomy-1"
+    },
+    {
+      "path": "examples/visual_signature/calibration/calibration_summary.md",
+      "record_type": "generated_file",
+      "schema_version": "visual-signature-calibration-generated-file-1",
+      "sha256": "4df73f752ea2fdb0b6f93ab7a2ae1b56f0c9e5c3081f4946c67f712d7d521386",
+      "size_bytes": 2617,
+      "taxonomy_version": "phase-zero-taxonomy-1"
+    }
+  ],
+  "notes": [
+    "Calibration is evidence-only.",
+    "Missing review is marked as insufficient_review, not contradicted.",
+    "Unclear review is marked as unresolved, not contradicted.",
+    "No scoring, rubric dimensions, production reports, or UI are modified."
+  ],
+  "record_count": 5,
+  "record_type": "calibration_manifest",
+  "schema_version": "visual-signature-calibration-manifest-1",
+  "schema_versions": {
+    "calibration_claim": "visual-signature-calibration-claim-1",
+    "calibration_generated_file": "visual-signature-calibration-generated-file-1",
+    "calibration_manifest": "visual-signature-calibration-manifest-1",
+    "calibration_record": "visual-signature-calibration-record-1",
+    "calibration_records": "visual-signature-calibration-records-1",
+    "calibration_summary": "visual-signature-calibration-summary-1",
+    "review_outcome": "visual-signature-calibration-review-outcome-1"
+  },
+  "source_artifact_hashes": {
+    "examples/visual_signature/calibration_brands.json": "43c1f75398618cd042b4954745a7226a3660fc46ed2187dc2c97b83f7a31c780",
+    "examples/visual_signature/screenshots/capture_manifest.json": "85fdfed159fa60dc3598247d1ea25bc6b83fb20fffc01975eb1621e620734e8b",
+    "examples/visual_signature/screenshots/dismissal_audit.json": "b35c54d794643d6bc23d6d66150e08ccc3cc30cd62467d0b48bc18fa77335a97"
+  },
+  "source_artifact_refs": [
+    "examples/visual_signature/phase_one",
+    "examples/visual_signature/phase_two",
+    "examples/visual_signature/screenshots/capture_manifest.json",
+    "examples/visual_signature/screenshots/dismissal_audit.json",
+    "examples/visual_signature/calibration_brands.json"
+  ],
+  "source_brand_catalog_path": "examples/visual_signature/calibration_brands.json",
+  "source_capture_manifest_path": "examples/visual_signature/screenshots/capture_manifest.json",
+  "source_dismissal_audit_path": "examples/visual_signature/screenshots/dismissal_audit.json",
+  "source_phase_one_root": "examples/visual_signature/phase_one",
+  "source_phase_two_root": "examples/visual_signature/phase_two",
+  "summary_count_consistency": true,
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "validation_errors": [],
+  "validation_status": "valid"
+}

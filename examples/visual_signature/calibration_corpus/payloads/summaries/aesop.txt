@@ -1,0 +1,40 @@
+Expected category: premium_luxury
+Notes: Premium retail visual system with restrained product presentation.
+
+== Aesop ==
+URL: https://www.aesop.com
+Interpretation status: interpretable
+Extraction confidence: 0.63 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.48, consistency_coverage=0.53]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.68
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.53
+
+Visual summaries:
+- palette preview: #000000[###] #f7ecdd[###] #f6f5e8[###] #fffef2[###] #333333[###] #242424[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=68; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: button=86, cta=13, form=20, accordion=2, modal=4
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #404040[###] #e0e0e0[###] #606060[###] #c0c0c0[###] #a0a0a0[###] #808080[###] #000000[###]
+- viewport palette: #ffffff[###] #404040[###] #e0e0e0[###] #606060[###] #c0c0c0[###] #a0a0a0[###] #808080[###] #000000[###]
+- composition: density=sparse; whitespace=99%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=99%; classification=sparse_single_focus
+- vision confidence: 0.75 (medium)
+- viewport confidence: 0.75 (medium)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

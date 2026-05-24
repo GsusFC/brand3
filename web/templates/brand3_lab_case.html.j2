@@ -1,0 +1,146 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.title }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.kind }}</span>
+    <span class="tag">// case detail · lab only</span>
+  </div>
+  <a class="source-link" href="{{ model.back_href }}">Back to Brand3 Lab</a>
+  <h1 class="page-title">{{ model.title }}</h1>
+  <p class="prose dim intro-copy">{{ model.case.summary }}</p>
+  <div class="lab-index-meta">
+    <span class="inline-kv"><span class="k">signal_depth</span>=<span class="v">{{ model.case.signal_depth }}</span></span>
+    <span class="inline-kv"><span class="k">signal_quality</span>=<span class="v">{{ model.case.signal_quality }}</span></span>
+    <span class="inline-kv"><span class="k">reading_valence</span>=<span class="v">{{ model.case.reading_valence }}</span></span>
+    <span class="inline-kv"><span class="k">reading_mode</span>=<span class="v">{{ model.case.reading_mode }}</span></span>
+    <span class="inline-kv"><span class="k">safe_output_mode</span>=<span class="v">{{ model.case.safe_output_mode }}</span></span>
+  </div>
+  <div class="badge-line">
+    <a class="source-link" href="{{ model.case.comparison_href }}">open comparison viewer</a>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Reading Guidance</span>
+    <span class="tag">// evidence before interpretation</span>
+  </div>
+  <div class="lab-two-column-brief">
+    <article class="lab-detail-block">
+      <h2>How To Read This Case</h2>
+      <ul class="lab-detail-list">
+        {% for item in model.how_to_read %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    <article class="lab-detail-block">
+      <h2>Classification Evidence</h2>
+      <ul class="lab-detail-list">
+        {% for evidence in model.case.classification_evidence %}
+        <li>{{ evidence }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Applied Layers</span>
+    <span class="tag">// which experiments affect the case</span>
+  </div>
+  <div class="lab-layer-card-row">
+    {% for layer in model.case.active_layers %}
+    <article class="lab-layer-mini-card">
+      <div class="lab-layer-mini-head">
+        <h2>{{ layer.name }}</h2>
+        <span class="badge{% if layer.status == 'applied' %} badge-ready{% endif %}">{{ layer.status }}</span>
+      </div>
+      <p>{{ layer.evidence }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{% if model.pair %}
+<hr class="rule-thin">
+
+<section class="lab-detail-section lab-narrative-evidence-section" id="case-comparison" data-comparison-pair data-brand-id="{{ model.case.id }}" data-brand-name="{{ model.case.brand }}">
+  <div class="section-head">
+    <span class="label">Narrative Evidence</span>
+    <span class="tag">// baseline vs perceptual</span>
+  </div>
+  <div class="lab-narrative-grid">
+    <article class="lab-narrative-panel">
+      <div class="lab-narrative-panel-head">
+        <h2>Baseline narrative</h2>
+        <span class="badge">current</span>
+      </div>
+      <p>{{ model.pair.baseline_narrative }}</p>
+    </article>
+    <article class="lab-narrative-panel is-perceptual">
+      <div class="lab-narrative-panel-head">
+        <h2>Perceptual narrative</h2>
+        <span class="badge badge-ready">augmented</span>
+      </div>
+      <p>{{ model.pair.perceptual_augmented_narrative }}</p>
+    </article>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section class="lab-detail-section">
+  <div class="section-head">
+    <span class="label">Comparison Signals</span>
+    <span class="tag">// what changed</span>
+  </div>
+  <div class="lab-signal-summary">
+    <article>
+      <h2>Specificity / grounding</h2>
+      <div class="lab-signal-chip-row">
+        {% for item in model.pair.better_specificity %}
+        <span class="badge badge-ready">{{ item }}</span>
+        {% endfor %}
+      </div>
+    </article>
+    <article>
+      <h2>Perceptual gains</h2>
+      <div class="lab-signal-chip-row">
+        {% for item in model.pair.perceptual_gains %}
+        <span class="badge badge-ready">{{ item }}</span>
+        {% endfor %}
+      </div>
+    </article>
+    <article>
+      <h2>Overreach risks</h2>
+      <div class="lab-signal-chip-row">
+        {% for item in model.pair.overreach_risks %}
+        <span class="badge">{{ item }}</span>
+        {% endfor %}
+      </div>
+    </article>
+  </div>
+</section>
+{% endif %}
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">Source Artifacts</span>
+    <span class="tag">// where this case is derived from</span>
+  </div>
+  <div class="kv artifact-kv">
+    {% for path in model.source_paths %}
+    <span class="k">source</span>    <span class="v mono-token">{{ path }}</span>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

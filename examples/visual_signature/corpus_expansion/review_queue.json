@@ -1,0 +1,136 @@
+{
+  "category_distribution": {
+    "AI-native": 1,
+    "SaaS": 1,
+    "ecommerce": 1,
+    "editorial/media": 1,
+    "wellness_lifestyle": 1
+  },
+  "confidence_distribution": {
+    "high": 2,
+    "low": 1,
+    "medium": 1,
+    "unknown": 1
+  },
+  "current_capture_count": 5,
+  "generated_at": "2026-05-12T10:43:08.621714Z",
+  "notes": [
+    "Evidence-only review queue scaffold.",
+    "Not enabled for scoring, runtime behavior, or model training."
+  ],
+  "pilot_run_id": "visual-signature-corpus-expansion-pilot-1",
+  "queue_items": [
+    {
+      "brand_name": "Linear",
+      "capture_id": "linear",
+      "category": "SaaS",
+      "confidence_bucket": "high",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-reviewed-capture"
+      ],
+      "queue_id": "queue_linear",
+      "queue_state": "reviewed",
+      "record_type": "corpus_expansion_queue_item",
+      "review_outcome": "confirmed",
+      "reviewed_at": "2026-05-12T10:30:00Z",
+      "reviewer_id": "reviewer-01",
+      "schema_version": "visual-signature-corpus-expansion-queue-item-1",
+      "website_url": "https://linear.app"
+    },
+    {
+      "brand_name": "The Verge",
+      "capture_id": "the-verge",
+      "category": "editorial/media",
+      "confidence_bucket": "high",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-reviewed-capture"
+      ],
+      "queue_id": "queue_verge",
+      "queue_state": "reviewed",
+      "record_type": "corpus_expansion_queue_item",
+      "review_outcome": "contradicted",
+      "reviewed_at": "2026-05-12T10:31:00Z",
+      "reviewer_id": "reviewer-02",
+      "schema_version": "visual-signature-corpus-expansion-queue-item-1",
+      "website_url": "https://www.theverge.com"
+    },
+    {
+      "brand_name": "OpenAI",
+      "capture_id": "openai",
+      "category": "AI-native",
+      "confidence_bucket": "medium",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-unresolved-review"
+      ],
+      "queue_id": "queue_openai",
+      "queue_state": "unresolved",
+      "record_type": "corpus_expansion_queue_item",
+      "review_outcome": "unresolved",
+      "reviewed_at": "2026-05-12T10:32:00Z",
+      "reviewer_id": "reviewer-03",
+      "schema_version": "visual-signature-corpus-expansion-queue-item-1",
+      "website_url": "https://openai.com"
+    },
+    {
+      "brand_name": "Allbirds",
+      "capture_id": "allbirds",
+      "category": "ecommerce",
+      "confidence_bucket": "low",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-needs-more-evidence"
+      ],
+      "queue_id": "queue_allbirds",
+      "queue_state": "needs_additional_evidence",
+      "record_type": "corpus_expansion_queue_item",
+      "review_outcome": null,
+      "reviewed_at": null,
+      "reviewer_id": null,
+      "schema_version": "visual-signature-corpus-expansion-queue-item-1",
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "brand_name": "Headspace",
+      "capture_id": "headspace",
+      "category": "wellness_lifestyle",
+      "confidence_bucket": "unknown",
+      "evidence_refs": [
+        "examples/visual_signature/calibration_records.json"
+      ],
+      "notes": [
+        "seed-queued-capture"
+      ],
+      "queue_id": "queue_headspace",
+      "queue_state": "queued",
+      "record_type": "corpus_expansion_queue_item",
+      "review_outcome": null,
+      "reviewed_at": null,
+      "reviewer_id": null,
+      "schema_version": "visual-signature-corpus-expansion-queue-item-1",
+      "website_url": "https://www.headspace.com"
+    }
+  ],
+  "queue_state_distribution": {
+    "needs_additional_evidence": 1,
+    "queued": 1,
+    "reviewed": 2,
+    "unresolved": 1
+  },
+  "readiness_scope": "human_review_scaling",
+  "readiness_status": "not_ready",
+  "record_type": "corpus_expansion_review_queue",
+  "reviewed_capture_count": 2,
+  "schema_version": "visual-signature-corpus-expansion-review-queue-1",
+  "target_capture_count": 20
+}

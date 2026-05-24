@@ -1,0 +1,39 @@
+Expected category: saas
+Notes: Visual collaboration SaaS with colorful interface-led storytelling.
+
+== Miro ==
+URL: https://miro.com
+Interpretation status: interpretable
+Extraction confidence: 0.71 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.60, consistency_coverage=0.76]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.76
+
+Visual summaries:
+- palette preview: #1c1c1e[###] #ffffff[###] #000000[###] #656b81[###] #0099ff[###] #6366f1[###] #322bfe[###] #6e3cfe[###]
+- typography: &quot
+- layout: header=False; nav=True; hero=True; sections=4; density=dense; patterns=flex,sticky_nav
+- components: button=6, cta=4, card=14, tabs=4, pricing=14
+- consistency: overall=0.61; color=0.48; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #e0e0e0[###] #4060ff[###] #ffe040[###] #e0e0ff[###] #c0c0c0[###] #606060[###]
+- viewport palette: #ffffff[###] #202020[###] #e0e0e0[###] #4060ff[###] #ffe040[###] #e0e0ff[###] #c0c0c0[###] #606060[###]
+- composition: density=dense; whitespace=74%; classification=dense_grid
+- viewport composition: density=dense; whitespace=74%; classification=dense_grid
+- vision confidence: 0.88 (high)
+- viewport confidence: 0.88 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

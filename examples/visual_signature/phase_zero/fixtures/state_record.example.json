@@ -1,0 +1,86 @@
+{
+  "brand_name": "Example Brand",
+  "capture_id": "cap_phase_zero_example",
+  "confidence": 0.91,
+  "created_at": "2026-05-11T10:00:00Z",
+  "lineage_refs": [
+    "capture:phase-zero-example"
+  ],
+  "perceptual_state": "REVIEW_REQUIRED_STATE",
+  "reasoning_trace": {
+    "created_at": "2026-05-11T10:00:00Z",
+    "lineage_refs": [
+      "capture:phase-zero-example"
+    ],
+    "record_type": "reasoning_trace",
+    "review_required": true,
+    "schema_version": "phase-zero-reasoning-trace-1",
+    "statements": [
+      {
+        "confidence": 0.92,
+        "evidence_refs": [
+          "raw_screenshot_path"
+        ],
+        "statement": "A cookie modal covers the lower portion of the viewport.",
+        "warnings": []
+      },
+      {
+        "confidence": 0.78,
+        "evidence_refs": [
+          "raw_screenshot_path",
+          "dom_snapshot_ref"
+        ],
+        "statement": "The primary CTA is visible but its clarity is reduced by the overlay.",
+        "warnings": []
+      }
+    ],
+    "summary": "The viewport is readable but partially obstructed, so human review is required.",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "trace_id": "trace_phase_zero_example",
+    "unsupported_inference_warnings": []
+  },
+  "record_id": "state_phase_zero_example",
+  "record_type": "perceptual_state",
+  "schema_version": "phase-zero-perceptual-state-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "transitions": [
+    {
+      "capture_id": "cap_phase_zero_example",
+      "confidence": 0.93,
+      "created_at": "2026-05-11T10:00:00Z",
+      "evidence_refs": [
+        "raw_screenshot_path"
+      ],
+      "from_state": "RAW_STATE",
+      "lineage_refs": [
+        "capture:phase-zero-example"
+      ],
+      "mutation_ref": null,
+      "notes": [
+        "cookie modal visible"
+      ],
+      "reason": "viewport_obstruction_detected",
+      "record_type": "transition_record",
+      "schema_version": "phase-zero-transition-record-1",
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "to_state": "OBSTRUCTED_STATE",
+      "transition_id": "transition_phase_zero_example"
+    }
+  ],
+  "uncertainty": {
+    "confidence": 0.91,
+    "confidence_level": "high",
+    "known_unknowns": [
+      "overlay may hide below-the-fold intent"
+    ],
+    "record_type": "uncertainty_profile",
+    "reviewer_required": true,
+    "schema_version": "phase-zero-uncertainty-profile-1",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "uncertainty_reasons": [
+      "insufficient_viewport"
+    ],
+    "unsupported_inference": false
+  },
+  "website_url": "https://example.com"
+}

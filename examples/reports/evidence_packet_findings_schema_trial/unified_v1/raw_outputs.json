@@ -1,0 +1,395 @@
+{
+  "created_at": "2026-05-18T09:15:33.972442+00:00",
+  "executed": true,
+  "model": "gemini-3.1-pro-preview",
+  "results": [
+    {
+      "created_at": "2026-05-18T09:15:34.004598+00:00",
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If the snapshot comparison is accurate, the audited brand's positioning is most similar to Wrike within the measured set.",
+            "evidence_anchor": "Wrike as the audited brand's closest measured competitor with measured distance 0.752",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, Wrike has the lowest measured positioning distance at 0.752, which is below the average distance of 0.821.",
+            "title": "Closest measured competitor positioning distance"
+          },
+          {
+            "bounded_interpretation": "If the snapshot comparison is accurate, the audited brand's positioning is most distinct from ProjectManager within the measured set.",
+            "evidence_anchor": "ProjectManager as the audited brand's most different measured competitor with measured distance 0.872",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, ProjectManager has the highest measured positioning distance at 0.872, which is above the average distance of 0.821.",
+            "title": "Furthest measured competitor positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "titles": [
+          "Closest measured competitor positioning distance",
+          "Furthest measured competitor positioning distance"
+        ],
+        "risky_terms_detected": [
+          "superior",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    },
+    {
+      "created_at": "2026-05-18T09:15:34.009646+00:00",
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If positioning distance reflects messaging overlap, the audited brand and Netlify share the most similar positioning among the measured set.",
+            "evidence_anchor": "Netlify as the audited brand's closest measured competitor with measured distance 0.855",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, Netlify has the lowest measured positioning distance at 0.855, compared to an average distance of 0.873.",
+            "title": "Netlify closest measured positioning distance"
+          },
+          {
+            "bounded_interpretation": "If positioning distance reflects messaging divergence, the audited brand and Qoddi App Platform exhibit the least similar positioning among the measured set.",
+            "evidence_anchor": "Qoddi App Platform as the audited brand's most different measured competitor with measured distance 0.887",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Among 5 analyzed competitors, Qoddi App Platform has the highest measured positioning distance at 0.887, compared to an average distance of 0.873.",
+            "title": "Qoddi highest measured positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 2,
+        "titles": [
+          "Netlify closest measured positioning distance",
+          "Qoddi highest measured positioning distance"
+        ],
+        "risky_terms_detected": [
+          "superior",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    },
+    {
+      "created_at": "2026-05-18T09:15:34.015406+00:00",
+      "case_id": "launchdarkly",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If these metrics reflect current market messaging, the audited brand's positioning is most similar to Split and least similar to FeaturIT within the analyzed group.",
+            "evidence_anchor": "Split... closest measured competitor with measured distance 0.773; FeaturIT... most different measured competitor with measured distance 0.863; avg_distance=0.818",
+            "evidence_urls": [
+              "snapshot://feature/competitor_web_comparison"
+            ],
+            "limits": "Snapshot comparison supports relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.",
+            "observation": "Out of 5 analyzed competitors, the audited brand's relative positioning distance ranges from 0.773 for Split (closest) to 0.863 for FeaturIT (most different), against an average distance of 0.818.",
+            "title": "Measured competitor relative positioning distance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Measured competitor relative positioning distance"
+        ],
+        "risky_terms_detected": [
+          "superior",
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    },
+    {
+      "created_at": "2026-05-18T09:15:34.020090+00:00",
+      "case_id": "linear",
+      "dimension": "coherencia",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "https://linear.app/",
+        "https://medium.com/linear-app/about"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If categorized by these descriptions, Linear operates within the software development tooling space with a focus on issue tracking and product planning.",
+            "evidence_anchor": "\"Linear is a purpose-built tool for planning and building products.\" (https://linear.app/) and \"The issue tracking tool you’ll enjoy to use.\" (https://medium.com/linear-app/about)",
+            "evidence_urls": [
+              "https://linear.app/",
+              "https://medium.com/linear-app/about"
+            ],
+            "limits": "Does not prove user enjoyment, adoption rates, specific feature availability, or competitive positioning.",
+            "observation": "Linear is described as a software development company providing a tool for planning and building products, specifically functioning as an issue tracking tool.",
+            "title": "Product planning and issue tracking"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Product planning and issue tracking"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://linear.app/",
+          "https://medium.com/linear-app/about"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    },
+    {
+      "created_at": "2026-05-18T09:15:34.025212+00:00",
+      "case_id": "vercel",
+      "dimension": "coherencia",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "allowed_evidence_urls": [
+        "https://en.wikipedia.org/wiki/Vercel"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If Vercel maintains Next.js, the company allocates resources to the ongoing development of this specific web framework.",
+            "evidence_anchor": "\"The company created and maintains the Next.js web development framework.\"",
+            "evidence_urls": [
+              "https://en.wikipedia.org/wiki/Vercel"
+            ],
+            "limits": "This evidence does not prove user adoption, market share, revenue, or the existence of other products.",
+            "observation": "Vercel Inc. is identified as an American cloud application company responsible for creating and maintaining the Next.js web development framework.",
+            "title": "Vercel Next.js Framework Maintenance"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Vercel Next.js Framework Maintenance"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://en.wikipedia.org/wiki/Vercel"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    },
+    {
+      "created_at": "2026-05-18T09:15:47.071950+00:00",
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "allowed_evidence_urls": [
+        "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+        "https://releasebot.io/updates/launchdarkly",
+        "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "title": "Feature flag version restoration added",
+            "evidence_anchor": "\"LaunchDarkly adds the ability to restore a feature flag to a previous version from change history...\"",
+            "observation": "LaunchDarkly introduced a capability to restore feature flags to previous versions, which includes code diffs and previews.",
+            "bounded_interpretation": "If users utilize change history, this feature provides a mechanism to revert feature flags to prior states.",
+            "limits": "Does not prove frequency of use, user preference, or comparative advantage over other feature management systems.",
+            "evidence_urls": [
+              "https://releasebot.io/updates/launchdarkly"
+            ]
+          },
+          {
+            "title": "Online evals in AI Configs",
+            "evidence_anchor": "\"Online evals in AI Configs is now GA\"",
+            "observation": "LaunchDarkly has moved online evaluations within AI Configs to General Availability.",
+            "bounded_interpretation": "The feature has transitioned from pre-release phases to general availability for platform users.",
+            "limits": "Does not prove adoption rates, customer demand for AI Configs, or future roadmap direction.",
+            "evidence_urls": [
+              "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/"
+            ]
+          },
+          {
+            "title": "Leadership team expansion announced",
+            "evidence_anchor": "\"LaunchDarkly Expands Leadership Team in Response to Accelerated Growth and AI Tailwinds\"",
+            "observation": "A press release indicates LaunchDarkly is expanding its leadership team, attributing the change to growth and AI tailwinds.",
+            "bounded_interpretation": "The organization is increasing its executive headcount in connection with stated market conditions.",
+            "limits": "Does not prove actual financial metrics, market leadership, or the operational impact of the new leadership.",
+            "evidence_urls": [
+              "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+            ]
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 3,
+        "titles": [
+          "Feature flag version restoration added",
+          "Online evals in AI Configs",
+          "Leadership team expansion announced"
+        ],
+        "risky_terms_detected": [
+          "leadership",
+          "advantage",
+          "adoption",
+          "roadmap"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://launchdarkly.com/blog/online-evals-ai-configs-ga-customizable-judges/",
+          "https://releasebot.io/updates/launchdarkly",
+          "https://www.globenewswire.com/news-release/2026/01/20/3221642/0/en/launchdarkly-expands-leadership-team-in-response-to-accelerated-growth-and-ai-tailwinds.html"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    },
+    {
+      "created_at": "2026-05-18T09:15:47.076845+00:00",
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "allowed_evidence_urls": [
+        "https://watermelon.sh/"
+      ],
+      "raw_response": {
+        "findings": [
+          {
+            "bounded_interpretation": "If evaluated on this messaging, the positioning focuses on providing design infrastructure specifically targeted toward modern startups.",
+            "evidence_anchor": "\"Watermelon | Design Infrastructure for Modern Startups Building the design infrastructure for modern startups.\" (https://watermelon.sh/)",
+            "evidence_urls": [
+              "https://watermelon.sh/"
+            ],
+            "limits": "Does not prove actual product capabilities, feature sets, market adoption, or define what constitutes a modern startup.",
+            "observation": "The audited surface text explicitly describes Watermelon as building design infrastructure for modern startups.",
+            "title": "Design infrastructure for modern startups"
+          }
+        ]
+      },
+      "summary": {
+        "finding_count": 1,
+        "titles": [
+          "Design infrastructure for modern startups"
+        ],
+        "risky_terms_detected": [
+          "adoption"
+        ],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": true,
+        "has_typical_decision": false,
+        "evidence_urls_used": [
+          "https://watermelon.sh/"
+        ],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "json_repair_retry_reason": null
+    }
+  ],
+  "skipped": [
+    {
+      "case_id": "watermelon",
+      "dimension": "vitalidad",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "launchdarkly",
+      "dimension": "coherencia",
+      "status": "review_required",
+      "intent": "review_required_control",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

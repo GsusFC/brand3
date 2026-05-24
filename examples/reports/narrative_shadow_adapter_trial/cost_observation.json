@@ -1,0 +1,21 @@
+{
+  "created_at": "2026-05-18T14:20:35.435769+00:00",
+  "execute_requested": true,
+  "executed": true,
+  "llm_calls_planned": 7,
+  "llm_calls_executed": 7,
+  "source_mode": "benchmark",
+  "model": "gemini-3.1-pro-preview",
+  "usage_metadata_available": false,
+  "cost_estimate_available": false,
+  "notes": [
+    "Narrative shadow adapter trial over candidate dry-path v2.1 manifest."
+  ],
+  "json_repair_retries_attempted": 0,
+  "json_repair_retries_succeeded": 0,
+  "parse_failures_unrecovered": 0,
+  "cache_hits": 7,
+  "cache_misses": 0,
+  "cache_writes": 0,
+  "call_failures": []
+}

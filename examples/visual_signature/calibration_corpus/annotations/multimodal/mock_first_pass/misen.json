@@ -1,0 +1,730 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:00:20.042942",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://misen.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.616,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.865
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "ecommerce",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 252,
+    "video_count": 48
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Misen",
+  "calibration": {
+    "expected_category": "ecommerce",
+    "notes": "DTC product ecommerce with utilitarian product-led visual system."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#d80027",
+      "#000088",
+      "#ffda44",
+      "#0052b4",
+      "#24420e",
+      "#c09300"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#eeeeee",
+      "#000000",
+      "#000088",
+      "#0052b4",
+      "#24420e"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#ffffff",
+      "#eeeeee",
+      "#d80027",
+      "#000000",
+      "#000088",
+      "#ffda44",
+      "#0052b4",
+      "#24420e"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 250,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#eeeeee",
+        "occurrences": 156,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d80027",
+        "occurrences": 138,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 106,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000088",
+        "occurrences": 100,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffda44",
+        "occurrences": 92,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#0052b4",
+        "occurrences": 86,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#24420e",
+        "occurrences": 84,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#c09300",
+        "occurrences": 56,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#406325",
+        "occurrences": 46,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#485654",
+        "occurrences": 44,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6da544",
+        "occurrences": 42,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#338af3",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ba1f3e",
+        "occurrences": 36,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#511124",
+        "occurrences": 36,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#67923d",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#6c301e",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#333333",
+        "occurrences": 30,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#fab81c",
+        "occurrences": 28,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#a2001d",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#b07e09",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#496e2d",
+        "occurrences": 22,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#34541f",
+        "occurrences": 22,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#8c959d",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#d80027",
+      "#000000",
+      "#000088",
+      "#0052b4",
+      "#24420e",
+      "#406325"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.7,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "navigation"
+      },
+      {
+        "confidence": 0.72,
+        "count": 104,
+        "labels": [
+          "Do not sell",
+          "Accept",
+          "Add to Cart",
+          "Secure Checkout",
+          "Continue shopping",
+          "Enter Search Keywords",
+          "Reload",
+          "Need more help?"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 8,
+        "labels": [
+          "Do not sell",
+          "Accept",
+          "Skip to content",
+          "Secure Checkout",
+          "Continue shopping",
+          "SHOP NOW",
+          "Reload",
+          "Need more help?"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 98,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 20,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "navigation",
+      "form",
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Do not sell",
+      "Accept",
+      "Skip to content",
+      "Secure Checkout",
+      "Continue shopping",
+      "SHOP NOW",
+      "Reload",
+      "Need more help?"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.94,
+    "confidence": 0.77,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.674,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.77,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.672
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.738
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.95,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 172,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "neue-haas-unica",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 2,
+        "role": "body",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      16.0,
+      16.0,
+      14.0,
+      14.0,
+      24.0,
+      14.0,
+      16.0,
+      16.0,
+      10.0,
+      16.0,
+      16.0,
+      10.0,
+      16.0,
+      16.0,
+      10.0,
+      16.0,
+      16.0,
+      10.0,
+      16.0,
+      16.0,
+      10.0,
+      16.0,
+      16.0,
+      10.0
+    ],
+    "weight_range": {
+      "max": 900,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.929
+    },
+    "composition": {
+      "color_variance": 0.55,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.038,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.292
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 322821,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://misen.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/misen.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 39,
+      "confidence": 0.763,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 5904,
+          "ratio": 0.2952
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 5053,
+          "ratio": 0.2526
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 5042,
+          "ratio": 0.2521
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1710,
+          "ratio": 0.0855
+        },
+        {
+          "hex": "#4080c0",
+          "occurrences": 1210,
+          "ratio": 0.0605
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 288,
+          "ratio": 0.0144
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 197,
+          "ratio": 0.0098
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 140,
+          "ratio": 0.007
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.55,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.038,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.292
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.763,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.851
+    },
+    "viewport_palette": {
+      "color_count": 39,
+      "confidence": 0.763,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 5904,
+          "ratio": 0.2952
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 5053,
+          "ratio": 0.2526
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 5042,
+          "ratio": 0.2521
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1710,
+          "ratio": 0.0855
+        },
+        {
+          "hex": "#4080c0",
+          "occurrences": 1210,
+          "ratio": 0.0605
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 288,
+          "ratio": 0.0144
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 197,
+          "ratio": 0.0098
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 140,
+          "ratio": 0.007
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.292,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.763,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.851
+    }
+  },
+  "website_url": "https://misen.com"
+}

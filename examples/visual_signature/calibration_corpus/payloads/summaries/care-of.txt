@@ -1,0 +1,42 @@
+Expected category: wellness_lifestyle
+Notes: Consumer wellness ecommerce with quiz and product subscription behavior.
+
+== Care/of ==
+URL: https://takecareof.com
+Interpretation status: not_interpretable
+Extraction confidence: 0.03 (low) [acquisition=0.10, html_coverage=0.00, signal_coverage=0.01, consistency_coverage=0.02]
+
+Signal coverage: 29%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: missing, confidence=0.00
+- components: missing, confidence=0.00
+- assets: ok, confidence=0.04
+- consistency: ok, confidence=0.02
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=False; hero=False; sections=0; density=unknown; patterns=unknown
+- components: none
+- consistency: overall=0.20; color=0.15; type=0.20; component=0.25; asset=0.20
+
+Vision summaries:
+- screenshot: available=False; quality=missing; capture_type=unknown; dimensions=-; viewport=-
+- screenshot palette: none
+- viewport palette: none
+- composition: density=unknown; whitespace=-; classification=unknown
+- viewport composition: density=unknown; whitespace=-; classification=unknown
+- vision confidence: 0.00 (low)
+- viewport confidence: 0.00 (low)
+- agreement: high; flags=none
+- agreement notes: none
+
+Acquisition failure:
+- acquisition error: DNS resolution failed for hostname "takecareof.com". This means the domain name could not be translated to an IP address. Possible causes: (1) The domain name is misspelled (check for typos), (2) The domain does not exist or has expired, (3) The DNS servers are temporarily unavailable, or (4) The domain was recently registered and DNS has not propagated yet. Please verify the URL is correct and the website exists.
+- extraction limitation: acquisition_errors_present
+- extraction limitation: screenshot_not_available
+- extraction limitation: html_coverage_limited
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

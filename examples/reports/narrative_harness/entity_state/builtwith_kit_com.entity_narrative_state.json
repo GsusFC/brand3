@@ -1,0 +1,271 @@
+{
+  "version": 0,
+  "status": {
+    "stage": "experimental",
+    "mode": "offline_fixture",
+    "runtime_enabled": false,
+    "used_by_scoring": false,
+    "used_by_prompts": false,
+    "used_by_rendering": false,
+    "persisted_report_narrative": false,
+    "llm_generated": false,
+    "requires_human_review": true
+  },
+  "metadata": {
+    "case_id": "builtwith_kit_com",
+    "brand": "builtwith.kit.com",
+    "run_id": 74,
+    "created_from": [
+      "examples/reports/narrative_harness/builtwith_kit_com.payload.json",
+      "examples/reports/narrative_harness/builtwith_kit_com.diagnostic.json",
+      "examples/reports/narrative_harness/builtwith_kit_com.render_aware.diagnostic.json",
+      "docs/brand3_entity_narrative_state_design_memo.md",
+      "docs/brand3_observation_repetition_family_findings.md",
+      "docs/brand3_render_aware_harness_multi_report_findings.md"
+    ],
+    "created_at": "2026-05-16",
+    "notes": "Manual offline fixture derived from existing diagnostics and payload evidence only."
+  },
+  "primary_entity_signal": {
+    "label": "ambiguous entity frame: Kit creator/email platform signals overlap with BuiltWith web-intelligence signals",
+    "confidence": "medium",
+    "supporting_sources": [
+      "https://kit.com/",
+      "https://builtwith.com/",
+      "https://builtwith.com/about",
+      "https://kb.builtwith.com/account-management/all-builtwith-products/"
+    ],
+    "supporting_payload_findings": [
+      {
+        "dimension": "coherencia",
+        "finding_index": 0,
+        "title": "Email-first OS for creators"
+      },
+      {
+        "dimension": "coherencia",
+        "finding_index": 1,
+        "title": "Technology intelligence provider"
+      },
+      {
+        "dimension": "percepcion",
+        "finding_index": 0,
+        "title": "Brand describes itself as intelligence platform"
+      },
+      {
+        "dimension": "vitalidad",
+        "finding_index": 2,
+        "title": "Product and Knowledge Base"
+      }
+    ],
+    "uncertainty": "The fixture cannot determine whether kit.com and builtwith.com represent one entity, adjacent entities, a malformed target, or mixed source retrieval. Treat this as an entity-resolution risk, not a strategic conclusion."
+  },
+  "entity_aliases": {
+    "primary": "builtwith.kit.com",
+    "aliases_or_adjacent_surfaces": [
+      "kit.com",
+      "builtwith.com",
+      "builtwith.com/about",
+      "kb.builtwith.com",
+      "blog.builtwith.com"
+    ],
+    "needs_review": true,
+    "notes": "Aliases are derived from evidence URLs and payload observations. They are not asserted to be equivalent legal or brand entities."
+  },
+  "owned_claim_density": {
+    "level": "high",
+    "basis": {
+      "safe_attribution_repetition_total": 11,
+      "visible_safe_attribution_total": 11,
+      "phrases": {
+        "the brand describes itself": 4,
+        "the brand claims": 1,
+        "based only on self-description": 6
+      }
+    },
+    "interpretation": "Owned/self-description language dominates enough that a future composition layer should prefer one global caveat over repeated per-finding caveats.",
+    "confidence": "high"
+  },
+  "source_ownership_summary": {
+    "owned_or_self_description": {
+      "count_estimate": 8,
+      "sources": [
+        "https://kit.com/",
+        "https://builtwith.com/",
+        "https://builtwith.com/about",
+        "https://kb.builtwith.com/account-management/all-builtwith-products/",
+        "https://blog.builtwith.com/2026/02/25/llms-and-mcp/"
+      ],
+      "confidence": "medium"
+    },
+    "third_party_or_external_assessment": {
+      "count_estimate": 2,
+      "sources": [
+        "https://www.scamadviser.com/check-website/builtwith.kit.com",
+        "https://www.joesandbox.com/analysis/1719754/0/html"
+      ],
+      "confidence": "high"
+    },
+    "technical_or_configuration": {
+      "count_estimate": 2,
+      "sources": [
+        "https://builtwith.kit.com/robots.txt",
+        "local visual-analysis metrics in payload observation"
+      ],
+      "confidence": "medium"
+    },
+    "uncited_or_missing_evidence_url": {
+      "findings_without_evidence_urls": 4,
+      "confidence": "high"
+    },
+    "notes": "Counts are approximate because this fixture is manually derived from finding-level evidence URLs and observation text, not from a source classifier."
+  },
+  "repeated_opener_budget": {
+    "max_same_opening": 2,
+    "tracked_openings": {
+      "payload": {
+        "teams in this": 9,
+        "the brand describes": 4
+      },
+      "visible_render": {
+        "the brand describes": 4
+      }
+    },
+    "recommended_action": "Suppress or consolidate openings above budget before final prose is accepted.",
+    "confidence": "high"
+  },
+  "attribution_budget": {
+    "max_repeated_safe_attribution": 2,
+    "observed_total": 11,
+    "global_caveat_preferred": true,
+    "suggested_global_caveat": "Several positioning claims are owned or self-described and lack third-party corroboration in the current evidence set.",
+    "notes": "This is a composition constraint, not a final report sentence.",
+    "confidence": "high"
+  },
+  "corroboration_caveat_budget": {
+    "max_repeated_caveat": 2,
+    "observed_total": 14,
+    "phrases": {
+      "based only on self-description": 6,
+      "no external corroboration": 8
+    },
+    "global_corroboration_note_preferred": true,
+    "confidence": "high"
+  },
+  "fallback_language_budget": {
+    "max_fallback_opening_reuse": 2,
+    "observed_total": 9,
+    "phrases": {
+      "the evidence pool": 9
+    },
+    "fallback_mode": false,
+    "notes": "This case is not a pure deterministic fallback case, but the payload repeatedly uses evidence-pool language in caveats.",
+    "confidence": "medium"
+  },
+  "evidence_url_coverage": {
+    "findings_total": 13,
+    "findings_without_evidence_urls": 4,
+    "payload_evidence_url_count": 13,
+    "visible_evidence_chip_link_count": 13,
+    "coverage_ratio": 0.69,
+    "coverage_level": "mixed",
+    "confidence": "high"
+  },
+  "primary_tension": {
+    "type": "owned_positioning_vs_external_trust_and_entity_ambiguity",
+    "summary": "Owned creator/email and BuiltWith intelligence claims sit beside external trust/safety assessments and ambiguous target/entity surfaces.",
+    "supporting_sources": [
+      "https://kit.com/",
+      "https://builtwith.com/",
+      "https://www.scamadviser.com/check-website/builtwith.kit.com",
+      "https://www.joesandbox.com/analysis/1719754/0/html"
+    ],
+    "confidence": "medium",
+    "uncertainty": "The state can identify tension among evidence surfaces, but cannot infer brand intent or resolve whether the mixed surfaces are caused by crawling, targeting, or actual brand architecture."
+  },
+  "contradiction_candidates": [
+    {
+      "id": "owned_creator_positioning_vs_builtwith_intelligence_positioning",
+      "stated_claim": "email-first operating system for creators who mean business",
+      "observed_signal": "BuiltWith describes itself as website profiling, lead generation, competitive analysis, and business intelligence.",
+      "supporting_sources": [
+        "https://kit.com/",
+        "https://builtwith.com/",
+        "https://builtwith.com/about"
+      ],
+      "confidence": "medium",
+      "requires_human_review": true
+    },
+    {
+      "id": "owned_positioning_vs_external_trust_scrutiny",
+      "stated_claim": "owned platform/product positioning from kit.com and builtwith.com surfaces",
+      "observed_signal": "ScamAdviser and Joe Sandbox appear in the evidence pool for builtwith.kit.com.",
+      "supporting_sources": [
+        "https://www.scamadviser.com/check-website/builtwith.kit.com",
+        "https://www.joesandbox.com/analysis/1719754/0/html"
+      ],
+      "confidence": "medium",
+      "requires_human_review": true
+    }
+  ],
+  "decision_space_mode": {
+    "recommended_mode": "hidden_generic",
+    "basis": {
+      "payload_typical_decision_count": 13,
+      "payload_teams_in_this_position_typically_count": 9,
+      "visible_decision_space_count_after_conditional_rendering": 0,
+      "visible_teams_in_this_position_typically_count_after_conditional_rendering": 0
+    },
+    "notes": "All current decision-space lines were generic enough to be suppressed by rendering. A future composition layer should either hide them or compress decision framing at dimension/synthesis level after stronger state exists.",
+    "confidence": "high"
+  },
+  "findings_to_compress_or_demote": [
+    {
+      "dimension": "coherencia",
+      "finding_index": 0,
+      "title": "Email-first OS for creators",
+      "reason": "owned_claim_repeated_elsewhere_and_missing_evidence_url",
+      "suggested_action": "compress_owned_claim_or_attach_global_caveat",
+      "confidence": "high"
+    },
+    {
+      "dimension": "coherencia",
+      "finding_index": 2,
+      "title": "Visual analysis metrics",
+      "reason": "technical_non_branded_observation_missing_evidence_url_and_entity_relevance_uncertain",
+      "suggested_action": "demote_or_require_human_review",
+      "confidence": "medium"
+    },
+    {
+      "dimension": "diferenciacion",
+      "finding_index": 0,
+      "title": "Email-first operating system for creators",
+      "reason": "duplicates_owned_creator_positioning_from_coherencia",
+      "suggested_action": "compress_with_related_owned_claims",
+      "confidence": "high"
+    },
+    {
+      "dimension": "presencia",
+      "finding_index": 0,
+      "title": "Email-first operating system claim",
+      "reason": "owned_claim_repeated_elsewhere_and_missing_evidence_url",
+      "suggested_action": "compress_owned_claim_or_attach_global_caveat",
+      "confidence": "high"
+    },
+    {
+      "dimension": "vitalidad",
+      "finding_index": 1,
+      "title": "Web Intelligence Provider Identity",
+      "reason": "owned_claim_repetition_and_truncated_observation_text",
+      "suggested_action": "require_evidence_review_before_prominent_rendering",
+      "confidence": "medium"
+    }
+  ],
+  "explicit_non_goals": [
+    "Do not use this fixture for scoring.",
+    "Do not use this fixture to rewrite report prose.",
+    "Do not use this fixture as a runtime gate.",
+    "Do not treat aliases as verified legal or brand equivalence.",
+    "Do not infer brand intent, market position, audience psychology, or strategy beyond cited evidence.",
+    "Do not mutate report_narrative payloads from this fixture."
+  ]
+}

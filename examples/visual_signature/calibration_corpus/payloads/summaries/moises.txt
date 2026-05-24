@@ -1,0 +1,39 @@
+Expected category: consumer_app
+Notes: Lower-fame consumer music app added for app-category diversity.
+
+== Moises ==
+URL: https://moises.ai
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.57, consistency_coverage=0.54]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.52
+- typography: missing, confidence=0.35
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.54
+
+Visual summaries:
+- palette preview: #000000[###] #00efff[###] #ffffff[###]
+- typography: none
+- layout: header=False; nav=True; hero=True; sections=20; density=balanced; patterns=grid,flex,sticky_nav
+- components: button=92, cta=29, form=8, card=34, accordion=72, modal=2, pricing=4
+- consistency: overall=0.56; color=0.78; type=0.20; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #202020[###] #000020[###] #404020[###] #404040[###] #ffffff[###] #402020[###] #002020[###]
+- viewport palette: #000000[###] #202020[###] #000020[###] #404020[###] #404040[###] #ffffff[###] #402020[###] #002020[###]
+- composition: density=dense; whitespace=3%; classification=dense_grid
+- viewport composition: density=dense; whitespace=3%; classification=dense_grid
+- vision confidence: 0.81 (high)
+- viewport confidence: 0.81 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

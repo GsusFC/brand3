@@ -1,0 +1,149 @@
+{
+  "schema_version": "brand3-product-positioning-recovery-plan-1",
+  "record_type": "product_positioning_recovery_plan",
+  "status": "planning_only",
+  "principle": {
+    "primary_product": "Brand3 Scoring",
+    "secondary_module": "Visual Signature Lab",
+    "summary": "Brand3 Scoring is the working product and user hook. Visual Signature is the long-term R&D layer for human-reviewed visual perception."
+  },
+  "observed_current_state": [
+    "The homepage already centers the scoring input form at /.",
+    "Recent analyses and observability links are available from the homepage.",
+    "The shared footer currently exposes Visual Signature alongside scoring links.",
+    "Visual Signature has multiple dedicated routes and should remain accessible."
+  ],
+  "ideal_homepage_hierarchy": [
+    "Brand3 Scoring title and short value statement",
+    "prominent brand URL input and analyze button",
+    "short trust or constraints note if needed",
+    "recent analyses",
+    "reports and brand history links",
+    "secondary Visual Signature Lab entry point"
+  ],
+  "main_navigation_proposal": [
+    "Analyze",
+    "Latest Results",
+    "Reports",
+    "Brands",
+    "Team"
+  ],
+  "secondary_lab_navigation_proposal": {
+    "label": "Visual Signature Lab",
+    "placement": [
+      "footer secondary group",
+      "collapsed advanced/research section",
+      "secondary nav region"
+    ],
+    "items": [
+      "Overview",
+      "Governance",
+      "Calibration",
+      "Corpus",
+      "Reviewer"
+    ]
+  },
+  "copy_changes": {
+    "homepage_direction": [
+      "Use scoring-first language on the homepage.",
+      "Make the analyze action obvious and above the fold.",
+      "Treat lab features as secondary research tools."
+    ],
+    "visual_signature_direction": [
+      "Use Lab, Research, Advanced, and Evidence-only phrasing.",
+      "Avoid presenting Visual Signature as a peer product in the hero.",
+      "Keep governance and calibration language out of the main scoring path."
+    ],
+    "suggested_phrases": [
+      "Analyze a brand from its URL",
+      "See the latest scores and reports",
+      "Visual Signature Lab",
+      "Human-reviewed visual perception",
+      "Research Calibration"
+    ]
+  },
+  "route_naming_suggestions": [
+    {
+      "current": "/visual-signature",
+      "visible_label": "Visual Signature Lab"
+    },
+    {
+      "current": "/visual-signature/governance",
+      "visible_label": "Advanced"
+    },
+    {
+      "current": "/visual-signature/calibration",
+      "visible_label": "Research Calibration"
+    },
+    {
+      "current": "/visual-signature/corpus",
+      "visible_label": "Research Corpus"
+    },
+    {
+      "current": "/visual-signature/reviewer",
+      "visible_label": "Lab Reviewer"
+    }
+  ],
+  "what_to_hide_by_default": [
+    "Visual Signature governance details on the homepage",
+    "calibration summary blocks on the homepage",
+    "corpus expansion diagnostics on the homepage",
+    "reviewer workflow pilot details on the homepage",
+    "raw JSON on shared surfaces",
+    "advanced research metadata outside the lab"
+  ],
+  "what_to_keep_visible": [
+    "brand URL input",
+    "analyze action",
+    "recent analyses",
+    "report entry points",
+    "brand history / results links",
+    "one-click access to Visual Signature Lab"
+  ],
+  "staged_implementation_plan": [
+    {
+      "step": "Reframe copy only",
+      "details": [
+        "Update labels and helper text to make scoring the primary hook.",
+        "Re-label Visual Signature as Lab / Research / Advanced."
+      ]
+    },
+    {
+      "step": "Rebalance homepage hierarchy",
+      "details": [
+        "Keep the input form above the fold.",
+        "Keep results and report access directly below it.",
+        "Push lab links below the main action path."
+      ]
+    },
+    {
+      "step": "Adjust navigation grouping",
+      "details": [
+        "Add a clear primary nav for scoring workflows.",
+        "Move Visual Signature into a secondary or collapsed nav group."
+      ]
+    },
+    {
+      "step": "Reduce lab prominence in shared chrome",
+      "details": [
+        "Change footer and global link treatment so Visual Signature is accessible but not dominant."
+      ]
+    },
+    {
+      "step": "Verify user flow",
+      "details": [
+        "Home -> analyze -> status -> report remains the main path.",
+        "Visual Signature remains one click away, but not foregrounded."
+      ]
+    }
+  ],
+  "non_goals": [
+    "No scoring logic changes.",
+    "No prompt changes.",
+    "No report changes.",
+    "No Visual Signature semantic changes.",
+    "No capture changes.",
+    "No persistence changes.",
+    "No runtime behavior changes."
+  ]
+}

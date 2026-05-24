@@ -1,0 +1,141 @@
+{
+  "brandName": "Example Brand",
+  "websiteUrl": "https://example.com",
+  "analyzedUrl": "https://example.com",
+  "acquisition": {
+    "adapter": "firecrawl",
+    "statusCode": 200,
+    "acquiredAt": "2026-05-08T00:00:00.000Z",
+    "warnings": [],
+    "errors": []
+  },
+  "colors": {
+    "palette": [
+      {
+        "hex": "#ffffff",
+        "role": "background",
+        "occurrences": 6,
+        "source": "rendered_html",
+        "confidence": 0.72
+      },
+      {
+        "hex": "#111111",
+        "role": "text",
+        "occurrences": 4,
+        "source": "rendered_html",
+        "confidence": 0.68
+      }
+    ],
+    "dominantColors": ["#ffffff", "#111111"],
+    "accentCandidates": [],
+    "backgroundCandidates": ["#ffffff"],
+    "textColorCandidates": ["#111111"],
+    "paletteComplexity": "low",
+    "confidence": 0.46
+  },
+  "typography": {
+    "fontFamilies": [
+      {
+        "family": "Inter",
+        "role": "body",
+        "occurrences": 3,
+        "source": "rendered_html",
+        "confidence": 0.65
+      }
+    ],
+    "headingScale": "moderate",
+    "weightRange": {
+      "min": 400,
+      "max": 700
+    },
+    "sizeSamplesPx": [16, 20, 48],
+    "confidence": 0.9
+  },
+  "logo": {
+    "logoDetected": true,
+    "candidates": [
+      {
+        "url": "https://example.com/logo.svg",
+        "alt": "Example Brand",
+        "location": "header",
+        "source": "images",
+        "confidence": 0.78
+      }
+    ],
+    "faviconDetected": true,
+    "textualBrandMarkDetected": true,
+    "primaryLocation": "header",
+    "confidence": 0.9
+  },
+  "layout": {
+    "hasHeader": true,
+    "hasNavigation": true,
+    "hasHero": true,
+    "hasMainContent": true,
+    "hasFooter": true,
+    "sectionCount": 4,
+    "layoutPatterns": ["grid", "flex"],
+    "visualDensity": "balanced",
+    "confidence": 0.85
+  },
+  "components": {
+    "components": [
+      {
+        "type": "navigation",
+        "count": 1,
+        "labels": ["Product", "Pricing"],
+        "source": "rendered_html",
+        "confidence": 0.7
+      },
+      {
+        "type": "cta",
+        "count": 2,
+        "labels": ["Get started", "Book a demo"],
+        "source": "rendered_html",
+        "confidence": 0.62
+      }
+    ],
+    "primaryCtas": ["Get started", "Book a demo"],
+    "interactionPatterns": ["navigation"],
+    "confidence": 0.7
+  },
+  "assets": {
+    "imageCount": 5,
+    "svgCount": 3,
+    "videoCount": 0,
+    "backgroundImageCount": 1,
+    "logoImageCandidates": [
+      {
+        "url": "https://example.com/logo.svg",
+        "alt": "Example Brand",
+        "source": "images",
+        "roleHint": "logo"
+      }
+    ],
+    "iconCandidates": [],
+    "screenshotAvailable": true,
+    "assetMix": ["logo", "icon", "photo", "screenshot"],
+    "confidence": 0.72
+  },
+  "consistency": {
+    "colorConsistency": 0.78,
+    "typographyConsistency": 0.82,
+    "componentConsistency": 0.8,
+    "assetConsistency": 0.87,
+    "overallConsistency": 0.813,
+    "notes": [],
+    "confidence": 0.695
+  },
+  "extractionConfidence": {
+    "score": 0.749,
+    "level": "medium",
+    "factors": {
+      "acquisition": 0.9,
+      "htmlCoverage": 0.72,
+      "signalCoverage": 0.755,
+      "consistencyCoverage": 0.695
+    },
+    "limitations": []
+  },
+  "version": "visual-signature-mvp-1"
+}

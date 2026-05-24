@@ -1,0 +1,44 @@
+Expected category: editorial_media
+Notes: Entertainment media with high content density and recurring cards.
+
+== Polygon ==
+URL: https://www.polygon.com
+Interpretation status: interpretable
+Extraction confidence: 0.58 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.41, consistency_coverage=0.35]
+
+Signal coverage: 71%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.35
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=36; density=balanced; patterns=grid,flex,multi_column
+- components: cta=9, form=12, card=734, accordion=4, tabs=6, pricing=4
+- consistency: overall=0.32; color=0.15; type=0.20; component=0.72; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #404040[###] #200000[###] #606060[###] #808080[###] #000000[###] #002020[###]
+- viewport palette: #ffffff[###] #202020[###] #404040[###] #200000[###] #606060[###] #808080[###] #000000[###] #002020[###]
+- composition: density=dense; whitespace=72%; classification=dense_grid
+- viewport composition: density=dense; whitespace=72%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.35)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

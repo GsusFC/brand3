@@ -1,0 +1,38 @@
+Expected category: consumer_app
+Notes: Lower-fame consumer self-care app added for ordinary app landing behavior.
+
+== Finch ==
+URL: https://finchcare.com
+Interpretation status: interpretable
+Extraction confidence: 0.79 (high) [acquisition=0.90, html_coverage=0.90, signal_coverage=0.66, consistency_coverage=0.75]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.75
+
+Visual summaries:
+- palette preview: #ffffff[###] #212121[###] #1863dc[###] #f4f4f4[###] #ebebeb[###] #000000[###] #4e4b66[###] #d0d5d2[###]
+- typography: Rubik
+- layout: header=True; nav=False; hero=False; sections=0; density=sparse; patterns=flex,multi_column
+- components: button=30, cta=11, form=4, accordion=226, modal=26
+- consistency: overall=0.61; color=0.48; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=low_detail; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #c0c0c0[###] #a0a0c0[###] #002020[###] #e0e0e0[###] #a0a0a0[###]
+- viewport palette: #ffffff[###] #c0c0c0[###] #a0a0c0[###] #002020[###] #e0e0e0[###] #a0a0a0[###]
+- composition: density=sparse; whitespace=100%; classification=blank
+- viewport composition: density=sparse; whitespace=100%; classification=blank
+- vision confidence: 0.53 (medium)
+- viewport confidence: 0.53 (medium)
+- agreement: medium; flags=dom_palette_more_complex_than_viewport
+- agreement notes: DOM palette is noisier than the viewport palette.
+
+Weak or missing signals:
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

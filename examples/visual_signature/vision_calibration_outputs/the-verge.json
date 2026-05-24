@@ -1,0 +1,253 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-08T21:00:50.251989",
+    "adapter": "firecrawl",
+    "errors": [
+      "HTTPSConnectionPool(host='api.firecrawl.dev', port=443): Max retries exceeded with url: /v2/scrape (Caused by NameResolutionError(\"HTTPSConnection(host='api.firecrawl.dev', port=443): Failed to resolve 'api.firecrawl.dev' ([Errno 8] nodename nor servname provided, or not known)\"))"
+    ],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.theverge.com",
+  "assets": {
+    "asset_mix": [
+      "unknown"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.04,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 0,
+    "video_count": 0
+  },
+  "brand_name": "The Verge",
+  "calibration": {
+    "expected_category": "editorial/media",
+    "notes": "High-density media layout with strong typography and recurring editorial modules."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [],
+    "confidence": 0.0,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": []
+  },
+  "consistency": {
+    "asset_consistency": 0.2,
+    "color_consistency": 0.15,
+    "component_consistency": 0.25,
+    "confidence": 0.022,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.198,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.1,
+      "consistency_coverage": 0.022,
+      "html_coverage": 0.0,
+      "signal_coverage": 0.015
+    },
+    "level": "low",
+    "limitations": [
+      "acquisition_errors_present",
+      "screenshot_not_available",
+      "html_coverage_limited",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.034
+  },
+  "interpretation_status": "not_interpretable",
+  "layout": {
+    "confidence": 0.0,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": false,
+    "has_main_content": false,
+    "has_navigation": false,
+    "layout_patterns": [
+      "unknown"
+    ],
+    "section_count": 0,
+    "visual_density": "unknown"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.0,
+    "font_families": [],
+    "heading_scale": "unknown",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "composition": {
+      "color_variance": 0.412,
+      "composition_classification": "dense_grid",
+      "confidence": 0.847,
+      "edge_density": 0.051,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.01
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 237305,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.theverge.com",
+      "path": "examples/visual_signature/screenshots/the-verge.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 97,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 11467,
+          "ratio": 0.5734
+        },
+        {
+          "hex": "#40ffc0",
+          "occurrences": 4991,
+          "ratio": 0.2495
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 586,
+          "ratio": 0.0293
+        },
+        {
+          "hex": "#e0c020",
+          "occurrences": 403,
+          "ratio": 0.0202
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 378,
+          "ratio": 0.0189
+        },
+        {
+          "hex": "#e0c040",
+          "occurrences": 277,
+          "ratio": 0.0138
+        },
+        {
+          "hex": "#ffe040",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 148,
+          "ratio": 0.0074
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.412,
+      "composition_classification": "dense_grid",
+      "confidence": 0.847,
+      "edge_density": 0.051,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.01
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.847,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "viewport_palette": {
+      "color_count": 97,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 11467,
+          "ratio": 0.5734
+        },
+        {
+          "hex": "#40ffc0",
+          "occurrences": 4991,
+          "ratio": 0.2495
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 586,
+          "ratio": 0.0293
+        },
+        {
+          "hex": "#e0c020",
+          "occurrences": 403,
+          "ratio": 0.0202
+        },
+        {
+          "hex": "#002020",
+          "occurrences": 378,
+          "ratio": 0.0189
+        },
+        {
+          "hex": "#e0c040",
+          "occurrences": 277,
+          "ratio": 0.0138
+        },
+        {
+          "hex": "#ffe040",
+          "occurrences": 166,
+          "ratio": 0.0083
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 148,
+          "ratio": 0.0074
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.01,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.847,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    }
+  },
+  "website_url": "https://www.theverge.com"
+}

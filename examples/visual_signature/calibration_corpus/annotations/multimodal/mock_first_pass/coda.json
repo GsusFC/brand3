@@ -1,0 +1,503 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:32:09.271758",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://coda.io",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "template like saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "high",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 6,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 112,
+    "video_count": 28
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Coda",
+  "calibration": {
+    "expected_category": "template_like_saas",
+    "notes": "Workspace SaaS with familiar template/product storytelling patterns."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 12,
+        "labels": [
+          "Product",
+          "Sales",
+          "Engineering",
+          "Design",
+          "Marketing",
+          "HR"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Get started for free",
+          "Contact sales",
+          "Design Icon",
+          "Read the handbook",
+          "Coda for design",
+          "Explore pricing"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.42,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.58,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "Get started for free",
+      "Contact sales",
+      "Design Icon",
+      "Read the handbook",
+      "Coda for design",
+      "Explore pricing"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.66,
+    "confidence": 0.302,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.35,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.302,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.36
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.559
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "multi_column"
+    ],
+    "section_count": 6,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Figma logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/2bb371ffdd66f87f616e16973c9ed5275c64ed05-73x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      },
+      {
+        "alt": "The New York Times logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/6b70a6d69a3d2dec96c5230fba13aa9e6a7c9364-212x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      },
+      {
+        "alt": "Square logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/3547d7cf40fddb4a2f7657cbedea00bb25b290d3-103x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      },
+      {
+        "alt": "Robinhood logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/f218d71811da8fb24c9c0e988e2c5e00fe9f163f-173x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      },
+      {
+        "alt": "BuzzFeed logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/2746fcb73e4576c7475206e11e75be68a4a246ec-103x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      },
+      {
+        "alt": "TED logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/6ecf4297aa5da3378679ddd09a0c2244bbba022d-53x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      },
+      {
+        "alt": "Uber logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://sanity-images.imgix.net/production/bb90d7b477ad1098d9a062917515c2734fdc4aa1-58x28.svg?h=60&amp;w=&amp;auto=format%2Ccompress"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.179,
+      "composition_classification": "dense_grid",
+      "confidence": 0.707,
+      "edge_density": 0.055,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.33
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 170043,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://coda.io",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/coda.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 68,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffe0c0",
+          "occurrences": 11370,
+          "ratio": 0.5685
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 6402,
+          "ratio": 0.3201
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 595,
+          "ratio": 0.0297
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 445,
+          "ratio": 0.0222
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 244,
+          "ratio": 0.0122
+        },
+        {
+          "hex": "#406040",
+          "occurrences": 159,
+          "ratio": 0.008
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 156,
+          "ratio": 0.0078
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 106,
+          "ratio": 0.0053
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.179,
+      "composition_classification": "dense_grid",
+      "confidence": 0.707,
+      "edge_density": 0.055,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.33
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.707,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.842
+    },
+    "viewport_palette": {
+      "color_count": 68,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffe0c0",
+          "occurrences": 11370,
+          "ratio": 0.5685
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 6402,
+          "ratio": 0.3201
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 595,
+          "ratio": 0.0297
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 445,
+          "ratio": 0.0222
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 244,
+          "ratio": 0.0122
+        },
+        {
+          "hex": "#406040",
+          "occurrences": 159,
+          "ratio": 0.008
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 156,
+          "ratio": 0.0078
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 106,
+          "ratio": 0.0053
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.33,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.707,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.842
+    }
+  },
+  "website_url": "https://coda.io"
+}

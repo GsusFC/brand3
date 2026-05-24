@@ -1,0 +1,151 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-08T12:21:27.603891",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://a24films.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 2,
+    "video_count": 0
+  },
+  "brand_name": "A24",
+  "calibration": {
+    "expected_category": "editorial/media",
+    "notes": "Culture/media-commerce hybrid with distinctive object and content presentation."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#000000"
+    ],
+    "confidence": 0.406,
+    "dominant_colors": [
+      "#000000"
+    ],
+    "palette": [
+      {
+        "confidence": 0.84,
+        "hex": "#000000",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#000000"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 1,
+        "labels": [
+          "**I Saw the TV Glow Screenplay Book**"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 14,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      }
+    ],
+    "confidence": 0.58,
+    "interaction_patterns": [
+      "unknown"
+    ],
+    "primary_ctas": [
+      "**I Saw the TV Glow Screenplay Book**"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.66,
+    "confidence": 0.382,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.539,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.382,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.438
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "visual_signal_coverage_limited",
+      "consistency_inference_limited"
+    ],
+    "score": 0.598
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid"
+    ],
+    "section_count": 2,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.shopify.com/s/files/1/0023/3789/8540/files/aaa24-logo.60q.600.png?v=1753198976"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "website_url": "https://a24films.com"
+}

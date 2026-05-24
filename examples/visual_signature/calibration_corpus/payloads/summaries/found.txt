@@ -1,0 +1,39 @@
+Expected category: finance_fintech
+Notes: Ordinary small-business fintech with practical conversion and trust patterns.
+
+== Found ==
+URL: https://found.com
+Interpretation status: interpretable
+Extraction confidence: 0.66 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.53, consistency_coverage=0.60]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.46
+- typography: ok, confidence=0.70
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.60
+
+Visual summaries:
+- palette preview: #ffffff[###] #151418[###]
+- typography: Fakt, quincy-cf
+- layout: header=True; nav=True; hero=False; sections=0; density=sparse; patterns=grid,flex,multi_column
+- components: button=18, cta=11, form=4, card=26, pricing=6
+- consistency: overall=0.70; color=0.78; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #404040[###] #ffffff[###] #e0ffff[###] #202020[###] #808080[###] #e0e0e0[###] #a0a0a0[###] #606060[###]
+- viewport palette: #404040[###] #ffffff[###] #e0ffff[###] #202020[###] #808080[###] #e0e0e0[###] #a0a0a0[###] #606060[###]
+- composition: density=dense; whitespace=29%; classification=dense_grid
+- viewport composition: density=dense; whitespace=29%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_palette_more_complex_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport palette is noisier than the DOM palette.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

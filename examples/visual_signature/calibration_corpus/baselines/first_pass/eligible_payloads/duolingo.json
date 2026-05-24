@@ -1,0 +1,503 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:56:59.916660",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.duolingo.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 36,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Duolingo",
+  "calibration": {
+    "expected_category": "consumer_app",
+    "notes": "Consumer app with strong character-led visual behavior."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#b70070",
+      "#ff878d",
+      "#66e1ff",
+      "#00c0ff",
+      "#ffad00",
+      "#ff8e00"
+    ],
+    "background_candidates": [
+      "#3d3d3d",
+      "#ffffff",
+      "#b70070",
+      "#fffeff"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#3d3d3d",
+      "#ffffff",
+      "#b70070",
+      "#ff878d",
+      "#66e1ff",
+      "#00c0ff",
+      "#ffad00",
+      "#ff8e00"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#3d3d3d",
+        "occurrences": 154,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 146,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#b70070",
+        "occurrences": 76,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ff878d",
+        "occurrences": 58,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#66e1ff",
+        "occurrences": 44,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#00c0ff",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffad00",
+        "occurrences": 40,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ff8e00",
+        "occurrences": 34,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#1cb0f6",
+        "occurrences": 32,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#00a9e5",
+        "occurrences": 24,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffe700",
+        "occurrences": 20,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffc800",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#af623c",
+        "occurrences": 16,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#3dbcf8",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d947ac",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#e5e5e5",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#22a882",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#fffeff",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#ffc700",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#89e219",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#89d878",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#6bccf9",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#70cdf9",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#d49800",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#3d3d3d",
+      "#b70070",
+      "#af623c"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 2,
+        "labels": [
+          "Try 1 week free"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 5,
+        "labels": [
+          "Get it on Google Play",
+          "Get it onGoogle Play",
+          "Get your class started",
+          "Learn more about ABC",
+          "Get started"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      }
+    ],
+    "confidence": 0.73,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": [
+      "Get it on Google Play",
+      "Get it onGoogle Play",
+      "Get your class started",
+      "Learn more about ABC",
+      "Get started"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.66,
+    "confidence": 0.542,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.449,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.542,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.487
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.639
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "single_column"
+    ],
+    "section_count": 24,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.095,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.657,
+      "edge_density": 0.035,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.922
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 119248,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.duolingo.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/consumer_app/duolingo.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 108,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 18368,
+          "ratio": 0.9184
+        },
+        {
+          "hex": "#60c000",
+          "occurrences": 417,
+          "ratio": 0.0209
+        },
+        {
+          "hex": "#20c0ff",
+          "occurrences": 220,
+          "ratio": 0.011
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 118,
+          "ratio": 0.0059
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 116,
+          "ratio": 0.0058
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 90,
+          "ratio": 0.0045
+        },
+        {
+          "hex": "#ffc0e0",
+          "occurrences": 41,
+          "ratio": 0.0021
+        },
+        {
+          "hex": "#ffc000",
+          "occurrences": 35,
+          "ratio": 0.0018
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.095,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.657,
+      "edge_density": 0.035,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.922
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.657,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.827
+    },
+    "viewport_palette": {
+      "color_count": 108,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 18368,
+          "ratio": 0.9184
+        },
+        {
+          "hex": "#60c000",
+          "occurrences": 417,
+          "ratio": 0.0209
+        },
+        {
+          "hex": "#20c0ff",
+          "occurrences": 220,
+          "ratio": 0.011
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 118,
+          "ratio": 0.0059
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 116,
+          "ratio": 0.0058
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 90,
+          "ratio": 0.0045
+        },
+        {
+          "hex": "#ffc0e0",
+          "occurrences": 41,
+          "ratio": 0.0021
+        },
+        {
+          "hex": "#ffc000",
+          "occurrences": 35,
+          "ratio": 0.0018
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.922,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.657,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.827
+    }
+  },
+  "website_url": "https://www.duolingo.com"
+}

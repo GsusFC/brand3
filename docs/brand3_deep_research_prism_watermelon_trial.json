@@ -1,0 +1,100 @@
+{
+  "case_id": "watermelon",
+  "target_url": "https://watermelon.sh",
+  "trial_type": "single_url_deep_research_brand3_prism",
+  "artifacts": {
+    "request": "examples/reports/deep_research_trial/watermelon_prism/request.json",
+    "raw_interaction": "examples/reports/deep_research_trial/watermelon_prism/raw_interaction.json",
+    "evidence_packet": "examples/reports/deep_research_trial/watermelon_prism/evidence_packet.json",
+    "cost_observation": "examples/reports/deep_research_trial/watermelon_prism/cost_observation.json",
+    "trial_notes": "examples/reports/deep_research_trial/watermelon_prism/trial_notes.md"
+  },
+  "scope": {
+    "single_url_only": true,
+    "target_url_only": true,
+    "seed_urls_provided": false,
+    "previous_brand3_evidence_provided": false,
+    "google_search_allowed": true,
+    "url_context_allowed": true,
+    "deep_research_max_enabled": false,
+    "one_interaction_only": true,
+    "runtime_integration": false
+  },
+  "execution": {
+    "status": "completed",
+    "interaction_id": "v1_Chc0VDhLYXBTX0dmXzN4TjhQNnRLODBRMBIXNFQ4S2FwU19HZl8zeE44UDZ0SzgwUTA",
+    "parseable_evidence_packet_returned": false,
+    "script_error": "completed_but_no_parseable_evidence_packet",
+    "raw_output_type": "narrative_audit_with_sources",
+    "normalized_failure_packet_created": true
+  },
+  "cost": {
+    "cost_observability": "observable",
+    "estimated_model_usd": 2.505606,
+    "estimate_basis": "Gemini 3.1 Pro Preview standard long-context rates; thought tokens counted as output; search charges excluded",
+    "google_search_charge_visibility": "not_itemized_in_interaction_output",
+    "input_tokens": 407940,
+    "output_tokens": 17095,
+    "thought_tokens": 31452,
+    "billed_output_tokens_estimate": 48547,
+    "total_tokens": 725538,
+    "tool_use_tokens": 269051,
+    "cached_tokens": 69632
+  },
+  "contract_compliance": {
+    "single_url_only": "pass",
+    "no_seed_urls": "pass",
+    "no_previous_brand3_evidence": "pass",
+    "structured_json_packet": "fail",
+    "no_report_prose": "fail",
+    "no_strategy_language": "partial_fail",
+    "evidence_citations": "partial_pass",
+    "finding_eligibility_classification": "fail_as_structured_contract"
+  },
+  "comparison": {
+    "current_brand3_watermelon_pipeline": {
+      "strength": "collects broad signals",
+      "weakness": "mixes audited surface, adjacent domains, GitHub, Product Hunt, software listings, and unrelated Watermelon references before generation"
+    },
+    "local_evidence_packet_v0_expectation": {
+      "strength": "forces eligibility and review gates before prose",
+      "weakness": "cannot discover missing sources as deeply as Deep Research without better upstream acquisition"
+    },
+    "deep_research_prism_trial": {
+      "strength": "discovers and separates useful entity/surface categories from one URL",
+      "weakness": "does not obey the evidence-packet output contract and turns evidence into narrative analysis"
+    }
+  },
+  "findings": [
+    {
+      "id": "discovery_improved",
+      "summary": "Deep Research found useful entity-separation and source-discovery material for Watermelon from one URL."
+    },
+    {
+      "id": "contract_failed",
+      "summary": "The model did not return parseable JSON and wrote a narrative audit despite explicit instructions."
+    },
+    {
+      "id": "overinterpretation_risk",
+      "summary": "The raw output used strong interpretive language such as high coherence, high vitality, and strategic deployment before structured evidence eligibility was settled."
+    },
+    {
+      "id": "cost_too_high_for_default",
+      "summary": "The trial used 725,538 total tokens and estimated USD 2.505606 in model cost excluding search charges."
+    }
+  ],
+  "root_finding": "Deep Research can improve discovery and entity separation, but in this prism mode it is not a reliable structured evidence packet compiler. It recreates Brand3's core failure if allowed to interpret before classification is locked.",
+  "recommended_next_step": "Do not run more Deep Research trials immediately. Harden the local Evidence Packet v0 and existing Exa/Web acquisition order first. If Deep Research is tested again, require stricter schema enforcement or a narrower packet-only interface.",
+  "non_goals_preserved": [
+    "no Brand3 production collector changes",
+    "no scoring changes",
+    "no prompt rollout",
+    "no report generation changes",
+    "no rendering changes",
+    "no persisted payload format changes",
+    "no Visual Signature changes",
+    "no runtime integration",
+    "no repeated Deep Research tasks",
+    "no Deep Research Max"
+  ]
+}

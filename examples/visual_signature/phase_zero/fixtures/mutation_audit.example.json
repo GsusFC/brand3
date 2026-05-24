@@ -1,0 +1,30 @@
+{
+  "after_artifact_ref": "examples/visual_signature/phase_zero/fixtures/clean_attempt.example.png",
+  "after_state": "REVIEW_REQUIRED_STATE",
+  "attempted": true,
+  "before_artifact_ref": "examples/visual_signature/phase_zero/fixtures/raw.example.png",
+  "before_state": "ELIGIBLE_FOR_SAFE_INTERVENTION",
+  "brand_name": "Example Brand",
+  "capture_id": "cap_phase_zero_example",
+  "created_at": "2026-05-11T10:00:00Z",
+  "evidence_preserved": true,
+  "integrity_notes": [
+    "raw_viewport_preserved_as_primary_evidence",
+    "clean_attempt_is_supplemental_only",
+    "safe_mutation_failed_without_overwriting_raw_state"
+  ],
+  "lineage_refs": [
+    "capture:phase-zero-example",
+    "transition:transition_phase_zero_example"
+  ],
+  "mutation_id": "mutation_phase_zero_example",
+  "mutation_type": "cookie_banner_dismissal",
+  "record_type": "mutation_audit",
+  "reversible": true,
+  "risk_level": "low",
+  "schema_version": "phase-zero-mutation-audit-1",
+  "successful": false,
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "trigger": "close",
+  "website_url": "https://example.com"
+}

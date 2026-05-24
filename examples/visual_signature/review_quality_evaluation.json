@@ -1,0 +1,249 @@
+{
+  "schema_version": "visual-signature-review-quality-evaluation-1",
+  "record_type": "review_quality_evaluation_framework",
+  "status": "design_only",
+  "core_statement": "Visual perception is probabilistic and interpretive, not objective truth. Review quality is about whether human answers are well-grounded in visible evidence, expressed consistently, and reusable across captures.",
+  "guardrails": [
+    "no ingestion implementation",
+    "no scoring integration",
+    "no ML implementation",
+    "no embeddings implementation",
+    "no prompt changes",
+    "no rubric changes",
+    "no capture changes",
+    "no runtime mutation enablement",
+    "no provider execution",
+    "no production report changes",
+    "no official review record creation"
+  ],
+  "source_documents": [
+    "examples/visual_signature/review_semantics.md",
+    "examples/visual_signature/review_semantics.json",
+    "examples/visual_signature/human_review_workflow_map.md",
+    "examples/visual_signature/human_review_ui_design.md"
+  ],
+  "quality_definition": {
+    "good_review": [
+      "raw viewport inspected first",
+      "supplemental screenshots used only as context",
+      "answers match the actual question",
+      "observation and interpretation are separated",
+      "confidence matches evidence strength",
+      "evidence refs are complete and specific",
+      "notes are short, concrete, and evidence-based",
+      "contradictions are explicit when visible evidence conflicts",
+      "unresolved cases stay unresolved",
+      "answer can be compared consistently with other reviewers"
+    ],
+    "low_signal_review": [
+      "raw viewport not inspected first",
+      "answer repeats metadata instead of visible evidence",
+      "notes are vague, generic, or subjective",
+      "high confidence despite weak or missing evidence",
+      "partial answers used where a concrete judgment is required",
+      "same generic phrase used across multiple questions",
+      "supplemental screenshots treated as replacements",
+      "governance metadata treated as visual evidence",
+      "strong conclusion without evidence refs",
+      "brand knowledge used instead of screenshot evidence"
+    ]
+  },
+  "quality_dimensions": [
+    {
+      "id": "reviewer_ambiguity_indicators",
+      "items": [
+        "frequent use of uncertain without explanation",
+        "conflicting answers across related questions",
+        "notes that hedge without naming the visible issue",
+        "high confidence paired with missing evidence refs",
+        "contradiction notes without a concrete visible conflict",
+        "repeated unresolved outcomes without stating what is missing",
+        "treating supplemental screenshots as replacements"
+      ]
+    },
+    {
+      "id": "question_ambiguity_indicators",
+      "items": [
+        "question combines multiple judgments at once",
+        "question mixes observation and interpretation",
+        "question can only be answered using hidden metadata",
+        "question asks for a category label when only a partial cue is visible",
+        "question does not define binary vs graded expectations",
+        "question is impossible to answer from a single viewport"
+      ]
+    },
+    {
+      "id": "confidence_misuse_patterns",
+      "items": [
+        "high confidence with missing screenshots",
+        "high confidence on an inherently ambiguous question",
+        "confidence assigned from brand familiarity",
+        "confidence copied across questions without re-evaluating evidence",
+        "confidence treated as a brand quality score",
+        "confidence used to mask unresolved evidence"
+      ]
+    },
+    {
+      "id": "contradiction_quality_vs_noise",
+      "good": [
+        "names the exact visible conflict",
+        "references the evidence that caused the contradiction",
+        "preserves the original claim",
+        "distinguishes contradiction from missing evidence"
+      ],
+      "noisy": [
+        "states something is wrong without showing why",
+        "uses contradiction when the case is unresolved",
+        "contradicts metadata rather than visible evidence",
+        "turns every disagreement into a contradiction"
+      ]
+    },
+    {
+      "id": "partial_answer_interpretation_risks",
+      "items": [
+        "partial can mean some evidence visible or some uncertainty remaining",
+        "partial can hide a real contradiction",
+        "partial can be used when the question should be binary",
+        "partial can be mistaken for agreement when it means weak support"
+      ]
+    },
+    {
+      "id": "reviewer_drift",
+      "items": [
+        "confidence thresholds change without explanation",
+        "similar cases receive different outcomes across sessions",
+        "metadata starts being treated as evidence",
+        "notes become shorter, vaguer, or more generic",
+        "unresolved or contradicted states are no longer used"
+      ]
+    },
+    {
+      "id": "calibration_failure_scenarios",
+      "items": [
+        "raw viewport ignored and supplemental image overtrusted",
+        "evidence too weak or broken to support a meaningful answer",
+        "questions too broad and absorb multiple judgments into one field",
+        "reviewers use different mental models for the same question",
+        "confidence is inflated",
+        "contradiction and unresolved states are underused",
+        "notes are too vague to support analysis",
+        "metadata is interpreted as evidence",
+        "case-specific guidance changes the meaning of stable questions"
+      ]
+    },
+    {
+      "id": "semantic_overlap_between_questions",
+      "items": [
+        "viewport usable overlaps with materially obstructed",
+        "clean attempt exists overlaps with clean attempt is supplemental",
+        "claim supported overlaps with review outcome confirmed",
+        "category cues visible overlaps with product or service presence visible"
+      ]
+    }
+  ],
+  "completeness_metrics": [
+    "required fields present",
+    "evidence refs present",
+    "raw viewport inspected first",
+    "question response rate",
+    "confidence provided",
+    "notes provided when needed",
+    "contradiction or unresolved fields used appropriately",
+    "case-specific questions answered"
+  ],
+  "evidence_and_screenshot_adequacy": {
+    "evidence_adequacy": [
+      "visible raw viewport exists",
+      "clear subject or obstruction exists",
+      "enough context exists to answer the question without guessing",
+      "supplemental clean attempt or full-page capture available when needed"
+    ],
+    "evidence_inadequacy": [
+      "screenshot missing",
+      "screenshot broken or cropped",
+      "viewport too obscured",
+      "question cannot be answered from what is visible"
+    ],
+    "screenshot_quality_adequacy": [
+      "render completely",
+      "fit the preview viewport",
+      "preserve the relevant visible region",
+      "do not introduce layout overflow",
+      "are legible enough to support the question being asked"
+    ],
+    "poor_screenshot_quality": [
+      "crops the relevant visible area",
+      "overflows the viewport",
+      "makes text or obstruction unreadable",
+      "loses the distinction between raw and supplemental evidence"
+    ]
+  },
+  "onboarding_requirements": [
+    "can explain observation versus interpretation",
+    "can identify when evidence is insufficient",
+    "can distinguish raw viewport from supplemental images",
+    "can use confidence carefully",
+    "can write short evidence-based notes",
+    "can record contradictions without exaggeration",
+    "can leave unresolved cases unresolved",
+    "can avoid using metadata as the primary evidence source"
+  ],
+  "reasoning_examples": {
+    "strong": [
+      "The raw viewport clearly shows the modal, so the obstruction is visible and the claim is contradicted.",
+      "The clean attempt exists, but it does not materially change the raw viewport reading, so it remains supplemental.",
+      "The page shows visible category cues, but not enough to confirm the stronger claim, so this is unresolved."
+    ],
+    "weak": [
+      "It feels like a modal.",
+      "Probably supported.",
+      "Confidence high because the page looks familiar.",
+      "The JSON says so."
+    ]
+  },
+  "ingestion_enablement_criteria": [
+    "complete records",
+    "correct evidence linkage",
+    "stable use of outcomes",
+    "sensible confidence usage",
+    "clear unresolved handling",
+    "clear contradiction handling",
+    "low reviewer drift",
+    "repeatable question interpretation",
+    "acceptable reviewer agreement on repeated cases",
+    "evidence adequacy matching the question set"
+  ],
+  "evaluation_heuristics": [
+    "favor concrete visible evidence",
+    "penalize metadata or reputation-based answers",
+    "penalize high confidence on weak evidence",
+    "penalize generic notes",
+    "favor explicit unresolved handling",
+    "favor explicit contradiction handling when visible evidence conflicts",
+    "penalize partial answers where binary is required",
+    "check semantic overlap between questions",
+    "check whether the raw viewport was inspected first",
+    "check whether evidence refs match the answer"
+  ],
+  "future_qa_workflow": [
+    "sample completed draft reviews",
+    "compare against gold or adjudicated set",
+    "measure reviewer agreement and drift",
+    "flag ambiguous questions",
+    "flag confidence misuse",
+    "identify low-signal reasoning patterns",
+    "gate ingestion until quality thresholds are met"
+  ],
+  "non_goals": [
+    "no ingestion implementation",
+    "no scoring integration",
+    "no ML or embeddings implementation",
+    "no prompt changes",
+    "no rubric changes",
+    "no capture changes",
+    "no runtime mutation enablement",
+    "no provider execution",
+    "no production report changes",
+    "no official review record creation"
+  ]
+}

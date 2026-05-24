@@ -1,0 +1,95 @@
+{
+  "artifact_id": "brand3_production_deploy_readiness_manifest_2026_05_15",
+  "artifact_type": "production_deploy_readiness_manifest",
+  "date": "2026-05-15",
+  "branch": "production-deploy-readiness",
+  "source_commit": "e605322",
+  "classification": "safe_to_deploy",
+  "decision": "Safe to deploy from this clean branch, subject to repeating the validation gate in CI or the deployment environment.",
+  "included_runtime_surface": [
+    "/",
+    "/analyze",
+    "/r/{token}/status",
+    "/r/{token}",
+    "/reports",
+    "/brand/{domain}",
+    "/team/unlock",
+    "/takedown",
+    "/_health"
+  ],
+  "excluded_experimental_surface": [
+    "/visual-signature/*",
+    "/brand3-lab/*",
+    "examples/perceptual_library/**",
+    "examples/brand3_lab/**",
+    "examples/visual_signature/**",
+    "src/reports/experimental_perceptual_narrative.py",
+    "src/visual_signature/**"
+  ],
+  "guardrails": {
+    "no_scoring_changes": true,
+    "no_prompt_rewrites": true,
+    "no_report_renderer_rollout": true,
+    "no_visual_signature_semantic_changes": true,
+    "no_schema_mutations": true,
+    "no_perceptual_runtime_activation": true,
+    "no_lab_persistence": true
+  },
+  "validation": {
+    "py_compile_web_and_reports": {
+      "command": "python -m py_compile web/app.py web/config.py web/routes/*.py web/middleware/*.py web/workers/*.py src/reports/*.py",
+      "status": "passed"
+    },
+    "critical_pytest_subset": {
+      "command": "python -m pytest tests/test_web_app.py tests/test_web_health.py tests/test_web_listings.py tests/test_reports_renderer.py tests/test_reports_dossier.py tests/test_reports_narrative.py tests/test_scoring_engine.py",
+      "status": "passed",
+      "result": "77 passed in 2.52s"
+    },
+    "full_pytest": {
+      "command": "python -m pytest",
+      "status": "passed",
+      "result": "420 passed, 1 skipped, 1 warning in 6.93s"
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "status": "passed_before_manifest_creation"
+    },
+    "local_http_smoke": {
+      "base_url": "http://127.0.0.1:8001",
+      "status": "passed",
+      "checks": [
+        {
+          "path": "/",
+          "expected_status": 200,
+          "actual_status": 200
+        },
+        {
+          "path": "/_health",
+          "expected_status": 200,
+          "actual_status": 200
+        },
+        {
+          "path": "/reports",
+          "expected_status": 200,
+          "actual_status": 200
+        },
+        {
+          "path": "/visual-signature",
+          "expected_status": 404,
+          "actual_status": 404
+        },
+        {
+          "path": "/brand3-lab/perceptual-narrative-comparison",
+          "expected_status": 404,
+          "actual_status": 404
+        }
+      ]
+    }
+  },
+  "residual_risk": [
+    "The original worktree remains dirty and mixes production, lab, research, report, service, and test changes.",
+    "Only this clean branch should be used for production deployment.",
+    "CI should repeat the validation gate before promotion.",
+    "The local Python runtime logs hashlib warnings for blake2b and blake2s during server startup; the app starts and serves requests, but CI or deploy runtime should be checked for the same warning."
+  ]
+}

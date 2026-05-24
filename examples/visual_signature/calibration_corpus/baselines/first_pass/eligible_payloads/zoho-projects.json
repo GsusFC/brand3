@@ -1,0 +1,416 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:32:31.205082",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.zoho.com/projects/",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 18,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Zoho Projects",
+  "calibration": {
+    "expected_category": "template_like_saas",
+    "notes": "Large-suite SaaS with utilitarian page patterns and lower design polish."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [],
+    "confidence": 0.05,
+    "dominant_colors": [],
+    "palette": [],
+    "palette_complexity": "unknown",
+    "text_color_candidates": []
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 4,
+        "labels": [
+          "Customize projects",
+          "Automate workflows"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 10,
+        "labels": [
+          "SIGN UP NOW",
+          "REQUEST DEMO",
+          "Customize projects",
+          "Automate workflows",
+          "Learn more about Gantt charts",
+          "Learn more about time tracking",
+          "Learn more about project customization",
+          "Learn more about task automation",
+          "Get App",
+          "Learn more"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 24,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "SIGN UP NOW",
+      "REQUEST DEMO",
+      "Customize projects",
+      "Automate workflows",
+      "Learn more about Gantt charts",
+      "Learn more about time tracking",
+      "Learn more about project customization",
+      "Learn more about task automation"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.15,
+    "component_consistency": 0.72,
+    "confidence": 0.382,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.365,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.382,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.463
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "consistency_inference_limited"
+    ],
+    "score": 0.607
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex",
+      "sticky_nav"
+    ],
+    "section_count": 62,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Forbes",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/otherbrandlogos/forbes.svg"
+      },
+      {
+        "alt": "HDFC securities",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/otherbrandlogos/hdfc-securities.jpg"
+      },
+      {
+        "alt": "the-home-depot",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/otherbrandlogos/the-home-depot.svg"
+      },
+      {
+        "alt": "airbus",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/otherbrandlogos/airbus.svg"
+      },
+      {
+        "alt": "TATA Chemicals Limited",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/otherbrandlogos/tata-chemicals.svg"
+      },
+      {
+        "alt": "Legrand",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/otherbrandlogos/legrand.svg"
+      },
+      {
+        "alt": "Zendesk",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/othercompanylogos/zen-desk.png"
+      },
+      {
+        "alt": "Slack",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.zohowebstatic.com/sites/zweb/images/othercompanylogos/slack.png"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.015,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.526,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.073,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.131
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 552151,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.zoho.com/projects/",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/zoho-projects.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 120,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#e0ffff",
+          "occurrences": 6789,
+          "ratio": 0.3394
+        },
+        {
+          "hex": "#c0ffe0",
+          "occurrences": 3803,
+          "ratio": 0.1902
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 3104,
+          "ratio": 0.1552
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2311,
+          "ratio": 0.1155
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1640,
+          "ratio": 0.082
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 322,
+          "ratio": 0.0161
+        },
+        {
+          "hex": "#c0ffff",
+          "occurrences": 308,
+          "ratio": 0.0154
+        },
+        {
+          "hex": "#e02020",
+          "occurrences": 221,
+          "ratio": 0.0111
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.526,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.073,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.131
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 120,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#e0ffff",
+          "occurrences": 6789,
+          "ratio": 0.3394
+        },
+        {
+          "hex": "#c0ffe0",
+          "occurrences": 3803,
+          "ratio": 0.1902
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 3104,
+          "ratio": 0.1552
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2311,
+          "ratio": 0.1155
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1640,
+          "ratio": 0.082
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 322,
+          "ratio": 0.0161
+        },
+        {
+          "hex": "#c0ffff",
+          "occurrences": 308,
+          "ratio": 0.0154
+        },
+        {
+          "hex": "#e02020",
+          "occurrences": 221,
+          "ratio": 0.0111
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.131,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.zoho.com/projects/"
+}

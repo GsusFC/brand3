@@ -8,13 +8,14 @@
   </div>
 
   {% if analyses %}
+  <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th style="width:14%">date</th>
-        <th style="width:8%" class="num">score</th>
-        <th style="width:38%">bar</th>
-        <th style="width:20%">band</th>
+        <th class="col-date">date</th>
+        <th class="num col-score">score</th>
+        <th class="col-bar-wide">bar</th>
+        <th class="col-band-wide">band</th>
         <th></th>
       </tr>
     </thead>
@@ -30,15 +31,16 @@
     {% endfor %}
     </tbody>
   </table>
+  </div>
   {% if analyses|length > 1 %}
-  <p class="small dim" style="margin-top:14px">// evolution: older runs → newer runs read top-down</p>
+  <p class="small dim block-note">// evolution: older runs → newer runs read top-down</p>
   {% endif %}
-  <p class="small dim" style="margin-top:14px">
+  <p class="small dim block-note">
     own this brand? <a href="/takedown?domain={{ domain }}">request takedown →</a>
   </p>
   {% else %}
   <div class="empty">// no public analyses for this brand.</div>
-  <p class="small dim" style="margin-top:10px"><a href="/">← run the first analysis</a></p>
+  <p class="small dim block-note"><a href="/">← run the first analysis</a></p>
   {% endif %}
 </section>
 {% endblock %}

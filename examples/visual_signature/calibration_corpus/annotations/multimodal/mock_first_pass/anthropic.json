@@ -1,0 +1,476 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:55:59.459405",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.anthropic.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.616,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.865
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "ai native",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 12,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Anthropic",
+  "calibration": {
+    "expected_category": "ai_native",
+    "notes": "AI company with editorial and safety-led visual positioning."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#181818",
+      "#000000",
+      "#f9f9f7"
+    ],
+    "confidence": 0.517,
+    "dominant_colors": [
+      "#181818",
+      "#000000",
+      "#f9f9f7"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#181818",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#000000",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f9f9f7",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#181818",
+      "#000000"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 10,
+        "labels": [
+          "Read the story",
+          "Model details",
+          "Read announcement",
+          "Read the post"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "research",
+          "products",
+          "Read the story",
+          "Model details",
+          "Read announcement",
+          "Read the post"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      }
+    ],
+    "confidence": 0.73,
+    "interaction_patterns": [
+      "accordion"
+    ],
+    "primary_ctas": [
+      "research",
+      "products",
+      "Read the story",
+      "Model details",
+      "Read announcement",
+      "Read the post"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.66,
+    "confidence": 0.447,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.539,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.447,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.456
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available",
+      "consistency_inference_limited"
+    ],
+    "score": 0.614
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.95,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "multi_column"
+    ],
+    "section_count": 4,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.418,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.922
+    },
+    "composition": {
+      "color_variance": 0.661,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.079,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.012
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 229656,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.anthropic.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ai_native/anthropic.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 35,
+      "confidence": 0.741,
+      "dominant_colors": [
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 11408,
+          "ratio": 0.5704
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 7378,
+          "ratio": 0.3689
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 200,
+          "ratio": 0.01
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 192,
+          "ratio": 0.0096
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 121,
+          "ratio": 0.006
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 116,
+          "ratio": 0.0058
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 104,
+          "ratio": 0.0052
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 97,
+          "ratio": 0.0049
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.661,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.079,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.012
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.741,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.845
+    },
+    "viewport_palette": {
+      "color_count": 35,
+      "confidence": 0.741,
+      "dominant_colors": [
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 11408,
+          "ratio": 0.5704
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 7378,
+          "ratio": 0.3689
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 200,
+          "ratio": 0.01
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 192,
+          "ratio": 0.0096
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 121,
+          "ratio": 0.006
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 116,
+          "ratio": 0.0058
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 104,
+          "ratio": 0.0052
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 97,
+          "ratio": 0.0049
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.012,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.741,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.845
+    }
+  },
+  "website_url": "https://www.anthropic.com"
+}

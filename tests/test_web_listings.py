@@ -113,7 +113,7 @@ class ListingsTests(unittest.TestCase):
     def test_index_empty_shows_placeholder(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("no public analyses yet", r.text)
+        self.assertIn("no public audits yet", r.text)
 
     def test_index_limits_to_ten(self):
         for i in range(15):

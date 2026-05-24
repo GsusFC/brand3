@@ -1,0 +1,78 @@
+{
+  "$defs": {
+    "ScoreDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "boundary_note": {
+          "minLength": 1,
+          "title": "Boundary Note",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "title": "Enabled",
+          "type": "boolean"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "observation_keys": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Observation Keys",
+          "type": "array"
+        }
+      },
+      "required": [
+        "key",
+        "description",
+        "observation_keys",
+        "boundary_note"
+      ],
+      "title": "ScoreDefinition",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "items": {
+        "$ref": "#/$defs/ScoreDefinition"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "registry_type": {
+      "const": "scoring_registry",
+      "title": "Registry Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "phase-zero-scoring-registry-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "registry_type",
+    "items"
+  ],
+  "title": "ScoringRegistry",
+  "type": "object"
+}

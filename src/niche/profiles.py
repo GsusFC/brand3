@@ -81,6 +81,34 @@ CALIBRATION_PROFILES: dict[str, dict[str, object]] = {
             },
         },
     },
+    "product_with_parent": {
+        "label": "Product with Parent",
+        "description": "Product brands whose audit should combine product evidence with parent-company credibility, visibility and momentum.",
+        "auto_apply": False,
+        "stage": "product",
+        "dimension_weights": {
+            "coherencia": 0.22,
+            "presencia": 0.14,
+            "percepcion": 0.18,
+            "diferenciacion": 0.24,
+            "vitalidad": 0.22,
+        },
+        "rule_overrides": {},
+    },
+    "ecosystem_or_protocol": {
+        "label": "Ecosystem / Protocol",
+        "description": "Protocol, platform or ecosystem brands where developer/community activity, momentum and network adoption matter more than traditional brand presence.",
+        "auto_apply": False,
+        "stage": "ecosystem",
+        "dimension_weights": {
+            "coherencia": 0.18,
+            "presencia": 0.12,
+            "percepcion": 0.16,
+            "diferenciacion": 0.24,
+            "vitalidad": 0.30,
+        },
+        "rule_overrides": {},
+    },
 }
 
 

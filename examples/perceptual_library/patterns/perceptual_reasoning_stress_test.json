@@ -1,0 +1,287 @@
+{
+  "artifact_id": "brand3_perceptual_reasoning_stress_test_v0_1",
+  "artifact_type": "perceptual_reasoning_stress_test",
+  "generated_at": "2026-05-15",
+  "status": "benchmark_stress_test",
+  "scope": "perceptual_narrative_reasoning_only",
+  "guardrails": {
+    "documentation_only": true,
+    "runtime_changes": false,
+    "scoring_changes": false,
+    "prompt_rewrites": false,
+    "report_changes": false,
+    "visual_signature_changes": false,
+    "schema_changes": false
+  },
+  "surface_classes": [
+    "premium_editorial_brands",
+    "dense_crypto_brands",
+    "corporate_enterprise_brands",
+    "wellness_lifestyle_brands",
+    "local_service_businesses",
+    "generic_template_saas",
+    "intentionally_weak_brands"
+  ],
+  "benchmark_matrix": [
+    {
+      "surface_class": "premium_editorial_brands",
+      "typical_evidence": ["visual hierarchy", "product/editorial imagery", "typography", "whitespace", "campaign copy"],
+      "baseline_tendency": "Premium, polished, sophisticated editorial identity.",
+      "perceptual_augmented_target": "Describe restraint, pacing, object focus, and editorial sequence without asserting premium status.",
+      "where_improves_clarity": "Turns prestige adjectives into visible mechanics.",
+      "where_overreaches": "Infers cultural authority, luxury status, or audience sophistication from restraint.",
+      "where_generic_sophistication_collapse_occurs": "When restrained surfaces are described as premium, refined, elevated, or sophisticated without mechanism.",
+      "where_baseline_safer": "Single landing page, reputation-only evidence, or no capture.",
+      "brand3_floc_differentiation": "Strong when it names restraint/density, image/copy hierarchy, and claim/evidence boundaries.",
+      "recommended_confidence": "medium"
+    },
+    {
+      "surface_class": "dense_crypto_brands",
+      "typical_evidence": ["token mechanics", "protocol claims", "dashboards", "community channels", "technical copy"],
+      "baseline_tendency": "Innovative Web3 ecosystem with strong community energy and differentiated protocol positioning.",
+      "perceptual_augmented_target": "Separate protocol claims from surface legibility and keep ideology/community readings evidence-bound.",
+      "where_improves_clarity": "Prevents technical language from becoming proof of vitality or differentiation.",
+      "where_overreaches": "Invents openness, disruption, empowerment, or cultural momentum.",
+      "where_generic_sophistication_collapse_occurs": "When technical density becomes 'sophisticated ecosystem' language.",
+      "where_baseline_safer": "Technical summary without visual or behavioral evidence.",
+      "brand3_floc_differentiation": "High for claim/signal gaps and concept/implementation proof.",
+      "recommended_confidence": "medium"
+    },
+    {
+      "surface_class": "corporate_enterprise_brands",
+      "typical_evidence": ["product pages", "solution taxonomy", "compliance claims", "analyst/press mentions"],
+      "baseline_tendency": "Robust and trusted enterprise platform with comprehensive solutions.",
+      "perceptual_augmented_target": "Map system governance, proof hierarchy, solution architecture, and operational density.",
+      "where_improves_clarity": "Turns robust platform prose into observable proof structure.",
+      "where_overreaches": "Binds all evidence into one coherent enterprise story and invents trust or authority.",
+      "where_generic_sophistication_collapse_occurs": "When enterprise complexity is rewritten as mature, sophisticated, or world-class.",
+      "where_baseline_safer": "Product taxonomy is visible but proof evidence is missing.",
+      "brand3_floc_differentiation": "Medium-high when it separates stated credibility from observed proof structure.",
+      "recommended_confidence": "medium_high_with_corroboration"
+    },
+    {
+      "surface_class": "wellness_lifestyle_brands",
+      "typical_evidence": ["soft color", "illustration", "benefit copy", "testimonials", "conversion flows"],
+      "baseline_tendency": "Warm, calm, supportive, accessible brand that helps users improve wellbeing.",
+      "perceptual_augmented_target": "Tie emotional temperature to visible mechanisms while keeping outcomes conditional.",
+      "where_improves_clarity": "Protects against turning tone into therapeutic or behavioral outcome claims.",
+      "where_overreaches": "Projects user emotion, support, safety, or wellbeing effects from friendly visuals.",
+      "where_generic_sophistication_collapse_occurs": "When softness becomes premium lifestyle language without evidence.",
+      "where_baseline_safer": "Short surface summary that avoids outcome language.",
+      "brand3_floc_differentiation": "Medium when emotional temperature stays mechanism-bound.",
+      "recommended_confidence": "medium_low"
+    },
+    {
+      "surface_class": "local_service_businesses",
+      "typical_evidence": ["service lists", "reviews", "location pages", "basic imagery", "booking CTAs"],
+      "baseline_tendency": "Simple but functional presence with limited differentiation.",
+      "perceptual_augmented_target": "Read service clarity, locality, evidence availability, and conversion path without imposing agency-brand standards.",
+      "where_improves_clarity": "Distinguishes small-surface adequacy from weak brand expression.",
+      "where_overreaches": "Penalizes local businesses for lacking editorial or system-level sophistication.",
+      "where_generic_sophistication_collapse_occurs": "When local trust cues are judged through premium/editorial vocabulary.",
+      "where_baseline_safer": "Perceptual vocabulary would add unnecessary abstraction.",
+      "brand3_floc_differentiation": "Moderate if it names practical surface behavior.",
+      "recommended_confidence": "medium"
+    },
+    {
+      "surface_class": "generic_template_saas",
+      "typical_evidence": ["standard hero", "feature cards", "generic benefits", "little proof"],
+      "baseline_tendency": "Modern SaaS experience with clear benefits and clean interface.",
+      "perceptual_augmented_target": "Identify template behavior and missing specificity without treating it as product failure.",
+      "where_improves_clarity": "Names generic surface mechanics without calling the company weak.",
+      "where_overreaches": "Fabricates clarity/differentiation tension without comparison evidence.",
+      "where_generic_sophistication_collapse_occurs": "When clean template UI is praised as refined or focused.",
+      "where_baseline_safer": "Neutral summary with no comparative surface evidence.",
+      "brand3_floc_differentiation": "High methodologically because it separates generic surface behavior from strategic failure.",
+      "recommended_confidence": "medium"
+    },
+    {
+      "surface_class": "intentionally_weak_brands",
+      "typical_evidence": ["thin copy", "missing corroboration", "low signal repetition", "inconsistent or absent channels"],
+      "baseline_tendency": "Weak, fragmented, lacking differentiation and momentum.",
+      "perceptual_augmented_target": "Treat weakness as evidence-bound absence rather than personality, strategy, or business failure.",
+      "where_improves_clarity": "Prevents punitive score-first writing.",
+      "where_overreaches": "Over-explains a brand that simply lacks usable evidence.",
+      "where_generic_sophistication_collapse_occurs": "When absence is contrasted against imagined sophistication.",
+      "where_baseline_safer": "Baseline explicitly states evidence insufficiency without interpretation.",
+      "brand3_floc_differentiation": "High as methodological control; low as brand-specific perceptual reading.",
+      "recommended_confidence": "low_for_interpretation_high_for_limitation"
+    }
+  ],
+  "failure_heatmap": {
+    "scale": ["low", "medium", "high", "critical"],
+    "rows": {
+      "invented_intentionality": {
+        "premium_editorial_brands": "high",
+        "dense_crypto_brands": "critical",
+        "corporate_enterprise_brands": "high",
+        "wellness_lifestyle_brands": "high",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "medium",
+        "intentionally_weak_brands": "high"
+      },
+      "unsupported_emotional_projection": {
+        "premium_editorial_brands": "high",
+        "dense_crypto_brands": "medium",
+        "corporate_enterprise_brands": "medium",
+        "wellness_lifestyle_brands": "critical",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "medium",
+        "intentionally_weak_brands": "medium"
+      },
+      "cinematic_inflation": {
+        "premium_editorial_brands": "medium",
+        "dense_crypto_brands": "high",
+        "corporate_enterprise_brands": "low",
+        "wellness_lifestyle_brands": "medium",
+        "local_service_businesses": "low",
+        "generic_template_saas": "low",
+        "intentionally_weak_brands": "low"
+      },
+      "false_sophistication_language": {
+        "premium_editorial_brands": "critical",
+        "dense_crypto_brands": "medium",
+        "corporate_enterprise_brands": "high",
+        "wellness_lifestyle_brands": "high",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "high",
+        "intentionally_weak_brands": "medium"
+      },
+      "weak_evidence_amplification": {
+        "premium_editorial_brands": "medium",
+        "dense_crypto_brands": "high",
+        "corporate_enterprise_brands": "high",
+        "wellness_lifestyle_brands": "high",
+        "local_service_businesses": "critical",
+        "generic_template_saas": "high",
+        "intentionally_weak_brands": "critical"
+      },
+      "aesthetic_hallucination": {
+        "premium_editorial_brands": "high",
+        "dense_crypto_brands": "medium",
+        "corporate_enterprise_brands": "medium",
+        "wellness_lifestyle_brands": "high",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "medium",
+        "intentionally_weak_brands": "medium"
+      },
+      "narrative_over_binding": {
+        "premium_editorial_brands": "high",
+        "dense_crypto_brands": "high",
+        "corporate_enterprise_brands": "critical",
+        "wellness_lifestyle_brands": "medium",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "high",
+        "intentionally_weak_brands": "medium"
+      },
+      "perception_without_observable_grounding": {
+        "premium_editorial_brands": "high",
+        "dense_crypto_brands": "high",
+        "corporate_enterprise_brands": "high",
+        "wellness_lifestyle_brands": "high",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "high",
+        "intentionally_weak_brands": "high"
+      },
+      "tension_fabrication": {
+        "premium_editorial_brands": "medium",
+        "dense_crypto_brands": "high",
+        "corporate_enterprise_brands": "high",
+        "wellness_lifestyle_brands": "medium",
+        "local_service_businesses": "medium",
+        "generic_template_saas": "critical",
+        "intentionally_weak_brands": "high"
+      },
+      "generic_premium_projection": {
+        "premium_editorial_brands": "critical",
+        "dense_crypto_brands": "medium",
+        "corporate_enterprise_brands": "medium",
+        "wellness_lifestyle_brands": "high",
+        "local_service_businesses": "low",
+        "generic_template_saas": "medium",
+        "intentionally_weak_brands": "low"
+      }
+    }
+  },
+  "confidence_distribution": [
+    {
+      "surface_class": "premium_editorial_brands",
+      "high_confidence_zone": "visible hierarchy, spacing, imagery, typography",
+      "medium_confidence_zone": "emotional temperature tied to visible mechanics",
+      "low_confidence_zone": "premium status, cultural authority, audience sophistication",
+      "recommended_default": "medium"
+    },
+    {
+      "surface_class": "dense_crypto_brands",
+      "high_confidence_zone": "explicit claims, terminology, diagrams, claim/signal gaps",
+      "medium_confidence_zone": "category-to-surface translation from technical copy plus surface structure",
+      "low_confidence_zone": "ideology, community energy, disruption intent",
+      "recommended_default": "medium"
+    },
+    {
+      "surface_class": "corporate_enterprise_brands",
+      "high_confidence_zone": "solution taxonomy, proof modules, third-party references",
+      "medium_confidence_zone": "system governance reading",
+      "low_confidence_zone": "trust, authority, market leadership",
+      "recommended_default": "medium_high_with_corroboration"
+    },
+    {
+      "surface_class": "wellness_lifestyle_brands",
+      "high_confidence_zone": "visible softness, color, hierarchy, illustration",
+      "medium_confidence_zone": "calm or approachable emotional temperature",
+      "low_confidence_zone": "support, safety, user wellbeing outcomes",
+      "recommended_default": "medium_low"
+    },
+    {
+      "surface_class": "local_service_businesses",
+      "high_confidence_zone": "services, location, booking path, reviews",
+      "medium_confidence_zone": "service clarity and local trust cues",
+      "low_confidence_zone": "strategic maturity, brand ambition",
+      "recommended_default": "medium"
+    },
+    {
+      "surface_class": "generic_template_saas",
+      "high_confidence_zone": "template pattern, feature-card structure, low proof density",
+      "medium_confidence_zone": "differentiation limitation",
+      "low_confidence_zone": "product quality or market failure",
+      "recommended_default": "medium"
+    },
+    {
+      "surface_class": "intentionally_weak_brands",
+      "high_confidence_zone": "evidence insufficiency, missing corroboration",
+      "medium_confidence_zone": "surface thinness as limitation",
+      "low_confidence_zone": "failure, irrelevance, strategic incompetence",
+      "recommended_default": "low_for_interpretation_high_for_limitation"
+    }
+  ],
+  "safe_deployment_zones": [
+    "reports with screenshots or direct page evidence",
+    "cases with repeated surface mechanisms across multiple sections",
+    "technical or enterprise surfaces where category complexity needs translation",
+    "generic SaaS or weak-brand reviews where the goal is to avoid punitive overstatement",
+    "claim/signal gap analysis",
+    "evidence limitation findings",
+    "design-system or multi-surface cases with actual component, template, or taxonomy evidence"
+  ],
+  "unsafe_deployment_zones": [
+    "copy-only evidence pools",
+    "obstructed screenshots without fallback evidence",
+    "wellness, finance, health, AI safety, or luxury claims without corroboration",
+    "famous brands where reputation may fill gaps",
+    "motion-heavy interpretation without motion capture",
+    "local businesses where perceptual vocabulary would impose an agency-brand standard",
+    "sparse sites where absence may be mistaken for failure",
+    "any report that needs legal, financial, medical, or reputational caution"
+  ],
+  "deployment_recommendation": {
+    "global_enablement": "do_not_enable",
+    "best_next_use": [
+      "Keep it opt-in.",
+      "Use it first on evidence-rich findings.",
+      "Add a visible acceptance gate using the overreach taxonomy.",
+      "Track which surface classes improve and which require baseline fallback.",
+      "Prefer baseline when the perceptual layer cannot name a surface mechanism."
+    ],
+    "decision": "The perceptual reasoning layer is differentiated when it reads surface behavior rather than brand quality. It is not safe as a default layer for sparse, emotional, famous, luxury-coded, or uncaptured motion-heavy surfaces."
+  }
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "brand_name": "Linear",
+    "website_url": "https://linear.app",
+    "expected_category": "SaaS",
+    "notes": "Modern SaaS with controlled dark visual system and product-led components.",
+    "screenshot_path": "examples/visual_signature/screenshots/linear.png",
+    "capture_type": "viewport"
+  },
+  {
+    "brand_name": "OpenAI",
+    "website_url": "https://openai.com",
+    "expected_category": "AI-native",
+    "notes": "AI-native company with restrained editorial/product visual behavior.",
+    "screenshot_path": "examples/visual_signature/screenshots/openai.png",
+    "capture_type": "viewport"
+  },
+  {
+    "brand_name": "The Verge",
+    "website_url": "https://www.theverge.com",
+    "expected_category": "editorial/media",
+    "notes": "High-density media layout with strong typography and recurring editorial modules.",
+    "screenshot_path": "examples/visual_signature/screenshots/the-verge.png",
+    "capture_type": "viewport"
+  },
+  {
+    "brand_name": "Allbirds",
+    "website_url": "https://www.allbirds.com",
+    "expected_category": "ecommerce",
+    "notes": "Consumer ecommerce with product imagery, category navigation, and lifestyle assets.",
+    "screenshot_path": "examples/visual_signature/screenshots/allbirds.png",
+    "capture_type": "viewport"
+  },
+  {
+    "brand_name": "Headspace",
+    "website_url": "https://www.headspace.com",
+    "expected_category": "wellness/lifestyle",
+    "notes": "Wellness brand with illustration, soft palette, and consumer conversion flows.",
+    "screenshot_path": "examples/visual_signature/screenshots/headspace.png",
+    "capture_type": "viewport"
+  }
+]

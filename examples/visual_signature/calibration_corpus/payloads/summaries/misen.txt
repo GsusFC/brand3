@@ -1,0 +1,39 @@
+Expected category: ecommerce
+Notes: DTC product ecommerce with utilitarian product-led visual system.
+
+== Misen ==
+URL: https://misen.com
+Interpretation status: interpretable
+Extraction confidence: 0.74 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.67, consistency_coverage=0.77]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.95
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.77
+
+Visual summaries:
+- palette preview: #ffffff[###] #eeeeee[###] #d80027[###] #000000[###] #000088[###] #ffda44[###] #0052b4[###] #24420e[###]
+- typography: neue-haas-unica, &quot
+- layout: header=True; nav=True; hero=True; sections=172; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: navigation=4, button=104, cta=8, form=98, accordion=12, tabs=10, modal=20
+- consistency: overall=0.67; color=0.48; type=0.82; component=0.94; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #404040[###] #202020[###] #000000[###] #4080c0[###] #402020[###] #200000[###] #202000[###]
+- viewport palette: #ffffff[###] #404040[###] #202020[###] #000000[###] #4080c0[###] #402020[###] #200000[###] #202000[###]
+- composition: density=dense; whitespace=29%; classification=dense_grid
+- viewport composition: density=dense; whitespace=29%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

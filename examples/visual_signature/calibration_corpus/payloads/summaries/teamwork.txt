@@ -1,0 +1,40 @@
+Expected category: saas
+Notes: Less design-forward SaaS candidate for mature but ordinary visual systems.
+
+== Teamwork ==
+URL: https://www.teamwork.com
+Interpretation status: interpretable
+Extraction confidence: 0.62 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.47, consistency_coverage=0.47]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.46
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.47
+
+Visual summaries:
+- palette preview: #6a84ec[###] #1d1c39[###] #62c0f8[###] #885ef7[###] #c96318[###] #1fcadc[###] #ff7641[###] #ef2f62[###]
+- typography: none
+- layout: header=False; nav=False; hero=False; sections=4; density=sparse; patterns=single_column
+- components: cta=2
+- consistency: overall=0.50; color=0.68; type=0.20; component=0.62; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #ffe0ff[###] #e0e0ff[###] #202040[###] #ffc0ff[###] #8060ff[###] #404060[###] #a0e0c0[###]
+- viewport palette: #ffffff[###] #ffe0ff[###] #e0e0ff[###] #202040[###] #ffc0ff[###] #8060ff[###] #404060[###] #a0e0c0[###]
+- composition: density=balanced; whitespace=52%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=52%; classification=balanced_blocks
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

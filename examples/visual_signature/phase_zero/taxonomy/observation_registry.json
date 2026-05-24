@@ -1,0 +1,79 @@
+{
+  "items": [
+    {
+      "description": "Visible viewport blocking elements or overlays.",
+      "key": "obstruction",
+      "layer": "functional",
+      "notes": [
+        "Used to gate safe intervention eligibility."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "How easy the primary call to action is to identify.",
+      "key": "cta_clarity",
+      "layer": "functional",
+      "notes": [
+        "Separate from CTA effectiveness or conversion impact."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "How easy primary navigation is to detect and use.",
+      "key": "navigation_clarity",
+      "layer": "functional",
+      "notes": [
+        "Avoids conflating hidden routes with visible hierarchy."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "How visually dense the viewport feels.",
+      "key": "density",
+      "layer": "functional",
+      "notes": [
+        "Observation only; not automatically good or bad."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "Overall visual mood or tone.",
+      "key": "visual_tone",
+      "layer": "editorial",
+      "notes": [
+        "Supports editorial / brand perception."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "Consistency of visual language across the viewport.",
+      "key": "brand_consistency",
+      "layer": "editorial",
+      "notes": [
+        "Does not imply sameness or sameness as quality."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "How much expressive visual variation is present.",
+      "key": "expressive_density",
+      "layer": "editorial",
+      "notes": [
+        "Useful for creative intent versus noise analysis."
+      ],
+      "value_type": "categorical"
+    },
+    {
+      "description": "Whether irregularity reads as intentional rather than error.",
+      "key": "creative_intent",
+      "layer": "editorial",
+      "notes": [
+        "Used to avoid treating rule-breaking as defect by default."
+      ],
+      "value_type": "categorical"
+    }
+  ],
+  "registry_type": "observation_registry",
+  "schema_version": "phase-zero-observation-registry-1",
+  "taxonomy_version": "phase-zero-taxonomy-1"
+}

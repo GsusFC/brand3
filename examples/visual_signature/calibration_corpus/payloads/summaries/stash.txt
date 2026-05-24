@@ -1,0 +1,40 @@
+Expected category: finance_fintech
+Notes: Consumer finance app added for more ordinary subscription and investing conversion patterns.
+
+== Stash ==
+URL: https://www.stash.com
+Interpretation status: interpretable
+Extraction confidence: 0.63 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.47, consistency_coverage=0.52]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.74
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.52
+
+Visual summaries:
+- palette preview: #dcdce6[###] #ffffff[###] #f2f4f5[###] #191919[###] #00b67a[###] #005128[###] #009ceb[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=34; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: button=10, cta=8, card=10, accordion=2
+- consistency: overall=0.51; color=0.68; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #004060[###] #202020[###] #e0e0ff[###] #e0ffff[###] #e0e0e0[###] #00a0e0[###] #000000[###]
+- viewport palette: #ffffff[###] #004060[###] #202020[###] #e0e0ff[###] #e0ffff[###] #e0e0e0[###] #00a0e0[###] #000000[###]
+- composition: density=dense; whitespace=40%; classification=dense_grid
+- viewport composition: density=dense; whitespace=40%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

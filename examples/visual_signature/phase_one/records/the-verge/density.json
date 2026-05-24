@@ -1,0 +1,60 @@
+{
+  "brand_name": "The Verge",
+  "capture_id": "the-verge",
+  "confidence": 0.838,
+  "created_at": "2026-05-11T17:45:37.798955",
+  "evidence_refs": [
+    "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/the-verge.png"
+  ],
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:the-verge",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+  ],
+  "observation_key": "density",
+  "observation_value": "dense",
+  "perception_layer": "functional",
+  "reasoning_trace": {
+    "created_at": "2026-05-11T17:45:37.798955",
+    "lineage_refs": [
+      "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+      "capture:the-verge",
+      "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+    ],
+    "record_type": "reasoning_trace",
+    "review_required": false,
+    "schema_version": "phase-zero-reasoning-trace-1",
+    "statements": [
+      {
+        "confidence": 0.838,
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/the-verge.png"
+        ],
+        "statement": "Viewport density evidence is dense.",
+        "warnings": []
+      }
+    ],
+    "summary": "Raw viewport density is dense.",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "trace_id": "trace_the-verge_density",
+    "unsupported_inference_warnings": []
+  },
+  "record_id": "obs_the-verge_density",
+  "record_type": "perceptual_observation",
+  "schema_version": "phase-zero-perceptual-observation-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty": {
+    "confidence": 0.838,
+    "confidence_level": "high",
+    "known_unknowns": [],
+    "record_type": "uncertainty_profile",
+    "reviewer_required": false,
+    "schema_version": "phase-zero-uncertainty-profile-1",
+    "taxonomy_version": "phase-zero-taxonomy-1",
+    "uncertainty_reasons": [
+      "dense_grid"
+    ],
+    "unsupported_inference": false
+  },
+  "website_url": "https://www.theverge.com"
+}

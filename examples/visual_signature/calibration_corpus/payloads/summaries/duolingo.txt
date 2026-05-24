@@ -1,0 +1,40 @@
+Expected category: consumer_app
+Notes: Consumer app with strong character-led visual behavior.
+
+== Duolingo ==
+URL: https://www.duolingo.com
+Interpretation status: interpretable
+Extraction confidence: 0.64 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.49, consistency_coverage=0.54]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.73
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.54
+
+Visual summaries:
+- palette preview: #3d3d3d[###] #ffffff[###] #b70070[###] #ff878d[###] #66e1ff[###] #00c0ff[###] #ffad00[###] #ff8e00[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=24; density=sparse; patterns=single_column
+- components: button=2, cta=5, form=2
+- consistency: overall=0.45; color=0.48; type=0.20; component=0.66; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #60c000[###] #20c0ff[###] #404040[###] #e0e0e0[###] #808080[###] #ffc0e0[###] #ffc000[###]
+- viewport palette: #ffffff[###] #60c000[###] #20c0ff[###] #404040[###] #e0e0e0[###] #808080[###] #ffc0e0[###] #ffc000[###]
+- composition: density=sparse; whitespace=92%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=92%; classification=sparse_single_focus
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

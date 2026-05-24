@@ -1,0 +1,39 @@
+{
+  "after_artifact_ref": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+  "after_state": "REVIEW_REQUIRED_STATE",
+  "attempted": true,
+  "before_artifact_ref": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+  "before_state": "ELIGIBLE_FOR_SAFE_INTERVENTION",
+  "brand_name": "Allbirds",
+  "capture_id": "allbirds",
+  "created_at": "2026-05-11T17:46:01.414933",
+  "evidence_preserved": true,
+  "integrity_notes": [
+    "raw_viewport_preserved_as_primary_evidence",
+    "clean_attempt_is_supplemental_only; raw_viewport_remains_primary",
+    "safe_mutation_failed_without_overwriting_raw_state",
+    "raw_state_preserved_after_failed_attempt"
+  ],
+  "lineage_refs": [
+    "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+    "capture:allbirds",
+    "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+    "clean_attempt:/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+    "transition:raw_capture_created",
+    "transition:human_review_required",
+    "transition:exact_safe_affordance_detected",
+    "transition:safe_mutation_attempted",
+    "transition:safe_mutation_failed",
+    "mutation:19b338a23e1f4d21af54be0ce7dc9c09"
+  ],
+  "mutation_id": "19b338a23e1f4d21af54be0ce7dc9c09",
+  "mutation_type": "newsletter_modal_dismissal",
+  "record_type": "mutation_audit",
+  "reversible": true,
+  "risk_level": "low",
+  "schema_version": "phase-zero-mutation-audit-1",
+  "successful": false,
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "trigger": "close",
+  "website_url": "https://www.allbirds.com"
+}

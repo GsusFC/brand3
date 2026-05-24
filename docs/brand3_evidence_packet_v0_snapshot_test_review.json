@@ -1,0 +1,82 @@
+{
+  "document": "brand3_evidence_packet_v0_snapshot_test_review",
+  "purpose": "Test hardened local Evidence Packet v0 on Watermelon and LaunchDarkly snapshots to check whether it distinguishes ambiguity from clean evidence without blocking everything.",
+  "generated_artifacts": [
+    "examples/reports/evidence_packet/watermelon.local_evidence_packet.v0.json",
+    "examples/reports/evidence_packet/launchdarkly.local_evidence_packet.v0.json"
+  ],
+  "reference_artifact": "examples/reports/evidence_packet/builtwith_kit_com.local_evidence_packet.v0.json",
+  "case_counts": {
+    "builtwith_kit_com": {
+      "finding_eligible_evidence": 0,
+      "evidence_not_eligible_for_findings": 26,
+      "missing_evidence": 12,
+      "entity_ambiguity": 5,
+      "related_surface_evidence": 12,
+      "requires_human_review": 7,
+      "excluded_noise": 0
+    },
+    "watermelon": {
+      "finding_eligible_evidence": 3,
+      "evidence_not_eligible_for_findings": 32,
+      "missing_evidence": 13,
+      "entity_ambiguity": 3,
+      "related_surface_evidence": 5,
+      "requires_human_review": 3,
+      "excluded_noise": 1
+    },
+    "launchdarkly": {
+      "finding_eligible_evidence": 13,
+      "evidence_not_eligible_for_findings": 16,
+      "missing_evidence": 10,
+      "entity_ambiguity": 1,
+      "related_surface_evidence": 1,
+      "requires_human_review": 1,
+      "excluded_noise": 0
+    }
+  },
+  "watermelon_assessment": {
+    "verdict": "usefully_conservative",
+    "eligible_evidence_scope": "audited_surface_only",
+    "review_gated_surfaces": [
+      "watermelon.us",
+      "linkedin.com/company/watermelon",
+      "crunchbase.com/organization/watermelon-3d11",
+      "github.com/WatermelonCorp/watermellon-registry",
+      "github.com/watermelontools",
+      "producthunt.com/products/watermelon",
+      "softwaresuggest.com/watermelon/alternatives"
+    ],
+    "excluded_noise": [
+      "perishablenews.com/produce/fresh-pro-announces-honey-watermelons-brand-refresh-new-mascot"
+    ],
+    "remaining_risk": "Local v0 cannot prove explicit relationships for some likely related surfaces without stronger upstream link extraction."
+  },
+  "launchdarkly_assessment": {
+    "verdict": "not_over_conservative",
+    "eligible_evidence_count": 13,
+    "review_gated_surface": "linkedin.com/company/launchdarkly",
+    "remaining_risk": "Some eligible external sources may still need source-role weighting, and empty-text URL evidence should be downgraded or enriched before generation."
+  },
+  "overall_verdict": "The hardened packet is not simply blocking everything. It blocks Builtwith, constrains Watermelon, and preserves substantial LaunchDarkly evidence.",
+  "not_ready_for_generation_reasons": [
+    "empty-text URL evidence can still be eligible",
+    "external comparison and release aggregator sources need source-role weighting",
+    "social profile candidates need verification status",
+    "explicit links from audited pages should be extracted before relation confidence is upgraded",
+    "full nested dimension contract is not yet emitted"
+  ],
+  "recommended_next_step": "Run a narrow hardening pass for empty-text URL evidence, source role subtypes, social verification status, and explicit-link extraction; then rerun Watermelon and LaunchDarkly before any lab prompt test.",
+  "non_goals_preserved": [
+    "no runtime integration",
+    "no prompt changes",
+    "no scoring changes",
+    "no report generation changes",
+    "no rendering changes",
+    "no persisted payload changes",
+    "no Visual Signature changes",
+    "no Deep Research calls",
+    "no Exa Firecrawl or API calls",
+    "no generation input changes"
+  ]
+}

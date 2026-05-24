@@ -1,0 +1,162 @@
+{
+  "version": "1.0",
+  "created_at": "2026-05-17",
+  "status": {
+    "artifact_type": "state_first_generation_trials_synthesis",
+    "lab_only": true,
+    "runtime_integration": false,
+    "prompt_rollout": false,
+    "scoring_change": false,
+    "renderer_change": false,
+    "report_mutation": false,
+    "visual_signature_change": false,
+    "automated_generator_added": false
+  },
+  "executive_judgment": {
+    "state_first_research_phase_justified": true,
+    "production_use_justified": false,
+    "core_claim": "The useful change is not better style; it is generation governed by shared entity state, evidence map, uncertainty model, and dimension roles before findings are written."
+  },
+  "trial_matrix": [
+    {
+      "case_id": "builtwith_kit_com",
+      "case_name": "Builtwith / Kit",
+      "pressure_family": "entity_boundary_collision",
+      "state_first_result": "strong_improvement",
+      "signal_strength": "high",
+      "main_learning": "Entity ambiguity becomes the governing condition instead of hidden fragmentation."
+    },
+    {
+      "case_id": "iris",
+      "case_name": "Iris",
+      "pressure_family": "name_collision_ambiguity",
+      "state_first_result": "strong_improvement",
+      "signal_strength": "high",
+      "main_learning": "Similar names are not converted into aliases or one strategy."
+    },
+    {
+      "case_id": "watermelon",
+      "case_name": "Watermelon",
+      "pressure_family": "ecosystem_ambiguity",
+      "state_first_result": "strong_improvement",
+      "signal_strength": "high",
+      "main_learning": "Related surfaces stay review-gated instead of becoming one platform story."
+    },
+    {
+      "case_id": "launchdarkly",
+      "case_name": "LaunchDarkly",
+      "pressure_family": "healthy_high_evidence_control",
+      "state_first_result": "moderate_improvement",
+      "signal_strength": "medium",
+      "main_learning": "The useful behavior is restraint and evidence discipline, not adding entity complexity."
+    },
+    {
+      "case_id": "netlify_snapshot_mock",
+      "case_name": "Netlify mock",
+      "pressure_family": "fallback_repetition_control",
+      "state_first_result": "modest_improvement",
+      "signal_strength": "low_to_medium",
+      "main_learning": "Fallback language can be compressed, but thin evidence should stay thin."
+    }
+  ],
+  "improvements": [
+    {
+      "area": "entity_coherence",
+      "strength": "high",
+      "summary": "State-first prevents distinct uncertainty types from collapsing into one confident story."
+    },
+    {
+      "area": "evidence_binding",
+      "strength": "medium_to_high",
+      "summary": "Findings become clearer about what evidence supports and what it cannot support."
+    },
+    {
+      "area": "caveat_discipline",
+      "strength": "high",
+      "summary": "Repeated caveats are moved to shared uncertainty rules instead of repeated per finding."
+    },
+    {
+      "area": "restraint_in_healthy_cases",
+      "strength": "medium",
+      "summary": "LaunchDarkly shows state-first can stay light when the entity is stable."
+    },
+    {
+      "area": "fallback_compression",
+      "strength": "low_to_medium",
+      "summary": "Netlify mock shows state-first can reduce fallback sameness without inventing depth."
+    }
+  ],
+  "unsolved": [
+    "Manual trials do not prove automation.",
+    "State-first does not fix missing finding-level evidence URLs.",
+    "State-first does not replace entity discovery.",
+    "Outputs can read more diagnostic than final report prose.",
+    "Fluent state-first prose can hide uncertainty if caveats are compressed too aggressively."
+  ],
+  "readiness": {
+    "ready_for": [
+      "lab_only_generator_specification",
+      "small_offline_generation_runner",
+      "strict_baseline_comparison",
+      "continued_research"
+    ],
+    "not_ready_for": [
+      "runtime_report_generation",
+      "prompt_rollout",
+      "official_report_replacement",
+      "automatic_lab_display_as_improved_output",
+      "scoring_influence",
+      "visual_signature_integration"
+    ]
+  },
+  "recommended_next_phase": {
+    "title": "Specify Lab-Only State-First Findings Generator v0",
+    "purpose": "Define a strictly offline input/output contract and workflow for generating candidate artifacts comparable to the manual trials.",
+    "minimum_inputs": [
+      "report_narrative_payload",
+      "payload_level_narrative_harness_diagnostic",
+      "render_aware_diagnostic",
+      "entity_narrative_state_v0",
+      "optional_reviewed_observed_related_surfaces",
+      "optional_base_dossier_or_snapshot_metadata"
+    ],
+    "minimum_outputs": [
+      "baseline_summary",
+      "shared_entity_state",
+      "shared_evidence_map",
+      "global_uncertainty_model",
+      "state_first_finding_plan",
+      "generated_state_first_findings",
+      "comparison_against_baseline",
+      "verdict"
+    ],
+    "hard_requirements": [
+      "no_scoring",
+      "no_renderer_change",
+      "no_report_mutation",
+      "no_prompt_rollout",
+      "no_visual_signature",
+      "no_persistence",
+      "no_production_readiness_claim"
+    ]
+  },
+  "generator_preconditions": [
+    "report_narrative payload exists",
+    "Narrative Harness diagnostics exist or can be built offline",
+    "EntityNarrativeState exists or can be built offline",
+    "the case has enough evidence to build a meaningful evidence map",
+    "unresolved ambiguity is explicitly marked",
+    "related surfaces are explicit or reviewed, not inferred from arbitrary URLs"
+  ],
+  "fallback_when_preconditions_fail": "No safe state-first generation candidate.",
+  "explicit_non_goals": [
+    "apply state-first to Brand Audit production output",
+    "change existing scoring reports",
+    "rewrite global prompts",
+    "add more architecture before testing generation behavior",
+    "let Lab claim these findings are official",
+    "hide uncertainty to make the result look better",
+    "infer related surfaces from name similarity",
+    "treat state fields as prose to quote directly"
+  ]
+}

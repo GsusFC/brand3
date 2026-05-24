@@ -1,0 +1,261 @@
+{
+  "artifact_id": "brand3_perceptual_narrative_compression_v0_1",
+  "artifact_type": "perceptual_narrative_compression_specification",
+  "generated_at": "2026-05-15",
+  "status": "evaluation_specification",
+  "scope": "perceptual_narrative_writing_only",
+  "source_artifacts": [
+    "examples/brand3_platform/perceptual_narrative_evaluation.md",
+    "examples/brand3_platform/perceptual_narrative_evaluation.json",
+    "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.md",
+    "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.json",
+    "examples/perceptual_library/patterns/perceptual_reading_semantics.md",
+    "examples/perceptual_library/patterns/perceptual_reading_semantics.json",
+    "src/reports/experimental_perceptual_narrative.py"
+  ],
+  "guardrails": {
+    "runtime_rollout": false,
+    "scoring_changes": false,
+    "visual_signature_changes": false,
+    "production_prompt_rewrites": false,
+    "report_renderer_changes": false,
+    "schema_mutation": false
+  },
+  "purpose": "Define how Brand3 can compress procedural and epistemic language in perceptual findings while preserving evidence boundaries, confidence limits, and anti-overreach discipline.",
+  "compression_thesis": "The perceptual layer improves specificity, but it often exposes too much of its reasoning procedure. Compression should preserve the same epistemic boundary with fewer visible scaffolding words.",
+  "non_goals": [
+    "more poetic writing",
+    "scoring integration",
+    "runtime activation",
+    "Visual Signature integration",
+    "production prompt rewrite",
+    "report renderer change"
+  ],
+  "compression_patterns": [
+    {
+      "pattern_id": "compressible_disclaimer_patterns",
+      "pattern_name": "Compressible Disclaimer Patterns",
+      "definition": "Repeated methodological disclaimers that can be shortened when source status or evidence type remains visible.",
+      "verbose_forms": [
+        "supports a high-confidence observation of",
+        "remains an interpretation, not a directly visible fact",
+        "should be written as a copy-supported reading",
+        "the evidence pool still needs interaction-level confirmation",
+        "not enough repeated signals to support a stable perceptual pattern"
+      ],
+      "compressed_forms": [
+        "makes visible",
+        "as an interpretation",
+        "copy-level only",
+        "interaction proof is still missing",
+        "too thin for a stable pattern"
+      ],
+      "safe_when": [
+        "the sentence still names the evidence type",
+        "the claim remains bounded",
+        "the material is descriptive rather than strategic",
+        "the same paragraph preserves observation versus interpretation"
+      ]
+    },
+    {
+      "pattern_id": "procedural_narration_patterns",
+      "pattern_name": "Procedural Narration Patterns",
+      "definition": "Language that explains the method instead of making the perceptual finding.",
+      "weak_forms": [
+        "Brand3 can observe",
+        "The narrative should name",
+        "The finding should keep",
+        "This should be treated as",
+        "The useful tension is"
+      ],
+      "preferred_forms": [
+        "The surface shows",
+        "The finding is",
+        "The safer reading is",
+        "The tension sits between",
+        "The evidence supports"
+      ],
+      "reason": "The report should sound like grounded analysis, not a lab protocol."
+    },
+    {
+      "pattern_id": "epistemic_repetition",
+      "pattern_name": "Epistemic Repetition",
+      "definition": "Stacking too many caution markers in one sentence.",
+      "warning_markers": [
+        "can support",
+        "may indicate",
+        "remains",
+        "should",
+        "requires",
+        "not directly visible",
+        "until confirmed"
+      ],
+      "rule": "Use one explicit confidence marker per sentence unless the finding is in a high-risk narrative zone.",
+      "preferred_behavior": "Compress repeated caution into one clear source or confidence limit."
+    },
+    {
+      "pattern_id": "acceptable_implicit_caution",
+      "pattern_name": "Acceptable Implicit Caution",
+      "definition": "Caution carried by bounded verbs and evidence labels instead of long disclaimers.",
+      "bounded_verbs": [
+        "suggests",
+        "points to",
+        "frames",
+        "supports",
+        "reads as",
+        "makes legible",
+        "keeps open",
+        "does not yet show"
+      ],
+      "evidence_labels": [
+        "capture-visible",
+        "copy-stated",
+        "source-level",
+        "interaction-unverified",
+        "implementation-unverified",
+        "single-source",
+        "weakly evidenced"
+      ],
+      "example": "Copy-stated Datamosh and MetaHuman references point to concept-bearing motion, but motion behavior is still unverified."
+    },
+    {
+      "pattern_id": "editorial_flow_preservation",
+      "pattern_name": "Editorial-Flow Preservation",
+      "definition": "Keeping the reading chain intact while reducing method language.",
+      "preferred_order": [
+        "observable signal",
+        "pattern or cluster",
+        "productive tension",
+        "confidence limit only where needed"
+      ],
+      "avoid_order": [
+        "method disclaimer",
+        "pattern label",
+        "surface evidence",
+        "generic conclusion"
+      ]
+    },
+    {
+      "pattern_id": "compact_tension_writing",
+      "pattern_name": "Compact Tension Writing",
+      "definition": "Naming both sides of a perceptual tension without turning the sentence into advice.",
+      "sentence_structures": [
+        "The tension sits between X and Y.",
+        "X gives the surface force; Y keeps it from becoming Z.",
+        "The surface gains X, but pays for it with Y.",
+        "The pattern is productive when X remains visible; it weakens when Y disappears.",
+        "The unresolved point is not X, but Y."
+      ]
+    },
+    {
+      "pattern_id": "observational_compression",
+      "pattern_name": "Observational Compression",
+      "definition": "Compressing multiple surface signals into one higher-signal observation when all signals are evidence-backed.",
+      "safe_rule": "All compressed signals must still exist in the evidence pool.",
+      "example_before": "The surface uses navigation, code-oriented content, and implementation pathways, and these elements together make the category legible through use rather than campaign language.",
+      "example_after": "Navigation, code content, and implementation paths make the category legible through use, not campaign language."
+    }
+  ],
+  "high_signal_sentence_structures": [
+    "Signal, signal, and signal make [pattern] visible.",
+    "[Evidence type] supports [reading]; [higher claim] remains unproven.",
+    "The surface reads as [temperature] because [mechanism], not because [generic category claim].",
+    "The claim is [stated claim]; the visible signal is [observed signal].",
+    "The useful absence is [missing evidence], not [unsupported verdict].",
+    "[Pattern] is productive here because [surface mechanism]."
+  ],
+  "before_after_rewrites": [
+    {
+      "case": "Apple",
+      "compression_focus": "interpretation boundary",
+      "before": "Apple's owned surface repeatedly organizes attention around product object, material finish, controlled whitespace, and short declarative copy. That supports a high-confidence observation of product-first hierarchy; the broader reading of institutional authority remains an interpretation, not a directly visible fact.",
+      "after": "Product objects, material finish, controlled whitespace, and short declarative copy make product-first hierarchy visible. Institutional authority is a possible reading, not a visible fact.",
+      "why_safe": "The visible mechanism remains explicit, and the strategic implication stays bounded."
+    },
+    {
+      "case": "Linear",
+      "compression_focus": "copy-supported UX claim",
+      "before": "The claim/signal gap matters because some visual evidence is obstructed or screenshot-limited, so interface clarity should be written as a copy-supported reading until direct product-surface evidence confirms it.",
+      "after": "Because the evidence is obstructed and screenshot-limited, interface clarity stays copy-supported until product-surface proof appears.",
+      "why_safe": "The source limit remains visible without procedural narration."
+    },
+    {
+      "case": "Stripe Docs",
+      "compression_focus": "operational density",
+      "before": "That supports a category-to-surface reading with a system-driven emotional temperature: controlled, dense, and instructional.",
+      "after": "The category becomes legible through a controlled, dense, instructional system surface.",
+      "why_safe": "This is acceptable when navigation, code content, and implementation pathways are visible."
+    },
+    {
+      "case": "Headspace",
+      "compression_focus": "sensitive emotional reading",
+      "before": "Soft color, simple hierarchy, and friendly illustration can support a low-to-medium confidence emotional temperature of calm accessibility, but supportive mental-health experience is an interpretation unless product-flow evidence is available.",
+      "after": "Soft color, simple hierarchy, and friendly illustration support a low-to-medium reading of calm accessibility; mental-health support remains unproven without product-flow evidence.",
+      "why_safe": "The sensitive claim remains explicit because wellness and support are high-risk emotional zones."
+    },
+    {
+      "case": "Example Company",
+      "compression_focus": "absence without verdict",
+      "before": "The narrative should name the limitation directly: Brand3 can observe low surface specificity and weak corroboration, but should not infer strategic failure or audience irrelevance from missing evidence alone.",
+      "after": "The surface shows low specificity and weak corroboration; strategic failure and audience irrelevance are not visible from missing evidence alone.",
+      "why_safe": "Absence is treated as absence, not verdict."
+    }
+  ],
+  "safe_compression_rules": [
+    "Keep at least one evidence anchor when compressing an observation.",
+    "Keep source status visible for copy-based, single-source, obstructed, or unverified material.",
+    "Replace procedural narration with bounded verbs, not with certainty.",
+    "Compress repeated caution markers into one clear limit.",
+    "Preserve the distinction between observed signal and strategic interpretation.",
+    "Preserve contradictions and unresolved tensions.",
+    "Prefer concrete surface mechanisms over prestige adjectives.",
+    "Do not import pattern examples from another case as if they were target evidence."
+  ],
+  "unsafe_compression_examples": [
+    {
+      "unsafe_sentence": "Headspace creates mental-health support through calm illustration.",
+      "why_unsafe": "It turns a surface mood into a user outcome.",
+      "safer_form": "Friendly illustration can support a calm-accessibility reading; mental-health support remains unproven without product-flow evidence."
+    },
+    {
+      "unsafe_sentence": "Linear has clear product UX.",
+      "why_unsafe": "It converts marketing or screenshot-limited evidence into product behavior.",
+      "safer_form": "Interface clarity stays copy-supported until product-surface proof appears."
+    },
+    {
+      "unsafe_sentence": "Apple projects institutional authority.",
+      "why_unsafe": "It asserts strategic meaning without naming evidence or confidence.",
+      "safer_form": "Institutional authority is a possible reading, not a visible fact."
+    },
+    {
+      "unsafe_sentence": "D4DATA uses cinematic motion to express transformation.",
+      "why_unsafe": "Motion remains unverified unless capture or sequence evidence exists.",
+      "safer_form": "Copy-stated motion language points to concept-bearing motion, but motion behavior remains unverified."
+    },
+    {
+      "unsafe_sentence": "The weak brand has failed strategy.",
+      "why_unsafe": "Missing evidence is not proof of strategic failure.",
+      "safer_form": "The surface shows low specificity and weak corroboration; strategic failure is not visible from missing evidence alone."
+    }
+  ],
+  "explicit_caution_must_remain_visible_when": [
+    "strategic intent is not directly stated by the brand",
+    "the finding touches user emotion, trust, safety, therapy, wellness, or psychological effect",
+    "product UX behavior is inferred from marketing copy",
+    "motion, cinematic pacing, or interaction behavior lacks capture evidence",
+    "financial, medical, legal, security, or operational claims appear",
+    "evidence is single-source, obstructed, missing, or copy-only",
+    "a contradiction implies harm or user impact without evidence",
+    "material is low confidence or requires human review"
+  ],
+  "caution_can_be_implicit_when": [
+    "the signal is directly visible or directly stated",
+    "the sentence uses an evidence label such as copy-stated or capture-visible",
+    "the claim is descriptive rather than strategic",
+    "the pattern is low-risk and supported by multiple signals",
+    "the sentence uses bounded verbs such as suggests, supports, or points to",
+    "no user outcome, internal intent, or business effect is being asserted"
+  ],
+  "recommended_posture": "Brand3 should sound evidence-bound without narrating every epistemic step. The strongest compressed finding reads like analysis, not a lab protocol.",
+  "canonical_compressed_example": "Navigation, code content, and implementation paths make Stripe Docs legible through use, not campaign language. The tension is how much complexity the surface can expose while still guiding action."
+}

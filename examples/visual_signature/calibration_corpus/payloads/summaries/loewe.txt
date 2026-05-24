@@ -1,0 +1,40 @@
+Expected category: premium_luxury
+Notes: Luxury brand with craft/editorial art direction.
+
+== Loewe ==
+URL: https://www.loewe.com
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.53, consistency_coverage=0.61]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.41
+- typography: ok, confidence=0.90
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.61
+
+Visual summaries:
+- palette preview: #333333[###]
+- typography: Avus, Loewe, &quot
+- layout: header=True; nav=True; hero=True; sections=8; density=dense; patterns=flex,multi_column,sticky_nav
+- components: button=44, cta=5, form=4, accordion=6
+- consistency: overall=0.66; color=0.78; type=0.65; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #a08080[###] #c0a0a0[###] #202000[###] #a08060[###] #806060[###] #c0a080[###] #c08060[###]
+- viewport palette: #ffffff[###] #a08080[###] #c0a0a0[###] #202000[###] #a08060[###] #806060[###] #c0a080[###] #c08060[###]
+- composition: density=dense; whitespace=16%; classification=dense_grid
+- viewport composition: density=dense; whitespace=16%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: weak confidence (0.41)
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

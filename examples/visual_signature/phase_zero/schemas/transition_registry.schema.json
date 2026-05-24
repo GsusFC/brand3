@@ -1,0 +1,83 @@
+{
+  "$defs": {
+    "TransitionDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "from_states": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "From States",
+          "type": "array"
+        },
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "requires_evidence": {
+          "default": true,
+          "title": "Requires Evidence",
+          "type": "boolean"
+        },
+        "requires_lineage": {
+          "default": true,
+          "title": "Requires Lineage",
+          "type": "boolean"
+        },
+        "to_state": {
+          "minLength": 1,
+          "title": "To State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "from_states",
+        "to_state",
+        "description"
+      ],
+      "title": "TransitionDefinition",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "items": {
+      "items": {
+        "$ref": "#/$defs/TransitionDefinition"
+      },
+      "title": "Items",
+      "type": "array"
+    },
+    "registry_type": {
+      "const": "transition_registry",
+      "title": "Registry Type",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "phase-zero-transition-registry-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "registry_type",
+    "items"
+  ],
+  "title": "TransitionRegistry",
+  "type": "object"
+}

@@ -1,0 +1,40 @@
+Expected category: finance_fintech
+Notes: B2B fintech with product-led and trust-heavy conversion structure.
+
+== Ramp ==
+URL: https://ramp.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.57, consistency_coverage=0.58]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.58
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #6e6a68[###] #0c0a08[###] #f4f1ef[###] #1a1919[###] #6d6a68[###] #1a1918[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=150; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: button=8, cta=8, form=8, card=110, accordion=2
+- consistency: overall=0.46; color=0.48; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #000000[###] #e0e0e0[###] #202020[###] #a0a0a0[###] #808080[###] #c0c0c0[###] #606060[###]
+- viewport palette: #ffffff[###] #000000[###] #e0e0e0[###] #202020[###] #a0a0a0[###] #808080[###] #c0c0c0[###] #606060[###]
+- composition: density=sparse; whitespace=94%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=94%; classification=sparse_single_focus
+- vision confidence: 0.75 (high)
+- viewport confidence: 0.75 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

@@ -1,0 +1,33 @@
+Expected category: editorial/media
+Notes: Culture/media-commerce hybrid with distinctive object and content presentation.
+
+== A24 ==
+URL: https://a24films.com
+Interpretation status: interpretable
+Extraction confidence: 0.60 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.44, consistency_coverage=0.38]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.41
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.58
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.38
+
+Visual summaries:
+- palette preview: #000000[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=2; density=dense; patterns=grid
+- components: button=2, cta=1, card=14
+- consistency: overall=0.54; color=0.78; type=0.20; component=0.66; asset=0.45
+
+Weak or missing signals:
+- colors: weak confidence (0.41)
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.38)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

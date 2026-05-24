@@ -9,6 +9,8 @@ CREATE TABLE IF NOT EXISTS web_requests (
   requester_ip TEXT,
   requester_is_team BOOLEAN NOT NULL DEFAULT 0,
   status TEXT NOT NULL CHECK (status IN ('queued','running','ready','failed')),
+  phase TEXT NOT NULL DEFAULT 'queued',
+  phase_updated_at TIMESTAMP,
   run_id INTEGER,
   error_message TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -1,0 +1,172 @@
+{
+  "generated_at": "2026-05-14",
+  "scope": "foundational_framework_only",
+  "purpose": "internal_semantic_layer_for_scoring_narrative_visual_signature_clustering_embeddings_and_diagnostics",
+  "core_reading_principles": [
+    "observe the surface before interpreting it",
+    "prefer behavior over slogan",
+    "prefer tension over praise",
+    "prefer system description over brand essence claims",
+    "prefer repeated signals over isolated impressions",
+    "treat absence as a signal when it is meaningful"
+  ],
+  "perceptual_vocabulary": [
+    {
+      "term": "editorial restraint",
+      "meaning": "how much the brand suppresses noise, decoration, or overstatement"
+    },
+    {
+      "term": "recognition density",
+      "meaning": "how quickly the surface becomes identifiable from recurring cues"
+    },
+    {
+      "term": "interface softness",
+      "meaning": "how forgiving, calm, or tactically gentle the experience feels"
+    },
+    {
+      "term": "visual entropy",
+      "meaning": "how much uncontrolled variation or disorder appears across the surface"
+    },
+    {
+      "term": "ritual familiarity",
+      "meaning": "how much repeated structure creates a learnable habit"
+    },
+    {
+      "term": "narrative compression",
+      "meaning": "how much meaning is packed into a small number of cues"
+    },
+    {
+      "term": "aesthetic fatigue",
+      "meaning": "how quickly the surface feels overused, exhausted, or visually stale"
+    },
+    {
+      "term": "premium signaling",
+      "meaning": "the visible cues that try to produce a premium reading"
+    },
+    {
+      "term": "systemic coherence",
+      "meaning": "how well the parts behave like one designed system"
+    },
+    {
+      "term": "theatrical launches",
+      "meaning": "the use of spectacle, announcement energy, or exaggerated reveal patterns"
+    },
+    {
+      "term": "interaction friction",
+      "meaning": "the amount of effort required to move through the surface"
+    },
+    {
+      "term": "identity rigidity",
+      "meaning": "how fixed, narrow, or over-controlled the identity system feels"
+    },
+    {
+      "term": "visual silence",
+      "meaning": "how much the surface leaves open space, restraint, or unclaimed territory"
+    },
+    {
+      "term": "cadence consistency",
+      "meaning": "how stable the pacing, rhythm, and release pattern feels over time"
+    }
+  ],
+  "perceptual_oppositions": [
+    "expressive vs restrained",
+    "premium vs commodity",
+    "editorial vs utilitarian",
+    "ritualized vs chaotic",
+    "dense vs sparse",
+    "soft vs aggressive",
+    "iconic vs generic",
+    "systemized vs fragmented"
+  ],
+  "surface_behaviors": {
+    "hierarchy": [
+      "what is visually prioritized first",
+      "what is pushed into the background",
+      "whether hierarchy guides attention or scatters it"
+    ],
+    "spacing": [
+      "whether spacing is generous, compressed, padded, or unstable",
+      "whether spacing creates calm or friction",
+      "whether the spacing system repeats consistently"
+    ],
+    "typography": [
+      "whether the typographic voice is restrained or performative",
+      "whether type behaves like a system or like decoration",
+      "whether type supports legibility, rhythm, and hierarchy"
+    ],
+    "motion": [
+      "whether motion reinforces the system or distracts from it",
+      "whether motion is purposeful, theatrical, delayed, abrupt, or absent",
+      "whether motion creates continuity or interruption"
+    ],
+    "cadence": [
+      "how often meaningful changes occur",
+      "whether the brand reveals itself in a stable rhythm or in bursts",
+      "whether cadence is consistent across channels and time"
+    ],
+    "repetition": [
+      "what repeats",
+      "whether repetition builds recognition or produces monotony",
+      "whether repetition is intentional or residual"
+    ],
+    "navigation": [
+      "whether the path through the surface is clear, compressed, or fragmented",
+      "whether navigation reinforces identity or hides it",
+      "whether the system teaches the user how it wants to be read"
+    ],
+    "launch_patterns": [
+      "whether launches are theatrical or quiet",
+      "whether launches feel systemized or episodic",
+      "whether launches reinforce a recurring identity pattern or reset it"
+    ],
+    "visual_rhythm": [
+      "whether the surface has rhythm and what kind",
+      "whether the rhythm is dense, sparse, fast, slow, jagged, or smooth",
+      "whether rhythm produces memory"
+    ]
+  },
+  "tension_patterns": [
+    "premium ambition / commodity execution",
+    "polished UI / weak identity",
+    "expressive campaigns / rigid product system",
+    "high activity / low evolution",
+    "coherent system / low memorability",
+    "restrained surface / loud self-description",
+    "strong repetition / weak recognition",
+    "visual confidence / narrative vagueness",
+    "editorial polish / interaction friction",
+    "system coherence / channel fragmentation"
+  ],
+  "narrative_interpretation_rules": [
+    "observe what is visible",
+    "name the pattern in concrete terms",
+    "infer only what the evidence reasonably supports",
+    "keep conditional language for interpretation",
+    "avoid turning a surface reading into a business-school conclusion"
+  ],
+  "forbidden_narrative_behaviors": [
+    "teams may choose",
+    "this could indicate",
+    "depends on strategic priorities",
+    "abstract business-school language",
+    "filler transitions that do not add evidence",
+    "generic strategic prescriptions",
+    "praise without a surface anchor"
+  ],
+  "brand3_reading_philosophy": [
+    "perception over positioning",
+    "behavior over messaging",
+    "tension over praise",
+    "systems over slogans",
+    "observation before interpretation"
+  ],
+  "intended_future_uses": [
+    "scoring language",
+    "narrative generation",
+    "Visual Signature reading",
+    "perceptual clustering",
+    "embedding/search work",
+    "diagnostic summaries",
+    "human review rubrics"
+  ]
+}

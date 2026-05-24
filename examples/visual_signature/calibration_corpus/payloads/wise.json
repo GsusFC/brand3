@@ -1,0 +1,529 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:50:25.177186",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://wise.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 328,
+    "video_count": 10
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Wise",
+  "calibration": {
+    "expected_category": "finance_fintech",
+    "notes": "Consumer fintech with high-clarity conversion flows."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#f0263c",
+      "#163300",
+      "#231d9a",
+      "#9fe870"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#0e0f0c",
+      "#163300",
+      "#231d9a"
+    ],
+    "confidence": 0.683,
+    "dominant_colors": [
+      "#ffffff",
+      "#f0263c",
+      "#0e0f0c",
+      "#163300",
+      "#231d9a",
+      "#9fe870"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 50,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#f0263c",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#0e0f0c",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#163300",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#231d9a",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#9fe870",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#0e0f0c",
+      "#163300",
+      "#231d9a"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 46,
+        "labels": [
+          "Change",
+          "1 USD = 0.8485 EUR Guaranteed for 55h Guaranteed for 55h 1 USD = 0.8485 EUR",
+          "USD",
+          "EUR",
+          "0 USD",
+          "Send money",
+          "View popular destinations",
+          "USD United States dollar",
+          "EUR Euro",
+          "23 currencies"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 48,
+        "labels": [
+          "Skip to content",
+          "Sign up",
+          "Change",
+          "1 USD = 0.8485 EUR Guaranteed for 55h Guaranteed for 55h 1 USD = 0.8485 EUR",
+          "USD",
+          "EUR",
+          "0 USD",
+          "Send money",
+          "View popular destinations",
+          "Send money now"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 12,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "accordion"
+    ],
+    "primary_ctas": [
+      "Skip to content",
+      "Sign up",
+      "Change",
+      "1 USD = 0.8485 EUR Guaranteed for 55h Guaranteed for 55h 1 USD = 0.8485 EUR",
+      "USD",
+      "EUR",
+      "0 USD",
+      "Send money"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.72,
+    "confidence": 0.716,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.636,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.716,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.686
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.735
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 32,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Wise",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://wise.com/public-resources/assets/logos/wise-personal/logo.png"
+      },
+      {
+        "alt": "Bank of America",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dq8dwmysp7hk1.cloudfront.net/logos/bank-of-america.png"
+      },
+      {
+        "alt": "Wells Fargo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dq8dwmysp7hk1.cloudfront.net/logos/wells-fargo.png"
+      },
+      {
+        "alt": "Wise",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dq8dwmysp7hk1.cloudfront.net/logos/wise-mark.svg"
+      },
+      {
+        "alt": "Bank of America",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dq8dwmysp7hk1.cloudfront.net/logos/bank-of-america-mark.svg"
+      },
+      {
+        "alt": "Wells Fargo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dq8dwmysp7hk1.cloudfront.net/logos/wells-fargo-mark.svg"
+      },
+      {
+        "alt": "Chase",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://dq8dwmysp7hk1.cloudfront.net/logos/chase-mark.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": "Wise",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Inter",
+        "occurrences": 6,
+        "role": "body",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "helvetica",
+        "occurrences": 6,
+        "role": "body",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "arial",
+        "occurrences": 6,
+        "role": "body",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "expressive",
+    "size_samples_px": [
+      18.0,
+      18.0,
+      12.0,
+      12.0,
+      34.0,
+      12.0,
+      12.0,
+      34.0,
+      22.0,
+      22.0,
+      22.0,
+      22.0,
+      100.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      12.0,
+      22.0,
+      22.0,
+      22.0,
+      22.0
+    ],
+    "weight_range": {
+      "max": 400,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.73,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.201,
+      "composition_classification": "dense_grid",
+      "confidence": 0.72,
+      "edge_density": 0.059,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.134
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 211605,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://wise.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/wise.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 92,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 14093,
+          "ratio": 0.7046
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2736,
+          "ratio": 0.1368
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1368,
+          "ratio": 0.0684
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 173,
+          "ratio": 0.0086
+        },
+        {
+          "hex": "#60a040",
+          "occurrences": 169,
+          "ratio": 0.0084
+        },
+        {
+          "hex": "#80a0a0",
+          "occurrences": 131,
+          "ratio": 0.0066
+        },
+        {
+          "hex": "#60a0a0",
+          "occurrences": 130,
+          "ratio": 0.0065
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 110,
+          "ratio": 0.0055
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.201,
+      "composition_classification": "dense_grid",
+      "confidence": 0.72,
+      "edge_density": 0.059,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.134
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.72,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.846
+    },
+    "viewport_palette": {
+      "color_count": 92,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 14093,
+          "ratio": 0.7046
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 2736,
+          "ratio": 0.1368
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1368,
+          "ratio": 0.0684
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 173,
+          "ratio": 0.0086
+        },
+        {
+          "hex": "#60a040",
+          "occurrences": 169,
+          "ratio": 0.0084
+        },
+        {
+          "hex": "#80a0a0",
+          "occurrences": 131,
+          "ratio": 0.0066
+        },
+        {
+          "hex": "#60a0a0",
+          "occurrences": 130,
+          "ratio": 0.0065
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 110,
+          "ratio": 0.0055
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.134,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.72,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.846
+    }
+  },
+  "website_url": "https://wise.com"
+}

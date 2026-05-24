@@ -1,0 +1,240 @@
+{
+  "agreement_distribution": {
+    "confirmed": 2,
+    "contradicted": 2,
+    "unresolved": 1
+  },
+  "calibration_run_id": "6bf278708eea4c4887aaebe799477f59",
+  "category_breakdown": {
+    "AI-native": {
+      "agreement_distribution": {
+        "unresolved": 1
+      },
+      "confidence_bucket_distribution": {
+        "high": 1
+      },
+      "confirmed_count": 0,
+      "confirmed_rate": 0.0,
+      "contradicted_count": 0,
+      "contradicted_rate": 0.0,
+      "high_confidence_contradiction_count": 0,
+      "insufficient_review_count": 0,
+      "insufficient_review_rate": 0.0,
+      "overconfidence_rate": 0.0,
+      "reviewed_claims": 1,
+      "total_claims": 1,
+      "uncertainty_accepted_count": 1,
+      "uncertainty_accepted_rate": 1.0,
+      "unresolved_count": 1,
+      "unresolved_rate": 1.0
+    },
+    "SaaS": {
+      "agreement_distribution": {
+        "confirmed": 1
+      },
+      "confidence_bucket_distribution": {
+        "high": 1
+      },
+      "confirmed_count": 1,
+      "confirmed_rate": 1.0,
+      "contradicted_count": 0,
+      "contradicted_rate": 0.0,
+      "high_confidence_contradiction_count": 0,
+      "insufficient_review_count": 0,
+      "insufficient_review_rate": 0.0,
+      "overconfidence_rate": 0.0,
+      "reviewed_claims": 1,
+      "total_claims": 1,
+      "uncertainty_accepted_count": 0,
+      "uncertainty_accepted_rate": 0.0,
+      "unresolved_count": 0,
+      "unresolved_rate": 0.0
+    },
+    "ecommerce": {
+      "agreement_distribution": {
+        "contradicted": 1
+      },
+      "confidence_bucket_distribution": {
+        "high": 1
+      },
+      "confirmed_count": 0,
+      "confirmed_rate": 0.0,
+      "contradicted_count": 1,
+      "contradicted_rate": 1.0,
+      "high_confidence_contradiction_count": 1,
+      "insufficient_review_count": 0,
+      "insufficient_review_rate": 0.0,
+      "overconfidence_rate": 1.0,
+      "reviewed_claims": 1,
+      "total_claims": 1,
+      "uncertainty_accepted_count": 0,
+      "uncertainty_accepted_rate": 0.0,
+      "unresolved_count": 0,
+      "unresolved_rate": 0.0
+    },
+    "editorial/media": {
+      "agreement_distribution": {
+        "contradicted": 1
+      },
+      "confidence_bucket_distribution": {
+        "high": 1
+      },
+      "confirmed_count": 0,
+      "confirmed_rate": 0.0,
+      "contradicted_count": 1,
+      "contradicted_rate": 1.0,
+      "high_confidence_contradiction_count": 1,
+      "insufficient_review_count": 0,
+      "insufficient_review_rate": 0.0,
+      "overconfidence_rate": 1.0,
+      "reviewed_claims": 1,
+      "total_claims": 1,
+      "uncertainty_accepted_count": 0,
+      "uncertainty_accepted_rate": 0.0,
+      "unresolved_count": 0,
+      "unresolved_rate": 0.0
+    },
+    "wellness/lifestyle": {
+      "agreement_distribution": {
+        "confirmed": 1
+      },
+      "confidence_bucket_distribution": {
+        "high": 1
+      },
+      "confirmed_count": 1,
+      "confirmed_rate": 1.0,
+      "contradicted_count": 0,
+      "contradicted_rate": 0.0,
+      "high_confidence_contradiction_count": 0,
+      "insufficient_review_count": 0,
+      "insufficient_review_rate": 0.0,
+      "overconfidence_rate": 0.0,
+      "reviewed_claims": 1,
+      "total_claims": 1,
+      "uncertainty_accepted_count": 0,
+      "uncertainty_accepted_rate": 0.0,
+      "unresolved_count": 0,
+      "unresolved_rate": 0.0
+    }
+  },
+  "claim_kind_breakdown": {
+    "capture_state": {
+      "agreement_distribution": {
+        "confirmed": 2,
+        "contradicted": 2,
+        "unresolved": 1
+      },
+      "confidence_bucket_distribution": {
+        "high": 5
+      },
+      "confirmed_count": 2,
+      "confirmed_rate": 0.4,
+      "contradicted_count": 2,
+      "contradicted_rate": 0.4,
+      "high_confidence_contradiction_count": 2,
+      "insufficient_review_count": 0,
+      "insufficient_review_rate": 0.0,
+      "overconfidence_rate": 0.4,
+      "reviewed_claims": 5,
+      "total_claims": 5,
+      "uncertainty_accepted_count": 1,
+      "uncertainty_accepted_rate": 0.2,
+      "unresolved_count": 1,
+      "unresolved_rate": 0.2
+    }
+  },
+  "confidence_bucket_distribution": {
+    "high": 5
+  },
+  "confirmed_count": 2,
+  "confirmed_rate": 0.4,
+  "contradicted_count": 2,
+  "contradicted_rate": 0.4,
+  "generated_at": "2026-05-11T22:27:42.269547Z",
+  "high_confidence_contradiction_count": 2,
+  "insufficient_review_count": 0,
+  "insufficient_review_rate": 0.0,
+  "notes": [
+    "Calibration is evidence-only.",
+    "Missing review is marked as insufficient_review, not contradicted.",
+    "Unclear review is marked as unresolved, not contradicted.",
+    "No scoring, rubric dimensions, production reports, or UI are modified."
+  ],
+  "overconfidence_rate": 0.4,
+  "record_count": 5,
+  "record_type": "calibration_summary",
+  "review_status_distribution": {
+    "approved": 2,
+    "needs_more_evidence": 1,
+    "rejected": 2
+  },
+  "reviewed_claims": 5,
+  "schema_version": "visual-signature-calibration-summary-1",
+  "schema_versions": {
+    "calibration_claim": "visual-signature-calibration-claim-1",
+    "calibration_generated_file": "visual-signature-calibration-generated-file-1",
+    "calibration_manifest": "visual-signature-calibration-manifest-1",
+    "calibration_record": "visual-signature-calibration-record-1",
+    "calibration_records": "visual-signature-calibration-records-1",
+    "calibration_summary": "visual-signature-calibration-summary-1",
+    "review_outcome": "visual-signature-calibration-review-outcome-1"
+  },
+  "source_artifact_hashes": {
+    "examples/visual_signature/calibration_brands.json": "43c1f75398618cd042b4954745a7226a3660fc46ed2187dc2c97b83f7a31c780",
+    "examples/visual_signature/screenshots/capture_manifest.json": "85fdfed159fa60dc3598247d1ea25bc6b83fb20fffc01975eb1621e620734e8b",
+    "examples/visual_signature/screenshots/dismissal_audit.json": "b35c54d794643d6bc23d6d66150e08ccc3cc30cd62467d0b48bc18fa77335a97"
+  },
+  "source_artifact_refs": [
+    "examples/visual_signature/phase_one",
+    "examples/visual_signature/phase_two",
+    "examples/visual_signature/screenshots/capture_manifest.json",
+    "examples/visual_signature/screenshots/dismissal_audit.json",
+    "examples/visual_signature/calibration_brands.json"
+  ],
+  "source_brand_catalog_path": "examples/visual_signature/calibration_brands.json",
+  "source_breakdown": {
+    "affordance_targets": {
+      "average_per_claim": 112.6,
+      "count": 563
+    },
+    "capture_manifest": {
+      "average_per_claim": 1.0,
+      "count": 5
+    },
+    "dismissal_audit": {
+      "average_per_claim": 1.0,
+      "count": 5
+    },
+    "phase_one_eligibility": {
+      "average_per_claim": 1.0,
+      "count": 5
+    },
+    "phase_one_mutation_audit": {
+      "average_per_claim": 0.2,
+      "count": 1
+    },
+    "phase_one_state": {
+      "average_per_claim": 1.0,
+      "count": 5
+    },
+    "phase_one_transition_records": {
+      "average_per_claim": 3.2,
+      "count": 16
+    },
+    "phase_two_review": {
+      "average_per_claim": 1.0,
+      "count": 5
+    }
+  },
+  "source_capture_manifest_path": "examples/visual_signature/screenshots/capture_manifest.json",
+  "source_dismissal_audit_path": "examples/visual_signature/screenshots/dismissal_audit.json",
+  "source_phase_one_root": "examples/visual_signature/phase_one",
+  "source_phase_two_root": "examples/visual_signature/phase_two",
+  "summary_count_consistency": true,
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "total_claims": 5,
+  "uncertainty_accepted_count": 1,
+  "uncertainty_accepted_rate": 0.2,
+  "unresolved_count": 1,
+  "unresolved_rate": 0.2
+}

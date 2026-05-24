@@ -4,6 +4,7 @@
 
 # Python
 __pycache__/
+**/__pycache__/
 *.pyc
 *.pyo
 *.pyd
@@ -11,6 +12,9 @@ __pycache__/
 *.egg-info/
 build/
 dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 
 # Virtual env
 .venv/
@@ -21,17 +25,36 @@ env/
 .vscode/
 .idea/
 
-# Datos locales y outputs
+# Local data and generated outputs
 data/
 output/
+scratch/
 
-# Logs y batches de validación
+# Local SQLite DB files are ignored. If future tests need SQLite fixtures,
+# explicitly allowlist those fixture paths instead of weakening this rule.
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+*.db
+*.db-shm
+*.db-wal
+
+# Logs and validation batches
 validation-*/
 *.log
 
-# Environment con secrets
+# Environment with secrets
 .env
 .env.local
+.env.*.local
+
+# Local tool/browser caches
+.sentrux/
+.cache/
+playwright-report/
+test-results/
+blob-report/
 
 # Graphify — commit graph.json/GRAPH_REPORT.md/graph.html, skip the rest
 graphify-out/cache/
@@ -42,3 +65,9 @@ graphify-out/.graphify_root
 
 # Local MCP server config (paths absolutos a la máquina del dev)
 .mcp.json
+
+# Visual Signature generated artifacts:
+# Keep this section intentionally narrow for Phase 1. Some files under
+# examples/visual_signature are source fixtures/manifests; others are generated
+# screenshots/corpora. Do not bulk-ignore or delete them until the artifact
+# policy is finalized in docs/PR review.

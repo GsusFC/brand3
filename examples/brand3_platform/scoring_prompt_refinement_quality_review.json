@@ -1,0 +1,102 @@
+{
+  "scope": [
+    "examples/brand3_platform/scoring_prompt_refinement_implementation_note.md",
+    "examples/brand3_platform/brand3_report_voice_guide.md",
+    "current report snapshots"
+  ],
+  "verdict": "partial_improvement",
+  "summary": "The low-risk wording pass improved the report voice in the prompt layer and deterministic fallbacks, but score-led language remains partly structural in the renderer and summary layers.",
+  "findings": [
+    {
+      "area": "score_first_openings",
+      "status": "improved_but_not_eliminated",
+      "assessment": "Synthesis prompts now ask for an evidence anchor and ban score-led openings. The fallback synthesis is also less score-forward, but it still references highest and lowest dimensions, so the score-first feel is reduced rather than removed."
+    },
+    {
+      "area": "generic_phrases",
+      "status": "improved",
+      "assessment": "The findings and tensions prompts now discourage generic praise and push the model toward mismatch, concentration, repetition, and absence. This should lower consultant-sounding boilerplate."
+    },
+    {
+      "area": "observation_implication_tension_structure",
+      "status": "improved",
+      "assessment": "The new structure is clearer and should yield more reusable perceptual knowledge. The main tradeoff is a risk of over-literal prose if the model over-follows the anchor rule."
+    },
+    {
+      "area": "evidence_anchoring",
+      "status": "improved",
+      "assessment": "The new prompts require a concrete anchor before interpretation. This is the strongest quality gain in the patch."
+    },
+    {
+      "area": "literary_consultant_tone",
+      "status": "improved_but_not_gone",
+      "assessment": "The tone is less ornate, but phrases like strategic question, trade-off space, and substantive read still carry consultant residue."
+    }
+  ],
+  "before_after_excerpts": [
+    {
+      "topic": "synthesis_opening",
+      "before": "Write a SYNTHESIS PARAGRAPH about the brand ... Rules: ... DO NOT cite numbers except the global score if it helps.",
+      "after": "Open with one concrete evidence anchor ... Do not open with the score. Use the observation / implication / tension order ...",
+      "assessment": "Better evidence-first framing; less score-led."
+    },
+    {
+      "topic": "synthesis_fallback",
+      "before": "Strongest dimension: Presence (82/100). Weakest dimension: Differentiation (54/100).",
+      "after": "Cross-dimension snapshot for {brand}. Observed pattern: the clearest read sits in {top.display_name} ...",
+      "assessment": "Reduced genericity, but score-structure remains visible."
+    },
+    {
+      "topic": "findings_structure",
+      "before": "prose: 2-3 lines in English ... Mention at least one concrete detail.",
+      "after": "observation / implication / tension; Start with one concrete quote, page, source domain, or channel ...",
+      "assessment": "Substantial improvement in diagnostic specificity."
+    },
+    {
+      "topic": "tensions",
+      "before": "Decide whether ONE significant cross-dimensional tension exists.",
+      "after": "Identify ONE significant cross-dimensional TENSION if and only if one genuinely exists ...",
+      "assessment": "Better restraint and stronger evidence discipline."
+    },
+    {
+      "topic": "renderer_holdout",
+      "before": "Example scores 72/100 (band B). Strongest dimension: Presence (82/100). Weakest dimension: Differentiation (54/100).",
+      "after": "unchanged by this patch",
+      "assessment": "Confirms that some score-first voice is structural, not prompt-only."
+    }
+  ],
+  "remaining_phrases_to_eliminate": [
+    "strategic question",
+    "trade-off space",
+    "substantive read",
+    "clear message",
+    "strong presence",
+    "well-defined identity",
+    "the available sources point in the same direction",
+    "automatic synthesis unavailable"
+  ],
+  "remaining_risks": [
+    "Synthesis fallback still uses strongest/weakest dimension framing.",
+    "Renderer summary layers still emit score-led prose.",
+    "Evidence-anchor guidance may push the model toward repetitive openings.",
+    "Residual consultant tone remains in the strategic framing vocabulary."
+  ],
+  "next_recommended_changes": {
+    "low_risk": [
+      "Remove strongest/weakest wording from fallback synthesis.",
+      "Replace residual consultant phrases with plainer editorial terms.",
+      "Regenerate snapshots after the output settles."
+    ],
+    "medium_risk": [
+      "Rework the renderer's score-first summary layer.",
+      "Reduce duplicated summary prose across report sections.",
+      "Make the distinction between metadata and narrative more explicit in the report layout."
+    ]
+  },
+  "validation_basis": [
+    "src/reports/narrative.py diff",
+    "tests/snapshots/report-netlify-light.html",
+    "tests/snapshots/report-netlify-dark.html",
+    "src/reports/templates/report.html.j2"
+  ]
+}

@@ -58,9 +58,9 @@ if _promotion_dimension_drops:
         pass
 
 # LLM config (text + vision share the same provider by default)
-DEFAULT_LLM_MODEL = "gemini-2.5-flash"
-DEFAULT_LLM_CHEAP_MODEL = "gemini-2.5-flash-lite"
-DEFAULT_LLM_PREMIUM_MODEL = "gemini-2.5-pro"
+DEFAULT_LLM_MODEL = "gemini-3.1-pro-preview"
+DEFAULT_LLM_CHEAP_MODEL = "gemini-3.1-flash-lite"
+DEFAULT_LLM_PREMIUM_MODEL = "gemini-3.1-pro-preview"
 DEFAULT_VISION_MODEL = "gemini-2.5-flash"
 LLM_BASE_URL = os.environ.get(
     "BRAND3_LLM_BASE_URL",

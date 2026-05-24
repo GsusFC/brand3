@@ -1,0 +1,560 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:00:06.053391",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.meundies.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.616,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.865
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "ecommerce",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "photographic",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 2,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 100,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "MeUndies",
+  "calibration": {
+    "expected_category": "ecommerce",
+    "notes": "Consumer ecommerce with playful product imagery and promotional density."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#d9ff6e",
+      "#fa0a0a"
+    ],
+    "background_candidates": [
+      "#000000",
+      "#d9ff6e",
+      "#e4d8c1",
+      "#1e1e1d",
+      "#222222",
+      "#717070"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#000000",
+      "#d9ff6e",
+      "#e4d8c1",
+      "#1e1e1d",
+      "#222222",
+      "#717070",
+      "#fffbf1",
+      "#e5e2dc"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 40,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d9ff6e",
+        "occurrences": 34,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#e4d8c1",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#1e1e1d",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#222222",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#717070",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#fffbf1",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e5e2dc",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f8d2d1",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fa0a0a",
+        "occurrences": 2,
+        "role": "accent",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#000000",
+      "#1e1e1d",
+      "#222222",
+      "#717070"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 60,
+        "labels": [
+          "Select Size",
+          "Shop Now",
+          "Become A Member",
+          "Give Now",
+          "The Forethought Solve widget is a virtual assistant. You have the ability to sel"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 9,
+        "labels": [
+          "Select Size",
+          "Shop Now",
+          "Become A Member",
+          "Shop Mens",
+          "Shop Womens",
+          "Give Now",
+          "The Forethought Solve widget is a virtual assistant. You have the ability to sel",
+          "Join Membership",
+          "Discounted pricing"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.79,
+    "interaction_patterns": [
+      "modal"
+    ],
+    "primary_ctas": [
+      "Select Size",
+      "Shop Now",
+      "Become A Member",
+      "Shop Mens",
+      "Shop Womens",
+      "Give Now",
+      "The Forethought Solve widget is a virtual assistant. You have the ability to sel",
+      "Join Membership"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.68,
+    "confidence": 0.617,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.514,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.617,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.562
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.677
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "sticky_nav"
+    ],
+    "section_count": 14,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.15,
+    "favicon_detected": true,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.4,
+    "font_families": [],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0,
+      14.0
+    ],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.47,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.056,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.015
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 691170,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.meundies.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/ecommerce/meundies.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 104,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 5369,
+          "ratio": 0.2685
+        },
+        {
+          "hex": "#604020",
+          "occurrences": 3079,
+          "ratio": 0.154
+        },
+        {
+          "hex": "#e0e0c0",
+          "occurrences": 1301,
+          "ratio": 0.065
+        },
+        {
+          "hex": "#e0ff60",
+          "occurrences": 889,
+          "ratio": 0.0445
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 880,
+          "ratio": 0.044
+        },
+        {
+          "hex": "#804020",
+          "occurrences": 880,
+          "ratio": 0.044
+        },
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 848,
+          "ratio": 0.0424
+        },
+        {
+          "hex": "#c06040",
+          "occurrences": 556,
+          "ratio": 0.0278
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.47,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.056,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.015
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 104,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 5369,
+          "ratio": 0.2685
+        },
+        {
+          "hex": "#604020",
+          "occurrences": 3079,
+          "ratio": 0.154
+        },
+        {
+          "hex": "#e0e0c0",
+          "occurrences": 1301,
+          "ratio": 0.065
+        },
+        {
+          "hex": "#e0ff60",
+          "occurrences": 889,
+          "ratio": 0.0445
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 880,
+          "ratio": 0.044
+        },
+        {
+          "hex": "#804020",
+          "occurrences": 880,
+          "ratio": 0.044
+        },
+        {
+          "hex": "#ffe0e0",
+          "occurrences": 848,
+          "ratio": 0.0424
+        },
+        {
+          "hex": "#c06040",
+          "occurrences": 556,
+          "ratio": 0.0278
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.015,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.meundies.com"
+}

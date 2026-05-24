@@ -1,0 +1,103 @@
+{
+  "version": "observed_related_surfaces.input.v0",
+  "status": {
+    "offline_only": true,
+    "manual_review": true,
+    "runtime_enabled": false,
+    "used_by_scoring": false,
+    "used_by_prompts": false,
+    "used_by_rendering": false,
+    "visual_signature_input": false
+  },
+  "case": {
+    "brand": "Iris",
+    "primary_surface": "irisdesign.dev",
+    "source_memo": "docs/brand3_iris_phase2_findings.md",
+    "input_contract": "docs/brand3_observed_related_surfaces_input_contract.md",
+    "run_id": 77
+  },
+  "observed_related_surfaces": [
+    {
+      "surface": "irisdesign.in",
+      "relation_type": "ambiguous_name_match",
+      "evidence": [
+        "docs/brand3_iris_phase2_findings.md: Search and discovery surfaced irisdesign.in among Iris-related domains"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as name-collision/entity-composition pressure only. This does not assert ownership, aliasing or relation to irisdesign.dev."
+    },
+    {
+      "surface": "irisdigital.design",
+      "relation_type": "ambiguous_name_match",
+      "evidence": [
+        "docs/brand3_iris_phase2_findings.md: Search and discovery surfaced irisdigital.design among Iris-related domains"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as name-collision/entity-composition pressure only. Relation to the audited entity is unverified."
+    },
+    {
+      "surface": "byiris.io",
+      "relation_type": "ambiguous_name_match",
+      "evidence": [
+        "docs/brand3_iris_phase2_findings.md: Search and discovery surfaced byiris.io among Iris-related domains"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as ambiguous Iris-name surface only. This fixture does not infer product, parent, or brand relation."
+    },
+    {
+      "surface": "heyiris.ai",
+      "relation_type": "ambiguous_name_match",
+      "evidence": [
+        "docs/brand3_iris_phase2_findings.md: Search and discovery surfaced heyiris.ai among Iris-related domains"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included because the Phase 2 memo identifies AI-heavy Iris surface pressure. No ownership or equivalence is asserted."
+    },
+    {
+      "surface": "iris-ai.dev",
+      "relation_type": "ambiguous_name_match",
+      "evidence": [
+        "docs/brand3_iris_phase2_findings.md: Search and discovery surfaced iris-ai.dev among Iris-related domains"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as ambiguous AI/Iris name collision pressure only."
+    },
+    {
+      "surface": "irisdesigncollaborative.com",
+      "relation_type": "ambiguous_name_match",
+      "evidence": [
+        "docs/brand3_iris_phase2_findings.md: Search and discovery surfaced irisdesigncollaborative.com among Iris-related domains"
+      ],
+      "confidence": "low",
+      "requires_human_review": true,
+      "source": "manual_review",
+      "notes": "Included as design-name collision pressure only. This does not assert relation to irisdesign.dev."
+    }
+  ],
+  "excluded_surfaces": [
+    {
+      "surface": "several other Iris-design or Iris-AI surfaces",
+      "reason": "The Phase 2 memo mentions additional surfaces only generically; they are excluded until explicit surface names and relation evidence are available.",
+      "source": "manual_review"
+    }
+  ],
+  "guardrails": {
+    "does_not_infer_ownership": true,
+    "does_not_treat_related_surfaces_as_aliases": true,
+    "does_not_use_arbitrary_evidence_urls": true,
+    "does_not_use_name_similarity_alone": true,
+    "does_not_use_search_cooccurrence_alone": true,
+    "requires_human_review_for_all_surfaces": true,
+    "all_surfaces_are_ambiguous_name_match": true
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "block_reasons": [
+    "small_sample_size",
+    "insufficient_reviewed_claims",
+    "insufficient_category_depth",
+    "insufficient_confidence_spread",
+    "contradiction_rate_too_high",
+    "high_confidence_contradictions_too_high"
+  ],
+  "bundle_valid": true,
+  "calibration_run_id": "6bf278708eea4c4887aaebe799477f59",
+  "category_coverage": {
+    "AI-native": {
+      "count": 1,
+      "meets_minimum": false,
+      "minimum_required": 3,
+      "reviewed_count": 1,
+      "share": 0.2
+    },
+    "SaaS": {
+      "count": 1,
+      "meets_minimum": false,
+      "minimum_required": 3,
+      "reviewed_count": 1,
+      "share": 0.2
+    },
+    "ecommerce": {
+      "count": 1,
+      "meets_minimum": false,
+      "minimum_required": 3,
+      "reviewed_count": 1,
+      "share": 0.2
+    },
+    "editorial/media": {
+      "count": 1,
+      "meets_minimum": false,
+      "minimum_required": 3,
+      "reviewed_count": 1,
+      "share": 0.2
+    },
+    "wellness/lifestyle": {
+      "count": 1,
+      "meets_minimum": false,
+      "minimum_required": 3,
+      "reviewed_count": 1,
+      "share": 0.2
+    }
+  },
+  "checked_at": "2026-05-12T07:27:50.390205Z",
+  "confidence_bucket_coverage": {
+    "high": {
+      "count": 5,
+      "meets_minimum": true,
+      "minimum_required": 1,
+      "reviewed_count": 5,
+      "share": 1.0
+    },
+    "low": {
+      "count": 0,
+      "meets_minimum": false,
+      "minimum_required": 1,
+      "reviewed_count": 0,
+      "share": 0.0
+    },
+    "medium": {
+      "count": 0,
+      "meets_minimum": false,
+      "minimum_required": 1,
+      "reviewed_count": 0,
+      "share": 0.0
+    },
+    "unknown": {
+      "count": 0,
+      "meets_minimum": false,
+      "minimum_required": 1,
+      "reviewed_count": 0,
+      "share": 0.0
+    }
+  },
+  "contradiction_rate": 0.4,
+  "minimum_thresholds_used": {
+    "maximum_contradiction_rate": 0.25,
+    "maximum_high_confidence_contradictions": 1,
+    "maximum_unresolved_rate": 0.25,
+    "minimum_categories": 3,
+    "minimum_claims_per_category": 3,
+    "minimum_confidence_buckets": 3,
+    "minimum_reviewed_claims": 15,
+    "minimum_total_claims": 15
+  },
+  "notes": [
+    "Evidence-only readiness gate.",
+    "No scoring, rubric dimensions, production reports, or UI are modified.",
+    "Scope evaluated: broader_corpus_use",
+    "Bundle validation must pass before readiness can be positive.",
+    "Observed categories: 5",
+    "Observed confidence buckets: 1",
+    "Validation errors: 0",
+    "Corpus manifest categories: 12",
+    "Corpus manifest broader calibration target: 15",
+    "Thresholds are conservative and intended to block broader corpus use until sample size and spread improve."
+  ],
+  "overconfidence_rate": 0.4,
+  "readiness_scope": "broader_corpus_use",
+  "recommendation": "Hold broader corpus use until sample size, category depth, and confidence spread improve.",
+  "record_count": 5,
+  "record_type": "calibration_readiness",
+  "reviewed_claims": 5,
+  "schema_version": "visual-signature-calibration-readiness-1",
+  "source_corpus_manifest_path": "examples/visual_signature/calibration_corpus/corpus_manifest.json",
+  "status": "not_ready",
+  "summary_count_consistency": true,
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "unresolved_rate": 0.2,
+  "validation_errors": [],
+  "warning_reasons": [
+    "corpus_category_coverage_limited:5/12",
+    "corpus_manifest_loaded"
+  ]
+}

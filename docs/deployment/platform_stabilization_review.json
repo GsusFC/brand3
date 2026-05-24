@@ -1,0 +1,248 @@
+{
+  "artifact_id": "brand3_platform_stabilization_review_2026_05_15",
+  "artifact_type": "deployment_stabilization_review",
+  "generated_at": "2026-05-15",
+  "status": "review_complete",
+  "deploy_recommendation": "not_ready",
+  "scope": {
+    "review_only": true,
+    "no_new_features": true,
+    "no_scoring_changes": true,
+    "no_prompt_rewrites": true,
+    "no_runtime_rollout": true,
+    "no_visual_signature_semantic_changes": true,
+    "no_schema_mutations": true
+  },
+  "architecture_boundaries": {
+    "production_brand_audit_platform": {
+      "routes": [
+        "/",
+        "/analyze",
+        "/r/{token}/status",
+        "/r/{token}",
+        "/reports",
+        "/brand/{domain}",
+        "/team/unlock",
+        "/takedown",
+        "/_health"
+      ],
+      "status": "production_facing",
+      "risk": "medium"
+    },
+    "visual_signature_lab": {
+      "routes": [
+        "/visual-signature",
+        "/visual-signature/governance",
+        "/visual-signature/calibration",
+        "/visual-signature/corpus",
+        "/visual-signature/reviewer",
+        "/visual-signature/reviewer/human-review",
+        "/visual-signature/reviewer/human-review/{brand}",
+        "/visual-signature/artifacts/{artifact_key}",
+        "/visual-signature/screenshots/{filename}/preview",
+        "/visual-signature/screenshots/{filename:path}"
+      ],
+      "status": "experimental_lab_public_route_surface",
+      "persistence": "artifact_read_and_file_response_only_for_web_routes",
+      "risk": "medium"
+    },
+    "brand3_perceptual_lab": {
+      "routes": [
+        "/brand3-lab/perceptual-narrative-comparison"
+      ],
+      "status": "experimental_lab_public_route_surface",
+      "persistence": "client_side_draft_export_only",
+      "risk": "medium_for_public_exposure_low_for_persistence"
+    },
+    "research_only_artifacts": [
+      "examples/perceptual_library/**",
+      "examples/brand3_platform/perceptual_*",
+      "examples/brand3_lab/**",
+      "examples/visual_signature/**"
+    ],
+    "inactive_or_opt_in_systems": [
+      {
+        "system": "perceptual_narrative_augmentation",
+        "default_enabled": false,
+        "global_rollout": false
+      },
+      {
+        "system": "visual_signature_shadow_run",
+        "default_enabled": false,
+        "global_rollout": false
+      }
+    ]
+  },
+  "reviews": {
+    "runtime_safety": {
+      "status": "functional_locally",
+      "risk": "medium",
+      "notes": [
+        "FastAPI server starts locally.",
+        "Local startup logged hashlib blake2 warnings but completed.",
+        "Route surface includes lab routes that may need gating in production."
+      ]
+    },
+    "scoring_integrity": {
+      "status": "not_mutated_by_this_review",
+      "risk": "medium_high_until_service_diffs_reviewed",
+      "notes": [
+        "No scoring changes were made in this stabilization pass.",
+        "Perceptual narrative is disabled by default.",
+        "Worktree includes service-layer and scoring-pipeline-related untracked/modified files that need separate review."
+      ]
+    },
+    "report_rendering": {
+      "status": "focused_tests_pass",
+      "risk": "medium_high",
+      "notes": [
+        "Report renderer/dossier/narrative focused tests passed.",
+        "Report template and snapshots are modified in the dirty worktree.",
+        "Visual report review is recommended before deploy."
+      ]
+    },
+    "visual_signature_isolation": {
+      "status": "isolated_as_lab_routes",
+      "risk": "medium",
+      "notes": [
+        "Visual Signature routes are separate from production scoring.",
+        "Focused Visual Signature route tests passed.",
+        "Routes are publicly exposed unless gated by deploy routing/auth."
+      ]
+    },
+    "brand3_lab_isolation": {
+      "status": "isolated_get_only_client_export",
+      "risk": "low_for_persistence_medium_for_exposure",
+      "notes": [
+        "Brand3 Lab route is GET-only.",
+        "No server-side writes found.",
+        "Draft export is client-side JSON only."
+      ]
+    },
+    "perceptual_layer_rollout_status": {
+      "status": "experimental_opt_in_disabled_by_default",
+      "risk": "low_while_disabled_high_if_global",
+      "notes": [
+        "enable_perceptual_narrative defaults to false in dossier and narrative paths.",
+        "Production report path does not enable perceptual augmentation.",
+        "Perceptual artifacts are static research/lab inputs."
+      ]
+    }
+  },
+  "experimental_feature_inventory": [
+    {
+      "area": "Visual Signature Lab",
+      "public_route": true,
+      "persistence": "local artifact reads and screenshot serving",
+      "production_impact": "should remain separate"
+    },
+    {
+      "area": "Visual Signature human review",
+      "public_route": true,
+      "persistence": "client_side_draft_export_only",
+      "production_impact": "no official records"
+    },
+    {
+      "area": "Brand3 Lab comparison viewer",
+      "public_route": true,
+      "persistence": "client_side_draft_export_only",
+      "production_impact": "no scoring or report impact"
+    },
+    {
+      "area": "Perceptual narrative augmentation",
+      "public_route": false,
+      "persistence": "none",
+      "production_impact": "disabled by default"
+    },
+    {
+      "area": "Perceptual calibration logs",
+      "public_route": false,
+      "persistence": "static examples only",
+      "production_impact": "none"
+    },
+    {
+      "area": "Visual Signature shadow run",
+      "public_route": false,
+      "persistence": "can persist only if explicitly enabled",
+      "production_impact": "disabled by default"
+    }
+  ],
+  "validation": {
+    "py_compile": {
+      "command": "./.venv/bin/python -m py_compile web/app.py web/brand3_lab_data.py web/visual_signature_data.py web/routes/*.py src/reports/*.py",
+      "status": "passed"
+    },
+    "web_critical_tests": {
+      "command": "./.venv/bin/python -m pytest tests/test_web_app.py tests/test_web_listings.py tests/test_web_visual_signature_routes.py",
+      "status": "passed",
+      "result": "28 passed"
+    },
+    "report_tests": {
+      "command": "./.venv/bin/python -m pytest tests/test_reports_renderer.py tests/test_reports_dossier.py tests/test_reports_narrative.py",
+      "status": "passed",
+      "result": "64 passed"
+    },
+    "json_parse": {
+      "status": "passed_for_key_artifacts",
+      "notes": "jq parsed key perceptual and Brand3 Lab JSON artifacts."
+    },
+    "known_limitations": [
+      "Full test suite was not used as deploy gate in this pass.",
+      "A known full-suite failure existed before this review in tests/test_main_experiment.py.",
+      "jsonschema is not installed, so Draft 2020-12 validation was not run for calibration logs."
+    ]
+  },
+  "critical_path_status": {
+    "homepage": "pass",
+    "brand_audit_flow": "pass_with_fake_engine",
+    "reports_render": "pass",
+    "listings_render": "pass",
+    "visual_signature_routes": "pass",
+    "brand3_lab_routes": "pass",
+    "hidden_brand3_lab_persistence": "not_found",
+    "perceptual_default_disabled": "pass"
+  },
+  "known_dirty_worktree_areas": [
+    "production web routes and templates",
+    "web config and middleware",
+    "report dossier/narrative/template code",
+    "service pipeline and brand service refactors",
+    "storage/migrations",
+    "tests and snapshots",
+    "Visual Signature source/examples/scripts/tests",
+    "Brand3 Lab and perceptual library examples",
+    "documentation"
+  ],
+  "deployment_risks": [
+    "Dirty worktree spans production and experimental systems.",
+    "Report template and snapshots changed.",
+    "Service-layer refactors need separate review.",
+    "Visual Signature and Brand3 Lab routes are public unless gated.",
+    "Shared CSS/template changes can affect production pages.",
+    "Full suite has known failure history.",
+    "Local Python runtime logs hashlib warnings at startup."
+  ],
+  "recommended_pre_deploy_cleanup": [
+    "Split production web/report changes from lab/research changes.",
+    "Create a dedicated deployment branch containing only production-safe changes.",
+    "Decide whether /visual-signature/* and /brand3-lab/* should be public, gated, or disabled in production.",
+    "Review report template and report snapshots visually.",
+    "Review service-layer refactors and untracked pipeline modules.",
+    "Run full test suite and fix or explicitly waive known failures.",
+    "Run browser smoke tests for production and lab routes.",
+    "Investigate hashlib warnings if they reproduce in deploy runtime."
+  ],
+  "recommended_future_branch_split": [
+    "deploy/web-platform-stabilization",
+    "lab/visual-signature-platform",
+    "lab/brand3-perceptual-research",
+    "reports/narrative-refinement",
+    "services/pipeline-refactor"
+  ],
+  "classification": {
+    "safe_to_deploy": false,
+    "deploy_with_caution": false,
+    "not_ready": true,
+    "reason": "Functional local paths exist, but the current worktree mixes production changes, lab surfaces, report-template changes, service refactors, untracked experimental systems, and known test-suite risk."
+  }
+}

@@ -1,0 +1,488 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:31:42.494626",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.process.st",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 50,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Process Street",
+  "calibration": {
+    "expected_category": "saas",
+    "notes": "Smaller SaaS candidate to reduce famous-brand overfitting."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#1e2b36",
+      "#003388",
+      "#0d71d8"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#1e2b36",
+      "#fff8e5",
+      "#eaf5ff",
+      "#003388",
+      "#cce6ff"
+    ],
+    "confidence": 0.85,
+    "dominant_colors": [
+      "#ffffff",
+      "#1e2b36",
+      "#fff8e5",
+      "#eaf5ff",
+      "#003388",
+      "#cce6ff",
+      "#f5faff",
+      "#f5f5f5"
+    ],
+    "palette": [
+      {
+        "confidence": 0.84,
+        "hex": "#ffffff",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#1e2b36",
+        "occurrences": 12,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#fff8e5",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#eaf5ff",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#003388",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#cce6ff",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f5faff",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f5f5f5",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0d71d8",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#1e2b36",
+      "#003388",
+      "#0d71d8"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 2,
+        "labels": [
+          "Got it"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 10,
+        "labels": [
+          "Get started",
+          "See it in action",
+          "Explore Docs",
+          "Explore Ops",
+          "Explore Cora",
+          "Learn more",
+          "Generate with AI",
+          "More testimonials",
+          "Got it",
+          "Get\\\\\nstarted"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Get started",
+      "See it in action",
+      "Explore Docs",
+      "Explore Ops",
+      "Explore Cora",
+      "Learn more",
+      "Generate with AI",
+      "More testimonials"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.7,
+    "confidence": 0.56,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.519,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.56,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.582
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.675
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 24,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Salesforce logo",
+        "confidence": 0.72,
+        "location": "body",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/landing-pages/bpm-salesforce.svg"
+      },
+      {
+        "alt": "Slack logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logos/slack-logo.svg"
+      },
+      {
+        "alt": "Gov of Canada logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logos/gov-of-canada-logo.svg"
+      },
+      {
+        "alt": "Colliers logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logos/colliers-logo.svg"
+      },
+      {
+        "alt": "Betterment logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logos/betterment-logo.svg"
+      },
+      {
+        "alt": "Drift logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logos/drift-logo.svg"
+      },
+      {
+        "alt": "Process Street Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logo-process-street-diamond.svg"
+      },
+      {
+        "alt": "Cisco logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.process.st/wp-content/themes/koombea/images/logos/cisco.png"
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "body",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.127,
+      "composition_classification": "dense_grid",
+      "confidence": 0.676,
+      "edge_density": 0.061,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.285
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 630706,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.process.st",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/saas/process-street.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 66,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 5445,
+          "ratio": 0.2722
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 4082,
+          "ratio": 0.2041
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 3138,
+          "ratio": 0.1569
+        },
+        {
+          "hex": "#e0ffe0",
+          "occurrences": 2084,
+          "ratio": 0.1042
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1863,
+          "ratio": 0.0931
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1096,
+          "ratio": 0.0548
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 349,
+          "ratio": 0.0175
+        },
+        {
+          "hex": "#a0a060",
+          "occurrences": 322,
+          "ratio": 0.0161
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.127,
+      "composition_classification": "dense_grid",
+      "confidence": 0.676,
+      "edge_density": 0.061,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.285
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.676,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.833
+    },
+    "viewport_palette": {
+      "color_count": 66,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 5445,
+          "ratio": 0.2722
+        },
+        {
+          "hex": "#ffffe0",
+          "occurrences": 4082,
+          "ratio": 0.2041
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 3138,
+          "ratio": 0.1569
+        },
+        {
+          "hex": "#e0ffe0",
+          "occurrences": 2084,
+          "ratio": 0.1042
+        },
+        {
+          "hex": "#e0e0ff",
+          "occurrences": 1863,
+          "ratio": 0.0931
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1096,
+          "ratio": 0.0548
+        },
+        {
+          "hex": "#202040",
+          "occurrences": 349,
+          "ratio": 0.0175
+        },
+        {
+          "hex": "#a0a060",
+          "occurrences": 322,
+          "ratio": 0.0161
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.285,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.676,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.833
+    }
+  },
+  "website_url": "https://www.process.st"
+}

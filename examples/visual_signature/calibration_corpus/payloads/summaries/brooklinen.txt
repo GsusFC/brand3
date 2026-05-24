@@ -1,0 +1,39 @@
+Expected category: ecommerce
+Notes: Mid-market ecommerce with promotion and product-led layout.
+
+== Brooklinen ==
+URL: https://www.brooklinen.com
+Interpretation status: interpretable
+Extraction confidence: 0.71 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.64, consistency_coverage=0.68]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.68
+
+Visual summaries:
+- palette preview: #283455[###] #777777[###] #fdfaf8[###] #293c70[###] #ffffff[###] #e3ad7c[###] #8ea4b6[###] #46454a[###]
+- typography: &quot
+- layout: header=True; nav=True; hero=True; sections=64; density=dense; patterns=grid,flex,multi_column,sticky_nav
+- components: button=736, cta=58, form=22, card=360, accordion=4, tabs=68, modal=240
+- consistency: overall=0.62; color=0.48; type=0.82; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #0040a0[###] #204060[###] #c0a060[###] #c0a0a0[###] #c08040[###] #e0e0e0[###] #c0c0a0[###]
+- viewport palette: #ffffff[###] #0040a0[###] #204060[###] #c0a060[###] #c0a0a0[###] #c08040[###] #e0e0e0[###] #c0c0a0[###]
+- composition: density=dense; whitespace=18%; classification=dense_grid
+- viewport composition: density=dense; whitespace=18%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

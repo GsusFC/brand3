@@ -1,0 +1,389 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:18:34.124301",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.themarshallproject.org",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 22,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 48,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "The Marshall Project",
+  "calibration": {
+    "expected_category": "editorial_media",
+    "notes": "Mission-led publication added for less commercial editorial baseline behavior."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#000000",
+      "#ffffff"
+    ],
+    "confidence": 0.461,
+    "dominant_colors": [
+      "#000000",
+      "#ffffff"
+    ],
+    "palette": [
+      {
+        "confidence": 0.76,
+        "hex": "#000000",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ffffff",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#000000"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 4,
+        "labels": [
+          "Sign up",
+          "Sign up for our newsletters"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 5,
+        "labels": [
+          "More about our emails",
+          "Sign up",
+          "Sign up for our newsletters",
+          "![A photo shows a brown and tan warehouse, a road and a stop sign.",
+          "Get Involved"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 38,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "More about our emails",
+      "Sign up",
+      "Sign up for our newsletters",
+      "![A photo shows a brown and tan warehouse, a road and a stop sign.",
+      "Get Involved"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.7,
+    "confidence": 0.463,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.549,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.463,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.492
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.629
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 284,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "A black-and-white photo shows a Black woman holding a folder speaking to a Black man holding paperwork in front of a desk with piles of forms. A group of Black women and children stand nearby. A sign for the &quot;Immigration &amp; Naturalization Service&quot; is in the background, with the agency",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://mirrorball.themarshallproject.org/roP82IdMjmupGO73KnqqaeiemhXG0krBUIbNz4vGD2o/w:740/aHR0cHM6Ly9kMm0x/OXBtdnRzNWJvYi5j/bG91ZGZyb250Lm5l/dC9teTkxc2xyMHEy/ZnRwaGV6OXAybXR3/aHBoOWJlLzI2MDQy/NV9DQV9CZXR0bWFu/X0dldHR5SW1hZ2Vz/LTE2MjEwMzA1NDku/anBn"
+      },
+      {
+        "alt": "A photo shows a multicolored sign with a layered star logo, at night. The sign reads \u201cMohican Young Star Academy\u201d and \u201cThrough the Thorns to the Stars.\u201d Behind the sign is a parking lot with streetlights.",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://mirrorball.themarshallproject.org/mlkVy1Qj6PzRAm8XZgGLTENo4NX-ltvjw3Iem8JLfXY/w:740/aHR0cHM6Ly9kMm0x/OXBtdnRzNWJvYi5j/bG91ZGZyb250Lm5l/dC94YnR3cGtuZjBn/MjBtNnNpdjlwcjQx/dXN6Y25yLzI2MDQy/MS1OU21hbGx3b29k/LUNMRS1SRVNJREVO/VElBTC1CSUxMLmpw/Zw"
+      },
+      {
+        "alt": "A blue, black and white collage shows images of police officers, silhouettes, two hands handcuffed, a logo of the Missouri Department of Public Safety, a map, a brick wall and clippings of a court case.",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://mirrorball.themarshallproject.org/LVydps4r1Jwxz0bRhsJfFZO-dDK2DNIptTGAemCajOA/w:740/aHR0cHM6Ly9kMm0x/OXBtdnRzNWJvYi5j/bG91ZGZyb250Lm5l/dC81cmFpY25maWNo/Nmxidm94azk4NzYw/NjRraHJ2L01lbGFu/aWVfR2FyY2lhX1NU/TC1PRkZJQ0VSLU1J/U0NPTkRVQ1QtREFU/QUJBU0VfaGVhZGVy/XzI1MDkwOS5qcGc"
+      },
+      {
+        "alt": null,
+        "confidence": 0.55,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": "The Marshall Project",
+        "url": null
+      }
+    ],
+    "confidence": 0.5,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": true
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_palette_more_complex_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.313,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport palette is noisier than the DOM palette.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.586,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.058,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.391
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 839055,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.themarshallproject.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/the-marshall-project.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 82,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7738,
+          "ratio": 0.3869
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 3156,
+          "ratio": 0.1578
+        },
+        {
+          "hex": "#604040",
+          "occurrences": 1507,
+          "ratio": 0.0754
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 1444,
+          "ratio": 0.0722
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 1011,
+          "ratio": 0.0505
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 826,
+          "ratio": 0.0413
+        },
+        {
+          "hex": "#604020",
+          "occurrences": 768,
+          "ratio": 0.0384
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 501,
+          "ratio": 0.025
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.586,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.058,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.391
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 82,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 7738,
+          "ratio": 0.3869
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 3156,
+          "ratio": 0.1578
+        },
+        {
+          "hex": "#604040",
+          "occurrences": 1507,
+          "ratio": 0.0754
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 1444,
+          "ratio": 0.0722
+        },
+        {
+          "hex": "#402020",
+          "occurrences": 1011,
+          "ratio": 0.0505
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 826,
+          "ratio": 0.0413
+        },
+        {
+          "hex": "#604020",
+          "occurrences": 768,
+          "ratio": 0.0384
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 501,
+          "ratio": 0.025
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.391,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.themarshallproject.org"
+}

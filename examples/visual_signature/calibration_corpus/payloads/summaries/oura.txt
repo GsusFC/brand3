@@ -1,0 +1,40 @@
+Expected category: wellness_lifestyle
+Notes: Wellness hardware with premium product imagery and health education.
+
+== Oura ==
+URL: https://ouraring.com
+Interpretation status: interpretable
+Extraction confidence: 0.64 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.49, consistency_coverage=0.56]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.74
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.56
+
+Visual summaries:
+- palette preview: #cbcbcb[###] #eadccf[###] #b6cfdd[###] #f3ebe1[###] #b5e4fe[###] #d5c3ab[###] #ffb648[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=10; density=balanced; patterns=grid,flex,multi_column
+- components: button=44, cta=11, card=74, accordion=24, tabs=44, pricing=4
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #c0a080[###] #c0c0a0[###] #ffffff[###] #c0a0a0[###] #a08080[###] #a0a080[###] #ffffe0[###] #a08060[###]
+- viewport palette: #c0a080[###] #c0c0a0[###] #ffffff[###] #c0a0a0[###] #a08080[###] #a0a080[###] #ffffe0[###] #a08060[###]
+- composition: density=dense; whitespace=13%; classification=dense_grid
+- viewport composition: density=dense; whitespace=13%; classification=dense_grid
+- vision confidence: 0.82 (high)
+- viewport confidence: 0.82 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

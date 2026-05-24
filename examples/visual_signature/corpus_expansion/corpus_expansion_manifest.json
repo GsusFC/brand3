@@ -1,0 +1,50 @@
+{
+  "category_distribution": {
+    "AI-native": 1,
+    "SaaS": 1,
+    "ecommerce": 1,
+    "editorial/media": 1,
+    "wellness_lifestyle": 1
+  },
+  "confidence_distribution": {
+    "high": 2,
+    "low": 1,
+    "medium": 1,
+    "unknown": 1
+  },
+  "contradiction_rate": 0.2,
+  "current_capture_count": 5,
+  "generated_at": "2026-05-12T10:43:08.621714Z",
+  "known_limitations": [
+    "Current corpus expansion state is a scaffold, not a production corpus.",
+    "This bundle is insufficient for model training.",
+    "This bundle is insufficient for production scoring.",
+    "This bundle is evidence-only corpus expansion.",
+    "Readiness is not yet broad enough for reviewed-corpus expansion.",
+    "Block reason: small_sample_size",
+    "Block reason: insufficient_reviewed_captures",
+    "Block reason: insufficient_category_depth"
+  ],
+  "metrics_file": "pilot_metrics.json",
+  "notes": [
+    "Evidence-only governance manifest.",
+    "Capability presence in the corpus expansion pipeline does not imply production approval.",
+    "Readiness is scope-dependent and separate from scoring, runtime, and training."
+  ],
+  "pilot_run_id": "visual-signature-corpus-expansion-pilot-1",
+  "queue_state_distribution": {
+    "needs_additional_evidence": 1,
+    "queued": 1,
+    "reviewed": 2,
+    "unresolved": 1
+  },
+  "readiness_scope": "human_review_scaling",
+  "readiness_status": "not_ready",
+  "record_type": "corpus_expansion_manifest",
+  "review_queue_file": "review_queue.json",
+  "reviewed_capture_count": 2,
+  "reviewer_coverage": 0.4,
+  "schema_version": "visual-signature-corpus-expansion-manifest-1",
+  "target_capture_count": 20,
+  "unresolved_rate": 0.2
+}

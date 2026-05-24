@@ -1,0 +1,607 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:01:41.955570",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.niemanlab.org",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 14,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Nieman Lab",
+  "calibration": {
+    "expected_category": "editorial_media",
+    "notes": "Niche editorial site added to reduce major-publication overfitting."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#882222",
+      "#882211",
+      "#00b6b6",
+      "#ed2e24",
+      "#93be42",
+      "#bea234"
+    ],
+    "background_candidates": [
+      "#333333",
+      "#2c2c2a",
+      "#882222",
+      "#882211",
+      "#5b6163",
+      "#000000"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#333333",
+      "#2c2c2a",
+      "#c1dbd9",
+      "#882222",
+      "#939393",
+      "#882211",
+      "#dddddd",
+      "#5b6163"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#333333",
+        "occurrences": 50,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#2c2c2a",
+        "occurrences": 22,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#c1dbd9",
+        "occurrences": 22,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#882222",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#939393",
+        "occurrences": 18,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#882211",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#dddddd",
+        "occurrences": 6,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#5b6163",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#000000",
+        "occurrences": 4,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#00b6b6",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ed2e24",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#aaaaaa",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#cccccc",
+        "occurrences": 2,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffffaa",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f5f5f5",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#eeeeee",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#999999",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#997777",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#93be42",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#bea234",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#43969a",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fd860e",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e34d01",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#01bfdf",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#333333",
+      "#2c2c2a",
+      "#882222",
+      "#939393",
+      "#882211",
+      "#5b6163"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Senate Democrats press top media regulator Brendan Carr to back off ABC",
+          "![ProPublica gets a new look built to work across platforms",
+          "ProPublica gets a new look built to work across platforms",
+          "Facebook",
+          "Contact",
+          "Like us on Facebook"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 24,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      }
+    ],
+    "confidence": 0.67,
+    "interaction_patterns": [
+      "form"
+    ],
+    "primary_ctas": [
+      "Senate Democrats press top media regulator Brendan Carr to back off ABC",
+      "![ProPublica gets a new look built to work across platforms",
+      "ProPublica gets a new look built to work across platforms",
+      "Facebook",
+      "Contact",
+      "Like us on Facebook"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.64,
+    "confidence": 0.703,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.556,
+    "typography_consistency": 0.65
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.703,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.602
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.704
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "single_column"
+    ],
+    "section_count": 0,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Nieman Lab logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.niemanlab.org/wordpress/wp-content/themes/Labby/resources/niemansitelogos/lab-logo-color-tighter.svg"
+      },
+      {
+        "alt": "Nieman Lab logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.niemanlab.org/wordpress/wp-content/themes/Labby/resources/niemansitelogos/lab-logo-color.svg"
+      },
+      {
+        "alt": "Nieman Foundation logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.niemanlab.org/wordpress/wp-content/themes/Labby/resources/niemansitelogos/foundation-logo-color.svg"
+      },
+      {
+        "alt": "Nieman Reports logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.niemanlab.org/wordpress/wp-content/themes/Labby/resources/niemansitelogos/reports-logo-color.svg"
+      },
+      {
+        "alt": "Nieman Storyboard logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.niemanlab.org/wordpress/wp-content/themes/Labby/resources/niemansitelogos/storyboard-logo-color.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.niemanlab.org/wordpress/wp-content/themes/Labby/resources/niemanlab-logo-for-footer-darker-small.png"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "freight-sans-pro",
+        "occurrences": 68,
+        "role": "ui",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "freight-text-pro",
+        "occurrences": 18,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "freight-macro-pro",
+        "occurrences": 8,
+        "role": "display",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "jubilat",
+        "occurrences": 8,
+        "role": "display",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "expressive",
+    "size_samples_px": [
+      16.0,
+      24.0,
+      14.0,
+      60.0,
+      16.0,
+      13.0,
+      20.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      16.0,
+      34.0,
+      22.0,
+      16.0,
+      22.0,
+      16.0,
+      34.0
+    ],
+    "weight_range": {
+      "max": 700,
+      "min": 100
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.89
+    },
+    "composition": {
+      "color_variance": 0.067,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.64,
+      "edge_density": 0.034,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.691
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 72383,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.niemanlab.org",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/editorial_media/nieman-lab.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 15,
+      "confidence": 0.632,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 13666,
+          "ratio": 0.6833
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 5229,
+          "ratio": 0.2615
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 438,
+          "ratio": 0.0219
+        },
+        {
+          "hex": "#c02020",
+          "occurrences": 216,
+          "ratio": 0.0108
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 173,
+          "ratio": 0.0086
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 112,
+          "ratio": 0.0056
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 91,
+          "ratio": 0.0046
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 56,
+          "ratio": 0.0028
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.067,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.64,
+      "edge_density": 0.034,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.691
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.64,
+        "palette": 0.632,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.755
+    },
+    "viewport_palette": {
+      "color_count": 15,
+      "confidence": 0.632,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 13666,
+          "ratio": 0.6833
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 5229,
+          "ratio": 0.2615
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 438,
+          "ratio": 0.0219
+        },
+        {
+          "hex": "#c02020",
+          "occurrences": 216,
+          "ratio": 0.0108
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 173,
+          "ratio": 0.0086
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 112,
+          "ratio": 0.0056
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 91,
+          "ratio": 0.0046
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 56,
+          "ratio": 0.0028
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.691,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.64,
+        "palette": 0.632,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.755
+    }
+  },
+  "website_url": "https://www.niemanlab.org"
+}

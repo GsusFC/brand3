@@ -1,0 +1,484 @@
+{
+  "date": "2026-05-14",
+  "mode": "read-only",
+  "scope": [
+    "FLOC*",
+    "Brand3",
+    "branding",
+    "case studies",
+    "clients",
+    "design projects"
+  ],
+  "notion_actions": {
+    "searched": true,
+    "fetched_pages": true,
+    "fetched_data_sources": true,
+    "created": false,
+    "updated": false,
+    "moved": false,
+    "deleted": false,
+    "ingested": false
+  },
+  "top_level_findings": [
+    {
+      "name": "FLOC*Ops",
+      "type": "page",
+      "role": "Operational hub for project, client, opportunity, task, team, contact, account, and content-planning databases.",
+      "relevance": "High for locating project structures; medium for vocabulary/report-generation context."
+    },
+    {
+      "name": "FLOC*Brain",
+      "type": "page",
+      "role": "Shared internal knowledge base with framework, glossary, services, conventions, decisions, and team context.",
+      "relevance": "High for report voice, methodology, terminology, and controlled vocabulary."
+    },
+    {
+      "name": "Projects Database",
+      "type": "data_source",
+      "role": "Central project index.",
+      "relevance": "High for project metadata, work type, status, and asset pointers."
+    },
+    {
+      "name": "Accounts",
+      "type": "data_source",
+      "role": "Client/brand index.",
+      "relevance": "High for client/brand and sector fields; sensitive admin fields must be excluded."
+    },
+    {
+      "name": "Social Media Planning",
+      "type": "data_source",
+      "role": "Content planning and case-study publication database.",
+      "relevance": "High for public-facing case summaries and report voice, if filtered to published/public material."
+    }
+  ],
+  "main_structures": [
+    {
+      "name": "FLOC*Space",
+      "type": "workspace_area",
+      "children_observed": [
+        "FLOC*Ops",
+        "FLOC*Brain"
+      ],
+      "notes": "Appears to be the parent area for core FLOC* operations and knowledge pages."
+    },
+    {
+      "name": "FLOC*Ops",
+      "type": "page",
+      "linked_structures": [
+        "Projects Database",
+        "Ongoing Projects",
+        "Opportunities",
+        "FLOC*Team",
+        "Accounts",
+        "Contacts",
+        "Gestión de cuentas Comunicación"
+      ],
+      "sensitivity": "Contains operational and CRM structures; use only for schema discovery unless explicitly approved."
+    },
+    {
+      "name": "FLOC*Brain",
+      "type": "page",
+      "linked_structures": [
+        "1. Qué es FLOC*",
+        "2. Equipo Core",
+        "3. BrandOS — Framework",
+        "4. Glosario y Convenciones",
+        "5. Instrucciones para Claude",
+        "6. Changelog de Decisiones",
+        "7. Servicios",
+        "8. Distribución — Contra como canal de venta",
+        "9. Leads Pipeline",
+        "10. Eventos y Networking",
+        "El Circulo skills",
+        "Team Brains — WIP"
+      ],
+      "sensitivity": "Contains internal knowledge; should be curated into abstract rules before use."
+    }
+  ],
+  "data_sources": [
+    {
+      "name": "Projects Database",
+      "fields": [
+        "Title",
+        "Account",
+        "Opportunity",
+        "Services",
+        "Status",
+        "Start Date",
+        "Due Date",
+        "Leaders",
+        "Budget",
+        "Lead",
+        "Notion Link",
+        "Preview",
+        "Pinterest",
+        "Pinterest Link",
+        "WORK Figma File",
+        "Remaining days"
+      ],
+      "service_options_observed": [
+        "Brand Identity",
+        "Brand Strategy",
+        "Brand3",
+        "Branding in Public",
+        "Branding Lite",
+        "Design Sprint",
+        "Digital Product",
+        "Evolution Guardian",
+        "Identity Pack",
+        "Landing Lite",
+        "Naming",
+        "Product Guardian",
+        "Side Project",
+        "Starter-Kit",
+        "UX/UI Website",
+        "UX/UI MVP",
+        "Website Evolution",
+        "Website Pack"
+      ],
+      "use_cases": [
+        "project name",
+        "client/brand relation",
+        "type of work",
+        "deliverable/service taxonomy",
+        "asset pointers"
+      ],
+      "exclude_by_default": [
+        "leaders/person data",
+        "budget",
+        "private asset links unless approved"
+      ]
+    },
+    {
+      "name": "Accounts",
+      "fields": [
+        "Account",
+        "Company Name",
+        "Industry",
+        "Website",
+        "Status",
+        "Location",
+        "City",
+        "Preview",
+        "Opportunities",
+        "Contacts",
+        "legal/admin fields"
+      ],
+      "industry_options_observed_summary": [
+        "fintech",
+        "crypto",
+        "gaming",
+        "education",
+        "fashion",
+        "media",
+        "community",
+        "IT",
+        "development",
+        "DeFi",
+        "CeFi",
+        "blockchain services",
+        "art",
+        "tourism",
+        "agency",
+        "other sector tags"
+      ],
+      "use_cases": [
+        "client/brand",
+        "sector",
+        "public website",
+        "visual preview pointer"
+      ],
+      "exclude_by_default": [
+        "contacts",
+        "legal representative data",
+        "tax/legal IDs",
+        "addresses",
+        "phone/email rollups"
+      ]
+    },
+    {
+      "name": "Opportunities",
+      "fields": [
+        "Opportunity",
+        "Account",
+        "Contacts",
+        "Stage",
+        "Source",
+        "Priority",
+        "Estimated budget",
+        "Website",
+        "Mail thread",
+        "Leader",
+        "Last contact",
+        "Date sent",
+        "Close Date",
+        "Loss Reason"
+      ],
+      "use_cases": [
+        "proposal lifecycle understanding",
+        "sanitized aggregate project-stage patterns"
+      ],
+      "exclude_by_default": [
+        "contacts",
+        "mail threads",
+        "budget",
+        "loss reasons",
+        "leader/person fields",
+        "dates tied to sales activity"
+      ]
+    },
+    {
+      "name": "Ongoing Projects",
+      "fields": [
+        "Task",
+        "Projects Database",
+        "Project",
+        "Type",
+        "Type Task",
+        "Status",
+        "Date",
+        "Responsable",
+        "Priority",
+        "Link",
+        "Github",
+        "web",
+        "Figma File rollup",
+        "Title Project rollup"
+      ],
+      "use_cases": [
+        "locating current project pages",
+        "understanding operational project status"
+      ],
+      "exclude_by_default": [
+        "task content",
+        "responsable/person fields",
+        "priority/status operational details"
+      ]
+    },
+    {
+      "name": "Social Media Planning",
+      "fields": [
+        "Name",
+        "Type",
+        "Networks",
+        "Status",
+        "Date",
+        "Person",
+        "DRIVE - ASSETS",
+        "FIGMA - ASSETS",
+        "URL",
+        "Inflynce Invest."
+      ],
+      "relevant_types_observed": [
+        "case study",
+        "WorkFLOC*",
+        "Brand3",
+        "BRND",
+        "FLOC*Packs"
+      ],
+      "use_cases": [
+        "public-facing report voice",
+        "case examples",
+        "concise project summaries",
+        "surface-language patterns"
+      ],
+      "include_only_if": [
+        "published",
+        "public-facing",
+        "approved for reuse"
+      ],
+      "exclude_by_default": [
+        "person fields",
+        "investment/spend fields",
+        "internal scheduling metadata",
+        "raw asset links unless approved"
+      ]
+    }
+  ],
+  "candidate_project_fields": {
+    "project_name": {
+      "sources": [
+        "Projects Database.Title",
+        "Social Media Planning.Name",
+        "page title"
+      ],
+      "support": "strong"
+    },
+    "client_brand": {
+      "sources": [
+        "Projects Database.Account",
+        "Accounts.Account",
+        "Accounts.Company Name",
+        "page title"
+      ],
+      "support": "strong"
+    },
+    "sector": {
+      "sources": [
+        "Accounts.Industry"
+      ],
+      "support": "strong"
+    },
+    "type_of_work": {
+      "sources": [
+        "Projects Database.Services",
+        "Social Media Planning.Type",
+        "Services page"
+      ],
+      "support": "strong"
+    },
+    "brief": {
+      "sources": [
+        "project pages",
+        "proposal pages",
+        "case-study pages"
+      ],
+      "support": "available_with_selective_fetch"
+    },
+    "strategy": {
+      "sources": [
+        "Brand strategy pages",
+        "BrandOS framework",
+        "case-study pages"
+      ],
+      "support": "strong_but_requires_curation"
+    },
+    "visual_identity": {
+      "sources": [
+        "project pages",
+        "Figma links",
+        "Pinterest links",
+        "case-study copy"
+      ],
+      "support": "available_but_asset_ingestion_not_recommended_yet"
+    },
+    "deliverables": {
+      "sources": [
+        "Projects Database.Services",
+        "Services page",
+        "case-study summaries"
+      ],
+      "support": "strong"
+    },
+    "notes": {
+      "sources": [
+        "page body content",
+        "Ongoing Projects tasks"
+      ],
+      "support": "available_but_sensitive"
+    },
+    "links_assets": {
+      "sources": [
+        "Figma fields",
+        "Drive fields",
+        "Pinterest fields",
+        "Website fields",
+        "URL fields"
+      ],
+      "support": "strong_as_pointers_only"
+    }
+  },
+  "brand3_feed_candidates": {
+    "surface_perception_language": {
+      "sources": [
+        "case-study pages",
+        "BrandOS framework",
+        "project visual-strategy pages",
+        "public social posts",
+        "asset pointers"
+      ],
+      "possible_outputs": [
+        "first-glance visual signal language",
+        "density/texture/composition/palette/motion descriptors",
+        "identity-system behavior language"
+      ],
+      "risk": "medium",
+      "mitigation": "Use only public or explicitly approved project material."
+    },
+    "report_voice": {
+      "sources": [
+        "FLOC*Brain glossary and conventions",
+        "BrandOS framework",
+        "Services page",
+        "public case-study copy"
+      ],
+      "possible_outputs": [
+        "voice guide",
+        "observation-to-implication phrasing",
+        "brand-readiness and evolution language"
+      ],
+      "risk": "low_to_medium",
+      "mitigation": "Convert into abstract voice rules instead of raw corpus examples."
+    },
+    "perceptual_vocabulary": {
+      "sources": [
+        "BrandOS visual-context pipeline",
+        "case-study summaries",
+        "design/project pages",
+        "glossary terms"
+      ],
+      "possible_outputs": [
+        "controlled vocabulary",
+        "definitions",
+        "avoid/banned alternatives"
+      ],
+      "risk": "medium",
+      "mitigation": "Normalize to generic terms and avoid client-specific details."
+    },
+    "tension_patterns": {
+      "sources": [
+        "BrandOS framework",
+        "services comparison",
+        "case-study pages",
+        "proposal/strategy pages"
+      ],
+      "patterns_observed": [
+        "static delivery versus living/evolving brand system",
+        "generic AI output versus curated visual context",
+        "early-stage existence signal versus fundraising-ready credibility",
+        "visual expression versus strategic clarity",
+        "internal product maturity versus external public signal",
+        "playful/emotional universe versus serious product trust",
+        "sprint speed versus long-term system durability"
+      ],
+      "risk": "medium",
+      "mitigation": "Store as abstract patterns, not case-specific claims."
+    },
+    "case_examples": {
+      "sources": [
+        "Social Media Planning case-study pages",
+        "Services page example rows",
+        "published work links"
+      ],
+      "examples_observed": [
+        "Alchemain",
+        "CHARMS",
+        "DEGEN",
+        "ATH21",
+        "AUT",
+        "FOUNT"
+      ],
+      "risk": "medium",
+      "mitigation": "Use only public/published summaries and avoid private notes."
+    }
+  },
+  "recommended_allowlist_candidates": [
+    "FLOC*Brain glossary/conventions",
+    "FLOC*Brain BrandOS framework",
+    "FLOC*Brain services overview",
+    "published Social Media Planning case-study pages",
+    "selected public project pages with explicit approval"
+  ],
+  "recommended_exclusions": [
+    "Contacts",
+    "FLOC*Team",
+    "legal/admin account fields",
+    "mail threads",
+    "budgets unless explicitly needed as private operational metadata",
+    "loss reasons and sales-stage details",
+    "people/person/responsable fields",
+    "unpublished proposal pages unless explicitly approved",
+    "raw Drive/Figma/Pinterest assets until a separate asset policy exists"
+  ],
+  "recommendation": "Do not ingest anything yet. Use this as a schema and source-candidate inventory. Any future ingestion should be allowlisted, privacy-filtered, abstracted into vocabulary/patterns, and manually reviewed before it affects Brand3 prompts or report generation."
+}

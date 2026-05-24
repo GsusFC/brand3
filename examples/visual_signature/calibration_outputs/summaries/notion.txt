@@ -1,0 +1,29 @@
+Expected category: template-like SaaS
+Notes: Broad SaaS/productivity surface; useful for detecting consistent but common SaaS patterns.
+
+== Notion ==
+URL: https://www.notion.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.58, consistency_coverage=0.59]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #2537b1[###] #097fe8[###] #ffb110[###] #f64932[###] #ff8a33[###] #ad6ded[###] #2a9d99[###] #ff83dd[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=14; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=26, cta=12, form=28, card=30, accordion=2, tabs=20, pricing=4
+- consistency: overall=0.53; color=0.68; type=0.20; component=0.74; asset=0.45
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

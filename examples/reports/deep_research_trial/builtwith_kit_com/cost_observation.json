@@ -1,0 +1,46 @@
+{
+  "agent": "deep-research-preview-04-2026",
+  "automation_recommendation": "manual_review_required_before_any_automation",
+  "case_id": "builtwith_kit_com",
+  "cost_observability": "observable",
+  "created_at": "2026-05-17T21:12:53.378275+00:00",
+  "deep_research_max_enabled": false,
+  "error": "",
+  "estimate_basis": "approx_gemini_3_1_pro_preview_standard_rates_counts_thought_tokens_as_output_excludes_search_tool_charges",
+  "estimated_billed_output_tokens": 35732,
+  "estimated_usd": 0.558784,
+  "executed": true,
+  "input_tokens": 65000,
+  "interaction_id": "v1_ChdYeTRLYXB5c0ZhS2d2ZElQa2FLNzRRcxIXWHk0S2FweXNGYUtndmRJUGthSzc0UXM",
+  "open_google_search_enabled": false,
+  "output_tokens": 9385,
+  "retries": 0,
+  "thought_tokens": 26347,
+  "tools": [
+    {
+      "type": "url_context"
+    }
+  ],
+  "total_tokens": 100732,
+  "usage_metadata": {
+    "input_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 65000
+      }
+    ],
+    "output_tokens_by_modality": [
+      {
+        "modality": "text",
+        "tokens": 9385
+      }
+    ],
+    "total_cached_tokens": 4096,
+    "total_input_tokens": 65000,
+    "total_output_tokens": 9385,
+    "total_thought_tokens": 26347,
+    "total_tokens": 100732,
+    "total_tool_use_tokens": 0
+  },
+  "usage_metadata_found": true
+}

@@ -1,0 +1,41 @@
+Expected category: finance_fintech
+Notes: Smaller fintech infrastructure brand for lower-fame baseline variety.
+
+== Teller ==
+URL: https://teller.io
+Interpretation status: interpretable
+Extraction confidence: 0.61 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.43, consistency_coverage=0.49]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.79
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.64
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.49
+
+Visual summaries:
+- palette preview: #131313[###] #000000[###] #111111[###] #2126ff[###] #1a1a1a[###] #002085[###] #333333[###] #393aff[###]
+- typography: none
+- layout: header=False; nav=False; hero=True; sections=0; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=8, form=4, modal=4, pricing=4
+- consistency: overall=0.51; color=0.68; type=0.20; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #e0e0e0[###] #202020[###] #2060e0[###] #002020[###] #202040[###] #404040[###] #606060[###]
+- viewport palette: #000000[###] #e0e0e0[###] #202020[###] #2060e0[###] #002020[###] #202040[###] #404040[###] #606060[###]
+- composition: density=dense; whitespace=0%; classification=dense_grid
+- viewport composition: density=dense; whitespace=0%; classification=dense_grid
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited

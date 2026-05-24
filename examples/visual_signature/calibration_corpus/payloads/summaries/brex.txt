@@ -1,0 +1,40 @@
+Expected category: finance_fintech
+Notes: B2B fintech with polished enterprise SaaS-like visual language.
+
+== Brex ==
+URL: https://www.brex.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.57, consistency_coverage=0.58]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.58
+
+Visual summaries:
+- palette preview: #333333[###] #ffffff[###] #ff5900[###] #212121[###] #8b8d98[###] #6f737b[###] #122124[###] #f46a35[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=62; density=sparse; patterns=flex,multi_column
+- components: button=30, cta=9, form=8, card=6, tabs=58, modal=2
+- consistency: overall=0.46; color=0.48; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #000000[###] #202020[###] #c0c0c0[###] #808080[###] #404040[###] #ff6000[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #000000[###] #202020[###] #c0c0c0[###] #808080[###] #404040[###] #ff6000[###]
+- composition: density=balanced; whitespace=75%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=75%; classification=balanced_blocks
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

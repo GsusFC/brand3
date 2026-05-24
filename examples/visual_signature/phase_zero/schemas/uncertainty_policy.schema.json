@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "confidence_threshold": {
+      "default": 0.8,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Confidence Threshold",
+      "type": "number"
+    },
+    "known_unknown_labels": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Known Unknown Labels",
+      "type": "array"
+    },
+    "policy_type": {
+      "const": "uncertainty_policy",
+      "title": "Policy Type",
+      "type": "string"
+    },
+    "reviewer_required_labels": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Reviewer Required Labels",
+      "type": "array"
+    },
+    "reviewer_required_threshold": {
+      "default": 0.65,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Reviewer Required Threshold",
+      "type": "number"
+    },
+    "schema_version": {
+      "const": "phase-zero-uncertainty-policy-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    },
+    "uncertainty_reasons": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Uncertainty Reasons",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "policy_type",
+    "known_unknown_labels",
+    "uncertainty_reasons",
+    "reviewer_required_labels"
+  ],
+  "title": "UncertaintyPolicy",
+  "type": "object"
+}

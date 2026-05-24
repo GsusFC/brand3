@@ -7,7 +7,7 @@
     <span class="tag">// {{ total }} total · page {{ page }}/{{ total_pages }}</span>
   </div>
 
-  <form method="get" action="/reports" class="form-row" style="margin-bottom:16px">
+  <form method="get" action="/reports" class="form-row reports-filter">
     <input type="text" name="q" value="{{ query }}" placeholder="filter brand slug ...">
     <select name="sort">
       <option value="newest" {% if sort == "newest" %}selected{% endif %}>newest</option>
@@ -18,14 +18,15 @@
   </form>
 
   {% if rows %}
+  <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th style="width:14%">date</th>
-        <th style="width:26%">brand</th>
-        <th style="width:8%" class="num">score</th>
-        <th style="width:28%">bar</th>
-        <th style="width:16%">band</th>
+        <th class="col-date">date</th>
+        <th class="col-brand">brand</th>
+        <th class="num col-score">score</th>
+        <th class="col-bar">bar</th>
+        <th class="col-band">band</th>
         <th></th>
       </tr>
     </thead>
@@ -42,6 +43,7 @@
     {% endfor %}
     </tbody>
   </table>
+  </div>
   {% else %}
   <div class="empty">// no analyses match this filter.</div>
   {% endif %}

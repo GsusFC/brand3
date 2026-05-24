@@ -1,0 +1,39 @@
+Expected category: template_like_saas
+Notes: Mid-market SaaS with repeated social proof and feature modules.
+
+== Hive ==
+URL: https://hive.com
+Interpretation status: interpretable
+Extraction confidence: 0.70 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.61, consistency_coverage=0.68]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.70
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.68
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #0099ff[###] #898b8f[###] #272829[###] #ff492c[###] #3b3b3d[###] #8e8e8e[###]
+- typography: &quot, Inter
+- layout: header=False; nav=True; hero=True; sections=16; density=balanced; patterns=flex
+- components: cta=5, form=2, card=14, pricing=4
+- consistency: overall=0.61; color=0.48; type=0.82; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #202020[###] #ffffff[###] #404040[###] #402040[###] #402060[###] #604080[###] #606060[###]
+- viewport palette: #000000[###] #202020[###] #ffffff[###] #404040[###] #402040[###] #402060[###] #604080[###] #606060[###]
+- composition: density=dense; whitespace=1%; classification=dense_grid
+- viewport composition: density=dense; whitespace=1%; classification=dense_grid
+- vision confidence: 0.82 (high)
+- viewport confidence: 0.82 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

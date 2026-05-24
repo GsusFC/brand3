@@ -1,0 +1,39 @@
+Expected category: wellness_lifestyle
+Notes: Lower-fame wellness subscription candidate for ordinary category behavior.
+
+== Glo ==
+URL: https://www.glo.com
+Interpretation status: interpretable
+Extraction confidence: 0.72 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.62, consistency_coverage=0.74]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.79
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.74
+
+Visual summaries:
+- palette preview: #1d1e28[###] #6a6e76[###] #000000[###] #ffffff[###] #f5efe5[###] #d9c29c[###] #f4f4f5[###] #5a5a66[###]
+- typography: Outfit, -apple-system, BlinkMacSystemFont
+- layout: header=True; nav=False; hero=False; sections=20; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=48, cta=13, modal=4, pricing=24
+- consistency: overall=0.57; color=0.48; type=0.65; component=0.68; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #ffe0e0[###] #202020[###] #000000[###] #806060[###] #404040[###] #c0a0a0[###] #e0c0c0[###]
+- viewport palette: #ffffff[###] #ffe0e0[###] #202020[###] #000000[###] #806060[###] #404040[###] #c0a0a0[###] #e0c0c0[###]
+- composition: density=sparse; whitespace=92%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=92%; classification=sparse_single_focus
+- vision confidence: 0.75 (high)
+- viewport confidence: 0.75 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

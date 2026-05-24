@@ -1,0 +1,120 @@
+{
+  "created_at": "2026-05-18T10:50:16.794891+00:00",
+  "db_path": "/Users/gsus/Antigravity/Brand3/brand3/data/brand3.sqlite3",
+  "cases": [
+    {
+      "group_id": "group_a",
+      "case_id": "vercel",
+      "source_type": "primary",
+      "brand_name": "Vercel",
+      "canonical_url": "https://vercel.com",
+      "run_id": 79,
+      "run_url": "https://vercel.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/vercel.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/vercel.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "thin",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "launchdarkly",
+      "source_type": "primary",
+      "brand_name": "LaunchDarkly",
+      "canonical_url": "https://launchdarkly.com",
+      "run_id": 76,
+      "run_url": "https://launchdarkly.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/launchdarkly.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/launchdarkly.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "review_required",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "netlify",
+      "source_type": "backup",
+      "brand_name": "Netlify",
+      "canonical_url": "https://netlify.com",
+      "run_id": 68,
+      "run_url": "https://www.netlify.com",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/netlify.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/netlify.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "blocked",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "blocked",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_a",
+      "case_id": "linear",
+      "source_type": "backup",
+      "brand_name": "Linear",
+      "canonical_url": "https://linear.app",
+      "run_id": 80,
+      "run_url": "https://linear.app",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/linear.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/linear.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "ready",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "iris",
+      "source_type": "primary",
+      "brand_name": "Iris",
+      "canonical_url": "https://irisdesign.dev",
+      "run_id": 77,
+      "run_url": "https://irisdesign.dev",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/iris.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/iris.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "ready",
+        "diferenciacion": "blocked",
+        "vitalidad": "ready"
+      }
+    },
+    {
+      "group_id": "group_b",
+      "case_id": "watermelon",
+      "source_type": "primary",
+      "brand_name": "Watermelon",
+      "canonical_url": "https://watermelon.sh",
+      "run_id": 78,
+      "run_url": "https://watermelon.sh",
+      "status": "ok",
+      "packet_path": "examples/reports/evidence_packet/watermelon.local_evidence_packet.v0.json",
+      "candidate_path": "examples/reports/evidence_packet_prompt_input/watermelon.prompt_input_candidate.v0.json",
+      "readiness": {
+        "coherencia": "ready",
+        "presencia": "thin",
+        "percepcion": "thin",
+        "diferenciacion": "blocked",
+        "vitalidad": "blocked"
+      }
+    }
+  ]
+}

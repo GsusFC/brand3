@@ -1,0 +1,39 @@
+Expected category: nonprofit_education
+Notes: Nonprofit with ecommerce-like donation and campaign visuals.
+
+== One Tree Planted ==
+URL: https://onetreeplanted.org
+Interpretation status: interpretable
+Extraction confidence: 0.73 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.65, consistency_coverage=0.74]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.79
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.74
+
+Visual summaries:
+- palette preview: #1b1d22[###] #ffffff[###] #eeece9[###] #d54d4d[###] #000000[###] #e5e1df[###] #131c0f[###] #487840[###]
+- typography: Arial, Roboto, Helvetica, &quot, Roboto Condensed
+- layout: header=True; nav=True; hero=True; sections=58; density=sparse; patterns=grid,flex,multi_column,sticky_nav
+- components: button=30, cta=19, form=24, card=4, modal=28, pricing=8
+- consistency: overall=0.64; color=0.68; type=0.65; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202020[###] #404040[###] #204020[###] #204060[###] #800060[###] #ffffff[###] #406020[###] #404020[###]
+- viewport palette: #202020[###] #404040[###] #204020[###] #204060[###] #800060[###] #ffffff[###] #406020[###] #404020[###]
+- composition: density=dense; whitespace=4%; classification=dense_grid
+- viewport composition: density=dense; whitespace=4%; classification=dense_grid
+- vision confidence: 0.84 (high)
+- viewport confidence: 0.84 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

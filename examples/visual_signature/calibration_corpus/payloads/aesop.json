@@ -1,0 +1,404 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:28:39.259292",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.aesop.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 6,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 2,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Aesop",
+  "calibration": {
+    "expected_category": "premium_luxury",
+    "notes": "Premium retail visual system with restrained product presentation."
+  },
+  "colors": {
+    "accent_candidates": [],
+    "background_candidates": [
+      "#000000",
+      "#f7ecdd",
+      "#f6f5e8",
+      "#fffef2",
+      "#333333",
+      "#242424"
+    ],
+    "confidence": 0.683,
+    "dominant_colors": [
+      "#000000",
+      "#f7ecdd",
+      "#f6f5e8",
+      "#fffef2",
+      "#333333",
+      "#242424"
+    ],
+    "palette": [
+      {
+        "confidence": 0.68,
+        "hex": "#000000",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f7ecdd",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f6f5e8",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fffef2",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#333333",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#242424",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#000000",
+      "#fffef2",
+      "#333333",
+      "#242424"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 86,
+        "labels": [
+          "Add all to cart &nbsp;Resurrection Rites",
+          "Add all to cart &nbsp;Touch of Brilliance",
+          "Add to cart &nbsp;Add the Solais Replenishing Hand Serum to cart",
+          "Loading ...",
+          "Add all to cart &nbsp;Solais &amp; Resurrection Duo",
+          "Add all to cart &nbsp;Solais &amp; Reverence Duo",
+          "Add all to cart &nbsp;Solais &amp; Eleos Duo"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 13,
+        "labels": [
+          "Discover gifts",
+          "Add all to cart &nbsp;Resurrection Rites",
+          "Add all to cart &nbsp;Touch of Brilliance",
+          "Add to cart &nbsp;Add the Solais Replenishing Hand Serum to cart",
+          "Loading ...",
+          "Discover Solais",
+          "Add all to cart &nbsp;Solais &amp; Resurrection Duo",
+          "Add all to cart &nbsp;Solais &amp; Reverence Duo",
+          "Add all to cart &nbsp;Solais &amp; Eleos Duo",
+          "Discover Hand &amp; Body"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 20,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "accordion",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Discover gifts",
+      "Add all to cart &nbsp;Resurrection Rites",
+      "Add all to cart &nbsp;Touch of Brilliance",
+      "Add to cart &nbsp;Add the Solais Replenishing Hand Serum to cart",
+      "Loading ...",
+      "Discover Solais",
+      "Add all to cart &nbsp;Solais &amp; Resurrection Duo",
+      "Add all to cart &nbsp;Solais &amp; Reverence Duo"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.7,
+    "confidence": 0.528,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.519,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.528,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.477
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.634
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 68,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [],
+    "confidence": 0.0,
+    "favicon_detected": false,
+    "logo_detected": false,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 0.73,
+      "summary_notes": [],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.891
+    },
+    "composition": {
+      "color_variance": 0.018,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.611,
+      "edge_density": 0.011,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.989
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 39444,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.aesop.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/aesop.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 16,
+      "confidence": 0.637,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19691,
+          "ratio": 0.9846
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 120,
+          "ratio": 0.006
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 52,
+          "ratio": 0.0026
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 31,
+          "ratio": 0.0015
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 24,
+          "ratio": 0.0012
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 23,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 22,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 17,
+          "ratio": 0.0008
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.018,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.611,
+      "edge_density": 0.011,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.989
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.611,
+        "palette": 0.637,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.748
+    },
+    "viewport_palette": {
+      "color_count": 16,
+      "confidence": 0.637,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 19691,
+          "ratio": 0.9846
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 120,
+          "ratio": 0.006
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 52,
+          "ratio": 0.0026
+        },
+        {
+          "hex": "#606060",
+          "occurrences": 31,
+          "ratio": 0.0015
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 24,
+          "ratio": 0.0012
+        },
+        {
+          "hex": "#a0a0a0",
+          "occurrences": 23,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 22,
+          "ratio": 0.0011
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 17,
+          "ratio": 0.0008
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.989,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.611,
+        "palette": 0.637,
+        "screenshot": 0.9
+      },
+      "level": "medium",
+      "limitations": [],
+      "score": 0.748
+    }
+  },
+  "website_url": "https://www.aesop.com"
+}

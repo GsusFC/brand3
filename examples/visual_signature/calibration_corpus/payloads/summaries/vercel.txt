@@ -1,0 +1,40 @@
+Expected category: developer_first
+Notes: Design-forward developer platform useful as high-maturity reference.
+
+== Vercel ==
+URL: https://vercel.com
+Interpretation status: interpretable
+Extraction confidence: 0.69 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.61, consistency_coverage=0.64]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.40
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.64
+
+Visual summaries:
+- palette preview: #2c8ce1[###] #45dec4[###] #d9d9d9[###] #ff3e00[###] #00dc82[###] #fc6d26[###] #2684ff[###] #41d1ff[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=22; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=18, cta=22, form=6, card=6, tabs=60, modal=4, pricing=2
+- consistency: overall=0.47; color=0.48; type=0.20; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #e0ffff[###] #ffe0c0[###] #60ffc0[###] #c0ffe0[###] #ffffe0[###] #e0c040[###]
+- viewport palette: #ffffff[###] #202020[###] #e0ffff[###] #ffe0c0[###] #60ffc0[###] #c0ffe0[###] #ffffe0[###] #e0c040[###]
+- composition: density=balanced; whitespace=75%; classification=balanced_blocks
+- viewport composition: density=balanced; whitespace=75%; classification=balanced_blocks
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

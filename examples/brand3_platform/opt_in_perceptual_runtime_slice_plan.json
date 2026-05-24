@@ -1,0 +1,268 @@
+{
+  "artifact_id": "brand3_opt_in_perceptual_runtime_slice_plan_v0_1",
+  "artifact_type": "opt_in_runtime_slice_plan",
+  "generated_at": "2026-05-16",
+  "status": "implementation_plan",
+  "scope": "experimental_opt_in_planning_only",
+  "guardrails": {
+    "planning_only": true,
+    "runtime_rollout": false,
+    "scoring_changes": false,
+    "global_enablement": false,
+    "visual_signature_changes": false,
+    "report_structure_changes": false,
+    "production_prompt_rewrite": false
+  },
+  "inputs_reviewed": [
+    "examples/brand3_platform/perceptual_narrative_compression_review.md",
+    "examples/brand3_platform/perceptual_narrative_compression_review.json",
+    "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.md",
+    "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.json",
+    "examples/perceptual_library/patterns/perceptual_reasoning_stress_test.md",
+    "examples/perceptual_library/patterns/perceptual_reasoning_stress_test.json",
+    "src/reports/experimental_perceptual_narrative.py",
+    "src/reports/narrative.py",
+    "src/reports/dossier.py"
+  ],
+  "decision": {
+    "recommendation": "prepare_opt_in_lab_first_implementation",
+    "summary": "A minimal compressed perceptual runtime slice is viable only as an explicit opt-in layer for findings by dimension, gated by high-signal evidence and strict confidence handling.",
+    "global_rollout": false
+  },
+  "current_runtime_boundary": {
+    "existing_opt_in_flags": [
+      "build_brand_dossier(... enable_perceptual_narrative=False)",
+      "build_report_narrative_payload(... enable_perceptual_narrative=False)",
+      "generate_all_findings(... enable_perceptual_narrative=False)"
+    ],
+    "current_adapter": "src/reports/experimental_perceptual_narrative.py",
+    "current_behavior": "Perceptual hints are passed only when explicitly enabled; hints are reading lenses, not target-brand facts.",
+    "proposed_additional_flag": "enable_compressed_perceptual_narrative"
+  },
+  "proposed_runtime_shape": {
+    "pipeline": [
+      "baseline findings",
+      "perceptual hints",
+      "compressed perceptual findings"
+    ],
+    "rules": [
+      "Compressed mode has no effect unless perceptual narrative mode is also enabled.",
+      "If high-signal detection fails, return baseline findings.",
+      "If confidence gating fails, return baseline findings.",
+      "If compression validation fails, production opt-in falls back to baseline.",
+      "Public report reads continue to prefer persisted narrative and must not trigger live LLM work."
+    ]
+  },
+  "safe_activation_conditions": [
+    "explicit opt-in flag is true",
+    "target surface is findings by dimension only",
+    "run has enough evidence to support perceptual language",
+    "dimension is eligible for augmentation",
+    "at least one direct or source-level evidence anchor exists for the dimension",
+    "evidence is not copy-only unless the finding explicitly remains copy-supported",
+    "generated text preserves at least one visible mechanism or source boundary",
+    "compressed finding does not introduce forbidden overreach patterns",
+    "output remains structurally compatible with Finding(title, observation, implication, typical_decision, evidence_urls)"
+  ],
+  "high_signal_detection": {
+    "minimum_rules": [
+      "at least 2 evidence items in the dimension",
+      "or 1 evidence item plus a directly quoted concrete surface/detail",
+      "or repeated evidence from multiple source types across the run"
+    ],
+    "preferred_rules": [
+      "at least 2 distinct evidence URLs",
+      "at least one quote or extracted detail",
+      "evidence contains surface mechanisms such as navigation, typography, image hierarchy, product objects, code content, templates, proof modules, service lists, reviews, screenshots, or source-stated interface details",
+      "the finding can name a signal before interpretation"
+    ],
+    "fail_when": [
+      "evidence is empty",
+      "evidence is only generic marketing copy",
+      "no concrete quote/detail exists",
+      "the dimension only has score metadata",
+      "the signal would need to be imported from the perceptual registry rather than target evidence"
+    ]
+  },
+  "confidence_thresholds": {
+    "allowed": {
+      "high": [
+        "direct visible evidence",
+        "direct source statement",
+        "repeated evidence across sections or URLs"
+      ],
+      "medium": [
+        "copy-supported reading with explicit source boundary",
+        "category-to-surface reading supported by concrete evidence"
+      ]
+    },
+    "blocked_from_compression": [
+      "low confidence strategic intent",
+      "inferred audience emotion",
+      "trust, wellness, safety, therapeutic support, financial security, market leadership, or product efficacy without corroboration",
+      "motion or cinematic claims without capture, sequence, or source-stated motion evidence",
+      "weak, unverified, or human-review material unless limitation remains explicit"
+    ]
+  },
+  "dimensions": {
+    "eligible_initially": [
+      {
+        "dimension": "coherencia",
+        "reason": "Useful for claim/signal gap, system consistency, proof structure."
+      },
+      {
+        "dimension": "presencia",
+        "reason": "Useful for surface visibility, attention hierarchy, channel evidence."
+      },
+      {
+        "dimension": "percepcion",
+        "reason": "Useful for emotional temperature only when mechanism-bound."
+      },
+      {
+        "dimension": "diferenciacion",
+        "reason": "Useful for category-to-surface translation and template behavior."
+      }
+    ],
+    "conditionally_eligible": [
+      {
+        "dimension": "vitalidad",
+        "condition": "Only when direct evidence of motion, publishing rhythm, interaction, update cadence, or concept-bearing movement exists."
+      }
+    ],
+    "excluded_initially_when": [
+      "evidence is copy-only and seeks to infer UX behavior",
+      "category is wellness, health, finance, legal, safety, or security and explicit caution cannot be preserved",
+      "finding depends on internal strategy, intent, audience sophistication, cultural authority, or leadership",
+      "dimension lacks concrete source anchors",
+      "finding would mainly add style vocabulary rather than evidence"
+    ]
+  },
+  "fallback_behavior": [
+    {
+      "condition": "compressed mode is off",
+      "fallback": "current baseline behavior"
+    },
+    {
+      "condition": "compressed mode is on but perceptual mode is off",
+      "fallback": "current baseline behavior"
+    },
+    {
+      "condition": "high-signal detection fails",
+      "fallback": "current baseline behavior"
+    },
+    {
+      "condition": "confidence gating fails",
+      "fallback": "current baseline behavior"
+    },
+    {
+      "condition": "LLM or JSON parsing fails",
+      "fallback": "current deterministic fallback"
+    },
+    {
+      "condition": "compression produces overreach",
+      "fallback": "baseline in production opt-in; raw perceptual only in lab comparison mode"
+    }
+  ],
+  "overreach_suppression_rules": {
+    "reject_or_rewrite_terms": {
+      "invented_intentionality": ["seeks", "intends", "aims", "wants", "designed to", "built to"],
+      "unsupported_emotional_projection": ["makes users feel", "creates trust", "provides support"],
+      "cinematic_inflation": ["cinematic", "filmic", "choreographed", "immersive journey"],
+      "false_sophistication_language": ["premium", "sophisticated", "elevated", "world-class", "refined", "polished"],
+      "narrative_over_binding": ["all", "every", "fully", "resolves", "unified", "converges"]
+    },
+    "reject_patterns": [
+      "copy claim presented as product behavior",
+      "visual detail not present in target evidence",
+      "fabricated tension",
+      "generic premium projection",
+      "registry example treated as target-brand fact"
+    ],
+    "preferred_suppression_output": [
+      "keep baseline finding",
+      "or keep compressed finding only after replacing overreach with source-bound language",
+      "never silently assert a stronger claim"
+    ]
+  },
+  "baseline_only": [
+    "scores and scoring logic",
+    "global synthesis",
+    "cross-dimensional tension prose",
+    "dimension verdicts",
+    "evidence collection and source classification",
+    "report rendering and template structure",
+    "persisted public report reads unless an explicitly generated opt-in payload exists",
+    "sparse, copy-only, low-signal, or sensitive findings that cannot preserve caution"
+  ],
+  "lab_only": [
+    "side-by-side baseline/raw/compressed comparison",
+    "reviewer preference controls",
+    "calibration logs",
+    "unsafe overreach examples",
+    "raw perceptual output when compression fails",
+    "any run where human review is required before showing compressed prose"
+  ],
+  "never_automatic": [
+    "strategic intent inference",
+    "user emotion or therapeutic/support outcome claims",
+    "trust, safety, financial, legal, medical, or security claims",
+    "famous-brand reputation filling evidence gaps",
+    "motion/cinematic interpretation without motion evidence",
+    "perceptual registry examples treated as target-brand facts",
+    "automatic replacement of baseline findings for all reports"
+  ],
+  "rollout_boundaries": [
+    {
+      "phase": "phase_0_planning_only",
+      "description": "Current document. No code changes."
+    },
+    {
+      "phase": "phase_1_lab_only_implementation",
+      "description": "Explicit flag and paired baseline/perceptual/compressed outputs for reviewer comparison."
+    },
+    {
+      "phase": "phase_2_private_opt_in_payload_generation",
+      "description": "Compressed findings generated for selected high-signal runs and stored as experimental metadata."
+    },
+    {
+      "phase": "phase_3_limited_partner_review",
+      "description": "Expose compressed findings only with baseline comparison and unsafe-overreach review."
+    }
+  ],
+  "monitoring_requirements": [
+    "activation flag state",
+    "high-signal pass/fail reason",
+    "dimension eligibility",
+    "confidence gating result",
+    "fallback reason",
+    "overreach suppression hits",
+    "reviewer preference where available",
+    "whether compressed text preserved evidence URLs",
+    "whether low-confidence material remained explicit",
+    "compressed better / baseline better / mixed / unsafe overreach",
+    "failure mode frequency",
+    "percentage of findings falling back to baseline"
+  ],
+  "rollback_conditions": [
+    "scores or dimension verdicts change",
+    "public reads trigger live LLM generation unexpectedly",
+    "Visual Signature output changes",
+    "compressed findings omit evidence boundaries for low-confidence material",
+    "sensitive categories generate unsupported user outcome claims",
+    "reviewer unsafe-overreach rate exceeds a small controlled threshold",
+    "fallback is not identical to baseline when gates fail",
+    "prompt output causes JSON parsing instability or report rendering errors"
+  ],
+  "test_requirements_before_implementation": [
+    "flag off produces baseline findings payload where feasible",
+    "compressed flag has no effect unless perceptual flag is also on",
+    "low-signal dimensions fall back to baseline",
+    "copy-only UX claims remain copy-supported or fall back",
+    "sensitive categories preserve explicit caution",
+    "scores and verdicts are unchanged",
+    "Visual Signature routes and outputs are unchanged",
+    "persisted public report reads do not call LLM",
+    "overreach terms are rejected or suppressed"
+  ],
+  "final_recommendation": "Prepare implementation only as an explicit opt-in lab-first slice. The runtime slice is viable, but only as a controlled editorial experiment, not a product default."
+}

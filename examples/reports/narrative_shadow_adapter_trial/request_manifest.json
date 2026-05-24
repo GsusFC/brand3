@@ -1,0 +1,173 @@
+{
+  "created_at": "2026-05-18T14:20:35.433024+00:00",
+  "source_created_at": "2026-05-18T12:44:30.057698+00:00",
+  "run_id_filter": null,
+  "source_mode": "benchmark",
+  "source_reference": "examples/reports/evidence_packet_candidate_integration_dry_path_v2_1/request_manifest.json",
+  "requests": [
+    {
+      "case_id": "lightmatter",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for lightmatter/diferenciacion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"For competitor comparison evidence, only discuss relative positioning distance.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Competitor comparison supports only relative positioning distance, not leadership.\",\n    \"Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.\",\n    \"Owned claims lack external corroboration; keep attribution visible.\",\n    \"Review-gated evidence cannot enter the prompt without manual approval.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies QuiX Quantum as the audited brand's closest measured competitor with measured distance 0.815; avg_distance=0.883; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    },\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies Anyon Systems Inc. as the audited brand's most different measured competitor with measured distance 0.959; avg_distance=0.883; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "included_evidence_count": 2,
+      "group_id": "group_a",
+      "source_type": "primary",
+      "run_id": 86
+    },
+    {
+      "case_id": "celestial_ai",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for celestial_ai/diferenciacion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"For competitor comparison evidence, only discuss relative positioning distance.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Competitor comparison supports only relative positioning distance, not leadership.\",\n    \"Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.\",\n    \"Owned claims lack external corroboration; keep attribution visible.\",\n    \"Review-gated evidence cannot enter the prompt without manual approval.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies Cooper as the audited brand's closest measured competitor with measured distance 0.842; avg_distance=0.913; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    },\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies Opinly as the audited brand's most different measured competitor with measured distance 0.958; avg_distance=0.913; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "included_evidence_count": 2,
+      "group_id": "group_a",
+      "source_type": "primary",
+      "run_id": 87
+    },
+    {
+      "case_id": "raycast",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for raycast/percepcion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Dimension is thin; qualify evidence limits and avoid strong conclusions.\",\n    \"Perception evidence must not be generalized beyond cited sources.\",\n    \"Owned claims lack external corroboration; keep attribution visible.\",\n    \"Review-gated evidence cannot enter the prompt without manual approval.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"At Raycast, we make developers more productive.\",\n      \"url\": \"https://www.raycast.com/blog/hello-world\",\n      \"source_class\": \"audited_surface\",\n      \"limits\": \"\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "https://www.raycast.com/blog/hello-world"
+      ],
+      "included_evidence_count": 1,
+      "group_id": "group_b",
+      "source_type": "primary",
+      "run_id": 92
+    },
+    {
+      "case_id": "retool",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "thin",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for retool/percepcion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Dimension is thin; qualify evidence limits and avoid strong conclusions.\",\n    \"Perception evidence must not be generalized beyond cited sources.\",\n    \"Owned claims lack external corroboration; keep attribution visible.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"The world’s best companies use Retool Enterprise\",\n      \"url\": \"https://retool.com/enterprise\",\n      \"source_class\": \"audited_surface\",\n      \"limits\": \"\"\n    },\n    {\n      \"text\": \"tens of thousands of companies have come to rely on Retool\",\n      \"url\": \"https://retool.com/newsroom/retool-raises-50-million-led-by-sequoia\",\n      \"source_class\": \"audited_surface\",\n      \"limits\": \"\"\n    },\n    {\n      \"text\": \"Retool’s New AI-Powered App Builder Lets Non-Developers Build Enterprise Apps\",\n      \"url\": \"https://retool.com/newsroom\",\n      \"source_class\": \"audited_surface\",\n      \"limits\": \"\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "https://retool.com/enterprise",
+        "https://retool.com/newsroom",
+        "https://retool.com/newsroom/retool-raises-50-million-led-by-sequoia"
+      ],
+      "included_evidence_count": 3,
+      "group_id": "group_b",
+      "source_type": "primary",
+      "run_id": 93
+    },
+    {
+      "case_id": "cron",
+      "dimension": "percepcion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for cron/percepcion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Perception evidence must not be generalized beyond cited sources.\",\n    \"External evidence is source-bounded and must be cited.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"Cron is the next-generation calendar for professionals and teams.\",\n      \"url\": \"http://cron.com/\",\n      \"source_class\": \"audited_surface\",\n      \"limits\": \"\"\n    },\n    {\n      \"text\": \"Cron (acq. by Notion) is the next-generation calendar app for professionals and teams, making modern work more efficient and joyful.\",\n      \"url\": \"https://www.ycombinator.com/companies/cron\",\n      \"source_class\": \"external_third_party\",\n      \"limits\": \"\"\n    },\n    {\n      \"text\": \"The application was voted the number one productivity app\",\n      \"url\": \"https://cal.com/blog/what-is-cron\",\n      \"source_class\": \"external_third_party\",\n      \"limits\": \"\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "http://cron.com/",
+        "https://cal.com/blog/what-is-cron",
+        "https://www.ycombinator.com/companies/cron"
+      ],
+      "included_evidence_count": 3,
+      "group_id": "group_b",
+      "source_type": "primary",
+      "run_id": 94
+    },
+    {
+      "case_id": "locomotive",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for locomotive/diferenciacion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"For competitor comparison evidence, only discuss relative positioning distance.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Competitor comparison supports only relative positioning distance, not leadership.\",\n    \"Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.\",\n    \"Owned claims lack external corroboration; keep attribution visible.\",\n    \"Review-gated evidence cannot enter the prompt without manual approval.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies Nash as the audited brand's closest measured competitor with measured distance 0.897; avg_distance=0.922; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    },\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies LoadBetter Inc. as the audited brand's most different measured competitor with measured distance 0.961; avg_distance=0.922; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "included_evidence_count": 2,
+      "group_id": "group_c",
+      "source_type": "primary",
+      "run_id": 95
+    },
+    {
+      "case_id": "bakken_baeck",
+      "dimension": "diferenciacion",
+      "intent": "segmented_matrix_case",
+      "readiness_status": "ready",
+      "source": "narrative_shadow_adapter",
+      "model": "gemini-3.1-pro-preview",
+      "system": "You are a strict evidence analyst for Brand3 lab validation.\nReturn JSON only. Do not write report prose. Do not recommend strategy.\nDo not infer leadership, advantage, superiority, moat, traction, adoption,\ncustomer preference, intent, roadmap, or planning direction.\n\nUse only included evidence. If evidence is narrow, produce narrow findings.",
+      "user": "{\n  \"task\": \"Generate bounded findings for bakken_baeck/diferenciacion in real validation batch v2.1.\",\n  \"schema\": {\n    \"findings\": [\n      {\n        \"title\": \"\",\n        \"evidence_anchor\": \"\",\n        \"observation\": \"\",\n        \"bounded_interpretation\": \"\",\n        \"limits\": \"\",\n        \"evidence_urls\": []\n      }\n    ]\n  },\n  \"field_rules\": {\n    \"title\": \"3-6 words. Pattern, not quality.\",\n    \"evidence_anchor\": \"Quote, source, URL, or measured evidence used.\",\n    \"observation\": \"Only what included evidence supports.\",\n    \"bounded_interpretation\": \"Conditional interpretation only; no strategy, recommendation, or category leadership.\",\n    \"limits\": \"What the evidence does not prove.\",\n    \"evidence_urls\": \"Only URLs/provenance values present in included evidence.\"\n  },\n  \"prompt_rules\": [\n    \"Do not include typical_decision.\",\n    \"Do not generate strategic choices.\",\n    \"Do not recommend actions.\",\n    \"Do not infer leadership, advantage, superiority, moat, traction, adoption, customer preference, intent, or roadmap.\",\n    \"Use only included evidence URLs.\",\n    \"Return JSON only.\",\n    \"For competitor comparison evidence, only discuss relative positioning distance.\",\n    \"Use only included evidence for this dimension.\",\n    \"Do not use excluded or review-required evidence.\",\n    \"Do not invent strategy, intent, ownership, traction, or entity relationships.\",\n    \"Competitor comparison supports only relative positioning distance, not leadership.\",\n    \"Do not turn competitor comparison into product superiority, moat, market advantage, customer preference, or strategy.\",\n    \"Owned claims lack external corroboration; keep attribution visible.\",\n    \"Review-gated evidence cannot enter the prompt without manual approval.\"\n  ],\n  \"included_evidence\": [\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies Montell & Partners as the audited brand's closest measured competitor with measured distance 0.812; avg_distance=0.879; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    },\n    {\n      \"text\": \"Existing Brand3 competitor comparison identifies Swedish Consulting Group as the audited brand's most different measured competitor with measured distance 0.965; avg_distance=0.879; competitors_analyzed=5.\",\n      \"url\": \"snapshot://feature/competitor_web_comparison\",\n      \"source_class\": \"competitor_comparison\",\n      \"limits\": \"Snapshot comparison can support relative positioning distance only; it does not prove superiority, product quality, adoption, customer choice, durable defensibility, or planning direction.\"\n    }\n  ]\n}",
+      "max_tokens": 1800,
+      "allowed_evidence_urls": [
+        "snapshot://feature/competitor_web_comparison"
+      ],
+      "included_evidence_count": 2,
+      "group_id": "group_c",
+      "source_type": "primary",
+      "run_id": 96
+    }
+  ],
+  "skipped": [
+    {
+      "group_id": "group_a",
+      "case_id": "synthesia",
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "intent": "segmented_matrix_case",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "group_c",
+      "case_id": "dogstudio",
+      "dimension": "diferenciacion",
+      "status": "blocked",
+      "intent": "segmented_matrix_case",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "controls",
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "group_id": "controls",
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "status": "blocked",
+      "intent": "blocked_control",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ]
+}

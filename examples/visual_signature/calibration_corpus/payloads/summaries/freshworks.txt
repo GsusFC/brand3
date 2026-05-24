@@ -1,0 +1,39 @@
+Expected category: saas
+Notes: Mid-market operational SaaS with more conventional enterprise layout.
+
+== Freshworks ==
+URL: https://www.freshworks.com
+Interpretation status: interpretable
+Extraction confidence: 0.75 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.70, consistency_coverage=0.77]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.77
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #1d2026[###] #101828[###] #7909da[###] #8512e0[###] #858585[###] #75baf1[###]
+- typography: Helvetica, WistiaPlayerInter, WistiaPlayerInterNumbersSemiBold
+- layout: header=True; nav=True; hero=True; sections=14; density=dense; patterns=flex
+- components: button=80, cta=18, form=16, card=1024, accordion=14, tabs=52, modal=22
+- consistency: overall=0.58; color=0.48; type=0.65; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #404040[###] #202040[###] #000000[###] #204040[###] #402040[###] #200020[###] #202020[###] #000040[###]
+- viewport palette: #404040[###] #202040[###] #000000[###] #204040[###] #402040[###] #200020[###] #202020[###] #000040[###]
+- composition: density=dense; whitespace=0%; classification=dense_grid
+- viewport composition: density=dense; whitespace=0%; classification=dense_grid
+- vision confidence: 0.75 (medium)
+- viewport confidence: 0.75 (medium)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

@@ -1,0 +1,418 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:33:50.542576",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.onepeloton.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 128,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Peloton",
+  "calibration": {
+    "expected_category": "wellness_lifestyle",
+    "notes": "Fitness/lifestyle brand with product, community, and app surfaces."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#df1c2f"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#000000",
+      "#181a1d",
+      "#df1c2f"
+    ],
+    "confidence": 0.628,
+    "dominant_colors": [
+      "#ffffff",
+      "#000000",
+      "#888b93",
+      "#181a1d",
+      "#df1c2f"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 64,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 28,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#888b93",
+        "occurrences": 20,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#181a1d",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#df1c2f",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "low",
+    "text_color_candidates": [
+      "#000000",
+      "#181a1d",
+      "#df1c2f"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 50,
+        "labels": [
+          "Bikes Arrow",
+          "Treads Arrow",
+          "Row Arrow",
+          "Apps Arrow",
+          "Accessories Arrow",
+          "Deals Arrow",
+          "Account",
+          "Cart",
+          "Play",
+          "Arrow"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 9,
+        "labels": [
+          "Shop Tread",
+          "Shop Bike+",
+          "Discover all classes",
+          "Arrow",
+          "Explore Treads",
+          "Explore Bikes",
+          "Shop apparel",
+          "Chat",
+          "Learn more"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 66,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 16,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 90,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Shop Tread",
+      "Shop Bike+",
+      "Discover all classes",
+      "Arrow",
+      "Explore Treads",
+      "Explore Bikes",
+      "Shop apparel",
+      "Chat"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.78,
+    "component_consistency": 0.72,
+    "confidence": 0.565,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.554,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.565,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.56
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.668
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": false,
+    "has_header": false,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 38,
+    "visual_density": "balanced"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Peloton logo in white inside a rounded square on a dark background",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://res.cloudinary.com/peloton-cycle/image/fetch/dpr_1.0,f_auto,q_auto:good,w_600/https://images.ctfassets.net/7vk8puwnesgc/5OOQKIcG9Iei8IGKXiRmcO/5be39ca10c07978c0858d4322bc4339c/Cards_2_Mobile.jpg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.35,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {
+      "max": 600,
+      "min": 600
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "medium",
+      "disagreement_flags": [
+        "viewport_palette_more_complex_than_dom"
+      ],
+      "dom_density": "balanced",
+      "dom_palette_complexity": 0.626,
+      "summary_notes": [
+        "Viewport palette is noisier than the DOM palette."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.919
+    },
+    "composition": {
+      "color_variance": 0.459,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.017,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.158
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 225261,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.onepeloton.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/peloton.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 33,
+      "confidence": 0.73,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 8971,
+          "ratio": 0.4486
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 3170,
+          "ratio": 0.1585
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 2916,
+          "ratio": 0.1458
+        },
+        {
+          "hex": "#400000",
+          "occurrences": 1696,
+          "ratio": 0.0848
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 1606,
+          "ratio": 0.0803
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 962,
+          "ratio": 0.0481
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 285,
+          "ratio": 0.0143
+        },
+        {
+          "hex": "#e02020",
+          "occurrences": 207,
+          "ratio": 0.0103
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.459,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.017,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.158
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.73,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.843
+    },
+    "viewport_palette": {
+      "color_count": 33,
+      "confidence": 0.73,
+      "dominant_colors": [
+        {
+          "hex": "#202020",
+          "occurrences": 8971,
+          "ratio": 0.4486
+        },
+        {
+          "hex": "#ffffff",
+          "occurrences": 3170,
+          "ratio": 0.1585
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 2916,
+          "ratio": 0.1458
+        },
+        {
+          "hex": "#400000",
+          "occurrences": 1696,
+          "ratio": 0.0848
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 1606,
+          "ratio": 0.0803
+        },
+        {
+          "hex": "#200000",
+          "occurrences": 962,
+          "ratio": 0.0481
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 285,
+          "ratio": 0.0143
+        },
+        {
+          "hex": "#e02020",
+          "occurrences": 207,
+          "ratio": 0.0103
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.158,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.73,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.843
+    }
+  },
+  "website_url": "https://www.onepeloton.com"
+}

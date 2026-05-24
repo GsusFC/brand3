@@ -1,0 +1,145 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "after_artifact_ref": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "After Artifact Ref"
+    },
+    "after_state": {
+      "minLength": 1,
+      "title": "After State",
+      "type": "string"
+    },
+    "attempted": {
+      "title": "Attempted",
+      "type": "boolean"
+    },
+    "before_artifact_ref": {
+      "minLength": 1,
+      "title": "Before Artifact Ref",
+      "type": "string"
+    },
+    "before_state": {
+      "minLength": 1,
+      "title": "Before State",
+      "type": "string"
+    },
+    "brand_name": {
+      "minLength": 1,
+      "title": "Brand Name",
+      "type": "string"
+    },
+    "capture_id": {
+      "minLength": 1,
+      "title": "Capture Id",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "evidence_preserved": {
+      "title": "Evidence Preserved",
+      "type": "boolean"
+    },
+    "integrity_notes": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Integrity Notes",
+      "type": "array"
+    },
+    "lineage_refs": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Lineage Refs",
+      "type": "array"
+    },
+    "mutation_id": {
+      "minLength": 1,
+      "title": "Mutation Id",
+      "type": "string"
+    },
+    "mutation_type": {
+      "minLength": 1,
+      "title": "Mutation Type",
+      "type": "string"
+    },
+    "record_type": {
+      "const": "mutation_audit",
+      "title": "Record Type",
+      "type": "string"
+    },
+    "reversible": {
+      "title": "Reversible",
+      "type": "boolean"
+    },
+    "risk_level": {
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "blocking"
+      ],
+      "title": "Risk Level",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "phase-zero-mutation-audit-1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "successful": {
+      "title": "Successful",
+      "type": "boolean"
+    },
+    "taxonomy_version": {
+      "const": "phase-zero-taxonomy-1",
+      "title": "Taxonomy Version",
+      "type": "string"
+    },
+    "trigger": {
+      "minLength": 1,
+      "title": "Trigger",
+      "type": "string"
+    },
+    "website_url": {
+      "minLength": 1,
+      "title": "Website Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "taxonomy_version",
+    "record_type",
+    "mutation_id",
+    "capture_id",
+    "brand_name",
+    "website_url",
+    "mutation_type",
+    "before_state",
+    "after_state",
+    "attempted",
+    "successful",
+    "reversible",
+    "risk_level",
+    "trigger",
+    "evidence_preserved",
+    "before_artifact_ref"
+  ],
+  "title": "MutationAuditRecord",
+  "type": "object"
+}

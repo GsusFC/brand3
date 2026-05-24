@@ -1,0 +1,17 @@
+{
+  "created_at": "2026-05-18T08:39:58.965094+00:00",
+  "execute_requested": true,
+  "executed": true,
+  "llm_calls_planned": 3,
+  "llm_calls_executed": 3,
+  "model": "gemini-3.1-pro-preview",
+  "usage_metadata_available": false,
+  "cost_estimate_available": false,
+  "notes": [
+    "Single batch CV-dim trial; provider usage metadata not exposed by LLMAnalyzer."
+  ],
+  "cache_hits": 3,
+  "cache_misses": 0,
+  "cache_writes": 0,
+  "call_failures": []
+}

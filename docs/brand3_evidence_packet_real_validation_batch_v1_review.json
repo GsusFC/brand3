@@ -1,0 +1,100 @@
+{
+  "review": "brand3_evidence_packet_real_validation_batch_v1",
+  "mode": "lab_only_non_runtime_non_mutating",
+  "snapshot_runs": [
+    74,
+    76,
+    78,
+    79,
+    80,
+    82,
+    83,
+    84,
+    85
+  ],
+  "executed_targets": [
+    {
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "readiness_status": "ready"
+    },
+    {
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "readiness_status": "ready"
+    },
+    {
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "readiness_status": "ready"
+    },
+    {
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "readiness_status": "thin"
+    },
+    {
+      "case_id": "notion",
+      "dimension": "diferenciacion",
+      "readiness_status": "ready"
+    },
+    {
+      "case_id": "stripe",
+      "dimension": "diferenciacion",
+      "readiness_status": "ready"
+    },
+    {
+      "case_id": "figma",
+      "dimension": "diferenciacion",
+      "readiness_status": "ready"
+    },
+    {
+      "case_id": "datadog",
+      "dimension": "diferenciacion",
+      "readiness_status": "ready"
+    }
+  ],
+  "skipped_targets": [
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "coherencia",
+      "readiness_status": "blocked",
+      "reason": "status_not_executable_for_lab_call"
+    },
+    {
+      "case_id": "builtwith_kit_com",
+      "dimension": "percepcion",
+      "readiness_status": "blocked",
+      "reason": "status_not_executable_for_lab_call"
+    }
+  ],
+  "execution": {
+    "llm_calls_planned": 8,
+    "llm_calls_executed": 8,
+    "json_repair_retries_attempted": 0,
+    "json_repair_retries_succeeded": 0,
+    "parse_failures_unrecovered": 0
+  },
+  "pass_criteria": {
+    "no_typical_decision": true,
+    "limits_present": true,
+    "risky_terms_outside_limits_empty": true,
+    "evidence_urls_valid": true,
+    "parse_failures_unrecovered": 0,
+    "blocked_controls_skipped": true
+  },
+  "overall_pass": true,
+  "assessment": {
+    "drift_reduction": "stable",
+    "thin_dimension_behavior": "qualified_and_bounded",
+    "blocked_controls": "enforced",
+    "cost_observability": "partial_no_provider_token_usage_exposed"
+  },
+  "decision": {
+    "lab_default_gate_recommended": true,
+    "production_rollout_recommended": false,
+    "next_focus": [
+      "candidate_non_runtime_integration_hook_behind_lab_flag"
+    ]
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "created_at": "2026-05-18T10:32:40.302870+00:00",
+  "executed": false,
+  "requests_executed": 5,
+  "requests_skipped": 3,
+  "parse_failures_unrecovered": 0,
+  "per_case": {
+    "linear::diferenciacion": {
+      "case_id": "linear",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false,
+      "previous_candidate_schema_summary": {
+        "finding_count": 1,
+        "titles": [
+          "Relative Positioning Distance Among Measured Competitors"
+        ],
+        "risky_terms_detected": [
+          "strategy"
+        ],
+        "risky_terms_outside_limits": [
+          "strategy"
+        ],
+        "limits_field_present": false,
+        "has_typical_decision": true,
+        "evidence_urls_used": [
+          "snapshot://feature/competitor_web_comparison"
+        ],
+        "evidence_url_validity": false
+      },
+      "drift_indicator": {
+        "previous_has_typical_decision": true,
+        "current_has_typical_decision": false,
+        "previous_risky_terms_outside_limits": [
+          "strategy"
+        ],
+        "current_risky_terms_outside_limits": []
+      }
+    },
+    "vercel::diferenciacion": {
+      "case_id": "vercel",
+      "dimension": "diferenciacion",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 2,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false,
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "drift_indicator": {
+        "previous_has_typical_decision": null,
+        "current_has_typical_decision": false,
+        "previous_risky_terms_outside_limits": [],
+        "current_risky_terms_outside_limits": []
+      }
+    },
+    "launchdarkly::vitalidad": {
+      "case_id": "launchdarkly",
+      "dimension": "vitalidad",
+      "intent": "ready",
+      "readiness_status": "ready",
+      "included_evidence_count": 3,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false,
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "drift_indicator": {
+        "previous_has_typical_decision": null,
+        "current_has_typical_decision": false,
+        "previous_risky_terms_outside_limits": [],
+        "current_risky_terms_outside_limits": []
+      }
+    },
+    "vercel::coherencia": {
+      "case_id": "vercel",
+      "dimension": "coherencia",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false,
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "drift_indicator": {
+        "previous_has_typical_decision": null,
+        "current_has_typical_decision": false,
+        "previous_risky_terms_outside_limits": [],
+        "current_risky_terms_outside_limits": []
+      }
+    },
+    "watermelon::percepcion": {
+      "case_id": "watermelon",
+      "dimension": "percepcion",
+      "intent": "thin",
+      "readiness_status": "thin",
+      "included_evidence_count": 1,
+      "summary": {
+        "finding_count": 0,
+        "titles": [],
+        "risky_terms_detected": [],
+        "risky_terms_outside_limits": [],
+        "limits_field_present": false,
+        "has_typical_decision": false,
+        "evidence_urls_used": [],
+        "evidence_url_validity": true
+      },
+      "json_repair_retry_attempted": false,
+      "json_repair_retry_succeeded": false,
+      "parse_failure_unrecovered": false,
+      "previous_candidate_schema_summary": {
+        "available": false
+      },
+      "drift_indicator": {
+        "previous_has_typical_decision": null,
+        "current_has_typical_decision": false,
+        "previous_risky_terms_outside_limits": [],
+        "current_risky_terms_outside_limits": []
+      }
+    }
+  },
+  "pass_flags": {
+    "no_typical_decision": null,
+    "limits_present": null,
+    "risky_terms_outside_limits_empty": null,
+    "evidence_urls_valid": null,
+    "blocked_or_review_controls_skipped": true,
+    "thin_cases_qualified": null,
+    "parse_failures_unrecovered_zero": null
+  },
+  "trial_pass": null,
+  "manual_review_required": true
+}

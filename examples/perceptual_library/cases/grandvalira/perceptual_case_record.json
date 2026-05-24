@@ -1,0 +1,401 @@
+{
+  "record_id": "floc_grandvalira_perceptual_case_record_v0_1",
+  "schema_version": "0.1.0",
+  "created_at": "2026-05-15",
+  "status": "third_pilot_fixture",
+  "case": {
+    "case_id": "grandvalira",
+    "project_name": "Grandvalira Resorts",
+    "public_url": "https://wearefloc.com/work/grandvalira-resorts",
+    "pilot_role": "corporate_system",
+    "why_selected": "Tests whether the schema can hold a corporate and multi-brand design-system case where public evidence emphasizes components, foundations, scalability, cohesion, and preservation of distinct resort identities."
+  },
+  "source_material": {
+    "public_case_page": {
+      "url": "https://wearefloc.com/work/grandvalira-resorts",
+      "title": "Grandvalira Resorts x FLOC* - The Design System for guiding the three ski resorts",
+      "captured_as": "public_text_fetch",
+      "source_id": "floc_public_case_grandvalira"
+    },
+    "public_case_copy_excerpts": [
+      {
+        "source_id": "grandvalira_copy_title",
+        "text": "The Design System for guiding the three ski resorts"
+      },
+      {
+        "source_id": "grandvalira_copy_hybrid_system",
+        "text": "create a hybrid Design System that unites the three emblematic resorts of Andorra"
+      },
+      {
+        "source_id": "grandvalira_copy_resorts",
+        "text": "Pal Arinsal, Grandvalira and Ordino Arcalis"
+      },
+      {
+        "source_id": "grandvalira_copy_components",
+        "text": "library of multi-brand components and foundations"
+      },
+      {
+        "source_id": "grandvalira_copy_scalability_cohesion",
+        "text": "allows the scalability and visual cohesion of each resort"
+      },
+      {
+        "source_id": "grandvalira_copy_unique_personalities",
+        "text": "respecting the uniqueness of their multiple personalities"
+      },
+      {
+        "source_id": "grandvalira_copy_main_brand",
+        "text": "reinforcing the digital universe of the main brand"
+      },
+      {
+        "source_id": "grandvalira_copy_services",
+        "text": "UX/UI and Design System"
+      },
+      {
+        "source_id": "grandvalira_copy_close_line",
+        "text": "The infinite winter"
+      }
+    ],
+    "local_prior_case_artifacts": []
+  },
+  "method_boundaries": {
+    "public_website_only": true,
+    "notion_used": false,
+    "no_scoring": true,
+    "no_prompt_changes": true,
+    "no_report_changes": true,
+    "no_visual_signature_runtime_changes": true,
+    "no_runtime_changes": true,
+    "quality_evaluation": false
+  },
+  "confidence_semantics": {
+    "high": "Directly stated in public copy, directly listed in public metadata, or anchored to existing local visual observations with direct visible evidence.",
+    "medium": "Reasonable interpretation from public copy or from a single anchored visual observation, but not independently repeated.",
+    "low": "Plausible but weak inference from aesthetics, tone, or incomplete evidence; requires human review before reuse."
+  },
+  "extracted_facts": [
+    {
+      "id": "fact-001",
+      "fact": "The public case frames the project as a design system for guiding three ski resorts.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_title",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-002",
+      "fact": "The public copy names the three resorts as Pal Arinsal, Grandvalira, and Ordino Arcalis.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_resorts",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-003",
+      "fact": "The public copy describes the work as a hybrid Design System that unites the three resort identities.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_hybrid_system",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-004",
+      "fact": "The public copy says FLOC* created a library of multi-brand components and foundations.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_components",
+          "support_level": "direct"
+        }
+      ]
+    },
+    {
+      "id": "fact-005",
+      "fact": "The public page identifies UX/UI and Design System as service areas.",
+      "confidence": "high",
+      "evidence": [
+        {
+          "source_type": "public_case_metadata",
+          "source_id": "floc_public_case_grandvalira",
+          "support_level": "direct"
+        }
+      ]
+    }
+  ],
+  "visual_observations": [
+    {
+      "id": "visual-001",
+      "facet": "system_behavior",
+      "observation": "The public description anchors the case in system behavior: a hybrid design system, multi-brand components, and foundations.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_hybrid_system",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_components",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "Treat as stated system architecture until captures or component documentation confirm how the system appears."
+    },
+    {
+      "id": "visual-002",
+      "facet": "multi_brand_cohesion",
+      "observation": "The case states a need for visual cohesion across each resort while preserving their unique personalities.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_scalability_cohesion",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_unique_personalities",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "This is a strong design-system claim, but the record does not yet verify visible differentiation between resort identities."
+    },
+    {
+      "id": "visual-003",
+      "facet": "hierarchy",
+      "observation": "The public copy implies a parent-brand hierarchy: the system supports resort-level cohesion while reinforcing the main brand's digital universe.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_main_brand",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_unique_personalities",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "Parent-child hierarchy is inferred from case language and needs component or page evidence before reuse."
+    },
+    {
+      "id": "visual-004",
+      "facet": "scalability",
+      "observation": "The public description presents scalability as a visible-system property of the component and foundation library.",
+      "confidence": "medium",
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_components",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_scalability_cohesion",
+          "support_level": "copy_based"
+        }
+      ],
+      "downstream_note": "Scalability is stated directly, but actual scalability evidence would require multiple screens, components, or variants."
+    }
+  ],
+  "strategic_interpretations": [
+    {
+      "id": "interp-001",
+      "interpretation": "Grandvalira appears to use design-system work as a governance layer for multiple resort identities rather than as a single-brand refresh.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_hybrid_system",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_components",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_unique_personalities",
+          "support_level": "copy_based"
+        }
+      ],
+      "why_not_high_confidence": "The governance role is a Brand3 interpretation of design-system language; source copy does not use governance terminology."
+    },
+    {
+      "id": "interp-002",
+      "interpretation": "The case suggests a tension between unity and differentiation: the system must make the resorts feel related without flattening their individual identities.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_scalability_cohesion",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_unique_personalities",
+          "support_level": "copy_based"
+        }
+      ],
+      "why_not_high_confidence": "The tension is strongly suggested by copy, but visible execution across the three resorts is not yet captured."
+    },
+    {
+      "id": "interp-003",
+      "interpretation": "The project frames digital product coherence as an ecosystem problem across multiple destinations, not as isolated UX/UI screens.",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_main_brand",
+          "support_level": "copy_based"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_services",
+          "support_level": "copy_based"
+        }
+      ],
+      "why_not_high_confidence": "The ecosystem reading depends on Brand3 interpretation of 'digital universe' and UX/UI service scope."
+    }
+  ],
+  "unsupported_or_low_confidence_inferences": [
+    {
+      "id": "low-001",
+      "inference": "The visual system may use shared foundations with resort-specific tokens, themes, or component variants.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_components",
+          "support_level": "weak_inference"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_unique_personalities",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "The copy names components, foundations, and personalities, but does not specify tokens, themes, or variants."
+    },
+    {
+      "id": "low-002",
+      "inference": "The design language may balance institutional utility with destination-specific atmosphere.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_scalability_cohesion",
+          "support_level": "weak_inference"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_close_line",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "Atmospheric tone is inferred from 'The infinite winter' and resort context, not visually confirmed."
+    },
+    {
+      "id": "low-003",
+      "inference": "The system may prioritize navigational consistency across resort experiences.",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_title",
+          "support_level": "weak_inference"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_services",
+          "support_level": "weak_inference"
+        }
+      ],
+      "why_low_confidence": "The word 'guiding' and UX/UI service tag imply navigation, but no flow or interface capture is included."
+    }
+  ],
+  "contradictions": [
+    {
+      "id": "contra-001",
+      "stated_claim": "The public copy says the hybrid design system unites three resorts.",
+      "observed_signal": "The same public copy says the system respects the uniqueness of their multiple personalities.",
+      "contradiction_level": "soft",
+      "confidence": "medium",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_hybrid_system",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_unique_personalities",
+          "support_level": "copy_based"
+        }
+      ],
+      "interpretation_boundary": "This is a productive multi-brand design-system tension, not evidence of inconsistency."
+    },
+    {
+      "id": "contra-002",
+      "stated_claim": "The public copy claims scalability and visual cohesion for each resort.",
+      "observed_signal": "The available first-pass evidence does not include component screenshots, token documentation, or multi-resort screen comparisons.",
+      "contradiction_level": "unverified",
+      "confidence": "low",
+      "requires_human_review": true,
+      "evidence": [
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_scalability_cohesion",
+          "support_level": "direct"
+        },
+        {
+          "source_type": "public_case_copy",
+          "source_id": "grandvalira_copy_components",
+          "support_level": "weak_inference"
+        }
+      ],
+      "interpretation_boundary": "Do not convert scalability and cohesion claims into confirmed system performance without component or screen evidence."
+    }
+  ],
+  "human_review": {
+    "status": "required_before_downstream_use",
+    "review_questions": [
+      "Do captures or design-system materials confirm shared components and foundations across the three resort identities?",
+      "Where does the system preserve each resort's unique personality, and where does it enforce main-brand cohesion?",
+      "Is the unity/differentiation tension visible in interface behavior or only stated in copy?",
+      "Which terms are reusable for Brand3 design-system cases without importing resort-specific language?"
+    ],
+    "reviewed_by": null,
+    "reviewed_at": null
+  },
+  "validation": {
+    "json_parse_required": true,
+    "schema_contract": "examples/perceptual_library/schema/perceptual_case_record_schema.json",
+    "test_file": "tests/test_perceptual_case_record.py",
+    "case_artifact_boundary": "third_pilot_fixture_only",
+    "ready_for_scoring": false,
+    "ready_for_runtime": false
+  }
+}

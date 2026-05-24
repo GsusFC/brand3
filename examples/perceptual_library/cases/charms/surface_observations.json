@@ -1,0 +1,152 @@
+{
+  "case_id": "charms",
+  "source_url": "https://wearefloc.com/work/charms",
+  "artifact_type": "perception_first_case",
+  "not_a_scoring_report": true,
+  "observations": [
+    {
+      "id": "surface-001",
+      "facet": "surface_behavior",
+      "observation": "The brand surface behaves like a soft field of light rather than a hard product interface. Blue gradients, white type, and blurred spherical forms create a sense of suspended motion.",
+      "visible_evidence": [
+        "Blue-to-pale-blue gradient hero artwork.",
+        "Large soft-edged sphere behind serif headline.",
+        "Repeated luminous circular form across identity assets."
+      ],
+      "perceptual_effect": "The category feels slowed down and made atmospheric before it is made functional.",
+      "avoid_interpretation": "Do not read this as a conversion-first product page."
+    },
+    {
+      "id": "surface-002",
+      "facet": "pacing",
+      "observation": "The case page uses a gallery cadence: text introduction, then a sequence of large visual panels with minimal interruption. The rhythm asks the viewer to look, pause, and compare surfaces.",
+      "visible_evidence": [
+        "Introductory project copy precedes the gallery.",
+        "The Design Sprint section is followed by a long run of image assets.",
+        "The page resolves into a short verbal closure: Feel. Play. Belong."
+      ],
+      "perceptual_effect": "The pace is editorial and contemplative, not feature-by-feature.",
+      "avoid_interpretation": "Do not turn the pacing into a funnel analysis."
+    },
+    {
+      "id": "surface-003",
+      "facet": "visual_rhythm",
+      "observation": "The system repeats rounded light forms, serif wordmarks, blue fields, and white negative space. The repetition is gentle, almost breathing, instead of mechanical.",
+      "visible_evidence": [
+        "Spherical blue-white forms recur in wide identity panels.",
+        "The Charms serif mark appears both large and partially cropped.",
+        "White space alternates with saturated blue bands."
+      ],
+      "perceptual_effect": "The viewer perceives a ritual loop: orb, word, silence, orb again.",
+      "avoid_interpretation": "Do not describe this as mere sameness."
+    },
+    {
+      "id": "surface-004",
+      "facet": "editorial_tone",
+      "observation": "The writing frames the project through feeling and belonging, while the visuals avoid loud gaming tropes. The editorial voice is calm, almost ceremonial.",
+      "visible_evidence": [
+        "The page names emotion, play, social ritual, and belonging.",
+        "The visible close line compresses the idea into three short words.",
+        "The typography favors a refined serif in the identity assets."
+      ],
+      "perceptual_effect": "The tone makes Web3 gaming feel intimate and socially held.",
+      "avoid_interpretation": "Do not flatten the tone into generic friendliness."
+    },
+    {
+      "id": "surface-005",
+      "facet": "hierarchy",
+      "observation": "Hierarchy is built through scale and silence. Large serif typography carries the emotional center, while supporting text and navigation stay small and recessive.",
+      "visible_evidence": [
+        "The hero composition places the main phrase at very large scale.",
+        "The Charms wordmark sits small in the upper-left corner in the hero asset.",
+        "The page-level navigation is sparse and utilitarian."
+      ],
+      "perceptual_effect": "The eye treats the brand world as the main event and the page furniture as secondary.",
+      "avoid_interpretation": "Do not frame hierarchy only as readability."
+    },
+    {
+      "id": "surface-006",
+      "facet": "interaction_feeling",
+      "observation": "The interaction layer feels like browsing a lookbook. The CTA appears after the sensory sequence, and the repeated visit-site text behaves like a moving strip rather than a conventional button label.",
+      "visible_evidence": [
+        "Gallery-first scroll sequence.",
+        "Visit website CTA repeats the same words across the link area.",
+        "Next-project navigation appears after the case has finished its visual sequence."
+      ],
+      "perceptual_effect": "Interaction feels like crossing a threshold out of the case world rather than being pushed into action.",
+      "avoid_interpretation": "Do not evaluate the CTA as a standard SaaS component."
+    },
+    {
+      "id": "surface-007",
+      "facet": "density_vs_silence",
+      "observation": "The composition alternates dense natural texture with broad digital silence. Flower fields and hair/fabric closeups give tactile density; pale gradients and white areas give quiet.",
+      "visible_evidence": [
+        "Field photography with flowers and grass.",
+        "Cropped merchandise photography with fabric texture.",
+        "Large blue-white gradient surfaces with few elements."
+      ],
+      "perceptual_effect": "The brand feels alive without becoming noisy.",
+      "avoid_interpretation": "Do not mistake quiet space for incomplete content."
+    },
+    {
+      "id": "surface-008",
+      "facet": "perceived_sophistication",
+      "observation": "Sophistication comes from restraint, serif detail, crop discipline, and controlled color. The playful premise is not expressed through cartoons or maximal effects.",
+      "visible_evidence": [
+        "Serif type specimens in the visual system.",
+        "Muted blue palette with soft white and pale lavender shifts.",
+        "Embroidery and printed specimens shown as considered physical artifacts."
+      ],
+      "perceptual_effect": "The brand reads as playful, but handled through an editorial and fashion-adjacent lens.",
+      "avoid_interpretation": "Do not call it premium only because it is minimal."
+    },
+    {
+      "id": "surface-009",
+      "facet": "perceived_intentionality",
+      "observation": "The same few materials are recombined instead of constantly replaced: orb, serif, blue field, flower, fabric, light. This makes the surface feel selected rather than decorated.",
+      "visible_evidence": [
+        "Repeated blue orb motif.",
+        "Repeated serif wordmark and type-specimen treatment.",
+        "Repeated soft natural imagery."
+      ],
+      "perceptual_effect": "The system feels curated around a small set of gestures.",
+      "avoid_interpretation": "Do not treat every asset as a separate idea."
+    },
+    {
+      "id": "surface-010",
+      "facet": "ritualized_interface_behavior",
+      "observation": "The visible system ritualizes play through recurrence and soft entry points. The viewer repeatedly encounters circular portals, partially cropped marks, and short emotional phrases.",
+      "visible_evidence": [
+        "Circular forms act like repeated entrances.",
+        "The final phrase uses a three-part cadence.",
+        "The project copy explicitly connects games with social ritual."
+      ],
+      "perceptual_effect": "Interaction is framed as belonging to a recurring world, not just using a game layer.",
+      "avoid_interpretation": "Do not reduce ritual to animation."
+    },
+    {
+      "id": "surface-011",
+      "facet": "emotional_temperature",
+      "observation": "The temperature is warm-cool: visually blue and airy, emotionally soft and human. Natural light, flowers, and fabric prevent the blue system from becoming clinical.",
+      "visible_evidence": [
+        "Blue gradient and white typography.",
+        "Flower-field photography.",
+        "Close fabric and hair photography."
+      ],
+      "perceptual_effect": "The surface feels calm, affectionate, and slightly dreamlike.",
+      "avoid_interpretation": "Do not describe the blue palette as cold by default."
+    },
+    {
+      "id": "surface-012",
+      "facet": "premium_vs_playful_tension",
+      "observation": "The case holds premium cues and playful cues in the same frame: refined serif typography and quiet spacing sit beside emotional game-world language and soft toy-like orbs.",
+      "visible_evidence": [
+        "Large elegant serif headline.",
+        "Soft glowing spheres.",
+        "Language around play, feeling, and belonging."
+      ],
+      "perceptual_effect": "The brand feels designed for play without losing adult composure.",
+      "avoid_interpretation": "Do not choose only one side of the tension."
+    }
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "artifact_id": "brand3_perceptual_overreach_taxonomy_v0_1",
+  "artifact_type": "perceptual_overreach_taxonomy",
+  "generated_at": "2026-05-15",
+  "status": "draft_taxonomy",
+  "scope": "perceptual_narrative_augmentation_only",
+  "guardrails": {
+    "documentation_only": true,
+    "runtime_changes": false,
+    "scoring_changes": false,
+    "prompt_rewrites": false,
+    "report_changes": false,
+    "visual_signature_changes": false,
+    "schema_changes": false
+  },
+  "source_artifacts": [
+    "examples/brand3_platform/perceptual_narrative_evaluation.md",
+    "examples/brand3_platform/perceptual_narrative_evaluation.json",
+    "examples/perceptual_library/patterns/perceptual_reading_semantics.md",
+    "examples/perceptual_library/patterns/perceptual_reading_semantics.json",
+    "examples/perceptual_library/patterns/perceptual_pattern_registry.md",
+    "examples/perceptual_library/patterns/perceptual_pattern_registry.json",
+    "src/reports/experimental_perceptual_narrative.py"
+  ],
+  "core_rule": "The strongest Brand3 reading is the most precise interpretation the evidence can support.",
+  "failure_modes": [
+    {
+      "id": "invented_intentionality",
+      "name": "Invented Intentionality",
+      "definition": "Assigning motive, strategy, audience intent, or business objective to the brand without direct evidence.",
+      "examples": [
+        "The brand seeks cultural authority.",
+        "The company is targeting sophisticated enterprise buyers.",
+        "The surface is designed to make users feel safe."
+      ],
+      "why_it_happens": "Perceptual language invites causal explanation, so writers fill in the internal strategy that would make a surface pattern make sense.",
+      "observable_warning_signs": [
+        "verbs like seeks, intends, aims, wants, designed to, built to",
+        "audience claims without source support",
+        "strategic conclusions attached to aesthetic signals",
+        "because clauses that explain internal motivation"
+      ],
+      "mitigation_strategies": [
+        "Replace intention with supported reading.",
+        "Name the evidence type.",
+        "Add that internal intent is not observable from outside when needed.",
+        "Require human review for unstated strategic intent."
+      ],
+      "confidence_rules": {
+        "high": "Only when intent is directly stated by the brand or source.",
+        "medium": "Repeated source language consistently frames intent but product behavior is not visible.",
+        "low": "Intent is inferred from aesthetics, tone, layout, or category alone."
+      },
+      "acceptable_form": "The owned copy frames the product as a system for enterprise workflow, which may support a reading of operational ambition.",
+      "unacceptable_form": "The brand is pursuing enterprise authority."
+    },
+    {
+      "id": "unsupported_emotional_projection",
+      "name": "Unsupported Emotional Projection",
+      "definition": "Claiming a felt emotional state without tying it to observable mechanisms.",
+      "examples": [
+        "The brand feels reassuring.",
+        "The experience is calming and supportive.",
+        "The interface creates trust."
+      ],
+      "why_it_happens": "Emotional temperature is useful, but mood words are easy to write without evidence.",
+      "observable_warning_signs": [
+        "calm, warm, reassuring, supportive, trustworthy, inviting, human, confident",
+        "no reference to color, pacing, hierarchy, density, typography, motion, illustration, or copy",
+        "emotional outcome phrased as user effect"
+      ],
+      "mitigation_strategies": [
+        "Tie emotional temperature to mechanisms.",
+        "Keep user impact conditional.",
+        "Avoid therapeutic, psychological, or trust claims unless evidence supports them."
+      ],
+      "confidence_rules": {
+        "high": "Repeated visible mechanisms converge.",
+        "medium": "Surface signals and copy tone align.",
+        "low": "Emotion comes from category expectation or brand reputation."
+      },
+      "acceptable_form": "Soft color, low-density hierarchy, and friendly illustration can support a low-to-medium confidence reading of calm accessibility.",
+      "unacceptable_form": "The brand makes users feel supported."
+    },
+    {
+      "id": "cinematic_inflation",
+      "name": "Cinematic Inflation",
+      "definition": "Overusing cinematic or motion language when motion is absent, copy-only, or not concept-bearing.",
+      "examples": [
+        "The brand creates a cinematic journey.",
+        "The experience has filmic momentum.",
+        "The motion system expresses transformation."
+      ],
+      "why_it_happens": "Motion-oriented patterns such as Guided Movement, Concept-Bearing Motion, and Threshold Pacing can become decorative if applied to static surfaces.",
+      "observable_warning_signs": [
+        "cinematic, immersive, filmic, kinetic, choreographed, journey",
+        "no captured motion, sequence, transition, or interaction evidence",
+        "production terms treated as perceptual effects"
+      ],
+      "mitigation_strategies": [
+        "Separate motion claim from motion observation.",
+        "Use copy states when motion is source-described but not captured.",
+        "Require capture, video, or sequential evidence before high confidence."
+      ],
+      "confidence_rules": {
+        "high": "Direct motion evidence exists and the concept linkage is clear.",
+        "medium": "Source-stated motion has some supporting still-sequence evidence.",
+        "low": "Motion is inferred from static aesthetics or production language alone."
+      },
+      "acceptable_form": "The case copy names Datamosh transitions, but concept-bearing motion remains unverified until motion evidence is reviewed.",
+      "unacceptable_form": "The brand uses cinematic motion to symbolize disruption."
+    },
+    {
+      "id": "false_sophistication_language",
+      "name": "False Sophistication Language",
+      "definition": "Using prestige-coded adjectives as if they were analysis.",
+      "examples": [
+        "The brand is sophisticated.",
+        "The visual identity is premium and polished.",
+        "The system is elegant, modern, and refined."
+      ],
+      "why_it_happens": "Baseline LLM prose often defaults to generic quality language when evidence is thin, and perceptual augmentation can replace old generic language with new pseudo-premium vocabulary.",
+      "observable_warning_signs": [
+        "sophisticated, premium, elegant, refined, polished, elevated, world-class",
+        "adjectives not followed by observable mechanism",
+        "quality words standing where pattern behavior should be"
+      ],
+      "mitigation_strategies": [
+        "Replace quality labels with surface behavior.",
+        "Ban prestige adjectives unless quoted or directly evidenced.",
+        "Ask what changed on the surface."
+      ],
+      "confidence_rules": {
+        "high": "Rare; only if the term is a direct source quote and labeled as such.",
+        "medium": "Generally avoid; rewrite as mechanism.",
+        "low": "Default for unsupported prestige labels."
+      },
+      "acceptable_form": "The surface uses restrained spacing, product-scale imagery, and short declarative copy.",
+      "unacceptable_form": "The brand feels premium and sophisticated."
+    },
+    {
+      "id": "weak_evidence_amplification",
+      "name": "Weak Evidence Amplification",
+      "definition": "Making sparse, copy-only, obstructed, or single-source evidence sound more conclusive than it is.",
+      "examples": [
+        "The interface is intuitive based on a source claim.",
+        "The system is scalable based on case-study copy.",
+        "The brand lacks differentiation based only on missing evidence."
+      ],
+      "why_it_happens": "The narrative layer tries to be useful even when evidence is thin.",
+      "observable_warning_signs": [
+        "single URL drives broad conclusion",
+        "copy claims become product behavior",
+        "absence becomes defect",
+        "obstruction or missing capture disappears from prose"
+      ],
+      "mitigation_strategies": [
+        "Name evidence limits inside the observation.",
+        "Convert conclusions into limitations or review questions.",
+        "Keep copy-based material at medium or low confidence.",
+        "Do not infer failure from missing evidence."
+      ],
+      "confidence_rules": {
+        "high": "Direct or corroborated evidence.",
+        "medium": "Copy-based claims stated clearly as copy.",
+        "low": "Absent, obstructed, or inferred signals."
+      },
+      "acceptable_form": "The source states a seamless interface, but current evidence only supports a copy-level guidance claim.",
+      "unacceptable_form": "The product offers a seamless interface."
+    },
+    {
+      "id": "aesthetic_hallucination",
+      "name": "Aesthetic Hallucination",
+      "definition": "Inventing visual details that are not present in the evidence pool.",
+      "examples": [
+        "Soft gradients and rounded modules when no capture exists.",
+        "Dense navigation and code panels when only homepage copy was reviewed.",
+        "Large serif typography copied from another case."
+      ],
+      "why_it_happens": "Static perceptual hints include surface signals from prior cases, which can contaminate target observations if treated as facts.",
+      "observable_warning_signs": [
+        "visual details not found in screenshots, HTML, or source text",
+        "FLOC case-specific signals appear in unrelated brand analysis",
+        "pattern examples leak into target observations"
+      ],
+      "mitigation_strategies": [
+        "Treat adapter hints as lenses only, never target facts.",
+        "Require every visual detail to map to evidence.",
+        "Do not mention Charms, D4DATA, Grandvalira, or their motifs unless in the evidence pool."
+      ],
+      "confidence_rules": {
+        "high": "Directly visible or directly extracted signals.",
+        "medium": "Source-stated visual claims.",
+        "low": "Visual details imported from registry examples are invalid or require rewrite."
+      },
+      "acceptable_form": "If similar repeated forms appear in the target evidence, they may support a motif-control reading.",
+      "unacceptable_form": "The brand uses soft light fields and ritual pacing when those signals come only from Charms."
+    },
+    {
+      "id": "narrative_over_binding",
+      "name": "Narrative Over-Binding",
+      "definition": "Forcing multiple signals into a single coherent story when the evidence supports only partial or divergent readings.",
+      "examples": [
+        "Every surface reinforces the same strategic narrative.",
+        "The ecosystem resolves complexity through a unified grammar.",
+        "All channels converge around trust and speed."
+      ],
+      "why_it_happens": "Reports prefer coherent stories, and perceptual patterns can make fragmented evidence feel artificially integrated.",
+      "observable_warning_signs": [
+        "all, every, fully, resolves, unified, converges",
+        "no acknowledgement of divergent channels",
+        "contradiction smoothed into coherence",
+        "pattern names used to close uncertainty"
+      ],
+      "mitigation_strategies": [
+        "Preserve partiality.",
+        "Name channel divergence when present.",
+        "Use one available reading instead of the story.",
+        "Keep contradictions unresolved when evidence is unresolved."
+      ],
+      "confidence_rules": {
+        "high": "Multiple independent anchors support the same reading.",
+        "medium": "Two or more signals converge but source diversity is limited.",
+        "low": "The story is assembled from scattered or weak signals."
+      },
+      "acceptable_form": "Several owned-surface signals point toward operational clarity, while external corroboration remains limited.",
+      "unacceptable_form": "The brand coherently expresses operational clarity across the ecosystem."
+    },
+    {
+      "id": "perception_without_observable_grounding",
+      "name": "Perception Without Observable Grounding",
+      "definition": "Applying perceptual pattern language without naming the signal that supports it.",
+      "examples": [
+        "This is category-to-surface translation.",
+        "The brand uses guided movement.",
+        "The emotional temperature is controlled."
+      ],
+      "why_it_happens": "Registry vocabulary can become shorthand. Shorthand is unsafe in report prose unless anchored.",
+      "observable_warning_signs": [
+        "pattern label appears without evidence",
+        "emotional temperature appears before observation",
+        "no quote, source, surface, channel, visual signal, or structural mechanism"
+      ],
+      "mitigation_strategies": [
+        "Every pattern sentence must include at least one surface mechanism.",
+        "Pattern labels should follow observations, not replace them.",
+        "If no mechanism can be named, do not use the pattern."
+      ],
+      "confidence_rules": {
+        "high": "Signal, cluster, and pattern are all present.",
+        "medium": "Signal exists but cluster is partial.",
+        "low": "Pattern is plausible but only one weak signal exists."
+      },
+      "acceptable_form": "Navigation density, code-oriented content, and implementation pathways support a category-to-surface reading.",
+      "unacceptable_form": "This is category-to-surface translation."
+    },
+    {
+      "id": "tension_fabrication",
+      "name": "Tension Fabrication",
+      "definition": "Inventing a contradiction or tradeoff because the report expects one.",
+      "examples": [
+        "The brand balances accessibility and authority with no evidence for either side.",
+        "There is a tension between calm and conversion without conversion evidence.",
+        "Minimalism conflicts with density when only one surface was reviewed."
+      ],
+      "why_it_happens": "Tension improves narrative quality, but not every evidence pool contains a real tension.",
+      "observable_warning_signs": [
+        "between X and Y where X or Y has no evidence",
+        "tension language appears in every dimension",
+        "tension is generic enough to fit any brand",
+        "no contradiction, absence, mismatch, or tradeoff is named"
+      ],
+      "mitigation_strategies": [
+        "Require evidence for both sides.",
+        "Use no stable tension identified when needed.",
+        "Treat claim/evidence gaps as unverified, not automatically defects."
+      ],
+      "confidence_rules": {
+        "high": "Both sides are directly evidenced.",
+        "medium": "One side is direct and one side is copy-based.",
+        "low": "One side is inferred or absent."
+      },
+      "acceptable_form": "The source claims modularity, but available evidence supports repeated motif control more clearly than component behavior.",
+      "unacceptable_form": "The brand balances modularity and emotion without evidence for both."
+    },
+    {
+      "id": "generic_premium_projection",
+      "name": "Generic Premium Projection",
+      "definition": "Reading premium status into restraint, minimalism, whitespace, or monochrome surfaces without evidence.",
+      "examples": [
+        "The restrained layout signals premium positioning.",
+        "Minimalism makes the product feel luxury.",
+        "Whitespace creates a high-end perception."
+      ],
+      "why_it_happens": "Premium is often used as a shortcut for restraint.",
+      "observable_warning_signs": [
+        "premium, luxury, high-end, elevated attached to whitespace or restraint",
+        "market tier inferred from aesthetics",
+        "no pricing, audience, product, or third-party evidence"
+      ],
+      "mitigation_strategies": [
+        "Replace premium with observable restraint.",
+        "Require separate market-position evidence.",
+        "Treat premium as interpretation, never direct visual fact."
+      ],
+      "confidence_rules": {
+        "high": "Premium positioning is explicitly stated or externally corroborated.",
+        "medium": "Surface restraint aligns with product or category evidence.",
+        "low": "Premium is inferred from visual restraint alone."
+      },
+      "acceptable_form": "The surface is restrained: sparse copy, high whitespace, and controlled product imagery.",
+      "unacceptable_form": "The brand reads as premium because it is restrained."
+    }
+  ],
+  "safe_perceptual_augmentation_zones": [
+    "Direct screenshots, source quotes, HTML structure, or repeated visual signals are present.",
+    "The finding names a concrete surface mechanism.",
+    "The interpretation is conditional.",
+    "The prose separates claim, observation, implication, and limitation.",
+    "Pattern vocabulary follows evidence.",
+    "Contradiction is recorded as claim/signal, not defect.",
+    "Emotional temperature is tied to pacing, density, hierarchy, color, motion, or interaction.",
+    "Weak evidence is written as a limitation or review question."
+  ],
+  "high_risk_narrative_zones": [
+    "Copy-only evidence pool.",
+    "Unavailable, obstructed, or stale screenshots.",
+    "Famous-brand reputation likely fills evidence gaps.",
+    "Emotionally loaded categories such as wellness, finance, AI, and luxury.",
+    "Sparse or generic evidence.",
+    "Pattern names without mechanisms.",
+    "Authority, trust, support, sophistication, leadership, or premium status claims.",
+    "Expected tension with no evidence-backed tradeoff.",
+    "Motion, cinematic, or interface claims stated in copy but not captured."
+  ],
+  "dimensions_most_vulnerable_to_overreach": [
+    {
+      "dimension": "percepcion",
+      "risk": "Invented audience readings, trust claims, authority claims, and emotional projection.",
+      "control": "Require source type and corroboration status."
+    },
+    {
+      "dimension": "diferenciacion",
+      "risk": "False uniqueness, leadership language, and unsupported category distinction.",
+      "control": "Require comparison anchor or state that comparison is unavailable."
+    },
+    {
+      "dimension": "vitalidad",
+      "risk": "Cinematic inflation, momentum claims, and unsupported community or cultural energy.",
+      "control": "Require timestamped activity, motion evidence, or channel behavior."
+    },
+    {
+      "dimension": "presencia",
+      "risk": "Weak evidence amplification and treating thin public presence as a strategy verdict.",
+      "control": "Treat absence as evidence limitation unless the absence itself is measured and relevant."
+    },
+    {
+      "dimension": "coherencia",
+      "risk": "Narrative over-binding and generic cohesion language.",
+      "control": "Separate repeated motif, design-system claim, and verified component behavior."
+    }
+  ],
+  "editorial_acceptance_gate": [
+    "Does it name at least one observable signal?",
+    "Does it distinguish source claim from observed behavior?",
+    "Does every interpretation use conditional language unless directly stated?",
+    "Does it avoid prestige-coded adjectives as analysis?",
+    "Does it avoid importing signals from prior cases?",
+    "Does any tension have evidence on both sides?",
+    "Does emotional temperature cite the mechanism that creates it?",
+    "Does low-confidence material remain a limitation or review question?",
+    "Would the sentence still be true if brand fame were ignored?",
+    "Does the prose improve specificity without increasing invented intent?"
+  ]
+}

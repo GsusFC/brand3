@@ -1,0 +1,74 @@
+{
+  "approved_count": 2,
+  "blocked_after_review_count": 3,
+  "captures": [
+    {
+      "brand_name": "Allbirds",
+      "capture_id": "allbirds",
+      "phase_one_eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/allbirds/phase_one_dataset_eligibility.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/allbirds/reviewed_dataset_eligibility.json"
+      ],
+      "review_status": "approved",
+      "reviewed_eligible": true
+    },
+    {
+      "brand_name": "Headspace",
+      "capture_id": "headspace",
+      "phase_one_eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/headspace/phase_one_dataset_eligibility.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/headspace/reviewed_dataset_eligibility.json"
+      ],
+      "review_status": "rejected",
+      "reviewed_eligible": false
+    },
+    {
+      "brand_name": "Linear",
+      "capture_id": "linear",
+      "phase_one_eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/linear/phase_one_dataset_eligibility.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/linear/reviewed_dataset_eligibility.json"
+      ],
+      "review_status": "rejected",
+      "reviewed_eligible": false
+    },
+    {
+      "brand_name": "OpenAI",
+      "capture_id": "openai",
+      "phase_one_eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/openai/phase_one_dataset_eligibility.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/openai/reviewed_dataset_eligibility.json"
+      ],
+      "review_status": "needs_more_evidence",
+      "reviewed_eligible": false
+    },
+    {
+      "brand_name": "The Verge",
+      "capture_id": "the-verge",
+      "phase_one_eligible": false,
+      "record_paths": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/the-verge/phase_one_dataset_eligibility.json",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/records/the-verge/reviewed_dataset_eligibility.json"
+      ],
+      "review_status": "approved",
+      "reviewed_eligible": true
+    }
+  ],
+  "created_at": "2026-05-11T21:05:47.419019Z",
+  "eligible_after_review_count": 2,
+  "needs_more_evidence_count": 1,
+  "output_root": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two",
+  "phase": "phase_two",
+  "rejected_count": 2,
+  "reviewed_captures": 5,
+  "schema_version": "phase-two-manifest-1",
+  "source_phase_one_root": "examples/visual_signature/phase_one",
+  "source_reviews_path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/phase_two/reviews/review_records.json",
+  "total_captures": 5,
+  "validation_errors": [],
+  "validation_passed": true
+}

@@ -1,0 +1,2676 @@
+{
+  "categories": {
+    "ai_native": {
+      "category": "ai_native",
+      "category_averages": {
+        "component_density": 0.939,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.979,
+        "density_agreement_score": 0.775,
+        "dom_viewport_agreement_score": 0.583,
+        "dom_viewport_disagreement_severity_score": 0.3,
+        "extraction_confidence": 0.646,
+        "palette_agreement_score": 0.775,
+        "palette_complexity": 0.68,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.685,
+        "signal_usability": 0.515,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.097,
+        "viewport_density_score": 0.638,
+        "viewport_whitespace": 0.483,
+        "visible_cta_weight": 0.867,
+        "vision_confidence": 0.836
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.431,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.786
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 5,
+          "low": 3,
+          "medium": 4
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 2,
+          "minor": 4,
+          "moderate": 1,
+          "none": 5
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "balanced_blocks": 1,
+          "blank": 1,
+          "dense_grid": 7,
+          "sparse_single_focus": 3
+        },
+        "viewport_density": {
+          "balanced": 1,
+          "dense": 7,
+          "sparse": 4
+        },
+        "viewport_whitespace_band": {
+          "high": 2,
+          "low": 5,
+          "very_high": 5
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.939,
+          "count": 12,
+          "iqr": 0.117,
+          "median": 1.0,
+          "q1": 0.883,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.979,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.775,
+          "count": 12,
+          "iqr": 0.225,
+          "median": 1.0,
+          "q1": 0.775,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.583,
+          "count": 12,
+          "iqr": 0.625,
+          "median": 0.5,
+          "q1": 0.375,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.3,
+          "count": 12,
+          "iqr": 0.338,
+          "median": 0.25,
+          "q1": 0.0,
+          "q3": 0.338
+        },
+        "extraction_confidence": {
+          "average": 0.646,
+          "count": 12,
+          "iqr": 0.051,
+          "median": 0.641,
+          "q1": 0.621,
+          "q3": 0.673
+        },
+        "palette_agreement_score": {
+          "average": 0.775,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 0.775,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.68,
+          "count": 12,
+          "iqr": 0.257,
+          "median": 0.736,
+          "q1": 0.576,
+          "q3": 0.833
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.685,
+          "count": 12,
+          "iqr": 0.072,
+          "median": 0.681,
+          "q1": 0.649,
+          "q3": 0.721
+        },
+        "signal_usability": {
+          "average": 0.515,
+          "count": 12,
+          "iqr": 0.111,
+          "median": 0.508,
+          "q1": 0.46,
+          "q3": 0.571
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.097,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0
+        },
+        "viewport_density_score": {
+          "average": 0.638,
+          "count": 12,
+          "iqr": 0.7,
+          "median": 0.9,
+          "q1": 0.2,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.483,
+          "count": 12,
+          "iqr": 0.81,
+          "median": 0.497,
+          "q1": 0.046,
+          "q3": 0.856
+        },
+        "visible_cta_weight": {
+          "average": 0.867,
+          "count": 12,
+          "iqr": 0.2,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 1.0
+        },
+        "vision_confidence": {
+          "average": 0.836,
+          "count": 12,
+          "iqr": 0.038,
+          "median": 0.851,
+          "q1": 0.829,
+          "q3": 0.866
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "consumer_app": {
+      "category": "consumer_app",
+      "category_averages": {
+        "component_density": 0.813,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.854,
+        "density_agreement_score": 0.775,
+        "dom_viewport_agreement_score": 0.542,
+        "dom_viewport_disagreement_severity_score": 0.321,
+        "extraction_confidence": 0.643,
+        "palette_agreement_score": 0.737,
+        "palette_complexity": 0.758,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.676,
+        "signal_usability": 0.501,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.155,
+        "viewport_density_score": 0.783,
+        "viewport_whitespace": 0.335,
+        "visible_cta_weight": 0.717,
+        "vision_confidence": 0.831
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.51,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.802
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 4,
+          "low": 3,
+          "medium": 5
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 2,
+          "minor": 5,
+          "moderate": 1,
+          "none": 4
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "blank": 1,
+          "dense_grid": 10,
+          "sparse_single_focus": 1
+        },
+        "viewport_density": {
+          "dense": 10,
+          "sparse": 2
+        },
+        "viewport_whitespace_band": {
+          "high": 1,
+          "low": 6,
+          "moderate": 3,
+          "very_high": 2
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.813,
+          "count": 12,
+          "iqr": 0.302,
+          "median": 0.761,
+          "q1": 0.698,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.854,
+          "count": 12,
+          "iqr": 0.062,
+          "median": 1.0,
+          "q1": 0.938,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.775,
+          "count": 12,
+          "iqr": 0.225,
+          "median": 1.0,
+          "q1": 0.775,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.542,
+          "count": 12,
+          "iqr": 0.625,
+          "median": 0.5,
+          "q1": 0.375,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.321,
+          "count": 12,
+          "iqr": 0.338,
+          "median": 0.25,
+          "q1": 0.0,
+          "q3": 0.338
+        },
+        "extraction_confidence": {
+          "average": 0.643,
+          "count": 12,
+          "iqr": 0.041,
+          "median": 0.631,
+          "q1": 0.614,
+          "q3": 0.655
+        },
+        "palette_agreement_score": {
+          "average": 0.737,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 0.55,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.758,
+          "count": 12,
+          "iqr": 0.147,
+          "median": 0.771,
+          "q1": 0.711,
+          "q3": 0.858
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.676,
+          "count": 12,
+          "iqr": 0.056,
+          "median": 0.667,
+          "q1": 0.643,
+          "q3": 0.699
+        },
+        "signal_usability": {
+          "average": 0.501,
+          "count": 12,
+          "iqr": 0.085,
+          "median": 0.488,
+          "q1": 0.452,
+          "q3": 0.537
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.155,
+          "count": 12,
+          "iqr": 0.175,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.175
+        },
+        "viewport_density_score": {
+          "average": 0.783,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.9,
+          "q1": 0.9,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.335,
+          "count": 12,
+          "iqr": 0.373,
+          "median": 0.243,
+          "q1": 0.081,
+          "q3": 0.454
+        },
+        "visible_cta_weight": {
+          "average": 0.717,
+          "count": 12,
+          "iqr": 0.05,
+          "median": 0.8,
+          "q1": 0.75,
+          "q3": 0.8
+        },
+        "vision_confidence": {
+          "average": 0.831,
+          "count": 12,
+          "iqr": 0.052,
+          "median": 0.855,
+          "q1": 0.833,
+          "q3": 0.885
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "developer_first": {
+      "category": "developer_first",
+      "category_averages": {
+        "component_density": 0.96,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 1.0,
+        "density_agreement_score": 0.7,
+        "dom_viewport_agreement_score": 0.625,
+        "dom_viewport_disagreement_severity_score": 0.254,
+        "extraction_confidence": 0.657,
+        "palette_agreement_score": 0.925,
+        "palette_complexity": 0.753,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.696,
+        "signal_usability": 0.532,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.212,
+        "viewport_density_score": 0.55,
+        "viewport_whitespace": 0.504,
+        "visible_cta_weight": 0.933,
+        "vision_confidence": 0.828
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.418,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.784
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 7,
+          "low": 4,
+          "medium": 1
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 1,
+          "minor": 1,
+          "moderate": 3,
+          "none": 7
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "balanced_blocks": 4,
+          "dense_grid": 4,
+          "sparse_single_focus": 4
+        },
+        "viewport_density": {
+          "balanced": 4,
+          "dense": 4,
+          "sparse": 4
+        },
+        "viewport_whitespace_band": {
+          "high": 3,
+          "low": 4,
+          "very_high": 5
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.96,
+          "count": 12,
+          "iqr": 0.072,
+          "median": 1.0,
+          "q1": 0.928,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.7,
+          "count": 12,
+          "iqr": 0.9,
+          "median": 1.0,
+          "q1": 0.1,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.625,
+          "count": 12,
+          "iqr": 1.0,
+          "median": 1.0,
+          "q1": 0.0,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.254,
+          "count": 12,
+          "iqr": 0.6,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.6
+        },
+        "extraction_confidence": {
+          "average": 0.657,
+          "count": 12,
+          "iqr": 0.078,
+          "median": 0.675,
+          "q1": 0.617,
+          "q3": 0.695
+        },
+        "palette_agreement_score": {
+          "average": 0.925,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.753,
+          "count": 12,
+          "iqr": 0.102,
+          "median": 0.77,
+          "q1": 0.718,
+          "q3": 0.82
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.696,
+          "count": 12,
+          "iqr": 0.098,
+          "median": 0.718,
+          "q1": 0.649,
+          "q3": 0.747
+        },
+        "signal_usability": {
+          "average": 0.532,
+          "count": 12,
+          "iqr": 0.151,
+          "median": 0.567,
+          "q1": 0.46,
+          "q3": 0.611
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.212,
+          "count": 12,
+          "iqr": 0.27,
+          "median": 0.03,
+          "q1": 0.0,
+          "q3": 0.27
+        },
+        "viewport_density_score": {
+          "average": 0.55,
+          "count": 12,
+          "iqr": 0.7,
+          "median": 0.55,
+          "q1": 0.2,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.504,
+          "count": 12,
+          "iqr": 0.666,
+          "median": 0.539,
+          "q1": 0.142,
+          "q3": 0.808
+        },
+        "visible_cta_weight": {
+          "average": 0.933,
+          "count": 12,
+          "iqr": 0.2,
+          "median": 1.0,
+          "q1": 0.8,
+          "q3": 1.0
+        },
+        "vision_confidence": {
+          "average": 0.828,
+          "count": 12,
+          "iqr": 0.025,
+          "median": 0.833,
+          "q1": 0.82,
+          "q3": 0.844
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "ecommerce": {
+      "category": "ecommerce",
+      "category_averages": {
+        "component_density": 0.959,
+        "composition_agreement_score": 0.971,
+        "composition_stability": 1.0,
+        "cta_density": 0.875,
+        "density_agreement_score": 0.737,
+        "dom_viewport_agreement_score": 0.5,
+        "dom_viewport_disagreement_severity_score": 0.35,
+        "extraction_confidence": 0.658,
+        "palette_agreement_score": 0.737,
+        "palette_complexity": 0.798,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.698,
+        "signal_usability": 0.535,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.332,
+        "viewport_density_score": 0.842,
+        "viewport_whitespace": 0.247,
+        "visible_cta_weight": 0.708,
+        "vision_confidence": 0.853
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.485,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.797
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 4,
+          "low": 4,
+          "medium": 4
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 2,
+          "minor": 4,
+          "moderate": 2,
+          "none": 4
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "dense_grid": 11,
+          "sparse_single_focus": 1
+        },
+        "viewport_density": {
+          "dense": 11,
+          "sparse": 1
+        },
+        "viewport_whitespace_band": {
+          "low": 8,
+          "moderate": 3,
+          "very_high": 1
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.959,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 0.971,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.875,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.737,
+          "count": 12,
+          "iqr": 0.562,
+          "median": 1.0,
+          "q1": 0.438,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.5,
+          "count": 12,
+          "iqr": 1.0,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.35,
+          "count": 12,
+          "iqr": 0.6,
+          "median": 0.25,
+          "q1": 0.0,
+          "q3": 0.6
+        },
+        "extraction_confidence": {
+          "average": 0.658,
+          "count": 12,
+          "iqr": 0.084,
+          "median": 0.667,
+          "q1": 0.608,
+          "q3": 0.691
+        },
+        "palette_agreement_score": {
+          "average": 0.737,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 0.55,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.798,
+          "count": 12,
+          "iqr": 0.109,
+          "median": 0.831,
+          "q1": 0.777,
+          "q3": 0.886
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.698,
+          "count": 12,
+          "iqr": 0.106,
+          "median": 0.713,
+          "q1": 0.631,
+          "q3": 0.737
+        },
+        "signal_usability": {
+          "average": 0.535,
+          "count": 12,
+          "iqr": 0.163,
+          "median": 0.558,
+          "q1": 0.432,
+          "q3": 0.595
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.332,
+          "count": 12,
+          "iqr": 0.225,
+          "median": 0.18,
+          "q1": 0.18,
+          "q3": 0.405
+        },
+        "viewport_density_score": {
+          "average": 0.842,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.9,
+          "q1": 0.9,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.247,
+          "count": 12,
+          "iqr": 0.119,
+          "median": 0.192,
+          "q1": 0.143,
+          "q3": 0.262
+        },
+        "visible_cta_weight": {
+          "average": 0.708,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.8
+        },
+        "vision_confidence": {
+          "average": 0.853,
+          "count": 12,
+          "iqr": 0.036,
+          "median": 0.863,
+          "q1": 0.846,
+          "q3": 0.881
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "editorial_media": {
+      "category": "editorial_media",
+      "category_averages": {
+        "component_density": 0.972,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.979,
+        "density_agreement_score": 0.85,
+        "dom_viewport_agreement_score": 0.583,
+        "dom_viewport_disagreement_severity_score": 0.258,
+        "extraction_confidence": 0.632,
+        "palette_agreement_score": 0.737,
+        "palette_complexity": 0.716,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.667,
+        "signal_usability": 0.487,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.157,
+        "viewport_density_score": 0.813,
+        "viewport_whitespace": 0.428,
+        "visible_cta_weight": 0.842,
+        "vision_confidence": 0.847
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.406,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.781
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 4,
+          "low": 2,
+          "medium": 6
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 1,
+          "minor": 6,
+          "moderate": 1,
+          "none": 4
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "balanced_blocks": 3,
+          "dense_grid": 9
+        },
+        "viewport_density": {
+          "balanced": 3,
+          "dense": 9
+        },
+        "viewport_whitespace_band": {
+          "high": 4,
+          "low": 4,
+          "moderate": 2,
+          "very_high": 2
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.972,
+          "count": 12,
+          "iqr": 0.005,
+          "median": 1.0,
+          "q1": 0.995,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.979,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.85,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.583,
+          "count": 12,
+          "iqr": 0.5,
+          "median": 0.5,
+          "q1": 0.5,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.258,
+          "count": 12,
+          "iqr": 0.25,
+          "median": 0.25,
+          "q1": 0.0,
+          "q3": 0.25
+        },
+        "extraction_confidence": {
+          "average": 0.632,
+          "count": 12,
+          "iqr": 0.063,
+          "median": 0.643,
+          "q1": 0.599,
+          "q3": 0.661
+        },
+        "palette_agreement_score": {
+          "average": 0.737,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 0.55,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.716,
+          "count": 12,
+          "iqr": 0.139,
+          "median": 0.681,
+          "q1": 0.66,
+          "q3": 0.799
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.667,
+          "count": 12,
+          "iqr": 0.078,
+          "median": 0.683,
+          "q1": 0.624,
+          "q3": 0.702
+        },
+        "signal_usability": {
+          "average": 0.487,
+          "count": 12,
+          "iqr": 0.119,
+          "median": 0.512,
+          "q1": 0.422,
+          "q3": 0.541
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.157,
+          "count": 12,
+          "iqr": 0.04,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.04
+        },
+        "viewport_density_score": {
+          "average": 0.813,
+          "count": 12,
+          "iqr": 0.088,
+          "median": 0.9,
+          "q1": 0.812,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.428,
+          "count": 12,
+          "iqr": 0.477,
+          "median": 0.43,
+          "q1": 0.214,
+          "q3": 0.691
+        },
+        "visible_cta_weight": {
+          "average": 0.842,
+          "count": 12,
+          "iqr": 0.125,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.925
+        },
+        "vision_confidence": {
+          "average": 0.847,
+          "count": 12,
+          "iqr": 0.043,
+          "median": 0.859,
+          "q1": 0.841,
+          "q3": 0.884
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "finance_fintech": {
+      "category": "finance_fintech",
+      "category_averages": {
+        "component_density": 0.944,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.917,
+        "density_agreement_score": 0.625,
+        "dom_viewport_agreement_score": 0.542,
+        "dom_viewport_disagreement_severity_score": 0.371,
+        "extraction_confidence": 0.645,
+        "palette_agreement_score": 0.85,
+        "palette_complexity": 0.766,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.682,
+        "signal_usability": 0.511,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.167,
+        "viewport_density_score": 0.813,
+        "viewport_whitespace": 0.372,
+        "visible_cta_weight": 0.775,
+        "vision_confidence": 0.853
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.481,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.796
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 6,
+          "low": 5,
+          "medium": 1
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 3,
+          "minor": 1,
+          "moderate": 2,
+          "none": 6
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "balanced_blocks": 1,
+          "dense_grid": 10,
+          "sparse_single_focus": 1
+        },
+        "viewport_density": {
+          "balanced": 1,
+          "dense": 10,
+          "sparse": 1
+        },
+        "viewport_whitespace_band": {
+          "high": 2,
+          "low": 5,
+          "moderate": 3,
+          "very_high": 2
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.944,
+          "count": 12,
+          "iqr": 0.026,
+          "median": 1.0,
+          "q1": 0.974,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.917,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.625,
+          "count": 12,
+          "iqr": 0.9,
+          "median": 1.0,
+          "q1": 0.1,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.542,
+          "count": 12,
+          "iqr": 1.0,
+          "median": 0.75,
+          "q1": 0.0,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.371,
+          "count": 12,
+          "iqr": 0.7,
+          "median": 0.125,
+          "q1": 0.0,
+          "q3": 0.7
+        },
+        "extraction_confidence": {
+          "average": 0.645,
+          "count": 12,
+          "iqr": 0.04,
+          "median": 0.653,
+          "q1": 0.626,
+          "q3": 0.666
+        },
+        "palette_agreement_score": {
+          "average": 0.85,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 1.0,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.766,
+          "count": 12,
+          "iqr": 0.133,
+          "median": 0.794,
+          "q1": 0.704,
+          "q3": 0.837
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.682,
+          "count": 12,
+          "iqr": 0.055,
+          "median": 0.694,
+          "q1": 0.654,
+          "q3": 0.709
+        },
+        "signal_usability": {
+          "average": 0.511,
+          "count": 12,
+          "iqr": 0.086,
+          "median": 0.528,
+          "q1": 0.467,
+          "q3": 0.553
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.167,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0
+        },
+        "viewport_density_score": {
+          "average": 0.813,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.9,
+          "q1": 0.9,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.372,
+          "count": 12,
+          "iqr": 0.51,
+          "median": 0.312,
+          "q1": 0.14,
+          "q3": 0.65
+        },
+        "visible_cta_weight": {
+          "average": 0.775,
+          "count": 12,
+          "iqr": 0.025,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.825
+        },
+        "vision_confidence": {
+          "average": 0.853,
+          "count": 12,
+          "iqr": 0.035,
+          "median": 0.861,
+          "q1": 0.842,
+          "q3": 0.877
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "local_service_small_business": {
+      "category": "local_service_small_business",
+      "category_averages": {
+        "component_density": 0.929,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.95,
+        "density_agreement_score": 0.64,
+        "dom_viewport_agreement_score": 0.4,
+        "dom_viewport_disagreement_severity_score": 0.42,
+        "extraction_confidence": 0.616,
+        "palette_agreement_score": 0.73,
+        "palette_complexity": 0.747,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.65,
+        "signal_usability": 0.462,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.1,
+        "viewport_density_score": 0.76,
+        "viewport_whitespace": 0.339,
+        "visible_cta_weight": 0.8,
+        "vision_confidence": 0.845
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.455,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.5,
+        "score": 0.766
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 2,
+          "low": 4,
+          "medium": 4
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 2,
+          "minor": 4,
+          "moderate": 2,
+          "none": 2
+        },
+        "interpretation_status": {
+          "interpretable": 10
+        },
+        "viewport_composition": {
+          "dense_grid": 8,
+          "sparse_single_focus": 2
+        },
+        "viewport_density": {
+          "dense": 8,
+          "sparse": 2
+        },
+        "viewport_whitespace_band": {
+          "low": 4,
+          "moderate": 4,
+          "very_high": 2
+        }
+      },
+      "interpretable_count": 10,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.929,
+          "count": 10,
+          "iqr": 0.091,
+          "median": 0.984,
+          "q1": 0.909,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.95,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.64,
+          "count": 10,
+          "iqr": 0.9,
+          "median": 1.0,
+          "q1": 0.1,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.4,
+          "count": 10,
+          "iqr": 0.5,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 0.5
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.42,
+          "count": 10,
+          "iqr": 0.35,
+          "median": 0.25,
+          "q1": 0.25,
+          "q3": 0.6
+        },
+        "extraction_confidence": {
+          "average": 0.616,
+          "count": 10,
+          "iqr": 0.041,
+          "median": 0.629,
+          "q1": 0.597,
+          "q3": 0.637
+        },
+        "palette_agreement_score": {
+          "average": 0.73,
+          "count": 10,
+          "iqr": 0.45,
+          "median": 0.55,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.747,
+          "count": 10,
+          "iqr": 0.194,
+          "median": 0.824,
+          "q1": 0.664,
+          "q3": 0.858
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.65,
+          "count": 10,
+          "iqr": 0.054,
+          "median": 0.66,
+          "q1": 0.617,
+          "q3": 0.671
+        },
+        "signal_usability": {
+          "average": 0.462,
+          "count": 10,
+          "iqr": 0.083,
+          "median": 0.477,
+          "q1": 0.411,
+          "q3": 0.494
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.1,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.0
+        },
+        "viewport_density_score": {
+          "average": 0.76,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 0.9,
+          "q1": 0.9,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.339,
+          "count": 10,
+          "iqr": 0.266,
+          "median": 0.287,
+          "q1": 0.1,
+          "q3": 0.366
+        },
+        "visible_cta_weight": {
+          "average": 0.8,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.8
+        },
+        "vision_confidence": {
+          "average": 0.845,
+          "count": 10,
+          "iqr": 0.044,
+          "median": 0.863,
+          "q1": 0.834,
+          "q3": 0.878
+        }
+      },
+      "sample_count": 10,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "nonprofit_education": {
+      "category": "nonprofit_education",
+      "category_averages": {
+        "component_density": 0.943,
+        "composition_agreement_score": 0.971,
+        "composition_stability": 1.0,
+        "cta_density": 0.917,
+        "density_agreement_score": 0.617,
+        "dom_viewport_agreement_score": 0.417,
+        "dom_viewport_disagreement_severity_score": 0.433,
+        "extraction_confidence": 0.632,
+        "palette_agreement_score": 0.737,
+        "palette_complexity": 0.815,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.669,
+        "signal_usability": 0.491,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.238,
+        "viewport_density_score": 0.9,
+        "viewport_whitespace": 0.189,
+        "visible_cta_weight": 0.733,
+        "vision_confidence": 0.872
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.455,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.791
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 3,
+          "low": 5,
+          "medium": 4
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 3,
+          "minor": 4,
+          "moderate": 2,
+          "none": 3
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "dense_grid": 12
+        },
+        "viewport_density": {
+          "dense": 12
+        },
+        "viewport_whitespace_band": {
+          "high": 1,
+          "low": 7,
+          "moderate": 4
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.943,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 0.971,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.917,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.617,
+          "count": 12,
+          "iqr": 0.9,
+          "median": 1.0,
+          "q1": 0.1,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.417,
+          "count": 12,
+          "iqr": 0.625,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 0.625
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.433,
+          "count": 12,
+          "iqr": 0.512,
+          "median": 0.25,
+          "q1": 0.188,
+          "q3": 0.7
+        },
+        "extraction_confidence": {
+          "average": 0.632,
+          "count": 12,
+          "iqr": 0.067,
+          "median": 0.653,
+          "q1": 0.602,
+          "q3": 0.669
+        },
+        "palette_agreement_score": {
+          "average": 0.737,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 0.55,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.815,
+          "count": 12,
+          "iqr": 0.106,
+          "median": 0.807,
+          "q1": 0.768,
+          "q3": 0.874
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.669,
+          "count": 12,
+          "iqr": 0.078,
+          "median": 0.692,
+          "q1": 0.629,
+          "q3": 0.707
+        },
+        "signal_usability": {
+          "average": 0.491,
+          "count": 12,
+          "iqr": 0.121,
+          "median": 0.526,
+          "q1": 0.428,
+          "q3": 0.549
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.238,
+          "count": 12,
+          "iqr": 0.385,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.385
+        },
+        "viewport_density_score": {
+          "average": 0.9,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.9,
+          "q1": 0.9,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.189,
+          "count": 12,
+          "iqr": 0.293,
+          "median": 0.152,
+          "q1": 0.035,
+          "q3": 0.328
+        },
+        "visible_cta_weight": {
+          "average": 0.733,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.8
+        },
+        "vision_confidence": {
+          "average": 0.872,
+          "count": 12,
+          "iqr": 0.022,
+          "median": 0.883,
+          "q1": 0.863,
+          "q3": 0.885
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "premium_luxury": {
+      "category": "premium_luxury",
+      "category_averages": {
+        "component_density": 0.898,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.886,
+        "density_agreement_score": 0.591,
+        "dom_viewport_agreement_score": 0.409,
+        "dom_viewport_disagreement_severity_score": 0.45,
+        "extraction_confidence": 0.622,
+        "palette_agreement_score": 0.755,
+        "palette_complexity": 0.665,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.673,
+        "signal_usability": 0.496,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.304,
+        "viewport_density_score": 0.709,
+        "viewport_whitespace": 0.417,
+        "visible_cta_weight": 0.745,
+        "vision_confidence": 0.817
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.54,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.55,
+        "score": 0.795
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 3,
+          "low": 5,
+          "medium": 3
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 3,
+          "minor": 3,
+          "moderate": 2,
+          "none": 3
+        },
+        "interpretation_status": {
+          "interpretable": 11
+        },
+        "viewport_composition": {
+          "blank": 2,
+          "dense_grid": 8,
+          "sparse_single_focus": 1
+        },
+        "viewport_density": {
+          "dense": 8,
+          "sparse": 3
+        },
+        "viewport_whitespace_band": {
+          "high": 1,
+          "low": 6,
+          "moderate": 1,
+          "very_high": 3
+        }
+      },
+      "interpretable_count": 11,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.898,
+          "count": 11,
+          "iqr": 0.027,
+          "median": 1.0,
+          "q1": 0.973,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 11,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 11,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.886,
+          "count": 11,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.591,
+          "count": 11,
+          "iqr": 0.9,
+          "median": 1.0,
+          "q1": 0.1,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.409,
+          "count": 11,
+          "iqr": 0.75,
+          "median": 0.5,
+          "q1": 0.0,
+          "q3": 0.75
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.45,
+          "count": 11,
+          "iqr": 0.675,
+          "median": 0.25,
+          "q1": 0.125,
+          "q3": 0.8
+        },
+        "extraction_confidence": {
+          "average": 0.622,
+          "count": 11,
+          "iqr": 0.064,
+          "median": 0.634,
+          "q1": 0.621,
+          "q3": 0.685
+        },
+        "palette_agreement_score": {
+          "average": 0.755,
+          "count": 11,
+          "iqr": 0.45,
+          "median": 0.55,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.665,
+          "count": 11,
+          "iqr": 0.276,
+          "median": 0.716,
+          "q1": 0.54,
+          "q3": 0.817
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 11,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.673,
+          "count": 11,
+          "iqr": 0.075,
+          "median": 0.669,
+          "q1": 0.655,
+          "q3": 0.73
+        },
+        "signal_usability": {
+          "average": 0.496,
+          "count": 11,
+          "iqr": 0.116,
+          "median": 0.491,
+          "q1": 0.47,
+          "q3": 0.586
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 11,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.304,
+          "count": 11,
+          "iqr": 0.56,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.56
+        },
+        "viewport_density_score": {
+          "average": 0.709,
+          "count": 11,
+          "iqr": 0.35,
+          "median": 0.9,
+          "q1": 0.55,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.417,
+          "count": 11,
+          "iqr": 0.579,
+          "median": 0.224,
+          "q1": 0.151,
+          "q3": 0.73
+        },
+        "visible_cta_weight": {
+          "average": 0.745,
+          "count": 11,
+          "iqr": 0.0,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.8
+        },
+        "vision_confidence": {
+          "average": 0.817,
+          "count": 11,
+          "iqr": 0.094,
+          "median": 0.833,
+          "q1": 0.764,
+          "q3": 0.858
+        }
+      },
+      "sample_count": 11,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "saas": {
+      "category": "saas",
+      "category_averages": {
+        "component_density": 0.924,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.958,
+        "density_agreement_score": 0.925,
+        "dom_viewport_agreement_score": 0.833,
+        "dom_viewport_disagreement_severity_score": 0.125,
+        "extraction_confidence": 0.665,
+        "palette_agreement_score": 0.888,
+        "palette_complexity": 0.726,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.709,
+        "signal_usability": 0.551,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.347,
+        "viewport_density_score": 0.725,
+        "viewport_whitespace": 0.446,
+        "visible_cta_weight": 0.858,
+        "vision_confidence": 0.827
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.461,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.792
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 9,
+          "low": 1,
+          "medium": 2
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 1,
+          "minor": 2,
+          "none": 9
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "balanced_blocks": 4,
+          "dense_grid": 7,
+          "sparse_single_focus": 1
+        },
+        "viewport_density": {
+          "balanced": 4,
+          "dense": 7,
+          "sparse": 1
+        },
+        "viewport_whitespace_band": {
+          "high": 2,
+          "low": 4,
+          "moderate": 1,
+          "very_high": 5
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.924,
+          "count": 12,
+          "iqr": 0.061,
+          "median": 1.0,
+          "q1": 0.939,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.958,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.925,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.833,
+          "count": 12,
+          "iqr": 0.125,
+          "median": 1.0,
+          "q1": 0.875,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.125,
+          "count": 12,
+          "iqr": 0.062,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.062
+        },
+        "extraction_confidence": {
+          "average": 0.665,
+          "count": 12,
+          "iqr": 0.092,
+          "median": 0.686,
+          "q1": 0.619,
+          "q3": 0.711
+        },
+        "palette_agreement_score": {
+          "average": 0.888,
+          "count": 12,
+          "iqr": 0.113,
+          "median": 1.0,
+          "q1": 0.887,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.726,
+          "count": 12,
+          "iqr": 0.116,
+          "median": 0.712,
+          "q1": 0.666,
+          "q3": 0.782
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.709,
+          "count": 12,
+          "iqr": 0.108,
+          "median": 0.738,
+          "q1": 0.653,
+          "q3": 0.761
+        },
+        "signal_usability": {
+          "average": 0.551,
+          "count": 12,
+          "iqr": 0.167,
+          "median": 0.597,
+          "q1": 0.465,
+          "q3": 0.632
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.347,
+          "count": 12,
+          "iqr": 0.745,
+          "median": 0.14,
+          "q1": 0.0,
+          "q3": 0.745
+        },
+        "viewport_density_score": {
+          "average": 0.725,
+          "count": 12,
+          "iqr": 0.35,
+          "median": 0.9,
+          "q1": 0.55,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.446,
+          "count": 12,
+          "iqr": 0.656,
+          "median": 0.592,
+          "q1": 0.08,
+          "q3": 0.736
+        },
+        "visible_cta_weight": {
+          "average": 0.858,
+          "count": 12,
+          "iqr": 0.2,
+          "median": 0.85,
+          "q1": 0.8,
+          "q3": 1.0
+        },
+        "vision_confidence": {
+          "average": 0.827,
+          "count": 12,
+          "iqr": 0.064,
+          "median": 0.838,
+          "q1": 0.798,
+          "q3": 0.862
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "template_like_saas": {
+      "category": "template_like_saas",
+      "category_averages": {
+        "component_density": 0.957,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.979,
+        "density_agreement_score": 0.7,
+        "dom_viewport_agreement_score": 0.583,
+        "dom_viewport_disagreement_severity_score": 0.342,
+        "extraction_confidence": 0.663,
+        "palette_agreement_score": 0.812,
+        "palette_complexity": 0.774,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.708,
+        "signal_usability": 0.55,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.178,
+        "viewport_density_score": 0.754,
+        "viewport_whitespace": 0.357,
+        "visible_cta_weight": 0.833,
+        "vision_confidence": 0.847
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.433,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.6,
+        "score": 0.787
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 6,
+          "low": 4,
+          "medium": 2
+        },
+        "dom_viewport_disagreement_severity": {
+          "major": 3,
+          "minor": 2,
+          "moderate": 1,
+          "none": 6
+        },
+        "interpretation_status": {
+          "interpretable": 12
+        },
+        "viewport_composition": {
+          "balanced_blocks": 1,
+          "dense_grid": 9,
+          "sparse_single_focus": 2
+        },
+        "viewport_density": {
+          "balanced": 1,
+          "dense": 9,
+          "sparse": 2
+        },
+        "viewport_whitespace_band": {
+          "high": 1,
+          "low": 6,
+          "moderate": 3,
+          "very_high": 2
+        }
+      },
+      "interpretable_count": 12,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.957,
+          "count": 12,
+          "iqr": 0.014,
+          "median": 1.0,
+          "q1": 0.986,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.979,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.7,
+          "count": 12,
+          "iqr": 0.9,
+          "median": 1.0,
+          "q1": 0.1,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.583,
+          "count": 12,
+          "iqr": 1.0,
+          "median": 0.75,
+          "q1": 0.0,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.342,
+          "count": 12,
+          "iqr": 0.7,
+          "median": 0.125,
+          "q1": 0.0,
+          "q3": 0.7
+        },
+        "extraction_confidence": {
+          "average": 0.663,
+          "count": 12,
+          "iqr": 0.072,
+          "median": 0.669,
+          "q1": 0.634,
+          "q3": 0.705
+        },
+        "palette_agreement_score": {
+          "average": 0.812,
+          "count": 12,
+          "iqr": 0.45,
+          "median": 1.0,
+          "q1": 0.55,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.774,
+          "count": 12,
+          "iqr": 0.119,
+          "median": 0.791,
+          "q1": 0.703,
+          "q3": 0.822
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.708,
+          "count": 12,
+          "iqr": 0.085,
+          "median": 0.716,
+          "q1": 0.672,
+          "q3": 0.757
+        },
+        "signal_usability": {
+          "average": 0.55,
+          "count": 12,
+          "iqr": 0.132,
+          "median": 0.562,
+          "q1": 0.494,
+          "q3": 0.626
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 12,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.178,
+          "count": 12,
+          "iqr": 0.205,
+          "median": 0.0,
+          "q1": 0.0,
+          "q3": 0.205
+        },
+        "viewport_density_score": {
+          "average": 0.754,
+          "count": 12,
+          "iqr": 0.088,
+          "median": 0.9,
+          "q1": 0.812,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.357,
+          "count": 12,
+          "iqr": 0.243,
+          "median": 0.269,
+          "q1": 0.193,
+          "q3": 0.436
+        },
+        "visible_cta_weight": {
+          "average": 0.833,
+          "count": 12,
+          "iqr": 0.05,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.85
+        },
+        "vision_confidence": {
+          "average": 0.847,
+          "count": 12,
+          "iqr": 0.024,
+          "median": 0.845,
+          "q1": 0.834,
+          "q3": 0.858
+        }
+      },
+      "sample_count": 12,
+      "version": "visual-signature-category-baseline-mvp-1"
+    },
+    "wellness_lifestyle": {
+      "category": "wellness_lifestyle",
+      "category_averages": {
+        "component_density": 0.98,
+        "composition_agreement_score": 1.0,
+        "composition_stability": 1.0,
+        "cta_density": 0.875,
+        "density_agreement_score": 0.73,
+        "dom_viewport_agreement_score": 0.55,
+        "dom_viewport_disagreement_severity_score": 0.255,
+        "extraction_confidence": 0.685,
+        "palette_agreement_score": 0.865,
+        "palette_complexity": 0.808,
+        "signal_availability": 1.0,
+        "signal_coverage": 0.73,
+        "signal_usability": 0.585,
+        "structural_agreement_score": 1.0,
+        "typography_complexity": 0.406,
+        "viewport_density_score": 0.725,
+        "viewport_whitespace": 0.362,
+        "visible_cta_weight": 0.782,
+        "vision_confidence": 0.835
+      },
+      "confidence": {
+        "coverage": 1.0,
+        "limitations": [
+          "sample_below_deeper_analysis_target"
+        ],
+        "metric_discriminability": 0.456,
+        "metric_fill": 1.0,
+        "sample_adequacy": 0.5,
+        "score": 0.766
+      },
+      "distributions": {
+        "dom_viewport_agreement_level": {
+          "high": 4,
+          "low": 3,
+          "medium": 3
+        },
+        "dom_viewport_disagreement_severity": {
+          "minor": 3,
+          "moderate": 3,
+          "none": 4
+        },
+        "interpretation_status": {
+          "interpretable": 10
+        },
+        "viewport_composition": {
+          "balanced_blocks": 3,
+          "dense_grid": 6,
+          "sparse_single_focus": 1
+        },
+        "viewport_density": {
+          "balanced": 3,
+          "dense": 6,
+          "sparse": 1
+        },
+        "viewport_whitespace_band": {
+          "high": 1,
+          "low": 6,
+          "very_high": 3
+        }
+      },
+      "interpretable_count": 10,
+      "not_interpretable_count": 0,
+      "numeric_stats": {
+        "component_density": {
+          "average": 0.98,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_agreement_score": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "composition_stability": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "cta_density": {
+          "average": 0.875,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "density_agreement_score": {
+          "average": 0.73,
+          "count": 10,
+          "iqr": 0.675,
+          "median": 1.0,
+          "q1": 0.325,
+          "q3": 1.0
+        },
+        "dom_viewport_agreement_score": {
+          "average": 0.55,
+          "count": 10,
+          "iqr": 0.875,
+          "median": 0.5,
+          "q1": 0.125,
+          "q3": 1.0
+        },
+        "dom_viewport_disagreement_severity_score": {
+          "average": 0.255,
+          "count": 10,
+          "iqr": 0.512,
+          "median": 0.25,
+          "q1": 0.0,
+          "q3": 0.512
+        },
+        "extraction_confidence": {
+          "average": 0.685,
+          "count": 10,
+          "iqr": 0.039,
+          "median": 0.681,
+          "q1": 0.671,
+          "q3": 0.71
+        },
+        "palette_agreement_score": {
+          "average": 0.865,
+          "count": 10,
+          "iqr": 0.337,
+          "median": 1.0,
+          "q1": 0.663,
+          "q3": 1.0
+        },
+        "palette_complexity": {
+          "average": 0.808,
+          "count": 10,
+          "iqr": 0.163,
+          "median": 0.837,
+          "q1": 0.745,
+          "q3": 0.907
+        },
+        "signal_availability": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "signal_coverage": {
+          "average": 0.73,
+          "count": 10,
+          "iqr": 0.041,
+          "median": 0.728,
+          "q1": 0.716,
+          "q3": 0.757
+        },
+        "signal_usability": {
+          "average": 0.585,
+          "count": 10,
+          "iqr": 0.064,
+          "median": 0.582,
+          "q1": 0.563,
+          "q3": 0.627
+        },
+        "structural_agreement_score": {
+          "average": 1.0,
+          "count": 10,
+          "iqr": 0.0,
+          "median": 1.0,
+          "q1": 1.0,
+          "q3": 1.0
+        },
+        "typography_complexity": {
+          "average": 0.406,
+          "count": 10,
+          "iqr": 0.885,
+          "median": 0.26,
+          "q1": 0.0,
+          "q3": 0.885
+        },
+        "viewport_density_score": {
+          "average": 0.725,
+          "count": 10,
+          "iqr": 0.35,
+          "median": 0.9,
+          "q1": 0.55,
+          "q3": 0.9
+        },
+        "viewport_whitespace": {
+          "average": 0.362,
+          "count": 10,
+          "iqr": 0.532,
+          "median": 0.203,
+          "q1": 0.137,
+          "q3": 0.669
+        },
+        "visible_cta_weight": {
+          "average": 0.782,
+          "count": 10,
+          "iqr": 0.156,
+          "median": 0.8,
+          "q1": 0.8,
+          "q3": 0.956
+        },
+        "vision_confidence": {
+          "average": 0.835,
+          "count": 10,
+          "iqr": 0.036,
+          "median": 0.849,
+          "q1": 0.824,
+          "q3": 0.86
+        }
+      },
+      "sample_count": 10,
+      "version": "visual-signature-category-baseline-mvp-1"
+    }
+  },
+  "input_dir": "examples/visual_signature/calibration_corpus/baselines/first_pass/eligible_payloads",
+  "payload_count": 139,
+  "version": "visual-signature-category-baseline-mvp-1"
+}

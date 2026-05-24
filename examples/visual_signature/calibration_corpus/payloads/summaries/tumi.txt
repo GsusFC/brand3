@@ -1,0 +1,38 @@
+Expected category: premium_luxury
+Notes: Premium retail brand closer to mainstream ecommerce behavior.
+
+== Tumi ==
+URL: https://www.tumi.com
+Interpretation status: interpretable
+Extraction confidence: 0.72 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.64, consistency_coverage=0.72]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.68
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.72
+
+Visual summaries:
+- palette preview: #ffffff[###] #1b1c1e[###] #002fa4[###] #f1f1f1[###] #000000[###] #667282[###]
+- typography: sofia_regular, sans-serif !important
+- layout: header=True; nav=False; hero=True; sections=0; density=sparse; patterns=flex,multi_column
+- components: button=116, cta=12, form=20, tabs=32, modal=2, pricing=4
+- consistency: overall=0.68; color=0.68; type=0.82; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0e0[###] #606060[###] #c0c0c0[###] #2080c0[###] #ffe0e0[###] #e0e0ff[###] #808080[###]
+- viewport palette: #ffffff[###] #e0e0e0[###] #606060[###] #c0c0c0[###] #2080c0[###] #ffe0e0[###] #e0e0ff[###] #808080[###]
+- composition: density=sparse; whitespace=100%; classification=blank
+- viewport composition: density=sparse; whitespace=100%; classification=blank
+- vision confidence: 0.74 (medium)
+- viewport confidence: 0.74 (medium)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

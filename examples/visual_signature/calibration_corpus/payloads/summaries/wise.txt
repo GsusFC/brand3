@@ -1,0 +1,38 @@
+Expected category: finance_fintech
+Notes: Consumer fintech with high-clarity conversion flows.
+
+== Wise ==
+URL: https://wise.com
+Interpretation status: interpretable
+Extraction confidence: 0.73 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.69, consistency_coverage=0.72]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.68
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.50
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.72
+
+Visual summaries:
+- palette preview: #ffffff[###] #f0263c[###] #0e0f0c[###] #163300[###] #231d9a[###] #9fe870[###]
+- typography: Inter, helvetica, arial
+- layout: header=False; nav=True; hero=True; sections=32; density=balanced; patterns=grid,flex,multi_column
+- components: button=46, cta=48, form=6, card=12, accordion=12, pricing=4
+- consistency: overall=0.64; color=0.68; type=0.65; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #a0a0a0[###] #ffffff[###] #000000[###] #202000[###] #60a040[###] #80a0a0[###] #60a0a0[###] #808080[###]
+- viewport palette: #a0a0a0[###] #ffffff[###] #000000[###] #202000[###] #60a040[###] #80a0a0[###] #60a0a0[###] #808080[###]
+- composition: density=dense; whitespace=13%; classification=dense_grid
+- viewport composition: density=dense; whitespace=13%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

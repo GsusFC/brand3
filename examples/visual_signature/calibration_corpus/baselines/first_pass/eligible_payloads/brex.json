@@ -1,0 +1,526 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T01:51:02.721086",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.brex.com",
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 42,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Brex",
+  "calibration": {
+    "expected_category": "finance_fintech",
+    "notes": "B2B fintech with polished enterprise SaaS-like visual language."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#333333",
+      "#ffffff",
+      "#ff5900",
+      "#212121",
+      "#122124",
+      "#f46a35"
+    ],
+    "background_candidates": [
+      "#333333",
+      "#ffffff",
+      "#212121",
+      "#122124",
+      "#f46a35",
+      "#dfe3e7"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#333333",
+      "#ffffff",
+      "#ff5900",
+      "#212121",
+      "#8b8d98",
+      "#6f737b",
+      "#122124",
+      "#f46a35"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#333333",
+        "occurrences": 74,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ffffff",
+        "occurrences": 58,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#ff5900",
+        "occurrences": 46,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#212121",
+        "occurrences": 32,
+        "role": "accent",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#8b8d98",
+        "occurrences": 12,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#6f737b",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#122124",
+        "occurrences": 6,
+        "role": "border",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#f46a35",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#dfe3e7",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffbc96",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#91ecea",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4bb4b1",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e8905e",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#15191e",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#437d88",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f9f9f9",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e7e7e7",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#6e7879",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#707070",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#141414",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#333333",
+      "#212121",
+      "#6f737b",
+      "#122124",
+      "#15191e",
+      "#437d88"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 30,
+        "labels": [
+          "Get started",
+          "See Brex in action",
+          "DoorDash",
+          "SeatGeek",
+          "Lemonade",
+          "&lt;-",
+          "-&gt;"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 9,
+        "labels": [
+          "Get started",
+          "See Brex in action",
+          "DoorDash",
+          "SeatGeek",
+          "Lemonade",
+          "&lt;-",
+          "-&gt;",
+          "![Startups",
+          "Learn more"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 8,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 58,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "form",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Get started",
+      "See Brex in action",
+      "DoorDash",
+      "SeatGeek",
+      "Lemonade",
+      "&lt;-",
+      "-&gt;",
+      "![Startups"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.72,
+    "confidence": 0.585,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.464,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.585,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.573
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.676
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.75,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 62,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "HP Logos Mobile-Mar11",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.brex.com/_next/image?url=https%3A%2F%2Fbrand.brex.com%2Ftransform%2F548ca209-9208-4ab9-a7c4-83720f834250%2FHP-Logos-Mobile-Mar11&amp;w=3840&amp;q=85"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.346,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.807,
+      "edge_density": 0.053,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.748
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 298158,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.brex.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/finance_fintech/brex.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 79,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14706,
+          "ratio": 0.7353
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1964,
+          "ratio": 0.0982
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1132,
+          "ratio": 0.0566
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 796,
+          "ratio": 0.0398
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 198,
+          "ratio": 0.0099
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 196,
+          "ratio": 0.0098
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 136,
+          "ratio": 0.0068
+        },
+        {
+          "hex": "#ff6000",
+          "occurrences": 133,
+          "ratio": 0.0066
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.346,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.807,
+      "edge_density": 0.053,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.748
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.807,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.872
+    },
+    "viewport_palette": {
+      "color_count": 79,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 14706,
+          "ratio": 0.7353
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 1964,
+          "ratio": 0.0982
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 1132,
+          "ratio": 0.0566
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 796,
+          "ratio": 0.0398
+        },
+        {
+          "hex": "#c0c0c0",
+          "occurrences": 198,
+          "ratio": 0.0099
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 196,
+          "ratio": 0.0098
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 136,
+          "ratio": 0.0068
+        },
+        {
+          "hex": "#ff6000",
+          "occurrences": 133,
+          "ratio": 0.0066
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.748,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.807,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.872
+    }
+  },
+  "website_url": "https://www.brex.com"
+}

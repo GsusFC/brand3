@@ -1,0 +1,613 @@
+{
+  "calibration_run_id": "6bf278708eea4c4887aaebe799477f59",
+  "generated_at": "2026-05-11T22:27:42.269547Z",
+  "record_count": 5,
+  "record_type": "calibration_records",
+  "records": [
+    {
+      "agreement_state": "contradicted",
+      "brand_name": "Allbirds",
+      "calibration_id": "calibration_allbirds",
+      "capture_id": "allbirds",
+      "category": "ecommerce",
+      "claim": {
+        "claim_id": "claim_allbirds_state",
+        "claim_kind": "capture_state",
+        "claim_value": "REVIEW_REQUIRED_STATE",
+        "confidence": 0.89,
+        "confidence_bucket": "high",
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png"
+        ],
+        "lineage_refs": [
+          "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+          "capture:allbirds",
+          "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+          "clean_attempt:/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+          "mutation:19b338a23e1f4d21af54be0ce7dc9c09",
+          "transition:raw_capture_created",
+          "transition:human_review_required",
+          "transition:exact_safe_affordance_detected",
+          "transition:safe_mutation_attempted",
+          "transition:safe_mutation_failed"
+        ],
+        "notes": [
+          "source_state:REVIEW_REQUIRED_STATE",
+          "phase_one_eligible:False",
+          "mutation_attempted:True"
+        ],
+        "record_type": "perception_claim",
+        "schema_version": "visual-signature-calibration-claim-1",
+        "taxonomy_version": "phase-zero-taxonomy-1"
+      },
+      "confidence_bucket": "high",
+      "diagnostics": {
+        "affordance_diagnostics": {
+          "affordance_category_distribution": {
+            "ambiguous_action": 1,
+            "close_control": 3,
+            "login_action": 1,
+            "unknown_action": 119
+          },
+          "affordance_owner_distribution": {
+            "active_obstruction": 1,
+            "header_navigation": 10,
+            "social_link": 6,
+            "unknown_owner": 97,
+            "unrelated_cart_drawer": 7,
+            "unrelated_chat_widget": 3
+          },
+          "interaction_policy_distribution": {
+            "requires_human_review": 120,
+            "safe_to_dismiss": 3,
+            "unsafe_to_mutate": 1
+          },
+          "requires_human_review_candidates_encountered": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_encountered": 0
+        },
+        "capture_manifest": {
+          "candidate_click_targets": 2,
+          "perceptual_state": "REVIEW_REQUIRED_STATE",
+          "rejected_click_targets": 122,
+          "requires_human_review_candidates_rejected": 120,
+          "safe_to_dismiss_candidates_clicked": 2,
+          "safe_to_dismiss_candidates_not_clicked": 1,
+          "unsafe_to_mutate_candidates_rejected": 1
+        },
+        "mutation_audit": {
+          "attempted": true,
+          "risk_level": "low",
+          "successful": false
+        },
+        "review_required": true,
+        "state": "REVIEW_REQUIRED_STATE",
+        "state_confidence": 0.89
+      },
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.png",
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png"
+      ],
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:allbirds",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+        "clean_attempt:/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/allbirds.clean-attempt.png",
+        "mutation:19b338a23e1f4d21af54be0ce7dc9c09",
+        "transition:raw_capture_created",
+        "transition:human_review_required",
+        "transition:exact_safe_affordance_detected",
+        "transition:safe_mutation_attempted",
+        "transition:safe_mutation_failed",
+        "review:review_allbirds"
+      ],
+      "notes": [
+        "phase_one_state:REVIEW_REQUIRED_STATE",
+        "phase_one_eligible:False",
+        "phase_one_blocked_reasons:review_required_not_completed,confidence_below_threshold",
+        "review_status:approved",
+        "visually_supported:partial",
+        "uncertainty_accepted:true",
+        "mutation_attempted:True",
+        "mutation_successful:False",
+        "capture_manifest_targets:124",
+        "dismissal_owner_types:6"
+      ],
+      "record_type": "calibration_record",
+      "review_outcome": {
+        "capture_id": "allbirds",
+        "notes": [
+          "Obstruction is visible and the safe affordance is plausible.",
+          "Partial visual support is sufficient for this dataset gate."
+        ],
+        "record_type": "review_outcome",
+        "review_id": "review_allbirds",
+        "review_status": "approved",
+        "reviewed_at": "2026-05-11T18:00:00Z",
+        "reviewer_id": "reviewer_alpha",
+        "schema_version": "visual-signature-calibration-review-outcome-1",
+        "taxonomy_version": "phase-zero-taxonomy-1",
+        "uncertainty_accepted": true,
+        "unsupported_inference_present": false,
+        "visually_supported": "partial"
+      },
+      "schema_version": "visual-signature-calibration-record-1",
+      "source_breakdown": {
+        "affordance_targets": 124,
+        "capture_manifest": 1,
+        "dismissal_audit": 1,
+        "phase_one_eligibility": 1,
+        "phase_one_mutation_audit": 1,
+        "phase_one_state": 1,
+        "phase_one_transition_records": 5,
+        "phase_two_review": 1
+      },
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_alignment": "overconfident",
+      "website_url": "https://www.allbirds.com"
+    },
+    {
+      "agreement_state": "confirmed",
+      "brand_name": "Headspace",
+      "calibration_id": "calibration_headspace",
+      "capture_id": "headspace",
+      "category": "wellness/lifestyle",
+      "claim": {
+        "claim_id": "claim_headspace_state",
+        "claim_kind": "capture_state",
+        "claim_value": "UNSAFE_MUTATION_BLOCKED",
+        "confidence": 1.0,
+        "confidence_bucket": "high",
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+        ],
+        "lineage_refs": [
+          "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+          "capture:headspace",
+          "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+        ],
+        "notes": [
+          "source_state:UNSAFE_MUTATION_BLOCKED",
+          "phase_one_eligible:False"
+        ],
+        "record_type": "perception_claim",
+        "schema_version": "visual-signature-calibration-claim-1",
+        "taxonomy_version": "phase-zero-taxonomy-1"
+      },
+      "confidence_bucket": "high",
+      "diagnostics": {
+        "affordance_diagnostics": {
+          "affordance_category_distribution": {},
+          "affordance_owner_distribution": {},
+          "interaction_policy_distribution": {},
+          "requires_human_review_candidates_encountered": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_encountered": 0
+        },
+        "capture_manifest": {
+          "candidate_click_targets": 0,
+          "perceptual_state": "UNSAFE_MUTATION_BLOCKED",
+          "rejected_click_targets": 0,
+          "requires_human_review_candidates_rejected": 0,
+          "safe_to_dismiss_candidates_clicked": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_rejected": 0
+        },
+        "review_required": true,
+        "state": "UNSAFE_MUTATION_BLOCKED",
+        "state_confidence": 1.0
+      },
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/headspace.png"
+      ],
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:headspace",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+        "review:review_headspace"
+      ],
+      "notes": [
+        "phase_one_state:UNSAFE_MUTATION_BLOCKED",
+        "phase_one_eligible:False",
+        "phase_one_blocked_reasons:review_required_not_completed,confidence_below_threshold",
+        "review_status:rejected",
+        "visually_supported:no",
+        "capture_manifest_targets:0",
+        "dismissal_owner_types:0"
+      ],
+      "record_type": "calibration_record",
+      "review_outcome": {
+        "capture_id": "headspace",
+        "notes": [
+          "Protected environment classification is not a dataset-eligible capture."
+        ],
+        "record_type": "review_outcome",
+        "review_id": "review_headspace",
+        "review_status": "rejected",
+        "reviewed_at": "2026-05-11T18:20:00Z",
+        "reviewer_id": "reviewer_beta",
+        "schema_version": "visual-signature-calibration-review-outcome-1",
+        "taxonomy_version": "phase-zero-taxonomy-1",
+        "uncertainty_accepted": false,
+        "unsupported_inference_present": false,
+        "visually_supported": "no"
+      },
+      "schema_version": "visual-signature-calibration-record-1",
+      "source_breakdown": {
+        "affordance_targets": 0,
+        "capture_manifest": 1,
+        "dismissal_audit": 1,
+        "phase_one_eligibility": 1,
+        "phase_one_mutation_audit": 0,
+        "phase_one_state": 1,
+        "phase_one_transition_records": 2,
+        "phase_two_review": 1
+      },
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_alignment": "calibrated",
+      "website_url": "https://www.headspace.com"
+    },
+    {
+      "agreement_state": "confirmed",
+      "brand_name": "Linear",
+      "calibration_id": "calibration_linear",
+      "capture_id": "linear",
+      "category": "SaaS",
+      "claim": {
+        "claim_id": "claim_linear_state",
+        "claim_kind": "capture_state",
+        "claim_value": "OBSTRUCTED_STATE",
+        "confidence": 1.0,
+        "confidence_bucket": "high",
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/linear.png"
+        ],
+        "lineage_refs": [
+          "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+          "capture:linear",
+          "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+        ],
+        "notes": [
+          "source_state:OBSTRUCTED_STATE",
+          "phase_one_eligible:False"
+        ],
+        "record_type": "perception_claim",
+        "schema_version": "visual-signature-calibration-claim-1",
+        "taxonomy_version": "phase-zero-taxonomy-1"
+      },
+      "confidence_bucket": "high",
+      "diagnostics": {
+        "affordance_diagnostics": {
+          "affordance_category_distribution": {
+            "ambiguous_action": 1,
+            "close_control": 1,
+            "login_action": 2,
+            "unknown_action": 147
+          },
+          "affordance_owner_distribution": {
+            "active_obstruction": 3,
+            "header_navigation": 41,
+            "social_link": 5,
+            "unknown_owner": 100,
+            "unrelated_chat_widget": 2
+          },
+          "interaction_policy_distribution": {
+            "requires_human_review": 148,
+            "safe_to_dismiss": 1,
+            "unsafe_to_mutate": 2
+          },
+          "requires_human_review_candidates_encountered": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_encountered": 0
+        },
+        "capture_manifest": {
+          "candidate_click_targets": 0,
+          "perceptual_state": "OBSTRUCTED_STATE",
+          "rejected_click_targets": 151,
+          "requires_human_review_candidates_rejected": 148,
+          "safe_to_dismiss_candidates_clicked": 0,
+          "safe_to_dismiss_candidates_not_clicked": 1,
+          "unsafe_to_mutate_candidates_rejected": 2
+        },
+        "review_required": false,
+        "state": "OBSTRUCTED_STATE",
+        "state_confidence": 1.0
+      },
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/linear.png"
+      ],
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:linear",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+        "review:review_linear"
+      ],
+      "notes": [
+        "phase_one_state:OBSTRUCTED_STATE",
+        "phase_one_eligible:False",
+        "phase_one_blocked_reasons:confidence_below_threshold",
+        "review_status:rejected",
+        "visually_supported:no",
+        "capture_manifest_targets:151",
+        "dismissal_owner_types:5"
+      ],
+      "record_type": "calibration_record",
+      "review_outcome": {
+        "capture_id": "linear",
+        "notes": [
+          "The capture remains dominated by obstruction and candidate target discovery is weak."
+        ],
+        "record_type": "review_outcome",
+        "review_id": "review_linear",
+        "review_status": "rejected",
+        "reviewed_at": "2026-05-11T18:05:00Z",
+        "reviewer_id": "reviewer_beta",
+        "schema_version": "visual-signature-calibration-review-outcome-1",
+        "taxonomy_version": "phase-zero-taxonomy-1",
+        "uncertainty_accepted": false,
+        "unsupported_inference_present": false,
+        "visually_supported": "no"
+      },
+      "schema_version": "visual-signature-calibration-record-1",
+      "source_breakdown": {
+        "affordance_targets": 151,
+        "capture_manifest": 1,
+        "dismissal_audit": 1,
+        "phase_one_eligibility": 1,
+        "phase_one_mutation_audit": 0,
+        "phase_one_state": 1,
+        "phase_one_transition_records": 3,
+        "phase_two_review": 1
+      },
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_alignment": "calibrated",
+      "website_url": "https://linear.app"
+    },
+    {
+      "agreement_state": "unresolved",
+      "brand_name": "OpenAI",
+      "calibration_id": "calibration_openai",
+      "capture_id": "openai",
+      "category": "AI-native",
+      "claim": {
+        "claim_id": "claim_openai_state",
+        "claim_kind": "capture_state",
+        "claim_value": "OBSTRUCTED_STATE",
+        "confidence": 0.845,
+        "confidence_bucket": "high",
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/openai.png"
+        ],
+        "lineage_refs": [
+          "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+          "capture:openai",
+          "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+        ],
+        "notes": [
+          "source_state:OBSTRUCTED_STATE",
+          "phase_one_eligible:False"
+        ],
+        "record_type": "perception_claim",
+        "schema_version": "visual-signature-calibration-claim-1",
+        "taxonomy_version": "phase-zero-taxonomy-1"
+      },
+      "confidence_bucket": "high",
+      "diagnostics": {
+        "affordance_diagnostics": {
+          "affordance_category_distribution": {},
+          "affordance_owner_distribution": {},
+          "interaction_policy_distribution": {},
+          "requires_human_review_candidates_encountered": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_encountered": 0
+        },
+        "capture_manifest": {
+          "candidate_click_targets": 0,
+          "perceptual_state": "OBSTRUCTED_STATE",
+          "rejected_click_targets": 0,
+          "requires_human_review_candidates_rejected": 0,
+          "safe_to_dismiss_candidates_clicked": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_rejected": 0
+        },
+        "review_required": false,
+        "state": "OBSTRUCTED_STATE",
+        "state_confidence": 0.845
+      },
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/openai.png"
+      ],
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:openai",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+        "review:review_openai"
+      ],
+      "notes": [
+        "phase_one_state:OBSTRUCTED_STATE",
+        "phase_one_eligible:False",
+        "phase_one_blocked_reasons:confidence_below_threshold",
+        "review_status:needs_more_evidence",
+        "visually_supported:partial",
+        "capture_manifest_targets:0",
+        "dismissal_owner_types:0"
+      ],
+      "record_type": "calibration_record",
+      "review_outcome": {
+        "capture_id": "openai",
+        "notes": [
+          "The evidence is incomplete for a stable approval decision."
+        ],
+        "record_type": "review_outcome",
+        "review_id": "review_openai",
+        "review_status": "needs_more_evidence",
+        "reviewed_at": "2026-05-11T18:10:00Z",
+        "reviewer_id": "reviewer_gamma",
+        "schema_version": "visual-signature-calibration-review-outcome-1",
+        "taxonomy_version": "phase-zero-taxonomy-1",
+        "uncertainty_accepted": false,
+        "unsupported_inference_present": false,
+        "visually_supported": "partial"
+      },
+      "schema_version": "visual-signature-calibration-record-1",
+      "source_breakdown": {
+        "affordance_targets": 0,
+        "capture_manifest": 1,
+        "dismissal_audit": 1,
+        "phase_one_eligibility": 1,
+        "phase_one_mutation_audit": 0,
+        "phase_one_state": 1,
+        "phase_one_transition_records": 3,
+        "phase_two_review": 1
+      },
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_alignment": "uncertainty_accepted",
+      "website_url": "https://openai.com"
+    },
+    {
+      "agreement_state": "contradicted",
+      "brand_name": "The Verge",
+      "calibration_id": "calibration_the-verge",
+      "capture_id": "the-verge",
+      "category": "editorial/media",
+      "claim": {
+        "claim_id": "claim_the-verge_state",
+        "claim_kind": "capture_state",
+        "claim_value": "OBSTRUCTED_STATE",
+        "confidence": 0.89,
+        "confidence_bucket": "high",
+        "evidence_refs": [
+          "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/the-verge.png"
+        ],
+        "lineage_refs": [
+          "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+          "capture:the-verge",
+          "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json"
+        ],
+        "notes": [
+          "source_state:OBSTRUCTED_STATE",
+          "phase_one_eligible:False"
+        ],
+        "record_type": "perception_claim",
+        "schema_version": "visual-signature-calibration-claim-1",
+        "taxonomy_version": "phase-zero-taxonomy-1"
+      },
+      "confidence_bucket": "high",
+      "diagnostics": {
+        "affordance_diagnostics": {
+          "affordance_category_distribution": {
+            "ambiguous_action": 9,
+            "login_action": 1,
+            "subscription_action": 1,
+            "unknown_action": 277
+          },
+          "affordance_owner_distribution": {
+            "active_obstruction": 3,
+            "header_navigation": 39,
+            "social_link": 17,
+            "unknown_owner": 226,
+            "unrelated_chat_widget": 3
+          },
+          "interaction_policy_distribution": {
+            "requires_human_review": 286,
+            "unsafe_to_mutate": 2
+          },
+          "requires_human_review_candidates_encountered": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_encountered": 0
+        },
+        "capture_manifest": {
+          "candidate_click_targets": 0,
+          "perceptual_state": "OBSTRUCTED_STATE",
+          "rejected_click_targets": 288,
+          "requires_human_review_candidates_rejected": 286,
+          "safe_to_dismiss_candidates_clicked": 0,
+          "safe_to_dismiss_candidates_not_clicked": 0,
+          "unsafe_to_mutate_candidates_rejected": 2
+        },
+        "review_required": false,
+        "state": "OBSTRUCTED_STATE",
+        "state_confidence": 0.89
+      },
+      "evidence_refs": [
+        "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/screenshots/the-verge.png"
+      ],
+      "lineage_refs": [
+        "capture_manifest:examples/visual_signature/screenshots/capture_manifest.json",
+        "capture:the-verge",
+        "dismissal_audit:examples/visual_signature/screenshots/dismissal_audit.json",
+        "review:review_the_verge"
+      ],
+      "notes": [
+        "phase_one_state:OBSTRUCTED_STATE",
+        "phase_one_eligible:False",
+        "phase_one_blocked_reasons:confidence_below_threshold",
+        "review_status:approved",
+        "visually_supported:yes",
+        "uncertainty_accepted:true",
+        "capture_manifest_targets:288",
+        "dismissal_owner_types:5"
+      ],
+      "record_type": "calibration_record",
+      "review_outcome": {
+        "capture_id": "the-verge",
+        "notes": [
+          "Review confirms the evidence is visually supported without unsupported inference."
+        ],
+        "record_type": "review_outcome",
+        "review_id": "review_the_verge",
+        "review_status": "approved",
+        "reviewed_at": "2026-05-11T18:15:00Z",
+        "reviewer_id": "reviewer_alpha",
+        "schema_version": "visual-signature-calibration-review-outcome-1",
+        "taxonomy_version": "phase-zero-taxonomy-1",
+        "uncertainty_accepted": true,
+        "unsupported_inference_present": false,
+        "visually_supported": "yes"
+      },
+      "schema_version": "visual-signature-calibration-record-1",
+      "source_breakdown": {
+        "affordance_targets": 288,
+        "capture_manifest": 1,
+        "dismissal_audit": 1,
+        "phase_one_eligibility": 1,
+        "phase_one_mutation_audit": 0,
+        "phase_one_state": 1,
+        "phase_one_transition_records": 3,
+        "phase_two_review": 1
+      },
+      "taxonomy_version": "phase-zero-taxonomy-1",
+      "uncertainty_alignment": "overconfident",
+      "website_url": "https://www.theverge.com"
+    }
+  ],
+  "schema_version": "visual-signature-calibration-records-1",
+  "schema_versions": {
+    "calibration_claim": "visual-signature-calibration-claim-1",
+    "calibration_generated_file": "visual-signature-calibration-generated-file-1",
+    "calibration_manifest": "visual-signature-calibration-manifest-1",
+    "calibration_record": "visual-signature-calibration-record-1",
+    "calibration_records": "visual-signature-calibration-records-1",
+    "calibration_summary": "visual-signature-calibration-summary-1",
+    "review_outcome": "visual-signature-calibration-review-outcome-1"
+  },
+  "source_artifact_hashes": {
+    "examples/visual_signature/calibration_brands.json": "43c1f75398618cd042b4954745a7226a3660fc46ed2187dc2c97b83f7a31c780",
+    "examples/visual_signature/screenshots/capture_manifest.json": "85fdfed159fa60dc3598247d1ea25bc6b83fb20fffc01975eb1621e620734e8b",
+    "examples/visual_signature/screenshots/dismissal_audit.json": "b35c54d794643d6bc23d6d66150e08ccc3cc30cd62467d0b48bc18fa77335a97"
+  },
+  "source_artifact_refs": [
+    "examples/visual_signature/phase_one",
+    "examples/visual_signature/phase_two",
+    "examples/visual_signature/screenshots/capture_manifest.json",
+    "examples/visual_signature/screenshots/dismissal_audit.json",
+    "examples/visual_signature/calibration_brands.json"
+  ],
+  "source_brand_catalog_path": "examples/visual_signature/calibration_brands.json",
+  "source_capture_manifest_path": "examples/visual_signature/screenshots/capture_manifest.json",
+  "source_dismissal_audit_path": "examples/visual_signature/screenshots/dismissal_audit.json",
+  "source_phase_one_root": "examples/visual_signature/phase_one",
+  "source_phase_two_root": "examples/visual_signature/phase_two",
+  "taxonomy_version": "phase-zero-taxonomy-1"
+}

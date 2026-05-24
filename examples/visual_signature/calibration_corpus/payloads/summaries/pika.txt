@@ -1,0 +1,40 @@
+Expected category: ai_native
+Notes: AI video product with consumer creative visual style.
+
+== Pika ==
+URL: https://pika.art
+Interpretation status: interpretable
+Extraction confidence: 0.62 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.45, consistency_coverage=0.53]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.79
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.73
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.53
+
+Visual summaries:
+- palette preview: #0d0d0d[###] #ffffff[###] #ffc107[###] #ff3d00[###] #4caf50[###] #1976d2[###] #4267b2[###] #5865f2[###]
+- typography: none
+- layout: header=False; nav=True; hero=True; sections=0; density=balanced; patterns=flex
+- components: button=12, cta=4, modal=2
+- consistency: overall=0.51; color=0.68; type=0.20; component=0.66; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffe0e0[###] #000000[###] #ffffff[###] #2060a0[###] #202020[###] #402020[###] #c0a080[###] #c0c0a0[###]
+- viewport palette: #ffe0e0[###] #000000[###] #ffffff[###] #2060a0[###] #202020[###] #402020[###] #c0a080[###] #c0c0a0[###]
+- composition: density=dense; whitespace=3%; classification=dense_grid
+- viewport composition: density=dense; whitespace=3%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

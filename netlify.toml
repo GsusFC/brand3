@@ -1,0 +1,11 @@
+[build]
+  publish = "netlify"
+
+# Netlify is used as a public edge/proxy for the production FastAPI app.
+# The runtime itself stays on Fly.io because Brand3 needs a long-running
+# Python process, a background analysis queue, and persistent SQLite storage.
+[[redirects]]
+  from = "/*"
+  to = "https://brand3.fly.dev/:splat"
+  status = 200
+  force = true

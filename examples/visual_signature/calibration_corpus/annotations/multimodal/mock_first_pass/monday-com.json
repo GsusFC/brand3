@@ -1,0 +1,739 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:32:02.722927",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://monday.com",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "template like saas",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "high",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 788,
+    "video_count": 12
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Monday.com",
+  "calibration": {
+    "expected_category": "template_like_saas",
+    "notes": "Feature-heavy SaaS with repeated modules and conversion blocks."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#fe81e4",
+      "#6c6cff",
+      "#00d2d2",
+      "#00c875",
+      "#fa4270",
+      "#eca0ff"
+    ],
+    "background_candidates": [
+      "#535768",
+      "#000000",
+      "#ffffff",
+      "#333333"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#676879",
+      "#535768",
+      "#000000",
+      "#ffffff",
+      "#fe81e4",
+      "#6c6cff",
+      "#00d2d2",
+      "#a6a6a6"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#676879",
+        "occurrences": 36,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#535768",
+        "occurrences": 36,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000000",
+        "occurrences": 14,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.8,
+        "hex": "#ffffff",
+        "occurrences": 10,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#fe81e4",
+        "occurrences": 8,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#6c6cff",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#00d2d2",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#a6a6a6",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00c875",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#fa4270",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#eca0ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#6161ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00d0ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#c097fe",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#333333",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00a0ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00a1ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00beff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00d2ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00dfff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00e3ff",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffe000",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffbd00",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffa500",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#676879",
+      "#535768",
+      "#000000",
+      "#6161ff",
+      "#333333"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 92,
+        "labels": [
+          "AI",
+          "Research Agents Surface deep intelligence and actionable insights from any subje",
+          "Reporting Agents Automate status updates and performance reports on a set schedu",
+          "Insights Agents Spot risks and progress gaps before they become problems.",
+          "Meeting Assistants Schedule meetings, summarize calls, and extract action items.",
+          "Process Optimizers Identify, fix, and remove redundant or outdated data and proc",
+          "Create Your Own Agent Build a custom agent for any specific workflow or job."
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 14,
+        "labels": [
+          "Create your own solution",
+          "Get Started",
+          "Contact sales",
+          "Log in",
+          "Go to homepage",
+          "Read the case study",
+          "Explore our Trust Center",
+          "Learn more",
+          "monday for agents",
+          "Pricing"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 750,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 18,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 566,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.42,
+        "count": 28,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "accordion",
+      "tabs"
+    ],
+    "primary_ctas": [
+      "Create your own solution",
+      "Get Started",
+      "Contact sales",
+      "Log in",
+      "Go to homepage",
+      "Read the case study",
+      "Explore our Trust Center",
+      "Learn more"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.72,
+    "confidence": 0.595,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.464,
+    "typography_consistency": 0.2
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.595,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.555
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.671
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.6,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "flex",
+      "multi_column"
+    ],
+    "section_count": 46,
+    "visual_density": "dense"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "monday.com logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/658290685ff5e03443593ec3_monday.com.avif"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c7fc_logo-white-canva.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c7fa_logo-white-cc.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c812_logo-white-vistra.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c811_logo-white-universal.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c810_logo-white-holt.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c7fb_logo-white-lionsgate.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn.prod.website-files.com/656da6fea306219773d04208/69f1ebf0e3a90c211c06c7f9_logo-white-carrefour.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.2,
+    "font_families": [],
+    "heading_scale": "moderate",
+    "size_samples_px": [],
+    "weight_range": {}
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "dom_density_higher_than_viewport",
+        "dom_density_disagrees_with_viewport_first_fold"
+      ],
+      "dom_density": "dense",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "DOM suggests a denser page than the viewport first impression.",
+        "DOM suggests a denser page, but the viewport reads as spacious."
+      ],
+      "viewport_density": "sparse",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.136,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.682,
+      "edge_density": 0.048,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.894
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 189331,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://monday.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/monday-com.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 137,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 17903,
+          "ratio": 0.8952
+        },
+        {
+          "hex": "#6060e0",
+          "occurrences": 348,
+          "ratio": 0.0174
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 249,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#00c080",
+          "occurrences": 248,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#6060ff",
+          "occurrences": 201,
+          "ratio": 0.01
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 197,
+          "ratio": 0.0098
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 156,
+          "ratio": 0.0078
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 66,
+          "ratio": 0.0033
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.136,
+      "composition_classification": "sparse_single_focus",
+      "confidence": 0.682,
+      "edge_density": 0.048,
+      "visual_density": "sparse",
+      "whitespace_ratio": 0.894
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.682,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.835
+    },
+    "viewport_palette": {
+      "color_count": 137,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 17903,
+          "ratio": 0.8952
+        },
+        {
+          "hex": "#6060e0",
+          "occurrences": 348,
+          "ratio": 0.0174
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 249,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#00c080",
+          "occurrences": 248,
+          "ratio": 0.0124
+        },
+        {
+          "hex": "#6060ff",
+          "occurrences": 201,
+          "ratio": 0.01
+        },
+        {
+          "hex": "#000000",
+          "occurrences": 197,
+          "ratio": 0.0098
+        },
+        {
+          "hex": "#e0e0e0",
+          "occurrences": 156,
+          "ratio": 0.0078
+        },
+        {
+          "hex": "#808080",
+          "occurrences": 66,
+          "ratio": 0.0033
+        }
+      ]
+    },
+    "viewport_visual_density": "sparse",
+    "viewport_whitespace_ratio": 0.894,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.682,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.835
+    }
+  },
+  "website_url": "https://monday.com"
+}

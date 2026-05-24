@@ -1,0 +1,57 @@
+{
+  "document": "brand3_evidence_packet_linear_operability_test",
+  "version": 0,
+  "created_at": "2026-05-18T07:57:41.172065+00:00",
+  "scope": "offline_lab_after_one_normal_audit",
+  "target": {
+    "brand": "Linear",
+    "url": "https://linear.app",
+    "run_id": 80
+  },
+  "artifacts": {
+    "packet": "examples/reports/evidence_packet/linear.local_evidence_packet.v0.json",
+    "audit_output": "output/linear-20260518-095648.json"
+  },
+  "dimension_statuses": {
+    "coherencia": "ready",
+    "presencia": "thin",
+    "percepcion": "ready",
+    "diferenciacion": "abstain",
+    "vitalidad": "ready"
+  },
+  "counts": {
+    "finding_eligible_evidence": 10,
+    "evidence_not_eligible_for_findings": 24,
+    "requires_human_review": 1,
+    "source_inventory": 36
+  },
+  "evaluation": {
+    "preserves_strong_owned_evidence": true,
+    "preserves_strong_external_evidence": true,
+    "avoids_technical_artifacts_as_strategy": true,
+    "blocks_too_much": false,
+    "creates_cleaner_prompt_input": true,
+    "critical_gap": "Competitor discovery/comparison exists in the audit, but Evidence Packet v0 does not yet translate competitor_web_comparison into differentiation-ready evidence.",
+    "could_replace_current_evidence_preparation": "partially, only after competitor comparison extraction and official profile verification are implemented"
+  },
+  "case_interpretation": {
+    "coherencia": "Ready from multiple owned textual surfaces and non-review-gated evidence, with visual metrics kept as support/block signals rather than narrative basis.",
+    "presencia": "Thin despite strong audit presence because official/social/channel verification remains conservative.",
+    "percepcion": "Ready: non-empty eligible external perception evidence exists.",
+    "diferenciacion": "Abstain: this is the key result. The audit collected competitor evidence, but the packet has no path to make competitor comparison evidence finding-eligible yet.",
+    "vitalidad": "Ready from recent temporal activity evidence; URL-only recency artifacts are blocked rather than silently eligible."
+  },
+  "objective_conclusion": [
+    "Linear is a good case for the packet: it does not collapse under a strong stable brand.",
+    "The readiness layer is useful because it separates ready perception/vitality/coherence from unsupported differentiation.",
+    "The next implementation should not add more generic readiness rules; it should extract competitor_web_comparison into a conservative differentiation evidence shape."
+  ],
+  "recommended_next_step": "Implement a narrow offline extractor for competitor_web_comparison and discovery competitor metadata, then rerun Linear. Kill or pause the path if diferenciacion still abstains after that extractor.",
+  "non_goals_preserved": [
+    "no_prompt_rollout",
+    "no_scoring_change",
+    "no_renderer_change",
+    "no_visual_signature_change",
+    "no_runtime_integration"
+  ]
+}

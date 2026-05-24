@@ -1,0 +1,121 @@
+{
+  "agreement_availability_rate": 1.0,
+  "baseline_eligibility_rate": 0.965,
+  "generated_at": "2026-05-09T02:34:36.232511",
+  "interpretable_rate": 0.979,
+  "per_category": {
+    "ai_native": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "consumer_app": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "developer_first": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "ecommerce": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "editorial_media": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "finance_fintech": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "local_service_small_business": {
+      "eligibility_rate": 0.833,
+      "eligible": 10,
+      "interpretable": 11,
+      "interpretable_rate": 0.917,
+      "total": 12,
+      "viewport_availability_rate": 0.833,
+      "viewport_available": 10
+    },
+    "nonprofit_education": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "premium_luxury": {
+      "eligibility_rate": 0.917,
+      "eligible": 11,
+      "interpretable": 11,
+      "interpretable_rate": 0.917,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "saas": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "template_like_saas": {
+      "eligibility_rate": 1.0,
+      "eligible": 12,
+      "interpretable": 12,
+      "interpretable_rate": 1.0,
+      "total": 12,
+      "viewport_availability_rate": 1.0,
+      "viewport_available": 12
+    },
+    "wellness_lifestyle": {
+      "eligibility_rate": 0.833,
+      "eligible": 10,
+      "interpretable": 11,
+      "interpretable_rate": 0.917,
+      "total": 12,
+      "viewport_availability_rate": 0.917,
+      "viewport_available": 11
+    }
+  },
+  "schema_version": "visual-signature-corpus-metrics-1",
+  "screenshot_capture_failed": 3,
+  "screenshot_capture_ok": 141,
+  "total_records": 144,
+  "viewport_availability_rate": 0.979
+}

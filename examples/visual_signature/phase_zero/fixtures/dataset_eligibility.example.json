@@ -1,0 +1,36 @@
+{
+  "blocked_reasons": [],
+  "brand_name": "Example Brand",
+  "capture_id": "cap_phase_zero_example",
+  "confidence_threshold": 0.8,
+  "created_at": "2026-05-11T10:00:00Z",
+  "eligible": true,
+  "evidence_refs": [
+    "raw_screenshot_path",
+    "dom_snapshot_ref"
+  ],
+  "lineage_refs": [
+    "capture:phase-zero-example",
+    "mutation:mutation_phase_zero_example"
+  ],
+  "mutation_lineage_preserved": true,
+  "observed_confidence": 0.91,
+  "raw_evidence_preserved": true,
+  "reasons": [
+    "raw evidence preserved",
+    "schema valid",
+    "mutation lineage preserved",
+    "no unsupported inference",
+    "review completed"
+  ],
+  "record_id": "elig_phase_zero_example",
+  "record_type": "dataset_eligibility",
+  "review_completed": true,
+  "review_required": true,
+  "schema_valid": true,
+  "schema_version": "phase-zero-dataset-eligibility-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty_below_threshold": false,
+  "unsupported_inference_found": false,
+  "website_url": "https://example.com"
+}

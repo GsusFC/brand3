@@ -1,0 +1,26 @@
+{
+  "confidence_threshold": 0.8,
+  "known_unknown_labels": [
+    "insufficient_viewport",
+    "ambiguous_creative_intent",
+    "mixed_affordance_signals",
+    "hidden_navigation_uncertainty",
+    "aesthetic_uncertainty"
+  ],
+  "policy_type": "uncertainty_policy",
+  "reviewer_required_labels": [
+    "needs_human_validation",
+    "inference_not_supported",
+    "state_ambiguity"
+  ],
+  "reviewer_required_threshold": 0.65,
+  "schema_version": "phase-zero-uncertainty-policy-1",
+  "taxonomy_version": "phase-zero-taxonomy-1",
+  "uncertainty_reasons": [
+    "insufficient_viewport",
+    "ambiguous_creative_intent",
+    "mixed_affordance_signals",
+    "hidden_navigation_uncertainty",
+    "aesthetic_uncertainty"
+  ]
+}

@@ -1,0 +1,696 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T00:59:32.780212",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://hasura.io",
+  "annotations": {
+    "errors": [],
+    "overall_confidence": {
+      "factors": {
+        "evidence_specificity": 1.0,
+        "model_certainty": 0.668,
+        "screenshot_quality": 1.0,
+        "target_completeness": 1.0
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.884
+    },
+    "provider": {
+      "mock": true,
+      "model": "mock-visual-annotator-v1",
+      "name": "mock",
+      "prompt_version": "visual-signature-annotation-prompt-1"
+    },
+    "status": "annotated",
+    "targets": {
+      "category_cues": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_cues from available Visual Signature evidence."
+        ],
+        "label": "developer first",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "category_fit": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for category_fit from available Visual Signature evidence."
+        ],
+        "label": "aligned",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "human_presence": {
+        "confidence": 0.25,
+        "evidence": [
+          "Mock annotation for human_presence from available Visual Signature evidence."
+        ],
+        "label": "unknown",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "imagery_style": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for imagery_style from available Visual Signature evidence."
+        ],
+        "label": "product_ui",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "logo_prominence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for logo_prominence from available Visual Signature evidence."
+        ],
+        "label": "clear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "perceived_polish": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for perceived_polish from available Visual Signature evidence."
+        ],
+        "label": "medium",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "product_presence": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for product_presence from available Visual Signature evidence."
+        ],
+        "label": "unclear",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "template_likeness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for template_likeness from available Visual Signature evidence."
+        ],
+        "label": "low",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      },
+      "visual_distinctiveness": {
+        "confidence": 0.72,
+        "evidence": [
+          "Mock annotation for visual_distinctiveness from available Visual Signature evidence."
+        ],
+        "label": "moderate",
+        "limitations": [
+          "mock_provider_no_real_visual_semantics"
+        ],
+        "source": "viewport_screenshot"
+      }
+    },
+    "version": "visual-signature-annotations-mvp-1",
+    "warnings": []
+  },
+  "assets": {
+    "asset_mix": [
+      "icon"
+    ],
+    "background_image_count": 0,
+    "confidence": 0.34,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 26,
+    "video_count": 0
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Hasura",
+  "calibration": {
+    "expected_category": "developer_first",
+    "notes": "Technical platform with enterprise developer messaging."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#000614",
+      "#000615",
+      "#1863dc",
+      "#0056a7",
+      "#00754e",
+      "#14142a"
+    ],
+    "background_candidates": [
+      "#1f1f1f",
+      "#000614",
+      "#000615",
+      "#1863dc",
+      "#f5f5f5",
+      "#2a2a2a"
+    ],
+    "confidence": 0.9,
+    "dominant_colors": [
+      "#1f1f1f",
+      "#d0d0d0",
+      "#000614",
+      "#000615",
+      "#1863dc",
+      "#8e8e8e",
+      "#f5f5f5",
+      "#686868"
+    ],
+    "palette": [
+      {
+        "confidence": 0.85,
+        "hex": "#1f1f1f",
+        "occurrences": 18,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#d0d0d0",
+        "occurrences": 16,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.85,
+        "hex": "#000614",
+        "occurrences": 16,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.84,
+        "hex": "#000615",
+        "occurrences": 12,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#1863dc",
+        "occurrences": 8,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.76,
+        "hex": "#8e8e8e",
+        "occurrences": 8,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#f5f5f5",
+        "occurrences": 6,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#686868",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#2a2a2a",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#121212",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#000000",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#333333",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#0056a7",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#f4f4f4",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#e5f4ef",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#00754e",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#14142a",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#4e4b66",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#293c5b",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ededed",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#262626",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#9ca3af",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#acb7d4",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#ffffff",
+        "occurrences": 2,
+        "role": "background",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "high",
+    "text_color_candidates": [
+      "#1f1f1f",
+      "#d0d0d0",
+      "#000614",
+      "#000615",
+      "#1863dc",
+      "#8e8e8e"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 14,
+        "labels": [
+          "Cancel",
+          "Save My Preferences",
+          "Book Demo"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 6,
+        "labels": [
+          "Cookie Policy",
+          "Cancel",
+          "Save My Preferences",
+          "here",
+          "Book Demo",
+          "Contact Us"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.68,
+        "count": 22,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "form"
+      },
+      {
+        "confidence": 0.48,
+        "count": 4,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 10,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      }
+    ],
+    "confidence": 0.85,
+    "interaction_patterns": [
+      "form",
+      "modal"
+    ],
+    "primary_ctas": [
+      "Cookie Policy",
+      "Cancel",
+      "Save My Preferences",
+      "here",
+      "Book Demo",
+      "Contact Us"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.48,
+    "component_consistency": 0.7,
+    "confidence": 0.747,
+    "notes": [
+      "High color variety detected; verify whether this is systemized or incidental.",
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.614,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.747,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.632
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.721
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": false,
+    "layout_patterns": [
+      "grid",
+      "flex"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Cookieyes logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://cdn-cookieyes.com/assets/images/poweredbtcky.svg"
+      },
+      {
+        "alt": "Hasura",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://res.cloudinary.com/dh8fp23nd/image/upload/v1770621506/promptql-website/logos/promptql-logo-black_agseoy.svg"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "Helvetica",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "Arial",
+        "occurrences": 4,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "flat",
+    "size_samples_px": [
+      12.0,
+      14.0,
+      8.0,
+      14.0,
+      12.0,
+      14.0,
+      8.0,
+      14.0
+    ],
+    "weight_range": {
+      "max": 400,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "high",
+      "disagreement_flags": [],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [],
+      "viewport_density": "balanced",
+      "viewport_palette_complexity": 0.927
+    },
+    "composition": {
+      "color_variance": 0.111,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.667,
+      "edge_density": 0.04,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.507
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 212681,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://hasura.io",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/hasura.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 38,
+      "confidence": 0.758,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 9969,
+          "ratio": 0.4985
+        },
+        {
+          "hex": "#a0c0e0",
+          "occurrences": 4626,
+          "ratio": 0.2313
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 1877,
+          "ratio": 0.0939
+        },
+        {
+          "hex": "#e0ffe0",
+          "occurrences": 629,
+          "ratio": 0.0314
+        },
+        {
+          "hex": "#a0e0a0",
+          "occurrences": 582,
+          "ratio": 0.0291
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 371,
+          "ratio": 0.0186
+        },
+        {
+          "hex": "#a0e0c0",
+          "occurrences": 341,
+          "ratio": 0.017
+        },
+        {
+          "hex": "#c0e0c0",
+          "occurrences": 298,
+          "ratio": 0.0149
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.111,
+      "composition_classification": "balanced_blocks",
+      "confidence": 0.667,
+      "edge_density": 0.04,
+      "visual_density": "balanced",
+      "whitespace_ratio": 0.507
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.667,
+        "palette": 0.758,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.795
+    },
+    "viewport_palette": {
+      "color_count": 38,
+      "confidence": 0.758,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 9969,
+          "ratio": 0.4985
+        },
+        {
+          "hex": "#a0c0e0",
+          "occurrences": 4626,
+          "ratio": 0.2313
+        },
+        {
+          "hex": "#e0ffff",
+          "occurrences": 1877,
+          "ratio": 0.0939
+        },
+        {
+          "hex": "#e0ffe0",
+          "occurrences": 629,
+          "ratio": 0.0314
+        },
+        {
+          "hex": "#a0e0a0",
+          "occurrences": 582,
+          "ratio": 0.0291
+        },
+        {
+          "hex": "#c0e0e0",
+          "occurrences": 371,
+          "ratio": 0.0186
+        },
+        {
+          "hex": "#a0e0c0",
+          "occurrences": 341,
+          "ratio": 0.017
+        },
+        {
+          "hex": "#c0e0c0",
+          "occurrences": 298,
+          "ratio": 0.0149
+        }
+      ]
+    },
+    "viewport_visual_density": "balanced",
+    "viewport_whitespace_ratio": 0.507,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.667,
+        "palette": 0.758,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.795
+    }
+  },
+  "website_url": "https://hasura.io"
+}

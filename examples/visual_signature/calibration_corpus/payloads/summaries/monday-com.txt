@@ -1,0 +1,40 @@
+Expected category: template_like_saas
+Notes: Feature-heavy SaaS with repeated modules and conversion blocks.
+
+== Monday.com ==
+URL: https://monday.com
+Interpretation status: interpretable
+Extraction confidence: 0.67 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.56, consistency_coverage=0.59]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.59
+
+Visual summaries:
+- palette preview: #676879[###] #535768[###] #000000[###] #ffffff[###] #fe81e4[###] #6c6cff[###] #00d2d2[###] #a6a6a6[###]
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=46; density=dense; patterns=grid,flex,multi_column
+- components: button=92, cta=14, card=750, accordion=18, tabs=566, pricing=28
+- consistency: overall=0.46; color=0.48; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #6060e0[###] #404040[###] #00c080[###] #6060ff[###] #000000[###] #e0e0e0[###] #808080[###]
+- viewport palette: #ffffff[###] #6060e0[###] #404040[###] #00c080[###] #6060ff[###] #000000[###] #e0e0e0[###] #808080[###]
+- composition: density=sparse; whitespace=89%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=89%; classification=sparse_single_focus
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: low; flags=dom_density_higher_than_viewport,dom_density_disagrees_with_viewport_first_fold
+- agreement notes: DOM suggests a denser page than the viewport first impression.; DOM suggests a denser page, but the viewport reads as spacious.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

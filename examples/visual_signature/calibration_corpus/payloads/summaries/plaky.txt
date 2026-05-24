@@ -1,0 +1,40 @@
+Expected category: template_like_saas
+Notes: Lower-fame SaaS candidate for ordinary template-like page behavior.
+
+== Plaky ==
+URL: https://plaky.com
+Interpretation status: interpretable
+Extraction confidence: 0.62 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.47, consistency_coverage=0.46]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.46
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.46
+
+Visual summaries:
+- palette preview: #4d8aff[###] #172849[###]
+- typography: none
+- layout: header=False; nav=False; hero=False; sections=14; density=balanced; patterns=flex,multi_column
+- components: cta=7, card=54, accordion=14, tabs=10, pricing=10
+- consistency: overall=0.55; color=0.78; type=0.20; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #202040[###] #202020[###] #002020[###] #204060[###] #202060[###] #404040[###] #002040[###] #4080ff[###]
+- viewport palette: #202040[###] #202020[###] #002020[###] #204060[###] #202060[###] #404040[###] #002040[###] #4080ff[###]
+- composition: density=dense; whitespace=1%; classification=dense_grid
+- viewport composition: density=dense; whitespace=1%; classification=dense_grid
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

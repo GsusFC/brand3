@@ -1,0 +1,554 @@
+{
+  "acquisition": {
+    "acquired_at": "2026-05-09T02:33:35.339264",
+    "adapter": "firecrawl",
+    "errors": [],
+    "status_code": null,
+    "warnings": []
+  },
+  "analyzed_url": "https://www.noom.com",
+  "assets": {
+    "asset_mix": [
+      "icon",
+      "video"
+    ],
+    "background_image_count": 44,
+    "confidence": 0.38,
+    "icon_candidates": [],
+    "image_count": 0,
+    "logo_image_candidates": [],
+    "screenshot_available": false,
+    "svg_count": 58,
+    "video_count": 8
+  },
+  "baseline_eligibility": {
+    "baseline_eligible": true,
+    "failures": [],
+    "minimums": {
+      "signal_coverage": 0.7,
+      "viewport_height": 750,
+      "viewport_width": 1200
+    },
+    "observed": {
+      "viewport_height": 900,
+      "viewport_width": 1440
+    },
+    "signal_coverage": 1.0,
+    "warnings": []
+  },
+  "baseline_eligible": true,
+  "brand_name": "Noom",
+  "calibration": {
+    "expected_category": "wellness_lifestyle",
+    "notes": "Consumer wellness app with conversion and credibility messaging."
+  },
+  "colors": {
+    "accent_candidates": [
+      "#1a2e3b",
+      "#fc1d00",
+      "#ad925e",
+      "#276969"
+    ],
+    "background_candidates": [
+      "#ffffff",
+      "#191717",
+      "#444444",
+      "#1a2e3b",
+      "#fc1d00",
+      "#0a0a0a"
+    ],
+    "confidence": 0.85,
+    "dominant_colors": [
+      "#ffffff",
+      "#191717",
+      "#444444",
+      "#1a2e3b",
+      "#fc1d00",
+      "#0a0a0a",
+      "#ad925e",
+      "#000000"
+    ],
+    "palette": [
+      {
+        "confidence": 0.72,
+        "hex": "#ffffff",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#191717",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#444444",
+        "occurrences": 6,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.72,
+        "hex": "#1a2e3b",
+        "occurrences": 6,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#fc1d00",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#0a0a0a",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#ad925e",
+        "occurrences": 4,
+        "role": "text",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.68,
+        "hex": "#000000",
+        "occurrences": 4,
+        "role": "background",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.64,
+        "hex": "#276969",
+        "occurrences": 2,
+        "role": "text",
+        "source": "rendered_html"
+      }
+    ],
+    "palette_complexity": "medium",
+    "text_color_candidates": [
+      "#ffffff",
+      "#191717",
+      "#444444",
+      "#1a2e3b",
+      "#0a0a0a",
+      "#ad925e"
+    ]
+  },
+  "components": {
+    "components": [
+      {
+        "confidence": 0.72,
+        "count": 14,
+        "labels": [
+          "Play",
+          "CC/subtitles",
+          "Settings",
+          "Transcript",
+          "Picture-in-Picture",
+          "Fullscreen"
+        ],
+        "source": "rendered_html",
+        "type": "button"
+      },
+      {
+        "confidence": 0.62,
+        "count": 15,
+        "labels": [
+          "See if you qualify",
+          "Start your trial",
+          "SEE IF YOU QUALIFY",
+          "Find your plan",
+          "Play",
+          "CC/subtitles",
+          "Settings",
+          "Transcript",
+          "Picture-in-Picture",
+          "Fullscreen"
+        ],
+        "source": "rendered_html",
+        "type": "cta"
+      },
+      {
+        "confidence": 0.48,
+        "count": 2,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "card"
+      },
+      {
+        "confidence": 0.45,
+        "count": 34,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "accordion"
+      },
+      {
+        "confidence": 0.45,
+        "count": 60,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "tabs"
+      },
+      {
+        "confidence": 0.45,
+        "count": 6,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "modal"
+      },
+      {
+        "confidence": 0.42,
+        "count": 20,
+        "labels": [],
+        "source": "rendered_html",
+        "type": "pricing"
+      }
+    ],
+    "confidence": 0.9,
+    "interaction_patterns": [
+      "accordion",
+      "tabs",
+      "modal"
+    ],
+    "primary_ctas": [
+      "See if you qualify",
+      "Start your trial",
+      "SEE IF YOU QUALIFY",
+      "Find your plan",
+      "Play",
+      "CC/subtitles",
+      "Settings",
+      "Transcript"
+    ]
+  },
+  "consistency": {
+    "asset_consistency": 0.45,
+    "color_consistency": 0.68,
+    "component_consistency": 0.74,
+    "confidence": 0.757,
+    "notes": [
+      "No screenshot was available from the acquisition adapter."
+    ],
+    "overall_consistency": 0.684,
+    "typography_consistency": 0.82
+  },
+  "extraction_confidence": {
+    "factors": {
+      "acquisition": 0.65,
+      "consistency_coverage": 0.757,
+      "html_coverage": 0.9,
+      "signal_coverage": 0.638
+    },
+    "level": "medium",
+    "limitations": [
+      "screenshot_not_available"
+    ],
+    "score": 0.724
+  },
+  "interpretation_status": "interpretable",
+  "layout": {
+    "confidence": 0.45,
+    "has_footer": true,
+    "has_header": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_navigation": true,
+    "layout_patterns": [
+      "grid",
+      "multi_column",
+      "sticky_nav"
+    ],
+    "section_count": 0,
+    "visual_density": "sparse"
+  },
+  "logo": {
+    "candidates": [
+      {
+        "alt": "Noom Med",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/content/themes/Divi-child/images/noom-logo-med-crop.svg"
+      },
+      {
+        "alt": "Noom Weight",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/content/themes/Divi-child/images/noom-logo-weight.svg"
+      },
+      {
+        "alt": null,
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/tachyon/2024/10/noom-med-logo-2-1.png?w=1080"
+      },
+      {
+        "alt": "Noom Weight",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/tachyon/2024/10/noom-weight-logo.webp?w=1080"
+      },
+      {
+        "alt": "Black Healthline Logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/tachyon/2024/10/09-logo-healthline.webp?w=1080"
+      },
+      {
+        "alt": "Black Forbes logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/tachyon/2024/10/09-logo-forbes.webp?w=1080"
+      },
+      {
+        "alt": "Black Fast Company logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/tachyon/2024/10/09-logo-fast-company.webp?w=1080"
+      },
+      {
+        "alt": "black fortune logo",
+        "confidence": 0.72,
+        "location": "unknown",
+        "source": "rendered_html",
+        "text": null,
+        "url": "https://www.noom.com/tachyon/2024/10/09-logo-fortune.webp?w=1080"
+      }
+    ],
+    "confidence": 0.35,
+    "favicon_detected": false,
+    "logo_detected": true,
+    "primary_location": "unknown",
+    "textual_brand_mark_detected": false
+  },
+  "typography": {
+    "confidence": 0.9,
+    "font_families": [
+      {
+        "confidence": 0.65,
+        "family": "&quot",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      },
+      {
+        "confidence": 0.65,
+        "family": "--common-font-serif) !important",
+        "occurrences": 2,
+        "role": "unknown",
+        "source": "rendered_html"
+      }
+    ],
+    "heading_scale": "moderate",
+    "size_samples_px": [
+      12.0,
+      28.0,
+      16.0,
+      12.0,
+      28.0,
+      16.0,
+      28.0,
+      16.0,
+      35.0,
+      12.0,
+      28.0,
+      16.0,
+      12.0,
+      28.0,
+      16.0,
+      28.0,
+      16.0,
+      35.0
+    ],
+    "weight_range": {
+      "max": 900,
+      "min": 400
+    }
+  },
+  "version": "visual-signature-mvp-1",
+  "vision": {
+    "agreement": {
+      "agreement_level": "low",
+      "disagreement_flags": [
+        "viewport_density_higher_than_dom",
+        "viewport_density_disagrees_with_dom"
+      ],
+      "dom_density": "sparse",
+      "dom_palette_complexity": 1.0,
+      "summary_notes": [
+        "Viewport looks denser than the DOM summary suggests.",
+        "Viewport reads denser than the DOM summary suggests."
+      ],
+      "viewport_density": "dense",
+      "viewport_palette_complexity": 0.97
+    },
+    "composition": {
+      "color_variance": 0.499,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.087,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.245
+    },
+    "screenshot": {
+      "available": true,
+      "capture_type": "viewport",
+      "file_size_bytes": 1809837,
+      "height": 900,
+      "limitations": [],
+      "page_url": "https://www.noom.com",
+      "path": "/Users/gsus/Antigravity/Brand3/brand3/examples/visual_signature/calibration_corpus/screenshots/viewport/wellness_lifestyle/noom.png",
+      "quality": "usable",
+      "source": "local_file",
+      "viewport_height": 900,
+      "viewport_width": 1440,
+      "width": 1440
+    },
+    "screenshot_palette": {
+      "color_count": 137,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 4681,
+          "ratio": 0.2341
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2362,
+          "ratio": 0.1181
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 1446,
+          "ratio": 0.0723
+        },
+        {
+          "hex": "#8080a0",
+          "occurrences": 1337,
+          "ratio": 0.0669
+        },
+        {
+          "hex": "#e0ffe0",
+          "occurrences": 868,
+          "ratio": 0.0434
+        },
+        {
+          "hex": "#a0a0c0",
+          "occurrences": 821,
+          "ratio": 0.0411
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 734,
+          "ratio": 0.0367
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 649,
+          "ratio": 0.0324
+        }
+      ]
+    },
+    "version": "vision-enrichment-mvp-1",
+    "viewport_composition": {
+      "color_variance": 0.499,
+      "composition_classification": "dense_grid",
+      "confidence": 0.85,
+      "edge_density": 0.087,
+      "visual_density": "dense",
+      "whitespace_ratio": 0.245
+    },
+    "viewport_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    },
+    "viewport_palette": {
+      "color_count": 137,
+      "confidence": 0.9,
+      "dominant_colors": [
+        {
+          "hex": "#ffffff",
+          "occurrences": 4681,
+          "ratio": 0.2341
+        },
+        {
+          "hex": "#202020",
+          "occurrences": 2362,
+          "ratio": 0.1181
+        },
+        {
+          "hex": "#404020",
+          "occurrences": 1446,
+          "ratio": 0.0723
+        },
+        {
+          "hex": "#8080a0",
+          "occurrences": 1337,
+          "ratio": 0.0669
+        },
+        {
+          "hex": "#e0ffe0",
+          "occurrences": 868,
+          "ratio": 0.0434
+        },
+        {
+          "hex": "#a0a0c0",
+          "occurrences": 821,
+          "ratio": 0.0411
+        },
+        {
+          "hex": "#404040",
+          "occurrences": 734,
+          "ratio": 0.0367
+        },
+        {
+          "hex": "#202000",
+          "occurrences": 649,
+          "ratio": 0.0324
+        }
+      ]
+    },
+    "viewport_visual_density": "dense",
+    "viewport_whitespace_ratio": 0.245,
+    "vision_confidence": {
+      "factors": {
+        "composition": 0.85,
+        "palette": 0.9,
+        "screenshot": 0.9
+      },
+      "level": "high",
+      "limitations": [],
+      "score": 0.885
+    }
+  },
+  "website_url": "https://www.noom.com"
+}

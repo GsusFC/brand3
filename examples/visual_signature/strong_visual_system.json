@@ -1,0 +1,91 @@
+{
+  "brand_name": "Strong System Co",
+  "website_url": "https://strong.example",
+  "analyzed_url": "https://strong.example",
+  "acquisition": {
+    "adapter": "existing_web_data",
+    "status_code": 200,
+    "acquired_at": "2026-05-08T00:00:00",
+    "warnings": [],
+    "errors": []
+  },
+  "colors": {
+    "palette": [
+      {"hex": "#0b1020", "role": "background", "occurrences": 14, "source": "rendered_html", "confidence": 0.86},
+      {"hex": "#ffffff", "role": "text", "occurrences": 12, "source": "rendered_html", "confidence": 0.84},
+      {"hex": "#2f6bff", "role": "accent", "occurrences": 9, "source": "rendered_html", "confidence": 0.78}
+    ],
+    "dominant_colors": ["#0b1020", "#ffffff", "#2f6bff"],
+    "accent_candidates": ["#2f6bff"],
+    "background_candidates": ["#0b1020"],
+    "text_color_candidates": ["#ffffff"],
+    "palette_complexity": "low",
+    "confidence": 0.82
+  },
+  "typography": {
+    "font_families": [
+      {"family": "Inter", "role": "body", "occurrences": 8, "source": "rendered_html", "confidence": 0.78},
+      {"family": "Instrument Serif", "role": "display", "occurrences": 2, "source": "rendered_html", "confidence": 0.68}
+    ],
+    "heading_scale": "expressive",
+    "weight_range": {"min": 400, "max": 700},
+    "size_samples_px": [16, 20, 56, 72],
+    "confidence": 0.88
+  },
+  "logo": {
+    "logo_detected": true,
+    "candidates": [{"url": "https://strong.example/logo.svg", "alt": "Strong System Co", "location": "header", "source": "images", "confidence": 0.82}],
+    "favicon_detected": true,
+    "textual_brand_mark_detected": true,
+    "primary_location": "header",
+    "confidence": 0.9
+  },
+  "layout": {
+    "has_header": true,
+    "has_navigation": true,
+    "has_hero": true,
+    "has_main_content": true,
+    "has_footer": true,
+    "section_count": 6,
+    "layout_patterns": ["grid", "flex", "sticky_nav"],
+    "visual_density": "balanced",
+    "confidence": 0.88
+  },
+  "components": {
+    "components": [
+      {"type": "navigation", "count": 1, "labels": ["Product", "Customers", "Pricing"], "source": "rendered_html", "confidence": 0.7},
+      {"type": "cta", "count": 2, "labels": ["Book a demo", "Start free"], "source": "rendered_html", "confidence": 0.72},
+      {"type": "card", "count": 6, "labels": [], "source": "rendered_html", "confidence": 0.62}
+    ],
+    "primary_ctas": ["Book a demo", "Start free"],
+    "interaction_patterns": ["navigation"],
+    "confidence": 0.78
+  },
+  "assets": {
+    "image_count": 8,
+    "svg_count": 12,
+    "video_count": 1,
+    "background_image_count": 2,
+    "logo_image_candidates": [{"url": "https://strong.example/logo.svg", "source": "images", "alt": "Strong System Co", "role_hint": "logo"}],
+    "icon_candidates": [{"url": "https://strong.example/icon.svg", "source": "images", "role_hint": "icon"}],
+    "screenshot_available": true,
+    "asset_mix": ["logo", "icon", "photo", "video", "screenshot"],
+    "confidence": 0.84
+  },
+  "consistency": {
+    "color_consistency": 0.78,
+    "typography_consistency": 0.82,
+    "component_consistency": 0.86,
+    "asset_consistency": 0.87,
+    "overall_consistency": 0.827,
+    "notes": [],
+    "confidence": 0.83
+  },
+  "extraction_confidence": {
+    "score": 0.84,
+    "level": "high",
+    "factors": {"acquisition": 0.9, "html_coverage": 0.72, "signal_coverage": 0.85, "consistency_coverage": 0.83},
+    "limitations": []
+  },
+  "version": "visual-signature-mvp-1"
+}

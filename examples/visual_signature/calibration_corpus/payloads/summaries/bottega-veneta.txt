@@ -1,0 +1,40 @@
+Expected category: premium_luxury
+Notes: Luxury fashion brand with image-led and sparse visual behavior.
+
+== Bottega Veneta ==
+URL: https://www.bottegaveneta.com
+Interpretation status: interpretable
+Extraction confidence: 0.65 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.51, consistency_coverage=0.53]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.79
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.60
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.53
+
+Visual summaries:
+- palette preview: #ffffff[###] #000000[###] #ff0000[###] #00ff00[###] #0000ff[###] #ffff00[###] #ff00ff[###] #00ffff[###]
+- typography: none
+- layout: header=True; nav=True; hero=False; sections=0; density=sparse; patterns=single_column
+- components: button=68, cta=22, form=36, card=4, accordion=20, tabs=2, modal=94
+- consistency: overall=0.48; color=0.68; type=0.20; component=0.74; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #000000[###] #404040[###] #ffffff[###] #808080[###] #606060[###] #202020[###] #608080[###] #204040[###]
+- viewport palette: #000000[###] #404040[###] #ffffff[###] #808080[###] #606060[###] #202020[###] #608080[###] #204040[###]
+- composition: density=dense; whitespace=14%; classification=dense_grid
+- viewport composition: density=dense; whitespace=14%; classification=dense_grid
+- vision confidence: 0.83 (high)
+- viewport confidence: 0.83 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.24)
+- extraction limitation: screenshot_not_available

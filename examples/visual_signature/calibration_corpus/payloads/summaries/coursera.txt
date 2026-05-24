@@ -1,0 +1,40 @@
+Expected category: nonprofit_education
+Notes: Education platform with marketplace and credential messaging.
+
+== Coursera ==
+URL: https://www.coursera.org
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.57, consistency_coverage=0.58]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.58
+
+Visual summaries:
+- palette preview: #ffffff[###] #1e72eb[###] #cfe2ff[###] #0ff0ff[###] #4b95ff[###] #1cffba[###] #08ffb5[###] #1e2229[###]
+- typography: none
+- layout: header=True; nav=False; hero=True; sections=26; density=dense; patterns=grid,flex
+- components: button=86, cta=34, form=4, card=140, accordion=72, pricing=4
+- consistency: overall=0.52; color=0.68; type=0.20; component=0.72; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #e0e0ff[###] #ffffe0[###] #002020[###] #0060e0[###] #0040c0[###] #6080c0[###] #4080c0[###]
+- viewport palette: #ffffff[###] #e0e0ff[###] #ffffe0[###] #002020[###] #0060e0[###] #0040c0[###] #6080c0[###] #4080c0[###]
+- composition: density=dense; whitespace=49%; classification=dense_grid
+- viewport composition: density=dense; whitespace=49%; classification=dense_grid
+- vision confidence: 0.88 (high)
+- viewport confidence: 0.88 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

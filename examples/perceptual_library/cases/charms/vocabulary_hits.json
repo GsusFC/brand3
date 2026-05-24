@@ -1,0 +1,94 @@
+{
+  "case_id": "charms",
+  "source_url": "https://wearefloc.com/work/charms",
+  "artifact_type": "perceptual_vocabulary_candidates",
+  "not_a_scoring_report": true,
+  "vocabulary_hits": [
+    {
+      "term": "soft digital atmosphere",
+      "type": "surface_language",
+      "definition": "A digital surface that uses light, gradients, quiet space, and low-friction motion cues to feel ambient rather than mechanical.",
+      "case_evidence": "Blue-white gradient fields and blurred spherical forms dominate the identity panels.",
+      "use_when": "A technical or Web3 brand visually lowers friction through atmosphere.",
+      "avoid_when": "The surface is primarily functional, dense, or dashboard-led."
+    },
+    {
+      "term": "ritual loop",
+      "type": "behavior_language",
+      "definition": "A repeated sequence of visual gestures that makes the viewer feel they are re-entering the same world.",
+      "case_evidence": "Orb, serif wordmark, silence, and soft image texture recur across the gallery.",
+      "use_when": "Repetition feels ceremonial or world-building rather than decorative."
+    },
+    {
+      "term": "editorial quiet",
+      "type": "pacing_language",
+      "definition": "A layout condition where restraint, large image fields, and sparse copy ask for slower reading.",
+      "case_evidence": "The case moves from a short text block into a long sequence of large image panels.",
+      "use_when": "A brand surface creates confidence by letting images breathe."
+    },
+    {
+      "term": "tactile softness",
+      "type": "texture_language",
+      "definition": "A soft emotional read produced by fabric, natural light, flowers, hair, or printed material.",
+      "case_evidence": "Merchandise, field photography, and printed type specimens bring touch into the system.",
+      "use_when": "Digital identity uses physical texture to become more human."
+    },
+    {
+      "term": "premium play",
+      "type": "tension_language",
+      "definition": "A play-oriented brand surface that avoids childishness through typographic refinement, spacing, and material discipline.",
+      "case_evidence": "Serif typography and quiet compositions carry language about play, emotion, and belonging.",
+      "use_when": "A playful concept is expressed through adult composure."
+    },
+    {
+      "term": "warm-cool temperature",
+      "type": "emotional_temperature",
+      "definition": "A perceptual blend where cool palette decisions are warmed by organic imagery, human texture, or affectionate language.",
+      "case_evidence": "Blue gradients are paired with flowers, fabric, hair, and soft belonging language.",
+      "use_when": "A blue-dominant surface avoids feeling clinical."
+    },
+    {
+      "term": "threshold CTA",
+      "type": "interaction_language",
+      "definition": "A call-to-action that feels like leaving a brand world after immersion rather than being pushed through a conversion step.",
+      "case_evidence": "The visit-site link appears after the visual sequence and repeats its label across the link area.",
+      "use_when": "Interaction follows atmosphere instead of interrupting it."
+    },
+    {
+      "term": "world-feel before utility",
+      "type": "hierarchy_language",
+      "definition": "A presentation strategy where atmosphere and emotional rules appear before functional explanation.",
+      "case_evidence": "The page foregrounds a sensory identity sequence before sending the viewer to the live product.",
+      "use_when": "A brand wants the viewer to understand the world before the mechanics."
+    },
+    {
+      "term": "serif translation",
+      "type": "typographic_language",
+      "definition": "The use of refined serif type to humanize or soften technical vocabulary.",
+      "case_evidence": "Classical serif treatment carries onchain and agentic play language.",
+      "use_when": "Typography is doing emotional mediation between a technical category and a broader audience."
+    },
+    {
+      "term": "selected sparsity",
+      "type": "intentionality_language",
+      "definition": "A sparse surface that feels chosen because the same few forms and materials keep returning.",
+      "case_evidence": "The system repeatedly uses blue, white, orb forms, serif type, flowers, and tactile applications.",
+      "use_when": "Minimal elements produce a curated rhythm rather than a blank page."
+    }
+  ],
+  "phrases_to_avoid_for_this_case": [
+    "strong presence",
+    "clear message",
+    "brand consistency",
+    "clean and modern",
+    "high quality",
+    "good UX",
+    "premium look and feel",
+    "playful yet professional"
+  ],
+  "notes_for_future_review": [
+    "These terms are candidates only. They are not ingested into prompts or runtime behavior.",
+    "Before reuse, normalize overlap with any existing Brand3 perceptual vocabulary.",
+    "Keep the language observational and visible-evidence based."
+  ]
+}

@@ -1,0 +1,42 @@
+Expected category: local_service_small_business
+Notes: Small hospitality brand with expressive but simple visual surface.
+
+== Big Gay Ice Cream ==
+URL: https://biggayicecream.com
+Interpretation status: not_interpretable
+Extraction confidence: 0.03 (low) [acquisition=0.10, html_coverage=0.00, signal_coverage=0.01, consistency_coverage=0.02]
+
+Signal coverage: 29%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.00
+- logo: missing, confidence=0.00
+- layout: missing, confidence=0.00
+- components: missing, confidence=0.00
+- assets: ok, confidence=0.04
+- consistency: ok, confidence=0.02
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=False; nav=False; hero=False; sections=0; density=unknown; patterns=unknown
+- components: none
+- consistency: overall=0.20; color=0.15; type=0.20; component=0.25; asset=0.20
+
+Vision summaries:
+- screenshot: available=False; quality=missing; capture_type=unknown; dimensions=-; viewport=-
+- screenshot palette: none
+- viewport palette: none
+- composition: density=unknown; whitespace=-; classification=unknown
+- viewport composition: density=unknown; whitespace=-; classification=unknown
+- vision confidence: 0.00 (low)
+- viewport confidence: 0.00 (low)
+- agreement: high; flags=none
+- agreement notes: none
+
+Acquisition failure:
+- acquisition error: Request Timeout: Failed to scrape as the request timed out. The scrape operation timed out before completing. This happens when a page takes too long to load, render, or process. Possible causes: (1) The website is slow or unresponsive, (2) The page has heavy JavaScript that takes time to execute, (3) The page is very large or has many resources to load, (4) Network latency is high. To fix this, try increasing the timeout parameter in your scrape request, or if using actions, ensure your selectors are correct and the page is ready before actions are executed. - No additional error details provided.
+- extraction limitation: acquisition_errors_present
+- extraction limitation: screenshot_not_available
+- extraction limitation: html_coverage_limited
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

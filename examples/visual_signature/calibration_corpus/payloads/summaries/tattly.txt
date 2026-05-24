@@ -1,0 +1,43 @@
+Expected category: ecommerce
+Notes: Small product ecommerce with lower-complexity visual system.
+
+== Tattly ==
+URL: https://tattly.com
+Interpretation status: interpretable
+Extraction confidence: 0.58 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.41, consistency_coverage=0.34]
+
+Signal coverage: 86%
+- colors: missing, confidence=0.05
+- typography: ok, confidence=0.55
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.52
+- assets: ok, confidence=0.24
+- consistency: ok, confidence=0.34
+
+Visual summaries:
+- palette preview: none
+- typography: &quot
+- layout: header=False; nav=False; hero=True; sections=8; density=sparse; patterns=flex,multi_column
+- components: button=4, cta=1
+- consistency: overall=0.45; color=0.15; type=0.82; component=0.64; asset=0.20
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #000000[###] #202020[###] #404040[###] #808080[###] #606060[###] #a0a0a0[###] #c0c0c0[###]
+- viewport palette: #ffffff[###] #000000[###] #202020[###] #404040[###] #808080[###] #606060[###] #a0a0a0[###] #c0c0c0[###]
+- composition: density=sparse; whitespace=98%; classification=sparse_single_focus
+- viewport composition: density=sparse; whitespace=98%; classification=sparse_single_focus
+- vision confidence: 0.74 (medium)
+- viewport confidence: 0.74 (medium)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- colors: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.24)
+- consistency: weak confidence (0.34)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

@@ -1,0 +1,315 @@
+{
+  "generated": "2026-05-13",
+  "scope": "audit only",
+  "rules_followed": [
+    "did not move files",
+    "did not delete files",
+    "did not modify scoring",
+    "did not modify prompts",
+    "did not modify Visual Signature semantics",
+    "did not change runtime behavior",
+    "did not publish anything"
+  ],
+  "overall_readiness": {
+    "status": "not_ready_as_is",
+    "summary": "Brand3 can become a GitHub/team-reviewable unified project after repository hygiene, documentation, and generated artifact policy work. Core scoring, web UI, reports, tests, and Visual Signature source are reviewable; local data, outputs, logs, secrets, screenshots, and generated corpora need strict handling."
+  },
+  "repo_structure": {
+    "public_reviewable": [
+      "pyproject.toml",
+      ".gitignore",
+      ".env.example",
+      "README.md",
+      "DEPLOY.md",
+      "Dockerfile",
+      "fly.toml",
+      "litestream.yml",
+      "main.py",
+      "src/**",
+      "web/**",
+      "scripts/*.py",
+      "scripts/*.sh",
+      "migrations/*.sql",
+      "tests/**",
+      "docs/**",
+      "design/**",
+      "examples/brand3_platform/**",
+      "small deterministic fixtures under examples/**"
+    ],
+    "private_or_local_only": [
+      ".env",
+      ".env.local",
+      "data/brand3.sqlite3",
+      "data/brand3.sqlite3-shm",
+      "data/brand3.sqlite3-wal",
+      "output/**",
+      "validation-*/",
+      "*.log",
+      ".pytest_cache/",
+      ".sentrux/",
+      ".mcp.json",
+      "__pycache__/"
+    ],
+    "needs_artifact_policy": [
+      "examples/visual_signature/screenshots/*.png",
+      "examples/visual_signature/calibration_corpus/screenshots/**/*.png",
+      "examples/visual_signature/calibration_corpus/payloads/**/*.json",
+      "examples/visual_signature/calibration_corpus/annotations/**/*.json",
+      "examples/visual_signature/calibration_outputs/**/*.json",
+      "examples/visual_signature/category_baselines/**",
+      "examples/visual_signature/platform/**",
+      "examples/visual_signature/corpus_expansion/reviewer_viewer/**",
+      "graphify-out/graph.json",
+      "graphify-out/graph.html"
+    ],
+    "large_local_areas_observed": {
+      "output": "9.0M",
+      "data": "202M",
+      "examples/visual_signature": "83M",
+      "graphify-out": "8.2M"
+    },
+    "observed_file_counts": {
+      "examples_visual_signature_files": 935,
+      "output_files": 649
+    }
+  },
+  "gitignore_assessment": {
+    "already_ignored": [
+      ".env",
+      ".env.local",
+      "data/",
+      "output/",
+      "validation-*/",
+      "*.log",
+      ".venv/",
+      "__pycache__/",
+      ".mcp.json",
+      "graphify-out/cache/",
+      "graphify-out/manifest.json",
+      "graphify-out/cost.json"
+    ],
+    "recommended_additions": [
+      ".sentrux/",
+      ".pytest_cache/",
+      "*.sqlite3-shm",
+      "*.sqlite3-wal",
+      "generated Visual Signature screenshot/corpus paths after policy decision"
+    ]
+  },
+  "secrets": {
+    "local_env_file_present": true,
+    "local_env_file_status": "ignored; not read into audit",
+    "env_example_present": true,
+    "variables": [
+      {"name": "FIRECRAWL_API_KEY", "secret": true, "purpose": "web scrape/social/screenshot provider paths"},
+      {"name": "EXA_API_KEY", "secret": true, "purpose": "search and mention collection"},
+      {"name": "BRAND3_LLM_API_KEY", "secret": true, "purpose": "OpenAI-compatible LLM provider key"},
+      {"name": "GEMINI_API_KEY", "secret": true, "purpose": "fallback LLM provider key"},
+      {"name": "GOOGLE_API_KEY", "secret": true, "purpose": "fallback LLM provider key"},
+      {"name": "OPENROUTER_API_KEY", "secret": true, "purpose": "fallback LLM provider key"},
+      {"name": "BRAND3_TEAM_TOKEN", "secret": true, "purpose": "team unlock token"},
+      {"name": "BRAND3_COOKIE_SECRET", "secret": true, "purpose": "signed cookie secret"},
+      {"name": "BRAND3_LLM_BASE_URL", "secret": false, "purpose": "OpenAI-compatible base URL"},
+      {"name": "BRAND3_LLM_MODEL", "secret": false, "purpose": "default scoring model"},
+      {"name": "BRAND3_LLM_CHEAP_MODEL", "secret": false, "purpose": "cheap extraction/check model"},
+      {"name": "BRAND3_LLM_PREMIUM_MODEL", "secret": false, "purpose": "premium narrative/validation model"},
+      {"name": "BRAND3_VISION_MODEL", "secret": false, "purpose": "vision model"},
+      {"name": "SCREENSHOT_PROVIDER", "secret": false, "purpose": "playwright or firecrawl"},
+      {"name": "BRAND3_DB_PATH", "secret": false, "purpose": "local SQLite path override"},
+      {"name": "BRAND3_VISUAL_SIGNATURE_ROOT", "secret": false, "purpose": "local Visual Signature artifact root"}
+    ],
+    "scan_summary": "Search outside .env, data, output, logs, and validation batches found variable names, placeholders, generated graph references, and test dummy tokens only."
+  },
+  "initial_scoring": {
+    "status": "ready_for_review",
+    "input_paths": {
+      "web": ["GET /", "POST /analyze"],
+      "cli": ["python main.py analyze <url> [brand_name]", "python main.py <url> [brand_name]"]
+    },
+    "execution_path": [
+      "web/workers/queue.py",
+      "src/services/brand_service.py",
+      "src/services/input_collection.py",
+      "src/services/feature_pipeline.py",
+      "src/services/scoring_pipeline.py",
+      "src/scoring/engine.py",
+      "src/storage/sqlite_store.py"
+    ],
+    "dimension_scores": {
+      "sqlite": "data/brand3.sqlite3 table scores",
+      "json": "output/<brand-slug>-<timestamp>.json field dimensions"
+    },
+    "generated_report_prose": {
+      "status": "render_time_derived",
+      "no_persisted_generated_texts_per_dimension_found": true,
+      "files": [
+        "src/reports/renderer.py",
+        "src/reports/derivation.py",
+        "src/reports/dossier.py",
+        "src/reports/narrative.py",
+        "src/reports/templates/report.html.j2"
+      ]
+    }
+  },
+  "prompt_system": {
+    "status": "needs_documentation",
+    "locations": [
+      {
+        "file": "src/features/llm_analyzer.py",
+        "role": "brand positioning, differentiation, sentiment, consistency, tone, momentum JSON prompts",
+        "versioning": "PROMPT_VERSION = brand3-llm-v1"
+      },
+      {
+        "file": "src/reports/narrative.py",
+        "role": "report synthesis, dimension findings, cross-dimension tensions",
+        "versioning": "prompt constants found; no separate explicit prompt version found"
+      },
+      {
+        "file": "src/features/visual_analyzer.py",
+        "role": "initial scoring screenshot/vision prompt",
+        "versioning": "inline prompt; no separate prompt version found"
+      },
+      {
+        "file": "src/visual_signature/annotations/prompts.py",
+        "role": "Visual Signature annotation prompt",
+        "versioning": "PROMPT_VERSION = visual-signature-annotation-prompt-1"
+      }
+    ],
+    "recommendations": [
+      "Treat prompts as source code reviewed in PRs.",
+      "Add docs/prompts.md or docs/prompt_system.md.",
+      "Add prompt IDs/versions for report narrative and vision prompts.",
+      "Keep prompt edits separate from rubric/scoring logic changes.",
+      "Add tests or snapshots around prompt behavior when semantics change."
+    ]
+  },
+  "fastapi_jinja_ui": {
+    "status": "ready_for_review",
+    "routes": [
+      "/",
+      "/analyze",
+      "/reports",
+      "/r/{token}/status",
+      "/r/{token}",
+      "/brand/{domain}",
+      "/visual-signature",
+      "/visual-signature/governance",
+      "/visual-signature/calibration",
+      "/visual-signature/corpus",
+      "/visual-signature/reviewer"
+    ],
+    "files": [
+      "web/app.py",
+      "web/routes/*.py",
+      "web/templates/*.j2",
+      "web/static/main.css",
+      "web/workers/queue.py",
+      "web/storage.py"
+    ]
+  },
+  "visual_signature": {
+    "status": "needs_artifact_policy",
+    "source_areas": [
+      "src/visual_signature/**",
+      "src/brand3/visual-signature/**",
+      "scripts/visual_signature_*.py",
+      "tests/test_visual_signature*.py",
+      "web/visual_signature_data.py",
+      "web/routes/visual_signature.py",
+      "web/templates/visual_signature.html.j2"
+    ],
+    "artifact_areas": [
+      "examples/visual_signature/governance/**",
+      "examples/visual_signature/calibration/**",
+      "examples/visual_signature/corpus_expansion/**",
+      "examples/visual_signature/screenshots/**",
+      "examples/visual_signature/calibration_corpus/**"
+    ],
+    "separation_rules": [
+      "Visual Signature remains evidence-only.",
+      "Visual Signature does not modify src/dimensions.py.",
+      "Visual Signature does not modify src/scoring/engine.py.",
+      "Visual Signature does not write SQLite scores.",
+      "Visual Signature does not change report semantics.",
+      "Visual Signature does not change capture behavior from the platform."
+    ]
+  },
+  "commands": {
+    "setup": [
+      "python -m venv .venv",
+      "./.venv/bin/python -m pip install -e ."
+    ],
+    "app": [
+      "scripts/run_web_dev_macos.sh",
+      "PYTHONPATH=. ./.venv/bin/python -m uvicorn web.app:app --host 127.0.0.1 --port 8000"
+    ],
+    "scoring": [
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe",
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe --no-llm",
+      "./.venv/bin/python main.py analyze https://stripe.com Stripe --no-social",
+      "./.venv/bin/python main.py render-report --latest --theme light",
+      "./.venv/bin/python main.py runs --limit 20",
+      "./.venv/bin/python main.py show-run --run-id <id>"
+    ],
+    "tests": [
+      "./.venv/bin/python -m pytest",
+      "./.venv/bin/python -m pytest tests/test_scoring_engine.py tests/test_reports_derivation.py tests/test_reports_renderer.py -q",
+      "./.venv/bin/python -m pytest tests/test_web_app.py tests/test_web_health.py tests/test_web_listings.py -q",
+      "./.venv/bin/python -m pytest tests/test_visual_signature*.py -q"
+    ],
+    "visual_signature": [
+      "./.venv/bin/python scripts/visual_signature_capability_registry.py",
+      "./.venv/bin/python scripts/visual_signature_runtime_policy_matrix.py",
+      "./.venv/bin/python scripts/visual_signature_governance_integrity.py",
+      "./.venv/bin/python scripts/visual_signature_three_track_validation_plan.py",
+      "./.venv/bin/python scripts/visual_signature_calibrate.py",
+      "./.venv/bin/python scripts/visual_signature_calibration.py",
+      "./.venv/bin/python scripts/visual_signature_calibration_validate.py",
+      "./.venv/bin/python scripts/visual_signature_calibration_readiness.py",
+      "./.venv/bin/python scripts/visual_signature_calibration_reliability_report.py",
+      "./.venv/bin/python scripts/visual_signature_capture_screenshots.py",
+      "./.venv/bin/python scripts/visual_signature_corpus_pass.py",
+      "./.venv/bin/python scripts/visual_signature_corpus_expansion.py",
+      "./.venv/bin/python scripts/visual_signature_reviewer_workflow_pilot.py",
+      "./.venv/bin/python scripts/visual_signature_reviewer_viewer.py",
+      "./.venv/bin/python scripts/visual_signature_platform.py"
+    ]
+  },
+  "documentation_gaps": [
+    "README does not describe the current FastAPI/Jinja app.",
+    "README does not document /visual-signature routes.",
+    "README does not document Visual Signature as a separate layer.",
+    "README contains old absolute links pointing to /Users/gsus/brand3-scoring/.",
+    "README does not list current env vars.",
+    "README does not explain generated artifact policy.",
+    "README does not explain render-time derived dimension prose.",
+    "Prompt ownership/versioning is not documented.",
+    "No CONTRIBUTING.md found."
+  ],
+  "recommended_docs": [
+    "README.md",
+    "CONTRIBUTING.md",
+    "docs/environment.md",
+    "docs/artifact_policy.md",
+    "docs/prompts.md",
+    "docs/architecture.md",
+    "docs/local_review.md"
+  ],
+  "recommended_pr_boundaries": [
+    "Repository hygiene: .gitignore, README, docs, contribution rules.",
+    "Commit current Visual Signature source/tests separately from generated artifacts.",
+    "Add curated Visual Signature fixture bundle or LFS/artifact plan.",
+    "Add prompt documentation and prompt versioning.",
+    "Add unified platform docs around FastAPI/Jinja routes."
+  ],
+  "minimum_actions_before_publishing": [
+    "Clean or consciously stage the dirty worktree.",
+    "Confirm which untracked source/test files are intended for commit.",
+    "Keep .env, data, output, logs, validation folders, caches, and local tool configs uncommitted.",
+    "Decide Visual Signature artifact policy.",
+    "Update README with current app/scoring/test/Visual Signature commands.",
+    "Add docs for prompts, environment, artifacts, local review, and architecture separation.",
+    "Add .gitignore entries for .sentrux, .pytest_cache, and generated Visual Signature artifacts after policy decision.",
+    "Run full tests before opening the GitHub PR."
+  ]
+}

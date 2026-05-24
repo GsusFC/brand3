@@ -1,0 +1,39 @@
+Expected category: wellness_lifestyle
+Notes: Consumer wellness app with conversion and credibility messaging.
+
+== Noom ==
+URL: https://www.noom.com
+Interpretation status: interpretable
+Extraction confidence: 0.72 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.64, consistency_coverage=0.76]
+
+Signal coverage: 100%
+- colors: ok, confidence=0.85
+- typography: ok, confidence=0.90
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.45
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.76
+
+Visual summaries:
+- palette preview: #ffffff[###] #191717[###] #444444[###] #1a2e3b[###] #fc1d00[###] #0a0a0a[###] #ad925e[###] #000000[###]
+- typography: &quot, --common-font-serif) !important
+- layout: header=True; nav=True; hero=True; sections=0; density=sparse; patterns=grid,multi_column,sticky_nav
+- components: button=14, cta=15, card=2, accordion=34, tabs=60, modal=6, pricing=20
+- consistency: overall=0.68; color=0.68; type=0.82; component=0.74; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #202020[###] #404020[###] #8080a0[###] #e0ffe0[###] #a0a0c0[###] #404040[###] #202000[###]
+- viewport palette: #ffffff[###] #202020[###] #404020[###] #8080a0[###] #e0ffe0[###] #a0a0c0[###] #404040[###] #202000[###]
+- composition: density=dense; whitespace=24%; classification=dense_grid
+- viewport composition: density=dense; whitespace=24%; classification=dense_grid
+- vision confidence: 0.89 (high)
+- viewport confidence: 0.89 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

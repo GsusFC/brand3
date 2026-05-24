@@ -1,0 +1,40 @@
+Expected category: editorial_media
+Notes: Editorial subscription site with classic publication hierarchy.
+
+== The Atlantic ==
+URL: https://www.theatlantic.com
+Interpretation status: interpretable
+Extraction confidence: 0.64 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.52, consistency_coverage=0.50]
+
+Signal coverage: 71%
+- colors: ok, confidence=0.52
+- typography: missing, confidence=0.20
+- logo: missing, confidence=0.15
+- layout: ok, confidence=0.95
+- components: ok, confidence=0.90
+- assets: ok, confidence=0.38
+- consistency: ok, confidence=0.50
+
+Visual summaries:
+- palette preview: #000000[###] #ffffff[###] #faf4eb[###]
+- typography: none
+- layout: header=False; nav=True; hero=False; sections=18; density=dense; patterns=grid,multi_column
+- components: navigation=6, button=22, cta=11, form=8, card=96, accordion=46, modal=4
+- consistency: overall=0.61; color=0.78; type=0.20; component=0.94; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #606060[###] #ffffff[###] #202020[###] #000000[###] #404040[###] #402020[###] #e0e0e0[###] #600000[###]
+- viewport palette: #606060[###] #ffffff[###] #202020[###] #000000[###] #404040[###] #402020[###] #e0e0e0[###] #600000[###]
+- composition: density=dense; whitespace=22%; classification=dense_grid
+- viewport composition: density=dense; whitespace=22%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: medium; flags=viewport_palette_more_complex_than_dom
+- agreement notes: Viewport palette is noisier than the DOM palette.
+
+Weak or missing signals:
+- typography: missing primary signal
+- logo: missing primary signal
+- assets: weak confidence (0.38)
+- extraction limitation: screenshot_not_available

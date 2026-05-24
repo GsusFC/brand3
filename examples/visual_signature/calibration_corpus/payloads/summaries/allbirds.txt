@@ -1,0 +1,39 @@
+Expected category: ecommerce
+Notes: Consumer ecommerce with product and lifestyle imagery.
+
+== Allbirds ==
+URL: https://www.allbirds.com
+Interpretation status: interpretable
+Extraction confidence: 0.68 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.56, consistency_coverage=0.66]
+
+Signal coverage: 86%
+- colors: ok, confidence=0.90
+- typography: ok, confidence=0.55
+- logo: missing, confidence=0.00
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.85
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.66
+
+Visual summaries:
+- palette preview: #e0e2dc[###] #242729[###] #263144[###] #686d6e[###] #8b8a8f[###] #b4a897[###] #637054[###] #2a6281[###]
+- typography: &quot
+- layout: header=True; nav=False; hero=True; sections=42; density=balanced; patterns=grid,flex,multi_column,sticky_nav
+- components: button=100, cta=19, form=16, card=348, modal=28
+- consistency: overall=0.61; color=0.48; type=0.82; component=0.70; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #808080[###] #ffffff[###] #604040[###] #606060[###] #806060[###] #406060[###] #202020[###] #604020[###]
+- viewport palette: #808080[###] #ffffff[###] #604040[###] #606060[###] #806060[###] #406060[###] #202020[###] #604020[###]
+- composition: density=dense; whitespace=18%; classification=dense_grid
+- viewport composition: density=dense; whitespace=18%; classification=dense_grid
+- vision confidence: 0.85 (high)
+- viewport confidence: 0.85 (high)
+- agreement: high; flags=none
+- agreement notes: none
+
+Weak or missing signals:
+- logo: missing primary signal
+- assets: weak confidence (0.34)
+- extraction limitation: screenshot_not_available

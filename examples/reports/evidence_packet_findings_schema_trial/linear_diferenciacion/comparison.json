@@ -1,0 +1,36 @@
+{
+  "case_id": "linear",
+  "dimension": "diferenciacion",
+  "previous_schema": "observation_implication_typical_decision",
+  "new_schema": "evidence_anchor_observation_bounded_interpretation_limits",
+  "previous_summary": {
+    "finding_count": 1,
+    "titles": [
+      "Relative Positioning Distance Among Measured Competitors"
+    ],
+    "risky_terms_detected": [
+      "strategy"
+    ],
+    "risky_terms_outside_limits": [
+      "strategy"
+    ],
+    "limits_field_present": false,
+    "has_typical_decision": true
+  },
+  "new_summary": {
+    "finding_count": 1,
+    "titles": [
+      "Competitor relative positioning distance"
+    ],
+    "risky_terms_detected": [
+      "superior",
+      "adoption"
+    ],
+    "risky_terms_outside_limits": [],
+    "limits_field_present": true,
+    "has_typical_decision": false
+  },
+  "reduced_strategic_drift": false,
+  "limits_field_present": true,
+  "manual_review_required": true
+}

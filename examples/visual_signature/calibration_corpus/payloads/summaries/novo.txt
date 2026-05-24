@@ -1,0 +1,44 @@
+Expected category: finance_fintech
+Notes: Lower-fame fintech with ordinary marketing-site behavior.
+
+== Novo ==
+URL: https://www.novo.co
+Interpretation status: interpretable
+Extraction confidence: 0.58 (medium) [acquisition=0.65, html_coverage=0.90, signal_coverage=0.40, consistency_coverage=0.33]
+
+Signal coverage: 71%
+- colors: missing, confidence=0.05
+- typography: missing, confidence=0.20
+- logo: ok, confidence=0.35
+- layout: ok, confidence=0.75
+- components: ok, confidence=0.73
+- assets: ok, confidence=0.34
+- consistency: ok, confidence=0.33
+
+Visual summaries:
+- palette preview: none
+- typography: none
+- layout: header=True; nav=True; hero=True; sections=16; density=sparse; patterns=grid,multi_column
+- components: cta=5, card=2, accordion=2
+- consistency: overall=0.35; color=0.15; type=0.20; component=0.66; asset=0.45
+
+Vision summaries:
+- screenshot: available=True; quality=usable; capture_type=viewport; dimensions=1440x900; viewport=1440x900
+- screenshot palette: #ffffff[###] #c0c0c0[###] #e0e0e0[###] #202020[###] #000000[###] #404040[###] #4040e0[###] #e0c0c0[###]
+- viewport palette: #ffffff[###] #c0c0c0[###] #e0e0e0[###] #202020[###] #000000[###] #404040[###] #4040e0[###] #e0c0c0[###]
+- composition: density=dense; whitespace=65%; classification=dense_grid
+- viewport composition: density=dense; whitespace=65%; classification=dense_grid
+- vision confidence: 0.87 (high)
+- viewport confidence: 0.87 (high)
+- agreement: low; flags=viewport_density_higher_than_dom,viewport_palette_more_complex_than_dom,viewport_density_disagrees_with_dom
+- agreement notes: Viewport looks denser than the DOM summary suggests.; Viewport palette is noisier than the DOM palette.; Viewport reads denser than the DOM summary suggests.
+
+Weak or missing signals:
+- colors: missing primary signal
+- typography: missing primary signal
+- logo: weak confidence (0.35)
+- assets: weak confidence (0.34)
+- consistency: weak confidence (0.33)
+- extraction limitation: screenshot_not_available
+- extraction limitation: visual_signal_coverage_limited
+- extraction limitation: consistency_inference_limited

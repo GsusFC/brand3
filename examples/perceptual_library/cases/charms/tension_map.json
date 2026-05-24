@@ -1,0 +1,71 @@
+{
+  "case_id": "charms",
+  "source_url": "https://wearefloc.com/work/charms",
+  "artifact_type": "perceptual_tension_map",
+  "not_a_scoring_report": true,
+  "tensions": [
+    {
+      "id": "tension-001",
+      "name": "premium_softness_vs_game_energy",
+      "left_pole": "premium softness",
+      "right_pole": "game energy",
+      "visible_expression": "Serif typography, restrained spacing, and pale blue gradients soften a topic that could otherwise lean loud, competitive, or neon-heavy.",
+      "how_it_holds": "The surface keeps the emotional vocabulary of play while removing most of the expected visual noise.",
+      "what_brand3_should_learn": "A playful category can be made more sophisticated by lowering intensity, not by removing emotion."
+    },
+    {
+      "id": "tension-002",
+      "name": "digital_orb_vs_natural_field",
+      "left_pole": "digital orb",
+      "right_pole": "natural field",
+      "visible_expression": "Luminous blue spheres and gradient fields sit beside grass, flowers, hair, and fabric.",
+      "how_it_holds": "The digital motif gains warmth from the natural photography; the natural imagery gains strangeness from the synthetic color language.",
+      "what_brand3_should_learn": "Surface coherence can come from a stable emotional temperature rather than a single material world."
+    },
+    {
+      "id": "tension-003",
+      "name": "silence_vs_density",
+      "left_pole": "silence",
+      "right_pole": "density",
+      "visible_expression": "Large quiet fields alternate with detailed meadow and textile images.",
+      "how_it_holds": "The dense frames arrive as sensory proof after the quiet frames establish atmosphere.",
+      "what_brand3_should_learn": "A system can use empty space as pacing, then texture as arrival."
+    },
+    {
+      "id": "tension-004",
+      "name": "editorial_world_vs_product_utility",
+      "left_pole": "editorial world",
+      "right_pole": "product utility",
+      "visible_expression": "The page foregrounds mood, typography, and image sequencing before sending the viewer to the live product site.",
+      "how_it_holds": "The case builds desire through world-feel rather than tool explanation.",
+      "what_brand3_should_learn": "Some brand surfaces do not demonstrate the product first; they tune the viewer's perception before utility appears."
+    },
+    {
+      "id": "tension-005",
+      "name": "serif_refinement_vs_onchain_language",
+      "left_pole": "serif refinement",
+      "right_pole": "onchain language",
+      "visible_expression": "Classical serif lettering carries phrases about onchain agentic play.",
+      "how_it_holds": "The type choice humanizes the technical vocabulary instead of illustrating it literally.",
+      "what_brand3_should_learn": "Typography can act as emotional translation for technical categories."
+    },
+    {
+      "id": "tension-006",
+      "name": "ritual_vs_interface",
+      "left_pole": "ritual",
+      "right_pole": "interface",
+      "visible_expression": "The final phrase, recurring orb motif, and slow image sequence make the brand feel like an entry ritual rather than a simple UI surface.",
+      "how_it_holds": "Repetition creates a cadence of return: look, pause, re-enter.",
+      "what_brand3_should_learn": "Ritualized interface behavior can be visible in cadence and recurrence, not only in explicit UI mechanics."
+    },
+    {
+      "id": "tension-007",
+      "name": "youthful_belonging_vs_adult_composure",
+      "left_pole": "youthful belonging",
+      "right_pole": "adult composure",
+      "visible_expression": "The emotional vocabulary is welcoming and playful, while the composition stays quiet, cropped, and materially controlled.",
+      "how_it_holds": "The system invites softness without becoming childish.",
+      "what_brand3_should_learn": "Belonging can be expressed with restraint; warmth does not require visual exuberance."
+    }
+  ]
+}

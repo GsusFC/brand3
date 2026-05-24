@@ -515,3 +515,58 @@ def test_value_proposition_rejects_concatenated_copy_as_offer() -> None:
     accepted = accepted_block_evidence("value_proposition", spec, candidates)
 
     assert accepted == []
+
+
+def test_value_proposition_answer_cleans_residual_navigation_fragments() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    cases = [
+        (
+            "Base App Base Build Base Chain Base Pay Base App Post, trade, chat, and earn - all in one place An everything app that brings together a social network, apps, payments, and finance.",
+            "Post, trade, chat, and earn - all in one place An everything app that brings together a social network, apps, payments, and finance.",
+        ),
+        (
+            "NewNotion's developer platform: Any data. Any tool. Any agent. No infra required. [Learn more](https://notion.dev/)",
+            "Notion's developer platform: Any data. Any tool. Any agent. No infra required.",
+        ),
+        (
+            "Watermelon Native - mobile-first UI components for iOS, Android, and cross-platform. Seamless, performant, ready to drop into your app.launching soon",
+            "Watermelon Native - mobile-first UI components for iOS, Android, and cross-platform. Seamless, performant, ready to drop into your app.",
+        ),
+        (
+            "Why Outcraft AI Is The Right Platform For Your Business?. Results driven Built for outcomes, not activity Optimized for demos booked, revenue recovered, users retained, and LTV increased. Businesses spend thousands on ads and campaigns, but too often leads go cold because sales teams can't follow up fast enou",
+            "Results driven Built for outcomes, not activity Optimized for demos booked, revenue recovered, users retained, and LTV increased.",
+        ),
+    ]
+
+    for raw, expected in cases:
+        assert answer_from_spec("value_proposition", raw, [{"text": raw, "group": "product_offer"}]) == expected
+
+
+def test_value_proposition_rejects_docs_navigation_candidate() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Splits | Financial infrastructure for onchain teams Teams Changelog Blog Support Docs Explore Splits Open Teams Financial infrastructure for onchain t",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+def test_value_proposition_answer_does_not_append_broken_markdown_addition() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    accepted = [
+        {"text": "NewNotion's developer platform: Any data. Any tool. Any agent. No infra required. [Learn more](https://notion.dev/)", "group": "product_offer"},
+        {"text": "Streamlined workflows to reduce timelines by 3x.->](https://www.notion.com/customers/toyota) Bring all your tools and teams under one roof. Calculate savings below.", "group": "outcome"},
+    ]
+
+    answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
+
+    assert answer == "Notion's developer platform: Any data. Any tool. Any agent. No infra required."

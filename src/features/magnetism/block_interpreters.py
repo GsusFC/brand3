@@ -658,7 +658,7 @@ def _has_outcome_signal(text: str) -> bool:
 
 
 def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> str:
-    primary = evidence.strip()
+    primary = _clean_value_prop_answer_text(evidence)
     primary_low = primary.lower()
     if (
         not accepted
@@ -669,7 +669,7 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
     additions: list[str] = []
     for target_group in ("outcome", "audience"):
         for item in accepted:
-            text = str(item.get("text") or "").strip()
+            text = _clean_value_prop_answer_text(str(item.get("text") or ""))
             if item.get("group") != target_group or not text or text == primary or text in additions:
                 continue
             if _is_weak_value_prop_addition(text):
@@ -679,7 +679,21 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
     if not additions:
         return primary
     answer = primary.rstrip(".") + ". " + " ".join(additions)
-    return answer[:360].rstrip()
+    return _clean_value_prop_answer_text(answer[:360].rstrip())
+
+
+def _clean_value_prop_answer_text(text: str) -> str:
+    cleaned = re.sub(r"\s+", " ", text or "").strip()
+    cleaned = re.sub(r"\s*\[[^\]]{2,90}\]\(https?://[^)]+\)\s*$", "", cleaned).strip()
+    cleaned = re.sub(r"^New(?=[A-Z][A-Za-z0-9]+(?:'s)\b)", "", cleaned)
+    cleaned = re.sub(r"^Base App Base Build Base Chain Base Pay Base App\s+", "", cleaned, flags=re.I)
+    cleaned = re.sub(r"^[A-Z][A-Za-z0-9 .&'*-]{1,60}\s+\|\s+", "", cleaned)
+    cleaned = re.sub(r"\s+Teams Changelog Blog Support Docs Explore.*$", "", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"\bWhere sales begin\s+Where sales begin\b", "Where sales begin", cleaned, flags=re.I)
+    cleaned = re.sub(r"^Why [A-Z][^?]{2,120}\?\.\s*", "", cleaned)
+    cleaned = re.sub(r"\s+Businesses spend thousands on ads.*$", "", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"\.?launching soon\s*$", ".", cleaned, flags=re.I).strip()
+    return cleaned.strip()
 
 
 def _is_bad_value_prop_candidate(text: str) -> bool:
@@ -694,6 +708,8 @@ def _is_bad_value_prop_candidate(text: str) -> bool:
     if re.fullmatch(r"\[[^\]]{2,120}\]\(https?://[^)]+\)", stripped):
         return True
     if "play video pause video" in low:
+        return True
+    if "teams changelog blog support docs" in low:
         return True
     if low.count("moments of activation") >= 2:
         return True
@@ -729,6 +745,8 @@ def _is_weak_value_prop_addition(text: str) -> bool:
     if len(low) < 40 and not re.search(r"\b(?:helps|help|enables|enable|streamlines|automates|reduces|improves|builds|creates|for|para)\b", low):
         return True
     if any(marker in low for marker in ("copyright", "all rights reserved", "pricing", "privacy policy", "terms of service")):
+        return True
+    if any(marker in low for marker in ("](", "→](", "learn more", "calculate savings", "bring all your tools")):
         return True
     return low in {"help and security", "startups program"}
 

@@ -11,6 +11,7 @@ REQUIRED_SPEC_KEYS = {
     "task",
     "primary_question",
     "source_layers",
+    "strategic_groups",
     "look_for",
     "reject",
     "minimum_evidence_rule",
@@ -34,6 +35,7 @@ def test_migrated_tldr_block_specs_have_executable_contract() -> None:
         assert spec["task"]
         assert spec["primary_question"].endswith("?")
         assert spec["source_layers"]
+        assert spec["strategic_groups"]
         assert spec["look_for"]
         assert isinstance(spec["reject"], list)
         assert spec["minimum_evidence_rule"]
@@ -56,3 +58,18 @@ def test_get_tldr_block_interpreter_spec_returns_copy() -> None:
 
 def test_unmigrated_block_has_no_interpreter_spec() -> None:
     assert get_tldr_block_interpreter_spec("personality") is None
+
+
+def test_specs_declare_their_strategic_packet_groups() -> None:
+    assert TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]["strategic_groups"] == [
+        "product_offer",
+        "audience",
+        "outcome",
+        "hero_claims",
+    ]
+    assert TLDR_BLOCK_INTERPRETER_SPECS["mission"]["strategic_groups"] == [
+        "mission_language",
+    ]
+    assert TLDR_BLOCK_INTERPRETER_SPECS["vision"]["strategic_groups"] == [
+        "vision_language",
+    ]

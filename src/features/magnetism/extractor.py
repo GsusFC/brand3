@@ -708,7 +708,7 @@ Return exactly this JSON shape:
     def _first_accepted_tactispace_packet_evidence(self, strategic_packet: dict[str, Any]) -> str | None:
         for key in ("mission", "vision"):
             spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-            candidates = self._strategic_packet_candidates(key, strategic_packet)
+            candidates = self._strategic_packet_candidates(key, spec, strategic_packet)
             accepted = self._accepted_block_evidence(key, spec, candidates)
             if accepted:
                 return accepted[0]["text"]
@@ -853,7 +853,7 @@ Return exactly this JSON shape:
         candidates: list[dict[str, str]] = []
         seen: set[str] = set()
         if strategic_packet and key:
-            return self._strategic_packet_candidates(key, strategic_packet)
+            return self._strategic_packet_candidates(key, spec, strategic_packet)
         for layer_key in spec["source_layers"]:
             layer = layers.get(layer_key) or {}
             for source in ("evidence", "finding"):
@@ -869,18 +869,14 @@ Return exactly this JSON shape:
     @staticmethod
     def _strategic_packet_candidates(
         key: str,
+        spec: dict[str, Any],
         strategic_packet: dict[str, Any],
     ) -> list[dict[str, str]]:
-        group_map = {
-            "value_proposition": ["product_offer", "audience", "outcome", "hero_claims"],
-            "mission": ["mission_language"],
-            "vision": ["vision_language"],
-        }
         groups = strategic_packet.get("groups") if isinstance(strategic_packet, dict) else {}
         if not isinstance(groups, dict):
             return []
         candidates: list[dict[str, str]] = []
-        for group in group_map.get(key, []):
+        for group in spec.get("strategic_groups") or []:
             for item in groups.get(group) or []:
                 if not isinstance(item, dict):
                     continue
@@ -942,18 +938,24 @@ Return exactly this JSON shape:
             group = candidate.get("group")
             from_packet = str(candidate.get("source", "")).startswith("strategic:")
             if from_packet:
-                if key == "value_proposition" and group not in {"product_offer", "audience", "outcome", "hero_claims"}:
+                if key == "value_proposition" and group not in set(
+                    spec.get("strategic_groups") or []
+                ):
                     continue
                 if key == "mission":
                     if (
-                        group != "mission_language"
+                        group not in set(spec.get("strategic_groups") or [])
                         or self._is_testimonial_evidence(low)
                         or self._is_truncated_evidence(low)
                         or not (self._has_operating_activity_signal(low) or self._has_formal_mission_signal(low))
                     ):
                         continue
                 if key == "vision":
-                    if group != "vision_language" or self._is_truncated_evidence(low) or not self._has_future_signal(low):
+                    if (
+                        group not in set(spec.get("strategic_groups") or [])
+                        or self._is_truncated_evidence(low)
+                        or not self._has_future_signal(low)
+                    ):
                         continue
             else:
                 if not any(self._contains_keyword(low, term) for term in spec["look_for"]):

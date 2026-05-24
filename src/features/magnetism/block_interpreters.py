@@ -16,6 +16,7 @@ TLDR_BLOCK_INTERPRETER_SPECS = {
         "task": "Identify the concrete value exchange: offer, audience, and change.",
         "primary_question": "What does the brand offer, to whom, and what changes for that audience?",
         "source_layers": ["netspace", "tactispace", "ambientspace"],
+        "strategic_groups": ["product_offer", "audience", "outcome", "hero_claims"],
         "look_for": [
             "offer", "offers", "solution", "solutions", "platform", "product", "service", "services",
             "api", "system", "management", "streamline", "centralise", "centralize", "reconcile",
@@ -38,6 +39,7 @@ TLDR_BLOCK_INTERPRETER_SPECS = {
         "task": "Identify the brand's current operating activity.",
         "primary_question": "What does the brand concretely do today?",
         "source_layers": ["tactispace", "netspace", "aetherspace"],
+        "strategic_groups": ["mission_language"],
         "look_for": [
             "we build", "we create", "we provide", "we offer", "we operate", "we deliver",
             "builds", "creates", "provides", "offers", "operates", "delivers", "help", "helps",
@@ -59,6 +61,7 @@ TLDR_BLOCK_INTERPRETER_SPECS = {
         "task": "Identify the future state, category shift, or long-term change.",
         "primary_question": "What future, category shift, or change does the brand appear to be building toward?",
         "source_layers": ["tactispace", "aetherspace", "mindspace"],
+        "strategic_groups": ["vision_language"],
         "look_for": [
             "future", "future of", "vision", "new model", "new paradigm", "transform", "towards",
             "toward", "redefine", "next generation", "futuro", "visión", "nuevo modelo",

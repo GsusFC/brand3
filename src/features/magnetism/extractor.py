@@ -15,6 +15,13 @@ from urllib.parse import urlparse
 
 from src.collectors.web_collector import WebCollector
 from src.features.llm_analyzer import LLMAnalyzer
+from src.features.magnetism.block_interpreters import (
+    TLDR_BLOCK_INTERPRETER_SPECS,
+    accepted_block_evidence,
+    interpret_tldr_block,
+    strategic_packet_candidate_priority,
+    strategic_packet_candidates,
+)
 from src.features.magnetism.content_distiller import ContentDistiller
 from src.reports.derivation import collect_evidences
 from src.reports.canonical_evidence import build_canonical_brand_evidence
@@ -164,70 +171,6 @@ TLDR_BLOCK_CONTRACT = {
 STRATEGIC_TLDR_BLOCKS = {"core_purpose", "personality", "brand_idea", "values", "vision"}
 PERFORMED_TLDR_BLOCKS = {"personality", "attributes", "values"}
 DECLARATIVE_TLDR_BLOCKS = {"core_purpose", "magnetism", "value_proposition", "mission"}
-
-TLDR_BLOCK_INTERPRETER_SPECS = {
-    "value_proposition": {
-        "block": "value_proposition",
-        "task": "Identify the concrete value exchange: offer, audience, and change.",
-        "primary_question": "What does the brand offer, to whom, and what changes for that audience?",
-        "source_layers": ["netspace", "tactispace", "ambientspace"],
-        "look_for": [
-            "offer", "offers", "solution", "solutions", "platform", "product", "service", "services",
-            "api", "system", "management", "streamline", "centralise", "centralize", "reconcile",
-            "execute", "forecast", "payments", "pagos", "billing", "facturación", "financial services",
-            "servicios financieros", "revenue", "ingresos", "product development", "planning and building",
-            "teams and agents", "human intelligence", "business analyst", "research people",
-            "research people and companies", "soluciones", "materias primas", "ingredientes", "biorremediación",
-            "cosmética", "nutrición",
-        ],
-        "reject": ["main menu", "contacto", "subscribe now", "buy now", "book a demo"],
-        "minimum_evidence_rule": "At least one concrete offer or service description.",
-        "claim_type_rules": "declared when the offer is directly stated; inferred only when features imply the offer.",
-        "mode_rules": "compressed for direct offer evidence; needs_human_review when audience or outcome is unclear.",
-        "confidence_rules": "high requires offer plus outcome; medium requires clear offer; low is inferred from sparse features.",
-        "human_review_triggers": ["missing_audience", "missing_outcome", "multiple_offers"],
-        "output_style": "Concrete functional offer; avoid category slogans.",
-    },
-    "mission": {
-        "block": "mission",
-        "task": "Identify the brand's current operating activity.",
-        "primary_question": "What does the brand concretely do today?",
-        "source_layers": ["tactispace", "netspace", "aetherspace"],
-        "look_for": [
-            "we build", "we create", "we provide", "we offer", "we operate", "we deliver",
-            "builds", "creates", "provides", "offers", "operates", "delivers", "help", "helps",
-            "creamos", "construimos", "ofrecemos", "proporcionamos", "desarrollamos",
-        ],
-        "reject": [
-            "contact us", "book a demo", "subscribe", "buy now", "pricing", "future", "futuro",
-            "vision", "visión", "new model", "nuevo modelo",
-        ],
-        "minimum_evidence_rule": "At least one concrete present-tense operating claim.",
-        "claim_type_rules": "declared when copied/compressed from an operating claim; inferred only from clear product/service evidence.",
-        "mode_rules": "compressed for direct operating evidence; not_detected for CTAs, slogans, or future language.",
-        "confidence_rules": "high requires explicit mission/current activity; medium requires clear operating claim; low is inferred from product evidence only.",
-        "human_review_triggers": ["inferred_from_product_only", "mission_vision_mixed"],
-        "output_style": "Concrete, present-tense, operational. No aspiration.",
-    },
-    "vision": {
-        "block": "vision",
-        "task": "Identify the future state, category shift, or long-term change.",
-        "primary_question": "What future, category shift, or change does the brand appear to be building toward?",
-        "source_layers": ["tactispace", "aetherspace", "mindspace"],
-        "look_for": [
-            "future", "future of", "vision", "new model", "new paradigm", "transform", "towards",
-            "toward", "redefine", "next generation", "futuro", "visión", "nuevo modelo",
-            "nuevo paradigma", "transformar",
-        ],
-        "reject": ["we build", "we create", "we provide", "creamos", "ofrecemos", "book a demo", "pricing"],
-        "minimum_evidence_rule": "At least one future-facing or category-change signal.",
-        "claim_type_rules": "declared when the brand states a vision; inferred when Brand3 articulates a future hypothesis from future-facing evidence.",
-        "mode_rules": "interpreted_from_discourse for future signals that need articulation; not_detected without future/category-change evidence.",
-        "confidence_rules": "high requires explicit vision plus support; medium requires clear future/category-change signal; low is weak future language.",
-        "human_review_triggers": ["future_from_current_offer_only", "generic_transform_language", "mission_vision_overlap"],
-        "output_style": "Future-oriented but bounded. Avoid grandiose category claims unless explicit.",
-    },
-}
 
 GENERIC_MAGNETISM_TERMS = {
     "empower",
@@ -764,13 +707,18 @@ Return exactly this JSON shape:
                 })
         if not candidates:
             return None
-        return sorted(candidates, key=MagnetismExtractor._strategic_packet_candidate_priority)[0]
+        return sorted(candidates, key=strategic_packet_candidate_priority)[0]
 
     def _first_accepted_tactispace_packet_evidence(self, strategic_packet: dict[str, Any]) -> str | None:
         for key in ("mission", "vision"):
             spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-            candidates = self._strategic_packet_candidates(key, strategic_packet)
-            accepted = self._accepted_block_evidence(key, spec, candidates)
+            candidates = strategic_packet_candidates(
+                key,
+                spec,
+                strategic_packet,
+                str(TLDR_TO_LAYER.get(key, "netspace")),
+            )
+            accepted = accepted_block_evidence(key, spec, candidates)
             if accepted:
                 return accepted[0]["text"]
         return None
@@ -875,34 +823,13 @@ Return exactly this JSON shape:
     ) -> dict[str, Any] | None:
         spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
         candidates = self._select_block_evidence_candidates(spec, layers, strategic_packet, key)
-        accepted = self._accepted_block_evidence(key, spec, candidates)
-        if not accepted:
-            return None
-
-        evidence = accepted[0]["text"]
-        diagnostics = self._block_evidence_diagnostics(key, accepted, layers)
-        answer = self._answer_from_spec(key, evidence, accepted)
-        mode = self._mode_from_spec(key, diagnostics)
-        confidence = self._confidence_from_spec(key, diagnostics, accepted)
-        claim_type = self._claim_type_from_spec(key, diagnostics)
-        counter_evidence = self._counter_evidence_from_spec(key, diagnostics)
-        human_review = self._human_review_from_spec(key, diagnostics, confidence, counter_evidence)
-        reasoning = self._reasoning_from_spec(key, evidence, diagnostics)
-
-        return {
-            "content": answer,
-            "detected": True,
-            "claim_type": claim_type,
-            "mode": mode,
-            "confidence": confidence,
-            "evidence": [evidence],
-            "rationale": reasoning,
-            "reasoning": reasoning,
-            "observations": self._observations_from_spec(key, diagnostics),
-            "counter_evidence": counter_evidence,
-            "source_layers": list(dict.fromkeys(item["layer"] for item in accepted)),
-            "human_review_recommended": human_review,
-        }
+        return interpret_tldr_block(
+            key,
+            spec,
+            candidates,
+            layers,
+            TLDR_TO_LAYER[key],
+        )
 
     def _select_block_evidence_candidates(
         self,
@@ -914,7 +841,12 @@ Return exactly this JSON shape:
         candidates: list[dict[str, str]] = []
         seen: set[str] = set()
         if strategic_packet and key:
-            return self._strategic_packet_candidates(key, strategic_packet)
+            return strategic_packet_candidates(
+                key,
+                spec,
+                strategic_packet,
+                str(TLDR_TO_LAYER.get(key, "netspace")),
+            )
         for layer_key in spec["source_layers"]:
             layer = layers.get(layer_key) or {}
             for source in ("evidence", "finding"):
@@ -926,107 +858,6 @@ Return exactly this JSON shape:
                     seen.add(cleaned)
                     candidates.append({"text": cleaned, "layer": layer_key, "source": source})
         return candidates
-
-    @staticmethod
-    def _strategic_packet_candidates(
-        key: str,
-        strategic_packet: dict[str, Any],
-    ) -> list[dict[str, str]]:
-        group_map = {
-            "value_proposition": ["product_offer", "audience", "outcome", "hero_claims"],
-            "mission": ["mission_language"],
-            "vision": ["vision_language"],
-        }
-        groups = strategic_packet.get("groups") if isinstance(strategic_packet, dict) else {}
-        if not isinstance(groups, dict):
-            return []
-        candidates: list[dict[str, str]] = []
-        for group in group_map.get(key, []):
-            for item in groups.get(group) or []:
-                if not isinstance(item, dict):
-                    continue
-                text = MagnetismExtractor._clean_evidence_phrase(str(item.get("text") or ""))
-                if not text:
-                    continue
-                candidates.append({
-                    "text": text,
-                    "layer": str(TLDR_TO_LAYER.get(key, "netspace")),
-                    "source": f"strategic:{group}",
-                    "group": group,
-                    "source_type": str(item.get("source_type") or ""),
-                    "feature_name": str(item.get("feature_name") or ""),
-                })
-        return sorted(candidates, key=MagnetismExtractor._strategic_packet_candidate_priority)
-
-    @staticmethod
-    def _strategic_packet_candidate_priority(candidate: dict[str, str]) -> tuple[int, int, int, int, int, int, int, int]:
-        source_type = str(candidate.get("source_type") or "")
-        feature_name = str(candidate.get("feature_name") or "")
-        group = str(candidate.get("group") or "")
-        text = str(candidate.get("text") or "")
-        low = text.lower()
-        group_rank = {"product_offer": 0, "hero_claims": 1, "outcome": 2, "audience": 3}.get(group, 4)
-        source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(source_type, 3)
-        feature_rank = 3 if feature_name == "search_visibility" else 0
-        truncated_rank = 2 if re.search(r"\b(?:com|streamli|throu|c|users?)\s*$", text, re.I) else 0
-        generic_rank = 2 if low in {"todo en una plataforma", "all in one platform"} else 0
-        title_rank = 1 if (" | " in text or " – " in text or " # " in text) and len(text) < 120 else 0
-        richness = sum(
-            1
-            for marker in (
-                "platform", "plataforma", "teams", "creators", "developers", "enterprises",
-                "helps", "helping", "ayuda", "enables", "streamline", "streamlines",
-                "for ", "para ", "gestionar", "hacer crecer", "servicios financieros", "payments",
-                "pagos", "reduce", "reduce costes", "secure", "competitive advantage",
-                "web search", "search engine", "crawler", "real-world data", "video generation",
-                "operating system", "transport", "transporte", "planning", "roadmap",
-                "human intelligence", "business analyst", "research people", "creative entity",
-                "wield power", "world stage",
-            )
-            if marker in low
-        )
-        useful_length = min(len(text), 220)
-        return (group_rank, generic_rank, truncated_rank, -richness, title_rank, source_rank, feature_rank, -useful_length)
-
-    def _accepted_block_evidence(
-        self,
-        key: str,
-        spec: dict[str, Any],
-        candidates: list[dict[str, str]],
-    ) -> list[dict[str, str]]:
-        accepted: list[dict[str, str]] = []
-        for candidate in candidates:
-            text = candidate["text"]
-            low = text.lower()
-            if any(term in low for term in spec["reject"]):
-                continue
-            group = candidate.get("group")
-            from_packet = str(candidate.get("source", "")).startswith("strategic:")
-            if from_packet:
-                if key == "value_proposition" and group not in {"product_offer", "audience", "outcome", "hero_claims"}:
-                    continue
-                if key == "mission":
-                    if (
-                        group != "mission_language"
-                        or self._is_testimonial_evidence(low)
-                        or self._is_truncated_evidence(low)
-                        or not (self._has_operating_activity_signal(low) or self._has_formal_mission_signal(low))
-                    ):
-                        continue
-                if key == "vision":
-                    if group != "vision_language" or self._is_truncated_evidence(low) or not self._has_future_signal(low):
-                        continue
-            else:
-                if not any(self._contains_keyword(low, term) for term in spec["look_for"]):
-                    continue
-                if key == "mission" and (self._is_truncated_evidence(low) or not (self._has_operating_activity_signal(low) or self._has_formal_mission_signal(low))):
-                    continue
-                if key == "vision" and (self._is_truncated_evidence(low) or not self._has_future_signal(low)):
-                    continue
-                if key == "value_proposition" and not self._has_offer_signal(low):
-                    continue
-            accepted.append(candidate)
-        return accepted
 
     @staticmethod
     def _has_operating_activity_signal(text: str) -> bool:
@@ -1134,225 +965,6 @@ Return exactly this JSON shape:
                 "nutrición",
             )
         )
-
-    def _block_evidence_diagnostics(
-        self,
-        key: str,
-        accepted: list[dict[str, str]],
-        layers: dict[str, Any],
-    ) -> dict[str, Any]:
-        text = "\n".join(item["text"] for item in accepted).lower()
-        groups = {str(item.get("group")) for item in accepted if item.get("group")}
-        explicit_sources = [str(item.get("source") or "") for item in accepted]
-        product_offer_count = sum(
-            1 for item in accepted if str(item.get("group") or "") == "product_offer"
-        )
-        return {
-            "has_explicit_evidence": any(
-                source == "evidence" or source.startswith("strategic:")
-                for source in explicit_sources
-            ),
-            "has_offer": self._has_offer_signal(text) or "product_offer" in groups,
-            "has_audience": self._has_audience_signal(text) or "audience" in groups,
-            "has_outcome": self._has_outcome_signal(text) or "outcome" in groups,
-            "has_operating_activity": self._has_operating_activity_signal(text) or "mission_language" in groups,
-            "has_future": self._has_future_signal(text) or "vision_language" in groups,
-            "has_formal_vision": bool(
-                re.search(r"\b(our vision is|vision is|nuestra visión es|nuestra vision es)\b", text)
-            ),
-            "candidate_count": len(accepted),
-            "product_offer_count": product_offer_count,
-            "has_multiple_offers": product_offer_count > 1,
-            "accepted_groups": sorted(groups),
-            "primary_layer_detected": bool(layers.get(TLDR_TO_LAYER[key], {}).get("detected")),
-        }
-
-
-    @staticmethod
-    def _has_audience_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "for ",
-                "para ",
-                "teams",
-                "operators",
-                "creators",
-                "subscribers",
-                "athletes",
-                "atletas",
-                "banks",
-                "erp",
-                "cosmética",
-                "nutrición",
-                "health animal",
-                "salud animal",
-            )
-        )
-
-    @staticmethod
-    def _has_outcome_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "streamline",
-                "centralise",
-                "centralize",
-                "reconcile",
-                "execute",
-                "forecast",
-                "control",
-                "grow",
-                "grow your business",
-                "grow your revenue",
-                "hacer crecer",
-                "gestionar",
-                "gestionar el movimiento de dinero",
-                "modelos personalizados",
-                "potenciar",
-                "transform",
-                "reduce",
-                "save",
-                "build relationships",
-                "get things done",
-                "improve",
-                "valuable channel",
-                "turn subscribers into customers",
-                "biorremediación",
-            )
-        )
-
-    @staticmethod
-    def _answer_from_spec(key: str, evidence: str, accepted: list[dict[str, str]] | None = None) -> str:
-        if key == "value_proposition":
-            return MagnetismExtractor._value_proposition_answer(evidence, accepted or [])
-        if key == "vision" and "macroalgas" in evidence.lower() and "nuevo modelo" in evidence.lower():
-            return "A regenerative industrial model built around the potential of Mediterranean macroalgae."
-        return evidence
-
-    @staticmethod
-    def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> str:
-        primary = evidence.strip()
-        primary_low = primary.lower()
-        if (
-            not accepted
-            or len(primary) >= 90
-            or (
-                MagnetismExtractor._has_audience_signal(primary_low)
-                and MagnetismExtractor._has_outcome_signal(primary_low)
-            )
-        ):
-            return primary
-        additions: list[str] = []
-        for target_group in ("outcome", "audience"):
-            for item in accepted:
-                text = str(item.get("text") or "").strip()
-                if item.get("group") != target_group or not text or text == primary or text in additions:
-                    continue
-                additions.append(text)
-                break
-        if not additions:
-            return primary
-        answer = primary.rstrip(".") + ". " + " ".join(additions)
-        return answer[:360].rstrip()
-
-    @staticmethod
-    def _mode_from_spec(key: str, diagnostics: dict[str, Any]) -> str:
-        if key == "vision":
-            return "compressed" if diagnostics.get("has_formal_vision") else "interpreted_from_discourse"
-        return "compressed" if diagnostics["has_explicit_evidence"] else "interpreted_from_discourse"
-
-    @staticmethod
-    def _claim_type_from_spec(key: str, diagnostics: dict[str, Any]) -> str:
-        if key == "vision":
-            return "declared" if diagnostics.get("has_formal_vision") else "inferred"
-        return "declared" if diagnostics["has_explicit_evidence"] else "inferred"
-
-    @staticmethod
-    def _confidence_from_spec(
-        key: str,
-        diagnostics: dict[str, Any],
-        accepted: list[dict[str, str]],
-    ) -> str:
-        if key == "value_proposition":
-            if diagnostics["has_offer"] and diagnostics["has_outcome"] and diagnostics["has_audience"]:
-                return "high"
-            if diagnostics["has_offer"] and (diagnostics["has_outcome"] or diagnostics["has_audience"]):
-                return "medium"
-            return "low"
-        if key == "mission":
-            return "medium" if diagnostics["has_operating_activity"] else "low"
-        if key == "vision":
-            return "medium" if diagnostics["has_future"] and accepted else "low"
-        return "medium"
-
-    @staticmethod
-    def _counter_evidence_from_spec(key: str, diagnostics: dict[str, Any]) -> list[str]:
-        limits: list[str] = []
-        if key == "value_proposition":
-            if not diagnostics["has_audience"]:
-                limits.append("The available value proposition evidence does not clearly name the audience.")
-            if not diagnostics["has_outcome"]:
-                limits.append("The available value proposition evidence does not clearly state the outcome or change for the audience.")
-            if diagnostics.get("has_multiple_offers"):
-                limits.append("The evidence contains multiple offer signals, so a strategist should confirm the primary value proposition.")
-        if key == "vision" and not diagnostics.get("has_formal_vision"):
-            limits.append("The available evidence contains future-facing language, but not a formal vision statement.")
-        if key == "mission" and not diagnostics["has_explicit_evidence"]:
-            limits.append("The mission is inferred from product/service evidence rather than stated as a formal mission.")
-        return limits
-
-    @staticmethod
-    def _human_review_from_spec(
-        key: str,
-        diagnostics: dict[str, Any],
-        confidence: str,
-        counter_evidence: list[str],
-    ) -> bool:
-        if key == "vision":
-            return True if counter_evidence or confidence == "low" else False
-        if key == "value_proposition":
-            return (
-                confidence == "low"
-                or len(counter_evidence) >= 2
-                or diagnostics.get("has_multiple_offers", False)
-            )
-        if key == "mission":
-            return not diagnostics["has_explicit_evidence"] or confidence == "low"
-        return False
-
-    @staticmethod
-    def _reasoning_from_spec(key: str, evidence: str, diagnostics: dict[str, Any]) -> str:
-        if key == "value_proposition":
-            parts = ["The evidence states a concrete offer"]
-            if diagnostics["has_audience"]:
-                parts.append("names or implies an audience")
-            if diagnostics["has_outcome"]:
-                parts.append("and describes the operational change or outcome")
-            return ", ".join(parts) + f": {evidence}"
-        if key == "mission":
-            return f"The evidence uses present-tense operating language that describes what the brand does today: {evidence}"
-        if key == "vision":
-            return f"The evidence contains future-facing or category-change language, so the block is treated as an interpreted vision signal: {evidence}"
-        return f"The block is derived from accepted evidence: {evidence}"
-
-    @staticmethod
-    def _observations_from_spec(key: str, diagnostics: dict[str, Any]) -> list[str]:
-        observations = [f"Applied executable {key} interpreter spec."]
-        if key == "value_proposition":
-            observations.append(
-                "Detected offer/audience/outcome coverage: "
-                f"offer={diagnostics['has_offer']}, audience={diagnostics['has_audience']}, outcome={diagnostics['has_outcome']}."
-            )
-            if diagnostics.get("accepted_groups"):
-                observations.append("Strategic packet groups used: " + ", ".join(diagnostics["accepted_groups"]) + ".")
-            if diagnostics.get("has_multiple_offers"):
-                observations.append("Multiple product_offer candidates were found; primary offer requires review.")
-        if key == "mission":
-            observations.append(f"Present-tense operating evidence={diagnostics['has_operating_activity']}.")
-        if key == "vision":
-            observations.append(f"Future/category-change evidence={diagnostics['has_future']}.")
-        return observations
 
     @staticmethod
     def _empty_tldr_block(key: str, layer_key: str) -> dict[str, Any]:

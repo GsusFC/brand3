@@ -197,6 +197,7 @@ def strategic_packet_candidate_priority(
             "real-world data",
             "video generation",
             "operating system",
+            "open stack",
             "transport",
             "transporte",
             "planning",
@@ -290,6 +291,8 @@ def accepted_block_evidence(
                 _is_truncated_evidence(low) or not _has_future_signal(low)
             ):
                 continue
+            if block == "value_proposition" and _is_bad_value_prop_candidate(text):
+                continue
         else:
             if not any(_contains_keyword(low, term) for term in spec["look_for"]):
                 continue
@@ -303,7 +306,7 @@ def accepted_block_evidence(
                 _is_truncated_evidence(low) or not _has_future_signal(low)
             ):
                 continue
-            if block == "value_proposition" and not _has_offer_signal(low):
+            if block == "value_proposition" and (_is_bad_value_prop_candidate(text) or not _has_offer_signal(low)):
                 continue
         accepted.append(candidate)
     if block == "value_proposition" and accepted:
@@ -523,7 +526,7 @@ def _is_testimonial_evidence(text: str) -> bool:
 
 
 def _is_truncated_evidence(text: str) -> bool:
-    return bool(re.search(r"\b(?:com|streamli|throu|softwar|platfor|developmen|infrastructur|users?|c|w)\s*$", text.strip(), re.I))
+    return bool(re.search(r"\b(?:com|streamli|throu|softwar|platfor|developmen|infrastructur|users?|c|w|cr)\s*$", text.strip(), re.I))
 
 
 def _has_formal_mission_signal(text: str) -> bool:
@@ -586,6 +589,7 @@ def _has_offer_signal(text: str) -> bool:
             "centralise",
             "centralize",
             "soluciones",
+            "open stack",
             "human intelligence",
             "business analyst",
             "research people",
@@ -678,9 +682,53 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
     return answer[:360].rstrip()
 
 
+def _is_bad_value_prop_candidate(text: str) -> bool:
+    stripped = text.strip()
+    low = stripped.lower()
+    if _is_truncated_evidence(low):
+        return True
+    if stripped.startswith("![") or "![" in stripped:
+        return True
+    if _looks_like_concatenated_copy(stripped):
+        return True
+    if re.fullmatch(r"\[[^\]]{2,120}\]\(https?://[^)]+\)", stripped):
+        return True
+    if "play video pause video" in low:
+        return True
+    if low.count("moments of activation") >= 2:
+        return True
+    if "schema detected:" in low:
+        return True
+    if "technology, information and internet company" in low:
+        return True
+    if " company. " in low and " is a " in low[:120]:
+        return True
+    if " | " in stripped and "##" in stripped:
+        return True
+    if " b a s e b a s e " in low or "chain products developers solutions community" in low:
+        return True
+    if "customers logos" in low or "_next/image" in low:
+        return True
+    if "book a demo" in low and low.startswith(("book a demo", "talk to")):
+        return True
+    if stripped.count("**](http") or stripped.endswith("]"):
+        return True
+    return False
+
+
+def _looks_like_concatenated_copy(text: str) -> bool:
+    stripped = text.strip()
+    if len(stripped) < 80:
+        return False
+    space_ratio = stripped.count(" ") / max(len(stripped), 1)
+    return space_ratio < 0.04
+
+
 def _is_weak_value_prop_addition(text: str) -> bool:
     low = text.strip().lower()
     if len(low) < 40 and not re.search(r"\b(?:helps|help|enables|enable|streamlines|automates|reduces|improves|builds|creates|for|para)\b", low):
+        return True
+    if any(marker in low for marker in ("copyright", "all rights reserved", "pricing", "privacy policy", "terms of service")):
         return True
     return low in {"help and security", "startups program"}
 

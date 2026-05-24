@@ -149,3 +149,47 @@ def test_reverse_engineering_extractor_llm_exception_falls_back_to_heuristic():
 
     assert result["fallback_used"] is True
     assert result["layers"]["aetherspace"]["status"] == "detected"
+
+
+def test_reverse_engineering_from_audit_snapshot_uses_canonical_evidence_bundle():
+    extractor = ReverseEngineeringExtractor(llm=None)
+    snapshot = {
+        "run": {"id": 501, "brand_name": "Shared Brand", "url": "https://shared.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "Shared Brand is a workflow platform for finance teams that helps "
+                        "reduce reconciliation time. We provide API integrations and "
+                        "developer documentation."
+                    ),
+                },
+            },
+            {
+                "source": "visual_signature",
+                "payload": {
+                    "semantics": {
+                        "aesthetic_style": "minimalist brutalism",
+                        "visual_mood": "precise",
+                        "visual_polish_score": 8,
+                    }
+                },
+            },
+        ],
+        "evidence_items": [],
+    }
+
+    result = extractor.extract_from_audit_snapshot(snapshot)
+
+    assert result["source"] == "brand_audit_snapshot"
+    assert result["source_run_id"] == 501
+    assert result["canonical_evidence_summary"]["source"] == "brand_audit_snapshot"
+    assert result["canonical_evidence_summary"]["source_label"] == "Canonical Brand Audit evidence"
+    assert result["layers"]["netspace"]["status"] == "detected"
+    assert result["layers"]["envispace"]["status"] == "detected"
+    assert any(
+        "minimalist brutalism" in ev
+        for ev in result["layers"]["envispace"]["evidence"]
+    )

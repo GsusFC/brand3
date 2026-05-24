@@ -17,10 +17,8 @@ from src.collectors.web_collector import WebCollector
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.content_distiller import ContentDistiller
 from src.reports.derivation import collect_evidences
-from src.reports.strategic_evidence_packet import (
-    StrategicEvidencePacket,
-    build_strategic_evidence_packet,
-)
+from src.reports.canonical_evidence import build_canonical_brand_evidence
+from src.reports.strategic_evidence_packet import StrategicEvidencePacket
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
 
 LAYER_KEYS = [
@@ -379,21 +377,21 @@ class MagnetismExtractor:
         This is the preferred integration path: Brand Audit owns collection,
         evidence normalization, confidence, and degraded-state handling.
         """
-        run = snapshot.get("run") or {}
-        brand_name = str(run.get("brand_name") or "Unknown Brand")
-        url = str(run.get("url") or "manual")
-        strategic_packet = build_strategic_evidence_packet(snapshot)
-        evidence_text = strategic_packet.to_interpreter_text() or self._brand_audit_evidence_text(snapshot)
-        visual_semantics = self._visual_semantics_from_snapshot(snapshot)
-        evidence_packet_summary = self._brand_audit_evidence_packet_summary(snapshot, strategic_packet)
+        canonical_evidence = build_canonical_brand_evidence(snapshot)
+        brand_name = canonical_evidence.brand_name
+        url = canonical_evidence.url
+        strategic_packet = canonical_evidence.strategic_packet
+        evidence_text = canonical_evidence.interpreter_text
+        visual_semantics = canonical_evidence.visual_semantics
+        evidence_packet_summary = canonical_evidence.to_summary()
 
         if self.llm is not None and getattr(self.llm, "api_key", None):
             try:
                 result = self._extract_via_llm(evidence_text, visual_semantics, brand_name, url)
                 if result:
-                    result["source_run_id"] = run.get("id")
+                    result["source_run_id"] = canonical_evidence.run_id
                     result["source"] = "brand_audit_snapshot"
-                    result["limitations"].extend(self._snapshot_limitations(snapshot))
+                    result["limitations"].extend(canonical_evidence.limitations)
                     result["evidence_packet_summary"] = evidence_packet_summary
                     result["strategic_evidence_packet"] = strategic_packet.to_dict()
                     result["system_reading"] = self._derive_system_reading(
@@ -413,9 +411,9 @@ class MagnetismExtractor:
             collector_error="",
             strategic_evidence_packet=strategic_packet.to_dict(),
         )
-        result["source_run_id"] = run.get("id")
+        result["source_run_id"] = canonical_evidence.run_id
         result["source"] = "brand_audit_snapshot"
-        result["limitations"].extend(self._snapshot_limitations(snapshot))
+        result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
         result["strategic_evidence_packet"] = strategic_packet.to_dict()
         result["system_reading"] = self._derive_system_reading(

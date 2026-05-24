@@ -7,6 +7,7 @@ import re
 from typing import Any
 
 from src.features.llm_analyzer import LLMAnalyzer
+from src.reports.canonical_evidence import build_canonical_brand_evidence
 
 
 class ReverseEngineeringExtractor:
@@ -49,6 +50,21 @@ class ReverseEngineeringExtractor:
 
         # 2. Heuristic fallback path
         return self._extract_via_heuristic(web_content, mentions_list, signature, brand_name)
+
+    def extract_from_audit_snapshot(self, snapshot: dict[str, Any]) -> dict[str, Any]:
+        """Run Reverse Engineering from the shared Brand Audit evidence bundle."""
+        canonical_evidence = build_canonical_brand_evidence(snapshot)
+        result = self.extract(
+            web_markdown=canonical_evidence.interpreter_text,
+            mentions=canonical_evidence.public_mentions,
+            visual_signature={"semantics": canonical_evidence.visual_semantics},
+            brand_name=canonical_evidence.brand_name,
+        )
+        result["source"] = "brand_audit_snapshot"
+        result["source_run_id"] = canonical_evidence.run_id
+        result["canonical_evidence_summary"] = canonical_evidence.to_summary()
+        result["limitations"] = canonical_evidence.limitations
+        return result
 
     def _extract_via_llm(
         self,

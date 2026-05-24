@@ -163,6 +163,11 @@ def test_vision_acceptance_requires_future_or_category_change_signal() -> None:
             "source": "strategic:vision_language",
             "group": "vision_language",
         },
+        {
+            "text": "the future of softwar",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+        },
     ]
 
     accepted = accepted_block_evidence("vision", spec, candidates)

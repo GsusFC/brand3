@@ -1144,15 +1144,25 @@ Return exactly this JSON shape:
         text = "\n".join(item["text"] for item in accepted).lower()
         groups = {str(item.get("group")) for item in accepted if item.get("group")}
         explicit_sources = [str(item.get("source") or "") for item in accepted]
+        product_offer_count = sum(
+            1 for item in accepted if str(item.get("group") or "") == "product_offer"
+        )
         return {
-            "has_explicit_evidence": any(source == "evidence" or source.startswith("strategic:") for source in explicit_sources),
+            "has_explicit_evidence": any(
+                source == "evidence" or source.startswith("strategic:")
+                for source in explicit_sources
+            ),
             "has_offer": self._has_offer_signal(text) or "product_offer" in groups,
             "has_audience": self._has_audience_signal(text) or "audience" in groups,
             "has_outcome": self._has_outcome_signal(text) or "outcome" in groups,
             "has_operating_activity": self._has_operating_activity_signal(text) or "mission_language" in groups,
             "has_future": self._has_future_signal(text) or "vision_language" in groups,
-            "has_formal_vision": bool(re.search(r"\b(our vision is|vision is|nuestra visión es|nuestra vision es)\b", text)),
+            "has_formal_vision": bool(
+                re.search(r"\b(our vision is|vision is|nuestra visión es|nuestra vision es)\b", text)
+            ),
             "candidate_count": len(accepted),
+            "product_offer_count": product_offer_count,
+            "has_multiple_offers": product_offer_count > 1,
             "accepted_groups": sorted(groups),
             "primary_layer_detected": bool(layers.get(TLDR_TO_LAYER[key], {}).get("detected")),
         }
@@ -1284,6 +1294,8 @@ Return exactly this JSON shape:
                 limits.append("The available value proposition evidence does not clearly name the audience.")
             if not diagnostics["has_outcome"]:
                 limits.append("The available value proposition evidence does not clearly state the outcome or change for the audience.")
+            if diagnostics.get("has_multiple_offers"):
+                limits.append("The evidence contains multiple offer signals, so a strategist should confirm the primary value proposition.")
         if key == "vision" and not diagnostics.get("has_formal_vision"):
             limits.append("The available evidence contains future-facing language, but not a formal vision statement.")
         if key == "mission" and not diagnostics["has_explicit_evidence"]:
@@ -1300,7 +1312,11 @@ Return exactly this JSON shape:
         if key == "vision":
             return True if counter_evidence or confidence == "low" else False
         if key == "value_proposition":
-            return confidence == "low" or len(counter_evidence) >= 2
+            return (
+                confidence == "low"
+                or len(counter_evidence) >= 2
+                or diagnostics.get("has_multiple_offers", False)
+            )
         if key == "mission":
             return not diagnostics["has_explicit_evidence"] or confidence == "low"
         return False
@@ -1330,6 +1346,8 @@ Return exactly this JSON shape:
             )
             if diagnostics.get("accepted_groups"):
                 observations.append("Strategic packet groups used: " + ", ".join(diagnostics["accepted_groups"]) + ".")
+            if diagnostics.get("has_multiple_offers"):
+                observations.append("Multiple product_offer candidates were found; primary offer requires review.")
         if key == "mission":
             observations.append(f"Present-tense operating evidence={diagnostics['has_operating_activity']}.")
         if key == "vision":

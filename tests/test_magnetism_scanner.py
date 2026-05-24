@@ -411,6 +411,35 @@ class MagnetismScannerTests(unittest.TestCase):
             "Real-time AI search engine with a powerful web search API, web crawling API, and deep research tools for developers and enterprises.",
         )
 
+    def test_value_proposition_flags_multiple_offer_candidates_from_snapshot(self):
+        extractor = MagnetismExtractor(llm=None)
+        snapshot = {
+            "run": {"id": 137, "brand_name": "Multi Offer", "url": "https://multi.test"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "markdown_content": (
+                            "Multi Offer is a treasury platform for finance teams that streamlines cash visibility.\n"
+                            "Multi Offer also provides payment automation services for operators that reduce manual work."
+                        ),
+                    },
+                }
+            ],
+            "evidence_items": [],
+        }
+
+        result = extractor.extract_from_audit_snapshot(snapshot)
+
+        value_prop = result["tldr_brand3"]["value_proposition"]
+        self.assertTrue(value_prop["detected"])
+        self.assertTrue(value_prop["human_review_recommended"])
+        self.assertTrue(
+            any("multiple offer signals" in item for item in value_prop["counter_evidence"])
+        )
+        self.assertIn("Multiple product_offer candidates", " ".join(value_prop["observations"]))
+
     def test_extractor_from_brand_audit_snapshot_combines_short_offer_with_outcome(self):
         extractor = MagnetismExtractor(llm=None)
         snapshot = {

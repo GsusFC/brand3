@@ -512,7 +512,7 @@ def _is_testimonial_evidence(text: str) -> bool:
 
 
 def _is_truncated_evidence(text: str) -> bool:
-    return bool(re.search(r"\b(?:com|streamli|throu|users?|c)\s*$", text.strip(), re.I))
+    return bool(re.search(r"\b(?:com|streamli|throu|softwar|platfor|developmen|infrastructur|users?|c)\s*$", text.strip(), re.I))
 
 
 def _has_formal_mission_signal(text: str) -> bool:

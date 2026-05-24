@@ -332,3 +332,41 @@ def test_block_evidence_candidates_select_layer_evidence_when_no_packet() -> Non
         {"text": "Trusted by teams", "layer": "netspace", "source": "finding"},
         {"text": "Book a demo", "layer": "tactispace", "source": "evidence"},
     ]
+
+
+
+def test_value_proposition_rejects_strategic_packet_without_offer_candidate() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Employees: 40 - Monthly Growth: +29.0%",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+        },
+        {
+            "text": "Startups program",
+            "source": "strategic:audience",
+            "group": "audience",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert accepted == []
+
+
+
+def test_value_proposition_answer_does_not_append_weak_labels() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    accepted = [
+        {"text": "Anthropic's AI assistant for problem solvers.", "group": "product_offer"},
+        {"text": "Help and security", "group": "outcome"},
+        {"text": "Startups program", "group": "audience"},
+    ]
+
+    answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
+
+    assert answer == "Anthropic's AI assistant for problem solvers."

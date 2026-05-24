@@ -3,6 +3,7 @@ from __future__ import annotations
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     accepted_block_evidence,
+    block_evidence_candidates,
     block_evidence_diagnostics,
     confidence_from_spec,
     counter_evidence_from_spec,
@@ -302,3 +303,32 @@ def test_interpret_tldr_block_returns_none_without_accepted_evidence() -> None:
     )
 
     assert result is None
+
+
+
+def test_block_evidence_candidates_select_layer_evidence_when_no_packet() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    layers = {
+        "netspace": {
+            "evidence": [
+                "Main Menu Contacto Menú",
+                "A platform for finance teams. A platform for finance teams.",
+            ],
+            "finding": "Trusted by teams. Contacto Contáctanos Menú",
+        },
+        "tactispace": {"evidence": "Book a demo"},
+    }
+
+    candidates = block_evidence_candidates(
+        "value_proposition",
+        spec,
+        layers,
+        strategic_packet=None,
+        primary_layer_key="netspace",
+    )
+
+    assert candidates == [
+        {"text": "A platform for finance teams", "layer": "netspace", "source": "evidence"},
+        {"text": "Trusted by teams", "layer": "netspace", "source": "finding"},
+        {"text": "Book a demo", "layer": "tactispace", "source": "evidence"},
+    ]

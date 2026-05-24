@@ -1,8 +1,9 @@
 """Executable TLDR Brand3 block interpreter specs.
 
-The specs define the exercise each migrated TLDR block must perform. Runtime
-logic still lives in ``extractor.py`` for now; this module keeps the method
-contract separate from scanner orchestration so specs can evolve independently.
+The specs define the exercise each migrated TLDR block must perform. This
+module owns candidate selection, evidence acceptance, and block-level metadata
+for migrated TLDR blocks while the extractor remains responsible for scanner
+orchestration.
 """
 
 from __future__ import annotations
@@ -83,6 +84,32 @@ def get_tldr_block_interpreter_spec(block: str) -> dict[str, Any] | None:
     """Return the executable spec for a migrated TLDR block."""
     spec = TLDR_BLOCK_INTERPRETER_SPECS.get(block)
     return dict(spec) if spec else None
+
+
+def block_evidence_candidates(
+    block: str,
+    spec: dict[str, Any],
+    layers: dict[str, Any],
+    strategic_packet: dict[str, Any] | None,
+    primary_layer_key: str,
+) -> list[dict[str, str]]:
+    """Select block evidence candidates from the strategic packet or Magenta layers."""
+    if strategic_packet:
+        return strategic_packet_candidates(block, spec, strategic_packet, primary_layer_key)
+
+    candidates: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for layer_key in spec["source_layers"]:
+        layer = layers.get(layer_key) or {}
+        for source in ("evidence", "finding"):
+            value = layer.get(source)
+            for sentence in _sentences("\n".join(_evidence_list(value))):
+                cleaned = _clean_layer_candidate_text(sentence)
+                if not cleaned or cleaned in seen or _is_navigation_noise(cleaned):
+                    continue
+                seen.add(cleaned)
+                candidates.append({"text": cleaned, "layer": layer_key, "source": source})
+    return candidates
 
 
 def strategic_packet_candidates(
@@ -629,3 +656,43 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
         return primary
     answer = primary.rstrip(".") + ". " + " ".join(additions)
     return answer[:360].rstrip()
+
+
+def _evidence_list(value: Any) -> list[str]:
+    if isinstance(value, list):
+        return [str(item).strip() for item in value if str(item).strip()]
+    if value:
+        return [str(value).strip()]
+    return []
+
+
+def _sentences(text: str) -> list[str]:
+    raw_segments = [s.strip() for s in re.split(r"[.!?\n]+", text or "") if len(s.strip()) > 5]
+    segments: list[str] = []
+    for segment in raw_segments:
+        if len(segment) <= 320:
+            segments.append(segment)
+            continue
+        cuts = re.split(
+            r"(?=\b(?:Macroalgas|Soluciones|Únete|Unete|Ingredientes|Creamos|Servicios|Nuestras)\b)",
+            segment,
+        )
+        segments.extend(cut.strip() for cut in cuts if len(cut.strip()) > 10)
+    return segments
+
+
+def _clean_layer_candidate_text(value: str) -> str:
+    cleaned = " ".join(value.split()).strip(" -•*\t")
+    for marker in (" Contáctanos", " Contacto", " Nuestras soluciones", " Main Menu"):
+        idx = cleaned.find(marker)
+        if idx > 40:
+            cleaned = cleaned[:idx].strip()
+    return cleaned
+
+
+def _is_navigation_noise(value: str) -> bool:
+    low = value.lower().strip()
+    if low.startswith("main menu"):
+        return True
+    nav_tokens = ("contacto", "contáctanos", "menu", "menú", "alternar menú")
+    return len(value) < 120 and sum(1 for token in nav_tokens if token in low) >= 2

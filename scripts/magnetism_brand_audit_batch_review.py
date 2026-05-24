@@ -493,15 +493,9 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
-def _render_quality_examples(rows: list[dict[str, Any]], block: str, limit: int = 8) -> list[str]:
+def _render_quality_examples(rows: list[dict[str, Any]], block: str, limit: int = 12) -> list[str]:
     title = block.replace("_", " ").title()
-    ranked = sorted(
-        rows,
-        key=lambda row: (
-            {"weak": 0, "missing": 1, "usable": 2, "strong": 3}.get(str(row.get(f"{block}_quality")), 4),
-            str(row.get("brand") or ""),
-        ),
-    )[:limit]
+    ranked = _balanced_quality_rows(rows, block, limit=limit)
     lines = [f"### {title}", "", "| quality | run | brand | confidence | reasons | answer |", "|---|---:|---|---|---|---|"]
     for row in ranked:
         lines.append(
@@ -516,6 +510,36 @@ def _render_quality_examples(rows: list[dict[str, Any]], block: str, limit: int 
         )
     lines.append("")
     return lines
+
+
+def _balanced_quality_rows(rows: list[dict[str, Any]], block: str, limit: int = 12) -> list[dict[str, Any]]:
+    status_order = ("weak", "missing", "usable", "strong")
+    sorted_rows = sorted(rows, key=lambda row: str(row.get("brand") or ""))
+    selected: list[dict[str, Any]] = []
+    seen: set[int] = set()
+
+    for status in status_order:
+        for row in sorted_rows:
+            if row.get(f"{block}_quality") != status:
+                continue
+            selected.append(row)
+            seen.add(id(row))
+            break
+
+    for row in sorted(
+        rows,
+        key=lambda item: (
+            {status: index for index, status in enumerate(status_order)}.get(str(item.get(f"{block}_quality")), 99),
+            str(item.get("brand") or ""),
+        ),
+    ):
+        if id(row) in seen:
+            continue
+        selected.append(row)
+        seen.add(id(row))
+        if len(selected) >= limit:
+            break
+    return selected[:limit]
 
 
 def _quality_cell(row: dict[str, Any], block: str) -> str:

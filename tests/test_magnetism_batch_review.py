@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scripts.magnetism_brand_audit_batch_review import (
+    _balanced_quality_rows,
     _block_quality,
     _build_row,
     _build_summary,
@@ -329,3 +330,23 @@ def test_render_markdown_includes_block_quality_section() -> None:
     assert "VP quality" in markdown
     assert "## Block Quality Examples" in markdown
     assert "usable (human_review)" in markdown
+
+
+
+def test_balanced_quality_rows_includes_each_available_status() -> None:
+    rows = [
+        {"brand": "Missing A", "value_proposition_quality": "missing"},
+        {"brand": "Missing B", "value_proposition_quality": "missing"},
+        {"brand": "Usable A", "value_proposition_quality": "usable"},
+        {"brand": "Strong A", "value_proposition_quality": "strong"},
+        {"brand": "Weak A", "value_proposition_quality": "weak"},
+    ]
+
+    selected = _balanced_quality_rows(rows, "value_proposition", limit=4)
+
+    assert [row["value_proposition_quality"] for row in selected] == [
+        "weak",
+        "missing",
+        "usable",
+        "strong",
+    ]

@@ -196,5 +196,178 @@ def strategic_packet_candidate_priority(
     )
 
 
+def accepted_block_evidence(
+    block: str,
+    spec: dict[str, Any],
+    candidates: list[dict[str, str]],
+) -> list[dict[str, str]]:
+    """Filter evidence candidates according to the block's executable spec."""
+    accepted: list[dict[str, str]] = []
+    allowed_groups = set(spec.get("strategic_groups") or [])
+    for candidate in candidates:
+        text = candidate["text"]
+        low = text.lower()
+        if any(term in low for term in spec["reject"]):
+            continue
+        group = candidate.get("group")
+        from_packet = str(candidate.get("source", "")).startswith("strategic:")
+        if from_packet:
+            if group not in allowed_groups:
+                continue
+            if block == "mission" and (
+                _is_testimonial_evidence(low)
+                or _is_truncated_evidence(low)
+                or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
+            ):
+                continue
+            if block == "vision" and (
+                _is_truncated_evidence(low) or not _has_future_signal(low)
+            ):
+                continue
+        else:
+            if not any(_contains_keyword(low, term) for term in spec["look_for"]):
+                continue
+            if block == "mission" and (
+                _is_truncated_evidence(low)
+                or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
+            ):
+                continue
+            if block == "vision" and (
+                _is_truncated_evidence(low) or not _has_future_signal(low)
+            ):
+                continue
+            if block == "value_proposition" and not _has_offer_signal(low):
+                continue
+        accepted.append(candidate)
+    return accepted
+
+
 def _clean_candidate_text(value: str) -> str:
     return re.sub(r"\s+", " ", value or "").strip(" -|•*\t")
+
+
+def _contains_keyword(text: str, keyword: str) -> bool:
+    escaped = re.escape(keyword.lower())
+    if " " in keyword:
+        return re.search(escaped, text, flags=re.IGNORECASE) is not None
+    return (
+        re.search(
+            rf"(?<![A-Za-zÀ-ÿ0-9]){escaped}(?![A-Za-zÀ-ÿ0-9])",
+            text,
+            flags=re.IGNORECASE,
+        )
+        is not None
+    )
+
+
+def _has_operating_activity_signal(text: str) -> bool:
+    return any(
+        term in text
+        for term in (
+            "we build",
+            "we create",
+            "we provide",
+            "we offer",
+            "we operate",
+            "we deliver",
+            "builds",
+            "creates",
+            "provides",
+            "offers",
+            "operates",
+            "delivers",
+            "offers",
+            "accepts",
+            "implements",
+            "creamos",
+            "construimos",
+            "ofrecemos",
+            "ofrece",
+            "acepta",
+            "implementa",
+            "proporcionamos",
+            "desarrollamos",
+        )
+    )
+
+
+def _is_testimonial_evidence(text: str) -> bool:
+    low = text.strip().lower()
+    return low.startswith((">", "“", '"')) or " nos ofrece " in low or " customer " in low
+
+
+def _is_truncated_evidence(text: str) -> bool:
+    return bool(re.search(r"\b(?:com|streamli|throu|users?|c)\s*$", text.strip(), re.I))
+
+
+def _has_formal_mission_signal(text: str) -> bool:
+    return bool(
+        re.search(
+            r"\b(our mission|nuestra misión|nuestra mision|mission revolves around)\b",
+            text,
+            re.I,
+        )
+    )
+
+
+def _has_future_signal(text: str) -> bool:
+    return any(
+        term in text
+        for term in (
+            "future",
+            "future of",
+            "vision",
+            "new model",
+            "new paradigm",
+            "towards",
+            "toward",
+            "redefine",
+            "next generation",
+            "futuro",
+            "visión",
+            "nuevo modelo",
+            "nuevo paradigma",
+            "nueva generación",
+            "creative entity",
+            "creative work",
+            "wield power",
+            "world stage",
+        )
+    )
+
+
+def _has_offer_signal(text: str) -> bool:
+    return any(
+        term in text
+        for term in (
+            "solution",
+            "solutions",
+            "platform",
+            "product",
+            "service",
+            "services",
+            "api",
+            "system",
+            "payments",
+            "pagos",
+            "billing",
+            "facturación",
+            "financial services",
+            "servicios financieros",
+            "revenue",
+            "ingresos",
+            "streamline",
+            "centralise",
+            "centralize",
+            "soluciones",
+            "human intelligence",
+            "business analyst",
+            "research people",
+            "research people and companies",
+            "materias primas",
+            "ingredientes",
+            "biorremediación",
+            "cosmética",
+            "nutrición",
+        )
+    )

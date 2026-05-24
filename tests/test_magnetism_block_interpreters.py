@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
+    accepted_block_evidence,
     get_tldr_block_interpreter_spec,
     strategic_packet_candidates,
 )
@@ -114,3 +115,79 @@ def test_strategic_packet_candidates_are_selected_and_ordered_by_spec() -> None:
     assert candidates[0]["text"].startswith("Example is a treasury platform")
     assert all(candidate["source"].startswith("strategic:") for candidate in candidates)
     assert all(candidate["layer"] == "netspace" for candidate in candidates)
+
+
+def test_mission_acceptance_rejects_ctas_and_future_language() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["mission"]
+    candidates = [
+        {
+            "text": "Book a demo to see our platform",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "We build the future of treasury",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "We build treasury workflows for finance teams",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+    ]
+
+    accepted = accepted_block_evidence("mission", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "We build treasury workflows for finance teams"
+    ]
+
+
+def test_vision_acceptance_requires_future_or_category_change_signal() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "We provide treasury workflows for finance teams",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+        },
+        {
+            "text": "We are building a new model for corporate treasury",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+        },
+    ]
+
+    accepted = accepted_block_evidence("vision", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "We are building a new model for corporate treasury"
+    ]
+
+
+def test_value_proposition_acceptance_rejects_non_offer_layer_evidence() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Contact us for more details",
+            "source": "evidence",
+            "layer": "netspace",
+        },
+        {
+            "text": "Trusted by teams worldwide",
+            "source": "evidence",
+            "layer": "netspace",
+        },
+        {
+            "text": "A platform that streamlines payments for finance teams",
+            "source": "evidence",
+            "layer": "netspace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "A platform that streamlines payments for finance teams"
+    ]

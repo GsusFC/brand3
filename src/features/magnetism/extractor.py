@@ -17,6 +17,7 @@ from src.collectors.web_collector import WebCollector
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
+    accepted_block_evidence,
     strategic_packet_candidate_priority,
     strategic_packet_candidates,
 )
@@ -716,7 +717,7 @@ Return exactly this JSON shape:
                 strategic_packet,
                 str(TLDR_TO_LAYER.get(key, "netspace")),
             )
-            accepted = self._accepted_block_evidence(key, spec, candidates)
+            accepted = accepted_block_evidence(key, spec, candidates)
             if accepted:
                 return accepted[0]["text"]
         return None
@@ -821,7 +822,7 @@ Return exactly this JSON shape:
     ) -> dict[str, Any] | None:
         spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
         candidates = self._select_block_evidence_candidates(spec, layers, strategic_packet, key)
-        accepted = self._accepted_block_evidence(key, spec, candidates)
+        accepted = accepted_block_evidence(key, spec, candidates)
         if not accepted:
             return None
 
@@ -877,52 +878,6 @@ Return exactly this JSON shape:
                     seen.add(cleaned)
                     candidates.append({"text": cleaned, "layer": layer_key, "source": source})
         return candidates
-
-    def _accepted_block_evidence(
-        self,
-        key: str,
-        spec: dict[str, Any],
-        candidates: list[dict[str, str]],
-    ) -> list[dict[str, str]]:
-        accepted: list[dict[str, str]] = []
-        for candidate in candidates:
-            text = candidate["text"]
-            low = text.lower()
-            if any(term in low for term in spec["reject"]):
-                continue
-            group = candidate.get("group")
-            from_packet = str(candidate.get("source", "")).startswith("strategic:")
-            if from_packet:
-                if key == "value_proposition" and group not in set(
-                    spec.get("strategic_groups") or []
-                ):
-                    continue
-                if key == "mission":
-                    if (
-                        group not in set(spec.get("strategic_groups") or [])
-                        or self._is_testimonial_evidence(low)
-                        or self._is_truncated_evidence(low)
-                        or not (self._has_operating_activity_signal(low) or self._has_formal_mission_signal(low))
-                    ):
-                        continue
-                if key == "vision":
-                    if (
-                        group not in set(spec.get("strategic_groups") or [])
-                        or self._is_truncated_evidence(low)
-                        or not self._has_future_signal(low)
-                    ):
-                        continue
-            else:
-                if not any(self._contains_keyword(low, term) for term in spec["look_for"]):
-                    continue
-                if key == "mission" and (self._is_truncated_evidence(low) or not (self._has_operating_activity_signal(low) or self._has_formal_mission_signal(low))):
-                    continue
-                if key == "vision" and (self._is_truncated_evidence(low) or not self._has_future_signal(low)):
-                    continue
-                if key == "value_proposition" and not self._has_offer_signal(low):
-                    continue
-            accepted.append(candidate)
-        return accepted
 
     @staticmethod
     def _has_operating_activity_signal(text: str) -> bool:

@@ -18,6 +18,15 @@ from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     accepted_block_evidence,
+    answer_from_spec,
+    block_evidence_diagnostics,
+    claim_type_from_spec,
+    confidence_from_spec,
+    counter_evidence_from_spec,
+    human_review_from_spec,
+    mode_from_spec,
+    observations_from_spec,
+    reasoning_from_spec,
     strategic_packet_candidate_priority,
     strategic_packet_candidates,
 )
@@ -827,14 +836,14 @@ Return exactly this JSON shape:
             return None
 
         evidence = accepted[0]["text"]
-        diagnostics = self._block_evidence_diagnostics(key, accepted, layers)
-        answer = self._answer_from_spec(key, evidence, accepted)
-        mode = self._mode_from_spec(key, diagnostics)
-        confidence = self._confidence_from_spec(key, diagnostics, accepted)
-        claim_type = self._claim_type_from_spec(key, diagnostics)
-        counter_evidence = self._counter_evidence_from_spec(key, diagnostics)
-        human_review = self._human_review_from_spec(key, diagnostics, confidence, counter_evidence)
-        reasoning = self._reasoning_from_spec(key, evidence, diagnostics)
+        diagnostics = block_evidence_diagnostics(key, accepted, layers, TLDR_TO_LAYER[key])
+        answer = answer_from_spec(key, evidence, accepted)
+        mode = mode_from_spec(key, diagnostics)
+        confidence = confidence_from_spec(key, diagnostics, accepted)
+        claim_type = claim_type_from_spec(key, diagnostics)
+        counter_evidence = counter_evidence_from_spec(key, diagnostics)
+        human_review = human_review_from_spec(key, diagnostics, confidence, counter_evidence)
+        reasoning = reasoning_from_spec(key, evidence, diagnostics)
 
         return {
             "content": answer,
@@ -845,7 +854,7 @@ Return exactly this JSON shape:
             "evidence": [evidence],
             "rationale": reasoning,
             "reasoning": reasoning,
-            "observations": self._observations_from_spec(key, diagnostics),
+            "observations": observations_from_spec(key, diagnostics),
             "counter_evidence": counter_evidence,
             "source_layers": list(dict.fromkeys(item["layer"] for item in accepted)),
             "human_review_recommended": human_review,
@@ -985,225 +994,6 @@ Return exactly this JSON shape:
                 "nutrición",
             )
         )
-
-    def _block_evidence_diagnostics(
-        self,
-        key: str,
-        accepted: list[dict[str, str]],
-        layers: dict[str, Any],
-    ) -> dict[str, Any]:
-        text = "\n".join(item["text"] for item in accepted).lower()
-        groups = {str(item.get("group")) for item in accepted if item.get("group")}
-        explicit_sources = [str(item.get("source") or "") for item in accepted]
-        product_offer_count = sum(
-            1 for item in accepted if str(item.get("group") or "") == "product_offer"
-        )
-        return {
-            "has_explicit_evidence": any(
-                source == "evidence" or source.startswith("strategic:")
-                for source in explicit_sources
-            ),
-            "has_offer": self._has_offer_signal(text) or "product_offer" in groups,
-            "has_audience": self._has_audience_signal(text) or "audience" in groups,
-            "has_outcome": self._has_outcome_signal(text) or "outcome" in groups,
-            "has_operating_activity": self._has_operating_activity_signal(text) or "mission_language" in groups,
-            "has_future": self._has_future_signal(text) or "vision_language" in groups,
-            "has_formal_vision": bool(
-                re.search(r"\b(our vision is|vision is|nuestra visión es|nuestra vision es)\b", text)
-            ),
-            "candidate_count": len(accepted),
-            "product_offer_count": product_offer_count,
-            "has_multiple_offers": product_offer_count > 1,
-            "accepted_groups": sorted(groups),
-            "primary_layer_detected": bool(layers.get(TLDR_TO_LAYER[key], {}).get("detected")),
-        }
-
-
-    @staticmethod
-    def _has_audience_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "for ",
-                "para ",
-                "teams",
-                "operators",
-                "creators",
-                "subscribers",
-                "athletes",
-                "atletas",
-                "banks",
-                "erp",
-                "cosmética",
-                "nutrición",
-                "health animal",
-                "salud animal",
-            )
-        )
-
-    @staticmethod
-    def _has_outcome_signal(text: str) -> bool:
-        return any(
-            term in text
-            for term in (
-                "streamline",
-                "centralise",
-                "centralize",
-                "reconcile",
-                "execute",
-                "forecast",
-                "control",
-                "grow",
-                "grow your business",
-                "grow your revenue",
-                "hacer crecer",
-                "gestionar",
-                "gestionar el movimiento de dinero",
-                "modelos personalizados",
-                "potenciar",
-                "transform",
-                "reduce",
-                "save",
-                "build relationships",
-                "get things done",
-                "improve",
-                "valuable channel",
-                "turn subscribers into customers",
-                "biorremediación",
-            )
-        )
-
-    @staticmethod
-    def _answer_from_spec(key: str, evidence: str, accepted: list[dict[str, str]] | None = None) -> str:
-        if key == "value_proposition":
-            return MagnetismExtractor._value_proposition_answer(evidence, accepted or [])
-        if key == "vision" and "macroalgas" in evidence.lower() and "nuevo modelo" in evidence.lower():
-            return "A regenerative industrial model built around the potential of Mediterranean macroalgae."
-        return evidence
-
-    @staticmethod
-    def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> str:
-        primary = evidence.strip()
-        primary_low = primary.lower()
-        if (
-            not accepted
-            or len(primary) >= 90
-            or (
-                MagnetismExtractor._has_audience_signal(primary_low)
-                and MagnetismExtractor._has_outcome_signal(primary_low)
-            )
-        ):
-            return primary
-        additions: list[str] = []
-        for target_group in ("outcome", "audience"):
-            for item in accepted:
-                text = str(item.get("text") or "").strip()
-                if item.get("group") != target_group or not text or text == primary or text in additions:
-                    continue
-                additions.append(text)
-                break
-        if not additions:
-            return primary
-        answer = primary.rstrip(".") + ". " + " ".join(additions)
-        return answer[:360].rstrip()
-
-    @staticmethod
-    def _mode_from_spec(key: str, diagnostics: dict[str, Any]) -> str:
-        if key == "vision":
-            return "compressed" if diagnostics.get("has_formal_vision") else "interpreted_from_discourse"
-        return "compressed" if diagnostics["has_explicit_evidence"] else "interpreted_from_discourse"
-
-    @staticmethod
-    def _claim_type_from_spec(key: str, diagnostics: dict[str, Any]) -> str:
-        if key == "vision":
-            return "declared" if diagnostics.get("has_formal_vision") else "inferred"
-        return "declared" if diagnostics["has_explicit_evidence"] else "inferred"
-
-    @staticmethod
-    def _confidence_from_spec(
-        key: str,
-        diagnostics: dict[str, Any],
-        accepted: list[dict[str, str]],
-    ) -> str:
-        if key == "value_proposition":
-            if diagnostics["has_offer"] and diagnostics["has_outcome"] and diagnostics["has_audience"]:
-                return "high"
-            if diagnostics["has_offer"] and (diagnostics["has_outcome"] or diagnostics["has_audience"]):
-                return "medium"
-            return "low"
-        if key == "mission":
-            return "medium" if diagnostics["has_operating_activity"] else "low"
-        if key == "vision":
-            return "medium" if diagnostics["has_future"] and accepted else "low"
-        return "medium"
-
-    @staticmethod
-    def _counter_evidence_from_spec(key: str, diagnostics: dict[str, Any]) -> list[str]:
-        limits: list[str] = []
-        if key == "value_proposition":
-            if not diagnostics["has_audience"]:
-                limits.append("The available value proposition evidence does not clearly name the audience.")
-            if not diagnostics["has_outcome"]:
-                limits.append("The available value proposition evidence does not clearly state the outcome or change for the audience.")
-            if diagnostics.get("has_multiple_offers"):
-                limits.append("The evidence contains multiple offer signals, so a strategist should confirm the primary value proposition.")
-        if key == "vision" and not diagnostics.get("has_formal_vision"):
-            limits.append("The available evidence contains future-facing language, but not a formal vision statement.")
-        if key == "mission" and not diagnostics["has_explicit_evidence"]:
-            limits.append("The mission is inferred from product/service evidence rather than stated as a formal mission.")
-        return limits
-
-    @staticmethod
-    def _human_review_from_spec(
-        key: str,
-        diagnostics: dict[str, Any],
-        confidence: str,
-        counter_evidence: list[str],
-    ) -> bool:
-        if key == "vision":
-            return True if counter_evidence or confidence == "low" else False
-        if key == "value_proposition":
-            return (
-                confidence == "low"
-                or len(counter_evidence) >= 2
-                or diagnostics.get("has_multiple_offers", False)
-            )
-        if key == "mission":
-            return not diagnostics["has_explicit_evidence"] or confidence == "low"
-        return False
-
-    @staticmethod
-    def _reasoning_from_spec(key: str, evidence: str, diagnostics: dict[str, Any]) -> str:
-        if key == "value_proposition":
-            parts = ["The evidence states a concrete offer"]
-            if diagnostics["has_audience"]:
-                parts.append("names or implies an audience")
-            if diagnostics["has_outcome"]:
-                parts.append("and describes the operational change or outcome")
-            return ", ".join(parts) + f": {evidence}"
-        if key == "mission":
-            return f"The evidence uses present-tense operating language that describes what the brand does today: {evidence}"
-        if key == "vision":
-            return f"The evidence contains future-facing or category-change language, so the block is treated as an interpreted vision signal: {evidence}"
-        return f"The block is derived from accepted evidence: {evidence}"
-
-    @staticmethod
-    def _observations_from_spec(key: str, diagnostics: dict[str, Any]) -> list[str]:
-        observations = [f"Applied executable {key} interpreter spec."]
-        if key == "value_proposition":
-            observations.append(
-                "Detected offer/audience/outcome coverage: "
-                f"offer={diagnostics['has_offer']}, audience={diagnostics['has_audience']}, outcome={diagnostics['has_outcome']}."
-            )
-            if diagnostics.get("accepted_groups"):
-                observations.append("Strategic packet groups used: " + ", ".join(diagnostics["accepted_groups"]) + ".")
-            if diagnostics.get("has_multiple_offers"):
-                observations.append("Multiple product_offer candidates were found; primary offer requires review.")
-        if key == "mission":
-            observations.append(f"Present-tense operating evidence={diagnostics['has_operating_activity']}.")
-        if key == "vision":
-            observations.append(f"Future/category-change evidence={diagnostics['has_future']}.")
-        return observations
 
     @staticmethod
     def _empty_tldr_block(key: str, layer_key: str) -> dict[str, Any]:

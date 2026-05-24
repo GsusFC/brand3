@@ -242,6 +242,149 @@ def accepted_block_evidence(
     return accepted
 
 
+def block_evidence_diagnostics(
+    block: str,
+    accepted: list[dict[str, str]],
+    layers: dict[str, Any],
+    primary_layer_key: str,
+) -> dict[str, Any]:
+    text = "\n".join(item["text"] for item in accepted).lower()
+    groups = {str(item.get("group")) for item in accepted if item.get("group")}
+    explicit_sources = [str(item.get("source") or "") for item in accepted]
+    product_offer_count = sum(
+        1 for item in accepted if str(item.get("group") or "") == "product_offer"
+    )
+    return {
+        "has_explicit_evidence": any(
+            source == "evidence" or source.startswith("strategic:")
+            for source in explicit_sources
+        ),
+        "has_offer": _has_offer_signal(text) or "product_offer" in groups,
+        "has_audience": _has_audience_signal(text) or "audience" in groups,
+        "has_outcome": _has_outcome_signal(text) or "outcome" in groups,
+        "has_operating_activity": _has_operating_activity_signal(text) or "mission_language" in groups,
+        "has_future": _has_future_signal(text) or "vision_language" in groups,
+        "has_formal_vision": bool(
+            re.search(r"\b(our vision is|vision is|nuestra visión es|nuestra vision es)\b", text)
+        ),
+        "candidate_count": len(accepted),
+        "product_offer_count": product_offer_count,
+        "has_multiple_offers": product_offer_count > 1,
+        "accepted_groups": sorted(groups),
+        "primary_layer_detected": bool(layers.get(primary_layer_key, {}).get("detected")),
+    }
+
+
+def answer_from_spec(
+    block: str,
+    evidence: str,
+    accepted: list[dict[str, str]] | None = None,
+) -> str:
+    if block == "value_proposition":
+        return _value_proposition_answer(evidence, accepted or [])
+    if block == "vision" and "macroalgas" in evidence.lower() and "nuevo modelo" in evidence.lower():
+        return "A regenerative industrial model built around the potential of Mediterranean macroalgae."
+    return evidence
+
+
+def mode_from_spec(block: str, diagnostics: dict[str, Any]) -> str:
+    if block == "vision":
+        return "compressed" if diagnostics.get("has_formal_vision") else "interpreted_from_discourse"
+    return "compressed" if diagnostics["has_explicit_evidence"] else "interpreted_from_discourse"
+
+
+def claim_type_from_spec(block: str, diagnostics: dict[str, Any]) -> str:
+    if block == "vision":
+        return "declared" if diagnostics.get("has_formal_vision") else "inferred"
+    return "declared" if diagnostics["has_explicit_evidence"] else "inferred"
+
+
+def confidence_from_spec(
+    block: str,
+    diagnostics: dict[str, Any],
+    accepted: list[dict[str, str]],
+) -> str:
+    if block == "value_proposition":
+        if diagnostics["has_offer"] and diagnostics["has_outcome"] and diagnostics["has_audience"]:
+            return "high"
+        if diagnostics["has_offer"] and (diagnostics["has_outcome"] or diagnostics["has_audience"]):
+            return "medium"
+        return "low"
+    if block == "mission":
+        return "medium" if diagnostics["has_operating_activity"] else "low"
+    if block == "vision":
+        return "medium" if diagnostics["has_future"] and accepted else "low"
+    return "medium"
+
+
+def counter_evidence_from_spec(block: str, diagnostics: dict[str, Any]) -> list[str]:
+    limits: list[str] = []
+    if block == "value_proposition":
+        if not diagnostics["has_audience"]:
+            limits.append("The available value proposition evidence does not clearly name the audience.")
+        if not diagnostics["has_outcome"]:
+            limits.append("The available value proposition evidence does not clearly state the outcome or change for the audience.")
+        if diagnostics.get("has_multiple_offers"):
+            limits.append("The evidence contains multiple offer signals, so a strategist should confirm the primary value proposition.")
+    if block == "vision" and not diagnostics.get("has_formal_vision"):
+        limits.append("The available evidence contains future-facing language, but not a formal vision statement.")
+    if block == "mission" and not diagnostics["has_explicit_evidence"]:
+        limits.append("The mission is inferred from product/service evidence rather than stated as a formal mission.")
+    return limits
+
+
+def human_review_from_spec(
+    block: str,
+    diagnostics: dict[str, Any],
+    confidence: str,
+    counter_evidence: list[str],
+) -> bool:
+    if block == "vision":
+        return True if counter_evidence or confidence == "low" else False
+    if block == "value_proposition":
+        return (
+            confidence == "low"
+            or len(counter_evidence) >= 2
+            or diagnostics.get("has_multiple_offers", False)
+        )
+    if block == "mission":
+        return not diagnostics["has_explicit_evidence"] or confidence == "low"
+    return False
+
+
+def reasoning_from_spec(block: str, evidence: str, diagnostics: dict[str, Any]) -> str:
+    if block == "value_proposition":
+        parts = ["The evidence states a concrete offer"]
+        if diagnostics["has_audience"]:
+            parts.append("names or implies an audience")
+        if diagnostics["has_outcome"]:
+            parts.append("and describes the operational change or outcome")
+        return ", ".join(parts) + f": {evidence}"
+    if block == "mission":
+        return f"The evidence uses present-tense operating language that describes what the brand does today: {evidence}"
+    if block == "vision":
+        return f"The evidence contains future-facing or category-change language, so the block is treated as an interpreted vision signal: {evidence}"
+    return f"The block is derived from accepted evidence: {evidence}"
+
+
+def observations_from_spec(block: str, diagnostics: dict[str, Any]) -> list[str]:
+    observations = [f"Applied executable {block} interpreter spec."]
+    if block == "value_proposition":
+        observations.append(
+            "Detected offer/audience/outcome coverage: "
+            f"offer={diagnostics['has_offer']}, audience={diagnostics['has_audience']}, outcome={diagnostics['has_outcome']}."
+        )
+        if diagnostics.get("accepted_groups"):
+            observations.append("Strategic packet groups used: " + ", ".join(diagnostics["accepted_groups"]) + ".")
+        if diagnostics.get("has_multiple_offers"):
+            observations.append("Multiple product_offer candidates were found; primary offer requires review.")
+    if block == "mission":
+        observations.append(f"Present-tense operating evidence={diagnostics['has_operating_activity']}.")
+    if block == "vision":
+        observations.append(f"Future/category-change evidence={diagnostics['has_future']}.")
+    return observations
+
+
 def _clean_candidate_text(value: str) -> str:
     return re.sub(r"\s+", " ", value or "").strip(" -|•*\t")
 
@@ -371,3 +514,80 @@ def _has_offer_signal(text: str) -> bool:
             "nutrición",
         )
     )
+
+
+def _has_audience_signal(text: str) -> bool:
+    return any(
+        term in text
+        for term in (
+            "for ",
+            "para ",
+            "teams",
+            "operators",
+            "creators",
+            "subscribers",
+            "athletes",
+            "atletas",
+            "banks",
+            "erp",
+            "cosmética",
+            "nutrición",
+            "health animal",
+            "salud animal",
+        )
+    )
+
+
+def _has_outcome_signal(text: str) -> bool:
+    return any(
+        term in text
+        for term in (
+            "streamline",
+            "centralise",
+            "centralize",
+            "reconcile",
+            "execute",
+            "forecast",
+            "control",
+            "grow",
+            "grow your business",
+            "grow your revenue",
+            "hacer crecer",
+            "gestionar",
+            "gestionar el movimiento de dinero",
+            "modelos personalizados",
+            "potenciar",
+            "transform",
+            "reduce",
+            "save",
+            "build relationships",
+            "get things done",
+            "improve",
+            "valuable channel",
+            "turn subscribers into customers",
+            "biorremediación",
+        )
+    )
+
+
+def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> str:
+    primary = evidence.strip()
+    primary_low = primary.lower()
+    if (
+        not accepted
+        or len(primary) >= 90
+        or (_has_audience_signal(primary_low) and _has_outcome_signal(primary_low))
+    ):
+        return primary
+    additions: list[str] = []
+    for target_group in ("outcome", "audience"):
+        for item in accepted:
+            text = str(item.get("text") or "").strip()
+            if item.get("group") != target_group or not text or text == primary or text in additions:
+                continue
+            additions.append(text)
+            break
+    if not additions:
+        return primary
+    answer = primary.rstrip(".") + ". " + " ".join(additions)
+    return answer[:360].rstrip()

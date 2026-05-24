@@ -3,7 +3,11 @@ from __future__ import annotations
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
     accepted_block_evidence,
+    block_evidence_diagnostics,
+    confidence_from_spec,
+    counter_evidence_from_spec,
     get_tldr_block_interpreter_spec,
+    human_review_from_spec,
     strategic_packet_candidates,
 )
 
@@ -190,4 +194,57 @@ def test_value_proposition_acceptance_rejects_non_offer_layer_evidence() -> None
 
     assert [item["text"] for item in accepted] == [
         "A platform that streamlines payments for finance teams"
+    ]
+
+
+
+def test_value_proposition_diagnostics_drive_confidence_and_review() -> None:
+    accepted = [
+        {
+            "text": "A platform for finance teams that streamlines payments",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+    confidence = confidence_from_spec("value_proposition", diagnostics, accepted)
+
+    assert diagnostics["has_offer"] is True
+    assert diagnostics["has_audience"] is True
+    assert diagnostics["has_outcome"] is True
+    assert confidence == "high"
+    assert human_review_from_spec(
+        "value_proposition", diagnostics, confidence, counter_evidence
+    ) is False
+
+
+def test_value_proposition_missing_outcome_lowers_confidence() -> None:
+    accepted = [
+        {
+            "text": "A treasury platform for finance teams",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+    confidence = confidence_from_spec("value_proposition", diagnostics, accepted)
+
+    assert diagnostics["has_outcome"] is False
+    assert confidence == "medium"
+    assert counter_evidence == [
+        "The available value proposition evidence does not clearly state the outcome or change for the audience."
     ]

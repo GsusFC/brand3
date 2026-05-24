@@ -829,3 +829,119 @@ def test_strategic_evidence_packet_does_not_classify_product_transform_as_vision
     packet = build_strategic_evidence_packet(snapshot)
 
     assert not packet.groups.get("vision_language")
+
+
+def test_strategic_evidence_packet_rejects_privacy_policy_as_values_language():
+    snapshot = {
+        "run": {"id": 147, "brand_name": "Ethos", "url": "https://ethos.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "Ethos Privacy Policy | Ethos # Ethos Privacy Policy "
+                        "Last Updated: 16 December, 2024 Introduction"
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("values_language")
+    assert any(item["reason"] == "legal_or_footer_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_logo_and_image_blobs():
+    snapshot = {
+        "run": {"id": 148, "brand_name": "Logo", "url": "https://logo.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "Get the Sentry Logo | Sentry # Need our logo? "
+                        "Copy SVGDownload SVG Logo Color DarkLight"
+                    ),
+                },
+            },
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "[![Scaling securely](https://example.com/_next/image?url="
+                        "%2Fcustomers%2Flogos%2Fcase.png&w=3840&q=75)]"
+                    ),
+                },
+            },
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("values_language")
+    assert not packet.groups.get("proof_points")
+    assert any(item["reason"] == "image_alt_text_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_directory_profiles_as_proof_points():
+    snapshot = {
+        "run": {"id": 149, "brand_name": "Directory", "url": "https://directory.test"},
+        "features": [],
+        "raw_inputs": [],
+        "evidence_items": [
+            {
+                "source": "context",
+                "url": "https://www.crunchbase.com/organization/example",
+                "quote": "Example - Crunchbase Company Profile & Funding",
+                "feature_name": "search_visibility",
+                "dimension_name": "presence",
+                "confidence": 0.7,
+            },
+            {
+                "source": "context",
+                "url": "https://tracxn.com/example",
+                "quote": (
+                    "Example - 2026 Company Profile, Team, Funding & Competitors - Tracxn "
+                    "Your browser was unable to load all resources."
+                ),
+                "feature_name": "search_visibility",
+                "dimension_name": "presence",
+                "confidence": 0.7,
+            },
+        ],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("proof_points")
+    assert any(item["reason"] == "company_profile_metadata" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_broken_customer_story_fragments():
+    snapshot = {
+        "run": {"id": 150, "brand_name": "Retool", "url": "https://retool.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "Read story](https://retool.com/customers/doordash) "
+                        "[**$3M+ profit generated and 80% faster development**"
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert not packet.groups.get("proof_points")
+    assert any(item["reason"] == "customer_story_fragment_noise" for item in packet.rejected)

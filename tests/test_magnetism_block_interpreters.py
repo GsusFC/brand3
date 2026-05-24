@@ -141,12 +141,34 @@ def test_mission_acceptance_rejects_ctas_and_future_language() -> None:
             "source": "strategic:mission_language",
             "group": "mission_language",
         },
+        {
+            "text": "We help teams launch, control, and measure their digital products more easily than ever.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "We're on a mission to help professional designers earn a living doing work they take pride in.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "We Make Good Shit",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
+            "text": "The All-in-one AI Video Platform for Business Play video Pause video our mission Helping people w",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
     ]
 
     accepted = accepted_block_evidence("mission", spec, candidates)
 
     assert [item["text"] for item in accepted] == [
-        "We build treasury workflows for finance teams"
+        "We build treasury workflows for finance teams",
+        "We help teams launch, control, and measure their digital products more easily than ever.",
+        "We're on a mission to help professional designers earn a living doing work they take pride in.",
     ]
 
 

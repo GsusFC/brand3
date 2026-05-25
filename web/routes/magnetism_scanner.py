@@ -14,7 +14,11 @@ from ..middleware.team_cookie import create_serializer, is_team_request
 from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
-from src.services.brand_service import run as run_brand_audit
+from src.services.magnetism_service import (
+    run_legacy_manual_magnetism,
+    run_magnetism_from_audit_snapshot,
+    run_magnetism_from_url,
+)
 from src.storage.sqlite_store import SQLiteStore
 
 from ..storage import get_magnetism_scan, insert_magnetism_scan, list_magnetism_scans
@@ -52,7 +56,7 @@ async def magnetism_scanner_index(request: Request):
         audit_runs = store.list_runs(limit=12)
     finally:
         store.close()
-    
+
     # Format dates nicely for template listing
     for scan in scans:
         try:
@@ -115,32 +119,13 @@ async def magnetism_scanner_analyze(
             )
         normalized_url = result
 
-    # Initialize analyzer and extractor
     llm = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
-    extractor = MagnetismExtractor(llm=llm)
 
     try:
         if normalized_url:
-            audit_result = run_brand_audit(normalized_url)
-            run_id = audit_result.get("run_id") if isinstance(audit_result, dict) else None
-            if not run_id:
-                raise RuntimeError(
-                    "Brand Audit did not return a run_id for canonical Magnetism analysis."
-                )
-
-            store = SQLiteStore(BRAND3_DB_PATH)
-            try:
-                snapshot = store.get_run_snapshot(int(run_id))
-            finally:
-                store.close()
-            if snapshot is None:
-                raise RuntimeError(f"Brand Audit run #{run_id} could not be loaded as a snapshot.")
-            payload = extractor.extract_from_audit_snapshot(snapshot)
+            payload = run_magnetism_from_url(normalized_url, llm=llm)
         else:
-            payload = extractor.extract(
-                url=None,
-                manual_text=manual_val or None,
-            )
+            payload = run_legacy_manual_magnetism(manual_val, llm=llm)
 
         # Save to database
         scan_id = insert_magnetism_scan(
@@ -188,8 +173,7 @@ async def magnetism_scanner_from_run(
         )
 
     llm = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
-    extractor = MagnetismExtractor(llm=llm)
-    payload = extractor.extract_from_audit_snapshot(snapshot)
+    payload = run_magnetism_from_audit_snapshot(snapshot, llm=llm)
 
     scan_id = insert_magnetism_scan(
         brand_name=payload["brand_name"],

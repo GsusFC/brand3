@@ -559,7 +559,7 @@ def test_strategic_evidence_packet_rejects_section_heading_as_offer():
     assert any(item["reason"] == "navigation_or_section_heading_noise" for item in packet.rejected)
 
 
-def test_strategic_evidence_packet_rejects_customer_quote_as_offer():
+def test_strategic_evidence_packet_keeps_customer_quote_as_proof_not_offer():
     snapshot = {
         "run": {"id": 133, "brand_name": "Notion", "url": "https://notion.com"},
         "features": [],
@@ -577,7 +577,7 @@ def test_strategic_evidence_packet_rejects_customer_quote_as_offer():
     packet = build_strategic_evidence_packet(snapshot)
 
     assert not packet.groups.get("product_offer")
-    assert any(item["reason"] == "testimonial_quote_noise" for item in packet.rejected)
+    assert packet.groups["proof_points"][0].text.startswith("“Using the most AI-native tools")
 
 
 def test_strategic_evidence_packet_rejects_short_platform_team_label():
@@ -749,7 +749,7 @@ def test_strategic_evidence_packet_rejects_showcase_event_as_offer():
     assert any(item["reason"] == "promotion_or_event_noise" for item in packet.rejected)
 
 
-def test_strategic_evidence_packet_rejects_testimonial_as_mission_language():
+def test_strategic_evidence_packet_keeps_testimonial_as_proof_not_mission_language():
     snapshot = {
         "run": {"id": 143, "brand_name": "Eaship", "url": "https://eaship.io"},
         "features": [],
@@ -771,7 +771,7 @@ def test_strategic_evidence_packet_rejects_testimonial_as_mission_language():
     packet = build_strategic_evidence_packet(snapshot)
 
     assert not packet.groups.get("mission_language")
-    assert any(item["reason"] == "testimonial_quote_noise" for item in packet.rejected)
+    assert packet.groups["proof_points"][0].text.startswith("> “Eaship nos ofrece")
 
 
 def test_strategic_evidence_packet_rejects_generic_slogan_as_mission_language():
@@ -948,6 +948,28 @@ def test_strategic_evidence_packet_rejects_broken_customer_story_fragments():
 
     assert not packet.groups.get("proof_points")
     assert any(item["reason"] == "customer_story_fragment_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_groups_owned_case_study_page_as_proof_points():
+    snapshot = {
+        "run": {"id": 151, "brand_name": "Creatify", "url": "https://creatify.ai/es/"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://creatify.ai/es/case-study/dena",
+                    "markdown_content": "DeNA scaled ad creative production with Creatify across multiple campaigns.",
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["proof_points"][0].source_type == "owned_raw"
+    assert "DeNA scaled ad creative production" in packet.groups["proof_points"][0].text
 
 
 def test_strategic_evidence_packet_detects_observed_audience_terms_from_batch():

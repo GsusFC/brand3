@@ -14,6 +14,7 @@ from ..middleware.team_cookie import create_serializer, is_team_request
 from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
+from src.services.brand_service import run as run_brand_audit
 from src.storage.sqlite_store import SQLiteStore
 
 from ..storage import get_magnetism_scan, insert_magnetism_scan, list_magnetism_scans
@@ -119,11 +120,27 @@ async def magnetism_scanner_analyze(
     extractor = MagnetismExtractor(llm=llm)
 
     try:
-        # Run orchestrator
-        payload = extractor.extract(
-            url=normalized_url or None,
-            manual_text=manual_val or None,
-        )
+        if normalized_url:
+            audit_result = run_brand_audit(normalized_url)
+            run_id = audit_result.get("run_id") if isinstance(audit_result, dict) else None
+            if not run_id:
+                raise RuntimeError(
+                    "Brand Audit did not return a run_id for canonical Magnetism analysis."
+                )
+
+            store = SQLiteStore(BRAND3_DB_PATH)
+            try:
+                snapshot = store.get_run_snapshot(int(run_id))
+            finally:
+                store.close()
+            if snapshot is None:
+                raise RuntimeError(f"Brand Audit run #{run_id} could not be loaded as a snapshot.")
+            payload = extractor.extract_from_audit_snapshot(snapshot)
+        else:
+            payload = extractor.extract(
+                url=None,
+                manual_text=manual_val or None,
+            )
 
         # Save to database
         scan_id = insert_magnetism_scan(

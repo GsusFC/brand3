@@ -645,6 +645,79 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["magenta_circle"]["mindspace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["tactispace"]["status"], "not_detected")
 
+    @unittest.mock.patch("web.routes.magnetism_scanner.run_brand_audit")
+    @unittest.mock.patch("web.routes.magnetism_scanner.validate_url")
+    @unittest.mock.patch("web.routes.magnetism_scanner.LLMAnalyzer")
+    def test_web_route_url_analysis_uses_brand_audit_snapshot(
+        self,
+        mock_llm_class,
+        mock_validate_url,
+        mock_run_brand_audit,
+    ):
+        mock_llm_class.return_value.api_key = None
+        mock_validate_url.return_value = (True, "https://example.com")
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Canonical Route", "https://example.com")
+            run_id = store.create_run(
+                brand_id,
+                "Canonical Route",
+                "https://example.com",
+                use_llm=True,
+                use_social=True,
+            )
+            store.save_raw_input(
+                run_id,
+                "web",
+                {
+                    "markdown_content": (
+                        "Canonical Route is a workflow platform for finance teams "
+                        "that helps reduce reconciliation time."
+                    )
+                },
+            )
+            store.save_evidence_items(
+                run_id,
+                [
+                    {
+                        "source": "context",
+                        "url": "https://example.com",
+                        "quote": (
+                            "Canonical Route is a workflow platform for finance teams "
+                            "that helps reduce reconciliation time."
+                        ),
+                        "feature_name": "positioning",
+                        "dimension_name": "coherencia",
+                        "confidence": 0.9,
+                    }
+                ],
+            )
+        finally:
+            store.close()
+        mock_run_brand_audit.return_value = {"run_id": run_id}
+
+        self._unlock_team_cookie()
+        response = self.client.post(
+            "/magnetism-scanner/analyze",
+            data={"url": "https://example.com", "manual_text": ""},
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 303)
+        mock_validate_url.assert_called_once_with("https://example.com")
+        mock_run_brand_audit.assert_called_once_with("https://example.com")
+        scan_id = int(response.headers["location"].rsplit("/", 1)[-1])
+
+        from web.storage import get_magnetism_scan
+
+        scan = get_magnetism_scan(scan_id)
+        self.assertIsNotNone(scan)
+        payload = json.loads(scan["raw_payload"])
+        self.assertEqual(payload["source"], "brand_audit_snapshot")
+        self.assertEqual(payload["extraction_mode"], "canonical_snapshot")
+        self.assertEqual(payload["source_run_id"], run_id)
+        self.assertNotIn("deprecation", payload)
+
     @unittest.mock.patch("web.routes.magnetism_scanner.LLMAnalyzer")
     def test_web_routes_flow(self, mock_llm_class):
         mock_llm_class.return_value.api_key = None

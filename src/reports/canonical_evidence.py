@@ -18,6 +18,36 @@ from src.reports.strategic_evidence_packet import (
 )
 
 
+MAX_PUBLIC_MENTIONS = 8
+MAX_FALLBACK_LINES = 80
+MAX_FALLBACK_MARKDOWN_CHARS = 8000
+MIN_USABLE_QUOTE_LENGTH = 6
+SOURCE_WEB = "web"
+SOURCE_VISUAL_SIGNATURE = "visual_signature"
+OWNED_EVIDENCE_SOURCE_TYPES = {"owned", "social"}
+UNUSABLE_QUOTE_METADATA_MARKERS = (
+    "; evidence=",
+    "source_type=",
+    "dimension=",
+    "feature=",
+)
+UNUSABLE_QUOTE_CONTENT_MARKERS = (
+    "/news/",
+    "graphql api",
+    "product roadmap",
+    "__next_data__",
+)
+
+
+@dataclass
+class RawInputContext:
+    sources: list[str]
+    fallback_markdown: str = ""
+    visual_semantics: dict[str, Any] = field(
+        default_factory=lambda: {"status": "not_detected", "data": {}}
+    )
+
+
 @dataclass
 class CanonicalBrandEvidence:
     """Shared evidence view derived from a Brand Audit run snapshot."""
@@ -81,9 +111,10 @@ def build_canonical_brand_evidence(snapshot: dict[str, Any]) -> CanonicalBrandEv
     raw_inputs = snapshot.get("raw_inputs") or []
     audit = run.get("audit") or {}
     data_quality = audit.get("data_quality") or run.get("data_quality")
+    raw_input_context = _raw_input_context(raw_inputs)
 
     interpreter_text = strategic_packet.to_interpreter_text() or _fallback_evidence_text(
-        snapshot
+        evidences, raw_input_context.fallback_markdown
     )
     mentions = _public_mentions(strategic_packet)
 
@@ -93,11 +124,9 @@ def build_canonical_brand_evidence(snapshot: dict[str, Any]) -> CanonicalBrandEv
         run_id=run.get("id"),
         strategic_packet=strategic_packet,
         interpreter_text=interpreter_text,
-        visual_semantics=_visual_semantics_from_snapshot(snapshot),
+        visual_semantics=raw_input_context.visual_semantics,
         public_mentions=mentions,
-        raw_input_sources=sorted(
-            {str(item.get("source")) for item in raw_inputs if item.get("source")}
-        ),
+        raw_input_sources=raw_input_context.sources,
         limitations=_snapshot_limitations(snapshot),
         data_quality=data_quality,
         derived_evidence_count=len(evidences),
@@ -117,14 +146,53 @@ def _public_mentions(strategic_packet: StrategicEvidencePacket) -> list[str]:
             if text and key not in seen:
                 seen.add(key)
                 mentions.append(text)
-            if len(mentions) >= 8:
+            if len(mentions) >= MAX_PUBLIC_MENTIONS:
                 return mentions
     return mentions
 
 
-def _fallback_evidence_text(snapshot: dict[str, Any]) -> str:
-    evidences = collect_evidences(snapshot)
-    preferred = [ev for ev in evidences if str(ev.source_type) in {"owned", "social"}]
+def _raw_input_context(raw_inputs: list[dict[str, Any]]) -> RawInputContext:
+    sources = sorted(
+        {str(item.get("source")) for item in raw_inputs if item.get("source")}
+    )
+    fallback_markdown = ""
+    visual_semantics: dict[str, Any] = {"status": "not_detected", "data": {}}
+
+    for raw_input in reversed(raw_inputs):
+        source = raw_input.get("source")
+        payload = raw_input.get("payload") or {}
+
+        if source == SOURCE_WEB and not fallback_markdown:
+            fallback_markdown = str(
+                payload.get("markdown_content") or payload.get("content") or ""
+            )
+
+        if (
+            source == SOURCE_VISUAL_SIGNATURE
+            and visual_semantics["status"] == "not_detected"
+        ):
+            semantics = payload.get("semantics")
+            if semantics:
+                visual_semantics = {"status": "detected", "data": semantics}
+                continue
+            signature = payload.get("signature") or {}
+            if isinstance(signature, dict) and signature.get("semantics"):
+                visual_semantics = {
+                    "status": "detected",
+                    "data": signature["semantics"],
+                }
+
+    return RawInputContext(
+        sources=sources,
+        fallback_markdown=fallback_markdown[:MAX_FALLBACK_MARKDOWN_CHARS],
+        visual_semantics=visual_semantics,
+    )
+
+
+def _fallback_evidence_text(evidences: list[Any], fallback_markdown: str) -> str:
+    preferred = [
+        ev for ev in evidences if str(ev.source_type) in OWNED_EVIDENCE_SOURCE_TYPES
+    ]
     evidence_source = preferred or evidences
 
     lines: list[str] = []
@@ -138,34 +206,12 @@ def _fallback_evidence_text(snapshot: dict[str, Any]) -> str:
             continue
         seen.add(key)
         lines.append(f"- {quote}")
-        if len(lines) >= 80:
+        if len(lines) >= MAX_FALLBACK_LINES:
             break
 
     if lines:
         return "\n".join(lines)
-
-    for raw_input in reversed(snapshot.get("raw_inputs") or []):
-        if raw_input.get("source") != "web":
-            continue
-        payload = raw_input.get("payload") or {}
-        markdown = payload.get("markdown_content") or payload.get("content") or ""
-        if markdown:
-            return str(markdown)[:8000]
-    return ""
-
-
-def _visual_semantics_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
-    for raw_input in reversed(snapshot.get("raw_inputs") or []):
-        if raw_input.get("source") != "visual_signature":
-            continue
-        payload = raw_input.get("payload") or {}
-        semantics = payload.get("semantics")
-        if semantics:
-            return {"status": "detected", "data": semantics}
-        signature = payload.get("signature") or {}
-        if isinstance(signature, dict) and signature.get("semantics"):
-            return {"status": "detected", "data": signature["semantics"]}
-    return {"status": "not_detected", "data": {}}
+    return fallback_markdown
 
 
 def _snapshot_limitations(snapshot: dict[str, Any]) -> list[str]:
@@ -189,13 +235,10 @@ def _is_unusable_audit_quote(value: str) -> bool:
     low = value.lower().strip()
     if low.startswith(("http://", "https://")):
         return True
-    if len(value) < 6:
+    if len(value) < MIN_USABLE_QUOTE_LENGTH:
         return True
-    if any(
-        marker in low
-        for marker in ("; evidence=", "source_type=", "dimension=", "feature=")
-    ):
+    if any(marker in low for marker in UNUSABLE_QUOTE_METADATA_MARKERS):
         return True
-    if any(marker in low for marker in ("/news/", "graphql api", "product roadmap", "__next_data__")):
+    if any(marker in low for marker in UNUSABLE_QUOTE_CONTENT_MARKERS):
         return True
     return False

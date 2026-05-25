@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from scripts.magnetism_brand_audit_batch_review import (
+    QUALITY_BLOCKS,
     _balanced_quality_rows,
     _block_quality,
     _build_row,
@@ -212,7 +213,6 @@ def test_dedupe_snapshots_keeps_latest_run_per_brand_url() -> None:
     assert [item["run"]["id"] for item in deduped] == [12, 11]
 
 
-
 def test_block_quality_marks_high_clean_block_as_strong() -> None:
     quality = _block_quality(
         "value_proposition",
@@ -332,7 +332,6 @@ def test_render_markdown_includes_block_quality_section() -> None:
     assert "usable (human_review)" in markdown
 
 
-
 def test_balanced_quality_rows_includes_each_available_status() -> None:
     rows = [
         {"brand": "Missing A", "value_proposition_quality": "missing"},
@@ -350,3 +349,66 @@ def test_balanced_quality_rows_includes_each_available_status() -> None:
         "usable",
         "strong",
     ]
+
+
+def test_batch_quality_blocks_cover_full_tldr_contract() -> None:
+    assert QUALITY_BLOCKS == (
+        "core_purpose",
+        "magnetism",
+        "value_proposition",
+        "personality",
+        "brand_idea",
+        "attributes",
+        "values",
+        "mission",
+        "vision",
+    )
+
+
+def test_build_row_includes_quality_fields_for_all_tldr_blocks() -> None:
+    row = _build_row(
+        {"run": {"id": 10, "brand_name": "Full Quality", "url": "https://quality.test"}},
+        {
+            "metrics": {},
+            "evidence_packet_summary": {"strategic_group_counts": {"product_offer": 1}},
+            "magenta_circle": {"netspace": {"detected": True}},
+            "tldr_brand3": {
+                "core_purpose": {
+                    "answer": "A purpose hypothesis.",
+                    "confidence": "medium",
+                    "human_review_recommended": True,
+                },
+                "magnetism": {"answer": "A memorable signal.", "confidence": "high"},
+                "value_proposition": {"answer": "A concrete offer.", "confidence": "high"},
+                "personality": {"answer": "Precise and pragmatic.", "confidence": "medium"},
+                "brand_idea": {"mode": "not_detected", "claim_type": "absent"},
+                "attributes": {"answer": ["fast", "secure"], "confidence": "medium"},
+                "values": {"answer": ["trust"], "confidence": "medium"},
+                "mission": {"mode": "not_detected", "claim_type": "absent"},
+                "vision": {"answer": "A future signal.", "confidence": "medium", "human_review_recommended": True},
+            },
+        },
+    )
+
+    for block in QUALITY_BLOCKS:
+        assert block in row
+        assert f"{block}_confidence" in row
+        assert f"{block}_quality" in row
+        assert f"{block}_quality_reasons" in row
+        assert f"{block}_gaps" in row
+
+    assert row["block_quality"]["brand_idea"] == {"status": "missing", "reasons": ["no_answer"]}
+    assert row["attributes"] == "fast; secure"
+
+
+def test_summary_counts_quality_for_all_tldr_blocks() -> None:
+    row = {f"{block}_quality": "missing" for block in QUALITY_BLOCKS}
+    row["magnetism_quality"] = "strong"
+    row["values_quality"] = "usable"
+
+    summary = _build_summary([row])
+
+    assert set(summary["block_quality"]) == set(QUALITY_BLOCKS)
+    assert summary["block_quality"]["magnetism"] == {"strong": 1}
+    assert summary["block_quality"]["values"] == {"usable": 1}
+    assert summary["block_quality"]["brand_idea"] == {"missing": 1}

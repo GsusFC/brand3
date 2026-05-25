@@ -467,40 +467,47 @@ class WebCollector:
         return self._clean_markdown_content(
             "\n\n".join(part for part in content_parts if part).strip()
         )
-    def _extract_internal_links(self, markdown: str, base_url: str) -> list[str]:
-        """Extract absolute internal links from markdown content."""
-        if not markdown or not base_url:
+    def _extract_internal_links(
+        self,
+        markdown: str,
+        base_url: str,
+        *,
+        html: str = "",
+        links: list[str] | None = None,
+    ) -> list[str]:
+        """Extract absolute internal page links from observed Markdown, HTML, and browser links."""
+        if not base_url:
             return []
-        
+
         from urllib.parse import urljoin
+
         parsed_base = urlparse(base_url)
         base_domain = parsed_base.netloc.lower()
         if base_domain.startswith("www."):
             base_domain = base_domain[4:]
-            
-        # Regex to find standard Markdown links [text](url)
-        matches = re.findall(r'\[[^\]]*\]\(([^)]+)\)', markdown)
-        
+
+        candidates = []
+        candidates.extend(re.findall(r'\[[^\]]*\]\(([^)]+)\)', markdown or ""))
+        candidates.extend(re.findall(r'href=["\']([^"\']+)["\']', html or "", flags=re.IGNORECASE))
+        candidates.extend(links or [])
+
         internal_links = []
         seen = set()
-        
-        for link in matches:
-            link = link.strip()
+
+        for link in candidates:
+            link = str(link or "").strip()
             if not link or link.startswith("#") or link.startswith("javascript:") or link.startswith("mailto:") or link.startswith("tel:"):
                 continue
-            
-            # Resolve relative URLs to absolute
+
             absolute_url = urljoin(base_url, link)
-            
+
             try:
                 parsed_link = urlparse(absolute_url)
                 link_domain = parsed_link.netloc.lower()
                 if link_domain.startswith("www."):
                     link_domain = link_domain[4:]
-                
-                # Check if domains match
-                if link_domain == base_domain:
-                    # Normalize: strip fragments and trailing slashes
+
+                if link_domain == base_domain and self._looks_like_page_link(parsed_link.path):
                     normalized = parsed_link._replace(fragment="").geturl()
                     normalized = normalized.rstrip("/")
                     base_normalized = base_url.rstrip("/")
@@ -509,8 +516,30 @@ class WebCollector:
                         internal_links.append(normalized)
             except Exception:
                 continue
-                
+
         return internal_links
+
+    @staticmethod
+    def _looks_like_page_link(path: str) -> bool:
+        lowered = (path or "").lower()
+        blocked_extensions = (
+            ".css",
+            ".js",
+            ".json",
+            ".png",
+            ".jpg",
+            ".jpeg",
+            ".gif",
+            ".svg",
+            ".webp",
+            ".ico",
+            ".pdf",
+            ".zip",
+            ".mp4",
+            ".mov",
+            ".webm",
+        )
+        return not lowered.endswith(blocked_extensions)
 
     def _score_internal_links(self, links: list[str], base_url: str) -> list[str]:
         """Score and sort internal links based on their relevance keywords."""
@@ -640,20 +669,28 @@ class WebCollector:
                 data.error = browser_error
 
         if crawl_subpages and self._has_usable_markdown_content(data.markdown_content):
-            internal_links = self._extract_internal_links(data.markdown_content, url)
+            internal_links = self._extract_internal_links(
+                data.markdown_content,
+                url,
+                html=data.html,
+                links=data.links,
+            )
             sorted_subpages = self._score_internal_links(internal_links, url)
             subpages_to_crawl = sorted_subpages[:2]
             
             subpage_contents = []
+            owned_fallback_urls = []
             for subpage_url in subpages_to_crawl:
                 subpage_data = self.scrape(subpage_url, crawl_subpages=False)
                 if subpage_data.markdown_content:
+                    owned_fallback_urls.append(subpage_url)
                     subpage_contents.append(
                         f"\n\n---\n## Subpage: {subpage_url}\n{subpage_data.markdown_content}"
                     )
             
             if subpage_contents:
                 data.markdown_content += "".join(subpage_contents)
+                data.owned_fallback_urls = list(dict.fromkeys(data.owned_fallback_urls + owned_fallback_urls))
 
         return data
 

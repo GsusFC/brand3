@@ -199,6 +199,43 @@ def test_canonical_brand_evidence_reports_owned_page_role_coverage():
     assert "missing_product_or_solution_page" in report["reasons"]
 
 
+def test_canonical_brand_evidence_reads_embedded_owned_subpages_as_page_roles():
+    snapshot = {
+        "run": {
+            "id": 907,
+            "brand_name": "Embedded Pages",
+            "url": "https://embedded.test",
+        },
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "url": "https://embedded.test",
+                    "markdown_content": (
+                        "# Embedded Pages\nHomepage evidence. " * 80
+                        + "\n\n---\n## Subpage: https://embedded.test/product\n"
+                        + "Product platform evidence. " * 80
+                        + "\n\n---\n## Subpage: https://embedded.test/about\n"
+                        + "About the company evidence. " * 80
+                    ),
+                },
+            }
+        ],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    report = evidence.to_summary()["extraction_quality_report"]
+
+    assert evidence.to_summary()["web_page_roles"] == ["homepage", "product", "about"]
+    assert report["owned_page_count"] == 3
+    assert report["owned_page_roles"] == ["homepage", "product", "about"]
+    assert report["product_page_detected"] is True
+    assert report["about_page_detected"] is True
+    assert report["owned_text_chars"] >= len("Product platform evidence. " * 80)
+
+
 def test_canonical_brand_evidence_reports_capture_gap_without_owned_web_pages():
     snapshot = {
         "run": {"id": 906, "brand_name": "No Pages", "url": "https://nopages.test"},

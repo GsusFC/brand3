@@ -9,6 +9,7 @@ own independent inputs.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import re
 from typing import Any
 from urllib.parse import urlparse
 
@@ -261,13 +262,38 @@ def _raw_input_context(raw_inputs: list[dict[str, Any]]) -> RawInputContext:
                 or ""
             )
             title = str(payload.get("title") or "")
+            seen_urls: set[str] = set()
+            primary_text = _primary_web_page_text(markdown)
             if markdown or page_url or title:
                 web_pages.append(
                     {
                         "url": page_url,
                         "title": title,
-                        "text": markdown,
-                        "role": _infer_page_role(page_url, title, markdown),
+                        "text": primary_text,
+                        "role": _infer_page_role(page_url, title, primary_text),
+                    }
+                )
+                if page_url:
+                    seen_urls.add(page_url.rstrip("/"))
+            for page in _embedded_web_subpages(markdown):
+                normalized_url = str(page.get("url") or "").rstrip("/")
+                if normalized_url and normalized_url in seen_urls:
+                    continue
+                if normalized_url:
+                    seen_urls.add(normalized_url)
+                web_pages.append(page)
+            for fallback_url in payload.get("owned_fallback_urls") or []:
+                fallback_url = str(fallback_url or "")
+                normalized_url = fallback_url.rstrip("/")
+                if not fallback_url or normalized_url in seen_urls:
+                    continue
+                seen_urls.add(normalized_url)
+                web_pages.append(
+                    {
+                        "url": fallback_url,
+                        "title": "",
+                        "text": "",
+                        "role": _infer_page_role(fallback_url),
                     }
                 )
             if not fallback_markdown:
@@ -297,6 +323,37 @@ def _raw_input_context(raw_inputs: list[dict[str, Any]]) -> RawInputContext:
         web_page_roles=page_roles,
         extraction_quality_report=_build_extraction_quality_report(web_pages),
     )
+
+
+_EMBEDDED_SUBPAGE_RE = re.compile(r"(?:^|\n)## Subpage:\s*(?P<url>\S+)\s*\n", re.IGNORECASE)
+
+
+def _primary_web_page_text(markdown: str) -> str:
+    match = _EMBEDDED_SUBPAGE_RE.search(markdown or "")
+    if not match:
+        return markdown
+    return markdown[: match.start()].strip(" -\n")
+
+
+def _embedded_web_subpages(markdown: str) -> list[dict[str, Any]]:
+    matches = list(_EMBEDDED_SUBPAGE_RE.finditer(markdown or ""))
+    pages: list[dict[str, Any]] = []
+    for index, match in enumerate(matches):
+        page_url = match.group("url").strip()
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(markdown)
+        text = (markdown[start:end] or "").strip(" -\n")
+        if not page_url and not text:
+            continue
+        pages.append(
+            {
+                "url": page_url,
+                "title": "",
+                "text": text,
+                "role": _infer_page_role(page_url, text=text),
+            }
+        )
+    return pages
 
 
 PAGE_ROLE_ORDER = (

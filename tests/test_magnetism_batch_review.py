@@ -254,7 +254,7 @@ def test_build_row_includes_block_quality_fields() -> None:
         {"run": {"id": 8, "brand_name": "Quality Brand", "url": "https://quality.test"}},
         {
             "metrics": {},
-            "evidence_packet_summary": {"strategic_group_counts": {"product_offer": 1, "audience": 1, "outcome": 1}},
+            "evidence_packet_summary": {"evidence_quality": {"status": "strong", "reasons": []}, "strategic_group_counts": {"product_offer": 1, "audience": 1, "outcome": 1}},
             "magenta_circle": {"netspace": {"detected": True}},
             "tldr_brand3": {
                 "value_proposition": {"answer": "A clear offer for teams.", "confidence": "high"},
@@ -264,6 +264,8 @@ def test_build_row_includes_block_quality_fields() -> None:
         },
     )
 
+    assert row["canonical_evidence_quality"] == "strong"
+    assert row["evidence_packet"]["evidence_quality"] == {"status": "strong", "reasons": []}
     assert row["value_proposition_quality"] == "strong"
     assert row["mission_quality"] == "missing"
     assert row["vision_quality"] == "usable"
@@ -273,11 +275,12 @@ def test_build_row_includes_block_quality_fields() -> None:
 def test_summary_counts_block_quality() -> None:
     summary = _build_summary(
         [
-            {"value_proposition_quality": "strong", "mission_quality": "missing", "vision_quality": "usable"},
-            {"value_proposition_quality": "weak", "mission_quality": "missing", "vision_quality": "missing"},
+            {"canonical_evidence_quality": "strong", "value_proposition_quality": "strong", "mission_quality": "missing", "vision_quality": "usable"},
+            {"canonical_evidence_quality": "weak", "value_proposition_quality": "weak", "mission_quality": "missing", "vision_quality": "missing"},
         ]
     )
 
+    assert summary["canonical_evidence_quality"] == {"strong": 1, "weak": 1}
     assert summary["block_quality"]["value_proposition"] == {"strong": 1, "weak": 1}
     assert summary["block_quality"]["mission"] == {"missing": 2}
     assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
@@ -292,6 +295,7 @@ def test_render_markdown_includes_block_quality_section() -> None:
             "value_proposition_confidence": {"high": 1},
             "mission_confidence": {"low": 1},
             "vision_confidence": {"medium": 1},
+            "canonical_evidence_quality": {"weak": 1},
             "block_quality": {
                 "value_proposition": {"strong": 1},
                 "mission": {"missing": 1},
@@ -305,6 +309,8 @@ def test_render_markdown_includes_block_quality_section() -> None:
                 "detected_layers": [],
                 "detected_block_count": 1,
                 "review_flags": [],
+                "canonical_evidence_quality": "weak",
+                "canonical_evidence_quality_reasons": ["no_audience"],
                 "value_proposition": "A clear offer.",
                 "value_proposition_confidence": "high",
                 "value_proposition_quality": "strong",
@@ -327,6 +333,8 @@ def test_render_markdown_includes_block_quality_section() -> None:
 
     markdown = _render_markdown(payload)
 
+    assert "Canonical evidence quality" in markdown
+    assert "weak (no_audience)" in markdown
     assert "VP quality" in markdown
     assert "## Block Quality Examples" in markdown
     assert "usable (human_review)" in markdown

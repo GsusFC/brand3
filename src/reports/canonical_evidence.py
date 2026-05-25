@@ -69,6 +69,13 @@ class CanonicalBrandEvidence:
 
     def to_summary(self) -> dict[str, Any]:
         strategic_summary = self.strategic_packet.to_summary()
+        evidence_quality = _evidence_quality_summary(
+            interpreter_text=self.interpreter_text,
+            raw_input_count=self.raw_input_count,
+            group_counts=strategic_summary.get("group_counts") or {},
+            source_counts=strategic_summary.get("source_counts") or {},
+            visual_semantics=self.visual_semantics,
+        )
         return {
             "source": "brand_audit_snapshot",
             "source_label": "Canonical Brand Audit evidence",
@@ -80,6 +87,7 @@ class CanonicalBrandEvidence:
             "feature_count": self.feature_count,
             "sources": self.raw_input_sources,
             "data_quality": self.data_quality,
+            "evidence_quality": evidence_quality,
             "strategic_group_counts": strategic_summary.get("group_counts"),
             "strategic_source_counts": strategic_summary.get("source_counts"),
             "strategic_rejected_count": strategic_summary.get("rejected_count"),
@@ -101,6 +109,77 @@ class CanonicalBrandEvidence:
             "limitations": self.limitations,
             "strategic_packet": self.strategic_packet.to_dict(),
         }
+
+
+KEY_STRATEGIC_GROUPS = ("product_offer", "audience", "outcome")
+OWNED_STRATEGIC_SOURCE_TYPES = ("owned_raw", "owned", "social")
+
+
+def _evidence_quality_summary(
+    *,
+    interpreter_text: str,
+    raw_input_count: int,
+    group_counts: dict[str, Any],
+    source_counts: dict[str, Any],
+    visual_semantics: dict[str, Any],
+) -> dict[str, Any]:
+    """Summarize whether the canonical packet is useful for downstream lenses."""
+    normalized_group_counts = {
+        str(key): int(value or 0) for key, value in group_counts.items()
+    }
+    missing_key_groups = [
+        group for group in KEY_STRATEGIC_GROUPS if not normalized_group_counts.get(group)
+    ]
+    usable_group_count = len(
+        [count for count in normalized_group_counts.values() if count > 0]
+    )
+    owned_source_count = sum(
+        int(source_counts.get(source_type) or 0)
+        for source_type in OWNED_STRATEGIC_SOURCE_TYPES
+    )
+    visual_detected = visual_semantics.get("status") == "detected"
+
+    reasons: list[str] = []
+    if not interpreter_text.strip():
+        reasons.append("no_interpreter_text")
+    if raw_input_count <= 0:
+        reasons.append("no_raw_inputs")
+    if usable_group_count <= 0:
+        reasons.append("no_strategic_groups")
+    if not normalized_group_counts.get("product_offer"):
+        reasons.append("no_product_offer")
+    if not normalized_group_counts.get("audience"):
+        reasons.append("no_audience")
+    if not normalized_group_counts.get("outcome"):
+        reasons.append("no_outcome")
+    if owned_source_count <= 0:
+        reasons.append("no_owned_evidence")
+
+    if "no_interpreter_text" in reasons or "no_strategic_groups" in reasons:
+        status = "insufficient"
+    elif not normalized_group_counts.get("product_offer"):
+        status = "weak"
+    elif (
+        all(group not in missing_key_groups for group in KEY_STRATEGIC_GROUPS)
+        and owned_source_count > 0
+    ):
+        status = "strong"
+    elif normalized_group_counts.get("product_offer") and (
+        normalized_group_counts.get("audience") or normalized_group_counts.get("outcome")
+    ):
+        status = "usable"
+    else:
+        status = "weak"
+
+    return {
+        "status": status,
+        "reasons": reasons,
+        "key_groups": list(KEY_STRATEGIC_GROUPS),
+        "missing_key_groups": missing_key_groups,
+        "usable_group_count": usable_group_count,
+        "owned_source_count": owned_source_count,
+        "visual_semantics_detected": visual_detected,
+    }
 
 
 def build_canonical_brand_evidence(snapshot: dict[str, Any]) -> CanonicalBrandEvidence:

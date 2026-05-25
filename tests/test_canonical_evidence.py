@@ -58,6 +58,10 @@ def test_canonical_brand_evidence_groups_snapshot_for_downstream_lenses():
     assert summary["evidence_item_count"] == 1
     assert summary["data_quality"] == "partial"
     assert summary["strategic_group_counts"]["product_offer"] >= 1
+    assert summary["evidence_quality"]["status"] == "strong"
+    assert summary["evidence_quality"]["missing_key_groups"] == []
+    assert summary["evidence_quality"]["owned_source_count"] >= 1
+    assert summary["evidence_quality"]["visual_semantics_detected"] is True
 
 
 def test_canonical_brand_evidence_reuses_collected_evidences_for_fallback(monkeypatch):
@@ -91,3 +95,55 @@ def test_canonical_brand_evidence_reuses_collected_evidences_for_fallback(monkey
 
     assert calls == 1
     assert evidence.interpreter_text == "Fallback web copy for downstream interpreters."
+
+
+def test_canonical_brand_evidence_quality_marks_missing_strategy_groups():
+    snapshot = {
+        "run": {
+            "id": 903,
+            "brand_name": "Weak Canonical",
+            "url": "https://weak.test",
+        },
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "Trusted worldwide. Privacy and security first.",
+                },
+            }
+        ],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    quality = evidence.to_summary()["evidence_quality"]
+
+    assert quality["status"] == "weak"
+    assert quality["missing_key_groups"] == ["product_offer", "audience", "outcome"]
+    assert "no_product_offer" in quality["reasons"]
+
+
+def test_canonical_brand_evidence_quality_marks_empty_packet_insufficient(monkeypatch):
+    def fake_collect_evidences(snapshot):
+        return []
+
+    monkeypatch.setattr(canonical_evidence, "collect_evidences", fake_collect_evidences)
+    snapshot = {
+        "run": {
+            "id": 904,
+            "brand_name": "Empty Canonical",
+            "url": "https://empty.test",
+        },
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    quality = evidence.to_summary()["evidence_quality"]
+
+    assert quality["status"] == "insufficient"
+    assert "no_interpreter_text" in quality["reasons"]
+    assert "no_raw_inputs" in quality["reasons"]
+    assert "no_strategic_groups" in quality["reasons"]

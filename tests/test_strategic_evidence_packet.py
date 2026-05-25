@@ -1006,3 +1006,34 @@ def test_strategic_evidence_packet_detects_observed_outcome_terms_from_batch():
     assert "drive success" in outcome_text
     assert "solve problems" in outcome_text
     assert "deploy instantly" in outcome_text
+
+
+def test_strategic_evidence_packet_detects_observed_product_offer_terms_from_batch():
+    snapshot = {
+        "run": {"id": 92, "brand_name": "Offer Terms", "url": "https://offer.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "The AI-native branding solution for B2B startups. "
+                        "Cron is the next-generation calendar app for professionals and teams. "
+                        "Raycast is a collection of powerful productivity tools within an extendable launcher. "
+                        "Datadog is an observability service for cloud-scale applications and monitoring. "
+                        "Dribbble is a design portfolio platform, jobs and recruiting site."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+    offer_text = "\n".join(line.text for line in packet.groups["product_offer"])
+
+    assert "branding solution" in offer_text
+    assert "calendar app" in offer_text
+    assert "productivity tools" in offer_text
+    assert "observability service" in offer_text
+    assert "portfolio platform" in offer_text

@@ -91,6 +91,7 @@ class CanonicalBrandEvidence:
             "strategic_group_counts": strategic_summary.get("group_counts"),
             "strategic_source_counts": strategic_summary.get("source_counts"),
             "strategic_rejected_count": strategic_summary.get("rejected_count"),
+            "strategic_rejected_reason_counts": strategic_summary.get("rejected_reason_counts"),
             "strategic_warnings": strategic_summary.get("warnings"),
             "value_policy": (
                 "Brand Audit owns collection; downstream tools only interpret "

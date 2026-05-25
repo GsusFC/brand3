@@ -58,6 +58,7 @@ def test_canonical_brand_evidence_groups_snapshot_for_downstream_lenses():
     assert summary["evidence_item_count"] == 1
     assert summary["data_quality"] == "partial"
     assert summary["strategic_group_counts"]["product_offer"] >= 1
+    assert isinstance(summary["strategic_rejected_reason_counts"], dict)
     assert summary["evidence_quality"]["status"] == "strong"
     assert summary["evidence_quality"]["missing_key_groups"] == []
     assert summary["evidence_quality"]["owned_source_count"] >= 1

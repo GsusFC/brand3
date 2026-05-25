@@ -171,12 +171,14 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         block: count_by(f"{block}_quality")
         for block in QUALITY_BLOCKS
     }
+    diagnosis_counts = count_by("extraction_diagnosis")
 
     return {
         "value_proposition_confidence": count_by("value_proposition_confidence"),
         "mission_confidence": count_by("mission_confidence"),
         "vision_confidence": count_by("vision_confidence"),
         "canonical_evidence_quality": count_by("canonical_evidence_quality"),
+        "extraction_diagnosis": diagnosis_counts,
         "block_quality": block_quality_counts,
         "strategic_group_totals": dict(sorted(group_totals.items())),
         "strategic_group_presence": dict(sorted(group_presence.items())),
@@ -221,7 +223,16 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
 
     review_flags: list[str] = []
     group_counts = packet.get("strategic_group_counts") or {}
+    source_counts = packet.get("strategic_source_counts") or {}
+    rejected_reason_counts = packet.get("strategic_rejected_reason_counts") or {}
     evidence_quality = packet.get("evidence_quality") or {}
+    extraction_diagnosis = _extraction_diagnosis(
+        packet=packet,
+        group_counts=group_counts,
+        source_counts=source_counts,
+        rejected_reason_counts=rejected_reason_counts,
+        evidence_quality=evidence_quality,
+    )
     missing_vp_kind: str | None = None
     if "value_proposition" in missing_blocks:
         if not group_counts:
@@ -286,6 +297,8 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "needs_review_blocks": review_blocks,
         "canonical_evidence_quality": evidence_quality.get("status") or "missing",
         "canonical_evidence_quality_reasons": evidence_quality.get("reasons") or [],
+        "extraction_diagnosis": extraction_diagnosis["status"],
+        "extraction_diagnosis_reasons": extraction_diagnosis["reasons"],
         **block_fields,
         "block_quality": block_quality,
         "known_noise_hits": noise_hits,
@@ -299,9 +312,87 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
             "sources": packet.get("sources"),
             "data_quality": packet.get("data_quality"),
             "evidence_quality": evidence_quality,
+            "extraction_diagnosis": extraction_diagnosis,
             "strategic_group_counts": packet.get("strategic_group_counts"),
+            "strategic_source_counts": source_counts,
+            "strategic_rejected_reason_counts": rejected_reason_counts,
             "strategic_warnings": packet.get("strategic_warnings"),
         },
+    }
+
+
+def _extraction_diagnosis(
+    *,
+    packet: dict[str, Any],
+    group_counts: dict[str, Any],
+    source_counts: dict[str, Any],
+    rejected_reason_counts: dict[str, Any],
+    evidence_quality: dict[str, Any],
+) -> dict[str, Any]:
+    raw_input_count = int(packet.get("raw_input_count") or 0)
+    evidence_item_count = int(packet.get("evidence_item_count") or 0)
+    feature_count = int(packet.get("feature_count") or 0)
+    rejected_count = int(packet.get("strategic_rejected_count") or 0)
+    usable_group_count = len([value for value in group_counts.values() if value])
+    owned_source_count = sum(
+        int(source_counts.get(source_type) or 0)
+        for source_type in ("owned_raw", "owned", "social")
+    )
+    context_source_count = sum(
+        int(source_counts.get(source_type) or 0)
+        for source_type in ("encyclopedic", "news", "review", "other", "changelog")
+    )
+    evidence_status = str(evidence_quality.get("status") or "missing")
+    missing_groups = set(evidence_quality.get("missing_key_groups") or [])
+
+    reasons: list[str] = []
+    if raw_input_count <= 0:
+        reasons.append("no_raw_inputs")
+    if evidence_item_count <= 0 and feature_count <= 0:
+        reasons.append("no_persisted_feature_evidence")
+    if usable_group_count <= 0:
+        reasons.append("no_strategic_groups")
+    if owned_source_count <= 0:
+        reasons.append("no_owned_evidence")
+    if context_source_count > owned_source_count and owned_source_count <= 1:
+        reasons.append("third_party_heavy")
+    if rejected_count >= 20 and usable_group_count <= 2:
+        reasons.append("many_rejections_low_signal")
+    for group in ("product_offer", "audience", "outcome"):
+        if group in missing_groups:
+            reasons.append(f"missing_{group}")
+
+    if "no_raw_inputs" in reasons or "no_strategic_groups" in reasons:
+        status = "capture_gap"
+    elif evidence_status == "strong":
+        status = "strong"
+    elif evidence_status == "usable":
+        status = "usable"
+    elif "third_party_heavy" in reasons:
+        status = "third_party_heavy"
+    elif "many_rejections_low_signal" in reasons:
+        status = "selection_gap"
+    else:
+        status = "brand_sparse"
+
+    top_rejected_reasons = sorted(
+        rejected_reason_counts.items(),
+        key=lambda item: (-int(item[1] or 0), str(item[0])),
+    )[:5]
+
+    return {
+        "status": status,
+        "reasons": reasons,
+        "raw_input_count": raw_input_count,
+        "evidence_item_count": evidence_item_count,
+        "feature_count": feature_count,
+        "owned_source_count": owned_source_count,
+        "context_source_count": context_source_count,
+        "usable_group_count": usable_group_count,
+        "top_rejected_reasons": [
+            {"reason": str(reason), "count": int(count or 0)}
+            for reason, count in top_rejected_reasons
+        ],
     }
 
 
@@ -429,6 +520,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Mission confidence: `{_compact_counts(summary.get('mission_confidence'))}`",
         f"- Vision confidence: `{_compact_counts(summary.get('vision_confidence'))}`",
         f"- Canonical evidence quality: `{_compact_counts(summary.get('canonical_evidence_quality'))}`",
+        f"- Extraction diagnosis: `{_compact_counts(summary.get('extraction_diagnosis'))}`",
         f"- Group presence: `{_compact_counts(summary.get('strategic_group_presence'))}`",
         f"- Missing key groups: `{_compact_counts(summary.get('missing_group_presence'))}`",
         f"- Review flags: `{_compact_counts(summary.get('review_flag_counts'))}`",
@@ -439,18 +531,19 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Rows",
         "",
-        "| run | brand | audit | mag | coh | evidence quality | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
-        "|---:|---|---:|---:|---:|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
+        "|---:|---|---:|---:|---:|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(
-            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
+            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
                 run_id=row.get("run_id"),
                 brand=_md(row.get("brand")),
                 audit_score=_num(row.get("audit_score")),
                 magnetism_score=_num(row.get("magnetism_score")),
                 coherence_score=_num(row.get("coherence_score")),
                 evidence_quality=_md(_canonical_evidence_quality_cell(row)),
+                extraction_diagnosis=_md(_extraction_diagnosis_cell(row)),
                 layers=_md(", ".join(row.get("detected_layers") or [])),
                 blocks=row.get("detected_block_count"),
                 flags=_md(", ".join(row.get("review_flags") or []) or "ok"),
@@ -546,6 +639,14 @@ def _canonical_evidence_quality_cell(row: dict[str, Any]) -> str:
     if not reasons:
         return quality
     return quality + " (" + ", ".join(str(reason) for reason in reasons[:3]) + ")"
+
+
+def _extraction_diagnosis_cell(row: dict[str, Any]) -> str:
+    diagnosis = str(row.get("extraction_diagnosis") or "")
+    reasons = row.get("extraction_diagnosis_reasons") or []
+    if not reasons:
+        return diagnosis
+    return diagnosis + " (" + ", ".join(str(reason) for reason in reasons[:3]) + ")"
 
 
 def _quality_cell(row: dict[str, Any], block: str) -> str:

@@ -300,6 +300,7 @@ class StrategicEvidencePacket:
             "group_counts": {key: len(value) for key, value in self.groups.items()},
             "source_counts": self.source_counts,
             "rejected_count": len(self.rejected),
+            "rejected_reason_counts": _rejected_reason_counts(self.rejected),
             "warnings": self.warnings,
             "value_policy": "Brand Audit owns collection; this packet only groups strategically relevant public evidence.",
         }
@@ -315,6 +316,14 @@ class StrategicEvidencePacket:
             },
             "rejected": self.rejected[:40],
         }
+
+
+def _rejected_reason_counts(rejected: list[dict[str, str]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in rejected:
+        reason = str(item.get("reason") or "unknown")
+        counts[reason] = counts.get(reason, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 def build_strategic_evidence_packet(snapshot: dict[str, Any]) -> StrategicEvidencePacket:

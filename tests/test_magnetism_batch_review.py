@@ -7,6 +7,7 @@ from scripts.magnetism_brand_audit_batch_review import (
     _build_row,
     _build_summary,
     _dedupe_snapshots,
+    _extraction_diagnosis,
     _known_noise_hits,
     _render_markdown,
     _visible_interpretation_values,
@@ -254,7 +255,15 @@ def test_build_row_includes_block_quality_fields() -> None:
         {"run": {"id": 8, "brand_name": "Quality Brand", "url": "https://quality.test"}},
         {
             "metrics": {},
-            "evidence_packet_summary": {"evidence_quality": {"status": "strong", "reasons": []}, "strategic_group_counts": {"product_offer": 1, "audience": 1, "outcome": 1}},
+            "evidence_packet_summary": {
+                "evidence_quality": {"status": "strong", "reasons": []},
+                "raw_input_count": 1,
+                "evidence_item_count": 1,
+                "strategic_group_counts": {"product_offer": 1, "audience": 1, "outcome": 1},
+                "strategic_source_counts": {"owned_raw": 1},
+                "strategic_rejected_count": 0,
+                "strategic_rejected_reason_counts": {},
+            },
             "magenta_circle": {"netspace": {"detected": True}},
             "tldr_brand3": {
                 "value_proposition": {"answer": "A clear offer for teams.", "confidence": "high"},
@@ -265,7 +274,9 @@ def test_build_row_includes_block_quality_fields() -> None:
     )
 
     assert row["canonical_evidence_quality"] == "strong"
+    assert row["extraction_diagnosis"] == "strong"
     assert row["evidence_packet"]["evidence_quality"] == {"status": "strong", "reasons": []}
+    assert row["evidence_packet"]["extraction_diagnosis"]["owned_source_count"] == 1
     assert row["value_proposition_quality"] == "strong"
     assert row["mission_quality"] == "missing"
     assert row["vision_quality"] == "usable"
@@ -275,12 +286,13 @@ def test_build_row_includes_block_quality_fields() -> None:
 def test_summary_counts_block_quality() -> None:
     summary = _build_summary(
         [
-            {"canonical_evidence_quality": "strong", "value_proposition_quality": "strong", "mission_quality": "missing", "vision_quality": "usable"},
-            {"canonical_evidence_quality": "weak", "value_proposition_quality": "weak", "mission_quality": "missing", "vision_quality": "missing"},
+            {"canonical_evidence_quality": "strong", "extraction_diagnosis": "strong", "value_proposition_quality": "strong", "mission_quality": "missing", "vision_quality": "usable"},
+            {"canonical_evidence_quality": "weak", "extraction_diagnosis": "brand_sparse", "value_proposition_quality": "weak", "mission_quality": "missing", "vision_quality": "missing"},
         ]
     )
 
     assert summary["canonical_evidence_quality"] == {"strong": 1, "weak": 1}
+    assert summary["extraction_diagnosis"] == {"strong": 1, "brand_sparse": 1}
     assert summary["block_quality"]["value_proposition"] == {"strong": 1, "weak": 1}
     assert summary["block_quality"]["mission"] == {"missing": 2}
     assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
@@ -296,6 +308,7 @@ def test_render_markdown_includes_block_quality_section() -> None:
             "mission_confidence": {"low": 1},
             "vision_confidence": {"medium": 1},
             "canonical_evidence_quality": {"weak": 1},
+            "extraction_diagnosis": {"third_party_heavy": 1},
             "block_quality": {
                 "value_proposition": {"strong": 1},
                 "mission": {"missing": 1},
@@ -311,6 +324,8 @@ def test_render_markdown_includes_block_quality_section() -> None:
                 "review_flags": [],
                 "canonical_evidence_quality": "weak",
                 "canonical_evidence_quality_reasons": ["no_audience"],
+                "extraction_diagnosis": "third_party_heavy",
+                "extraction_diagnosis_reasons": ["third_party_heavy", "missing_audience"],
                 "value_proposition": "A clear offer.",
                 "value_proposition_confidence": "high",
                 "value_proposition_quality": "strong",
@@ -334,7 +349,9 @@ def test_render_markdown_includes_block_quality_section() -> None:
     markdown = _render_markdown(payload)
 
     assert "Canonical evidence quality" in markdown
+    assert "Extraction diagnosis" in markdown
     assert "weak (no_audience)" in markdown
+    assert "third_party_heavy (third_party_heavy, missing_audience)" in markdown
     assert "VP quality" in markdown
     assert "## Block Quality Examples" in markdown
     assert "usable (human_review)" in markdown
@@ -420,3 +437,44 @@ def test_summary_counts_quality_for_all_tldr_blocks() -> None:
     assert summary["block_quality"]["magnetism"] == {"strong": 1}
     assert summary["block_quality"]["values"] == {"usable": 1}
     assert summary["block_quality"]["brand_idea"] == {"missing": 1}
+
+
+def test_extraction_diagnosis_marks_capture_gap_when_no_inputs_or_groups() -> None:
+    diagnosis = _extraction_diagnosis(
+        packet={"raw_input_count": 0, "evidence_item_count": 0, "feature_count": 0, "strategic_rejected_count": 0},
+        group_counts={},
+        source_counts={},
+        rejected_reason_counts={},
+        evidence_quality={"status": "insufficient", "missing_key_groups": ["product_offer", "audience", "outcome"]},
+    )
+
+    assert diagnosis["status"] == "capture_gap"
+    assert "no_raw_inputs" in diagnosis["reasons"]
+    assert "no_strategic_groups" in diagnosis["reasons"]
+
+
+def test_extraction_diagnosis_marks_third_party_heavy_when_context_dominates() -> None:
+    diagnosis = _extraction_diagnosis(
+        packet={"raw_input_count": 1, "evidence_item_count": 4, "feature_count": 0, "strategic_rejected_count": 3},
+        group_counts={"product_offer": 1, "third_party_context": 4},
+        source_counts={"news": 4},
+        rejected_reason_counts={"low_strategic_signal": 2, "duplicate": 1},
+        evidence_quality={"status": "weak", "missing_key_groups": ["audience"]},
+    )
+
+    assert diagnosis["status"] == "third_party_heavy"
+    assert "third_party_heavy" in diagnosis["reasons"]
+    assert diagnosis["top_rejected_reasons"][0] == {"reason": "low_strategic_signal", "count": 2}
+
+
+def test_extraction_diagnosis_marks_selection_gap_for_many_rejections() -> None:
+    diagnosis = _extraction_diagnosis(
+        packet={"raw_input_count": 1, "evidence_item_count": 20, "feature_count": 0, "strategic_rejected_count": 25},
+        group_counts={"product_offer": 1},
+        source_counts={"owned_raw": 2},
+        rejected_reason_counts={"low_strategic_signal": 20},
+        evidence_quality={"status": "weak", "missing_key_groups": ["audience", "outcome"]},
+    )
+
+    assert diagnosis["status"] == "selection_gap"
+    assert "many_rejections_low_signal" in diagnosis["reasons"]

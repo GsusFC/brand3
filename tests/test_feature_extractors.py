@@ -1458,6 +1458,31 @@ Tabular foundation models for real-world data.
         self.assertEqual(sorted_links[2], "https://example.com/about-us")
         self.assertNotIn("https://example.com/privacy-policy", sorted_links)
 
+    def test_select_internal_links_to_crawl_balances_page_roles(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/pricing",
+            "https://example.com/features/dashboard",
+            "https://example.com/features/ai-video",
+            "https://example.com/about-us",
+            "https://example.com/customers",
+            "https://example.com/privacy-policy",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com")
+
+        self.assertEqual(
+            selected,
+            [
+                "https://example.com/features/dashboard",
+                "https://example.com/about-us",
+                "https://example.com/pricing",
+                "https://example.com/customers",
+            ],
+        )
+        self.assertNotIn("https://example.com/privacy-policy", selected)
+
+
     def test_scrape_recursive_crawling(self):
         from unittest.mock import patch
         collector = WebCollector()
@@ -1487,7 +1512,7 @@ Tabular foundation models for real-world data.
             self.assertIn("We are a premium team", data.markdown_content)
             self.assertEqual(
                 data.owned_fallback_urls,
-                ["https://example.com/pricing", "https://example.com/about"],
+                ["https://example.com/about", "https://example.com/pricing"],
             )
             
             data_no_crawl = collector.scrape("https://example.com", crawl_subpages=False)

@@ -147,8 +147,12 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
 
     group_totals: dict[str, int] = {}
     group_presence: dict[str, int] = {}
+    page_role_presence: dict[str, int] = {}
+    missing_page_role_counts: dict[str, int] = {}
+    failure_cause_counts: dict[str, int] = {}
     for row in rows:
-        groups = ((row.get("evidence_packet") or {}).get("strategic_group_counts") or {})
+        packet = row.get("evidence_packet") or {}
+        groups = packet.get("strategic_group_counts") or {}
         if not isinstance(groups, dict):
             continue
         for group, count in groups.items():
@@ -156,6 +160,14 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 continue
             group_totals[group] = group_totals.get(group, 0) + int(count)
             group_presence[group] = group_presence.get(group, 0) + 1
+        extraction_report = packet.get("extraction_quality_report") or {}
+        for role in extraction_report.get("owned_page_roles") or []:
+            page_role_presence[str(role)] = page_role_presence.get(str(role), 0) + 1
+        for role in extraction_report.get("missing_core_roles") or []:
+            missing_page_role_counts[str(role)] = missing_page_role_counts.get(str(role), 0) + 1
+        cause = extraction_report.get("likely_failure_cause")
+        if cause:
+            failure_cause_counts[str(cause)] = failure_cause_counts.get(str(cause), 0) + 1
 
     missing_group_presence = {
         group: len(rows) - group_presence.get(group, 0)
@@ -179,6 +191,9 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "vision_confidence": count_by("vision_confidence"),
         "canonical_evidence_quality": count_by("canonical_evidence_quality"),
         "extraction_diagnosis": diagnosis_counts,
+        "owned_page_role_presence": dict(sorted(page_role_presence.items())),
+        "missing_core_page_roles": dict(sorted(missing_page_role_counts.items())),
+        "extraction_failure_causes": dict(sorted(failure_cause_counts.items())),
         "block_quality": block_quality_counts,
         "strategic_group_totals": dict(sorted(group_totals.items())),
         "strategic_group_presence": dict(sorted(group_presence.items())),
@@ -223,6 +238,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
 
     review_flags: list[str] = []
     group_counts = packet.get("strategic_group_counts") or {}
+    extraction_quality_report = packet.get("extraction_quality_report") or {}
     source_counts = packet.get("strategic_source_counts") or {}
     rejected_reason_counts = packet.get("strategic_rejected_reason_counts") or {}
     evidence_quality = packet.get("evidence_quality") or {}
@@ -299,6 +315,9 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "canonical_evidence_quality_reasons": evidence_quality.get("reasons") or [],
         "extraction_diagnosis": extraction_diagnosis["status"],
         "extraction_diagnosis_reasons": extraction_diagnosis["reasons"],
+        "owned_page_roles": extraction_quality_report.get("owned_page_roles") or [],
+        "missing_core_page_roles": extraction_quality_report.get("missing_core_roles") or [],
+        "extraction_failure_cause": extraction_quality_report.get("likely_failure_cause"),
         **block_fields,
         "block_quality": block_quality,
         "known_noise_hits": noise_hits,
@@ -312,6 +331,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
             "sources": packet.get("sources"),
             "data_quality": packet.get("data_quality"),
             "evidence_quality": evidence_quality,
+            "extraction_quality_report": extraction_quality_report,
             "extraction_diagnosis": extraction_diagnosis,
             "strategic_group_counts": packet.get("strategic_group_counts"),
             "strategic_source_counts": source_counts,
@@ -521,6 +541,9 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Vision confidence: `{_compact_counts(summary.get('vision_confidence'))}`",
         f"- Canonical evidence quality: `{_compact_counts(summary.get('canonical_evidence_quality'))}`",
         f"- Extraction diagnosis: `{_compact_counts(summary.get('extraction_diagnosis'))}`",
+        f"- Owned page roles: `{_compact_counts(summary.get('owned_page_role_presence'))}`",
+        f"- Missing core page roles: `{_compact_counts(summary.get('missing_core_page_roles'))}`",
+        f"- Extraction failure causes: `{_compact_counts(summary.get('extraction_failure_causes'))}`",
         f"- Group presence: `{_compact_counts(summary.get('strategic_group_presence'))}`",
         f"- Missing key groups: `{_compact_counts(summary.get('missing_group_presence'))}`",
         f"- Review flags: `{_compact_counts(summary.get('review_flag_counts'))}`",
@@ -531,12 +554,12 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Rows",
         "",
-        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
-        "|---:|---|---:|---:|---:|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | page roles | missing pages | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
+        "|---:|---|---:|---:|---:|---|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(
-            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
+            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {page_roles} | {missing_pages} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
                 run_id=row.get("run_id"),
                 brand=_md(row.get("brand")),
                 audit_score=_num(row.get("audit_score")),
@@ -544,6 +567,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
                 coherence_score=_num(row.get("coherence_score")),
                 evidence_quality=_md(_canonical_evidence_quality_cell(row)),
                 extraction_diagnosis=_md(_extraction_diagnosis_cell(row)),
+                page_roles=_md(", ".join(row.get("owned_page_roles") or [])),
+                missing_pages=_md(", ".join(row.get("missing_core_page_roles") or [])),
                 layers=_md(", ".join(row.get("detected_layers") or [])),
                 blocks=row.get("detected_block_count"),
                 flags=_md(", ".join(row.get("review_flags") or []) or "ok"),
@@ -570,13 +595,16 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     for row in rows:
         packet = row.get("evidence_packet") or {}
         lines.append(
-            "- run {run_id} · {brand}: raw={raw} evidence_items={items} derived={derived} features={features} groups={groups} sources={sources}".format(
+            "- run {run_id} · {brand}: raw={raw} evidence_items={items} derived={derived} features={features} roles={roles} missing_pages={missing_pages} cause={cause} groups={groups} sources={sources}".format(
                 run_id=row.get("run_id"),
                 brand=row.get("brand"),
                 raw=packet.get("raw_input_count"),
                 items=packet.get("evidence_item_count"),
                 derived=packet.get("derived_evidence_count"),
                 features=packet.get("feature_count"),
+                roles=", ".join((packet.get("extraction_quality_report") or {}).get("owned_page_roles") or []),
+                missing_pages=", ".join((packet.get("extraction_quality_report") or {}).get("missing_core_roles") or []),
+                cause=(packet.get("extraction_quality_report") or {}).get("likely_failure_cause") or "",
                 groups=_compact_counts(packet.get("strategic_group_counts")),
                 sources=", ".join(packet.get("sources") or []),
             )

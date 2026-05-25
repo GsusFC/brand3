@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import urlparse
 
 from src.reports.derivation import collect_evidences
 from src.reports.strategic_evidence_packet import (
@@ -46,6 +47,8 @@ class RawInputContext:
     visual_semantics: dict[str, Any] = field(
         default_factory=lambda: {"status": "not_detected", "data": {}}
     )
+    web_page_roles: list[str] = field(default_factory=list)
+    extraction_quality_report: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -66,6 +69,8 @@ class CanonicalBrandEvidence:
     raw_input_count: int = 0
     evidence_item_count: int = 0
     feature_count: int = 0
+    web_page_roles: list[str] = field(default_factory=list)
+    extraction_quality_report: dict[str, Any] = field(default_factory=dict)
 
     def to_summary(self) -> dict[str, Any]:
         strategic_summary = self.strategic_packet.to_summary()
@@ -87,6 +92,8 @@ class CanonicalBrandEvidence:
             "feature_count": self.feature_count,
             "sources": self.raw_input_sources,
             "data_quality": self.data_quality,
+            "web_page_roles": self.web_page_roles,
+            "extraction_quality_report": self.extraction_quality_report,
             "evidence_quality": evidence_quality,
             "strategic_group_counts": strategic_summary.get("group_counts"),
             "strategic_source_counts": strategic_summary.get("source_counts"),
@@ -213,6 +220,8 @@ def build_canonical_brand_evidence(snapshot: dict[str, Any]) -> CanonicalBrandEv
         raw_input_count=len(raw_inputs),
         evidence_item_count=len(snapshot.get("evidence_items") or []),
         feature_count=len(snapshot.get("features") or []),
+        web_page_roles=raw_input_context.web_page_roles,
+        extraction_quality_report=raw_input_context.extraction_quality_report,
     )
 
 
@@ -237,15 +246,32 @@ def _raw_input_context(raw_inputs: list[dict[str, Any]]) -> RawInputContext:
     )
     fallback_markdown = ""
     visual_semantics: dict[str, Any] = {"status": "not_detected", "data": {}}
+    web_pages: list[dict[str, Any]] = []
 
     for raw_input in reversed(raw_inputs):
         source = raw_input.get("source")
         payload = raw_input.get("payload") or {}
 
-        if source == SOURCE_WEB and not fallback_markdown:
-            fallback_markdown = str(
-                payload.get("markdown_content") or payload.get("content") or ""
+        if source == SOURCE_WEB:
+            markdown = str(payload.get("markdown_content") or payload.get("content") or "")
+            page_url = str(
+                payload.get("canonical_url")
+                or payload.get("url")
+                or payload.get("page_url")
+                or ""
             )
+            title = str(payload.get("title") or "")
+            if markdown or page_url or title:
+                web_pages.append(
+                    {
+                        "url": page_url,
+                        "title": title,
+                        "text": markdown,
+                        "role": _infer_page_role(page_url, title, markdown),
+                    }
+                )
+            if not fallback_markdown:
+                fallback_markdown = markdown
 
         if (
             source == SOURCE_VISUAL_SIGNATURE
@@ -262,11 +288,131 @@ def _raw_input_context(raw_inputs: list[dict[str, Any]]) -> RawInputContext:
                     "data": signature["semantics"],
                 }
 
+    page_role_set = {page["role"] for page in web_pages if page.get("role")}
+    page_roles = [role for role in PAGE_ROLE_ORDER if role in page_role_set]
     return RawInputContext(
         sources=sources,
         fallback_markdown=fallback_markdown[:MAX_FALLBACK_MARKDOWN_CHARS],
         visual_semantics=visual_semantics,
+        web_page_roles=page_roles,
+        extraction_quality_report=_build_extraction_quality_report(web_pages),
     )
+
+
+PAGE_ROLE_ORDER = (
+    "homepage",
+    "product",
+    "solutions",
+    "pricing",
+    "customers",
+    "case_studies",
+    "trust",
+    "docs",
+    "about",
+    "careers",
+    "blog",
+    "unknown",
+)
+CORE_PAGE_ROLES = ("homepage", "product", "solutions", "about")
+PROOF_PAGE_ROLES = ("customers", "case_studies")
+TRUST_PAGE_ROLES = ("trust",)
+
+
+def _infer_page_role(url: str, title: str = "", text: str = "") -> str:
+    parsed = urlparse(url if "://" in url else f"https://{url}" if url else "")
+    path = (parsed.path or "/").strip().lower()
+    combined = f"{url} {title} {text[:500]}".lower()
+
+    if path in {"", "/"}:
+        return "homepage"
+    if any(marker in path for marker in ("/pricing", "/plans", "/price")):
+        return "pricing"
+    if any(marker in path for marker in ("/customers", "/customer", "/clients", "/client")):
+        return "customers"
+    if any(marker in path for marker in ("/case-studies", "/case_studies", "/case-study", "/stories")):
+        return "case_studies"
+    if any(marker in path for marker in ("/security", "/trust", "/privacy", "/compliance")):
+        return "trust"
+    if any(marker in path for marker in ("/docs", "/documentation", "/developers", "/api")):
+        return "docs"
+    if any(marker in path for marker in ("/about", "/company", "/manifesto")):
+        return "about"
+    if any(marker in path for marker in ("/careers", "/jobs", "/hiring")):
+        return "careers"
+    if any(marker in path for marker in ("/blog", "/news", "/resources", "/articles")):
+        return "blog"
+    if any(marker in path for marker in ("/product", "/products", "/platform", "/features")):
+        return "product"
+    if any(marker in path for marker in ("/solutions", "/use-cases", "/use_cases", "/industries")):
+        return "solutions"
+    if any(marker in combined for marker in ("platform", "product", "features", "software", "api")):
+        return "product"
+    if any(marker in combined for marker in ("solutions", "use cases", "for teams", "for enterprise")):
+        return "solutions"
+    return "unknown"
+
+
+def _build_extraction_quality_report(web_pages: list[dict[str, Any]]) -> dict[str, Any]:
+    role_counts: dict[str, int] = {}
+    total_text_chars = 0
+    for page in web_pages:
+        role = str(page.get("role") or "unknown")
+        role_counts[role] = role_counts.get(role, 0) + 1
+        total_text_chars += len(str(page.get("text") or "").strip())
+
+    roles = [role for role in PAGE_ROLE_ORDER if role_counts.get(role)]
+    missing_core_roles = [role for role in CORE_PAGE_ROLES if not role_counts.get(role)]
+    missing_proof_roles = [role for role in PROOF_PAGE_ROLES if not role_counts.get(role)]
+
+    reasons: list[str] = []
+    if not web_pages:
+        reasons.append("no_owned_web_pages")
+    if not role_counts.get("homepage"):
+        reasons.append("missing_homepage")
+    if not (role_counts.get("product") or role_counts.get("solutions")):
+        reasons.append("missing_product_or_solution_page")
+    if not role_counts.get("about"):
+        reasons.append("missing_about_page")
+    if not any(role_counts.get(role) for role in PROOF_PAGE_ROLES):
+        reasons.append("missing_customer_proof_page")
+    if total_text_chars < 1200:
+        reasons.append("low_owned_text_volume")
+
+    if "no_owned_web_pages" in reasons:
+        status = "capture_gap"
+        likely_failure_cause = "no_owned_web_pages"
+    elif "missing_product_or_solution_page" in reasons and total_text_chars < 2500:
+        status = "weak"
+        likely_failure_cause = "missing_product_pages"
+    elif "missing_homepage" in reasons:
+        status = "weak"
+        likely_failure_cause = "missing_homepage"
+    elif len(missing_core_roles) <= 1 and total_text_chars >= 2500:
+        status = "strong"
+        likely_failure_cause = None
+    else:
+        status = "usable"
+        likely_failure_cause = "partial_owned_page_coverage" if reasons else None
+
+    return {
+        "status": status,
+        "reasons": reasons,
+        "owned_page_count": len(web_pages),
+        "owned_text_chars": total_text_chars,
+        "owned_page_roles": roles,
+        "owned_page_role_counts": {role: role_counts[role] for role in roles},
+        "missing_core_roles": missing_core_roles,
+        "missing_proof_roles": missing_proof_roles,
+        "homepage_detected": bool(role_counts.get("homepage")),
+        "product_page_detected": bool(role_counts.get("product")),
+        "solutions_page_detected": bool(role_counts.get("solutions")),
+        "about_page_detected": bool(role_counts.get("about")),
+        "customers_page_detected": bool(role_counts.get("customers")),
+        "case_studies_page_detected": bool(role_counts.get("case_studies")),
+        "trust_or_security_page_detected": any(role_counts.get(role) for role in TRUST_PAGE_ROLES),
+        "pricing_page_detected": bool(role_counts.get("pricing")),
+        "likely_failure_cause": likely_failure_cause,
+    }
 
 
 def _fallback_evidence_text(evidences: list[Any], fallback_markdown: str) -> str:

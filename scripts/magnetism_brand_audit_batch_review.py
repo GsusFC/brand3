@@ -34,7 +34,7 @@ KNOWN_NOISE_MARKERS = [
     "rg --files",
 ]
 
-QUALITY_BLOCKS = ("value_proposition", "mission", "vision")
+QUALITY_BLOCKS = tuple(TLDR_KEYS)
 
 
 EVIDENCE_LEAK_MARKERS = [
@@ -202,7 +202,6 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
     value_block = tldr.get("value_proposition") or {}
     mission_block = tldr.get("mission") or {}
     vision_block = tldr.get("vision") or {}
-
     detected_layers = [
         layer for layer, value in layers.items() if isinstance(value, dict) and value.get("detected")
     ]
@@ -215,12 +214,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
     visible_values = _visible_interpretation_values(tldr, layers, result)
     noise_hits = _known_noise_hits(visible_values)
     evidence_leaks = _evidence_leak_hits(
-        [
-            _block_answer(tldr.get("value_proposition") or {}),
-            _block_answer(tldr.get("magnetism") or {}),
-            _block_answer(tldr.get("mission") or {}),
-            _block_answer(tldr.get("vision") or {}),
-        ]
+        [_block_answer(tldr.get(block) or {}) for block in TLDR_KEYS]
     )
     missing_blocks = [block for block in TLDR_KEYS if block not in detected_blocks]
 
@@ -263,9 +257,19 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
     if evidence_leaks:
         review_flags.append("evidence_format_leak:" + ",".join(evidence_leaks))
 
-    value_quality = _block_quality("value_proposition", value_block, noise_hits, evidence_leaks)
-    mission_quality = _block_quality("mission", mission_block, noise_hits, evidence_leaks)
-    vision_quality = _block_quality("vision", vision_block, noise_hits, evidence_leaks)
+    block_quality = {
+        block: _block_quality(block, tldr.get(block) or {}, noise_hits, evidence_leaks)
+        for block in TLDR_KEYS
+    }
+    block_fields: dict[str, Any] = {}
+    for block in TLDR_KEYS:
+        tldr_block = tldr.get(block) or {}
+        quality = block_quality[block]
+        block_fields[block] = _block_answer(tldr_block)
+        block_fields[f"{block}_confidence"] = tldr_block.get("confidence")
+        block_fields[f"{block}_quality"] = quality["status"]
+        block_fields[f"{block}_quality_reasons"] = quality["reasons"]
+        block_fields[f"{block}_gaps"] = tldr_block.get("counter_evidence") or []
 
     return {
         "run_id": run.get("id"),
@@ -278,22 +282,8 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "detected_block_count": len(detected_blocks),
         "missing_blocks": missing_blocks,
         "needs_review_blocks": review_blocks,
-        "value_proposition": _block_answer(value_block),
-        "value_proposition_confidence": value_block.get("confidence"),
-        "value_proposition_quality": value_quality["status"],
-        "value_proposition_quality_reasons": value_quality["reasons"],
-        "value_proposition_gaps": value_block.get("counter_evidence") or [],
-        "magnetism": _block_answer(tldr.get("magnetism") or {}),
-        "mission": _block_answer(mission_block),
-        "mission_confidence": mission_block.get("confidence"),
-        "mission_quality": mission_quality["status"],
-        "mission_quality_reasons": mission_quality["reasons"],
-        "mission_gaps": mission_block.get("counter_evidence") or [],
-        "vision": _block_answer(vision_block),
-        "vision_confidence": vision_block.get("confidence"),
-        "vision_quality": vision_quality["status"],
-        "vision_quality_reasons": vision_quality["reasons"],
-        "vision_gaps": vision_block.get("counter_evidence") or [],
+        **block_fields,
+        "block_quality": block_quality,
         "known_noise_hits": noise_hits,
         "evidence_leak_hits": evidence_leaks,
         "review_flags": review_flags,
@@ -439,6 +429,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- VP quality: `{_compact_counts((summary.get('block_quality') or {}).get('value_proposition'))}`",
         f"- Mission quality: `{_compact_counts((summary.get('block_quality') or {}).get('mission'))}`",
         f"- Vision quality: `{_compact_counts((summary.get('block_quality') or {}).get('vision'))}`",
+        f"- All TLDR block quality: `{_compact_block_quality(summary.get('block_quality'))}`",
         "",
         "## Rows",
         "",
@@ -568,6 +559,17 @@ def _compact_counts(value: Any) -> str:
     if not isinstance(value, dict) or not value:
         return ""
     return ",".join(f"{key}:{count}" for key, count in value.items() if count)
+
+
+def _compact_block_quality(value: Any) -> str:
+    if not isinstance(value, dict) or not value:
+        return ""
+    parts = []
+    for block in QUALITY_BLOCKS:
+        counts = _compact_counts(value.get(block))
+        if counts:
+            parts.append(f"{block}={counts}")
+    return "; ".join(parts)
 
 
 if __name__ == "__main__":

@@ -176,6 +176,7 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "value_proposition_confidence": count_by("value_proposition_confidence"),
         "mission_confidence": count_by("mission_confidence"),
         "vision_confidence": count_by("vision_confidence"),
+        "canonical_evidence_quality": count_by("canonical_evidence_quality"),
         "block_quality": block_quality_counts,
         "strategic_group_totals": dict(sorted(group_totals.items())),
         "strategic_group_presence": dict(sorted(group_presence.items())),
@@ -220,6 +221,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
 
     review_flags: list[str] = []
     group_counts = packet.get("strategic_group_counts") or {}
+    evidence_quality = packet.get("evidence_quality") or {}
     missing_vp_kind: str | None = None
     if "value_proposition" in missing_blocks:
         if not group_counts:
@@ -282,6 +284,8 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "detected_block_count": len(detected_blocks),
         "missing_blocks": missing_blocks,
         "needs_review_blocks": review_blocks,
+        "canonical_evidence_quality": evidence_quality.get("status") or "missing",
+        "canonical_evidence_quality_reasons": evidence_quality.get("reasons") or [],
         **block_fields,
         "block_quality": block_quality,
         "known_noise_hits": noise_hits,
@@ -294,6 +298,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
             "feature_count": packet.get("feature_count"),
             "sources": packet.get("sources"),
             "data_quality": packet.get("data_quality"),
+            "evidence_quality": evidence_quality,
             "strategic_group_counts": packet.get("strategic_group_counts"),
             "strategic_warnings": packet.get("strategic_warnings"),
         },
@@ -423,6 +428,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- VP confidence: `{_compact_counts(summary.get('value_proposition_confidence'))}`",
         f"- Mission confidence: `{_compact_counts(summary.get('mission_confidence'))}`",
         f"- Vision confidence: `{_compact_counts(summary.get('vision_confidence'))}`",
+        f"- Canonical evidence quality: `{_compact_counts(summary.get('canonical_evidence_quality'))}`",
         f"- Group presence: `{_compact_counts(summary.get('strategic_group_presence'))}`",
         f"- Missing key groups: `{_compact_counts(summary.get('missing_group_presence'))}`",
         f"- Review flags: `{_compact_counts(summary.get('review_flag_counts'))}`",
@@ -433,17 +439,18 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Rows",
         "",
-        "| run | brand | audit | mag | coh | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
-        "|---:|---|---:|---:|---:|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| run | brand | audit | mag | coh | evidence quality | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
+        "|---:|---|---:|---:|---:|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(
-            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
+            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
                 run_id=row.get("run_id"),
                 brand=_md(row.get("brand")),
                 audit_score=_num(row.get("audit_score")),
                 magnetism_score=_num(row.get("magnetism_score")),
                 coherence_score=_num(row.get("coherence_score")),
+                evidence_quality=_md(_canonical_evidence_quality_cell(row)),
                 layers=_md(", ".join(row.get("detected_layers") or [])),
                 blocks=row.get("detected_block_count"),
                 flags=_md(", ".join(row.get("review_flags") or []) or "ok"),
@@ -531,6 +538,14 @@ def _balanced_quality_rows(rows: list[dict[str, Any]], block: str, limit: int = 
         if len(selected) >= limit:
             break
     return selected[:limit]
+
+
+def _canonical_evidence_quality_cell(row: dict[str, Any]) -> str:
+    quality = str(row.get("canonical_evidence_quality") or "")
+    reasons = row.get("canonical_evidence_quality_reasons") or []
+    if not reasons:
+        return quality
+    return quality + " (" + ", ".join(str(reason) for reason in reasons[:3]) + ")"
 
 
 def _quality_cell(row: dict[str, Any], block: str) -> str:

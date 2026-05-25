@@ -417,6 +417,9 @@ def _add_owned_raw_web_candidates(
             after = sum(len(values) for values in packet.groups.values())
             if after > before:
                 added += 1
+                packet.source_counts["owned_raw"] = (
+                    packet.source_counts.get("owned_raw", 0) + 1
+                )
             if added >= 24:
                 break
 

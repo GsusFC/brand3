@@ -363,6 +363,7 @@ class MagnetismExtractor:
                         result["tldr_brand3"],
                         result["magenta_circle"],
                         result["metrics"],
+                        evidence_packet_summary,
                     )
                     return result
             except Exception:
@@ -387,6 +388,7 @@ class MagnetismExtractor:
             result["tldr_brand3"],
             result["magenta_circle"],
             result["metrics"],
+            evidence_packet_summary,
         )
         return result
 
@@ -577,6 +579,7 @@ Return exactly this JSON shape:
             normalized["tldr_brand3"],
             normalized["magenta_circle"],
             normalized["metrics"],
+            normalized["evidence_packet_summary"],
         )
 
         self._add_legacy_fields(normalized)
@@ -617,6 +620,11 @@ Return exactly this JSON shape:
                 payload["tldr_brand3"],
                 layers,
                 payload.get("metrics") or {},
+                (
+                    payload.get("evidence_packet_summary")
+                    if isinstance(payload.get("evidence_packet_summary"), dict)
+                    else None
+                ),
             )
         return payload
 
@@ -1113,6 +1121,12 @@ Return exactly this JSON shape:
             "distilled_evidence_count": selected_count,
             "distillation_quality_score": quality_score,
             "value_policy": "Only TLDR-relevant evidence is surfaced in this view; raw extraction remains upstream.",
+            "proof_support": {
+                "status": "not_detected",
+                "count": 0,
+                "evidence": [],
+                "reading": "No public proof signals were available in this evidence packet.",
+            },
         }
 
     @staticmethod
@@ -1141,11 +1155,23 @@ Return exactly this JSON shape:
         }
         if strategic_packet is not None:
             strategic_summary = strategic_packet.to_summary()
+            proof_lines = strategic_packet.groups.get("proof_points", [])
             summary["strategic_group_counts"] = strategic_summary.get("group_counts")
             summary["strategic_source_counts"] = strategic_summary.get("source_counts")
             summary["strategic_rejected_count"] = strategic_summary.get("rejected_count")
             summary["strategic_warnings"] = strategic_summary.get("warnings")
             summary["value_policy"] = strategic_summary.get("value_policy") or summary["value_policy"]
+            summary["proof_support"] = {
+                "status": "observed" if proof_lines else "not_detected",
+                "count": len(proof_lines),
+                "evidence": [line.to_dict() for line in proof_lines[:3]],
+                "reading": (
+                    "Observed public proof signals can support credibility, but they do not define mission, "
+                    "personality, values, or brand idea."
+                    if proof_lines
+                    else "No public proof signals were available in the strategic evidence packet."
+                ),
+            }
         return summary
 
     @staticmethod
@@ -1153,6 +1179,7 @@ Return exactly this JSON shape:
         tldr: dict[str, Any],
         layers: dict[str, Any],
         metrics: dict[str, Any],
+        evidence_packet_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Derive concise reverse-engineering outputs inside TLDR instead of a parallel report."""
         def detected(block_name: str) -> bool:
@@ -1207,9 +1234,32 @@ Return exactly this JSON shape:
                     "Which missing signals should be supplied by internal materials before using this as strategy?"
                 )
 
+        proof_support = (
+            evidence_packet_summary.get("proof_support")
+            if isinstance(evidence_packet_summary, dict)
+            and isinstance(evidence_packet_summary.get("proof_support"), dict)
+            else None
+        )
+        if proof_support and proof_support.get("status") == "observed":
+            credibility_support = {
+                "status": "observed",
+                "count": int(proof_support.get("count") or 0),
+                "evidence": proof_support.get("evidence") or [],
+                "reading": proof_support.get("reading")
+                or "Observed public proof signals support credibility without defining the brand strategy.",
+            }
+        else:
+            credibility_support = {
+                "status": "not_detected",
+                "count": 0,
+                "evidence": [],
+                "reading": "No public proof signals were available for a separate credibility reading.",
+            }
+
         return {
             "strategic_tensions": tensions[:3],
             "validation_questions": questions[:3],
+            "credibility_support": credibility_support,
             "derived_from": "TLDR Brand3 blocks and Magenta signal coverage",
         }
 

@@ -198,13 +198,29 @@
 
 <hr class="rule-thin">
 
-{% if model.system_reading and (model.system_reading.strategic_tensions or model.system_reading.validation_questions) %}
+{% if model.system_reading and (model.system_reading.strategic_tensions or model.system_reading.validation_questions or (model.system_reading.credibility_support and model.system_reading.credibility_support.status == 'observed')) %}
 <section>
   <div class="section-head">
     <span class="label">TLDR System Reading</span>
     <span class="tag">// tensions and validation questions inside TLDR Brand3</span>
   </div>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;">
+    {% if model.system_reading.credibility_support and model.system_reading.credibility_support.status == 'observed' %}
+    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
+      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">Credibility support</h2>
+      <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0 0 10px;">proof_points={{ model.system_reading.credibility_support.count }} · {{ model.system_reading.credibility_support.reading }}</p>
+      {% if model.system_reading.credibility_support.evidence %}
+      <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
+        {% for proof in model.system_reading.credibility_support.evidence %}
+        <li style="margin-bottom: 8px;">
+          {{ proof.text }}
+          {% if proof.url %}<br><span class="dim">{{ proof.url }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </article>
+    {% endif %}
     {% if model.system_reading.strategic_tensions %}
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
       <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">Strategic tensions</h2>

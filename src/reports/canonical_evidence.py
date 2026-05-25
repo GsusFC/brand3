@@ -82,6 +82,7 @@ class CanonicalBrandEvidence:
             source_counts=strategic_summary.get("source_counts") or {},
             visual_semantics=self.visual_semantics,
         )
+        proof_lines = self.strategic_packet.groups.get("proof_points", [])
         return {
             "source": "brand_audit_snapshot",
             "source_label": "Canonical Brand Audit evidence",
@@ -101,6 +102,7 @@ class CanonicalBrandEvidence:
             "strategic_rejected_count": strategic_summary.get("rejected_count"),
             "strategic_rejected_reason_counts": strategic_summary.get("rejected_reason_counts"),
             "strategic_warnings": strategic_summary.get("warnings"),
+            "proof_support": _proof_support_summary(proof_lines),
             "value_policy": (
                 "Brand Audit owns collection; downstream tools only interpret "
                 "this shared evidence bundle."
@@ -122,6 +124,26 @@ class CanonicalBrandEvidence:
 
 KEY_STRATEGIC_GROUPS = ("product_offer", "audience", "outcome")
 OWNED_STRATEGIC_SOURCE_TYPES = ("owned_raw", "owned", "social")
+
+
+def _proof_support_summary(proof_lines: list[Any]) -> dict[str, Any]:
+    if not proof_lines:
+        return {
+            "status": "not_detected",
+            "count": 0,
+            "evidence": [],
+            "reading": "No public proof signals were available in the strategic evidence packet.",
+        }
+
+    return {
+        "status": "observed",
+        "count": len(proof_lines),
+        "evidence": [line.to_dict() for line in proof_lines[:3]],
+        "reading": (
+            "Observed public proof signals can support credibility, but they do not define "
+            "mission, personality, values, or brand idea."
+        ),
+    }
 
 
 def _evidence_quality_summary(

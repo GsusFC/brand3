@@ -184,7 +184,10 @@ def test_reverse_engineering_from_audit_snapshot_uses_canonical_evidence_bundle(
     result = extractor.extract_from_audit_snapshot(snapshot)
 
     assert result["source"] == "brand_audit_snapshot"
+    assert result["extraction_mode"] == "canonical_snapshot"
+    assert result["canonical_evidence_source"] == "brand_audit_snapshot"
     assert result["source_run_id"] == 501
+    assert "deprecation" not in result
     assert result["canonical_evidence_summary"]["source"] == "brand_audit_snapshot"
     assert result["canonical_evidence_summary"]["source_label"] == "Canonical Brand Audit evidence"
     assert result["layers"]["netspace"]["status"] == "detected"

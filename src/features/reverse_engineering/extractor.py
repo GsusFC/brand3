@@ -61,6 +61,8 @@ class ReverseEngineeringExtractor:
             brand_name=canonical_evidence.brand_name,
         )
         result["source"] = "brand_audit_snapshot"
+        result["extraction_mode"] = "canonical_snapshot"
+        result["canonical_evidence_source"] = "brand_audit_snapshot"
         result["source_run_id"] = canonical_evidence.run_id
         result["canonical_evidence_summary"] = canonical_evidence.to_summary()
         result["limitations"] = canonical_evidence.limitations

@@ -975,3 +975,34 @@ def test_strategic_evidence_packet_detects_observed_audience_terms_from_batch():
     assert "fabricantes" in audience_text
     assert "shopper intent" in audience_text
     assert "people and companies" in audience_text
+
+
+def test_strategic_evidence_packet_detects_observed_outcome_terms_from_batch():
+    snapshot = {
+        "run": {"id": 91, "brand_name": "Outcome Terms", "url": "https://outcome.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "At Raycast, we make developers more productive. "
+                        "Cron makes modern work more efficient and joyful. "
+                        "We design, develop and ship digital products that drive success for our clients. "
+                        "ChatGPT helps people solve problems and learn faster. "
+                        "Create with AI or code, deploy instantly and scale modern web applications."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+    outcome_text = "\n".join(line.text for line in packet.groups["outcome"])
+
+    assert "more productive" in outcome_text
+    assert "more efficient" in outcome_text
+    assert "drive success" in outcome_text
+    assert "solve problems" in outcome_text
+    assert "deploy instantly" in outcome_text

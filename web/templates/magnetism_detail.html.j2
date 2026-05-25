@@ -25,11 +25,27 @@
     {% if model.source_run_id %}
     <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ model.source_run_id }}</span></span>
     {% endif %}
+    <span class="inline-kv"><span class="k">extraction_mode</span>=<span class="v">{{ model.extraction_mode }}</span></span>
+    {% if model.canonical_evidence_source %}
+    <span class="inline-kv"><span class="k">canonical_source</span>=<span class="v">{{ model.canonical_evidence_source }}</span></span>
+    {% elif model.direct_source_provider %}
+    <span class="inline-kv"><span class="k">direct_source</span>=<span class="v">{{ model.direct_source_provider }}</span></span>
+    {% endif %}
   </div>
 
+  {% if model.deprecation and model.deprecation.status == 'deprecated' %}
+  <div style="border: 1px solid var(--warning); background: color-mix(in srgb, var(--warning) 8%, transparent); padding: 10px 12px; margin: 12px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
+    legacy_extraction: this scan did not use the canonical Brand Audit snapshot pipeline. replacement={{ model.deprecation.replacement }}
+  </div>
+  {% endif %}
+
   <div class="badge-line" style="margin-top: 10px;">
-    {% if model.source == 'brand_audit_snapshot' %}
+    {% if model.extraction_mode == 'canonical_snapshot' %}
+    <span class="badge badge-ready">Canonical Brand Audit Snapshot</span>
+    {% elif model.source == 'brand_audit_snapshot' %}
     <span class="badge badge-ready">Brand Audit Evidence</span>
+    {% elif model.extraction_mode == 'legacy_direct' %}
+    <span class="badge badge-error">Legacy Direct Extraction</span>
     {% elif model.fallback_used %}
     <span class="badge badge-error">Heuristic Fallback Engine</span>
     {% else %}

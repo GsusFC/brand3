@@ -206,6 +206,84 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("TLDR Brand3", response.text)
         self.assertIn("Earn every second", response.text)
         self.assertIn("evidence_basis:", response.text)
+        self.assertIn("extraction_mode", response.text)
+        self.assertIn("unknown", response.text)
+
+    def test_scan_detail_shows_canonical_extraction_mode(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(
+            {
+                "run": {
+                    "id": 303,
+                    "brand_name": "Canonical Detail",
+                    "url": "https://canonical-detail.test",
+                },
+                "features": [],
+                "raw_inputs": [],
+                "evidence_items": [
+                    {
+                        "source": "context",
+                        "url": "https://canonical-detail.test",
+                        "quote": (
+                            "Canonical Detail is a workflow platform for finance teams "
+                            "that helps reduce reconciliation time."
+                        ),
+                        "feature_name": "positioning",
+                        "dimension_name": "coherencia",
+                        "confidence": 0.9,
+                    }
+                ],
+            }
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        self._unlock_team_cookie()
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("extraction_mode", response.text)
+        self.assertIn("canonical_snapshot", response.text)
+        self.assertIn("canonical_source", response.text)
+        self.assertIn("brand_audit_snapshot", response.text)
+        self.assertIn("Canonical Brand Audit Snapshot", response.text)
+        self.assertNotIn("legacy_extraction", response.text)
+
+    def test_scan_detail_shows_legacy_direct_warning(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="We have a proprietary framework and pricing. API is ready.",
+            brand_name="Legacy Detail",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        self._unlock_team_cookie()
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("extraction_mode", response.text)
+        self.assertIn("legacy_direct", response.text)
+        self.assertIn("direct_source", response.text)
+        self.assertIn("manual_evidence", response.text)
+        self.assertIn("Legacy Direct Extraction", response.text)
+        self.assertIn("legacy_extraction", response.text)
+        self.assertIn("replacement=extract_from_audit_snapshot", response.text)
 
     def test_extractor_heuristic_fallback(self):
         extractor = MagnetismExtractor(llm=None)
@@ -732,7 +810,8 @@ class MagnetismScannerTests(unittest.TestCase):
         # Follow redirect or GET detail page
         r_detail = self.client.get(redirect_url)
         self.assertEqual(r_detail.status_code, 200)
-        self.assertIn("Heuristic Fallback Engine", r_detail.text)
+        self.assertIn("Legacy Direct Extraction", r_detail.text)
+        self.assertIn("legacy_extraction", r_detail.text)
         self.assertIn("Manual Upload Brand", r_detail.text)
         self.assertIn("TLDR Brand3", r_detail.text)
         self.assertIn("9 strategic blocks derived from 7 Magenta signals", r_detail.text)

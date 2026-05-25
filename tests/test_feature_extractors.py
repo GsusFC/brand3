@@ -1485,9 +1485,50 @@ Tabular foundation models for real-world data.
             self.assertIn("Our plans start at $10/mo", data.markdown_content)
             self.assertIn("Subpage: https://example.com/about", data.markdown_content)
             self.assertIn("We are a premium team", data.markdown_content)
+            self.assertEqual(
+                data.owned_fallback_urls,
+                ["https://example.com/pricing", "https://example.com/about"],
+            )
             
             data_no_crawl = collector.scrape("https://example.com", crawl_subpages=False)
             self.assertNotIn("Subpage: https://example.com/pricing", data_no_crawl.markdown_content)
+
+    def test_scrape_recursive_crawling_uses_html_links_when_markdown_has_none(self):
+        from unittest.mock import patch
+        collector = WebCollector()
+
+        main_content = "# Main Page\n\nPlain homepage copy without markdown links. " * 10
+        main_html = """
+        <html><body>
+          <a href="/product">Product</a>
+          <a href="/about">About</a>
+          <a href="/assets/logo.svg">Logo</a>
+        </body></html>
+        """
+        product_content = "# Product Page\n\nProduct platform evidence." * 10
+        about_content = "# About Page\n\nCompany story evidence." * 10
+
+        def mock_run_firecrawl(url):
+            if url == "https://example.com":
+                return {"content": main_content, "html": main_html}
+            if url == "https://example.com/product":
+                return {"content": product_content, "html": "<html></html>"}
+            if url == "https://example.com/about":
+                return {"content": about_content, "html": "<html></html>"}
+            return {"error": "not found"}
+
+        with patch.object(WebCollector, "_run_firecrawl", side_effect=mock_run_firecrawl):
+            data = collector.scrape("https://example.com", crawl_subpages=True)
+
+        self.assertIn("Subpage: https://example.com/product", data.markdown_content)
+        self.assertIn("Product platform evidence", data.markdown_content)
+        self.assertIn("Subpage: https://example.com/about", data.markdown_content)
+        self.assertNotIn("assets/logo.svg", data.markdown_content)
+        self.assertEqual(
+            data.owned_fallback_urls,
+            ["https://example.com/product", "https://example.com/about"],
+        )
+
 
     def test_dismiss_cookie_banners_playwright(self):
         from unittest.mock import MagicMock

@@ -1466,6 +1466,7 @@ Tabular foundation models for real-world data.
             "https://example.com/features/ai-video",
             "https://example.com/about-us",
             "https://example.com/customers",
+            "https://example.com/testimonials",
             "https://example.com/privacy-policy",
         ]
 
@@ -1476,11 +1477,28 @@ Tabular foundation models for real-world data.
             [
                 "https://example.com/features/dashboard",
                 "https://example.com/about-us",
-                "https://example.com/pricing",
                 "https://example.com/customers",
+                "https://example.com/testimonials",
             ],
         )
+        self.assertNotIn("https://example.com/pricing", selected)
         self.assertNotIn("https://example.com/privacy-policy", selected)
+
+    def test_select_internal_links_to_crawl_recognizes_spanish_proof_pages(self):
+        collector = WebCollector()
+        links = [
+            "https://example.com/es/precios",
+            "https://example.com/es/producto",
+            "https://example.com/es/nosotros",
+            "https://example.com/es/testimonios",
+            "https://example.com/es/resenas",
+        ]
+
+        selected = collector._select_internal_links_to_crawl(links, "https://example.com/es/")
+
+        self.assertIn("https://example.com/es/testimonios", selected)
+        self.assertIn("https://example.com/es/resenas", selected)
+        self.assertLessEqual(len(selected), 4)
 
 
     def test_scrape_recursive_crawling(self):

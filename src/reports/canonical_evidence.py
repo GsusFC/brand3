@@ -363,6 +363,8 @@ PAGE_ROLE_ORDER = (
     "pricing",
     "customers",
     "case_studies",
+    "reviews",
+    "testimonials",
     "trust",
     "docs",
     "about",
@@ -371,7 +373,7 @@ PAGE_ROLE_ORDER = (
     "unknown",
 )
 CORE_PAGE_ROLES = ("homepage", "product", "solutions", "about")
-PROOF_PAGE_ROLES = ("customers", "case_studies")
+PROOF_PAGE_ROLES = ("customers", "case_studies", "reviews", "testimonials")
 TRUST_PAGE_ROLES = ("trust",)
 
 
@@ -395,10 +397,14 @@ def _infer_page_role(url: str, title: str = "", text: str = "") -> str:
         return "homepage"
     if any(marker in path for marker in ("/pricing", "/plans", "/price")):
         return "pricing"
-    if any(marker in path for marker in ("/customers", "/customer", "/clients", "/client")):
+    if any(marker in path for marker in ("/customers", "/customer", "/clients", "/client", "/clientes", "/cliente")):
         return "customers"
-    if any(marker in path for marker in ("/case-studies", "/case_studies", "/case-study", "/stories")):
+    if any(marker in path for marker in ("/case-studies", "/case_studies", "/case-study", "/stories", "/success-stories", "/casos", "/caso-de-exito", "/casos-de-exito")):
         return "case_studies"
+    if any(marker in path for marker in ("/reviews", "/review", "/ratings", "/resenas", "/reseñas", "/opiniones")):
+        return "reviews"
+    if any(marker in path for marker in ("/testimonials", "/testimonial", "/testimonios", "/testimonio")):
+        return "testimonials"
     if any(marker in path for marker in ("/security", "/trust", "/privacy", "/compliance")):
         return "trust"
     if any(marker in path for marker in ("/docs", "/documentation", "/developers", "/api")):
@@ -477,6 +483,8 @@ def _build_extraction_quality_report(web_pages: list[dict[str, Any]]) -> dict[st
         "about_page_detected": bool(role_counts.get("about")),
         "customers_page_detected": bool(role_counts.get("customers")),
         "case_studies_page_detected": bool(role_counts.get("case_studies")),
+        "reviews_page_detected": bool(role_counts.get("reviews")),
+        "testimonials_page_detected": bool(role_counts.get("testimonials")),
         "trust_or_security_page_detected": any(role_counts.get(role) for role in TRUST_PAGE_ROLES),
         "pricing_page_detected": bool(role_counts.get("pricing")),
         "likely_failure_cause": likely_failure_cause,

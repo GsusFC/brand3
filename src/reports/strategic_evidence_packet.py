@@ -532,8 +532,14 @@ def _reject_reason(text: str) -> str | None:
         return "empty_or_too_short"
     if low.startswith(("http://", "https://")):
         return "url_only"
-    if text.strip().startswith("!["):
+    if text.strip().startswith("![") or _looks_like_image_or_logo_noise(text, low):
         return "image_alt_text_noise"
+    if _looks_like_legal_or_footer_noise(low):
+        return "legal_or_footer_noise"
+    if _looks_like_directory_profile_noise(low):
+        return "company_profile_metadata"
+    if _looks_like_customer_story_fragment(low):
+        return "customer_story_fragment_noise"
     if _looks_truncated(low):
         return "truncated_fragment_noise"
     if low in {"we make good shit"}:
@@ -592,6 +598,69 @@ def _reject_reason(text: str) -> str | None:
     if "magic quadrant" in low or "named a leader" in low:
         return "analyst_report_or_award_noise"
     return None
+
+
+def _looks_like_image_or_logo_noise(text: str, low: str) -> bool:
+    return (
+        "![" in text
+        or "_next/image" in low
+        or "copy svg" in low
+        or "download svg" in low
+        or "get the sentry logo" in low
+        or "customer logos" in low
+        or re.search(r"\b(?:logo|logos)\b", low) and "http" in low
+    )
+
+
+def _looks_like_legal_or_footer_noise(low: str) -> bool:
+    legal_hits = sum(
+        1
+        for marker in (
+            "privacy policy",
+            "terms of service",
+            "copyright",
+            "all rights reserved",
+            "legal entity",
+            "effective date",
+            "last updated",
+            "opt-out",
+        )
+        if marker in low
+    )
+    if legal_hits >= 1 and any(
+        marker in low for marker in ("policy", "terms", "copyright", "legal", "all rights")
+    ):
+        return True
+    nav_hits = sum(
+        1
+        for marker in ("company", "blog", "careers", "pricing", "docs", "support", "resources", "status")
+        if marker in low
+    )
+    return nav_hits >= 5 and ("copyright" in low or "privacy" in low or "terms" in low)
+
+
+def _looks_like_directory_profile_noise(low: str) -> bool:
+    return any(
+        marker in low
+        for marker in (
+            "company profile & funding",
+            "company profile, team, funding",
+            "pitchbook",
+            "crunchbase",
+            "tracxn",
+            "your browser was unable to load",
+            "leadership hire last 30 days",
+            "boeing is among the largest global aerospace manufacturers",
+        )
+    )
+
+
+def _looks_like_customer_story_fragment(low: str) -> bool:
+    return (
+        low.startswith("read story]")
+        or "read story](" in low
+        or "customers/" in low and ("![" in low or "**" in low or "_next/image" in low)
+    )
 
 
 def _looks_truncated(low: str) -> bool:

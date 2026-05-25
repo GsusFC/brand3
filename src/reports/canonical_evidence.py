@@ -375,12 +375,23 @@ PROOF_PAGE_ROLES = ("customers", "case_studies")
 TRUST_PAGE_ROLES = ("trust",)
 
 
+def _is_localized_homepage_path(path: str) -> bool:
+    cleaned = (path or "").strip("/").lower()
+    if not cleaned:
+        return False
+    parts = cleaned.split("/")
+    if len(parts) != 1:
+        return False
+    locale = parts[0]
+    return bool(re.fullmatch(r"[a-z]{2}(?:-[a-z]{2})?", locale))
+
+
 def _infer_page_role(url: str, title: str = "", text: str = "") -> str:
     parsed = urlparse(url if "://" in url else f"https://{url}" if url else "")
     path = (parsed.path or "/").strip().lower()
     combined = f"{url} {title} {text[:500]}".lower()
 
-    if path in {"", "/"}:
+    if path in {"", "/"} or _is_localized_homepage_path(path):
         return "homepage"
     if any(marker in path for marker in ("/pricing", "/plans", "/price")):
         return "pricing"

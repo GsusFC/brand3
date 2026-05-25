@@ -229,6 +229,28 @@ def test_canonical_brand_evidence_reports_owned_page_role_coverage():
     assert "missing_product_or_solution_page" in report["reasons"]
 
 
+def test_canonical_brand_evidence_reports_reviews_and_testimonials_as_proof_pages():
+    snapshot = {
+        "run": {"id": 909, "brand_name": "Proof", "url": "https://proof.test/es/"},
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"canonical_url": "https://proof.test/es/", "markdown_content": "Home copy " * 120}},
+            {"source": "web", "payload": {"canonical_url": "https://proof.test/es/testimonios", "markdown_content": "Testimonios de clientes " * 80}},
+            {"source": "web", "payload": {"canonical_url": "https://proof.test/es/resenas", "markdown_content": "Reseñas y opiniones " * 80}},
+        ],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    report = evidence.to_summary()["extraction_quality_report"]
+
+    assert report["owned_page_roles"] == ["homepage", "reviews", "testimonials"]
+    assert report["reviews_page_detected"] is True
+    assert report["testimonials_page_detected"] is True
+    assert "missing_customer_proof_page" not in report["reasons"]
+    assert report["missing_proof_roles"] == ["customers", "case_studies"]
+
+
 def test_canonical_brand_evidence_reads_embedded_owned_subpages_as_page_roles():
     snapshot = {
         "run": {

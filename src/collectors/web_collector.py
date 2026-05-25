@@ -27,7 +27,7 @@ _DESKTOP_USER_AGENT = (
 )
 
 _MAX_OWNED_SUBPAGES = 4
-_OWNED_PAGE_ROLE_PRIORITY = ("product", "solutions", "about", "pricing", "proof", "trust")
+_OWNED_PAGE_ROLE_PRIORITY = ("product", "solutions", "about", "customers", "case_studies", "reviews", "testimonials", "pricing", "trust")
 
 
 @dataclass
@@ -564,6 +564,19 @@ class WebCollector:
             "servicio": 5,
             "technology": 5,
             "tecnologia": 5,
+            "customer": 6,
+            "customers": 6,
+            "client": 6,
+            "clientes": 6,
+            "case-stud": 6,
+            "success-stor": 6,
+            "casos": 6,
+            "reviews": 6,
+            "resenas": 6,
+            "reseñas": 6,
+            "opiniones": 6,
+            "testimonial": 6,
+            "testimonio": 6,
         }
         
         low_value = {
@@ -638,8 +651,14 @@ class WebCollector:
         path = urlparse(link).path.lower()
         if any(marker in path for marker in ("pricing", "precios", "plans")):
             return "pricing"
-        if any(marker in path for marker in ("customer", "client", "case-stud", "stories")):
-            return "proof"
+        if any(marker in path for marker in ("customer", "client", "clientes")):
+            return "customers"
+        if any(marker in path for marker in ("case-stud", "success-stor", "stories", "casos")):
+            return "case_studies"
+        if any(marker in path for marker in ("reviews", "resenas", "reseñas", "opiniones")):
+            return "reviews"
+        if any(marker in path for marker in ("testimonial", "testimonio")):
+            return "testimonials"
         if any(marker in path for marker in ("security", "trust", "privacy", "compliance")):
             return "trust"
         if any(marker in path for marker in ("about", "company", "nosotros", "manifesto")):

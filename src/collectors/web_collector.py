@@ -26,6 +26,9 @@ _DESKTOP_USER_AGENT = (
     "Chrome/123.0.0.0 Safari/537.36"
 )
 
+_MAX_OWNED_SUBPAGES = 4
+_OWNED_PAGE_ROLE_PRIORITY = ("product", "solutions", "about", "pricing", "proof", "trust")
+
 
 @dataclass
 class WebData:
@@ -607,6 +610,47 @@ class WebCollector:
         scored_links.sort(key=lambda x: x[0], reverse=True)
         return [link for _, link in scored_links]
 
+    def _select_internal_links_to_crawl(self, links: list[str], base_url: str) -> list[str]:
+        scored_links = self._score_internal_links(links, base_url)
+        selected: list[str] = []
+
+        for role in _OWNED_PAGE_ROLE_PRIORITY:
+            for link in scored_links:
+                if link in selected:
+                    continue
+                if self._link_role(link) == role:
+                    selected.append(link)
+                    break
+            if len(selected) >= _MAX_OWNED_SUBPAGES:
+                return selected
+
+        for link in scored_links:
+            if link in selected:
+                continue
+            selected.append(link)
+            if len(selected) >= _MAX_OWNED_SUBPAGES:
+                break
+
+        return selected
+
+    @staticmethod
+    def _link_role(link: str) -> str:
+        path = urlparse(link).path.lower()
+        if any(marker in path for marker in ("pricing", "precios", "plans")):
+            return "pricing"
+        if any(marker in path for marker in ("customer", "client", "case-stud", "stories")):
+            return "proof"
+        if any(marker in path for marker in ("security", "trust", "privacy", "compliance")):
+            return "trust"
+        if any(marker in path for marker in ("about", "company", "nosotros", "manifesto")):
+            return "about"
+        if any(marker in path for marker in ("solution", "solucion", "use-case", "industry")):
+            return "solutions"
+        if any(marker in path for marker in ("feature", "product", "producto", "platform", "plataforma")):
+            return "product"
+        return "other"
+
+
     def scrape(self, url: str, crawl_subpages: bool = True) -> WebData:
         """Scrape a website and return structured data."""
         data = WebData(url=url)
@@ -675,8 +719,7 @@ class WebCollector:
                 html=data.html,
                 links=data.links,
             )
-            sorted_subpages = self._score_internal_links(internal_links, url)
-            subpages_to_crawl = sorted_subpages[:2]
+            subpages_to_crawl = self._select_internal_links_to_crawl(internal_links, url)
             
             subpage_contents = []
             owned_fallback_urls = []

@@ -946,3 +946,32 @@ def test_strategic_evidence_packet_rejects_broken_customer_story_fragments():
 
     assert not packet.groups.get("proof_points")
     assert any(item["reason"] == "customer_story_fragment_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_detects_observed_audience_terms_from_batch():
+    snapshot = {
+        "run": {"id": 90, "brand_name": "Audience Terms", "url": "https://audience.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": (
+                        "The email platform made for creators. "
+                        "Eaship ayuda a fabricantes y distribuidores a reducir costes. "
+                        "Vexture interprets shopper intent for ecommerce brands. "
+                        "Research people and companies to build relationships."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+    audience_text = "\n".join(line.text for line in packet.groups["audience"])
+
+    assert "creators" in audience_text
+    assert "fabricantes" in audience_text
+    assert "shopper intent" in audience_text
+    assert "people and companies" in audience_text

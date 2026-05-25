@@ -169,6 +169,36 @@ def test_canonical_brand_evidence_quality_marks_empty_packet_insufficient(monkey
     assert "no_strategic_groups" in quality["reasons"]
 
 
+def test_canonical_brand_evidence_treats_localized_root_as_homepage():
+    snapshot = {
+        "run": {"id": 908, "brand_name": "Localized", "url": "https://localized.test/es/"},
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "url": "https://localized.test/es/",
+                    "markdown_content": "# Localized homepage\nPrimary localized page evidence. " * 80,
+                    "owned_fallback_urls": [
+                        "https://localized.test/es/features/product-video",
+                        "https://localized.test/es/pricing",
+                    ],
+                },
+            }
+        ],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    report = evidence.to_summary()["extraction_quality_report"]
+
+    assert report["homepage_detected"] is True
+    assert report["product_page_detected"] is True
+    assert report["pricing_page_detected"] is True
+    assert "homepage" not in report["missing_core_roles"]
+    assert report["owned_page_roles"] == ["homepage", "product", "pricing"]
+
+
 def test_canonical_brand_evidence_reports_owned_page_role_coverage():
     snapshot = {
         "run": {

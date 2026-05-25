@@ -152,7 +152,9 @@ def test_strategic_evidence_packet_uses_owned_raw_web_for_mission_language():
 
     assert packet.groups["mission_language"][0].source_type == "owned_raw"
     assert "Our mission is to help finance teams" in packet.groups["mission_language"][0].text
-    assert packet.to_summary()["source_counts"]["owned_raw"] == 1
+    summary = packet.to_summary()
+    assert summary["source_counts"]["owned_raw"] == 1
+    assert isinstance(summary["rejected_reason_counts"], dict)
 
 
 def test_strategic_evidence_packet_uses_owned_raw_web_for_vision_language():

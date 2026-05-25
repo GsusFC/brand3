@@ -10,6 +10,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass, field
 from typing import Any
+from urllib.parse import urlparse
 
 from src.reports.derivation import Evidence, collect_evidences
 
@@ -213,7 +214,28 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
     ),
     "proof_points": (
         "customers",
+        "customer",
+        "clients",
+        "client",
+        "clientes",
+        "cliente",
         "trusted by",
+        "con la confianza",
+        "case study",
+        "case studies",
+        "customer story",
+        "success story",
+        "caso de éxito",
+        "casos de éxito",
+        "testimonial",
+        "testimonials",
+        "testimonio",
+        "testimonios",
+        "reviews",
+        "review",
+        "reseñas",
+        "resenas",
+        "opiniones",
         "millions",
         "global",
         "leader",
@@ -233,6 +255,9 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
 
 OWNED_SOURCE_TYPES = {"owned", "social", "owned_raw"}
 CONTEXT_SOURCE_TYPES = {"encyclopedic", "news", "review", "other", "changelog"}
+_EMBEDDED_SUBPAGE_RE = re.compile(r"(?:^|\n)## Subpage:\s*(?P<url>\S+)\s*\n", re.IGNORECASE)
+
+
 NOISE_MARKERS = (
     "; evidence=",
     "source_type=",
@@ -388,7 +413,7 @@ def _rank_packet_groups(packet: StrategicEvidencePacket) -> None:
         packet.groups[group] = sorted(lines, key=lambda line: _line_priority(line, group))
 
 
-def _line_priority(line: StrategicEvidenceLine, group: str) -> tuple[int, int, int, int, int]:
+def _line_priority(line: StrategicEvidenceLine, group: str) -> tuple[int, int, int, int, int, int]:
     low = line.text.lower()
     source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(line.source_type, 3)
     feature_rank = 2 if line.feature_name == "search_visibility" else 0
@@ -400,8 +425,11 @@ def _line_priority(line: StrategicEvidenceLine, group: str) -> tuple[int, int, i
         noise_rank += 3
     if _looks_like_title_or_directory(low):
         noise_rank += 2
+    proof_page_rank = 0
+    if group == "proof_points":
+        proof_page_rank = 0 if _is_proof_page_url(line.url) else 1
     useful_length = min(len(line.text), 260)
-    return (source_rank, noise_rank, feature_rank, context_rank, -useful_length)
+    return (source_rank, proof_page_rank, noise_rank, feature_rank, context_rank, -useful_length)
 
 
 def _looks_like_promotion_or_event(low: str) -> bool:
@@ -430,7 +458,33 @@ def _looks_like_short_label(low: str) -> bool:
         return False
     if re.search(r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces)\b", low):
         return False
+    if low in {
+        "case studies",
+        "customer stories",
+        "testimonials",
+        "reviews",
+        "estudios de caso",
+        "casos de éxito",
+        "testimonios",
+        "reseñas",
+        "opiniones",
+    }:
+        return True
     return any(marker in low for marker in (" + ", "products", "services", "platform", "infrastructure", "software delivery", "financial services"))
+
+
+
+def _looks_like_bare_page_label(low: str) -> bool:
+    if len(low) > 40:
+        return False
+    if any(mark in low for mark in (".", "?", "!", ":", "|")):
+        return False
+    if any(char.isdigit() for char in low):
+        return False
+    return not re.search(
+        r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces|usó|logró|alcanzo|alcanzó|genera|mejora|reduce|optimiza|escala|scaled)\b",
+        low,
+    )
 
 
 def _looks_like_title_or_directory(low: str) -> bool:
@@ -453,32 +507,69 @@ def _add_owned_raw_web_candidates(
         if raw_input.get("source") != "web":
             continue
         payload = raw_input.get("payload") or {}
-        text = str(payload.get("markdown_content") or payload.get("content") or "")
-        if not text:
+        markdown = str(payload.get("markdown_content") or payload.get("content") or "")
+        if not markdown:
             continue
-        source_url = str(payload.get("canonical_url") or run_url)
-        added = 0
-        for line in _raw_candidate_lines(text):
-            before = sum(len(values) for values in packet.groups.values())
-            _add_candidate_line(
-                packet,
-                seen,
-                text=line,
-                source_type="owned_raw",
-                source_domain=None,
-                url=source_url,
-                feature_name="raw_web",
-                dimension=None,
-            )
-            after = sum(len(values) for values in packet.groups.values())
-            if after > before:
-                added += 1
-                packet.source_counts["owned_raw"] = (
-                    packet.source_counts.get("owned_raw", 0) + 1
-                )
-            if added >= 24:
-                break
+        source_url = str(
+            payload.get("canonical_url")
+            or payload.get("url")
+            or payload.get("page_url")
+            or run_url
+        )
+        pages = [(source_url, _primary_web_page_text(markdown))]
+        pages.extend(_embedded_web_subpage_texts(markdown))
+        for page_url, page_text in pages:
+            if page_text:
+                _add_owned_raw_page_candidates(packet, seen, page_text, page_url)
 
+
+def _add_owned_raw_page_candidates(
+    packet: StrategicEvidencePacket,
+    seen: set[str],
+    text: str,
+    source_url: str,
+) -> None:
+    added = 0
+    max_lines = 32 if _is_proof_page_url(source_url) else 24
+    for line in _raw_candidate_lines(text):
+        before = sum(len(values) for values in packet.groups.values())
+        _add_candidate_line(
+            packet,
+            seen,
+            text=line,
+            source_type="owned_raw",
+            source_domain=None,
+            url=source_url,
+            feature_name="raw_web",
+            dimension=None,
+        )
+        after = sum(len(values) for values in packet.groups.values())
+        if after > before:
+            added += 1
+            packet.source_counts["owned_raw"] = packet.source_counts.get("owned_raw", 0) + 1
+        if added >= max_lines:
+            break
+
+
+
+def _primary_web_page_text(markdown: str) -> str:
+    match = _EMBEDDED_SUBPAGE_RE.search(markdown or "")
+    if not match:
+        return markdown
+    return markdown[: match.start()].strip(" -\n")
+
+
+def _embedded_web_subpage_texts(markdown: str) -> list[tuple[str, str]]:
+    matches = list(_EMBEDDED_SUBPAGE_RE.finditer(markdown or ""))
+    pages: list[tuple[str, str]] = []
+    for index, match in enumerate(matches):
+        page_url = match.group("url").strip()
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(markdown)
+        text = (markdown[start:end] or "").strip(" -\n")
+        if page_url or text:
+            pages.append((page_url, text))
+    return pages
 
 def _add_candidate_line(
     packet: StrategicEvidencePacket,
@@ -502,7 +593,7 @@ def _add_candidate_line(
         return
     seen.add(key)
 
-    groups = _groups_for(cleaned, source_type)
+    groups = _groups_for(cleaned, source_type, url=url)
     if not groups:
         packet.rejected.append({"text": cleaned[:220], "reason": "low_strategic_signal"})
         return
@@ -542,18 +633,64 @@ def _raw_candidate_lines(text: str) -> list[str]:
     return candidates[:160]
 
 
-def _groups_for(text: str, source_type: str) -> list[str]:
+def _groups_for(text: str, source_type: str, url: str | None = None) -> list[str]:
     low = text.lower()
+    if _looks_like_testimonial_quote(low):
+        return ["proof_points"]
+
     groups = [
         group
         for group, keywords in GROUP_KEYWORDS.items()
         if any(keyword in low for keyword in keywords)
     ]
+    if (
+        source_type in OWNED_SOURCE_TYPES
+        and _is_proof_page_url(url)
+        and not _looks_like_bare_page_label(low)
+    ):
+        groups.append("proof_points")
     if source_type not in OWNED_SOURCE_TYPES and groups:
         groups = [group for group in groups if group in {"proof_points", "third_party_context"}]
         if "third_party_context" not in groups:
             groups.append("third_party_context")
-    return groups
+    return list(dict.fromkeys(groups))
+
+
+def _is_proof_page_url(url: str | None) -> bool:
+    if not url:
+        return False
+    try:
+        path = urlparse(url).path.lower()
+    except ValueError:
+        return False
+    return any(
+        marker in path
+        for marker in (
+            "/customers",
+            "/customer",
+            "/clients",
+            "/client",
+            "/clientes",
+            "/cliente",
+            "/case-study",
+            "/case-studies",
+            "/success-stories",
+            "/stories",
+            "/casos",
+            "/caso-de-exito",
+            "/casos-de-exito",
+            "/reviews",
+            "/review",
+            "/ratings",
+            "/resenas",
+            "/reseñas",
+            "/opiniones",
+            "/testimonials",
+            "/testimonial",
+            "/testimonios",
+            "/testimonio",
+        )
+    )
 
 
 def _clean_quote(value: str) -> str:
@@ -621,8 +758,8 @@ def _reject_reason(text: str) -> str | None:
         return "navigation_or_section_heading_noise"
     if "differentiates from" in low and any(marker in low for marker in ("logo", "mark", "blue", "green", "visual", "sterility", "wellness")):
         return "visual_comparison_noise"
-    if _looks_like_testimonial_quote(low):
-        return "testimonial_quote_noise"
+    # Testimonial quotes are valid proof evidence, while group selection keeps
+    # them out of mission/value-proposition groups.
     if (
         "api dashboard try" in low
         or "try api for free" in low

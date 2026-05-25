@@ -972,6 +972,32 @@ def test_strategic_evidence_packet_groups_owned_case_study_page_as_proof_points(
     assert "DeNA scaled ad creative production" in packet.groups["proof_points"][0].text
 
 
+def test_strategic_evidence_packet_keeps_case_study_creative_language_out_of_personality():
+    snapshot = {
+        "run": {"id": 152, "brand_name": "Creatify", "url": "https://creatify.ai/es/"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://creatify.ai/es/case-study/dena",
+                    "markdown_content": (
+                        "DeNA usó Creatify Studio para escalar las pruebas creativas. "
+                        "La mayoría de los anuncios generados por IA superaron el benchmark."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert packet.groups["proof_points"]
+    assert not packet.groups.get("personality_tone")
+    assert not packet.groups.get("values_language")
+
+
 def test_strategic_evidence_packet_detects_observed_audience_terms_from_batch():
     snapshot = {
         "run": {"id": 90, "brand_name": "Audience Terms", "url": "https://audience.test"},

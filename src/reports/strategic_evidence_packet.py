@@ -638,17 +638,14 @@ def _groups_for(text: str, source_type: str, url: str | None = None) -> list[str
     if _looks_like_testimonial_quote(low):
         return ["proof_points"]
 
+    if source_type in OWNED_SOURCE_TYPES and _is_proof_page_url(url):
+        return [] if _looks_like_bare_page_label(low) else ["proof_points"]
+
     groups = [
         group
         for group, keywords in GROUP_KEYWORDS.items()
         if any(keyword in low for keyword in keywords)
     ]
-    if (
-        source_type in OWNED_SOURCE_TYPES
-        and _is_proof_page_url(url)
-        and not _looks_like_bare_page_label(low)
-    ):
-        groups.append("proof_points")
     if source_type not in OWNED_SOURCE_TYPES and groups:
         groups = [group for group in groups if group in {"proof_points", "third_party_context"}]
         if "third_party_context" not in groups:

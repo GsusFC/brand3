@@ -103,6 +103,18 @@ TLDR_TO_LAYER = {
     block: layer for layer, blocks in LAYER_TO_TLDR.items() for block in blocks
 }
 
+CANONICAL_EXTRACTION_MODE = "canonical_snapshot"
+LEGACY_DIRECT_EXTRACTION_MODE = "legacy_direct"
+LEGACY_DIRECT_SOURCE = "direct_magnetism_legacy"
+LEGACY_DIRECT_DEPRECATION = {
+    "status": "deprecated",
+    "replacement": "extract_from_audit_snapshot",
+    "reason": (
+        "Brand Audit owns acquisition; Magnetism should interpret "
+        "CanonicalBrandEvidence from a persisted snapshot."
+    ),
+}
+
 TLDR_BLOCK_CONTRACT = {
     "core_purpose": {
         "question": "Why does this brand appear to exist beyond the product?",
@@ -230,7 +242,11 @@ class MagnetismExtractor:
         manual_text: str | None = None,
         brand_name: str | None = None,
     ) -> dict[str, Any]:
-        """Scrape available inputs, extract layer signals, and return a stable payload."""
+        """Legacy direct acquisition path for ad-hoc/debug Magnetism scans.
+
+        Production Brand3 lenses should use extract_from_audit_snapshot() so Brand
+        Audit remains the single canonical acquisition pipeline.
+        """
         url_str = (url or "").strip()
         manual_str = (manual_text or "").strip()
         brand_name = brand_name or self._infer_brand_name(url_str)
@@ -295,11 +311,12 @@ class MagnetismExtractor:
                     if result:
                         if content_distillation_summary:
                             result["content_distillation_summary"] = content_distillation_summary
+                        self._mark_legacy_direct_result(result, source_provider)
                         return result
                 except Exception:
                     pass
 
-            return self._extract_via_heuristic(
+            result = self._extract_via_heuristic(
                 web_markdown,
                 visual_semantics,
                 brand_name,
@@ -307,6 +324,8 @@ class MagnetismExtractor:
                 web_collector_error,
                 content_distillation_summary,
             )
+            self._mark_legacy_direct_result(result, source_provider)
+            return result
         finally:
             if temp_screenshot_path:
                 try:
@@ -335,6 +354,8 @@ class MagnetismExtractor:
                 if result:
                     result["source_run_id"] = canonical_evidence.run_id
                     result["source"] = "brand_audit_snapshot"
+                    result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
+                    result["canonical_evidence_source"] = "brand_audit_snapshot"
                     result["limitations"].extend(canonical_evidence.limitations)
                     result["evidence_packet_summary"] = evidence_packet_summary
                     result["strategic_evidence_packet"] = strategic_packet.to_dict()
@@ -357,6 +378,8 @@ class MagnetismExtractor:
         )
         result["source_run_id"] = canonical_evidence.run_id
         result["source"] = "brand_audit_snapshot"
+        result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
+        result["canonical_evidence_source"] = "brand_audit_snapshot"
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
         result["strategic_evidence_packet"] = strategic_packet.to_dict()
@@ -366,6 +389,14 @@ class MagnetismExtractor:
             result["metrics"],
         )
         return result
+
+    @staticmethod
+    def _mark_legacy_direct_result(result: dict[str, Any], source_provider: str) -> None:
+        result["source"] = LEGACY_DIRECT_SOURCE
+        result["extraction_mode"] = LEGACY_DIRECT_EXTRACTION_MODE
+        result["direct_source_provider"] = source_provider
+        result["canonical_evidence_source"] = None
+        result["deprecation"] = dict(LEGACY_DIRECT_DEPRECATION)
 
     def _extract_via_llm(
         self,

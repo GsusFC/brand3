@@ -218,6 +218,11 @@ class MagnetismScannerTests(unittest.TestCase):
         
         self.assertEqual(result["brand_name"], "Heuristic Manual")
         self.assertEqual(result["fallback_used"], True)
+        self.assertEqual(result["source"], "direct_magnetism_legacy")
+        self.assertEqual(result["extraction_mode"], "legacy_direct")
+        self.assertEqual(result["direct_source_provider"], "manual_evidence")
+        self.assertIsNone(result["canonical_evidence_source"])
+        self.assertEqual(result["deprecation"]["replacement"], "extract_from_audit_snapshot")
         self.assertEqual(result["magenta_circle"]["mindspace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["netspace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["tactispace"]["status"], "not_detected")
@@ -258,6 +263,8 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(result["brand_name"], "Llm Brand")
         self.assertEqual(result["fallback_used"], False)
+        self.assertEqual(result["source"], "direct_magnetism_legacy")
+        self.assertEqual(result["extraction_mode"], "legacy_direct")
         self.assertIn("metrics", result)
         self.assertIn("tldr_brand3", result)
         self.assertGreater(result["magnetism_score"], 0)
@@ -297,6 +304,9 @@ class MagnetismScannerTests(unittest.TestCase):
         result = extractor.extract_from_audit_snapshot(snapshot)
 
         self.assertEqual(result["source"], "brand_audit_snapshot")
+        self.assertEqual(result["extraction_mode"], "canonical_snapshot")
+        self.assertEqual(result["canonical_evidence_source"], "brand_audit_snapshot")
+        self.assertNotIn("deprecation", result)
         self.assertEqual(result["source_run_id"], 123)
         self.assertEqual(result["brand_name"], "Audit Brand")
         self.assertEqual(result["evidence_packet_summary"]["source"], "brand_audit_snapshot")

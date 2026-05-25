@@ -263,6 +263,12 @@ def test_build_row_includes_block_quality_fields() -> None:
                 "strategic_source_counts": {"owned_raw": 1},
                 "strategic_rejected_count": 0,
                 "strategic_rejected_reason_counts": {},
+                "extraction_quality_report": {
+                    "status": "strong",
+                    "owned_page_roles": ["homepage", "product"],
+                    "missing_core_roles": ["about"],
+                    "likely_failure_cause": "partial_owned_page_coverage",
+                },
             },
             "magenta_circle": {"netspace": {"detected": True}},
             "tldr_brand3": {
@@ -275,7 +281,11 @@ def test_build_row_includes_block_quality_fields() -> None:
 
     assert row["canonical_evidence_quality"] == "strong"
     assert row["extraction_diagnosis"] == "strong"
+    assert row["owned_page_roles"] == ["homepage", "product"]
+    assert row["missing_core_page_roles"] == ["about"]
+    assert row["extraction_failure_cause"] == "partial_owned_page_coverage"
     assert row["evidence_packet"]["evidence_quality"] == {"status": "strong", "reasons": []}
+    assert row["evidence_packet"]["extraction_quality_report"]["status"] == "strong"
     assert row["evidence_packet"]["extraction_diagnosis"]["owned_source_count"] == 1
     assert row["value_proposition_quality"] == "strong"
     assert row["mission_quality"] == "missing"
@@ -286,13 +296,42 @@ def test_build_row_includes_block_quality_fields() -> None:
 def test_summary_counts_block_quality() -> None:
     summary = _build_summary(
         [
-            {"canonical_evidence_quality": "strong", "extraction_diagnosis": "strong", "value_proposition_quality": "strong", "mission_quality": "missing", "vision_quality": "usable"},
-            {"canonical_evidence_quality": "weak", "extraction_diagnosis": "brand_sparse", "value_proposition_quality": "weak", "mission_quality": "missing", "vision_quality": "missing"},
+            {
+                "canonical_evidence_quality": "strong",
+                "extraction_diagnosis": "strong",
+                "value_proposition_quality": "strong",
+                "mission_quality": "missing",
+                "vision_quality": "usable",
+                "evidence_packet": {
+                    "extraction_quality_report": {
+                        "owned_page_roles": ["homepage", "product"],
+                        "missing_core_roles": ["about"],
+                        "likely_failure_cause": "partial_owned_page_coverage",
+                    }
+                },
+            },
+            {
+                "canonical_evidence_quality": "weak",
+                "extraction_diagnosis": "brand_sparse",
+                "value_proposition_quality": "weak",
+                "mission_quality": "missing",
+                "vision_quality": "missing",
+                "evidence_packet": {
+                    "extraction_quality_report": {
+                        "owned_page_roles": ["homepage"],
+                        "missing_core_roles": ["product", "solutions", "about"],
+                        "likely_failure_cause": "missing_product_pages",
+                    }
+                },
+            },
         ]
     )
 
     assert summary["canonical_evidence_quality"] == {"strong": 1, "weak": 1}
     assert summary["extraction_diagnosis"] == {"strong": 1, "brand_sparse": 1}
+    assert summary["owned_page_role_presence"] == {"homepage": 2, "product": 1}
+    assert summary["missing_core_page_roles"] == {"about": 2, "product": 1, "solutions": 1}
+    assert summary["extraction_failure_causes"] == {"missing_product_pages": 1, "partial_owned_page_coverage": 1}
     assert summary["block_quality"]["value_proposition"] == {"strong": 1, "weak": 1}
     assert summary["block_quality"]["mission"] == {"missing": 2}
     assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
@@ -309,6 +348,9 @@ def test_render_markdown_includes_block_quality_section() -> None:
             "vision_confidence": {"medium": 1},
             "canonical_evidence_quality": {"weak": 1},
             "extraction_diagnosis": {"third_party_heavy": 1},
+            "owned_page_role_presence": {"homepage": 1, "pricing": 1},
+            "missing_core_page_roles": {"product": 1, "solutions": 1, "about": 1},
+            "extraction_failure_causes": {"missing_product_pages": 1},
             "block_quality": {
                 "value_proposition": {"strong": 1},
                 "mission": {"missing": 1},
@@ -326,6 +368,9 @@ def test_render_markdown_includes_block_quality_section() -> None:
                 "canonical_evidence_quality_reasons": ["no_audience"],
                 "extraction_diagnosis": "third_party_heavy",
                 "extraction_diagnosis_reasons": ["third_party_heavy", "missing_audience"],
+                "owned_page_roles": ["homepage", "pricing"],
+                "missing_core_page_roles": ["product", "solutions", "about"],
+                "extraction_failure_cause": "missing_product_pages",
                 "value_proposition": "A clear offer.",
                 "value_proposition_confidence": "high",
                 "value_proposition_quality": "strong",
@@ -350,6 +395,11 @@ def test_render_markdown_includes_block_quality_section() -> None:
 
     assert "Canonical evidence quality" in markdown
     assert "Extraction diagnosis" in markdown
+    assert "Owned page roles" in markdown
+    assert "Missing core page roles" in markdown
+    assert "Extraction failure causes" in markdown
+    assert "homepage, pricing" in markdown
+    assert "product, solutions, about" in markdown
     assert "weak (no_audience)" in markdown
     assert "third_party_heavy (third_party_heavy, missing_audience)" in markdown
     assert "VP quality" in markdown

@@ -25,6 +25,20 @@ def test_canonical_brand_evidence_groups_snapshot_for_downstream_lenses():
                 },
             },
             {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://canonical.test/product",
+                    "markdown_content": "Product platform details for finance teams." * 80,
+                },
+            },
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://canonical.test/about",
+                    "markdown_content": "About Canonical Brand and its operating model." * 80,
+                },
+            },
+            {
                 "source": "visual_signature",
                 "payload": {"semantics": {"aesthetic_style": "minimalist brutalism"}},
             },
@@ -54,8 +68,13 @@ def test_canonical_brand_evidence_groups_snapshot_for_downstream_lenses():
     summary = evidence.to_summary()
     assert summary["source"] == "brand_audit_snapshot"
     assert summary["source_label"] == "Canonical Brand Audit evidence"
-    assert summary["raw_input_count"] == 2
+    assert summary["raw_input_count"] == 4
     assert summary["evidence_item_count"] == 1
+    assert summary["web_page_roles"] == ["homepage", "product", "about"]
+    assert summary["extraction_quality_report"]["status"] == "strong"
+    assert summary["extraction_quality_report"]["homepage_detected"] is True
+    assert summary["extraction_quality_report"]["product_page_detected"] is True
+    assert summary["extraction_quality_report"]["about_page_detected"] is True
     assert summary["data_quality"] == "partial"
     assert summary["strategic_group_counts"]["product_offer"] >= 1
     assert isinstance(summary["strategic_rejected_reason_counts"], dict)
@@ -148,3 +167,49 @@ def test_canonical_brand_evidence_quality_marks_empty_packet_insufficient(monkey
     assert "no_interpreter_text" in quality["reasons"]
     assert "no_raw_inputs" in quality["reasons"]
     assert "no_strategic_groups" in quality["reasons"]
+
+
+def test_canonical_brand_evidence_reports_owned_page_role_coverage():
+    snapshot = {
+        "run": {
+            "id": 905,
+            "brand_name": "Role Coverage",
+            "url": "https://roles.test",
+        },
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [
+            {"source": "web", "payload": {"canonical_url": "https://roles.test/", "markdown_content": "Home copy " * 120}},
+            {"source": "web", "payload": {"canonical_url": "https://roles.test/pricing", "markdown_content": "Pricing copy " * 80}},
+            {"source": "web", "payload": {"canonical_url": "https://roles.test/customers", "markdown_content": "Customer proof " * 80}},
+            {"source": "web", "payload": {"canonical_url": "https://roles.test/security", "markdown_content": "Security and trust " * 80}},
+        ],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    report = evidence.to_summary()["extraction_quality_report"]
+
+    assert report["owned_page_count"] == 4
+    assert report["owned_page_roles"] == ["homepage", "pricing", "customers", "trust"]
+    assert report["homepage_detected"] is True
+    assert report["customers_page_detected"] is True
+    assert report["trust_or_security_page_detected"] is True
+    assert report["pricing_page_detected"] is True
+    assert report["likely_failure_cause"] == "partial_owned_page_coverage"
+    assert "missing_product_or_solution_page" in report["reasons"]
+
+
+def test_canonical_brand_evidence_reports_capture_gap_without_owned_web_pages():
+    snapshot = {
+        "run": {"id": 906, "brand_name": "No Pages", "url": "https://nopages.test"},
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+    report = evidence.to_summary()["extraction_quality_report"]
+
+    assert report["status"] == "capture_gap"
+    assert report["likely_failure_cause"] == "no_owned_web_pages"
+    assert "no_owned_web_pages" in report["reasons"]

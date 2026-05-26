@@ -194,6 +194,9 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "owned_page_role_presence": dict(sorted(page_role_presence.items())),
         "missing_core_page_roles": dict(sorted(missing_page_role_counts.items())),
         "extraction_failure_causes": dict(sorted(failure_cause_counts.items())),
+        "proof_support_status": count_by("proof_support_status"),
+        "credibility_support_status": count_by("credibility_support_status"),
+        "proof_support_total": sum(int(row.get("proof_support_count") or 0) for row in rows),
         "block_quality": block_quality_counts,
         "strategic_group_totals": dict(sorted(group_totals.items())),
         "strategic_group_presence": dict(sorted(group_presence.items())),
@@ -217,6 +220,9 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
     layers = result.get("magenta_circle") or {}
     metrics = result.get("metrics") or {}
     packet = result.get("evidence_packet_summary") or {}
+    system_reading = result.get("system_reading") or {}
+    proof_support = packet.get("proof_support") or {}
+    credibility_support = system_reading.get("credibility_support") or {}
     value_block = tldr.get("value_proposition") or {}
     mission_block = tldr.get("mission") or {}
     vision_block = tldr.get("vision") or {}
@@ -318,6 +324,11 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "owned_page_roles": extraction_quality_report.get("owned_page_roles") or [],
         "missing_core_page_roles": extraction_quality_report.get("missing_core_roles") or [],
         "extraction_failure_cause": extraction_quality_report.get("likely_failure_cause"),
+        "proof_support_status": proof_support.get("status") or "not_detected",
+        "proof_support_count": int(proof_support.get("count") or 0),
+        "credibility_support_status": credibility_support.get("status") or "not_detected",
+        "credibility_support_count": int(credibility_support.get("count") or 0),
+        "credibility_support_evidence": credibility_support.get("evidence") or [],
         **block_fields,
         "block_quality": block_quality,
         "known_noise_hits": noise_hits,
@@ -337,6 +348,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
             "strategic_source_counts": source_counts,
             "strategic_rejected_reason_counts": rejected_reason_counts,
             "strategic_warnings": packet.get("strategic_warnings"),
+            "proof_support": proof_support,
         },
     }
 
@@ -544,6 +556,8 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Owned page roles: `{_compact_counts(summary.get('owned_page_role_presence'))}`",
         f"- Missing core page roles: `{_compact_counts(summary.get('missing_core_page_roles'))}`",
         f"- Extraction failure causes: `{_compact_counts(summary.get('extraction_failure_causes'))}`",
+        f"- Proof support: `{_compact_counts(summary.get('proof_support_status'))}` · total_proof_points=`{summary.get('proof_support_total') or 0}`",
+        f"- Credibility support: `{_compact_counts(summary.get('credibility_support_status'))}`",
         f"- Group presence: `{_compact_counts(summary.get('strategic_group_presence'))}`",
         f"- Missing key groups: `{_compact_counts(summary.get('missing_group_presence'))}`",
         f"- Review flags: `{_compact_counts(summary.get('review_flag_counts'))}`",
@@ -554,12 +568,12 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Rows",
         "",
-        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | page roles | missing pages | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
-        "|---:|---|---:|---:|---:|---|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | proof | page roles | missing pages | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
+        "|---:|---|---:|---:|---:|---|---|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(
-            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {page_roles} | {missing_pages} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
+            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {proof} | {page_roles} | {missing_pages} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
                 run_id=row.get("run_id"),
                 brand=_md(row.get("brand")),
                 audit_score=_num(row.get("audit_score")),
@@ -567,6 +581,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
                 coherence_score=_num(row.get("coherence_score")),
                 evidence_quality=_md(_canonical_evidence_quality_cell(row)),
                 extraction_diagnosis=_md(_extraction_diagnosis_cell(row)),
+                proof=_md(_proof_support_cell(row)),
                 page_roles=_md(", ".join(row.get("owned_page_roles") or [])),
                 missing_pages=_md(", ".join(row.get("missing_core_page_roles") or [])),
                 layers=_md(", ".join(row.get("detected_layers") or [])),
@@ -595,13 +610,14 @@ def _render_markdown(payload: dict[str, Any]) -> str:
     for row in rows:
         packet = row.get("evidence_packet") or {}
         lines.append(
-            "- run {run_id} · {brand}: raw={raw} evidence_items={items} derived={derived} features={features} roles={roles} missing_pages={missing_pages} cause={cause} groups={groups} sources={sources}".format(
+            "- run {run_id} · {brand}: raw={raw} evidence_items={items} derived={derived} features={features} proof={proof} roles={roles} missing_pages={missing_pages} cause={cause} groups={groups} sources={sources}".format(
                 run_id=row.get("run_id"),
                 brand=row.get("brand"),
                 raw=packet.get("raw_input_count"),
                 items=packet.get("evidence_item_count"),
                 derived=packet.get("derived_evidence_count"),
                 features=packet.get("feature_count"),
+                proof=_proof_support_cell(row),
                 roles=", ".join((packet.get("extraction_quality_report") or {}).get("owned_page_roles") or []),
                 missing_pages=", ".join((packet.get("extraction_quality_report") or {}).get("missing_core_roles") or []),
                 cause=(packet.get("extraction_quality_report") or {}).get("likely_failure_cause") or "",
@@ -659,6 +675,21 @@ def _balanced_quality_rows(rows: list[dict[str, Any]], block: str, limit: int = 
         if len(selected) >= limit:
             break
     return selected[:limit]
+
+
+def _proof_support_cell(row: dict[str, Any]) -> str:
+    credibility_status = row.get("credibility_support_status")
+    credibility_count = row.get("credibility_support_count")
+    if credibility_status not in {None, ""} and credibility_count not in {None, ""}:
+        status = str(credibility_status)
+        count = int(credibility_count or 0)
+    else:
+        status = str(row.get("proof_support_status") or "not_detected")
+        count = int(row.get("proof_support_count") or 0)
+
+    if count <= 0:
+        return status
+    return f"{status}:{count}"
 
 
 def _canonical_evidence_quality_cell(row: dict[str, Any]) -> str:

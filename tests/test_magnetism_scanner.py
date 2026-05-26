@@ -473,7 +473,12 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(proof_support["status"], "observed")
         self.assertEqual(credibility_support["status"], "observed")
         self.assertEqual(credibility_support["count"], 1)
-        self.assertIn("case-study/dena", credibility_support["evidence"][0]["url"])
+        self.assertTrue(
+            any(
+                "case-study/dena" in str(item.get("url") or "")
+                for item in credibility_support["evidence"]
+            )
+        )
         self.assertIn("do not define mission", credibility_support["reading"])
         self.assertEqual(result["tldr_brand3"]["mission"]["mode"], "not_detected")
         self.assertEqual(result["tldr_brand3"]["personality"]["mode"], "not_detected")

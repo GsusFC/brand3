@@ -269,8 +269,20 @@ def test_build_row_includes_block_quality_fields() -> None:
                     "missing_core_roles": ["about"],
                     "likely_failure_cause": "partial_owned_page_coverage",
                 },
+                "proof_support": {
+                    "status": "observed",
+                    "count": 2,
+                    "evidence": [{"text": "Customer proof", "url": "https://quality.test/case-study"}],
+                },
             },
             "magenta_circle": {"netspace": {"detected": True}},
+            "system_reading": {
+                "credibility_support": {
+                    "status": "observed",
+                    "count": 2,
+                    "evidence": [{"text": "Customer proof", "url": "https://quality.test/case-study"}],
+                }
+            },
             "tldr_brand3": {
                 "value_proposition": {"answer": "A clear offer for teams.", "confidence": "high"},
                 "mission": {"mode": "not_detected", "claim_type": "absent"},
@@ -284,6 +296,11 @@ def test_build_row_includes_block_quality_fields() -> None:
     assert row["owned_page_roles"] == ["homepage", "product"]
     assert row["missing_core_page_roles"] == ["about"]
     assert row["extraction_failure_cause"] == "partial_owned_page_coverage"
+    assert row["proof_support_status"] == "observed"
+    assert row["proof_support_count"] == 2
+    assert row["credibility_support_status"] == "observed"
+    assert row["credibility_support_count"] == 2
+    assert row["evidence_packet"]["proof_support"]["status"] == "observed"
     assert row["evidence_packet"]["evidence_quality"] == {"status": "strong", "reasons": []}
     assert row["evidence_packet"]["extraction_quality_report"]["status"] == "strong"
     assert row["evidence_packet"]["extraction_diagnosis"]["owned_source_count"] == 1
@@ -302,6 +319,10 @@ def test_summary_counts_block_quality() -> None:
                 "value_proposition_quality": "strong",
                 "mission_quality": "missing",
                 "vision_quality": "usable",
+                "proof_support_status": "observed",
+                "proof_support_count": 2,
+                "credibility_support_status": "observed",
+                "credibility_support_count": 2,
                 "evidence_packet": {
                     "extraction_quality_report": {
                         "owned_page_roles": ["homepage", "product"],
@@ -316,6 +337,10 @@ def test_summary_counts_block_quality() -> None:
                 "value_proposition_quality": "weak",
                 "mission_quality": "missing",
                 "vision_quality": "missing",
+                "proof_support_status": "not_detected",
+                "proof_support_count": 0,
+                "credibility_support_status": "not_detected",
+                "credibility_support_count": 0,
                 "evidence_packet": {
                     "extraction_quality_report": {
                         "owned_page_roles": ["homepage"],
@@ -332,6 +357,9 @@ def test_summary_counts_block_quality() -> None:
     assert summary["owned_page_role_presence"] == {"homepage": 2, "product": 1}
     assert summary["missing_core_page_roles"] == {"about": 2, "product": 1, "solutions": 1}
     assert summary["extraction_failure_causes"] == {"missing_product_pages": 1, "partial_owned_page_coverage": 1}
+    assert summary["proof_support_status"] == {"observed": 1, "not_detected": 1}
+    assert summary["credibility_support_status"] == {"observed": 1, "not_detected": 1}
+    assert summary["proof_support_total"] == 2
     assert summary["block_quality"]["value_proposition"] == {"strong": 1, "weak": 1}
     assert summary["block_quality"]["mission"] == {"missing": 2}
     assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
@@ -351,6 +379,9 @@ def test_render_markdown_includes_block_quality_section() -> None:
             "owned_page_role_presence": {"homepage": 1, "pricing": 1},
             "missing_core_page_roles": {"product": 1, "solutions": 1, "about": 1},
             "extraction_failure_causes": {"missing_product_pages": 1},
+            "proof_support_status": {"observed": 1},
+            "credibility_support_status": {"observed": 1},
+            "proof_support_total": 3,
             "block_quality": {
                 "value_proposition": {"strong": 1},
                 "mission": {"missing": 1},
@@ -371,6 +402,10 @@ def test_render_markdown_includes_block_quality_section() -> None:
                 "owned_page_roles": ["homepage", "pricing"],
                 "missing_core_page_roles": ["product", "solutions", "about"],
                 "extraction_failure_cause": "missing_product_pages",
+                "proof_support_status": "observed",
+                "proof_support_count": 3,
+                "credibility_support_status": "observed",
+                "credibility_support_count": 3,
                 "value_proposition": "A clear offer.",
                 "value_proposition_confidence": "high",
                 "value_proposition_quality": "strong",
@@ -398,6 +433,9 @@ def test_render_markdown_includes_block_quality_section() -> None:
     assert "Owned page roles" in markdown
     assert "Missing core page roles" in markdown
     assert "Extraction failure causes" in markdown
+    assert "Proof support" in markdown
+    assert "Credibility support" in markdown
+    assert "observed:3" in markdown
     assert "homepage, pricing" in markdown
     assert "product, solutions, about" in markdown
     assert "weak (no_audience)" in markdown

@@ -9,6 +9,7 @@ from scripts.magnetism_brand_audit_batch_review import (
     _dedupe_snapshots,
     _extraction_diagnosis,
     _known_noise_hits,
+    _proof_support_cell,
     _render_markdown,
     _visible_interpretation_values,
 )
@@ -363,6 +364,31 @@ def test_summary_counts_block_quality() -> None:
     assert summary["block_quality"]["value_proposition"] == {"strong": 1, "weak": 1}
     assert summary["block_quality"]["mission"] == {"missing": 2}
     assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
+
+
+def test_proof_support_cell_uses_credibility_status_and_count_atomically() -> None:
+    assert (
+        _proof_support_cell(
+            {
+                "credibility_support_status": "observed",
+                "credibility_support_count": 0,
+                "proof_support_status": "observed",
+                "proof_support_count": 3,
+            }
+        )
+        == "observed"
+    )
+    assert (
+        _proof_support_cell(
+            {
+                "credibility_support_status": "",
+                "credibility_support_count": "",
+                "proof_support_status": "observed",
+                "proof_support_count": 3,
+            }
+        )
+        == "observed:3"
+    )
 
 
 def test_render_markdown_includes_block_quality_section() -> None:

@@ -678,8 +678,15 @@ def _balanced_quality_rows(rows: list[dict[str, Any]], block: str, limit: int = 
 
 
 def _proof_support_cell(row: dict[str, Any]) -> str:
-    status = str(row.get("credibility_support_status") or row.get("proof_support_status") or "not_detected")
-    count = int(row.get("credibility_support_count") or row.get("proof_support_count") or 0)
+    credibility_status = row.get("credibility_support_status")
+    credibility_count = row.get("credibility_support_count")
+    if credibility_status not in {None, ""} and credibility_count not in {None, ""}:
+        status = str(credibility_status)
+        count = int(credibility_count or 0)
+    else:
+        status = str(row.get("proof_support_status") or "not_detected")
+        count = int(row.get("proof_support_count") or 0)
+
     if count <= 0:
         return status
     return f"{status}:{count}"

@@ -432,6 +432,57 @@ class MagnetismScannerTests(unittest.TestCase):
             1,
         )
 
+    def test_extractor_from_brand_audit_snapshot_surfaces_proof_as_credibility_support(self):
+        extractor = MagnetismExtractor(llm=None)
+        snapshot = {
+            "run": {
+                "id": 126,
+                "brand_name": "Proof Brand",
+                "url": "https://proofbrand.test",
+            },
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://proofbrand.test/",
+                        "markdown_content": (
+                            "Proof Brand is a treasury platform for finance teams "
+                            "that helps reduce reconciliation time."
+                        ),
+                    },
+                },
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://proofbrand.test/case-study/dena",
+                        "markdown_content": (
+                            "DeNA scaled treasury operations with Proof Brand across multiple entities."
+                        ),
+                    },
+                },
+            ],
+            "evidence_items": [],
+        }
+
+        result = extractor.extract_from_audit_snapshot(snapshot)
+
+        proof_support = result["evidence_packet_summary"]["proof_support"]
+        credibility_support = result["system_reading"]["credibility_support"]
+
+        self.assertEqual(proof_support["status"], "observed")
+        self.assertEqual(credibility_support["status"], "observed")
+        self.assertEqual(credibility_support["count"], 1)
+        self.assertTrue(
+            any(
+                "case-study/dena" in str(item.get("url") or "")
+                for item in credibility_support["evidence"]
+            )
+        )
+        self.assertIn("do not define mission", credibility_support["reading"])
+        self.assertEqual(result["tldr_brand3"]["mission"]["mode"], "not_detected")
+        self.assertEqual(result["tldr_brand3"]["personality"]["mode"], "not_detected")
+
     def test_extractor_from_brand_audit_snapshot_prefers_raw_owned_page_over_search_snippet(self):
         extractor = MagnetismExtractor(llm=None)
         snapshot = {

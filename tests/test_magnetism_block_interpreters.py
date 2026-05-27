@@ -638,7 +638,37 @@ def test_value_proposition_answer_removes_spanish_subscribe_cta_tail() -> None:
     answer = answer_from_spec("value_proposition", raw, [{"text": raw, "group": "product_offer"}])
 
     assert "Suscríbete" not in answer
+    assert "¿Listo para" not in answer
+    assert answer.startswith("En Bokeroon estamos creado una plataforma")
     assert answer.endswith("más claridad.")
+
+
+
+def test_mission_answer_removes_question_and_magnetic_tail() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    raw = (
+        "¿Listo para simplificar tus inversiones en criptomonedas? En Bokeroon estamos creado una plataforma "
+        "que convierte la gestión cripto en una experiencia instantánea y transparente. Menos complicaciones, más claridad."
+    )
+
+    answer = answer_from_spec("mission", raw, [{"text": raw, "group": "product_offer"}])
+
+    assert answer == "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente."
+
+
+def test_vision_rejects_fomo_change_cta_without_category_vision() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "No te quedes fuera El futuro de las criptomonedas está ocurriendo ahora mismo, y tú tienes una decisión que tomar: ¿Vas a quedarte en la sombra, o vas a ser parte del cambio?",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        }
+    ]
+
+    assert accepted_block_evidence("vision", spec, candidates) == []
 
 
 def test_value_proposition_rejects_docs_navigation_candidate() -> None:

@@ -633,6 +633,11 @@ def _is_feed_or_article_noise(text: str) -> bool:
         "caidas de precios",
         "este tipo de seguridad",
         "muchos, ya que",
+        "no te quedes fuera",
+        "tú tienes una decisión",
+        "tu tienes una decision",
+        "quedarte en la sombra",
+        "ser parte del cambio",
     )
     return any(marker in low for marker in editorial_markers)
 
@@ -807,6 +812,11 @@ def _mission_answer(evidence: str) -> str:
     low = cleaned.lower()
     if _is_developer_cloud_positioning(low):
         return "Provides developer infrastructure for deploying and running code in secure sandboxes."
+    if re.match(r"^¿[^?]{8,180}\?\s+en\s+", cleaned, flags=re.I):
+        cleaned = re.sub(r"^¿[^?]{8,180}\?\s+", "", cleaned, flags=re.I).strip()
+        low = cleaned.lower()
+    if "menos complicaciones" in low:
+        cleaned = re.split(r"\bMenos complicaciones\b", cleaned, maxsplit=1, flags=re.I)[0].strip().rstrip(". ") + "."
     if len(cleaned) > 360:
         return cleaned[:357].rstrip() + "..."
     return cleaned
@@ -830,6 +840,7 @@ def _clean_value_prop_answer_text(text: str) -> str:
     cleaned = re.sub(r"\s+Businesses spend thousands on ads.*$", "", cleaned, flags=re.I).strip()
     cleaned = re.sub(r"\.?launching soon\s*$", ".", cleaned, flags=re.I).strip()
     cleaned = re.sub(r"\s+Suscr[ií]bete\b.*$", "", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"^¿[^?]{8,180}\?\s+(?=En\s+)", "", cleaned, flags=re.I).strip()
     return cleaned.strip()
 
 

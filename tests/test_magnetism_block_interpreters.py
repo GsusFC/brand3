@@ -724,6 +724,36 @@ def test_value_proposition_answer_removes_spanish_subscribe_cta_tail() -> None:
 
 
 
+def test_interpret_uses_cleaned_evidence_in_reasoning() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    raw = (
+        "¿Listo para simplificar tus inversiones en criptomonedas? En Bokeroon estamos creado una plataforma "
+        "que convierte la gestión cripto en una experiencia instantánea y transparente. Menos complicaciones, "
+        "más claridad. Suscríbete Y sé de los primeros en acceder a nuestra plataforma"
+    )
+    candidates = [
+        {
+            "text": raw,
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+
+    result = interpret_tldr_block(
+        "value_proposition",
+        spec,
+        candidates,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+
+    assert result is not None
+    assert "Suscríbete" not in result["reasoning"]
+    assert "¿Listo para" not in result["reasoning"]
+    assert "En Bokeroon estamos creado" in result["reasoning"]
+
+
 def test_mission_answer_removes_question_and_magnetic_tail() -> None:
     from src.features.magnetism.block_interpreters import answer_from_spec
 
@@ -735,6 +765,25 @@ def test_mission_answer_removes_question_and_magnetic_tail() -> None:
     answer = answer_from_spec("mission", raw, [{"text": raw, "group": "product_offer"}])
 
     assert answer == "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente."
+
+
+def test_vision_rejects_rhetorical_future_question() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "¿Cómo ves el futuro de las inversiones con esta nueva herramienta?",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        }
+    ]
+
+    accepted = accepted_block_evidence("vision", spec, candidates)
+    sufficiency = evidence_sufficiency_from_spec("vision", candidates, accepted)
+
+    assert accepted == []
+    assert sufficiency["status"] == "polluted"
+    assert sufficiency["decision"] == "not_detected"
 
 
 def test_vision_rejects_market_prediction_without_brand_future() -> None:

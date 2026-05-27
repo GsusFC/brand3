@@ -263,7 +263,8 @@ def interpret_tldr_block(
     sufficiency = evidence_sufficiency_from_spec(block, candidates, accepted, diagnostics, counter_evidence)
     if sufficiency.get("decision") == "interpret_with_review":
         human_review = True
-    reasoning = reasoning_from_spec(block, evidence, diagnostics)
+    reasoning_evidence = display_evidence[0] if display_evidence else evidence
+    reasoning = reasoning_from_spec(block, reasoning_evidence, diagnostics)
 
     return {
         "content": answer,
@@ -355,7 +356,7 @@ def _noise_detected_for_block(
         low = text.lower()
         if _is_navigation_noise(text) or _is_feed_or_article_noise(text) or _is_truncated_evidence(text):
             return True
-        if block == "vision" and _is_market_prediction_noise(text):
+        if block == "vision" and (_is_market_prediction_noise(text) or _is_rhetorical_future_question_noise(text)):
             return True
         if block == "mission" and (_is_vague_mission_slogan(low) or _is_testimonial_evidence(low)):
             return True
@@ -394,6 +395,7 @@ def accepted_block_evidence(
                 _is_truncated_evidence(low)
                 or _is_feed_or_article_noise(text)
                 or _is_market_prediction_noise(text)
+                or _is_rhetorical_future_question_noise(text)
                 or not _has_future_signal(low)
             ):
                 continue
@@ -413,6 +415,7 @@ def accepted_block_evidence(
                 _is_truncated_evidence(low)
                 or _is_feed_or_article_noise(text)
                 or _is_market_prediction_noise(text)
+                or _is_rhetorical_future_question_noise(text)
                 or not _has_future_signal(low)
             ):
                 continue
@@ -743,6 +746,23 @@ def _is_feed_or_article_noise(text: str) -> bool:
         "ser parte del cambio",
     )
     return any(marker in low for marker in editorial_markers)
+
+
+def _is_rhetorical_future_question_noise(text: str) -> bool:
+    low = text.strip().lower()
+    if not _has_future_signal(low):
+        return False
+    if not low.endswith("?") and "?" not in low:
+        return False
+    rhetorical_markers = (
+        "cómo ves el futuro",
+        "como ves el futuro",
+        "qué opinas del futuro",
+        "que opinas del futuro",
+        "imaginas el futuro",
+        "ves el futuro",
+    )
+    return any(marker in low for marker in rhetorical_markers)
 
 
 def _is_market_prediction_noise(text: str) -> bool:

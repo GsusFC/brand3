@@ -7,6 +7,7 @@ from src.features.magnetism.block_interpreters import (
     block_evidence_diagnostics,
     confidence_from_spec,
     counter_evidence_from_spec,
+    evidence_sufficiency_from_spec,
     get_tldr_block_interpreter_spec,
     human_review_from_spec,
     interpret_tldr_block,
@@ -311,7 +312,7 @@ def test_interpret_tldr_block_returns_normalized_block_result() -> None:
     assert result["human_review_recommended"] is False
 
 
-def test_interpret_tldr_block_returns_none_without_accepted_evidence() -> None:
+def test_interpret_tldr_block_returns_absent_result_without_accepted_evidence() -> None:
     spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
     candidates = [
         {
@@ -330,8 +331,87 @@ def test_interpret_tldr_block_returns_none_without_accepted_evidence() -> None:
         "tactispace",
     )
 
-    assert result is None
+    assert result is not None
+    assert result["detected"] is False
+    assert result["claim_type"] == "absent"
+    assert result["mode"] == "not_detected"
+    assert result["evidence_sufficiency"]["status"] == "insufficient"
+    assert result["evidence_sufficiency"]["decision"] == "not_detected"
 
+
+def test_evidence_sufficiency_marks_complete_value_proposition_sufficient() -> None:
+    accepted = [
+        {
+            "text": "A platform for finance teams that streamlines payments",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+
+    sufficiency = evidence_sufficiency_from_spec(
+        "value_proposition", accepted, accepted, diagnostics, []
+    )
+
+    assert sufficiency["status"] == "sufficient"
+    assert sufficiency["decision"] == "interpret"
+    assert sufficiency["available_evidence"] == [
+        "A platform for finance teams that streamlines payments"
+    ]
+
+
+def test_evidence_sufficiency_marks_partial_value_proposition_for_missing_outcome() -> None:
+    accepted = [
+        {
+            "text": "A treasury platform for finance teams",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+        }
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+
+    sufficiency = evidence_sufficiency_from_spec(
+        "value_proposition", accepted, accepted, diagnostics, counter_evidence
+    )
+
+    assert sufficiency["status"] == "partial"
+    assert sufficiency["decision"] == "interpret_with_review"
+    assert sufficiency["missing_evidence"] == [
+        "The available value proposition evidence does not clearly state the outcome or change for the audience."
+    ]
+
+
+def test_evidence_sufficiency_marks_vision_market_prediction_polluted() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "Japón está liderando la carga cripto: el futuro de las finanzas pasa por las criptomonedas.",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        }
+    ]
+    accepted = accepted_block_evidence("vision", spec, candidates)
+
+    sufficiency = evidence_sufficiency_from_spec("vision", candidates, accepted)
+
+    assert accepted == []
+    assert sufficiency["status"] == "polluted"
+    assert sufficiency["noise_detected"] is True
+    assert sufficiency["decision"] == "not_detected"
 
 
 def test_block_evidence_candidates_select_layer_evidence_when_no_packet() -> None:

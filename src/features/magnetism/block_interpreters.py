@@ -234,7 +234,22 @@ def interpret_tldr_block(
     """Interpret a TLDR block from candidate evidence using its executable spec."""
     accepted = accepted_block_evidence(block, spec, candidates)
     if not accepted:
-        return None
+        sufficiency = evidence_sufficiency_from_spec(block, candidates, accepted)
+        return {
+            "content": None,
+            "detected": False,
+            "claim_type": "absent",
+            "mode": "not_detected",
+            "confidence": "low",
+            "evidence": [],
+            "rationale": "Insufficient evidence to articulate this block responsibly.",
+            "reasoning": "Insufficient evidence to articulate this block responsibly.",
+            "observations": [f"Applied executable {block} interpreter spec."],
+            "counter_evidence": sufficiency.get("missing_evidence", []),
+            "source_layers": [primary_layer_key],
+            "human_review_recommended": sufficiency.get("status") in {"partial", "polluted"},
+            "evidence_sufficiency": sufficiency,
+        }
 
     evidence = accepted[0]["text"]
     diagnostics = block_evidence_diagnostics(block, accepted, layers, primary_layer_key)
@@ -245,6 +260,9 @@ def interpret_tldr_block(
     claim_type = claim_type_from_spec(block, diagnostics)
     counter_evidence = counter_evidence_from_spec(block, diagnostics)
     human_review = human_review_from_spec(block, diagnostics, confidence, counter_evidence)
+    sufficiency = evidence_sufficiency_from_spec(block, candidates, accepted, diagnostics, counter_evidence)
+    if sufficiency.get("decision") == "interpret_with_review":
+        human_review = True
     reasoning = reasoning_from_spec(block, evidence, diagnostics)
 
     return {
@@ -260,7 +278,90 @@ def interpret_tldr_block(
         "counter_evidence": counter_evidence,
         "source_layers": list(dict.fromkeys(item["layer"] for item in accepted)),
         "human_review_recommended": human_review,
+        "evidence_sufficiency": sufficiency,
     }
+
+
+def evidence_sufficiency_from_spec(
+    block: str,
+    candidates: list[dict[str, str]],
+    accepted: list[dict[str, str]],
+    diagnostics: dict[str, Any] | None = None,
+    counter_evidence: list[str] | None = None,
+) -> dict[str, Any]:
+    """Assess whether the available evidence is enough to interpret a TLDR block."""
+    diagnostics = diagnostics or {}
+    counter_evidence = counter_evidence or []
+    noise_detected = _noise_detected_for_block(block, candidates, accepted)
+    available_evidence = [item["text"] for item in accepted[:3] if item.get("text")]
+    best_sources = _candidate_source_labels(accepted or candidates)
+    missing_evidence = list(counter_evidence)
+
+    if not candidates:
+        status = "insufficient"
+        missing_evidence.append(f"No candidate evidence was available for {block}.")
+    elif not accepted:
+        status = "polluted" if noise_detected else "insufficient"
+        if noise_detected:
+            missing_evidence.append("Candidate evidence was rejected as feed, article, CTA, navigation, or market-prediction noise.")
+        else:
+            minimum_rule = TLDR_BLOCK_INTERPRETER_SPECS[block]["minimum_evidence_rule"]
+            missing_evidence.append(f"No candidate evidence met the minimum rule: {minimum_rule}")
+    elif block == "value_proposition":
+        strong = diagnostics.get("has_offer") and diagnostics.get("has_audience") and diagnostics.get("has_outcome")
+        status = "sufficient" if strong and not noise_detected else "partial"
+    elif block == "mission":
+        status = "sufficient" if diagnostics.get("has_operating_activity") and not noise_detected else "partial"
+    elif block == "vision":
+        status = "sufficient" if diagnostics.get("has_formal_vision") and not noise_detected else "partial"
+    else:
+        status = "sufficient" if accepted and not noise_detected else "partial"
+
+    if status == "sufficient":
+        decision = "interpret"
+    elif status == "partial":
+        decision = "interpret_with_review"
+    else:
+        decision = "not_detected"
+
+    return {
+        "status": status,
+        "available_evidence": available_evidence,
+        "missing_evidence": list(dict.fromkeys(missing_evidence)),
+        "noise_detected": noise_detected,
+        "best_sources": best_sources,
+        "decision": decision,
+    }
+
+
+def _candidate_source_labels(candidates: list[dict[str, str]]) -> list[str]:
+    labels: list[str] = []
+    for item in candidates:
+        label = str(item.get("group") or item.get("source") or item.get("layer") or "unknown")
+        if label and label not in labels:
+            labels.append(label)
+    return labels[:5]
+
+
+def _noise_detected_for_block(
+    block: str,
+    candidates: list[dict[str, str]],
+    accepted: list[dict[str, str]],
+) -> bool:
+    accepted_texts = {item.get("text") for item in accepted}
+    rejected = [item for item in candidates if item.get("text") not in accepted_texts]
+    for item in rejected:
+        text = str(item.get("text") or "")
+        low = text.lower()
+        if _is_navigation_noise(text) or _is_feed_or_article_noise(text) or _is_truncated_evidence(text):
+            return True
+        if block == "vision" and _is_market_prediction_noise(text):
+            return True
+        if block == "mission" and (_is_vague_mission_slogan(low) or _is_testimonial_evidence(low)):
+            return True
+        if block == "value_proposition" and _is_bad_value_prop_candidate(text):
+            return True
+    return False
 
 
 def accepted_block_evidence(

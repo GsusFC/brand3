@@ -352,13 +352,18 @@ class MagnetismExtractor:
             try:
                 result = self._extract_via_llm(evidence_text, visual_semantics, brand_name, url)
                 if result:
+                    packet_dict = strategic_packet.to_dict()
                     result["source_run_id"] = canonical_evidence.run_id
                     result["source"] = "brand_audit_snapshot"
                     result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
                     result["canonical_evidence_source"] = "brand_audit_snapshot"
                     result["limitations"].extend(canonical_evidence.limitations)
                     result["evidence_packet_summary"] = evidence_packet_summary
-                    result["strategic_evidence_packet"] = strategic_packet.to_dict()
+                    result["strategic_evidence_packet"] = packet_dict
+                    self._enrich_layers_from_strategic_packet(result["magenta_circle"], packet_dict)
+                    result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict)
+                    result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
+                    result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
                     result["system_reading"] = self._derive_system_reading(
                         result["tldr_brand3"],
                         result["magenta_circle"],
@@ -500,7 +505,7 @@ Return exactly this JSON shape:
             "envispace": ["design", "visual", "aesthetic", "palette", "typography", "minimal", "brutalist"],
             "netspace": ["value", "api", "developer", "automation", "platform", "infrastructure", "financial services", "servicios financieros", "accept payments", "aceptar pagos", "billing", "facturación", "product development", "planning and building", "teams and agents", "integration", "sdk", "innovadores", "productos innovadores", "soluciones", "ingredientes activos", "materias primas", "servicios ambientales"],
             "tactispace": ["creamos", "we create", "we build", "we provide", "mission", "vision", "roadmap", "future", "new model", "new paradigm", "misión", "vision", "visión", "futuro", "nuevo modelo"],
-            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo"],
+            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "custom agents", "ai agents", "prioritization", "okr planning", "growth tracking", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo"],
         }
 
         layers: dict[str, Any] = {}
@@ -834,11 +839,12 @@ Return exactly this JSON shape:
                     tldr[key] = self._with_tldr_contract(key, brand_idea, layers)
                     continue
 
-            if key in {"attributes", "values"} and content:
+            if key in {"attributes", "values"} and (content or evidence or layer["detected"]):
                 attribute_text = self._joined_layer_evidence(
                     layers, ["ambientspace", "aetherspace", "netspace", "mindspace"]
                 )
-                content = self._extract_three_terms(" ".join([attribute_text, str(content), *evidence]), key)
+                seed_content = "" if content is None else str(content)
+                content = self._extract_three_terms(" ".join([attribute_text, seed_content, *evidence]), key)
                 if not content:
                     content = None
 
@@ -1724,7 +1730,6 @@ Return exactly this JSON shape:
                 "trust",
                 "security",
                 "seguro",
-                "simple",
                 "real-time control",
                 "centralised",
                 "centralized",
@@ -1732,6 +1737,13 @@ Return exactly this JSON shape:
                 "innovative",
                 "athletic",
                 "action-oriented",
+                "developer-first",
+                "secure",
+                "pragmatic",
+                "ai-native",
+                "practical",
+                "editorial",
+                "experimental",
             ],
             "values": [
                 "regenerativo",
@@ -1748,6 +1760,10 @@ Return exactly this JSON shape:
                 "inclusivity",
                 "innovation",
                 "innovación",
+                "fairness",
+                "transparency",
+                "customer empathy",
+                "developer empathy",
             ],
         }
         found: list[str] = []
@@ -1755,6 +1771,18 @@ Return exactly this JSON shape:
         if key == "attributes":
             if any(term in low for term in ("maratón", "maraton", "athlete", "athletes", "atletas")):
                 found.extend(["performance", "athletic"])
+            if any(term in low for term in ("devs", "developers", "builders", "ship", "deploy", "run any code")):
+                found.append("developer-first")
+            if any(term in low for term in ("security", "secure", "sandboxes", "isolated", "isolation", "private networking", "encryption", "untrusted code")):
+                found.append("secure")
+            if any(term in low for term in ("pay only", "actual usage", "based on usage", "down to the second", "waive", "refund", "unintended charges")):
+                found.append("pragmatic")
+            if any(term in low for term in ("custom agents", "ai agents", "artificial intelligence", "edge of ai")):
+                found.extend(["ai-native", "practical"])
+            if any(term in low for term in ("newsletter", "write for you", "media company", "question")):
+                found.append("editorial")
+            if any(term in low for term in ("incubate", "foundry", "experiment", "what comes next")):
+                found.append("experimental")
             if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
                 found.append("innovative")
         if key == "values":
@@ -1762,6 +1790,12 @@ Return exactly this JSON shape:
                 found.append("inspiration")
             if any(term in low for term in ("todo tipo de atletas", "all types of athletes")):
                 found.append("inclusivity")
+            if any(term in low for term in ("waive", "refund", "unintended charges", "unexpected", "weird on your bill")):
+                found.append("fairness")
+            if any(term in low for term in ("based on usage", "pay only", "actual cpu", "actual usage", "billing", "down to the second")):
+                found.append("transparency")
+            if any(term in low for term in ("tell us", "we would love to work with you", "we have engineers", "support customers", "devs", "developers")):
+                found.append("developer empathy")
             if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
                 found.append("innovation")
         found = list(dict.fromkeys(found))

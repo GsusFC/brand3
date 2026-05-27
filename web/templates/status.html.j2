@@ -8,7 +8,7 @@
 {% block content %}
 <section>
   <div class="section-head">
-    <span class="label">analysis_status</span>
+    <span class="label">{{ status_label if status_label else "analysis_status" }}</span>
     <span class="tag">// token={{ token }}</span>
   </div>
 
@@ -46,7 +46,7 @@
     </div>
     <div class="status-metric">
       <span class="k">typical run</span>
-      <span class="v">2–4 min</span>
+      <span class="v">{{ typical_run_label if typical_run_label else "2–4 min" }}</span>
     </div>
   </div>
 
@@ -65,7 +65,7 @@
     {% endfor %}
   </ol>
 
-  <p class="small dim">Page auto-refreshes every 5 seconds. This checklist reflects pipeline phase, not a percentage estimate.</p>
+  <p class="small dim">{{ status_note if status_note else "Page auto-refreshes every 5 seconds. This checklist reflects pipeline phase, not a percentage estimate." }}</p>
   {% elif status == "ready" %}
   <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">→ open report</a></p>
   {% elif status == "failed" %}

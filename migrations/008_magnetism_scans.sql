@@ -13,7 +13,15 @@ CREATE TABLE IF NOT EXISTS magnetism_scans (
   status TEXT NOT NULL DEFAULT 'ready',
   token TEXT,
   phase TEXT,
-  error_message TEXT
+  phase_updated_at TIMESTAMP,
+  error_message TEXT,
+  input_type TEXT,
+  input_value TEXT,
+  source_run_id INTEGER,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS idx_magnetism_scans_token ON magnetism_scans(token);
+CREATE INDEX IF NOT EXISTS idx_magnetism_scans_status ON magnetism_scans(status);
 CREATE INDEX IF NOT EXISTS idx_magnetism_scans_created ON magnetism_scans(created_at DESC);

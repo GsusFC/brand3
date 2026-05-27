@@ -3,53 +3,35 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+import secrets
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
-from ..config import settings
-from ..middleware.team_cookie import create_serializer, is_team_request
-
-from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
-from src.features.llm_analyzer import LLMAnalyzer
+from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import MagnetismExtractor
-from src.services.magnetism_service import (
-    run_legacy_manual_magnetism,
-    run_magnetism_from_audit_snapshot,
-    run_magnetism_from_url,
-)
 from src.storage.sqlite_store import SQLiteStore
 
-from ..storage import get_magnetism_scan, insert_magnetism_scan, list_magnetism_scans
+from ..storage import (
+    get_magnetism_scan,
+    get_magnetism_scan_by_token,
+    insert_magnetism_job,
+    insert_magnetism_scan,
+    list_magnetism_scans,
+)
 from ..templates_env import templates
+from ..workers.queue import get_queue
+from ..workers.slug import slug_from_url
 from ..workers.url_validator import validate_url
 
 router = APIRouter()
 
 
-def _is_unlocked_team_request(request: Request) -> bool:
-    return is_team_request(request, create_serializer(settings.cookie_secret))
-
-
-def _team_only_response(request: Request):
-    return templates.TemplateResponse(
-        request,
-        "error.html.j2",
-        {
-            "status_code": 403,
-            "error": "Magnetism Scanner is currently restricted to FLOC team access. Unlock via /team/unlock?token=...",
-        },
-        status_code=403,
-    )
-
 
 @router.get("/magnetism-scanner")
 async def magnetism_scanner_index(request: Request):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
-    if not _is_unlocked_team_request(request):
-        return _team_only_response(request)
-
     scans = list_magnetism_scans(limit=25)
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
@@ -88,10 +70,7 @@ async def magnetism_scanner_analyze(
     url: str = Form(None),
     manual_text: str = Form(None),
 ):
-    """Run analysis on the provided URL (scraped) or copy-pasted text block."""
-    if not _is_unlocked_team_request(request):
-        return _team_only_response(request)
-
+    """Queue analysis on the provided URL or copy-pasted text block."""
     url_val = (url or "").strip()
     manual_val = (manual_text or "").strip()
 
@@ -106,7 +85,6 @@ async def magnetism_scanner_analyze(
             status_code=400,
         )
 
-    # Validate URL if it is provided
     normalized_url = ""
     if url_val:
         valid, result = validate_url(url_val)
@@ -119,34 +97,27 @@ async def magnetism_scanner_analyze(
             )
         normalized_url = result
 
-    llm = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
+    token = secrets.token_urlsafe(12)
+    if normalized_url:
+        input_type = "url"
+        input_value = normalized_url
+        brand_name = slug_from_url(normalized_url)
+        display_url = normalized_url
+    else:
+        input_type = "manual"
+        input_value = manual_val
+        brand_name = "Manual Upload Brand"
+        display_url = "Manual Upload"
 
-    try:
-        if normalized_url:
-            payload = run_magnetism_from_url(normalized_url, llm=llm)
-        else:
-            payload = run_legacy_manual_magnetism(manual_val, llm=llm)
-
-        # Save to database
-        scan_id = insert_magnetism_scan(
-            brand_name=payload["brand_name"],
-            url=payload["url"] or "Manual Upload",
-            magnetism_score=payload["magnetism_score"],
-            coherence_score=payload["coherence_score"],
-            quadrant=payload["quadrant"],
-            raw_payload=json.dumps(payload, ensure_ascii=False),
-        )
-
-        # Redirect to details page
-        return RedirectResponse(f"/magnetism-scanner/scan/{scan_id}", status_code=303)
-
-    except Exception as e:
-        return templates.TemplateResponse(
-            request,
-            "error.html.j2",
-            {"status_code": 500, "error": f"Analysis failed: {str(e)}"},
-            status_code=500,
-        )
+    insert_magnetism_job(
+        token=token,
+        brand_name=brand_name,
+        url=display_url,
+        input_type=input_type,
+        input_value=input_value,
+    )
+    await get_queue().enqueue_magnetism(token)
+    return RedirectResponse(f"/magnetism-scanner/{token}/status", status_code=303)
 
 
 @router.post("/magnetism-scanner/from-run")
@@ -154,10 +125,7 @@ async def magnetism_scanner_from_run(
     request: Request,
     run_id: int = Form(...),
 ):
-    """Create a Magnetism scan from an existing Brand Audit run snapshot."""
-    if not _is_unlocked_team_request(request):
-        return _team_only_response(request)
-
+    """Queue a Magnetism scan from an existing Brand Audit run snapshot."""
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
         snapshot = store.get_run_snapshot(run_id)
@@ -172,26 +140,132 @@ async def magnetism_scanner_from_run(
             status_code=404,
         )
 
-    llm = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
-    payload = run_magnetism_from_audit_snapshot(snapshot, llm=llm)
-
-    scan_id = insert_magnetism_scan(
-        brand_name=payload["brand_name"],
-        url=payload["url"] or "Manual Upload",
-        magnetism_score=payload["magnetism_score"],
-        coherence_score=payload["coherence_score"],
-        quadrant=payload["quadrant"],
-        raw_payload=json.dumps(payload, ensure_ascii=False),
+    run = snapshot.get("run") or {}
+    token = secrets.token_urlsafe(12)
+    insert_magnetism_job(
+        token=token,
+        brand_name=str(run.get("brand_name") or f"Brand Audit run #{run_id}"),
+        url=str(run.get("url") or "Brand Audit snapshot"),
+        input_type="audit_run",
+        input_value=str(run_id),
+        source_run_id=run_id,
     )
-    return RedirectResponse(f"/magnetism-scanner/scan/{scan_id}", status_code=303)
+    await get_queue().enqueue_magnetism(token)
+    return RedirectResponse(f"/magnetism-scanner/{token}/status", status_code=303)
+
+
+_MAGNETISM_PHASES = [
+    ("queued", "Queued"),
+    ("collecting", "Collecting Brand Audit evidence"),
+    ("extracting", "Extracting Magnetism signals"),
+    ("interpreting", "Interpreting TLDR Brand3 blocks"),
+    ("scoring", "Scoring magnetism and coherence"),
+    ("finalizing", "Writing Magnetism report"),
+]
+
+_MAGNETISM_PHASE_LABELS = {
+    **{key: label for key, label in _MAGNETISM_PHASES},
+    "ready": "Magnetism report ready",
+    "failed": "Magnetism scan failed",
+}
+
+
+@router.get("/magnetism-scanner/{token}/status")
+async def magnetism_scanner_status(request: Request, token: str):
+    """Render the shared waiting page for an in-flight Magnetism scan."""
+    row = get_magnetism_scan_by_token(token)
+    if row is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan token {token}"},
+            status_code=404,
+        )
+    if row.get("status") == "ready":
+        return RedirectResponse("/magnetism-scanner/scan/{}".format(row["id"]), status_code=303)
+
+    phase = _magnetism_phase(row)
+    return templates.TemplateResponse(
+        request,
+        "status.html.j2",
+        {
+            "token": token,
+            "brand_slug": row.get("brand_name") or "magnetism scan",
+            "status": row.get("status") or "queued",
+            "elapsed_seconds": _elapsed(row.get("started_at")),
+            "elapsed_label": _elapsed_label(_elapsed(row.get("started_at"))),
+            "error_message": row.get("error_message"),
+            "phase": phase,
+            "phase_label": _MAGNETISM_PHASE_LABELS.get(phase, "Working"),
+            "phase_steps": _phase_steps(_MAGNETISM_PHASES, phase, row.get("status") or "queued"),
+            "ready_href": "/magnetism-scanner/scan/{}".format(row["id"]),
+            "back_href": "/magnetism-scanner",
+            "status_label": "magnetism_status",
+            "typical_run_label": "1-4 min",
+            "status_note": "Page auto-refreshes every 5 seconds. This checklist reflects Magnetism Scanner phase, not a percentage estimate.",
+        },
+    )
+
+
+def _elapsed(started_at: str | None) -> int:
+    if not started_at:
+        return 0
+    try:
+        dt = datetime.fromisoformat(str(started_at).replace(" ", "T"))
+    except ValueError:
+        return 0
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return max(0, int((datetime.now(timezone.utc) - dt).total_seconds()))
+
+
+def _elapsed_label(seconds: int) -> str:
+    minutes, rest = divmod(max(0, seconds), 60)
+    return f"{minutes:02d}:{rest:02d}"
+
+
+def _magnetism_phase(row: dict) -> str:
+    phase = row.get("phase") or row.get("status") or "queued"
+    if row.get("status") == "queued":
+        return "queued"
+    if row.get("status") == "failed":
+        return "failed"
+    if row.get("status") == "ready":
+        return "ready"
+    return str(phase)
+
+
+def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str) -> list[dict]:
+    if status == "failed":
+        current_phase = "failed"
+    if status == "ready":
+        current_phase = "ready"
+
+    current_index = next(
+        (idx for idx, (key, _label) in enumerate(phases) if key == current_phase),
+        -1,
+    )
+    steps = []
+    for idx, (key, label) in enumerate(phases):
+        if current_phase == "ready" or (current_index >= 0 and idx < current_index):
+            state = "done"
+        elif key == current_phase:
+            state = "active"
+        elif current_phase == "failed" and current_index >= 0 and idx == current_index:
+            state = "failed"
+        else:
+            state = "pending"
+        steps.append({"key": key, "label": label, "state": state})
+    if current_phase == "failed":
+        steps.append({"key": "failed", "label": "Magnetism scan failed", "state": "failed"})
+    if current_phase == "ready":
+        steps.append({"key": "ready", "label": "Magnetism report ready", "state": "done"})
+    return steps
 
 
 @router.get("/magnetism-scanner/scan/{scan_id}")
 async def magnetism_scanner_detail(request: Request, scan_id: int):
     """Render details sheet of a specific magnetism scan."""
-    if not _is_unlocked_team_request(request):
-        return _team_only_response(request)
-
     row = get_magnetism_scan(scan_id)
     if row is None:
         return templates.TemplateResponse(

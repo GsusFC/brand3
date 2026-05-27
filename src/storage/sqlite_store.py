@@ -169,7 +169,13 @@ class SQLiteStore:
                     "status": "TEXT NOT NULL DEFAULT 'ready'",
                     "token": "TEXT",
                     "phase": "TEXT",
+                    "phase_updated_at": "TIMESTAMP",
                     "error_message": "TEXT",
+                    "input_type": "TEXT",
+                    "input_value": "TEXT",
+                    "source_run_id": "INTEGER",
+                    "started_at": "TIMESTAMP",
+                    "completed_at": "TIMESTAMP",
                 },
             )
             self.conn.commit()

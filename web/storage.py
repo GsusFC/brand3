@@ -230,6 +230,43 @@ def insert_magnetism_scan(
     return last_id
 
 
+
+def insert_magnetism_job(
+    *,
+    token: str,
+    brand_name: str,
+    url: str,
+    input_type: str,
+    input_value: str,
+    source_run_id: int | None = None,
+) -> int:
+    """Insert a queued Magnetism scan job and return its primary key ID."""
+    with _connect() as conn:
+        cur = conn.execute(
+            """
+            INSERT INTO magnetism_scans
+              (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+               created_at, status, token, phase, phase_updated_at, input_type, input_value, source_run_id)
+            VALUES (?, ?, 0, 0, 'pending', '{}', datetime('now'), 'queued', ?, 'queued',
+                    datetime('now'), ?, ?, ?)
+            """,
+            (brand_name, url, token, input_type, input_value, source_run_id),
+        )
+        conn.commit()
+        last_id = cur.lastrowid
+    return int(last_id)
+
+
+def get_magnetism_scan_by_token(token: str) -> dict | None:
+    """Retrieve a Magnetism scan/job by public status token."""
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM magnetism_scans WHERE token = ?", (token,)
+        ).fetchone()
+    return dict(row) if row else None
+
+
+
 def get_magnetism_scan(scan_id: int) -> dict | None:
     """Retrieve a specific magnetism scan by ID."""
     with _connect() as conn:
@@ -246,6 +283,7 @@ def list_magnetism_scans(limit: int = 20) -> list[dict]:
             """
             SELECT id, brand_name, url, magnetism_score, coherence_score, quadrant, created_at
             FROM magnetism_scans
+            WHERE status = 'ready'
             ORDER BY created_at DESC
             LIMIT ?
             """,

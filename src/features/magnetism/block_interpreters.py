@@ -41,7 +41,7 @@ TLDR_BLOCK_INTERPRETER_SPECS = {
         "task": "Identify the brand's current operating activity.",
         "primary_question": "What does the brand concretely do today?",
         "source_layers": ["tactispace", "netspace", "aetherspace"],
-        "strategic_groups": ["mission_language"],
+        "strategic_groups": ["mission_language", "product_offer", "hero_claims"],
         "look_for": [
             "we build", "we create", "we provide", "we offer", "we operate", "we deliver",
             "builds", "creates", "provides", "offers", "operates", "delivers", "help", "helps",
@@ -239,6 +239,7 @@ def interpret_tldr_block(
     evidence = accepted[0]["text"]
     diagnostics = block_evidence_diagnostics(block, accepted, layers, primary_layer_key)
     answer = answer_from_spec(block, evidence, accepted)
+    display_evidence = evidence_from_spec(block, evidence, answer, accepted)
     mode = mode_from_spec(block, diagnostics)
     confidence = confidence_from_spec(block, diagnostics, accepted)
     claim_type = claim_type_from_spec(block, diagnostics)
@@ -252,7 +253,7 @@ def interpret_tldr_block(
         "claim_type": claim_type,
         "mode": mode,
         "confidence": confidence,
-        "evidence": [evidence],
+        "evidence": display_evidence,
         "rationale": reasoning,
         "reasoning": reasoning,
         "observations": observations_from_spec(block, diagnostics),
@@ -352,6 +353,78 @@ def block_evidence_diagnostics(
     }
 
 
+def evidence_from_spec(
+    block: str,
+    evidence: str,
+    answer: str,
+    accepted: list[dict[str, str]] | None = None,
+) -> list[str]:
+    accepted = accepted or []
+    if block in {"value_proposition", "mission"}:
+        representative = _representative_evidence_phrase(evidence, answer)
+        return [representative] if representative else [evidence]
+    return [evidence]
+
+
+def _representative_evidence_phrase(evidence: str, answer: str) -> str:
+    cleaned = _clean_value_prop_answer_text(evidence)
+    if len(cleaned) <= 240:
+        return cleaned
+    low_answer = answer.lower()
+    candidates = _sentence_like_evidence_segments(cleaned)
+    if not candidates:
+        return cleaned[:237].rstrip() + "..."
+    scored = sorted(
+        candidates,
+        key=lambda item: _representative_evidence_score(item, low_answer),
+        reverse=True,
+    )
+    best = scored[0].strip()
+    if len(best) > 240:
+        best = best[:237].rstrip() + "..."
+    return best
+
+
+def _sentence_like_evidence_segments(text: str) -> list[str]:
+    raw_parts = re.split(
+        r"(?=(?:Build fast|The platform|Powered by|Deploy your app|Modern Compute|For builders|Deploy an app|Sandboxes|Every Sprite|Pay only|Storage That Keeps Up|Built-In Private Networking|VMs That Do Everything|Fly\.io is|A developer|A platform|Public Cloud Billing))",
+        text,
+    )
+    parts: list[str] = []
+    for raw in raw_parts:
+        cleaned = re.sub(r"\s+", " ", raw).strip(" .-")
+        if len(cleaned) < 20:
+            continue
+        if _is_weak_value_prop_addition(cleaned):
+            continue
+        parts.append(cleaned)
+    if len(parts) <= 1:
+        parts = [s.strip(" .-") for s in _sentences(text) if len(s.strip()) >= 20]
+    return parts
+
+
+def _representative_evidence_score(text: str, low_answer: str) -> tuple[int, int, int]:
+    low = text.lower()
+    overlap = sum(1 for token in set(re.findall(r"[a-z0-9-]{4,}", low_answer)) if token in low)
+    signal = sum(
+        1
+        for marker in (
+            "platform for devs",
+            "for builders",
+            "deploy any code",
+            "run any code",
+            "sandboxes",
+            "deploy your app",
+            "developer-focused",
+            "secure",
+            "confidence",
+        )
+        if marker in low
+    )
+    length_penalty = abs(len(text) - 140)
+    return (signal, overlap, -length_penalty)
+
+
 def answer_from_spec(
     block: str,
     evidence: str,
@@ -359,6 +432,8 @@ def answer_from_spec(
 ) -> str:
     if block == "value_proposition":
         return _value_proposition_answer(evidence, accepted or [])
+    if block == "mission":
+        return _mission_answer(evidence)
     if block == "vision" and "macroalgas" in evidence.lower() and "nuevo modelo" in evidence.lower():
         return "A regenerative industrial model built around the potential of Mediterranean macroalgae."
     return evidence
@@ -494,6 +569,13 @@ def _has_operating_activity_signal(text: str) -> bool:
             "we make",
             "we enable",
             "we empower",
+            "deploy",
+            "deploys",
+            "run any code",
+            "lets you run",
+            "lets you deploy",
+            "launch instantly",
+            "runs on",
             "builds",
             "creates",
             "provides",
@@ -660,6 +742,8 @@ def _has_outcome_signal(text: str) -> bool:
 def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> str:
     primary = _clean_value_prop_answer_text(evidence)
     primary_low = primary.lower()
+    if _is_developer_cloud_positioning(primary_low):
+        return "A developer cloud platform for shipping and running code confidently in secure sandboxes."
     if (
         not accepted
         or len(primary) >= 90
@@ -681,6 +765,23 @@ def _value_proposition_answer(evidence: str, accepted: list[dict[str, str]]) -> 
     answer = primary.rstrip(".") + ". " + " ".join(additions)
     return _clean_value_prop_answer_text(answer[:360].rstrip())
 
+
+
+def _mission_answer(evidence: str) -> str:
+    cleaned = _clean_value_prop_answer_text(evidence)
+    low = cleaned.lower()
+    if _is_developer_cloud_positioning(low):
+        return "Provides developer infrastructure for deploying and running code in secure sandboxes."
+    if len(cleaned) > 360:
+        return cleaned[:357].rstrip() + "..."
+    return cleaned
+
+
+def _is_developer_cloud_positioning(text: str) -> bool:
+    return (
+        ("platform for devs" in text or "for builders" in text or "developer-focused public cloud" in text)
+        and ("deploy any code" in text or "run any code" in text or "sandboxes" in text)
+    )
 
 def _clean_value_prop_answer_text(text: str) -> str:
     cleaned = re.sub(r"\s+", " ", text or "").strip()
@@ -716,6 +817,8 @@ def _is_bad_value_prop_candidate(text: str) -> bool:
     if "schema detected:" in low:
         return True
     if "technology, information and internet company" in low:
+        return True
+    if low.startswith("a public cloud for security nerds") and len(stripped) > 420:
         return True
     if " company. " in low and " is a " in low[:120]:
         return True

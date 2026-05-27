@@ -77,6 +77,8 @@ def test_specs_declare_their_strategic_packet_groups() -> None:
     ]
     assert TLDR_BLOCK_INTERPRETER_SPECS["mission"]["strategic_groups"] == [
         "mission_language",
+        "product_offer",
+        "hero_claims",
     ]
     assert TLDR_BLOCK_INTERPRETER_SPECS["vision"]["strategic_groups"] == [
         "vision_language",
@@ -541,6 +543,38 @@ def test_value_proposition_answer_cleans_residual_navigation_fragments() -> None
 
     for raw, expected in cases:
         assert answer_from_spec("value_proposition", raw, [{"text": raw, "group": "product_offer"}]) == expected
+
+
+
+def test_interpreter_exposes_atomic_evidence_for_long_developer_cloud_copy() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    long_copy = (
+        "Build fast. Run any code fearlessly. The platform for devs who just want to ship. "
+        "Powered by sandboxes that let you deploy any code with confidence. Deploy your app "
+        "Modern Compute Without the Complexity For builders who need compute that keeps up with their ideas, "
+        "Fly Machines are hardware-virtualized containers that launch instantly and run only when you need them. "
+        "Deploy an app in minutes or run untrusted code in isolated sandboxes. "
+        "Pay only for actual CPU and memory consumption, down to the second."
+    )
+    candidates = [{
+        "text": long_copy,
+        "source": "strategic:product_offer",
+        "group": "product_offer",
+        "layer": "netspace",
+    }]
+
+    result = interpret_tldr_block(
+        "value_proposition",
+        spec,
+        candidates,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+
+    assert result is not None
+    assert result["content"] == "A developer cloud platform for shipping and running code confidently in secure sandboxes."
+    assert len(result["evidence"][0]) < 240
+    assert "platform for devs" in result["evidence"][0] or "deploy any code" in result["evidence"][0]
 
 
 def test_value_proposition_rejects_docs_navigation_candidate() -> None:

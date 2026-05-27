@@ -10,6 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import importlib
 import json
 import tempfile
+import threading
+import time
 import unittest
 import unittest.mock
 from typing import Any
@@ -79,6 +81,9 @@ class MagnetismScannerTests(unittest.TestCase):
         self.client.cookies.set(COOKIE_NAME, token)
 
     def tearDown(self):
+        from web.workers.queue import set_run_magnetism_override
+
+        set_run_magnetism_override(None)
         self.screenshot_mock.stop()
         self.client.__exit__(None, None, None)
         self._tmp.cleanup()
@@ -90,22 +95,23 @@ class MagnetismScannerTests(unittest.TestCase):
         ):
             os.environ.pop(key, None)
 
-    def test_web_routes_require_team_cookie(self):
+    def test_web_routes_are_public_without_team_cookie(self):
         response = self.client.get("/magnetism-scanner")
-        self.assertEqual(response.status_code, 403)
-        self.assertIn("restricted to FLOC team access", response.text)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Brand Magnetism Scanner", response.text)
 
         response = self.client.post(
             "/magnetism-scanner/analyze",
-            data={"manual_text": "We build developer tools."},
+            data={"url": "", "manual_text": ""},
         )
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Input required", response.text)
 
         response = self.client.post("/magnetism-scanner/from-run", data={"run_id": 1})
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
         response = self.client.get("/magnetism-scanner/scan/1")
-        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.status_code, 404)
 
     def test_database_helpers(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan, list_magnetism_scans
@@ -431,6 +437,46 @@ class MagnetismScannerTests(unittest.TestCase):
             result["evidence_packet_summary"]["strategic_group_counts"]["product_offer"],
             1,
         )
+
+    def test_extractor_from_brand_audit_snapshot_rederives_tldr_after_llm_with_packet(self):
+        fake_llm = FakeLLMAnalyzer(api_key="valid-key")
+        fake_llm.mock_response = {
+            "brand_name": "Fly Test",
+            "url": "https://fly.test",
+            "magenta_circle": {
+                "mindspace": {"detected": True, "finding": "Build fast", "evidence": "Build fast", "confidence": "high"},
+                "aetherspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "gamespace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "envispace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "netspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "tactispace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "ambientspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+            },
+        }
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        snapshot = {
+            "run": {"id": 140, "brand_name": "Fly Test", "url": "https://fly.test"},
+            "features": [],
+            "raw_inputs": [],
+            "evidence_items": [
+                {
+                    "source": "web",
+                    "url": "https://fly.test",
+                    "quote": "Fly Test is a platform for devs who want to ship, powered by sandboxes that let you deploy any code with confidence.",
+                    "feature_name": "positioning",
+                    "dimension_name": "coherencia",
+                    "confidence": 0.9,
+                }
+            ],
+        }
+
+        result = extractor.extract_from_audit_snapshot(snapshot)
+
+        value_prop = result["tldr_brand3"]["value_proposition"]
+        self.assertEqual(value_prop["mode"], "compressed")
+        self.assertIn("developer cloud platform", value_prop["answer"])
+        self.assertEqual(result["magenta_circle"]["netspace"]["status"], "detected")
+        self.assertGreater(result["metrics"]["coherence_score"], 40)
 
     def test_extractor_from_brand_audit_snapshot_surfaces_proof_as_credibility_support(self):
         extractor = MagnetismExtractor(llm=None)
@@ -774,30 +820,33 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["magenta_circle"]["mindspace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["tactispace"]["status"], "not_detected")
 
-    @unittest.mock.patch("web.routes.magnetism_scanner.run_magnetism_from_url")
     @unittest.mock.patch("web.routes.magnetism_scanner.validate_url")
-    @unittest.mock.patch("web.routes.magnetism_scanner.LLMAnalyzer")
-    def test_web_route_url_analysis_delegates_to_canonical_service(
+    def test_web_route_url_analysis_queues_canonical_service(
         self,
-        mock_llm_class,
         mock_validate_url,
-        mock_run_magnetism_from_url,
     ):
-        mock_llm_class.return_value.api_key = None
+        from web.workers.queue import set_run_magnetism_override
+
+        captured_jobs = []
+
+        def fake_magnetism(job: dict) -> dict:
+            captured_jobs.append(job)
+            return {
+                "brand_name": "Canonical Route",
+                "url": "https://example.com",
+                "magnetism_score": 62,
+                "coherence_score": 70,
+                "quadrant": "Low Magnetism - High Coherence",
+                "source": "brand_audit_snapshot",
+                "extraction_mode": "canonical_snapshot",
+                "source_run_id": 77,
+                "metrics": {},
+                "tldr_brand3": {},
+                "magenta_circle": {},
+            }
+
+        set_run_magnetism_override(fake_magnetism)
         mock_validate_url.return_value = (True, "https://example.com")
-        mock_run_magnetism_from_url.return_value = {
-            "brand_name": "Canonical Route",
-            "url": "https://example.com",
-            "magnetism_score": 62,
-            "coherence_score": 70,
-            "quadrant": "Low Magnetism - High Coherence",
-            "source": "brand_audit_snapshot",
-            "extraction_mode": "canonical_snapshot",
-            "source_run_id": 77,
-            "metrics": {},
-            "tldr_brand3": {},
-            "magenta_circle": {},
-        }
 
         self._unlock_team_cookie()
         response = self.client.post(
@@ -807,26 +856,96 @@ class MagnetismScannerTests(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 303)
+        self.assertRegex(response.headers["location"], r"^/magnetism-scanner/.+/status$")
         mock_validate_url.assert_called_once_with("https://example.com")
-        mock_run_magnetism_from_url.assert_called_once_with(
-            "https://example.com",
-            llm=mock_llm_class.return_value,
-        )
-        scan_id = int(response.headers["location"].rsplit("/", 1)[-1])
+        token = response.headers["location"].split("/")[2]
 
-        from web.storage import get_magnetism_scan
+        from web.storage import get_magnetism_scan_by_token
 
-        scan = get_magnetism_scan(scan_id)
+        scan = get_magnetism_scan_by_token(token)
         self.assertIsNotNone(scan)
+        self.assertIn(scan["status"], {"queued", "running", "ready"})
+        self.assertEqual(scan["input_type"], "url")
+        self.assertEqual(scan["input_value"], "https://example.com")
+
+        for _ in range(30):
+            scan = get_magnetism_scan_by_token(token)
+            if scan and scan["status"] == "ready":
+                break
+            time.sleep(0.2)
+
+        self.assertEqual(scan["status"], "ready")
         payload = json.loads(scan["raw_payload"])
         self.assertEqual(payload["source"], "brand_audit_snapshot")
         self.assertEqual(payload["extraction_mode"], "canonical_snapshot")
         self.assertEqual(payload["source_run_id"], 77)
+        self.assertEqual(captured_jobs[0]["input_type"], "url")
         self.assertNotIn("deprecation", payload)
 
-    @unittest.mock.patch("web.routes.magnetism_scanner.LLMAnalyzer")
-    def test_web_routes_flow(self, mock_llm_class):
-        mock_llm_class.return_value.api_key = None
+    def test_magnetism_status_page_shows_scanner_phase_steps(self):
+        from web.workers.queue import set_run_magnetism_override
+
+        release = threading.Event()
+
+        def slow_magnetism(job: dict, progress_cb=None) -> dict:
+            if progress_cb is not None:
+                progress_cb("interpreting")
+            release.wait(timeout=5)
+            return {
+                "brand_name": "Waiting Brand",
+                "url": "Manual Upload",
+                "magnetism_score": 51,
+                "coherence_score": 57,
+                "quadrant": "Low Magnetism - Low Coherence",
+                "source": "legacy_extraction",
+                "extraction_mode": "legacy_extraction",
+                "metrics": {},
+                "tldr_brand3": {},
+                "magenta_circle": {},
+            }
+
+        set_run_magnetism_override(slow_magnetism)
+        self._unlock_team_cookie()
+        response = self.client.post(
+            "/magnetism-scanner/analyze",
+            data={"url": "", "manual_text": "We build useful tools."},
+            follow_redirects=False,
+        )
+        status_url = response.headers["location"]
+        token = status_url.split("/")[2]
+
+        from web.storage import get_magnetism_scan_by_token
+
+        row = None
+        for _ in range(30):
+            row = get_magnetism_scan_by_token(token)
+            if row and row["status"] == "running" and row["phase"] == "interpreting":
+                break
+            time.sleep(0.2)
+
+        try:
+            self.assertEqual(row["status"], "running")
+            self.assertEqual(row["phase"], "interpreting")
+            status_resp = self.client.get(status_url, follow_redirects=False)
+            self.assertEqual(status_resp.status_code, 200)
+            self.assertIn("magnetism_status", status_resp.text)
+            self.assertIn("Interpreting TLDR Brand3 blocks", status_resp.text)
+            self.assertIn("Scoring magnetism and coherence", status_resp.text)
+            self.assertIn("This checklist reflects Magnetism Scanner phase", status_resp.text)
+        finally:
+            release.set()
+
+
+    def test_web_routes_flow(self):
+        from web.workers.queue import set_run_magnetism_override
+
+        def fake_manual_magnetism(job: dict) -> dict:
+            return MagnetismExtractor(llm=None).extract(
+                url=None,
+                manual_text=job.get("input_value") or "",
+            )
+
+        set_run_magnetism_override(fake_manual_magnetism)
         self._unlock_team_cookie()
         # GET index page when empty
         r = self.client.get("/magnetism-scanner")
@@ -853,10 +972,24 @@ class MagnetismScannerTests(unittest.TestCase):
             },
             follow_redirects=False
         )
-        # Should redirect to detail page
+        # Should redirect to status page while the queued scan runs.
         self.assertEqual(r_ok.status_code, 303)
-        redirect_url = r_ok.headers["location"]
-        self.assertTrue(redirect_url.startswith("/magnetism-scanner/scan/"))
+        status_url = r_ok.headers["location"]
+        self.assertRegex(status_url, r"^/magnetism-scanner/.+/status$")
+        r_status = self.client.get(status_url, follow_redirects=False)
+        self.assertIn(r_status.status_code, {200, 303})
+
+        token = status_url.split("/")[2]
+        from web.storage import get_magnetism_scan_by_token
+
+        scan = None
+        for _ in range(30):
+            scan = get_magnetism_scan_by_token(token)
+            if scan and scan["status"] == "ready":
+                break
+            time.sleep(0.2)
+        self.assertEqual(scan["status"], "ready")
+        redirect_url = f"/magnetism-scanner/scan/{scan['id']}"
 
         # Follow redirect or GET detail page
         r_detail = self.client.get(redirect_url)

@@ -266,6 +266,51 @@ def test_system_reading_places_reverse_engineering_inside_tldr() -> None:
     assert any("brand voice" in item or "brand idea" in item for item in reading["strategic_tensions"])
     assert reading["derived_from"] == "TLDR Brand3 blocks and Magenta signal coverage"
 
+
+
+def test_developer_cloud_billing_and_security_evidence_maps_attributes_and_values() -> None:
+    result = MagnetismExtractor(llm=None).extract(
+        url=None,
+        manual_text=(
+            "Build fast. Run any code fearlessly. The platform for devs who just want to ship. "
+            "Run untrusted code in isolated sandboxes with private networking and encryption. "
+            "Plans get complicated, so we just charge based on usage. Pay only for actual CPU "
+            "and memory consumption, down to the second. If it looks weird on your bill, "
+            "tell us. We will waive or refund unintended charges for paid support customers."
+        ),
+        brand_name="Fly.io",
+    )
+
+    attributes = result["tldr_brand3"]["attributes"]
+    values = result["tldr_brand3"]["values"]
+    _assert_v03_contract("attributes", attributes)
+    _assert_v03_contract("values", values)
+    assert attributes["detected"]
+    assert values["detected"]
+    attributes_text = _content_text(attributes["content"]).lower()
+    values_text = _content_text(values["content"]).lower()
+    assert "operator-led" not in attributes_text
+    assert any(term in attributes_text for term in ["developer-first", "secure", "pragmatic"]), attributes["content"]
+    assert any(term in values_text for term in ["fairness", "transparency", "developer empathy"]), values["content"]
+
+def test_attributes_can_derive_from_ambientspace_evidence_without_initial_content() -> None:
+    result = MagnetismExtractor(llm=None).extract(
+        url=None,
+        manual_text=(
+            "How Every uses custom agents for prioritization, meeting notes, "
+            "OKR planning, and growth tracking. What comes next is the question "
+            "we try to answer every day through our newsletter and software."
+        ),
+        brand_name="Every",
+    )
+
+    block = result["tldr_brand3"]["attributes"]
+    _assert_v03_contract("attributes", block)
+    assert block["detected"]
+    content = _content_text(block["content"]).lower()
+    assert any(term in content for term in ["ai-native", "practical", "editorial", "experimental"]), block["content"]
+    assert block["evidence_used"]
+
 def test_iconic_action_brand_can_derive_personality_and_brand_idea() -> None:
     fixture = _load_fixture("nike_tldr_v02.json")
     result = MagnetismExtractor(llm=None).extract(

@@ -292,6 +292,7 @@ def accepted_block_evidence(
             if block == "vision" and (
                 _is_truncated_evidence(low)
                 or _is_feed_or_article_noise(text)
+                or _is_market_prediction_noise(text)
                 or not _has_future_signal(low)
             ):
                 continue
@@ -310,6 +311,7 @@ def accepted_block_evidence(
             if block == "vision" and (
                 _is_truncated_evidence(low)
                 or _is_feed_or_article_noise(text)
+                or _is_market_prediction_noise(text)
                 or not _has_future_signal(low)
             ):
                 continue
@@ -640,6 +642,44 @@ def _is_feed_or_article_noise(text: str) -> bool:
         "ser parte del cambio",
     )
     return any(marker in low for marker in editorial_markers)
+
+
+def _is_market_prediction_noise(text: str) -> bool:
+    low = text.strip().lower()
+    if not _has_future_signal(low):
+        return False
+    market_prediction_markers = (
+        "japón está liderando",
+        "japon está liderando",
+        "japon esta liderando",
+        "japón ha comprendido",
+        "japon ha comprendido",
+        "el futuro de las finanzas pasa por",
+        "el futuro de las criptomonedas",
+        "otros aún no ven",
+        "otros aun no ven",
+        "referente global",
+        "incertidumbre regulatoria",
+        "mercado japonés",
+        "mercado japones",
+    )
+    if any(marker in low for marker in market_prediction_markers):
+        return True
+    talks_about_external_market = any(term in low for term in ("japón", "japon", "países", "paises", "mercado"))
+    talks_about_brand_action = any(
+        term in low
+        for term in (
+            "we are building",
+            "we're building",
+            "our vision",
+            "nuestra visión",
+            "nuestra vision",
+            "estamos creando",
+            "estamos creado",
+            "bokeroon",
+        )
+    )
+    return talks_about_external_market and not talks_about_brand_action
 
 
 def _is_testimonial_evidence(text: str) -> bool:

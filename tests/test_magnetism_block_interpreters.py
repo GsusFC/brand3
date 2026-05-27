@@ -657,6 +657,30 @@ def test_mission_answer_removes_question_and_magnetic_tail() -> None:
     assert answer == "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente."
 
 
+def test_vision_rejects_market_prediction_without_brand_future() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "Japón está liderando la carga cripto Japón ha comprendido lo que muchos otros aún no ven con claridad: el futuro de las finanzas pasa por las criptomonedas.",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        },
+        {
+            "text": "We are building the future of corporate treasury with a new model for global cash control.",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("vision", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "We are building the future of corporate treasury with a new model for global cash control."
+    ]
+
+
 def test_vision_rejects_fomo_change_cta_without_category_vision() -> None:
     spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
     candidates = [

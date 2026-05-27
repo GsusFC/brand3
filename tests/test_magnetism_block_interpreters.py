@@ -577,6 +577,70 @@ def test_interpreter_exposes_atomic_evidence_for_long_developer_cloud_copy() -> 
     assert "platform for devs" in result["evidence"][0] or "deploy any code" in result["evidence"][0]
 
 
+
+def test_mission_rejects_editorial_article_market_explanation() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["mission"]
+    candidates = [
+        {
+            "text": "Este tipo de seguridad se convierte en un atractivo irresistible para muchos, ya que ofrece una forma de protegerse contra caídas de precios sin tener que vender el activo subyacente.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+            "layer": "tactispace",
+        },
+        {
+            "text": "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "tactispace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("mission", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente."
+    ]
+
+
+def test_vision_rejects_raw_feed_and_url_noise() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "]]> https://bokeroon.com/post/feed/ 0 Descubre por qué Japón es el futuro de las criptomonedas https://bokeroon.com/post/#respond Fri, 13 Sep 2024 11:00:00 +0000 https://bokeroon.com/?p=124 Imagínate estar en el lugar adecuado.",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        },
+        {
+            "text": "We are building the future of corporate treasury with a new model for global cash control.",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+        },
+    ]
+
+    accepted = accepted_block_evidence("vision", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "We are building the future of corporate treasury with a new model for global cash control."
+    ]
+
+
+def test_value_proposition_answer_removes_spanish_subscribe_cta_tail() -> None:
+    from src.features.magnetism.block_interpreters import answer_from_spec
+
+    raw = (
+        "¿Listo para simplificar tus inversiones en criptomonedas? En Bokeroon estamos creado una plataforma "
+        "que convierte la gestión cripto en una experiencia instantánea y transparente. Menos complicaciones, "
+        "más claridad. Suscríbete Y sé de los primeros en acceder a nuestra plataforma"
+    )
+
+    answer = answer_from_spec("value_proposition", raw, [{"text": raw, "group": "product_offer"}])
+
+    assert "Suscríbete" not in answer
+    assert answer.endswith("más claridad.")
+
+
 def test_value_proposition_rejects_docs_navigation_candidate() -> None:
     spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
     candidates = [

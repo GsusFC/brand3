@@ -284,12 +284,15 @@ def accepted_block_evidence(
             if block == "mission" and (
                 _is_testimonial_evidence(low)
                 or _is_truncated_evidence(low)
+                or _is_feed_or_article_noise(text)
                 or _is_vague_mission_slogan(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
             if block == "vision" and (
-                _is_truncated_evidence(low) or not _has_future_signal(low)
+                _is_truncated_evidence(low)
+                or _is_feed_or_article_noise(text)
+                or not _has_future_signal(low)
             ):
                 continue
             if block == "value_proposition" and _is_bad_value_prop_candidate(text):
@@ -299,12 +302,15 @@ def accepted_block_evidence(
                 continue
             if block == "mission" and (
                 _is_truncated_evidence(low)
+                or _is_feed_or_article_noise(text)
                 or _is_vague_mission_slogan(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
             if block == "vision" and (
-                _is_truncated_evidence(low) or not _has_future_signal(low)
+                _is_truncated_evidence(low)
+                or _is_feed_or_article_noise(text)
+                or not _has_future_signal(low)
             ):
                 continue
             if block == "value_proposition" and (_is_bad_value_prop_candidate(text) or not _has_offer_signal(low)):
@@ -593,6 +599,9 @@ def _has_operating_activity_signal(text: str) -> bool:
             "implementa",
             "proporcionamos",
             "desarrollamos",
+            "estamos creando",
+            "estamos creado",
+            "convierte",
         )
     )
 
@@ -600,6 +609,32 @@ def _has_operating_activity_signal(text: str) -> bool:
 def _is_vague_mission_slogan(text: str) -> bool:
     low = text.strip().lower()
     return low in {"we make good shit"} or "shit" in low
+
+
+def _is_feed_or_article_noise(text: str) -> bool:
+    low = text.strip().lower()
+    url_count = len(re.findall(r"https?://", low))
+    if any(marker in low for marker in ("]]>", "#respond", "/feed/", "?p=")):
+        return True
+    if url_count >= 2:
+        return True
+    if re.search(r"\b(?:mon|tue|wed|thu|fri|sat|sun),\s+\d{1,2}\s+[a-z]{3}\s+\d{4}", low):
+        return True
+    editorial_markers = (
+        "imagínate",
+        "imaginate",
+        "cómo puedes beneficiarte",
+        "como puedes beneficiarte",
+        "lo que no quieren que sepas",
+        "descubre por qué",
+        "descubre por que",
+        "activo subyacente",
+        "caídas de precios",
+        "caidas de precios",
+        "este tipo de seguridad",
+        "muchos, ya que",
+    )
+    return any(marker in low for marker in editorial_markers)
 
 
 def _is_testimonial_evidence(text: str) -> bool:
@@ -794,6 +829,7 @@ def _clean_value_prop_answer_text(text: str) -> str:
     cleaned = re.sub(r"^Why [A-Z][^?]{2,120}\?\.\s*", "", cleaned)
     cleaned = re.sub(r"\s+Businesses spend thousands on ads.*$", "", cleaned, flags=re.I).strip()
     cleaned = re.sub(r"\.?launching soon\s*$", ".", cleaned, flags=re.I).strip()
+    cleaned = re.sub(r"\s+Suscr[ií]bete\b.*$", "", cleaned, flags=re.I).strip()
     return cleaned.strip()
 
 

@@ -50,6 +50,12 @@ BRAND3_PROMOTION_MAX_DIMENSION_DROPS = {
     "diferenciacion": 5.0,
     "vitalidad": 5.0,
 }
+BRAND3_TLDR_STRATEGIST_PASS = os.environ.get("BRAND3_TLDR_STRATEGIST_PASS", "").strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 _promotion_dimension_drops = os.environ.get("BRAND3_PROMOTION_MAX_DIMENSION_DROPS")
 if _promotion_dimension_drops:
     try:

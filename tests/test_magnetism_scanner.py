@@ -214,6 +214,56 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("evidence_basis:", response.text)
         self.assertIn("extraction_mode", response.text)
         self.assertIn("unknown", response.text)
+        self.assertNotIn("llm_strategist_pass", response.text)
+
+    def test_scan_detail_shows_tldr_strategy_metadata(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(
+            {
+                "run": {
+                    "id": 404,
+                    "brand_name": "Strategy Brand",
+                    "url": "https://strategy.test",
+                },
+                "features": [],
+                "raw_inputs": [
+                    {
+                        "source": "web",
+                        "payload": {
+                            "markdown_content": (
+                                "A memorable line. Strategy Brand is the workflow platform "
+                                "for teams that reduces manual reporting and keeps operators aligned."
+                            )
+                        },
+                    }
+                ],
+                "evidence_items": [],
+            }
+        )
+        payload["tldr_strategy"] = {
+            "mode": "llm_strategist_pass",
+            "verdict_vs_current": "better",
+            "main_gain": "Sharper block interpretation.",
+            "main_risk": "Evidence is still sparse.",
+            "validation_notes": ["mission: downgraded from declared."],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name="Strategy Brand",
+            url="https://strategy.test",
+            magnetism_score=payload["metrics"]["magnetism_score"],
+            coherence_score=payload["metrics"]["coherence_score"],
+            quadrant=payload["metrics"]["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        self._unlock_team_cookie()
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("llm_strategist_pass", response.text)
+        self.assertIn("Guardrail corrections", response.text)
+        self.assertIn("Sharper block interpretation.", response.text)
 
     def test_scan_detail_shows_canonical_extraction_mode(self):
         from web.storage import insert_magnetism_scan
@@ -1000,6 +1050,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("TLDR Brand3", r_detail.text)
         self.assertIn("9 strategic blocks derived from 7 Magenta signals", r_detail.text)
         self.assertIn("source signal: Emotions → Magnetism", r_detail.text)
+        self.assertIn("Method notes", r_detail.text)
+        self.assertIn("Evidence", r_detail.text)
         self.assertIn("evidence_basis:", r_detail.text)
         self.assertIn("Methodology Details", r_detail.text)
 
@@ -1059,6 +1111,64 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["magenta_circle"]["gamespace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["tactispace"]["status"], "detected")
 
+
+def test_entity_research_parent_surfaces_improve_lab_product_tldr():
+    extractor = MagnetismExtractor(llm=None)
+    snapshot = {
+        "run": {"id": 144, "brand_name": "tinyNature", "url": "https://lab.naturaumana.ai"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "entity_research_packet",
+                "payload": {
+                    "version": "entity_research_packet_v0_1",
+                    "input_url": "https://lab.naturaumana.ai",
+                    "audited_surface_type": "product_lab",
+                    "entity_name": "tinyNature",
+                    "parent_brand": "Natura Umana",
+                    "product_name": "tinyNature",
+                    "brand_architecture": "parent_brand_with_product_surface",
+                    "owned_surfaces": [
+                        {"url": "https://lab.naturaumana.ai", "role": "audited_surface", "entity_scope": "audited_surface", "reason": "input"},
+                        {"url": "https://www.naturaumana.ai/mission", "role": "mission_about", "entity_scope": "parent_brand", "reason": "mission"},
+                        {"url": "https://www.naturaumana.ai/natureos", "role": "product_system", "entity_scope": "parent_brand", "reason": "system"},
+                        {"url": "https://www.naturaumana.ai/privacy-policy", "role": "policy_security", "entity_scope": "parent_brand", "reason": "privacy"},
+                    ],
+                },
+            },
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://lab.naturaumana.ai",
+                    "markdown_content": (
+                        "Life orchestration, perfected by nature.\n"
+                        "tinyNature is a personal AI assistant platform for life orchestration.\n"
+                        "tinyNature is not just a chatbot; it is a command center.\n"
+                        "---\n"
+                        "## Subpage: https://www.naturaumana.ai/mission\n"
+                        "Our mission is to build technology that enhances life without distraction.\n"
+                        "We are building the future of human-machine interaction through voice-first personal agents.\n"
+                        "---\n"
+                        "## Subpage: https://www.naturaumana.ai/privacy-policy\n"
+                        "Privacy first. Your data stays yours. Security is at the core."
+                    ),
+                },
+            },
+        ],
+        "evidence_items": [],
+    }
+
+    result = extractor.extract_from_audit_snapshot(snapshot)
+    tldr = result["tldr_brand3"]
+
+    assert tldr["value_proposition"]["detected"] is True
+    assert "personal AI assistant" in tldr["value_proposition"]["answer"]
+    assert tldr["mission"]["detected"] is True
+    assert "enhances life without distraction" in tldr["mission"]["answer"]
+    assert tldr["vision"]["detected"] is True
+    assert "future of human-machine interaction" in tldr["vision"]["answer"]
+    assert tldr["values"]["detected"] is True
+    assert set(item.lower() for item in tldr["values"]["answer"]) & {"privacy", "security"}
 
 if __name__ == "__main__":
     unittest.main()

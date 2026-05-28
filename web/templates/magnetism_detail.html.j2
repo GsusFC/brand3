@@ -127,6 +127,28 @@
     <span class="tag">// 9 strategic blocks derived from 7 Magenta signals</span>
   </div>
 
+  {% if model.tldr_strategy %}
+  <div style="border: 1px solid var(--border); background: var(--surface); padding: 12px 14px; margin-top: 12px; display: grid; gap: 8px; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
+    <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+      <span class="badge">{{ model.tldr_strategy.mode or "method" }}</span>
+      {% if model.tldr_strategy.verdict_vs_current %}<span class="inline-kv"><span class="k">verdict</span>=<span class="v">{{ model.tldr_strategy.verdict_vs_current }}</span></span>{% endif %}
+    </div>
+    {% if model.tldr_strategy.main_gain %}<div><span class="dim">gain:</span> {{ model.tldr_strategy.main_gain }}</div>{% endif %}
+    {% if model.tldr_strategy.main_risk %}<div><span class="dim">risk:</span> {{ model.tldr_strategy.main_risk }}</div>{% endif %}
+    {% if model.tldr_strategy.validation_notes %}
+    <details style="color: var(--muted);">
+      <summary style="cursor:pointer; color: var(--muted);">Guardrail corrections · {{ model.tldr_strategy.validation_notes|length }}</summary>
+      <ul style="margin: 8px 0 0 16px; padding: 0; display: grid; gap: 4px;">
+        {% for note in model.tldr_strategy.validation_notes[:6] %}
+        <li>{{ note }}</li>
+        {% endfor %}
+        {% if model.tldr_strategy.validation_notes|length > 6 %}<li>+{{ model.tldr_strategy.validation_notes|length - 6 }} more</li>{% endif %}
+      </ul>
+    </details>
+    {% endif %}
+  </div>
+  {% endif %}
+
   {% set blocks = [
     ("core_purpose", "CORE PURPOSE"),
     ("magnetism", "MAGNETISM"),
@@ -165,30 +187,26 @@
         {% endif %}
       </div>
       <div style="display:grid; gap:7px;">
-        <span class="dim" style="font-family: var(--font-mono); font-size: 10px;">
-          mode: {{ block.mode or "not_detected" }}
-          {% if block.human_review_recommended %} · needs strategist review{% endif %}
-        </span>
-        {% if block.reasoning or block.rationale %}
-        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
-          reasoning: {{ block.reasoning or block.rationale }}
-        </span>
-        {% endif %}
         {% if block.evidence_used or block.evidence %}
-        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
-          evidence:
-          {% set evidence_items = block.evidence_used or block.evidence %}
+        {% set evidence_items = block.evidence_used or block.evidence %}
+        <div class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
+          <span style="color: var(--muted); text-transform: uppercase; letter-spacing: .04em;">Evidence</span><br>
           {% if evidence_items is iterable and evidence_items is not string %}
-            {{ evidence_items | join("; ") }}
+            {{ evidence_items[0] }}{% if evidence_items|length > 1 %} +{{ evidence_items|length - 1 }} more{% endif %}
           {% else %}
             {{ evidence_items }}
           {% endif %}
-        </span>
+        </div>
         {% endif %}
-        {% if block.counter_evidence %}
-        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
-          limitation: {{ block.counter_evidence | join("; ") }}
-        </span>
+        {% if block.reasoning or block.rationale or block.counter_evidence or block.mode %}
+        <details style="font-family: var(--font-mono); font-size: 10px; color: var(--muted);">
+          <summary style="cursor:pointer; color: var(--muted);">Method notes{% if block.human_review_recommended %} · review{% endif %}</summary>
+          <div style="display:grid; gap:6px; margin-top:8px; line-height:1.35;">
+            <span>mode: {{ block.mode or "not_detected" }}</span>
+            {% if block.reasoning or block.rationale %}<span>reasoning: {{ block.reasoning or block.rationale }}</span>{% endif %}
+            {% if block.counter_evidence %}<span>limitation: {{ block.counter_evidence | join("; ") }}</span>{% endif %}
+          </div>
+        </details>
         {% endif %}
       </div>
     </div>

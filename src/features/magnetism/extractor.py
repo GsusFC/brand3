@@ -14,6 +14,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.collectors.web_collector import WebCollector
+from src.config import BRAND3_TLDR_STRATEGIST_PASS
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
@@ -24,7 +25,9 @@ from src.features.magnetism.block_interpreters import (
     strategic_packet_candidates,
 )
 from src.features.magnetism.content_distiller import ContentDistiller
+from src.features.magnetism.strategist_tldr import maybe_build_strategist_tldr
 from src.reports.derivation import collect_evidences
+from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
@@ -361,7 +364,21 @@ class MagnetismExtractor:
                     result["evidence_packet_summary"] = evidence_packet_summary
                     result["strategic_evidence_packet"] = packet_dict
                     self._enrich_layers_from_strategic_packet(result["magenta_circle"], packet_dict)
-                    result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict)
+                    brand_context_brief = build_brand_context_brief(
+                        brand_name=brand_name,
+                        url=url,
+                        layers=result["magenta_circle"],
+                        strategic_packet=packet_dict,
+                    ).to_dict()
+                    result["brand_context_brief"] = brand_context_brief
+                    result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict, brand_context_brief)
+                    self._apply_strategist_tldr_if_enabled(
+                        result=result,
+                        brand_name=brand_name,
+                        url=url,
+                        packet_dict=packet_dict,
+                        brand_context_brief=brand_context_brief,
+                    )
                     result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
                     result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
                     result["system_reading"] = self._derive_system_reading(
@@ -388,7 +405,25 @@ class MagnetismExtractor:
         result["canonical_evidence_source"] = "brand_audit_snapshot"
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
-        result["strategic_evidence_packet"] = strategic_packet.to_dict()
+        packet_dict = strategic_packet.to_dict()
+        result["strategic_evidence_packet"] = packet_dict
+        brand_context_brief = build_brand_context_brief(
+            brand_name=brand_name,
+            url=url,
+            layers=result["magenta_circle"],
+            strategic_packet=packet_dict,
+        ).to_dict()
+        result["brand_context_brief"] = brand_context_brief
+        result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict, brand_context_brief)
+        self._apply_strategist_tldr_if_enabled(
+            result=result,
+            brand_name=brand_name,
+            url=url,
+            packet_dict=packet_dict,
+            brand_context_brief=brand_context_brief,
+        )
+        result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
+        result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
         result["system_reading"] = self._derive_system_reading(
             result["tldr_brand3"],
             result["magenta_circle"],
@@ -396,6 +431,47 @@ class MagnetismExtractor:
             evidence_packet_summary,
         )
         return result
+
+    def _apply_strategist_tldr_if_enabled(
+        self,
+        *,
+        result: dict[str, Any],
+        brand_name: str,
+        url: str,
+        packet_dict: dict[str, Any],
+        brand_context_brief: dict[str, Any],
+    ) -> None:
+        if not BRAND3_TLDR_STRATEGIST_PASS:
+            return
+        current_tldr = result.get("tldr_brand3")
+        if not isinstance(current_tldr, dict):
+            return
+        try:
+            strategist = maybe_build_strategist_tldr(
+                llm=self.llm,
+                brand_name=brand_name,
+                url=url,
+                magenta_circle=result.get("magenta_circle") or {},
+                strategic_evidence_packet=packet_dict,
+                brand_context_brief=brand_context_brief,
+                current_tldr=current_tldr,
+            )
+        except Exception as exc:
+            result.setdefault("limitations", []).append(f"TLDR strategist pass failed: {exc}")
+            return
+        if not strategist or not isinstance(strategist.get("tldr_brand3"), dict):
+            return
+
+        result["tldr_brand3_current"] = current_tldr
+        result["tldr_brand3_strategist"] = strategist
+        result["tldr_brand3"] = strategist["tldr_brand3"]
+        result["tldr_strategy"] = {
+            "mode": "llm_strategist_pass",
+            "verdict_vs_current": strategist.get("verdict_vs_current"),
+            "main_gain": strategist.get("main_gain"),
+            "main_risk": strategist.get("main_risk"),
+            "validation_notes": strategist.get("validation_notes") or [],
+        }
 
     @staticmethod
     def _mark_legacy_direct_result(result: dict[str, Any], source_provider: str) -> None:
@@ -572,7 +648,16 @@ Return exactly this JSON shape:
         strategic_packet = raw.get("strategic_evidence_packet") if isinstance(raw.get("strategic_evidence_packet"), dict) else None
         if strategic_packet:
             self._enrich_layers_from_strategic_packet(normalized["magenta_circle"], strategic_packet)
-        normalized["tldr_brand3"] = self._derive_tldr(normalized["magenta_circle"], strategic_packet)
+        brand_context_brief = raw.get("brand_context_brief") if isinstance(raw.get("brand_context_brief"), dict) else None
+        if not brand_context_brief:
+            brand_context_brief = build_brand_context_brief(
+                brand_name=normalized["brand_name"],
+                url=normalized["url"],
+                layers=normalized["magenta_circle"],
+                strategic_packet=strategic_packet,
+            ).to_dict()
+        normalized["brand_context_brief"] = brand_context_brief
+        normalized["tldr_brand3"] = self._derive_tldr(normalized["magenta_circle"], strategic_packet, brand_context_brief)
         if strategic_packet:
             normalized["strategic_evidence_packet"] = strategic_packet
         normalized["metrics"] = self._derive_metrics(normalized["magenta_circle"], normalized["tldr_brand3"])
@@ -806,6 +891,7 @@ Return exactly this JSON shape:
         self,
         layers: dict[str, Any],
         strategic_packet: dict[str, Any] | None = None,
+        brand_context_brief: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         tldr: dict[str, Any] = {}
         for key in TLDR_KEYS:
@@ -813,7 +899,7 @@ Return exactly this JSON shape:
             layer = layers[layer_key]
 
             if key in TLDR_BLOCK_INTERPRETER_SPECS:
-                interpreted = self._interpret_tldr_block_from_spec(key, layers, strategic_packet)
+                interpreted = self._interpret_tldr_block_from_spec(key, layers, strategic_packet, brand_context_brief)
                 tldr[key] = self._with_tldr_contract(key, interpreted or self._empty_tldr_block(key, layer_key), layers)
                 continue
 
@@ -866,6 +952,7 @@ Return exactly this JSON shape:
         key: str,
         layers: dict[str, Any],
         strategic_packet: dict[str, Any] | None = None,
+        brand_context_brief: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
         spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
         candidates = block_evidence_candidates(
@@ -874,6 +961,7 @@ Return exactly this JSON shape:
             layers,
             strategic_packet,
             TLDR_TO_LAYER[key],
+            brand_context_brief,
         )
         return interpret_tldr_block(
             key,

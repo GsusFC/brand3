@@ -11,6 +11,7 @@ from src.features.magnetism.block_interpreters import (
     get_tldr_block_interpreter_spec,
     human_review_from_spec,
     interpret_tldr_block,
+    source_role_for_url,
     strategic_packet_candidates,
 )
 
@@ -436,9 +437,9 @@ def test_block_evidence_candidates_select_layer_evidence_when_no_packet() -> Non
     )
 
     assert candidates == [
-        {"text": "A platform for finance teams", "layer": "netspace", "source": "evidence"},
-        {"text": "Trusted by teams", "layer": "netspace", "source": "finding"},
-        {"text": "Book a demo", "layer": "tactispace", "source": "evidence"},
+        {"text": "A platform for finance teams", "layer": "netspace", "source": "evidence", "source_role": "layer_evidence"},
+        {"text": "Trusted by teams", "layer": "netspace", "source": "finding", "source_role": "layer_evidence"},
+        {"text": "Book a demo", "layer": "tactispace", "source": "evidence", "source_role": "layer_evidence"},
     ]
 
 
@@ -851,3 +852,114 @@ def test_value_proposition_answer_does_not_append_broken_markdown_addition() -> 
     answer = answer_from_spec("value_proposition", accepted[0]["text"], accepted)
 
     assert answer == "Notion's developer platform: Any data. Any tool. Any agent. No infra required."
+
+
+
+def test_source_role_for_url_classifies_primary_and_low_trust_surfaces() -> None:
+    assert source_role_for_url("https://brand.test") == "homepage"
+    assert source_role_for_url("https://brand.test/about") == "about"
+    assert source_role_for_url("https://brand.test/products/payments") == "product"
+    assert source_role_for_url("https://brand.test/blog/future-of-crypto") == "blog_feed"
+    assert source_role_for_url("https://brand.test/feed") == "blog_feed"
+    assert source_role_for_url("https://brand.test/customers/acme") == "proof_customer"
+    assert source_role_for_url("https://brand.test/privacy") == "legal_navigation"
+
+
+
+def test_strategic_packet_candidates_include_source_role_and_prioritize_homepage() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    packet = {
+        "groups": {
+            "product_offer": [
+                {
+                    "text": "Blog explains how our platform improves portfolio management.",
+                    "source_type": "owned_raw",
+                    "url": "https://brand.test/blog/crypto-portfolio",
+                },
+                {
+                    "text": "A platform for investors that streamlines crypto portfolio management.",
+                    "source_type": "owned_raw",
+                    "url": "https://brand.test/",
+                },
+            ]
+        }
+    }
+
+    candidates = strategic_packet_candidates("value_proposition", spec, packet, "netspace")
+
+    assert candidates[0]["source_role"] == "homepage"
+    assert candidates[1]["source_role"] == "blog_feed"
+
+
+
+def test_mission_rejects_blog_feed_even_when_text_looks_operational() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["mission"]
+    candidates = [
+        {
+            "text": "We provide weekly analysis that helps investors understand Japan's crypto market.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+            "layer": "tactispace",
+            "source_role": "blog_feed",
+        }
+    ]
+
+    accepted = accepted_block_evidence("mission", spec, candidates)
+    sufficiency = evidence_sufficiency_from_spec("mission", candidates, accepted)
+
+    assert accepted == []
+    assert sufficiency["status"] == "polluted"
+    assert sufficiency["decision"] == "not_detected"
+
+
+
+def test_value_proposition_uses_homepage_over_blog_feed() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Our blog covers services and products for crypto market news.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "blog_feed",
+        },
+        {
+            "text": "A platform for investors that streamlines crypto portfolio management.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+    result = interpret_tldr_block("value_proposition", spec, candidates, {"netspace": {"detected": True}}, "netspace")
+
+    assert [item["text"] for item in accepted] == [
+        "A platform for investors that streamlines crypto portfolio management."
+    ]
+    assert result is not None
+    assert result["content"] == "A platform for investors that streamlines crypto portfolio management."
+    assert any("Source roles used: homepage." == item for item in result["observations"])
+
+
+
+def test_editorial_policy_guardrails_mark_overclaim_for_review() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["vision"]
+    candidates = [
+        {
+            "text": "Our vision is to build a premium future of treasury operations.",
+            "source": "strategic:vision_language",
+            "group": "vision_language",
+            "layer": "tactispace",
+            "source_role": "about",
+        }
+    ]
+
+    result = interpret_tldr_block("vision", spec, candidates, {"tactispace": {"detected": True}}, "tactispace")
+
+    assert result is not None
+    assert result["mode"] == "needs_human_review"
+    assert result["confidence"] == "low"
+    assert result["human_review_recommended"] is True
+    assert any("Editorial policy flagged possible overreach" in item for item in result["counter_evidence"])

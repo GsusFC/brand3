@@ -2,7 +2,10 @@ import unittest
 
 from src.reports.editorial_policy import (
     allowed_language_for_dimension_state,
+    editorial_discipline_warnings,
     evidence_language_hint,
+    overreach_warnings,
+    signal_depth_policy,
     label_dimension_state,
     label_report_mode,
     tone_for_dimension_state,
@@ -93,6 +96,28 @@ class EditorialPolicyTests(unittest.TestCase):
         self.assertTrue(direct["can_support_editorial_claims"])
         self.assertTrue(indirect["can_support_cautious_observations"])
         self.assertFalse(indirect["can_support_editorial_claims"])
+
+    def test_signal_depth_policy_limits_interpretive_reach(self):
+        rich = signal_depth_policy("rich_perceptual_signal")
+        thin = signal_depth_policy("thin_perceptual_signal")
+        unknown = signal_depth_policy("future_depth")
+
+        self.assertEqual(rich["interpretive_reach"], "medium_to_high")
+        self.assertEqual(thin["interpretive_reach"], "low")
+        self.assertEqual(unknown["interpretive_reach"], "none")
+
+    def test_editorial_discipline_warnings_detect_overreach_patterns(self):
+        warnings = editorial_discipline_warnings(
+            "The brand seeks enterprise authority with a premium and reassuring experience."
+        )
+
+        self.assertIn("invented_intentionality", warnings)
+        self.assertIn("false_sophistication", warnings)
+        self.assertIn("unsupported_emotional_projection", warnings)
+        self.assertEqual(overreach_warnings("The brand wants to feel safe."), [
+            "invented_intentionality",
+            "unsupported_emotional_projection",
+        ])
 
 
 if __name__ == "__main__":

@@ -10,6 +10,10 @@ from __future__ import annotations
 
 import re
 from typing import Any
+from urllib.parse import urlparse
+
+from src.reports.brand_context_brief import brand_context_candidates
+from src.reports.editorial_policy import overreach_warnings
 
 
 TLDR_BLOCK_INTERPRETER_SPECS = {
@@ -21,7 +25,7 @@ TLDR_BLOCK_INTERPRETER_SPECS = {
         "strategic_groups": ["product_offer", "audience", "outcome", "hero_claims"],
         "look_for": [
             "offer", "offers", "solution", "solutions", "platform", "product", "service", "services",
-            "api", "system", "management", "streamline", "centralise", "centralize", "reconcile",
+            "api", "system", "assistant", "companion", "management", "streamline", "centralise", "centralize", "reconcile",
             "execute", "forecast", "payments", "pagos", "billing", "facturación", "financial services",
             "servicios financieros", "revenue", "ingresos", "product development", "planning and building",
             "teams and agents", "human intelligence", "business analyst", "research people",
@@ -86,18 +90,88 @@ def get_tldr_block_interpreter_spec(block: str) -> dict[str, Any] | None:
     return dict(spec) if spec else None
 
 
+LOW_TRUST_BLOCK_SOURCE_ROLES = {"blog_feed", "proof_customer", "legal_navigation"}
+
+
+def source_role_for_candidate(item: dict[str, Any]) -> str:
+    surface_role = str(item.get("surface_role") or "")
+    if surface_role:
+        return {
+            "audited_surface": "homepage",
+            "parent_home": "homepage",
+            "mission_about": "about",
+            "product_system": "product",
+            "policy_security": "legal_navigation",
+            "blog_feed": "blog_feed",
+            "proof_customer": "proof_customer",
+        }.get(surface_role, surface_role)
+    return source_role_for_url(str(item.get("url") or ""))
+
+
+def source_role_for_url(url: str) -> str:
+    """Classify a source URL by strategic role for TLDR evidence weighting."""
+    if not url:
+        return "unknown"
+    try:
+        parsed = urlparse(url)
+    except ValueError:
+        return "unknown"
+    path = (parsed.path or "/").lower().rstrip("/") or "/"
+    if path == "/":
+        return "homepage"
+    if any(marker in path for marker in ("/blog", "/news", "/feed", "/article", "/post", "/resources")):
+        return "blog_feed"
+    if any(marker in path for marker in ("/customers", "/customer", "/clients", "/client", "/case-stud", "/stories", "/reviews", "/testimonials", "/casos", "/opiniones")):
+        return "proof_customer"
+    if any(marker in path for marker in ("/privacy", "/terms", "/legal", "/cookies", "/security")):
+        return "legal_navigation"
+    if any(marker in path for marker in ("/about", "/company", "/mission", "/manifesto", "/principles")):
+        return "about"
+    if any(marker in path for marker in ("/product", "/products", "/platform", "/solution", "/solutions", "/services", "/features")):
+        return "product"
+    if "/pricing" in path or "/plans" in path:
+        return "pricing"
+    if any(marker in path for marker in ("/docs", "/developers", "/api")):
+        return "docs"
+    return "unknown"
+
+
+def _source_role_rank(source_role: str) -> int:
+    return {
+        "homepage": 0,
+        "about": 1,
+        "product": 1,
+        "pricing": 2,
+        "docs": 2,
+        "layer_evidence": 3,
+        "unknown": 4,
+        "proof_customer": 6,
+        "blog_feed": 7,
+        "legal_navigation": 8,
+    }.get(source_role, 5)
+
+
+def _invalid_source_role_for_block(block: str, candidate: dict[str, str]) -> bool:
+    if block not in {"value_proposition", "mission", "vision"}:
+        return False
+    source_role = str(candidate.get("source_role") or "unknown")
+    return source_role in LOW_TRUST_BLOCK_SOURCE_ROLES
+
+
 def block_evidence_candidates(
     block: str,
     spec: dict[str, Any],
     layers: dict[str, Any],
     strategic_packet: dict[str, Any] | None,
     primary_layer_key: str,
+    brand_context_brief: dict[str, Any] | None = None,
 ) -> list[dict[str, str]]:
-    """Select block evidence candidates from the strategic packet or Magenta layers."""
+    """Select block evidence candidates from context brief, strategic packet, or Magenta layers."""
+    context_candidates = brand_context_candidates(block, brand_context_brief, primary_layer_key)
     if strategic_packet:
-        return strategic_packet_candidates(block, spec, strategic_packet, primary_layer_key)
+        return context_candidates + strategic_packet_candidates(block, spec, strategic_packet, primary_layer_key)
 
-    candidates: list[dict[str, str]] = []
+    candidates: list[dict[str, str]] = context_candidates
     seen: set[str] = set()
     for layer_key in spec["source_layers"]:
         layer = layers.get(layer_key) or {}
@@ -108,7 +182,7 @@ def block_evidence_candidates(
                 if not cleaned or cleaned in seen or _is_navigation_noise(cleaned):
                     continue
                 seen.add(cleaned)
-                candidates.append({"text": cleaned, "layer": layer_key, "source": source})
+                candidates.append({"text": cleaned, "layer": layer_key, "source": source, "source_role": "layer_evidence"})
     return candidates
 
 
@@ -138,6 +212,10 @@ def strategic_packet_candidates(
                     "group": group,
                     "source_type": str(item.get("source_type") or ""),
                     "feature_name": str(item.get("feature_name") or ""),
+                    "url": str(item.get("url") or ""),
+                    "surface_role": str(item.get("surface_role") or ""),
+                    "entity_scope": str(item.get("entity_scope") or ""),
+                    "source_role": source_role_for_candidate(item),
                     "block": block,
                 }
             )
@@ -146,9 +224,10 @@ def strategic_packet_candidates(
 
 def strategic_packet_candidate_priority(
     candidate: dict[str, str],
-) -> tuple[int, int, int, int, int, int, int, int]:
+) -> tuple[int, int, int, int, int, int, int, int, int]:
     """Rank candidates so concrete owned offer evidence wins over snippets/noise."""
     source_type = str(candidate.get("source_type") or "")
+    source_role = str(candidate.get("source_role") or "unknown")
     feature_name = str(candidate.get("feature_name") or "")
     group = str(candidate.get("group") or "")
     text = str(candidate.get("text") or "")
@@ -157,6 +236,7 @@ def strategic_packet_candidate_priority(
         group, 4
     )
     source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(source_type, 3)
+    source_role_rank = _source_role_rank(source_role)
     feature_rank = 3 if feature_name == "search_visibility" else 0
     truncated_rank = (
         2 if re.search(r"\b(?:com|streamli|throu|c|users?)\s*$", text, re.I) else 0
@@ -218,6 +298,7 @@ def strategic_packet_candidate_priority(
         truncated_rank,
         -richness,
         title_rank,
+        source_role_rank,
         source_rank,
         feature_rank,
         -useful_length,
@@ -265,6 +346,15 @@ def interpret_tldr_block(
         human_review = True
     reasoning_evidence = display_evidence[0] if display_evidence else evidence
     reasoning = reasoning_from_spec(block, reasoning_evidence, diagnostics)
+    mode, confidence, counter_evidence, human_review = apply_editorial_policy_guardrails(
+        block,
+        answer,
+        reasoning,
+        mode,
+        confidence,
+        counter_evidence,
+        human_review,
+    )
 
     return {
         "content": answer,
@@ -281,6 +371,33 @@ def interpret_tldr_block(
         "human_review_recommended": human_review,
         "evidence_sufficiency": sufficiency,
     }
+
+
+def apply_editorial_policy_guardrails(
+    block: str,
+    answer: str,
+    reasoning: str,
+    mode: str,
+    confidence: str,
+    counter_evidence: list[str],
+    human_review: bool,
+) -> tuple[str, str, list[str], bool]:
+    """Apply final editorial overreach checks to interpreted TLDR blocks."""
+    warnings = overreach_warnings(f"{answer} {reasoning}")
+    if not warnings:
+        return mode, confidence, counter_evidence, human_review
+
+    updated_counter = list(counter_evidence)
+    updated_counter.append(
+        "Editorial policy flagged possible overreach: " + ", ".join(sorted(set(warnings))) + "."
+    )
+    if confidence == "high":
+        confidence = "medium"
+    elif confidence == "medium":
+        confidence = "low"
+    if mode != "not_detected":
+        mode = "needs_human_review"
+    return mode, confidence, list(dict.fromkeys(updated_counter)), True
 
 
 def evidence_sufficiency_from_spec(
@@ -354,6 +471,8 @@ def _noise_detected_for_block(
     for item in rejected:
         text = str(item.get("text") or "")
         low = text.lower()
+        if _invalid_source_role_for_block(block, item):
+            return True
         if _is_navigation_noise(text) or _is_feed_or_article_noise(text) or _is_truncated_evidence(text):
             return True
         if block == "vision" and (_is_market_prediction_noise(text) or _is_rhetorical_future_question_noise(text)):
@@ -377,6 +496,8 @@ def accepted_block_evidence(
         text = candidate["text"]
         low = text.lower()
         if any(term in low for term in spec["reject"]):
+            continue
+        if _invalid_source_role_for_block(block, candidate):
             continue
         group = candidate.get("group")
         from_packet = str(candidate.get("source", "")).startswith("strategic:")
@@ -440,6 +561,7 @@ def block_evidence_diagnostics(
 ) -> dict[str, Any]:
     text = "\n".join(item["text"] for item in accepted).lower()
     groups = {str(item.get("group")) for item in accepted if item.get("group")}
+    source_roles = sorted({str(item.get("source_role") or "unknown") for item in accepted})
     explicit_sources = [str(item.get("source") or "") for item in accepted]
     product_offer_count = sum(
         1 for item in accepted if str(item.get("group") or "") == "product_offer"
@@ -461,6 +583,7 @@ def block_evidence_diagnostics(
         "product_offer_count": product_offer_count,
         "has_multiple_offers": product_offer_count > 1,
         "accepted_groups": sorted(groups),
+        "source_roles": source_roles,
         "primary_layer_detected": bool(layers.get(primary_layer_key, {}).get("detected")),
     }
 
@@ -640,12 +763,18 @@ def observations_from_spec(block: str, diagnostics: dict[str, Any]) -> list[str]
         )
         if diagnostics.get("accepted_groups"):
             observations.append("Strategic packet groups used: " + ", ".join(diagnostics["accepted_groups"]) + ".")
+        if diagnostics.get("source_roles"):
+            observations.append("Source roles used: " + ", ".join(diagnostics["source_roles"]) + ".")
         if diagnostics.get("has_multiple_offers"):
             observations.append("Multiple product_offer candidates were found; primary offer requires review.")
     if block == "mission":
         observations.append(f"Present-tense operating evidence={diagnostics['has_operating_activity']}.")
+        if diagnostics.get("source_roles"):
+            observations.append("Source roles used: " + ", ".join(diagnostics["source_roles"]) + ".")
     if block == "vision":
         observations.append(f"Future/category-change evidence={diagnostics['has_future']}.")
+        if diagnostics.get("source_roles"):
+            observations.append("Source roles used: " + ", ".join(diagnostics["source_roles"]) + ".")
     return observations
 
 
@@ -860,6 +989,8 @@ def _has_offer_signal(text: str) -> bool:
             "services",
             "api",
             "system",
+            "assistant",
+            "companion",
             "payments",
             "pagos",
             "billing",
@@ -1055,7 +1186,7 @@ def _is_weak_value_prop_addition(text: str) -> bool:
     low = text.strip().lower()
     if len(low) < 40 and not re.search(r"\b(?:helps|help|enables|enable|streamlines|automates|reduces|improves|builds|creates|for|para)\b", low):
         return True
-    if any(marker in low for marker in ("copyright", "all rights reserved", "pricing", "privacy policy", "terms of service")):
+    if any(marker in low for marker in ("copyright", "all rights reserved", "pricing", "privacy policy", "terms of service", "connect it to your favorite tools", "outlook sendgrid mailchimp")):
         return True
     if any(marker in low for marker in ("](", "→](", "learn more", "calculate savings", "bring all your tools")):
         return True

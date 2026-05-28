@@ -45,6 +45,7 @@ from src.discovery.calibration import apply_discovery_calibration_hint, build_di
 from src.discovery.search_plan import build_discovery_search_plan
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
+from src.reports.entity_research_packet import build_entity_research_packet
 from src.niche import (
     classify_brand_niche,
     get_calibration_profile,
@@ -1791,8 +1792,16 @@ def run(
         partial_dimensions = content_plan.partial_dimensions
         entity_discovery = _entity_discovery_payload(brand_name=brand_name, url=url, web_data=content_web or web_data, exa_data=exa_data, context_data=context_data)
         discovery_search_plan = _discovery_search_plan_payload(entity_discovery=entity_discovery, brand_name=brand_name, url=url)
+        entity_research_packet = build_entity_research_packet(
+            input_url=url,
+            brand_name=brand_name,
+            entity_discovery=entity_discovery,
+            discovery_search_plan=discovery_search_plan,
+        ).to_dict()
+        if run_id:
+            _store_safely(store, "entity research packet save", lambda: store.save_raw_input(run_id, "entity_research_packet", entity_research_packet))
         discovery_evidence_preview = _to_jsonable(build_discovery_evidence_preview(discovery_search_plan, exa_data=exa_data, web_data=content_web or web_data, context_data=context_data))
-        discovery_enrichment = build_discovery_enrichment(discovery_search_plan, discovery_evidence_preview, exa_data=exa_data, web_data=content_web or web_data, web_collector=web_collector, exa_collector=raw_inputs.exa_collector)
+        discovery_enrichment = build_discovery_enrichment(discovery_search_plan, discovery_evidence_preview, exa_data=exa_data, web_data=content_web or web_data, web_collector=web_collector, exa_collector=raw_inputs.exa_collector, entity_research_packet=entity_research_packet)
         exa_data = discovery_enrichment.exa_data
         content_web = discovery_enrichment.web_data or content_web
         web_data = discovery_enrichment.web_data or web_data
@@ -1924,6 +1933,7 @@ def run(
             "discovery_search_plan": discovery_search_plan,
             "discovery_evidence_preview": discovery_evidence_preview,
             "discovery_enrichment": discovery_enrichment_payload,
+            "entity_research_packet": entity_research_packet,
             "discovery_trust_basis": discovery_trust_basis,
             "discovery_calibration_hint": discovery_calibration_hint,
             "discovery_calibration_decision": discovery_calibration_decision,

@@ -134,6 +134,68 @@ _UNKNOWN_EVIDENCE_HINT = {
     "language": "treat as diagnostic only",
 }
 
+_SIGNAL_DEPTH_POLICIES: dict[str, dict[str, Any]] = {
+    "rich_perceptual_signal": {
+        "label": "Rich perceptual signal",
+        "interpretive_reach": "medium_to_high",
+        "safe_posture": "name mechanisms, clusters, and tensions without inventing intent",
+    },
+    "moderate_perceptual_signal": {
+        "label": "Moderate perceptual signal",
+        "interpretive_reach": "medium",
+        "safe_posture": "describe observed direction and keep claims conditional",
+    },
+    "thin_perceptual_signal": {
+        "label": "Thin perceptual signal",
+        "interpretive_reach": "low",
+        "safe_posture": "focus on limits, absences, and uncertainty",
+    },
+    "insufficient_perceptual_signal": {
+        "label": "Insufficient perceptual signal",
+        "interpretive_reach": "none",
+        "safe_posture": "do not infer; ask for more evidence",
+    },
+}
+
+_FALSE_SOPHISTICATION_TERMS = (
+    "premium",
+    "sophisticated",
+    "elevated",
+    "refined",
+    "polished",
+    "world-class",
+    "elegant",
+    "modern",
+    "robust",
+    "compelling",
+    "best-in-class",
+    "leader",
+    "leading",
+    "mature",
+    "high-end",
+    "seamless",
+)
+
+_INVENTED_INTENT_MARKERS = (
+    "seeks ",
+    "intends ",
+    "aims ",
+    "wants ",
+    "designed to ",
+    "built to ",
+    "pursuing ",
+)
+
+_UNSUPPORTED_EMOTIONAL_TERMS = (
+    "reassuring",
+    "supportive",
+    "trustworthy",
+    "calming",
+    "empowering",
+    "inspiring",
+    "safe",
+)
+
 
 def label_report_mode(mode: str) -> str:
     return tone_for_report_mode(mode)["label"]
@@ -164,3 +226,22 @@ def allowed_language_for_dimension_state(state: str) -> dict[str, Any]:
 
 def evidence_language_hint(evidence_type: str) -> dict[str, Any]:
     return dict(_EVIDENCE_HINTS.get(evidence_type, _UNKNOWN_EVIDENCE_HINT))
+
+def signal_depth_policy(depth: str) -> dict[str, Any]:
+    return dict(_SIGNAL_DEPTH_POLICIES.get(depth, _SIGNAL_DEPTH_POLICIES["insufficient_perceptual_signal"]))
+
+
+def editorial_discipline_warnings(text: str) -> list[str]:
+    low = str(text or "").lower()
+    warnings: list[str] = []
+    if any(term in low for term in _FALSE_SOPHISTICATION_TERMS):
+        warnings.append("false_sophistication")
+    if any(marker in low for marker in _INVENTED_INTENT_MARKERS):
+        warnings.append("invented_intentionality")
+    if any(term in low for term in _UNSUPPORTED_EMOTIONAL_TERMS):
+        warnings.append("unsupported_emotional_projection")
+    return warnings
+
+
+def overreach_warnings(text: str) -> list[str]:
+    return editorial_discipline_warnings(text)

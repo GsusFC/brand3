@@ -309,6 +309,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int):
                 "observations": payload["observations"],
                 "tldr_grid": payload["tldr_grid"],
                 "tldr_brand3": payload.get("tldr_brand3") or {},
+                "tldr_strategy": payload.get("tldr_strategy") or {},
                 "metrics": payload.get("metrics") or {},
                 "diagnosis": payload.get("diagnosis") or {},
                 "limitations": payload.get("limitations") or [],

@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.reports.derivation import Evidence, collect_evidences
+from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
 
 
 GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
@@ -279,6 +280,8 @@ class StrategicEvidenceLine:
     url: str | None = None
     feature_name: str | None = None
     dimension: str | None = None
+    surface_role: str | None = None
+    entity_scope: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -288,6 +291,8 @@ class StrategicEvidenceLine:
             "url": self.url,
             "feature_name": self.feature_name,
             "dimension": self.dimension,
+            "surface_role": self.surface_role,
+            "entity_scope": self.entity_scope,
         }
 
 
@@ -343,6 +348,15 @@ class StrategicEvidencePacket:
         }
 
 
+def _entity_research_packet(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+    for item in reversed(snapshot.get("raw_inputs") or []):
+        if item.get("source") == "entity_research_packet" and isinstance(item.get("payload"), dict):
+            return item["payload"]
+    audit = ((snapshot.get("run") or {}).get("audit") or {})
+    packet = audit.get("entity_research_packet") if isinstance(audit, dict) else None
+    return packet if isinstance(packet, dict) else None
+
+
 def _rejected_reason_counts(rejected: list[dict[str, str]]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for item in rejected:
@@ -374,6 +388,7 @@ def build_strategic_evidence_packet(snapshot: dict[str, Any]) -> StrategicEviden
             url=ev.url,
             feature_name=ev.feature_name,
             dimension=ev.dimension,
+            entity_research_packet=_entity_research_packet(snapshot),
         )
 
     # Raw owned web copy is the brand's own voice. Process it before
@@ -393,6 +408,7 @@ def build_strategic_evidence_packet(snapshot: dict[str, Any]) -> StrategicEviden
             url=ev.url,
             feature_name=ev.feature_name,
             dimension=ev.dimension,
+            entity_research_packet=_entity_research_packet(snapshot),
         )
 
     if not preferred:
@@ -520,7 +536,7 @@ def _add_owned_raw_web_candidates(
         pages.extend(_embedded_web_subpage_texts(markdown))
         for page_url, page_text in pages:
             if page_text:
-                _add_owned_raw_page_candidates(packet, seen, page_text, page_url)
+                _add_owned_raw_page_candidates(packet, seen, page_text, page_url, entity_research_packet=_entity_research_packet(snapshot))
 
 
 def _add_owned_raw_page_candidates(
@@ -528,6 +544,7 @@ def _add_owned_raw_page_candidates(
     seen: set[str],
     text: str,
     source_url: str,
+    entity_research_packet: dict[str, Any] | None = None,
 ) -> None:
     added = 0
     max_lines = 32 if _is_proof_page_url(source_url) else 24
@@ -542,6 +559,7 @@ def _add_owned_raw_page_candidates(
             url=source_url,
             feature_name="raw_web",
             dimension=None,
+            entity_research_packet=entity_research_packet,
         )
         after = sum(len(values) for values in packet.groups.values())
         if after > before:
@@ -581,6 +599,7 @@ def _add_candidate_line(
     url: str | None = None,
     feature_name: str | None = None,
     dimension: str | None = None,
+    entity_research_packet: dict[str, Any] | None = None,
 ) -> None:
     cleaned = _clean_quote(text)
     reject_reason = _reject_reason(cleaned)
@@ -604,6 +623,8 @@ def _add_candidate_line(
         url=url,
         feature_name=feature_name,
         dimension=dimension,
+        surface_role=surface_role_for_url(url or "", entity_research_packet),
+        entity_scope=entity_scope_for_url(url or "", entity_research_packet),
     )
     for group in groups:
         if len(packet.groups.setdefault(group, [])) < 8:

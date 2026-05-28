@@ -1087,3 +1087,65 @@ def test_strategic_evidence_packet_detects_observed_product_offer_terms_from_bat
     assert "productivity tools" in offer_text
     assert "observability service" in offer_text
     assert "portfolio platform" in offer_text
+
+
+def test_strategic_evidence_packet_propagates_entity_research_surface_roles():
+    snapshot = {
+        "run": {"id": 900, "brand_name": "tinyNature", "url": "https://lab.naturaumana.ai"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "entity_research_packet",
+                "payload": {
+                    "owned_surfaces": [
+                        {
+                            "url": "https://lab.naturaumana.ai",
+                            "role": "audited_surface",
+                            "entity_scope": "audited_surface",
+                            "reason": "input",
+                        },
+                        {
+                            "url": "https://www.naturaumana.ai/mission",
+                            "role": "mission_about",
+                            "entity_scope": "parent_brand",
+                            "reason": "mission",
+                        },
+                        {
+                            "url": "https://www.naturaumana.ai/privacy-policy",
+                            "role": "policy_security",
+                            "entity_scope": "parent_brand",
+                            "reason": "privacy",
+                        },
+                    ]
+                },
+            },
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://lab.naturaumana.ai",
+                    "markdown_content": (
+                        "tinyNature is a personal AI assistant platform for life orchestration.\n"
+                        "---\n"
+                        "## Subpage: https://www.naturaumana.ai/mission\n"
+                        "Our mission is to build technology that enhances life without distraction.\n"
+                        "---\n"
+                        "## Subpage: https://www.naturaumana.ai/privacy-policy\n"
+                        "Privacy first. Your data stays yours."
+                    ),
+                },
+            },
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    product = packet.groups["product_offer"][0].to_dict()
+    mission = packet.groups["mission_language"][0].to_dict()
+    values = packet.groups["values_language"][0].to_dict()
+    assert product["surface_role"] == "audited_surface"
+    assert product["entity_scope"] == "audited_surface"
+    assert mission["surface_role"] == "mission_about"
+    assert mission["entity_scope"] == "parent_brand"
+    assert values["surface_role"] == "policy_security"
+    assert values["entity_scope"] == "parent_brand"

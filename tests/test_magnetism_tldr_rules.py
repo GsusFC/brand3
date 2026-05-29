@@ -249,7 +249,7 @@ def test_executable_value_proposition_spec_marks_missing_audience_and_outcome() 
 
 
 
-def test_system_reading_places_reverse_engineering_inside_tldr() -> None:
+def test_system_reading_places_strategic_diagnostics_inside_tldr() -> None:
     result = MagnetismExtractor(llm=None).extract(
         url=None,
         manual_text="Treasury platform for cash visibility and reconciliation.",

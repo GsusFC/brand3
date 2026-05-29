@@ -453,11 +453,10 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
     fingerprint = audit.get("scoring_state_fingerprint") or ""
 
     runtime_seconds = run.get("run_duration_seconds")
+    run_id = run.get("id")
 
     # Defensive data_quality — replaces the legacy "unknown" sentinel.
     data_quality = derive_data_quality(snapshot)
-    run_id = run.get("id")
-    lab_href = f"/brand3-lab/cases/run/{run_id}" if run_id else ""
 
     # Terminal-head lines
     term_lines: list[dict] = []
@@ -562,7 +561,6 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             ),
             "report_id": f"rpt_{run.get('id') or 0:06d}",
             "run_id": run_id,
-            "lab_href": lab_href,
         },
         "ui": {
             "theme": theme,

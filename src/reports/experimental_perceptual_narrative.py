@@ -148,7 +148,7 @@ def format_perceptual_hints_for_prompt(hints: PerceptualNarrativeHints | None) -
 @lru_cache(maxsize=1)
 def _load_artifacts() -> dict[str, Any]:
     if not PATTERN_REGISTRY_PATH.exists() or not READING_SEMANTICS_PATH.exists():
-        return {}
+        return _fallback_artifacts()
     try:
         registry = _load_json(PATTERN_REGISTRY_PATH)
         semantics = _load_json(READING_SEMANTICS_PATH)
@@ -163,6 +163,115 @@ def _load_artifacts() -> dict[str, Any]:
         "registry": registry,
         "semantics": semantics,
         "case_records": case_records,
+    }
+
+
+def _fallback_artifacts() -> dict[str, Any]:
+    return {
+        "registry": {
+            "patterns": [
+                {
+                    "pattern_id": "pattern_category_surface_translation",
+                    "pattern_name": "Category-To-Surface Translation",
+                    "perceptual_meaning": "Category language becomes credible only when surface mechanisms make it observable.",
+                    "confidence_level": "medium",
+                    "typical_tensions": [
+                        "category claim vs observed product surface",
+                        "copy-supported clarity vs product-surface proof",
+                    ],
+                },
+                {
+                    "pattern_id": "pattern_evidence_bound_behavior",
+                    "pattern_name": "Evidence-Bound Behavior",
+                    "perceptual_meaning": "The reading stays useful by naming what the evidence can and cannot support.",
+                    "confidence_level": "medium",
+                    "typical_tensions": [
+                        "available owned evidence vs missing external corroboration",
+                    ],
+                },
+                {
+                    "pattern_id": "pattern_claim_signal_gap",
+                    "pattern_name": "Claim / Signal Gap",
+                    "perceptual_meaning": "A strong claim should be treated as conditional when the visible proof is thin.",
+                    "confidence_level": "low",
+                    "typical_tensions": [
+                        "declared ambition vs observable proof",
+                    ],
+                },
+                {
+                    "pattern_id": "pattern_guided_movement",
+                    "pattern_name": "Guided Movement",
+                    "perceptual_meaning": "Navigation, sequence, or interaction evidence can show how attention is directed.",
+                    "confidence_level": "medium",
+                    "typical_tensions": [
+                        "guided action vs exposed complexity",
+                    ],
+                },
+                {
+                    "pattern_id": "pattern_system_cohesion_difference",
+                    "pattern_name": "System Cohesion Difference",
+                    "perceptual_meaning": "Repeated language and surface behavior can support a bounded cohesion reading.",
+                    "confidence_level": "medium",
+                    "typical_tensions": [
+                        "owned-channel consistency vs broader market corroboration",
+                    ],
+                },
+                {
+                    "pattern_id": "pattern_concept_bearing_motion",
+                    "pattern_name": "Concept-Bearing Motion",
+                    "perceptual_meaning": "Motion should only be interpreted when sequence or interaction evidence is present.",
+                    "confidence_level": "low",
+                    "typical_tensions": [
+                        "motion language vs captured motion evidence",
+                    ],
+                },
+                {
+                    "pattern_id": "pattern_threshold_pacing",
+                    "pattern_name": "Threshold Pacing",
+                    "perceptual_meaning": "Page rhythm can clarify how the brand moves users from attention to action.",
+                    "confidence_level": "medium",
+                    "typical_tensions": [
+                        "attention capture vs action clarity",
+                    ],
+                },
+            ]
+        },
+        "semantics": {
+            "definitions": {
+                "signal_clusters": {
+                    "examples": [
+                        {"cluster": ["copy", "navigation", "proof modules"]},
+                        {"cluster": ["visual hierarchy", "density", "product objects"]},
+                        {"cluster": ["interaction", "sequence", "CTA behavior"]},
+                    ]
+                },
+                "perceptual_confidence": {
+                    "levels": {
+                        "high": "repeated visible mechanisms converge across surfaces",
+                        "medium": "surface signals and copy align but remain partially corroborated",
+                        "low": "the reading depends on sparse, owned, or copy-only evidence",
+                    }
+                },
+            },
+            "overreach_examples": [
+                "Do not infer internal intent from aesthetics alone.",
+                "Do not claim user emotion without naming surface mechanisms.",
+                "Do not treat category ambition as proven market position.",
+            ],
+            "generic_llm_interpretation_to_avoid": [
+                "premium and sophisticated visual identity",
+                "seamless and intuitive experience",
+                "market-leading platform",
+            ],
+        },
+        "case_records": [
+            {
+                "visual_observations": [
+                    {"observation": "Repeated product language can support a surface reading only when tied to visible mechanisms."},
+                    {"observation": "Sparse owned evidence should lower confidence rather than produce a broad brand conclusion."},
+                ]
+            }
+        ],
     }
 
 

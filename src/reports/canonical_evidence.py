@@ -1,9 +1,9 @@
 """Canonical public evidence bundle for downstream Brand3 interpreters.
 
 Brand Audit owns acquisition. This module adapts a persisted audit snapshot into
-one reusable evidence bundle so Magnetism, Reverse Engineering, and future TLDR
-interpreters read the same public evidence instead of scraping or selecting their
-own independent inputs.
+one reusable evidence bundle so Magnetism Scanner and future TLDR interpreters
+read the same public evidence instead of scraping or selecting their own
+independent inputs.
 """
 
 from __future__ import annotations

@@ -33,7 +33,6 @@ TYPOGRAPHY_SURFACES = [
     Path("web/templates/index.html.j2"),
     Path("web/templates/magnetism_scanner.html.j2"),
     Path("web/templates/magnetism_detail.html.j2"),
-    Path("web/routes/brand3_lab.py"),
     Path("src/reports/templates/report.html.j2"),
 ]
 

@@ -10,6 +10,9 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from src.features.magnetism.analyst_tldr import maybe_build_analyst_tldr
+from src.features.magnetism.tldr_guardrails import validate_analyst_tldr
+
 TLDR_KEYS = [
     "core_purpose",
     "magnetism",
@@ -96,27 +99,32 @@ def maybe_build_strategist_tldr(
     strategic_evidence_packet: dict[str, Any],
     brand_context_brief: dict[str, Any],
     current_tldr: dict[str, Any],
+    research_pack: Any | None = None,
 ) -> dict[str, Any] | None:
-    """Run the optional strategist pass and return a validated TLDR payload."""
+    """Legacy wrapper that keeps the old Strategist Pass interface alive.
+
+    The real LLM pass now lives in analyst_tldr.py and reads a Brand Research
+    Pack directly. This wrapper keeps existing callers stable while returning
+    the same validated TLDR shape.
+    """
     if llm is None or not getattr(llm, "api_key", None):
         return None
 
-    prompt = build_strategist_tldr_prompt(
+    analyst_result = maybe_build_analyst_tldr(
+        llm=llm,
         brand_name=brand_name,
         url=url,
-        magenta_circle=magenta_circle,
-        strategic_evidence_packet=strategic_evidence_packet,
-        brand_context_brief=brand_context_brief,
+        research_pack=research_pack or brand_context_brief,
         current_tldr=current_tldr,
     )
-    raw = llm._call_json(STRATEGIST_TLDR_SYSTEM_PROMPT, prompt, max_tokens=9000)
-    if not isinstance(raw, dict) or not raw:
+    if not isinstance(analyst_result, dict) or not analyst_result:
         return None
-
-    normalized = normalize_strategist_response(raw, current_tldr)
-    if not normalized.get("tldr_brand3"):
+    if analyst_result.get("analysis_error"):
         return None
-    return normalized
+    validated = validate_analyst_tldr(analyst_result, research_pack or brand_context_brief)
+    if not validated.get("tldr_brand3"):
+        return None
+    return validated
 
 
 def build_strategist_tldr_prompt(
@@ -159,7 +167,12 @@ def build_strategist_tldr_prompt(
     return json.dumps(payload, ensure_ascii=False, indent=2)
 
 
-def normalize_strategist_response(raw: dict[str, Any], current_tldr: dict[str, Any]) -> dict[str, Any]:
+def normalize_strategist_response(
+    raw: dict[str, Any],
+    current_tldr: dict[str, Any],
+    *,
+    research_pack: Any | None = None,
+) -> dict[str, Any]:
     blocks = raw.get("tldr_brand3") if isinstance(raw.get("tldr_brand3"), dict) else {}
     normalized_blocks: dict[str, Any] = {}
     validation_notes: list[str] = []
@@ -170,7 +183,7 @@ def normalize_strategist_response(raw: dict[str, Any], current_tldr: dict[str, A
         normalized_blocks[key] = block
         validation_notes.extend(notes)
 
-    return {
+    normalized = {
         "entity_reading": _clean_text(raw.get("entity_reading")),
         "verdict_vs_current": _clean_text(raw.get("verdict_vs_current")) or "unknown",
         "main_gain": _clean_text(raw.get("main_gain")),
@@ -178,6 +191,12 @@ def normalize_strategist_response(raw: dict[str, Any], current_tldr: dict[str, A
         "validation_notes": validation_notes,
         "tldr_brand3": normalized_blocks,
     }
+    if research_pack is None:
+        return normalized
+    validated = validate_analyst_tldr(normalized, research_pack)
+    if validation_notes:
+        validated["validation_notes"] = _dedupe_texts(validation_notes + (validated.get("validation_warnings") or []))
+    return validated
 
 
 def _normalize_block(key: str, raw: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
@@ -422,3 +441,18 @@ def _truncate(value: str, limit: int) -> str:
 def _allowed(value: Any, allowed: set[str], fallback: str) -> str:
     normalized = str(value or "").strip().lower()
     return normalized if normalized in allowed else fallback
+
+
+def _dedupe_texts(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    output: list[str] = []
+    for value in values:
+        text = _clean_text(value)
+        if not text:
+            continue
+        key = text.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        output.append(text)
+    return output

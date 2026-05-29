@@ -56,6 +56,15 @@ BRAND3_TLDR_STRATEGIST_PASS = os.environ.get("BRAND3_TLDR_STRATEGIST_PASS", "").
     "yes",
     "on",
 }
+BRAND3_MAGNETISM_RESEARCH_PACK_TLDR = os.environ.get(
+    "BRAND3_MAGNETISM_RESEARCH_PACK_TLDR",
+    "",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 _promotion_dimension_drops = os.environ.get("BRAND3_PROMOTION_MAX_DIMENSION_DROPS")
 if _promotion_dimension_drops:
     try:

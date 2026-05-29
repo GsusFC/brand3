@@ -932,6 +932,147 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(captured_jobs[0]["input_type"], "url")
         self.assertNotIn("deprecation", payload)
 
+    def test_research_pack_tldr_flag_on_uses_analyst_pass_and_persists_payload(self):
+        from web.storage import insert_magnetism_scan, get_magnetism_scan
+
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "entity_reading": "Base44 is a company-level AI app builder.",
+            "verdict_vs_current": "better",
+            "main_gain": "The offer is grounded in the Research Pack.",
+            "main_risk": "Founder context still needs human review.",
+            "tldr_brand3": {
+                "value_proposition": {
+                    "answer": "An AI app builder for non-technical founders.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "reasoning": "The owned homepage states the offer directly.",
+                    "evidence_used": ["Base44 is an AI app builder for non-technical founders."],
+                    "evidence_sources": [{"source_key": "https://base44.com", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                }
+            },
+        }
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        snapshot = {
+            "run": {"id": 505, "brand_name": "Base44", "url": "https://base44.com"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://base44.com",
+                        "markdown_content": (
+                            "Base44 is an AI app builder for non-technical founders. "
+                            "Build and ship apps fast."
+                        ),
+                    },
+                },
+                {
+                    "source": "entity_research_packet",
+                    "payload": {
+                        "input_url": "https://base44.com",
+                        "audited_surface_type": "parent_home",
+                        "entity_name": "Base44",
+                        "parent_brand": None,
+                        "product_name": None,
+                        "brand_architecture": "single_brand_surface",
+                        "owned_surfaces": [
+                            {
+                                "url": "https://base44.com",
+                                "role": "audited_surface",
+                                "entity_scope": "audited_surface",
+                                "reason": "input",
+                            }
+                        ],
+                        "limitations": [],
+                    },
+                },
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_TLDR_STRATEGIST_PASS", False), \
+             unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        scan_id = insert_magnetism_scan(
+            brand_name=result["brand_name"],
+            url=result["url"],
+            magnetism_score=result["magnetism_score"],
+            coherence_score=result["coherence_score"],
+            quadrant=result["quadrant"],
+            raw_payload=json.dumps(result),
+        )
+        stored = get_magnetism_scan(scan_id)
+        payload = json.loads(stored["raw_payload"])
+
+        self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
+        self.assertIn("research_pack", result)
+        self.assertIn("analyst_tldr_raw", result)
+        self.assertIn("analyst_tldr_validated", result)
+        self.assertIn("legacy_tldr_brand3", result)
+        self.assertEqual(result["tldr_strategy"]["mode"], "llm_analyst_pass")
+        self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
+        self.assertEqual(payload["tldr_generation_mode"], "analyst_pass_validated")
+        self.assertIn("research_pack", payload)
+        self.assertIn("analyst_tldr_validated", payload)
+
+    def test_research_pack_tldr_flag_falls_back_when_llm_fails(self):
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {}
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        snapshot = {
+            "run": {"id": 506, "brand_name": "Base44", "url": "https://base44.com"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://base44.com",
+                        "markdown_content": "Base44 is an AI app builder for non-technical founders.",
+                    },
+                },
+                {
+                    "source": "entity_research_packet",
+                    "payload": {
+                        "input_url": "https://base44.com",
+                        "audited_surface_type": "parent_home",
+                        "entity_name": "Base44",
+                        "parent_brand": None,
+                        "product_name": None,
+                        "brand_architecture": "single_brand_surface",
+                        "owned_surfaces": [
+                            {
+                                "url": "https://base44.com",
+                                "role": "audited_surface",
+                                "entity_scope": "audited_surface",
+                                "reason": "input",
+                            }
+                        ],
+                        "limitations": [],
+                    },
+                },
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_TLDR_STRATEGIST_PASS", False), \
+             unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        self.assertEqual(result["tldr_generation_mode"], "legacy_fallback_llm_error")
+        self.assertIn("legacy_tldr_brand3", result)
+        self.assertIn("warnings", result)
+        self.assertTrue(result["warnings"])
+        self.assertIn("analyst_tldr_validated", result)
+        self.assertIn("analyst_tldr_analysis_error", result)
+        self.assertEqual(result["tldr_brand3"], result["legacy_tldr_brand3"])
+
     def test_magnetism_status_page_shows_scanner_phase_steps(self):
         from web.workers.queue import set_run_magnetism_override
 

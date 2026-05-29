@@ -14,7 +14,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.collectors.web_collector import WebCollector
-from src.config import BRAND3_TLDR_STRATEGIST_PASS
+from src.config import BRAND3_MAGNETISM_RESEARCH_PACK_TLDR, BRAND3_TLDR_STRATEGIST_PASS
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
@@ -25,7 +25,9 @@ from src.features.magnetism.block_interpreters import (
     strategic_packet_candidates,
 )
 from src.features.magnetism.content_distiller import ContentDistiller
+from src.features.magnetism.analyst_tldr import run_analyst_tldr_pass
 from src.features.magnetism.strategist_tldr import maybe_build_strategist_tldr
+from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
 from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
@@ -344,6 +346,7 @@ class MagnetismExtractor:
         evidence normalization, confidence, and degraded-state handling.
         """
         canonical_evidence = build_canonical_brand_evidence(snapshot)
+        research_pack = build_brand_research_pack_from_snapshot(snapshot)
         brand_name = canonical_evidence.brand_name
         url = canonical_evidence.url
         strategic_packet = canonical_evidence.strategic_packet
@@ -372,13 +375,15 @@ class MagnetismExtractor:
                     ).to_dict()
                     result["brand_context_brief"] = brand_context_brief
                     result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict, brand_context_brief)
-                    self._apply_strategist_tldr_if_enabled(
+                    self._apply_tldr_generation_flow(
                         result=result,
                         brand_name=brand_name,
                         url=url,
                         packet_dict=packet_dict,
                         brand_context_brief=brand_context_brief,
+                        research_pack=research_pack,
                     )
+                    result.setdefault("tldr_generation_mode", "legacy_code")
                     result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
                     result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
                     result["system_reading"] = self._derive_system_reading(
@@ -415,13 +420,15 @@ class MagnetismExtractor:
         ).to_dict()
         result["brand_context_brief"] = brand_context_brief
         result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict, brand_context_brief)
-        self._apply_strategist_tldr_if_enabled(
+        self._apply_tldr_generation_flow(
             result=result,
             brand_name=brand_name,
             url=url,
             packet_dict=packet_dict,
             brand_context_brief=brand_context_brief,
+            research_pack=research_pack,
         )
+        result.setdefault("tldr_generation_mode", "legacy_code")
         result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
         result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
         result["system_reading"] = self._derive_system_reading(
@@ -432,7 +439,7 @@ class MagnetismExtractor:
         )
         return result
 
-    def _apply_strategist_tldr_if_enabled(
+    def _apply_tldr_generation_flow(
         self,
         *,
         result: dict[str, Any],
@@ -440,7 +447,20 @@ class MagnetismExtractor:
         url: str,
         packet_dict: dict[str, Any],
         brand_context_brief: dict[str, Any],
+        research_pack: Any | None = None,
     ) -> None:
+        result["research_pack"] = research_pack.to_dict() if hasattr(research_pack, "to_dict") else research_pack
+        if BRAND3_MAGNETISM_RESEARCH_PACK_TLDR:
+            self._apply_research_pack_tldr(
+                result=result,
+                brand_name=brand_name,
+                url=url,
+                packet_dict=packet_dict,
+                brand_context_brief=brand_context_brief,
+                research_pack=research_pack,
+            )
+            return
+
         if not BRAND3_TLDR_STRATEGIST_PASS:
             return
         current_tldr = result.get("tldr_brand3")
@@ -455,6 +475,7 @@ class MagnetismExtractor:
                 strategic_evidence_packet=packet_dict,
                 brand_context_brief=brand_context_brief,
                 current_tldr=current_tldr,
+                research_pack=research_pack,
             )
         except Exception as exc:
             result.setdefault("limitations", []).append(f"TLDR strategist pass failed: {exc}")
@@ -465,12 +486,87 @@ class MagnetismExtractor:
         result["tldr_brand3_current"] = current_tldr
         result["tldr_brand3_strategist"] = strategist
         result["tldr_brand3"] = strategist["tldr_brand3"]
+        result["tldr_generation_mode"] = "strategist_pass_legacy"
         result["tldr_strategy"] = {
             "mode": "llm_strategist_pass",
             "verdict_vs_current": strategist.get("verdict_vs_current"),
             "main_gain": strategist.get("main_gain"),
             "main_risk": strategist.get("main_risk"),
             "validation_notes": strategist.get("validation_notes") or [],
+            "validation_warnings": strategist.get("validation_warnings") or [],
+            "degraded_fields": strategist.get("degraded_fields") or [],
+        }
+
+    def _apply_research_pack_tldr(
+        self,
+        *,
+        result: dict[str, Any],
+        brand_name: str,
+        url: str,
+        packet_dict: dict[str, Any],
+        brand_context_brief: dict[str, Any],
+        research_pack: Any | None = None,
+    ) -> None:
+        current_tldr = result.get("tldr_brand3")
+        if not isinstance(current_tldr, dict):
+            return
+
+        if self.llm is None or not getattr(self.llm, "api_key", None):
+            result["legacy_tldr_brand3"] = current_tldr
+            result["tldr_generation_mode"] = "legacy_fallback_no_llm"
+            result.setdefault("warnings", []).append(
+                "Analyst Pass disabled because no LLM API key is available; legacy TLDR preserved."
+            )
+            return
+
+        try:
+            run = run_analyst_tldr_pass(
+                llm=self.llm,
+                brand_name=brand_name,
+                url=url,
+                research_pack=research_pack or brand_context_brief,
+                current_tldr=current_tldr,
+            )
+        except Exception as exc:
+            result["legacy_tldr_brand3"] = current_tldr
+            result["tldr_generation_mode"] = "legacy_fallback_llm_error"
+            result.setdefault("warnings", []).append(f"Analyst Pass failed; legacy TLDR preserved. error={exc}")
+            return
+
+        result["legacy_tldr_brand3"] = current_tldr
+        result["analyst_tldr_raw"] = run.get("raw") or {}
+        result["analyst_tldr_validated"] = run.get("validated") or {}
+        result["analyst_tldr_analysis_error"] = run.get("analysis_error")
+
+        if run.get("analysis_error"):
+            result["tldr_generation_mode"] = "legacy_fallback_llm_error"
+            warning = run["analysis_error"].get("detail") if isinstance(run["analysis_error"], dict) else "Analyst Pass failed."
+            result.setdefault("warnings", []).append(f"Analyst Pass fallback: {warning}")
+            result["tldr_brand3"] = current_tldr
+            result["tldr_strategy"] = {
+                "mode": "llm_analyst_pass_fallback",
+                "validation_notes": [],
+                "validation_warnings": [],
+                "degraded_fields": [],
+            }
+            return
+
+        validated = run.get("validated") if isinstance(run.get("validated"), dict) else {}
+        tldr = validated.get("tldr_brand3") if isinstance(validated, dict) else {}
+        if not isinstance(tldr, dict) or not tldr:
+            result["tldr_generation_mode"] = "legacy_fallback_llm_error"
+            result.setdefault("warnings", []).append("Analyst Pass returned no usable TLDR; legacy TLDR preserved.")
+            result["tldr_brand3"] = current_tldr
+            return
+
+        result["tldr_brand3"] = tldr
+        result["tldr_generation_mode"] = "analyst_pass_validated"
+        result["tldr_strategy"] = {
+            "mode": "llm_analyst_pass",
+            "prompt_version": validated.get("prompt_version"),
+            "validation_notes": validated.get("validation_notes") or [],
+            "validation_warnings": validated.get("validation_warnings") or [],
+            "degraded_fields": validated.get("degraded_fields") or [],
         }
 
     @staticmethod
@@ -660,6 +756,17 @@ Return exactly this JSON shape:
         normalized["tldr_brand3"] = self._derive_tldr(normalized["magenta_circle"], strategic_packet, brand_context_brief)
         if strategic_packet:
             normalized["strategic_evidence_packet"] = strategic_packet
+        for key in (
+            "research_pack",
+            "analyst_tldr_raw",
+            "analyst_tldr_validated",
+            "analyst_tldr_analysis_error",
+            "tldr_generation_mode",
+            "legacy_tldr_brand3",
+            "tldr_strategy",
+        ):
+            if key in raw:
+                normalized[key] = raw[key]
         normalized["metrics"] = self._derive_metrics(normalized["magenta_circle"], normalized["tldr_brand3"])
         normalized["diagnosis"] = self._derive_diagnosis(normalized["magenta_circle"], normalized["metrics"])
         if isinstance(raw.get("content_distillation_summary"), dict):

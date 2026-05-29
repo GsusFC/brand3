@@ -1,0 +1,126 @@
+{
+  "version": "brand_research_pack_v0_1",
+  "input_url": "https://base44.com",
+  "resolved_entity": {
+    "resolved_entity": "Base44",
+    "entity_type": "company",
+    "canonical_url": "https://base44.com",
+    "parent_brand": "",
+    "surface_role": "audited_surface",
+    "entity_scope": "audited_surface",
+    "confidence": "medium",
+    "notes": [
+      "External news evidence available; keep it in founder_or_press_context, not tone.",
+      "Context scan status=200."
+    ]
+  },
+  "entity_type": "company",
+  "parent_brand": "",
+  "official_urls": [
+    "https://base44.com"
+  ],
+  "analyzed_urls": [
+    "https://base44.com",
+    "https://techcrunch.com/2026/01/01/base44-founder-exit"
+  ],
+  "source_map": {
+    "https://base44.com": {
+      "url": "https://base44.com",
+      "source_type": "owned_official",
+      "label": "audited surface",
+      "surface_role": "audited_surface",
+      "entity_scope": "audited_surface",
+      "title": "Base44",
+      "notes": [
+        "Run input URL.",
+        "Derived from raw_inputs.web.",
+        "Derived from raw_inputs.context.",
+        "Derived from feature/evidence item (percepcion).",
+        "input"
+      ]
+    },
+    "https://techcrunch.com/2026/01/01/base44-founder-exit": {
+      "url": "https://techcrunch.com/2026/01/01/base44-founder-exit",
+      "source_type": "press_or_founder",
+      "label": "Base44 founder exit lands new platform",
+      "surface_role": "external_context",
+      "entity_scope": "external_context",
+      "title": "Base44 founder exit lands new platform",
+      "notes": [
+        "Derived from raw_inputs.exa.news."
+      ]
+    }
+  },
+  "company_summary": "Base44 is an AI app builder for non-technical founders. Build and ship apps fast.",
+  "product_summary": "Base44 is an AI app builder for non-technical founders. Build and ship apps fast.",
+  "audience": "non-technical founders; founders; teams",
+  "offer": "Base44 is an AI app builder for non-technical founders. Build and ship apps fast.",
+  "outcome": "build and ship; ship software; ship apps; help teams",
+  "category": "AI app builder",
+  "declared_purpose": "We are on a mission to help teams ship software.",
+  "declared_mission": "We are on a mission to help teams ship software.",
+  "future_direction": "",
+  "tone_of_voice": "fast",
+  "personality_signals": [
+    "fast"
+  ],
+  "visual_or_conceptual_signals": [
+    "builder"
+  ],
+  "values_signals": [
+    "Privacy and security are built in."
+  ],
+  "attributes_signals": [
+    "fast",
+    "technical"
+  ],
+  "proof_points": [
+    {
+      "text": "Trusted by founders and small teams",
+      "kind": "proof",
+      "source_url": "https://base44.com",
+      "source_type": "owned_official",
+      "source_label": "brand_sentiment",
+      "surface_role": "audited_surface",
+      "entity_scope": "audited_surface",
+      "topic": "percepcion",
+      "confidence": "high",
+      "notes": []
+    }
+  ],
+  "founder_or_press_context": [
+    {
+      "text": "Our founder exited a previous startup and built Base44 to make app creation simple.",
+      "kind": "context",
+      "source_url": "https://base44.com/about",
+      "source_type": "owned_about",
+      "source_label": "raw_web",
+      "surface_role": "mission_about",
+      "entity_scope": "unknown",
+      "topic": "founder_or_press",
+      "confidence": "high",
+      "notes": []
+    },
+    {
+      "text": "Base44 founder exit lands new platform",
+      "kind": "context",
+      "source_url": "https://techcrunch.com/2026/01/01/base44-founder-exit",
+      "source_type": "press_or_founder",
+      "source_label": "Base44 founder exit lands new platform",
+      "surface_role": "external_context",
+      "entity_scope": "external_context",
+      "topic": "context",
+      "confidence": "medium",
+      "notes": []
+    }
+  ],
+  "noise_rejected": [],
+  "evidence_gaps": [
+    "Only one official URL was retained; parent context may still be incomplete."
+  ],
+  "confidence_notes": [
+    "External news evidence available; keep it in founder_or_press_context, not tone.",
+    "Context scan status=200.",
+    "1 owned source(s) were retained in the pack."
+  ]
+}

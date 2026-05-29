@@ -1,0 +1,378 @@
+{
+  "version": "tldr_brand3_research_pack_gold_v0_1",
+  "cases": {
+    "https://base44.com": {
+      "summary": "Democratize software creation with natural-language app building. Avoid chrome and founder-proof over-weighting.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Democratize software creation by letting people turn ideas into working apps without code, team, or technical setup.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "Built for builders, powered by possibility.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "value_proposition": {
+          "answer": "Base44 lets builders, founders, and teams turn natural language prompts into working apps, including tools, back-office apps, customer portals, and enterprise products.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Builder-first, empowering, fast, anti-friction, practical.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "Software creation becomes a conversation; intent becomes working software.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "attributes": {
+          "answer": "Fast, accessible, full-stack, conversational, practical.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Accessibility, autonomy, creative agency, speed, removing gatekeepers.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Help anyone create their own apps with zero hassle.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "Move from buying or manually coding software to creating software from intent.",
+          "claim_type": "inferred",
+          "confidence": "low"
+        }
+      },
+      "error_taxonomy": [
+        "structural_noise_selected",
+        "proof_point_as_personality",
+        "concept_not_inferred",
+        "entity_context_not_promoted"
+      ]
+    },
+    "https://bokeroon.com": {
+      "summary": "Keep feed/article predictions out of vision; preserve clarity and transparency signals.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Make crypto investing easier to understand and manage for users who feel overwhelmed by complexity.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "Menos complicaciones, más claridad.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "value_proposition": {
+          "answer": "Bokeroon is building a platform that turns crypto management into an instant, transparent, and simpler experience.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Urgent, encouraging, challenger-like, educational.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "Crypto management without opacity.",
+          "claim_type": "inferred",
+          "confidence": "low"
+        },
+        "attributes": {
+          "answer": "Clear, fast, transparent, simple.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Clarity, accessibility, practical control.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Build a platform that makes crypto management instant and transparent.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "",
+          "claim_type": "absent",
+          "confidence": "low"
+        }
+      },
+      "error_taxonomy": [
+        "rhetorical_question_as_purpose",
+        "attributes_under_extracted",
+        "brand_idea_weak_but_not_absent",
+        "feed_or_article_noise"
+      ]
+    },
+    "https://fly.io": {
+      "summary": "Preserve strategist-quality synthesis and avoid over-metaphorizing the brand idea.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Get infrastructure out of developers' way so they can ship.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "Build fast. Run any code fearlessly.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "value_proposition": {
+          "answer": "Fly.io gives developers a public cloud for running apps and untrusted code in fast, hardware-isolated machines without infrastructure complexity.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Technical, playful, dev-native, irreverent.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "Infrastructure as an invisible superpower.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "attributes": {
+          "answer": "Developer-first, secure, fast, pragmatic.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Fairness, transparency, developer empathy.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Run apps and code on globally distributed, hardware-isolated compute.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "",
+          "claim_type": "absent",
+          "confidence": "low"
+        }
+      },
+      "error_taxonomy": []
+    },
+    "https://every.to/about": {
+      "summary": "Treat Every as a multi-surface entity: publication + software + services.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Help people think about what comes next in technology and turn those ideas into new technologies and businesses.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "What comes next?",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "value_proposition": {
+          "answer": "Every gives founders, operators, investors, and AI-native professionals editorial insight, products, courses, and consulting to stay at the edge of AI.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Thoughtful, curious, collaborative, non-dogmatic.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "An editorial and product studio for thinking at the edge of AI.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "attributes": {
+          "answer": "AI-native, practical, editorial.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Curiosity, usefulness, intellectual independence, experimentation.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Publish, build, teach, and consult around emerging technology and AI.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "Help people ask and answer what comes next so new technologies and businesses can emerge.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        }
+      },
+      "error_taxonomy": []
+    },
+    "https://lab.naturaumana.ai": {
+      "summary": "Subdomain/product surface. Parent entity expansion matters before stronger purpose or vision claims.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Make personal AI feel more human, useful, and integrated into daily life.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "Life orchestration, perfected by nature.",
+          "claim_type": "inferred",
+          "confidence": "low"
+        },
+        "value_proposition": {
+          "answer": "tinyNature acts as a personal AI assistant and command center that coordinates specialized agents across daily tasks and connected tools.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Personal, calm, always-available, companion-like.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "Life orchestration through a nature-inspired AI operating layer.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "attributes": {
+          "answer": "Private, orchestrated, agentic, personal.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Privacy, usefulness, personalization, calm intelligence.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Build AI assistants and agents that help people coordinate daily life.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "Unclear from the product surface alone; likely needs parent brand research.",
+          "claim_type": "absent",
+          "confidence": "low"
+        }
+      },
+      "error_taxonomy": [
+        "audited_surface_too_narrow",
+        "parent_entity_not_expanded",
+        "product_surface_used_as_full_brand"
+      ]
+    },
+    "https://creatify.ai/es/": {
+      "summary": "Performance marketing platform with strong proof and future-direction language; keep proof separate from core offer.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Help marketers and growth teams generate winning ad creative faster and at scale.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "Anuncios de IA que ganan.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "value_proposition": {
+          "answer": "Creatify is an AI ad platform designed for performance, letting teams create, test, and optimize video ads at scale.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Performance-driven, direct, ambitious.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "An autonomous creative optimization layer for paid media.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "attributes": {
+          "answer": "Fast, scalable, performance-oriented, ad-native.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Performance, efficiency, automation.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Generate, test, personalize, and optimize ad creatives at scale.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "Every ad and customer touchpoint eventually becomes dynamically generated and continuously optimized in real time.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        }
+      },
+      "error_taxonomy": []
+    },
+    "https://www.heygen.com": {
+      "summary": "Good scan quality, but no current magnetism scan exists in the corpus. Keep the case as audit-only.",
+      "blocks": {
+        "core_purpose": {
+          "answer": "Make video creation and localization easy enough for teams to scale without a studio bottleneck.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "magnetism": {
+          "answer": "Video creation, without the studio bottleneck.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "value_proposition": {
+          "answer": "HeyGen lets teams create talking-avatar videos and localize content at scale.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "personality": {
+          "answer": "Polished, product-led, scalable.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "brand_idea": {
+          "answer": "Video localization at scale.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "attributes": {
+          "answer": "Scalable, localized, video-first.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "values": {
+          "answer": "Accessibility, speed, scale.",
+          "claim_type": "inferred",
+          "confidence": "medium"
+        },
+        "mission": {
+          "answer": "Help teams create and localize video at scale.",
+          "claim_type": "declared",
+          "confidence": "high"
+        },
+        "vision": {
+          "answer": "Video creation becomes faster, more scalable, and more accessible.",
+          "claim_type": "inferred",
+          "confidence": "low"
+        }
+      },
+      "error_taxonomy": [
+        "missing_scanner_scan"
+      ]
+    }
+  }
+}

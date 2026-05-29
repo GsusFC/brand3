@@ -1887,6 +1887,190 @@ a:focus-visible {
   line-height: 1.65;
 }
 
+.magnetism-hero-section {
+  padding-bottom: 10px;
+}
+
+.magnetism-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(140px, 0.7fr) minmax(140px, 0.7fr);
+  margin-top: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.magnetism-hero-main,
+.magnetism-hero-metric {
+  min-width: 0;
+  padding: 18px;
+}
+
+.magnetism-hero-main,
+.magnetism-hero-metric:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+
+.magnetism-hero-title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 52px);
+  line-height: 0.95;
+}
+
+.magnetism-hero-verdict {
+  max-width: 760px;
+  margin: 10px 0 0;
+}
+
+.magnetism-hero-metric {
+  display: grid;
+  align-content: space-between;
+  min-height: 130px;
+}
+
+.magnetism-hero-label,
+.magnetism-hero-tier {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.magnetism-hero-label {
+  text-transform: uppercase;
+}
+
+.magnetism-hero-score {
+  font-family: var(--font-mono);
+  font-size: clamp(34px, 5vw, 64px);
+  font-weight: 700;
+  line-height: 0.9;
+}
+
+.magnetism-hero-score span {
+  color: var(--text-soft);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.magnetism-score-bar {
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: var(--surface-3);
+}
+
+.magnetism-score-bar span {
+  display: block;
+  width: var(--score-width);
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left center;
+  animation: magnetism-score-load 900ms steps(14, end) both;
+}
+
+.magnetism-score-bar-ok span {
+  background: var(--success);
+}
+
+@keyframes magnetism-score-load {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.magnetism-compact-rule {
+  margin: 10px 0 0;
+}
+
+.magnetism-tldr-section {
+  padding-top: 16px;
+}
+
+.magnetism-methodology-details {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.magnetism-methodology-summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.magnetism-methodology-summary::-webkit-details-marker {
+  display: none;
+}
+
+.magnetism-methodology-icon {
+  display: inline-grid;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+}
+
+.magnetism-methodology-icon::before {
+  content: "+";
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.magnetism-methodology-details[open] .magnetism-methodology-icon::before {
+  content: "-";
+}
+
+.magnetism-methodology-summary .label {
+  margin-right: auto;
+}
+
+.magnetism-methodology-details > div {
+  padding: 0 14px 14px;
+}
+
+.magnetism-card-result {
+  margin: 0;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.magnetism-card-head {
+  margin-bottom: 20px;
+}
+
+.magnetism-card-title-stack {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+}
+
+.magnetism-card-title {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.magnetism-card-path {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
 .lab-detail-list {
   display: grid;
   gap: 10px;
@@ -2332,6 +2516,7 @@ a:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   .matrix-dot,
+  .magnetism-score-bar span,
   .cursor {
     animation: none;
   }
@@ -2463,6 +2648,20 @@ a:hover {
 
   .home-feature-strip {
     grid-template-columns: 1fr;
+  }
+
+  .magnetism-hero-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .magnetism-hero-main,
+  .magnetism-hero-metric:not(:last-child) {
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .magnetism-hero-metric {
+    min-height: 100px;
   }
 
   .semantic-details-grid {

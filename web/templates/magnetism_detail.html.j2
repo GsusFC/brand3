@@ -1,36 +1,43 @@
 {% extends "base.html.j2" %}
 {% block title %}brand3 :: {{ model.title }}{% endblock %}
 {% block content %}
-<section>
+<section class="magnetism-hero-section">
   <div class="section-head">
-    <span class="label">magnetism_sheet</span>
-    <span class="tag">// scan_id={{ model.id }} · evidence-bound diagnostic</span>
+    <span class="label">magnetism scanner</span>
+    <span class="tag">// result</span>
   </div>
   <div class="lab-review-nav" style="margin-bottom: 14px;">
     <a class="source-link" href="/magnetism-scanner">Back to Magnetism Scanner</a>
   </div>
-  <h1 class="page-title">{{ model.brand_name }}</h1>
-  <p class="prose dim intro-copy" style="margin-bottom: 18px;">
-    Evidence-bound Magnetism scan across the 7 Magenta Circle layers. Scan completed on {{ model.created_at }}.
-  </p>
-
-  <div class="lab-index-meta" style="margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 14px;">
-    <span class="inline-kv"><span class="k">brand_name</span>=<span class="v">{{ model.brand_name }}</span></span>
-    {% if model.url and model.url != 'manual' and model.url != 'Manual Upload' %}
-    <span class="inline-kv"><span class="k">source_url</span>=<span class="v"><a href="{{ model.url }}" target="_blank" rel="noopener noreferrer">{{ model.url }}</a></span></span>
-    {% else %}
-    <span class="inline-kv"><span class="k">source_url</span>=<span class="v">Manual Copy/Paste</span></span>
-    {% endif %}
-    <span class="inline-kv"><span class="k">quadrant</span>=<span class="v hl-accent" style="font-weight: 600;">{{ model.quadrant }}</span></span>
-    {% if model.source_run_id %}
-    <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ model.source_run_id }}</span></span>
-    {% endif %}
-    <span class="inline-kv"><span class="k">extraction_mode</span>=<span class="v">{{ model.extraction_mode }}</span></span>
-    {% if model.canonical_evidence_source %}
-    <span class="inline-kv"><span class="k">canonical_source</span>=<span class="v">{{ model.canonical_evidence_source }}</span></span>
-    {% elif model.direct_source_provider %}
-    <span class="inline-kv"><span class="k">direct_source</span>=<span class="v">{{ model.direct_source_provider }}</span></span>
-    {% endif %}
+  <div class="magnetism-hero-grid">
+    <div class="magnetism-hero-main">
+      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      {% if model.quadrant %}
+      <p class="prose intro-copy magnetism-hero-verdict">
+        {{ model.quadrant }}
+      </p>
+      {% endif %}
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">Magnetism</div>
+      <div class="hl-accent magnetism-hero-score">
+        {{ model.magnetism_score }}<span>/100</span>
+      </div>
+      <div class="magnetism-score-bar" aria-hidden="true">
+        <span style="--score-width: {{ model.magnetism_score }}%;"></span>
+      </div>
+      <div class="dim magnetism-hero-tier">{{ model.metrics.magnetism_tier }}</div>
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">Coherence</div>
+      <div class="hl-ok magnetism-hero-score">
+        {{ model.coherence_score }}<span>/100</span>
+      </div>
+      <div class="magnetism-score-bar magnetism-score-bar-ok" aria-hidden="true">
+        <span style="--score-width: {{ model.coherence_score }}%;"></span>
+      </div>
+      <div class="dim magnetism-hero-tier">{{ model.metrics.coherence_tier }}</div>
+    </div>
   </div>
 
   {% if model.deprecation and model.deprecation.status == 'deprecated' %}
@@ -39,96 +46,65 @@
   </div>
   {% endif %}
 
-  <div class="badge-line" style="margin-top: 10px;">
-    {% if model.extraction_mode == 'canonical_snapshot' %}
-    <span class="badge badge-ready">Canonical Brand Audit Snapshot</span>
-    {% elif model.source == 'brand_audit_snapshot' %}
-    <span class="badge badge-ready">Brand Audit Evidence</span>
-    {% elif model.extraction_mode == 'legacy_direct' %}
-    <span class="badge badge-error">Legacy Direct Extraction</span>
-    {% elif model.fallback_used %}
-    <span class="badge badge-error">Heuristic Fallback Engine</span>
-    {% else %}
-    <span class="badge badge-ready">AI-Studio Signal Extractor</span>
+  <div hidden aria-hidden="true">
+    <div class="lab-index-meta" style="margin: 10px 0 12px; display: flex; flex-wrap: wrap; gap: 14px;">
+      <span class="inline-kv"><span class="k">brand_name</span>=<span class="v">{{ model.brand_name }}</span></span>
+      {% if model.url and model.url != 'manual' and model.url != 'Manual Upload' %}
+      <span class="inline-kv"><span class="k">source_url</span>=<span class="v"><a href="{{ model.url }}" target="_blank" rel="noopener noreferrer">{{ model.url }}</a></span></span>
+      {% else %}
+      <span class="inline-kv"><span class="k">source_url</span>=<span class="v">Manual Copy/Paste</span></span>
+      {% endif %}
+      <span class="inline-kv"><span class="k">quadrant</span>=<span class="v hl-accent" style="font-weight: 600;">{{ model.quadrant }}</span></span>
+      {% if model.source_run_id %}
+      <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ model.source_run_id }}</span></span>
+      {% endif %}
+      <span class="inline-kv"><span class="k">extraction_mode</span>=<span class="v">{{ model.extraction_mode }}</span></span>
+      {% if model.canonical_evidence_source %}
+      <span class="inline-kv"><span class="k">canonical_source</span>=<span class="v">{{ model.canonical_evidence_source }}</span></span>
+      {% elif model.direct_source_provider %}
+      <span class="inline-kv"><span class="k">direct_source</span>=<span class="v">{{ model.direct_source_provider }}</span></span>
+      {% endif %}
+    </div>
+    <div class="badge-line" style="margin-top: 10px;">
+      {% if model.extraction_mode == 'canonical_snapshot' %}
+      <span class="badge badge-ready">Canonical Brand Audit Snapshot</span>
+      {% elif model.source == 'brand_audit_snapshot' %}
+      <span class="badge badge-ready">Brand Audit Evidence</span>
+      {% elif model.extraction_mode == 'legacy_direct' %}
+      <span class="badge badge-error">Legacy Direct Extraction</span>
+      {% elif model.fallback_used %}
+      <span class="badge badge-error">Heuristic Fallback Engine</span>
+      {% else %}
+      <span class="badge badge-ready">AI-Studio Signal Extractor</span>
+      {% endif %}
+      <span class="badge">Magenta Circle v1.0</span>
+      {% if model.evidence_packet_summary and model.evidence_packet_summary.source_label %}
+      <span class="badge">{{ model.evidence_packet_summary.source_label }}</span>
+      {% endif %}
+    </div>
+    {% if model.evidence_packet_summary and model.evidence_packet_summary.evidence_basis %}
+    <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 10px 0 0;">
+      evidence_basis: {{ model.evidence_packet_summary.evidence_basis }}
+    </p>
     {% endif %}
-    <span class="badge">Magenta Circle v1.0</span>
-    {% if model.evidence_packet_summary and model.evidence_packet_summary.source_label %}
-    <span class="badge">{{ model.evidence_packet_summary.source_label }}</span>
-    {% endif %}
-  </div>
-  {% if model.evidence_packet_summary and model.evidence_packet_summary.evidence_basis %}
-  <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 10px 0 0;">
-    evidence_basis: {{ model.evidence_packet_summary.evidence_basis }}
-  </p>
-  {% endif %}
-  {% if model.content_distillation_summary %}
-  <details style="margin-top: 10px;">
-    <summary class="dim" style="cursor: pointer; font-family: var(--font-mono); font-size: 11px;">
+    {% if model.content_distillation_summary %}
+    <div class="dim" style="font-family: var(--font-mono); font-size: 11px; margin-top: 10px;">
       content_distillation: selected={{ model.content_distillation_summary.selected_count or 0 }} · rejected={{ model.content_distillation_summary.rejected_count or 0 }} · quality={{ model.content_distillation_summary.quality_score or 0 }}/100
-    </summary>
+    </div>
     {% if model.content_distillation_summary.warnings %}
     <div class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.45; margin-top: 8px;">
       warnings: {{ model.content_distillation_summary.warnings | join('; ') }}
     </div>
     {% endif %}
-  </details>
-  {% endif %}
-</section>
-
-<hr class="rule-thin">
-
-<section>
-  <div class="section-head">
-    <span class="label">scores</span>
-    <span class="tag">// derived from detected signals</span>
-  </div>
-
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 14px;">
-    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <h2 style="font-family: var(--font-ui); font-size: 14px; text-transform: uppercase; color: var(--accent); font-weight: 700;">Magnetism</h2>
-        <span class="hl-accent" style="font-size: 28px; font-weight: 700; font-family: var(--font-mono);">{{ model.magnetism_score }}<span style="font-size: 13px; color: var(--text-soft); font-weight: 400;">/100</span></span>
-      </div>
-      <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">{{ model.metrics.magnetism_tier }}</div>
-      <div style="background: var(--surface-3); border: 1px solid var(--border); height: 10px; margin: 12px 0; position: relative;">
-        <div style="background: var(--accent); height: 100%; width: {{ model.magnetism_score }}%;"></div>
-      </div>
-      <div style="display: grid; gap: 4px; font-size: 12px; margin-top: 14px;">
-        <span class="inline-kv"><span class="k">originality</span>=<span class="v">{{ model.metrics.magnetism_breakdown.originality }}</span></span>
-        <span class="inline-kv"><span class="k">specificity</span>=<span class="v">{{ model.metrics.magnetism_breakdown.specificity }}</span></span>
-        <span class="inline-kv"><span class="k">memorability</span>=<span class="v">{{ model.metrics.magnetism_breakdown.memorability }}</span></span>
-        <span class="inline-kv"><span class="k">verifiable_promise</span>=<span class="v">{{ model.metrics.magnetism_breakdown.verifiable_promise }}</span></span>
-      </div>
-    </article>
-
-    <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
-      <div style="display: flex; justify-content: space-between; align-items: baseline;">
-        <h2 style="font-family: var(--font-ui); font-size: 14px; text-transform: uppercase; color: var(--success); font-weight: 700;">Coherence</h2>
-        <span class="hl-ok" style="font-size: 28px; font-weight: 700; font-family: var(--font-mono);">{{ model.coherence_score }}<span style="font-size: 13px; color: var(--text-soft); font-weight: 400;">/100</span></span>
-      </div>
-      <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">{{ model.metrics.coherence_tier }}</div>
-      <div style="background: var(--surface-3); border: 1px solid var(--border); height: 10px; margin: 12px 0; position: relative;">
-        <div style="background: var(--success); height: 100%; width: {{ model.coherence_score }}%;"></div>
-      </div>
-      <div style="display: grid; gap: 4px; font-size: 12px; margin-top: 14px;">
-        <span class="inline-kv"><span class="k">completeness</span>=<span class="v">{{ model.metrics.coherence_breakdown.completeness }}</span></span>
-        <span class="inline-kv"><span class="k">semantic_alignment</span>=<span class="v">{{ model.metrics.coherence_breakdown.semantic_alignment }}</span></span>
-        <span class="inline-kv"><span class="k">absence_of_contradiction</span>=<span class="v">{{ model.metrics.coherence_breakdown.absence_of_contradiction }}</span></span>
-      </div>
-    </article>
+    {% endif %}
   </div>
 </section>
 
-<hr class="rule-thin">
+<hr class="rule-thin magnetism-compact-rule">
 
-<section>
-  <div class="section-head">
-    <span class="label">TLDR Brand3</span>
-    <span class="tag">// 9 strategic blocks derived from 7 Magenta signals</span>
-  </div>
-
+<section class="magnetism-tldr-section">
   {% if model.tldr_strategy %}
-  <div style="border: 1px solid var(--border); background: var(--surface); padding: 12px 14px; margin-top: 12px; display: grid; gap: 8px; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
+  <div hidden aria-hidden="true">
     <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
       <span class="badge">{{ model.tldr_strategy.mode or "method" }}</span>
       {% if model.tldr_strategy.verdict_vs_current %}<span class="inline-kv"><span class="k">verdict</span>=<span class="v">{{ model.tldr_strategy.verdict_vs_current }}</span></span>{% endif %}
@@ -149,6 +125,11 @@
   </div>
   {% endif %}
 
+  <div class="section-head">
+    <span class="label">TLDR Brand3</span>
+    <span class="tag">// 9 strategic blocks derived from 7 Magenta signals</span>
+  </div>
+
   {% set blocks = [
     ("core_purpose", "CORE PURPOSE"),
     ("magnetism", "MAGNETISM"),
@@ -165,11 +146,16 @@
     {% set block = model.tldr_brand3[key] %}
     <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
       <div>
-        <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom: 8px;">
-          <span class="hl-accent" style="font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; font-weight: 700; display: block;">{{ label }}</span>
-          <span class="badge">{{ block.claim_type or "absent" }} · {{ block.confidence or "low" }}</span>
+        <div class="magnetism-card-head">
+          <div class="magnetism-card-title-stack">
+            <span class="hl-accent magnetism-card-title">{{ label }}</span>
+            <span class="dim magnetism-card-path">
+              {{ block.source_signal_path or block.source_signal or "Magenta signal" }}
+            </span>
+          </div>
+          <span hidden aria-hidden="true">{{ block.claim_type or "absent" }} · {{ block.confidence or "low" }}</span>
         </div>
-        <span class="dim" style="font-family: var(--font-mono); font-size: 10px; display:block; margin: -2px 0 9px 0;">
+        <span hidden aria-hidden="true">
           source signal: {{ block.source_signal_path or block.source_signal or "Magenta signal" }}
         </span>
         {% if block.detected %}
@@ -180,16 +166,16 @@
             {% endfor %}
           </div>
           {% else %}
-          <p style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.45; color: var(--text);">{{ block.content }}</p>
+          <p class="magnetism-card-result">{{ block.content }}</p>
           {% endif %}
         {% else %}
-        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px;">(no detectado)</p>
+        <p class="dim magnetism-card-result">(no detectado)</p>
         {% endif %}
       </div>
       <div style="display:grid; gap:7px;">
         {% if block.evidence_used or block.evidence %}
         {% set evidence_items = block.evidence_used or block.evidence %}
-        <div class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.35;">
+        <div hidden aria-hidden="true">
           <span style="color: var(--muted); text-transform: uppercase; letter-spacing: .04em;">Evidence</span><br>
           {% if evidence_items is iterable and evidence_items is not string %}
             {{ evidence_items[0] }}{% if evidence_items|length > 1 %} +{{ evidence_items|length - 1 }} more{% endif %}
@@ -199,14 +185,14 @@
         </div>
         {% endif %}
         {% if block.reasoning or block.rationale or block.counter_evidence or block.mode %}
-        <details style="font-family: var(--font-mono); font-size: 10px; color: var(--muted);">
-          <summary style="cursor:pointer; color: var(--muted);">Method notes{% if block.human_review_recommended %} · review{% endif %}</summary>
+        <div hidden aria-hidden="true">
+          <span>Method notes{% if block.human_review_recommended %} · review{% endif %}</span>
           <div style="display:grid; gap:6px; margin-top:8px; line-height:1.35;">
             <span>mode: {{ block.mode or "not_detected" }}</span>
             {% if block.reasoning or block.rationale %}<span>reasoning: {{ block.reasoning or block.rationale }}</span>{% endif %}
             {% if block.counter_evidence %}<span>limitation: {{ block.counter_evidence | join("; ") }}</span>{% endif %}
           </div>
-        </details>
+        </div>
         {% endif %}
       </div>
     </div>
@@ -270,8 +256,9 @@
 {% endif %}
 
 <section>
-  <details>
-    <summary style="cursor: pointer; display: flex; justify-content: space-between; align-items: baseline;">
+  <details class="magnetism-methodology-details">
+    <summary class="magnetism-methodology-summary">
+      <span class="magnetism-methodology-icon" aria-hidden="true"></span>
       <span class="label">Methodology Details</span>
       <span class="tag">// 7 technical Magenta signals</span>
     </summary>

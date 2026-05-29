@@ -130,7 +130,7 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("Brand3 Scoring is the working audit product", response.text)
         self.assertIn("brand3-theme", response.text)
         self.assertIn('data-theme-toggle', response.text)
-        self.assertIn("brand3-clean-surfaces-20260528", response.text)
+        self.assertIn("brand3-magnetism-score-bars-20260529", response.text)
         self.assertNotIn("Brand3 Lab", response.text)
         self.assertNotIn("/brand3-lab", response.text)
 

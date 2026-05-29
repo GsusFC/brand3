@@ -23,9 +23,7 @@
     "examples/reports/narrative_harness/watermelon.diagnostic.json",
     "examples/reports/narrative_harness/watermelon.render_aware.diagnostic.json",
     "examples/reports/narrative_harness/entity_state/watermelon.entity_narrative_state.v0.json",
-    "examples/reports/narrative_harness/entity_state/inputs/watermelon.observed_related_surfaces.input.json",
-    "examples/brand3_platform/brand3_editorial_discipline_gate.json",
-    "examples/perceptual_library/patterns/perceptual_overreach_taxonomy.json"
+    "examples/reports/narrative_harness/entity_state/inputs/watermelon.observed_related_surfaces.input.json"
   ],
   "baseline": {
     "synthesis_excerpt": "The brand's owned presence at watermelon.sh describes a focus on Building the design infrastructure for modern startups, but external signals introduce GitHub, alternatives, and unrelated news surfaces.",
@@ -79,7 +77,9 @@
       "percepcion": [
         {
           "title": "Self-description as startup infrastructure",
-          "evidence_urls": ["https://watermelon.sh/"],
+          "evidence_urls": [
+            "https://watermelon.sh/"
+          ],
           "problem": "Owned positioning is visible but still over-extended into strategic intent."
         },
         {
@@ -92,14 +92,18 @@
         },
         {
           "title": "Product Hunt listing",
-          "evidence_urls": ["https://www.producthunt.com/products/watermelon"],
+          "evidence_urls": [
+            "https://www.producthunt.com/products/watermelon"
+          ],
           "problem": "Product Hunt presence is framed as traction-seeking without enough engagement evidence."
         }
       ],
       "presencia": [
         {
           "title": "Self-description as Design Infrastructure",
-          "evidence_urls": ["https://watermelon.sh/"],
+          "evidence_urls": [
+            "https://watermelon.sh/"
+          ],
           "problem": "Owned domain evidence is useful but repeated across dimensions."
         },
         {
@@ -122,7 +126,9 @@
       "vitalidad": [
         {
           "title": "Recent Founding and Growth",
-          "evidence_urls": ["https://watermelon.us/"],
+          "evidence_urls": [
+            "https://watermelon.us/"
+          ],
           "problem": "A different Watermelon surface is used for vitality evidence without verified equivalence."
         },
         {
@@ -163,7 +169,10 @@
       "finding_count": 14,
       "findings_without_evidence_urls": 6,
       "coverage_level": "mixed",
-      "affected_dimensions": ["coherencia", "diferenciacion"]
+      "affected_dimensions": [
+        "coherencia",
+        "diferenciacion"
+      ]
     },
     "budgets": {
       "attribution_budget": "over_budget",
@@ -231,7 +240,10 @@
     ],
     "missing_or_uncited": {
       "findings_without_evidence_urls": 6,
-      "affected_dimensions": ["coherencia", "diferenciacion"],
+      "affected_dimensions": [
+        "coherencia",
+        "diferenciacion"
+      ],
       "rule": "Missing URL support should reduce confidence and prevent strategic prescription."
     }
   },
@@ -290,7 +302,9 @@
         {
           "title": "The owned story is coherent, but the entity boundary is not",
           "finding": "watermelon.sh presents a clear owned story around design infrastructure for modern startups and a founder pain point: startups move quickly while design becomes a bottleneck. That is a coherent primary-surface claim. The problem is not the claim itself; it is that the wider evidence set also contains Watermelon-named developer, repository, marketplace, alternatives, and adjacent-domain surfaces whose relationship to watermelon.sh is not verified.",
-          "evidence": ["https://watermelon.sh/"],
+          "evidence": [
+            "https://watermelon.sh/"
+          ],
           "confidence": "medium for owned-surface observation, low for cross-surface entity interpretation",
           "uncertainty": "Do not merge the adjacent surfaces into one entity or roadmap without human review."
         },
@@ -309,14 +323,18 @@
         {
           "title": "Differentiation currently rests on an owned platform claim",
           "finding": "Watermelon differentiates itself through the language of infrastructure, ecosystem, and relief from fragmented design tools. That is a stronger and more specific claim than a generic design-service offer, but the available evidence supports it as owned positioning rather than externally validated differentiation.",
-          "evidence": ["https://watermelon.sh/"],
+          "evidence": [
+            "https://watermelon.sh/"
+          ],
           "confidence": "medium for claim visibility, low for market validation",
           "uncertainty": "No external proof in the current set validates whether the infrastructure claim is recognized by users or the market."
         },
         {
           "title": "The strongest safe reading is problem framing, not strategic intent",
           "finding": "The brand's safest differentiating signal is its problem frame: founders stitching tools together, inconsistent UI, and design slowing product development. The report can say this is the brand's chosen frame. It should not infer a full platform strategy, category ownership, or adoption pathway from that copy alone.",
-          "evidence": ["https://watermelon.sh/"],
+          "evidence": [
+            "https://watermelon.sh/"
+          ],
           "confidence": "medium",
           "uncertainty": "External corroboration is needed before treating the problem frame as market truth."
         }
@@ -339,7 +357,9 @@
         {
           "title": "Product Hunt is a visibility signal, not traction proof",
           "finding": "The Product Hunt profile can support the observation that a Watermelon product surface exists in an early-adopter channel. It cannot support a claim about adoption, feedback quality, or traction without engagement data and entity review.",
-          "evidence": ["https://www.producthunt.com/products/watermelon"],
+          "evidence": [
+            "https://www.producthunt.com/products/watermelon"
+          ],
           "confidence": "low to medium",
           "uncertainty": "Use only as a related visibility signal unless ownership and current relevance are verified."
         }
@@ -371,7 +391,9 @@
         {
           "title": "Vitality signals are present but not entity-safe",
           "finding": "The baseline uses watermelon.us for founding, hiring growth, and funding signals. State-first reading holds those claims as potentially useful but not entity-safe for watermelon.sh. They should not be used to describe the audited brand's vitality until the relationship between surfaces is verified.",
-          "evidence": ["https://watermelon.us/"],
+          "evidence": [
+            "https://watermelon.us/"
+          ],
           "confidence": "low",
           "uncertainty": "Funding, employee growth, and founding claims may belong to a different Watermelon entity."
         },

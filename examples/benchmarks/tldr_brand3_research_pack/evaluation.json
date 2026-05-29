@@ -1,0 +1,2659 @@
+{
+  "benchmark_taxonomy_counts": {
+    "attributes_under_extracted": 1,
+    "audited_surface_too_narrow": 1,
+    "brand_idea_weak_but_not_absent": 1,
+    "concept_not_inferred": 1,
+    "entity_context_not_promoted": 1,
+    "feed_or_article_noise": 1,
+    "missing_scanner_scan": 1,
+    "parent_entity_not_expanded": 1,
+    "product_surface_used_as_full_brand": 1,
+    "proof_point_as_personality": 1,
+    "rhetorical_question_as_purpose": 1,
+    "structural_noise_selected": 1
+  },
+  "block_summaries": [
+    {
+      "analyst_average": {
+        "block_answer_quality": 48.27,
+        "claim_type_correctness": 80.0,
+        "confidence_reasonableness": 78.57,
+        "evidence_correctness": 82.86,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 74.84
+      },
+      "block": "core_purpose",
+      "delta_average": {
+        "block_answer_quality": 32.82,
+        "claim_type_correctness": 10.0,
+        "confidence_reasonableness": 11.9,
+        "evidence_correctness": -0.47,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 13.04
+      },
+      "scanner_average": {
+        "block_answer_quality": 15.45,
+        "claim_type_correctness": 70.0,
+        "confidence_reasonableness": 66.67,
+        "evidence_correctness": 83.33,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 61.8
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 74.73,
+        "claim_type_correctness": 88.57,
+        "confidence_reasonableness": 78.57,
+        "evidence_correctness": 85.71,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 84.63
+      },
+      "block": "magnetism",
+      "delta_average": {
+        "block_answer_quality": -1.65,
+        "claim_type_correctness": 1.9,
+        "confidence_reasonableness": -4.76,
+        "evidence_correctness": 9.04,
+        "noise_avoidance": 6.67,
+        "strategic_usefulness": 2.22
+      },
+      "scanner_average": {
+        "block_answer_quality": 76.38,
+        "claim_type_correctness": 86.67,
+        "confidence_reasonableness": 83.33,
+        "evidence_correctness": 76.67,
+        "noise_avoidance": 93.33,
+        "strategic_usefulness": 82.41
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 54.11,
+        "claim_type_correctness": 77.14,
+        "confidence_reasonableness": 64.29,
+        "evidence_correctness": 97.14,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 76.88
+      },
+      "block": "value_proposition",
+      "delta_average": {
+        "block_answer_quality": 31.51,
+        "claim_type_correctness": -16.19,
+        "confidence_reasonableness": 5.96,
+        "evidence_correctness": 17.14,
+        "noise_avoidance": 6.67,
+        "strategic_usefulness": 12.68
+      },
+      "scanner_average": {
+        "block_answer_quality": 22.6,
+        "claim_type_correctness": 93.33,
+        "confidence_reasonableness": 58.33,
+        "evidence_correctness": 80.0,
+        "noise_avoidance": 93.33,
+        "strategic_usefulness": 64.2
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 43.63,
+        "claim_type_correctness": 57.14,
+        "confidence_reasonableness": 100.0,
+        "evidence_correctness": 100.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 76.66
+      },
+      "block": "personality",
+      "delta_average": {
+        "block_answer_quality": 20.78,
+        "claim_type_correctness": 47.14,
+        "confidence_reasonableness": 25.0,
+        "evidence_correctness": 20.0,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 21.06
+      },
+      "scanner_average": {
+        "block_answer_quality": 22.85,
+        "claim_type_correctness": 10.0,
+        "confidence_reasonableness": 75.0,
+        "evidence_correctness": 80.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 55.6
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 40.53,
+        "claim_type_correctness": 85.71,
+        "confidence_reasonableness": 92.86,
+        "evidence_correctness": 85.71,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 76.09
+      },
+      "block": "brand_idea",
+      "delta_average": {
+        "block_answer_quality": 28.94,
+        "claim_type_correctness": 19.04,
+        "confidence_reasonableness": 9.53,
+        "evidence_correctness": 19.04,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 16.78
+      },
+      "scanner_average": {
+        "block_answer_quality": 11.59,
+        "claim_type_correctness": 66.67,
+        "confidence_reasonableness": 83.33,
+        "evidence_correctness": 66.67,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 59.31
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 61.8,
+        "claim_type_correctness": 42.86,
+        "confidence_reasonableness": 92.86,
+        "evidence_correctness": 100.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 78.9
+      },
+      "block": "attributes",
+      "delta_average": {
+        "block_answer_quality": 27.91,
+        "claim_type_correctness": 42.86,
+        "confidence_reasonableness": 42.86,
+        "evidence_correctness": 33.33,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 27.9
+      },
+      "scanner_average": {
+        "block_answer_quality": 33.89,
+        "claim_type_correctness": 0.0,
+        "confidence_reasonableness": 50.0,
+        "evidence_correctness": 66.67,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 51.0
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 42.56,
+        "claim_type_correctness": 42.86,
+        "confidence_reasonableness": 92.86,
+        "evidence_correctness": 85.71,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 70.27
+      },
+      "block": "values",
+      "delta_average": {
+        "block_answer_quality": 24.48,
+        "claim_type_correctness": 42.86,
+        "confidence_reasonableness": 42.86,
+        "evidence_correctness": 35.71,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 27.35
+      },
+      "scanner_average": {
+        "block_answer_quality": 18.08,
+        "claim_type_correctness": 0.0,
+        "confidence_reasonableness": 50.0,
+        "evidence_correctness": 50.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 42.92
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 48.79,
+        "claim_type_correctness": 71.43,
+        "confidence_reasonableness": 64.29,
+        "evidence_correctness": 100.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 74.99
+      },
+      "block": "mission",
+      "delta_average": {
+        "block_answer_quality": 19.2,
+        "claim_type_correctness": -15.24,
+        "confidence_reasonableness": -2.38,
+        "evidence_correctness": 6.67,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 4.45
+      },
+      "scanner_average": {
+        "block_answer_quality": 29.59,
+        "claim_type_correctness": 86.67,
+        "confidence_reasonableness": 66.67,
+        "evidence_correctness": 93.33,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 70.54
+      }
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 60.7,
+        "claim_type_correctness": 80.0,
+        "confidence_reasonableness": 100.0,
+        "evidence_correctness": 82.86,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 81.78
+      },
+      "block": "vision",
+      "delta_average": {
+        "block_answer_quality": 16.39,
+        "claim_type_correctness": 3.33,
+        "confidence_reasonableness": 0.0,
+        "evidence_correctness": 2.86,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 5.99
+      },
+      "scanner_average": {
+        "block_answer_quality": 44.31,
+        "claim_type_correctness": 76.67,
+        "confidence_reasonableness": 100.0,
+        "evidence_correctness": 80.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 75.79
+      }
+    }
+  ],
+  "blocks": [
+    "core_purpose",
+    "magnetism",
+    "value_proposition",
+    "personality",
+    "brand_idea",
+    "attributes",
+    "values",
+    "mission",
+    "vision"
+  ],
+  "case_count": 7,
+  "case_evaluations": [
+    {
+      "analyst_average": {
+        "block_answer_quality": 17.76,
+        "claim_type_correctness": 42.22,
+        "confidence_reasonableness": 77.78,
+        "evidence_correctness": 71.11,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 57.55
+      },
+      "analyst_taxonomy_counts": {
+        "overclaim": 2,
+        "proof_point_as_personality": 1,
+        "weak_brand_idea": 2
+      },
+      "benchmark_taxonomy": [
+        "concept_not_inferred",
+        "entity_context_not_promoted",
+        "proof_point_as_personality",
+        "structural_noise_selected"
+      ],
+      "benchmark_taxonomy_counts": {
+        "concept_not_inferred": 1,
+        "entity_context_not_promoted": 1,
+        "proof_point_as_personality": 1,
+        "structural_noise_selected": 1
+      },
+      "block_comparisons": [
+        {
+          "analyst_answer": "Base44 exists to make app creation simple for non-technical founders.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 26.47665847665848,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 60.442997542997546
+          },
+          "analyst_taxonomy": [
+            "overclaim"
+          ],
+          "block": "core_purpose",
+          "gold_answer": "Democratize software creation by letting people turn ideas into working apps without code, team, or technical setup.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "Partner with Base44 to help students create and innovate.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 10.173410404624278,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 67.05202312138728
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Build and ship apps fast.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 16.470588235294116,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 57.44117647058823
+          },
+          "analyst_taxonomy": [
+            "overclaim"
+          ],
+          "block": "magnetism",
+          "gold_answer": "Built for builders, powered by possibility.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "Our Mission, Your Vision.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 11.764705882352942,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 40.0,
+            "noise_avoidance": 60.0,
+            "strategic_usefulness": 47.529411764705884
+          },
+          "scanner_taxonomy": [
+            "overclaim",
+            "structural_noise_selected"
+          ]
+        },
+        {
+          "analyst_answer": "An AI app builder for non-technical founders that reduces the work of creating software.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 24.913793103448278,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 73.47413793103448
+          },
+          "analyst_taxonomy": [],
+          "block": "value_proposition",
+          "gold_answer": "Base44 lets builders, founders, and teams turn natural language prompts into working apps, including tools, back-office apps, customer portals, and enterprise products.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Our Mission, Your Vision top of page # About Us...",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 8.073394495412845,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 0.0,
+            "evidence_correctness": 40.0,
+            "noise_avoidance": 60.0,
+            "strategic_usefulness": 37.42201834862385
+          },
+          "scanner_taxonomy": [
+            "missing_audience",
+            "structural_noise_selected"
+          ]
+        },
+        {
+          "analyst_answer": "The founder story makes Base44 feel ambitious and builder-oriented.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 16.96,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 75.088
+          },
+          "analyst_taxonomy": [
+            "proof_point_as_personality"
+          ],
+          "block": "personality",
+          "gold_answer": "Builder-first, empowering, fast, anti-friction, practical.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "Solo founder, $80M exit, 6 months...",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 11.063829787234043,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 55.819148936170215
+          },
+          "scanner_taxonomy": [
+            "overclaim",
+            "proof_point_as_personality"
+          ]
+        },
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "brand_idea",
+          "gold_answer": "Software creation becomes a conversation; intent becomes working software.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Fast, simple, and AI-first.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 27.42168674698795,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 63.22650602409639
+          },
+          "analyst_taxonomy": [],
+          "block": "attributes",
+          "gold_answer": "Fast, accessible, full-stack, conversational, practical.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Simplicity, speed, and trust.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 26.545454545454547,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 62.96363636363637
+          },
+          "analyst_taxonomy": [],
+          "block": "values",
+          "gold_answer": "Accessibility, autonomy, creative agency, speed, removing gatekeepers.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "To help teams ship software.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 21.035673187571923,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 62.81070195627157
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Help anyone create their own apps with zero hassle.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "help anyone create their own apps with zero hassle",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 99.60396039603961,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 99.88118811881188
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 35.0
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "vision",
+          "gold_answer": "Move from buying or manually coding software to creating software from intent.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "low",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 35.0
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        }
+      ],
+      "brand_audit_run_id": 81,
+      "delta_average": {
+        "block_answer_quality": 2.13,
+        "claim_type_correctness": 0.0,
+        "confidence_reasonableness": 11.11,
+        "evidence_correctness": 31.11,
+        "noise_avoidance": 8.89,
+        "strategic_usefulness": 10.31
+      },
+      "differences_summary": "Manual reading favors the owned offer and mission; the current scanner over-weights chrome and founder proof.",
+      "gold_summary": "Democratize software creation with natural-language app building. Avoid chrome and founder-proof over-weighting.",
+      "magnetism_scan_id": 8,
+      "manual_notes": "Benchmark regression case. Base44 is the clearest example of structural noise and founder-proof over-promotion in the old scanner.",
+      "scanner_available": true,
+      "scanner_average": {
+        "block_answer_quality": 15.63,
+        "claim_type_correctness": 42.22,
+        "confidence_reasonableness": 66.67,
+        "evidence_correctness": 40.0,
+        "noise_avoidance": 91.11,
+        "strategic_usefulness": 47.24
+      },
+      "scanner_taxonomy_counts": {
+        "missing_audience": 1,
+        "overclaim": 3,
+        "proof_point_as_personality": 1,
+        "structural_noise_selected": 2,
+        "weak_brand_idea": 4
+      },
+      "slug": "base44",
+      "source_kind": "benchmark_fixture",
+      "source_url": "https://base44.com"
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 100.0,
+        "claim_type_correctness": 100.0,
+        "confidence_reasonableness": 100.0,
+        "evidence_correctness": 100.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 100.0
+      },
+      "analyst_taxonomy_counts": {},
+      "benchmark_taxonomy": [
+        "attributes_under_extracted",
+        "brand_idea_weak_but_not_absent",
+        "feed_or_article_noise",
+        "rhetorical_question_as_purpose"
+      ],
+      "benchmark_taxonomy_counts": {
+        "attributes_under_extracted": 1,
+        "brand_idea_weak_but_not_absent": 1,
+        "feed_or_article_noise": 1,
+        "rhetorical_question_as_purpose": 1
+      },
+      "block_comparisons": [
+        {
+          "analyst_answer": "Make crypto investing easier to understand and manage for users who feel overwhelmed by complexity.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "core_purpose",
+          "gold_answer": "Make crypto investing easier to understand and manage for users who feel overwhelmed by complexity.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "¿Listo para simplificar tus inversiones en criptomonedas?",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 7.17948717948718,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 66.15384615384616
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Menos complicaciones, más claridad.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "magnetism",
+          "gold_answer": "Menos complicaciones, más claridad.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Menos complicaciones, más claridad.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Bokeroon is building a platform that turns crypto management into an instant, transparent, and simpler experience.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "value_proposition",
+          "gold_answer": "Bokeroon is building a platform that turns crypto management into an instant, transparent, and simpler experience.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 30.769230769230774,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 79.23076923076923
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Urgent, encouraging, challenger-like, educational.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "personality",
+          "gold_answer": "Urgent, encouraging, challenger-like, educational.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Crypto management without opacity.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "brand_idea",
+          "gold_answer": "Crypto management without opacity.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "low",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 35.0
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Clear, fast, transparent, simple.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "attributes",
+          "gold_answer": "Clear, fast, transparent, simple.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Clarity, accessibility, practical control.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "values",
+          "gold_answer": "Clarity, accessibility, practical control.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Build a platform that makes crypto management instant and transparent.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Build a platform that makes crypto management instant and transparent.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 26.894736842105267,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 78.06842105263158
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "vision",
+          "gold_answer": "",
+          "gold_claim_type": "absent",
+          "gold_confidence": "low",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "scanner_taxonomy": []
+        }
+      ],
+      "brand_audit_run_id": 80,
+      "delta_average": {
+        "block_answer_quality": 70.57,
+        "claim_type_correctness": 48.89,
+        "confidence_reasonableness": 16.67,
+        "evidence_correctness": 44.44,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 39.89
+      },
+      "differences_summary": "Manual reading preserves the offer and extracts clarity/instant/transparency signals. The old scanner treated a rhetorical question as purpose.",
+      "gold_summary": "Keep feed/article predictions out of vision; preserve clarity and transparency signals.",
+      "magnetism_scan_id": 7,
+      "manual_notes": "Benchmark regression case. Feed/article predictions should remain noise; attributes and clarity language matter.",
+      "scanner_available": true,
+      "scanner_average": {
+        "block_answer_quality": 29.43,
+        "claim_type_correctness": 51.11,
+        "confidence_reasonableness": 83.33,
+        "evidence_correctness": 55.56,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 60.11
+      },
+      "scanner_taxonomy_counts": {
+        "overclaim": 1,
+        "weak_brand_idea": 4
+      },
+      "slug": "bokeroon",
+      "source_kind": "benchmark_fixture",
+      "source_url": "https://bokeroon.com"
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 54.62,
+        "claim_type_correctness": 57.78,
+        "confidence_reasonableness": 88.89,
+        "evidence_correctness": 97.78,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 77.94
+      },
+      "analyst_taxonomy_counts": {
+        "weak_brand_idea": 1
+      },
+      "benchmark_taxonomy": [],
+      "benchmark_taxonomy_counts": {},
+      "block_comparisons": [
+        {
+          "analyst_answer": "To get out of the way of developers so they can focus entirely on shipping their ideas.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 55.655577299412926,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 86.69667318982388
+          },
+          "analyst_taxonomy": [],
+          "block": "core_purpose",
+          "gold_answer": "Get infrastructure out of developers' way so they can ship.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The platform for devs who just want to ship.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 27.864077669902912,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 70.85922330097088
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Build fast. Run any code fearlessly.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 96.0
+          },
+          "analyst_taxonomy": [],
+          "block": "magnetism",
+          "gold_answer": "Build fast. Run any code fearlessly.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Build fast. Run any code fearlessly.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 96.0
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "For developers and security engineers, Fly.io offers a public cloud of hardware-isolated micro-VMs that launch instantly, allowing them to deploy and scale applications globally without infrastructure complexity.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 38.82504353092588,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 68.14751305927777
+          },
+          "analyst_taxonomy": [],
+          "block": "value_proposition",
+          "gold_answer": "Fly.io gives developers a public cloud for running apps and untrusted code in fast, hardware-isolated machines without infrastructure complexity.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "A developer cloud platform for shipping and running code confidently in secure sandboxes.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 35.26837606837607,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 76.58051282051282
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Bold, highly technical, and playfully anti-corporate. It uses developer-native slang and casual humor to connect with its audience.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 34.579552329098604,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 65.37386569872959
+          },
+          "analyst_taxonomy": [],
+          "block": "personality",
+          "gold_answer": "Technical, playful, dev-native, irreverent.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The brand projects a bold, playful, and highly technical persona tailored for developers and security enthusiasts.",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 28.248407643312106,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 55.97452229299363
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Infrastructure as an invisible superpower. The brand positions complex hardware isolation as a magical, frictionless tool that empowers developers rather than burdening them with ops.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 33.88070175438597,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 80.1642105263158
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "brand_idea",
+          "gold_answer": "Infrastructure as an invisible superpower.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The conceptual brand idea frames infrastructure as an empowering, magical tool for developers.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 26.470588235294116,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 77.94117647058823
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Developer-centric, secure-by-default, and pragmatic.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 64.38709677419355,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 74.31612903225806
+          },
+          "analyst_taxonomy": [],
+          "block": "attributes",
+          "gold_answer": "Developer-first, secure, fast, pragmatic.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['developer-first', 'pragmatic']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 73.49315068493149,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 69.54794520547945
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Empathy and transparency. The brand actively defends developers against predatory cloud billing practices by offering usage-based pricing and forgiving accidental scaling costs.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 26.976374826285486,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 63.092912447885645
+          },
+          "analyst_taxonomy": [],
+          "block": "values",
+          "gold_answer": "Fairness, transparency, developer empathy.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['fairness', 'transparency', 'developer empathy']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 96.04395604395606,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 76.31318681318682
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Runs containers as lightweight, hardware-isolated virtual machines on its own global hardware network.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 37.30994152046783,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 67.69298245614036
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Run apps and code on globally distributed, hardware-isolated compute.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Provides developer infrastructure for deploying and running code in secure sandboxes.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 19.448051948051948,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 64.33441558441558
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "vision",
+          "gold_answer": "",
+          "gold_claim_type": "absent",
+          "gold_confidence": "low",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "scanner_taxonomy": []
+        }
+      ],
+      "brand_audit_run_id": 142,
+      "delta_average": {
+        "block_answer_quality": -1.7,
+        "claim_type_correctness": -8.89,
+        "confidence_reasonableness": 16.67,
+        "evidence_correctness": 4.45,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 1.55
+      },
+      "differences_summary": "Fly is largely solved; the main residual risk is overclaiming the conceptual idea if evidence gets too metaphorical.",
+      "gold_summary": "Preserve strategist-quality synthesis and avoid over-metaphorizing the brand idea.",
+      "magnetism_scan_id": 40,
+      "manual_notes": "Benchmark target: the strategist pass is close, but the dataset records the current scan and the strategist reading separately.",
+      "scanner_available": true,
+      "scanner_average": {
+        "block_answer_quality": 56.32,
+        "claim_type_correctness": 66.67,
+        "confidence_reasonableness": 72.22,
+        "evidence_correctness": 93.33,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 76.39
+      },
+      "scanner_taxonomy_counts": {
+        "overclaim": 4,
+        "weak_brand_idea": 1
+      },
+      "slug": "fly-io",
+      "source_kind": "magnetism_scan",
+      "source_url": "https://fly.io"
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 36.96,
+        "claim_type_correctness": 57.78,
+        "confidence_reasonableness": 88.89,
+        "evidence_correctness": 97.78,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 72.64
+      },
+      "analyst_taxonomy_counts": {
+        "weak_brand_idea": 1
+      },
+      "benchmark_taxonomy": [],
+      "benchmark_taxonomy_counts": {},
+      "block_comparisons": [
+        {
+          "analyst_answer": "To inspire audiences to think new thoughts and dream new dreams that become new technologies and businesses.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 43.63636363636364,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 83.0909090909091
+          },
+          "analyst_taxonomy": [],
+          "block": "core_purpose",
+          "gold_answer": "Help people think about what comes next in technology and turn those ideas into new technologies and businesses.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "we hope our answers inspire you to ask and answer this question yourself—so that you can think new thoughts and dream new dreams that become new technologies and new businesses.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 35.34735161032739,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 73.10420548309821
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "The Only Subscription You Need to Stay at the Edge of AI",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 6.666666666666666,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 68.0
+          },
+          "analyst_taxonomy": [],
+          "block": "magnetism",
+          "gold_answer": "What comes next?",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "“What comes next?” is the question that we try to answer at Every, every day.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 46.490713587487775,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 79.94721407624633
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Every provides newsletters, software, courses, and consulting to founders, operators, and investors, equipping them to stay at the edge of AI and build the future.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 54.34394904458599,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 72.8031847133758
+          },
+          "analyst_taxonomy": [],
+          "block": "value_proposition",
+          "gold_answer": "Every gives founders, operators, investors, and AI-native professionals editorial insight, products, courses, and consulting to stay at the edge of AI.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Sign in Subscribe *]:block [&>*]:mt-2 [&>*]:pt-2 mt-4\" > Home Newsletter Columnists Columns Podcast Products Events Guides Consulting *]:block space-y-2\"> Sign in *]:block space-y-2 py-2 my-2 border-y border-dashed border-homeborder\" > Search About us Careers Advertise with us The team FAQ Help center The paradox at the heart of AI The better the models get, the more work there is to do.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 8.024197613846411,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 68.40725928415392
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Collaborative, inquisitive, and practical, acting as a peer exploring the frontier of AI rather than an absolute authority.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 18.197674418604652,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 60.4593023255814
+          },
+          "analyst_taxonomy": [],
+          "block": "personality",
+          "gold_answer": "Thoughtful, curious, collaborative, non-dogmatic.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "A collaborative peer that avoids dictating absolute answers.",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 26.321934945788158,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 62.89658048373644
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "A collaborative laboratory at the frontier of AI, mapping 'what comes next' through continuous exploration and practical application.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 15.646258503401361,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 74.6938775510204
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "brand_idea",
+          "gold_answer": "An editorial and product studio for thinking at the edge of AI.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "Conceptually framed around operating at the extreme boundary of artificial intelligence.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 16.95364238410596,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 75.08609271523179
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "AI-native, practical, exploratory",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 77.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 78.1
+          },
+          "analyst_taxonomy": [],
+          "block": "attributes",
+          "gold_answer": "AI-native, practical, editorial.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['ai-native', 'practical', 'editorial']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 94.92957746478874,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 75.97887323943662
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Privacy and open-source collaboration",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 14.757281553398059,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 59.42718446601942
+          },
+          "analyst_taxonomy": [],
+          "block": "values",
+          "gold_answer": "Curiosity, usefulness, intellectual independence, experimentation.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['inspiration']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 8.88888888888889,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 50.166666666666664
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "To publish a daily newsletter, build software products, offer courses, and provide AI consulting and training services about what comes next in technology.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 41.64835164835165,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 68.99450549450549
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Publish, build, teach, and consult around emerging technology and AI.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "The truth is that by answering this question, over and over, we make what comes next, together.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 10.731707317073173,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 61.71951219512195
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "A future where answering 'what comes next' collaboratively leads to the creation of new technologies and businesses.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 60.7168610816543,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 88.21505832449628
+          },
+          "analyst_taxonomy": [],
+          "block": "vision",
+          "gold_answer": "Help people ask and answer what comes next so new technologies and businesses can emerge.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "How We Run a 25-person C ompany on Four AI Agents How Every uses custom agents for prioritization, meeting notes, OKR planning, and growth tracking—plus sample prompts to build your own Katie Parrott What I Learned O nboarding Our AI Project Manager Claudie saves us 15 hours a week, but getting her up to speed was harder than hiring a human Nityesh Agarwal The Agent That S aved My Brain How Every's growth lead built a command center in Claude Code Austin Tedesco Build Your Own F inancial Analyst With AI A step-by-step guide to going from ChatGPT earnings previews to a custom investment dashboard—no engineering team required Brooker Belcourt The Future of Programming Build more.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 1.7315845444877702,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 70.51947536334633
+          },
+          "scanner_taxonomy": []
+        }
+      ],
+      "brand_audit_run_id": 135,
+      "delta_average": {
+        "block_answer_quality": 9.25,
+        "claim_type_correctness": -8.89,
+        "confidence_reasonableness": 11.11,
+        "evidence_correctness": 4.45,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 3.99
+      },
+      "differences_summary": "The manual reading and strategist pass are close; the key evaluation axis is whether the multi-surface entity architecture remains intact.",
+      "gold_summary": "Treat Every as a multi-surface entity: publication + software + services.",
+      "magnetism_scan_id": 41,
+      "manual_notes": "Multi-surface brand: publication + software + services. The dataset preserves that entity architecture instead of flattening it into a newsletter only.",
+      "scanner_available": true,
+      "scanner_average": {
+        "block_answer_quality": 27.71,
+        "claim_type_correctness": 66.67,
+        "confidence_reasonableness": 77.78,
+        "evidence_correctness": 93.33,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 68.65
+      },
+      "scanner_taxonomy_counts": {
+        "overclaim": 3,
+        "weak_brand_idea": 1
+      },
+      "slug": "every-to-about",
+      "source_kind": "magnetism_scan",
+      "source_url": "https://every.to/about"
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 32.71,
+        "claim_type_correctness": 75.56,
+        "confidence_reasonableness": 72.22,
+        "evidence_correctness": 86.67,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 69.31
+      },
+      "analyst_taxonomy_counts": {
+        "overclaim": 1,
+        "weak_brand_idea": 2
+      },
+      "benchmark_taxonomy": [
+        "audited_surface_too_narrow",
+        "parent_entity_not_expanded",
+        "product_surface_used_as_full_brand"
+      ],
+      "benchmark_taxonomy_counts": {
+        "audited_surface_too_narrow": 1,
+        "parent_entity_not_expanded": 1,
+        "product_surface_used_as_full_brand": 1
+      },
+      "block_comparisons": [
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "core_purpose",
+          "gold_answer": "Make personal AI feel more human, useful, and integrated into daily life.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Life orchestration, perfected by nature.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 0.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 75.0
+          },
+          "analyst_taxonomy": [
+            "overclaim"
+          ],
+          "block": "magnetism",
+          "gold_answer": "Life orchestration, perfected by nature.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "low",
+          "scanner_answer": "Life orchestration, perfected by nature.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 0.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 75.0
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "A personal AI assistant that acts as a centralized command center, integrating with everyday tools to delegate and orchestrate complex tasks across every domain of the user's life.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 48.5227579990987,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 71.05682739972961
+          },
+          "analyst_taxonomy": [],
+          "block": "value_proposition",
+          "gold_answer": "tinyNature acts as a personal AI assistant and command center that coordinates specialized agents across daily tasks and connected tools.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Your personal AI assistant for life orchestration. It delegates complex requests to specialized internal sub-agents, ensuring precision across every domain of your life.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 41.32352941176471,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 70.89705882352942
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "An always-on, highly capable companion that balances the authority of a 'command center' with the organic ease implied by 'nature.'",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 25.77777777777778,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 77.73333333333333
+          },
+          "analyst_taxonomy": [],
+          "block": "personality",
+          "gold_answer": "Personal, calm, always-available, companion-like.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The brand adopts the persona of a personal, always-available companion.",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 61.58974358974359,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 73.47692307692307
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "The AI as a centralized command center that moves beyond simple conversational chat to actively orchestrate and delegate life tasks to specialized sub-agents.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 20.450450450450447,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 76.13513513513513
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "brand_idea",
+          "gold_answer": "Life orchestration through a nature-inspired AI operating layer.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The conceptual framework is a centralized command center that delegates tasks to specialized sub-agents.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 12.380952380952381,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 66.21428571428572
+          },
+          "scanner_taxonomy": [
+            "overclaim",
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "Secure, highly integrated, and orchestrating.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 32.674418604651166,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 79.80232558139535
+          },
+          "analyst_taxonomy": [],
+          "block": "attributes",
+          "gold_answer": "Private, orchestrated, agentic, personal.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['secure', 'security']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 3.8095238095238098,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 48.64285714285714
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Data privacy and security.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 29.634146341463413,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 78.89024390243902
+          },
+          "analyst_taxonomy": [],
+          "block": "values",
+          "gold_answer": "Privacy, usefulness, personalization, calm intelligence.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['security']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 3.5294117647058827,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 48.55882352941177
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "To build personal AI agents and platforms that provide users with personalized, always-on AI companions.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 37.33817301875378,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 67.70145190562613
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Build AI assistants and agents that help people coordinate daily life.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Natura Umana is a revolutionary AI platform that offers personalized, always-on AI companions through HumanPods and NatureOS.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 16.666666666666668,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 61.5
+          },
+          "scanner_taxonomy": [
+            "entity_context_missing"
+          ]
+        },
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 70.0
+          },
+          "analyst_taxonomy": [],
+          "block": "vision",
+          "gold_answer": "Unclear from the product surface alone; likely needs parent brand research.",
+          "gold_claim_type": "absent",
+          "gold_confidence": "low",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 70.0
+          },
+          "scanner_taxonomy": [
+            "entity_context_missing"
+          ]
+        }
+      ],
+      "brand_audit_run_id": 148,
+      "delta_average": {
+        "block_answer_quality": 6.12,
+        "claim_type_correctness": 28.89,
+        "confidence_reasonableness": 16.66,
+        "evidence_correctness": 2.23,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 9.11
+      },
+      "differences_summary": "The current scanner is directionally good, but the dataset keeps the parent-brand context explicit so subdomain inference remains reviewable.",
+      "gold_summary": "Subdomain/product surface. Parent entity expansion matters before stronger purpose or vision claims.",
+      "magnetism_scan_id": 39,
+      "manual_notes": "Subdomain / product-surface case. Parent entity expansion matters; the product surface alone underreads purpose and vision.",
+      "scanner_available": true,
+      "scanner_average": {
+        "block_answer_quality": 26.59,
+        "claim_type_correctness": 46.67,
+        "confidence_reasonableness": 55.56,
+        "evidence_correctness": 84.44,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 60.2
+      },
+      "scanner_taxonomy_counts": {
+        "entity_context_missing": 2,
+        "overclaim": 4,
+        "weak_brand_idea": 2
+      },
+      "slug": "lab-naturaumana-ai",
+      "source_kind": "magnetism_scan",
+      "source_url": "https://lab.naturaumana.ai"
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 27.49,
+        "claim_type_correctness": 53.33,
+        "confidence_reasonableness": 66.67,
+        "evidence_correctness": 84.44,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 63.13
+      },
+      "analyst_taxonomy_counts": {
+        "false_vision": 1,
+        "missing_audience": 1,
+        "overclaim": 3,
+        "weak_brand_idea": 2
+      },
+      "benchmark_taxonomy": [],
+      "benchmark_taxonomy_counts": {},
+      "block_comparisons": [
+        {
+          "analyst_answer": "Creatify está construyendo la capa autónoma de optimización creativa para la economía de Internet",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 12.134831460674159,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 66.14044943820224
+          },
+          "analyst_taxonomy": [
+            "overclaim"
+          ],
+          "block": "core_purpose",
+          "gold_answer": "Help marketers and growth teams generate winning ad creative faster and at scale.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "Creatify está construyendo la capa autónoma de optimización creativa para la economía de Internet",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 12.134831460674159,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 66.14044943820224
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "Anuncios de IA que ganan.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 96.0
+          },
+          "analyst_taxonomy": [],
+          "block": "magnetism",
+          "gold_answer": "Anuncios de IA que ganan.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "Anuncios de IA que ganan.",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 96.0
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 12.149016902380131,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 0.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 52.64470507071404
+          },
+          "analyst_taxonomy": [
+            "missing_audience"
+          ],
+          "block": "value_proposition",
+          "gold_answer": "Creatify is an AI ad platform designed for performance, letting teams create, test, and optimize video ads at scale.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 12.149016902380131,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 0.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 52.64470507071404
+          },
+          "scanner_taxonomy": [
+            "missing_audience"
+          ]
+        },
+        {
+          "analyst_answer": "The brand projects a revolutionary and highly efficient persona focused on disrupting traditional marketing.",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 9.863013698630137,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 57.95890410958904
+          },
+          "analyst_taxonomy": [],
+          "block": "personality",
+          "gold_answer": "Performance-driven, direct, ambitious.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The brand projects a revolutionary and highly efficient persona focused on disrupting traditional marketing.",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 9.863013698630137,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 57.95890410958904
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "The conceptual brand idea centers on instantly transforming static product pages into optimized video ads.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 13.742331288343559,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 74.12269938650307
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "brand_idea",
+          "gold_answer": "An autonomous creative optimization layer for paid media.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The conceptual brand idea centers on instantly transforming static product pages into optimized video ads.",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 13.742331288343559,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 74.12269938650307
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "['performance']",
+          "analyst_claim_type": "performed",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 31.11111111111111,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 56.83333333333333
+          },
+          "analyst_taxonomy": [
+            "overclaim"
+          ],
+          "block": "attributes",
+          "gold_answer": "Fast, scalable, performance-oriented, ad-native.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "['performance']",
+          "scanner_claim_type": "performed",
+          "scanner_confidence": "high",
+          "scanner_metrics": {
+            "block_answer_quality": 31.11111111111111,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 56.83333333333333
+          },
+          "scanner_taxonomy": [
+            "overclaim"
+          ]
+        },
+        {
+          "analyst_answer": "None",
+          "analyst_claim_type": "absent",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "analyst_taxonomy": [
+            "weak_brand_idea"
+          ],
+          "block": "values",
+          "gold_answer": "Performance, efficiency, automation.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "None",
+          "scanner_claim_type": "absent",
+          "scanner_confidence": "low",
+          "scanner_metrics": {
+            "block_answer_quality": 0.0,
+            "claim_type_correctness": 0.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 0.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 27.5
+          },
+          "scanner_taxonomy": [
+            "weak_brand_idea"
+          ]
+        },
+        {
+          "analyst_answer": "The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 4.2105263157894735,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 57.76315789473684
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Generate, test, personalize, and optimize ad creatives at scale.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": "The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+          "scanner_claim_type": "inferred",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 4.2105263157894735,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 50.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 57.76315789473684
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "The vision is a future where all customer touchpoints are dynamically generated and optimized in real-time",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 64.15810276679844,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 79.24743083003953
+          },
+          "analyst_taxonomy": [
+            "false_vision",
+            "overclaim"
+          ],
+          "block": "vision",
+          "gold_answer": "Every ad and customer touchpoint eventually becomes dynamically generated and continuously optimized in real time.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": "The vision is a future where all customer touchpoints are dynamically generated and optimized in real-time",
+          "scanner_claim_type": "declared",
+          "scanner_confidence": "medium",
+          "scanner_metrics": {
+            "block_answer_quality": 64.15810276679844,
+            "claim_type_correctness": 60.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 80.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 79.24743083003953
+          },
+          "scanner_taxonomy": [
+            "false_vision",
+            "overclaim"
+          ]
+        }
+      ],
+      "brand_audit_run_id": 129,
+      "delta_average": {
+        "block_answer_quality": 0.0,
+        "claim_type_correctness": 0.0,
+        "confidence_reasonableness": 0.0,
+        "evidence_correctness": 0.0,
+        "noise_avoidance": 0.0,
+        "strategic_usefulness": 0.0
+      },
+      "differences_summary": "Current TLDR is usable. Manual reading keeps proof points, audience and outcome separated from the core offer.",
+      "gold_summary": "Performance marketing platform with strong proof and future-direction language; keep proof separate from core offer.",
+      "magnetism_scan_id": 23,
+      "manual_notes": "High-signal performance marketing case. The brand is mostly stable; the main risk is collapsing proof points into the core offer.",
+      "scanner_available": true,
+      "scanner_average": {
+        "block_answer_quality": 27.49,
+        "claim_type_correctness": 53.33,
+        "confidence_reasonableness": 66.67,
+        "evidence_correctness": 84.44,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 63.13
+      },
+      "scanner_taxonomy_counts": {
+        "false_vision": 1,
+        "missing_audience": 1,
+        "overclaim": 3,
+        "weak_brand_idea": 2
+      },
+      "slug": "creatify-ai-es",
+      "source_kind": "magnetism_scan",
+      "source_url": "https://creatify.ai/es/"
+    },
+    {
+      "analyst_average": {
+        "block_answer_quality": 100.0,
+        "claim_type_correctness": 100.0,
+        "confidence_reasonableness": 100.0,
+        "evidence_correctness": 100.0,
+        "noise_avoidance": 100.0,
+        "strategic_usefulness": 100.0
+      },
+      "analyst_taxonomy_counts": {},
+      "benchmark_taxonomy": [
+        "missing_scanner_scan"
+      ],
+      "benchmark_taxonomy_counts": {
+        "missing_scanner_scan": 1
+      },
+      "block_comparisons": [
+        {
+          "analyst_answer": "Make video creation and localization easy enough for teams to scale without a studio bottleneck.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "core_purpose",
+          "gold_answer": "Make video creation and localization easy enough for teams to scale without a studio bottleneck.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Video creation, without the studio bottleneck.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "magnetism",
+          "gold_answer": "Video creation, without the studio bottleneck.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "HeyGen lets teams create talking-avatar videos and localize content at scale.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "value_proposition",
+          "gold_answer": "HeyGen lets teams create talking-avatar videos and localize content at scale.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Polished, product-led, scalable.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "personality",
+          "gold_answer": "Polished, product-led, scalable.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Video localization at scale.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "brand_idea",
+          "gold_answer": "Video localization at scale.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Scalable, localized, video-first.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "attributes",
+          "gold_answer": "Scalable, localized, video-first.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Accessibility, speed, scale.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "medium",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "values",
+          "gold_answer": "Accessibility, speed, scale.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "medium",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Help teams create and localize video at scale.",
+          "analyst_claim_type": "declared",
+          "analyst_confidence": "high",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "mission",
+          "gold_answer": "Help teams create and localize video at scale.",
+          "gold_claim_type": "declared",
+          "gold_confidence": "high",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        },
+        {
+          "analyst_answer": "Video creation becomes faster, more scalable, and more accessible.",
+          "analyst_claim_type": "inferred",
+          "analyst_confidence": "low",
+          "analyst_metrics": {
+            "block_answer_quality": 100.0,
+            "claim_type_correctness": 100.0,
+            "confidence_reasonableness": 100.0,
+            "evidence_correctness": 100.0,
+            "noise_avoidance": 100.0,
+            "strategic_usefulness": 100.0
+          },
+          "analyst_taxonomy": [],
+          "block": "vision",
+          "gold_answer": "Video creation becomes faster, more scalable, and more accessible.",
+          "gold_claim_type": "inferred",
+          "gold_confidence": "low",
+          "scanner_answer": null,
+          "scanner_claim_type": null,
+          "scanner_confidence": null,
+          "scanner_metrics": {
+            "block_answer_quality": null,
+            "claim_type_correctness": null,
+            "confidence_reasonableness": null,
+            "evidence_correctness": null,
+            "noise_avoidance": null,
+            "strategic_usefulness": null
+          },
+          "scanner_taxonomy": []
+        }
+      ],
+      "brand_audit_run_id": 104,
+      "delta_average": {
+        "block_answer_quality": null,
+        "claim_type_correctness": null,
+        "confidence_reasonableness": null,
+        "evidence_correctness": null,
+        "noise_avoidance": null,
+        "strategic_usefulness": null
+      },
+      "differences_summary": "The case is still useful for evaluation, but there is no current magnetism scan to compare against.",
+      "gold_summary": "Good scan quality, but no current magnetism scan exists in the corpus. Keep the case as audit-only.",
+      "magnetism_scan_id": null,
+      "manual_notes": "HeyGen exists in Brand Audit output but not in the current magnetism scan table. The dataset keeps it as a research-pack-only case.",
+      "scanner_available": false,
+      "scanner_average": {
+        "block_answer_quality": null,
+        "claim_type_correctness": null,
+        "confidence_reasonableness": null,
+        "evidence_correctness": null,
+        "noise_avoidance": null,
+        "strategic_usefulness": null
+      },
+      "scanner_taxonomy_counts": {},
+      "slug": "heygen",
+      "source_kind": "brand_audit_output",
+      "source_url": "https://www.heygen.com"
+    }
+  ],
+  "dataset_version": "tldr_brand3_research_pack_dataset_v0_1",
+  "gold_version": "tldr_brand3_research_pack_gold_v0_1",
+  "recommendations": [
+    "Tighten noise rejection before block interpretation; chrome, feed, and article fragments still leak into the legacy scanner.",
+    "Degrade confidence more aggressively when outputs move from inferred evidence to declared language without owned support.",
+    "Strengthen the brand-idea synthesis rule so weak conceptual glue is marked reviewable instead of promoted as strategic fact.",
+    "Require the value proposition block to preserve the audience when the manual gold notes make it explicit."
+  ],
+  "taxonomy_counts": {
+    "analyst": {
+      "false_vision": 1,
+      "missing_audience": 1,
+      "overclaim": 6,
+      "proof_point_as_personality": 1,
+      "weak_brand_idea": 8
+    },
+    "scanner": {
+      "entity_context_missing": 2,
+      "false_vision": 1,
+      "missing_audience": 2,
+      "overclaim": 18,
+      "proof_point_as_personality": 1,
+      "structural_noise_selected": 2,
+      "weak_brand_idea": 14
+    }
+  },
+  "version": "tldr_brand3_research_pack_evaluation_v0_1"
+}

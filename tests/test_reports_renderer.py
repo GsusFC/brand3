@@ -235,18 +235,8 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("a16z.com", html)  # URL chip / source list
         self.assertIn("#0b0d0e", html)  # dark bg token
 
-    def test_render_includes_lab_diagnostic_link_when_run_id_exists(self):
+    def test_render_omits_lab_diagnostic_link_from_public_report_nav(self):
         html = ReportRenderer().render(_sample_snapshot(), theme="dark")
-
-        self.assertIn('/brand3-lab/cases/run/42', html)
-        self.assertIn("Brand3 Lab", html)
-        self.assertIn("diagnostic · no scoring impact", html)
-
-    def test_render_omits_lab_diagnostic_link_when_run_id_missing(self):
-        snapshot = _sample_snapshot()
-        snapshot["run"].pop("id", None)
-
-        html = ReportRenderer().render(snapshot, theme="dark")
 
         self.assertNotIn("/brand3-lab/cases/run/", html)
         self.assertNotIn("diagnostic · no scoring impact", html)

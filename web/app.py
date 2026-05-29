@@ -15,7 +15,7 @@ from .config import settings
 from .logging_setup import access_log_middleware, configure_logging
 from .middleware.rate_limit import rate_limit_middleware
 from .routes import (
-    analyze, brand, brand3_lab, health, index, magnetism_scanner, report, reports_list, status, takedown, team,
+    analyze, brand, health, index, magnetism_scanner, report, reports_list, status, takedown, team,
     visual_signature,
 )
 from .storage import ensure_schema
@@ -58,7 +58,7 @@ app.middleware("http")(rate_limit_middleware)
 app.middleware("http")(access_log_middleware)
 app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
-for module in (index, analyze, status, report, reports_list, brand, team, takedown, health, visual_signature, brand3_lab, magnetism_scanner):
+for module in (index, analyze, status, report, reports_list, brand, team, takedown, health, visual_signature, magnetism_scanner):
     app.include_router(module.router)
 
 

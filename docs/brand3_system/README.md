@@ -40,6 +40,8 @@ Visual Signature path:
 - [prompt_system.md](prompt_system.md)
 - [report_generation.md](report_generation.md)
 - [developer_navigation.md](developer_navigation.md)
+- [../deprecated_surfaces.md](../deprecated_surfaces.md)
+- [../tldr_brand3_research_pack_analyst_pass_decision.md](../tldr_brand3_research_pack_analyst_pass_decision.md)
 
 ## Important Files And Folders
 

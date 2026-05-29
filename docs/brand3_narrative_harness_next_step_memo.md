@@ -435,7 +435,6 @@ The largest architectural risk is accidentally wiring the harness into productio
 - `docs/brand3_system/report_generation.md`
 - `examples/brand3_platform/scoring_narrative_pipeline_audit.md`
 - `examples/brand3_platform/scoring_report_voice_audit.md`
-- `examples/brand3_platform/brand3_editorial_discipline_gate.md`
 
 ## Explicit Non-Goals
 

@@ -309,9 +309,6 @@
 <nav class="report-app-nav" aria-label="Brand3 report navigation">
   <a href="/reports">Reports</a>
   <a href="/brand/{{ brand.domain or brand.name }}">Brand history</a>
-  {%- if footer.lab_href %}
-  <a href="{{ footer.lab_href }}" aria-label="Open read-only Brand3 Lab diagnostics for this audit">Brand3 Lab <span class="dim">diagnostic · no scoring impact</span></a>
-  {%- endif %}
   <span class="spacer"></span>
   <a href="?theme=light">Light</a>
   <a href="?theme=dark">Dark</a>

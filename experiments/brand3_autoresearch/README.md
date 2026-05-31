@@ -20,3 +20,8 @@ Candidate file convention:
 Real scan export:
 - `python experiments/brand3_autoresearch/export_candidate.py --scan-id <id> --output candidate/<case_id>.json`
 - `python experiments/brand3_autoresearch/export_candidate.py --scan-file path/to/scan.json --output candidate/<case_id>.json`
+
+Benchmark loop:
+- `python experiments/brand3_autoresearch/run_benchmark.py`
+- writes `runs/report.json` and `runs/report.md`
+- prints a `retain` or `revert` decision for the current Analyst Pass benchmark

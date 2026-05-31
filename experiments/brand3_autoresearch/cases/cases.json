@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "owned_clear",
+      "brand": "LangChain",
+      "language": "en",
+      "description": "Owned evidence with a clear value proposition and mission should produce non-empty TLDR blocks without noise leakage.",
+      "input_excerpt": "LangChain provides the agent engineering platform and open-source frameworks for reliable agents. The company mission is to build a better agent stack.",
+      "required_blocks": ["value_proposition", "mission"],
+      "expected_absent_blocks": ["vision"],
+      "min_detected_blocks": 2,
+      "forbid_terms": ["cookie", "login", "sign up", "privacy policy"],
+      "min_evidence_blocks": 1
+    },
+    {
+      "id": "noise_only",
+      "brand": "Noise Brand",
+      "language": "en",
+      "description": "Only page chrome and generic CTA noise should stay absent.",
+      "input_excerpt": "Home. Sign up. Log in. Cookie settings. Privacy Policy. Terms.",
+      "required_blocks": [],
+      "expected_absent_blocks": ["value_proposition", "mission", "vision", "attributes", "values"],
+      "max_detected_blocks": 0,
+      "forbid_terms": [],
+      "min_evidence_blocks": 0
+    },
+    {
+      "id": "late_evidence",
+      "brand": "Long Page",
+      "language": "en",
+      "description": "Useful evidence appears late in the page and should survive compaction or truncation.",
+      "input_excerpt": "Intro text and navigation noise. Pricing. Features. Integrations. More feature blur. Social proof. Footer links. Legal text. Another long stretch of generic marketing copy. The meaningful evidence appears later in the page, after several dense sections. The product team explains that the platform helps operations teams coordinate cross-functional workflows, reduce manual review, and keep handoffs visible. Additional detail reinforces the same idea with a concrete offer statement and a short mission line. The point of this case is that the useful evidence lives near the end rather than the beginning.",
+      "required_blocks": ["netspace"],
+      "expected_absent_blocks": ["vision"],
+      "min_detected_blocks": 1,
+      "forbid_terms": ["cookie", "login", "sign up"],
+      "min_evidence_blocks": 1
+    }
+  ]
+}

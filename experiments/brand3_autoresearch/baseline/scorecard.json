@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "weights": {
+    "coverage": 0.4,
+    "evidence": 0.3,
+    "noise": 0.2,
+    "structure": 0.1
+  },
+  "notes": [
+    "This is a baseline scorecard, not a production policy.",
+    "Candidate changes should improve the score without adding unsupported claims."
+  ]
+}
+

@@ -1,0 +1,152 @@
+{
+  "payload": {
+    "tldr_brand3": {
+      "core_purpose": {
+        "block": "core_purpose",
+        "question": "Why does this brand appear to exist beyond the product?",
+        "answer": "Creatify está construyendo la capa autónoma de optimización creativa para la economía de Internet",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "high",
+        "reasoning": "The core_purpose block is a Brand3 hypothesis constrained to the available purpose signal.",
+        "evidence_used": [
+          "Creatify está construyendo la capa autónoma de optimización creativa para la economía de Internet"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The brand does not explicitly declare this exact Brand3 articulation in the available evidence."
+        ],
+        "human_review_recommended": true
+      },
+      "magnetism": {
+        "block": "magnetism",
+        "question": "What phrase or tension best concentrates the brand's magnetic energy?",
+        "answer": "Anuncios de IA que ganan.",
+        "claim_type": "declared",
+        "mode": "compressed",
+        "confidence": "high",
+        "reasoning": "The magnetism block is compressed from direct evidence.",
+        "evidence_used": [
+          "Anuncios de IA que ganan."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "value_proposition": {
+        "block": "value_proposition",
+        "question": "What does the brand offer, to whom, and what changes for that audience?",
+        "answer": "The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "low",
+        "reasoning": "The evidence states a concrete offer: The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+        "evidence_used": [
+          "The concrete value exchange offers massive cost reduction in video production and increased lead generation"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The available value proposition evidence does not clearly name the audience.",
+          "The available value proposition evidence does not clearly state the outcome or change for the audience."
+        ],
+        "human_review_recommended": true
+      },
+      "personality": {
+        "block": "personality",
+        "question": "What personality does the brand perform through tone, vocabulary, behavior, and visual expression?",
+        "answer": "The brand projects a revolutionary and highly efficient persona focused on disrupting traditional marketing.",
+        "claim_type": "performed",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The personality block is articulated from observed discourse signals.",
+        "evidence_used": [
+          "Creatify revoluciona el marketing de generación de leads al entregar infinitas variaciones de anuncios en video con una velocidad y eficiencia de costos inigualables."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "brand_idea": {
+        "block": "brand_idea",
+        "question": "What conceptual idea connects strategy, category, and expression?",
+        "answer": "The conceptual brand idea centers on instantly transforming static product pages into optimized video ads.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The brand_idea block is articulated from observed discourse signals.",
+        "evidence_used": [
+          "Convierte cualquier página de producto en un anuncio de video exitoso: creado, probado y optimizado en minutos."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The brand does not explicitly declare this exact Brand3 articulation in the available evidence."
+        ],
+        "human_review_recommended": true
+      },
+      "attributes": {
+        "block": "attributes",
+        "question": "Which three attributes does the brand describe or demonstrate consistently?",
+        "answer": [
+          "performance"
+        ],
+        "claim_type": "performed",
+        "mode": "interpreted_from_discourse",
+        "confidence": "high",
+        "reasoning": "The attributes block is articulated from observed discourse signals.",
+        "evidence_used": [
+          "El generador de videos de producto con IA de Creatify ofrece al instante más de 50 variantes, desde tomas cinematográficas de producto hasta exhibiciones dinámicas estilo UGC"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "values": {
+        "block": "values",
+        "question": "Which three values does the brand appear to defend through what it says and does?",
+        "answer": null,
+        "claim_type": "absent",
+        "mode": "not_detected",
+        "confidence": "low",
+        "reasoning": "Insufficient evidence to articulate this block responsibly.",
+        "evidence_used": [],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "No sufficient public evidence was found for this TLDR block."
+        ],
+        "human_review_recommended": false
+      },
+      "mission": {
+        "block": "mission",
+        "question": "What does the brand concretely do today?",
+        "answer": "The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The evidence uses present-tense operating language that describes what the brand does today: The concrete value exchange offers massive cost reduction in video production and increased lead generation",
+        "evidence_used": [
+          "The concrete value exchange offers massive cost reduction in video production and increased lead generation"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The mission is inferred from product/service evidence rather than stated as a formal mission."
+        ],
+        "human_review_recommended": true
+      },
+      "vision": {
+        "block": "vision",
+        "question": "What future or category change does the brand appear to be building toward?",
+        "answer": "The vision is a future where all customer touchpoints are dynamically generated and optimized in real-time",
+        "claim_type": "declared",
+        "mode": "compressed",
+        "confidence": "medium",
+        "reasoning": "The evidence contains future-facing or category-change language, so the block is treated as an interpreted vision signal: The vision is a future where all customer touchpoints are dynamically generated and optimized in real-time",
+        "evidence_used": [
+          "The vision is a future where all customer touchpoints are dynamically generated and optimized in real-time"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      }
+    }
+  }
+}

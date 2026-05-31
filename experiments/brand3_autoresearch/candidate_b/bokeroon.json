@@ -1,0 +1,186 @@
+{
+  "payload": {
+    "tldr_brand3": {
+      "core_purpose": {
+        "block": "core_purpose",
+        "question": "Why does this brand appear to exist beyond the product?",
+        "answer": "Make crypto investing easier to understand and manage for users who feel overwhelmed by complexity.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The owned promise and transparency language support an inferred purpose.",
+        "evidence_used": [
+          "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente.",
+          "Menos complicaciones, más claridad."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "magnetism": {
+        "block": "magnetism",
+        "question": "What phrase, tension, or promise is most likely to be remembered?",
+        "answer": "Menos complicaciones, más claridad.",
+        "claim_type": "declared",
+        "mode": "compressed",
+        "confidence": "high",
+        "reasoning": "This phrase is the strongest memorable line in the evidence.",
+        "evidence_used": [
+          "Menos complicaciones, más claridad."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "value_proposition": {
+        "block": "value_proposition",
+        "question": "What does the brand offer, to whom, and what changes for that audience?",
+        "answer": "Bokeroon is building a platform that turns crypto management into an instant, transparent, and simpler experience.",
+        "claim_type": "declared",
+        "mode": "compressed",
+        "confidence": "high",
+        "reasoning": "The platform promise is literal and owned.",
+        "evidence_used": [
+          "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "personality": {
+        "block": "personality",
+        "question": "What personality does the brand perform through tone, vocabulary, behavior, and visual stance?",
+        "answer": "Urgent, encouraging, challenger-like, educational.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The question + clarity language suggest a guiding tone rather than a purely factual one.",
+        "evidence_used": [
+          "¿Listo para simplificar tus inversiones en criptomonedas?",
+          "Menos complicaciones, más claridad."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "brand_idea": {
+        "block": "brand_idea",
+        "question": "What conceptual idea connects category, offer, expression, and metaphor?",
+        "answer": "Crypto management without opacity.",
+        "claim_type": "inferred",
+        "mode": "needs_human_review",
+        "confidence": "low",
+        "reasoning": "This is a weak but useful synthesis and should remain reviewable.",
+        "evidence_used": [
+          "Menos complicaciones, más claridad.",
+          "experiencia instantánea y transparente"
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "attributes": {
+        "block": "attributes",
+        "question": "Which attributes are consistently demonstrated by product, behavior, proof, or language?",
+        "answer": "Clear, fast, transparent, simple.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The repeated adjectives are explicit in the offer and slogan.",
+        "evidence_used": [
+          "Menos complicaciones, más claridad.",
+          "instantánea y transparente"
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "values": {
+        "block": "values",
+        "question": "Which values does the brand appear to defend through what it says or does?",
+        "answer": "Clarity, accessibility, practical control.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The product framing points to practical control and clarity.",
+        "evidence_used": [
+          "Menos complicaciones, más claridad.",
+          "instantánea y transparente"
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "mission": {
+        "block": "mission",
+        "question": "What does the brand concretely do today?",
+        "answer": "Build a platform that makes crypto management instant and transparent.",
+        "claim_type": "declared",
+        "mode": "compressed",
+        "confidence": "high",
+        "reasoning": "This is the clearest owned operating statement.",
+        "evidence_used": [
+          "En Bokeroon estamos creado una plataforma que convierte la gestión cripto en una experiencia instantánea y transparente."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://bokeroon.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "vision": {
+        "block": "vision",
+        "question": "What future or category change is the brand trying to build?",
+        "answer": null,
+        "claim_type": "absent",
+        "mode": "not_detected",
+        "confidence": "low",
+        "reasoning": "Feed/article prediction remains rejected as future direction evidence.",
+        "evidence_used": [],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "Feed/article prediction is not owned vision."
+        ],
+        "human_review_recommended": false
+      }
+    }
+  }
+}

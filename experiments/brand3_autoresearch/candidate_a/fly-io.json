@@ -1,0 +1,163 @@
+{
+  "payload": {
+    "tldr_brand3": {
+      "core_purpose": {
+        "block": "core_purpose",
+        "question": "Why does the brand appear to exist beyond the product? Use explicit purpose/about/manifesto signals. If missing, infer cautiously or mark absent.",
+        "answer": "To get out of the way of developers so they can focus entirely on shipping their ideas.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The brand explicitly states its reason for being is to serve developers who 'just want to ship' and positions itself as a platform that 'gets out of your way.'",
+        "evidence_used": [
+          "The platform for devs who just want to ship.",
+          "Fly.io is the platform that gets out of your way"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The strategist answer synthesizes available evidence rather than quoting a direct brand declaration."
+        ],
+        "human_review_recommended": true
+      },
+      "magnetism": {
+        "block": "magnetism",
+        "question": "What phrase, tension, or promise is most likely to be remembered? Prefer hero/tagline/repeated short claims.",
+        "answer": "Build fast. Run any code fearlessly.",
+        "claim_type": "declared",
+        "mode": "literal",
+        "confidence": "high",
+        "reasoning": "This is the primary hero tagline repeated across multiple touchpoints, owned media, and third-party contexts.",
+        "evidence_used": [
+          "Build fast. Run any code fearlessly."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "value_proposition": {
+        "block": "value_proposition",
+        "question": "What does the brand offer, to whom, and what changes for that audience? Prioritize offer, audience, and outcome.",
+        "answer": "For developers and security engineers, Fly.io offers a public cloud of hardware-isolated micro-VMs that launch instantly, allowing them to deploy and scale applications globally without infrastructure complexity.",
+        "claim_type": "inferred",
+        "mode": "compressed",
+        "confidence": "medium",
+        "reasoning": "Synthesizes the audience (devs, security nerds), the offer (hardware-isolated micro-VMs/public cloud), and the outcome (deploy instantly without complexity).",
+        "evidence_used": [
+          "Fly.io is a new, developer-focused public cloud: Easy to deploy on, powerful to grow on.",
+          "A Public Cloud for Security Nerds",
+          "Deploy an app in minutes or run untrusted code in isolated sandboxes.",
+          "Modern Compute Without the Complexity"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The brand does not explicitly declare this exact Brand3 articulation in the available evidence."
+        ],
+        "human_review_recommended": true
+      },
+      "personality": {
+        "block": "personality",
+        "question": "What personality does the brand perform through tone, vocabulary, behavior, and visual stance?",
+        "answer": "Bold, highly technical, and playfully anti-corporate. It uses developer-native slang and casual humor to connect with its audience.",
+        "claim_type": "performed",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The brand's copywriting uses highly specific developer jargon mixed with irreverent, casual phrasing, performing an 'anti-corporate' identity.",
+        "evidence_used": [
+          "Fork Off VMs Like They're Processes",
+          "no-footguns secure",
+          "a bold, playful combination that positions Fly as the anti-corporate cloud.",
+          "Micro VMs and persistent storage, oh my!"
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "brand_idea": {
+        "block": "brand_idea",
+        "question": "What conceptual idea connects category, offer, expression, and metaphor? Avoid inventing a brand idea from one decorative phrase.",
+        "answer": "Infrastructure as an invisible superpower. The brand positions complex hardware isolation as a magical, frictionless tool that empowers developers rather than burdening them with ops.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The brand repeatedly contrasts heavy infrastructure with magical, empowering outcomes, using words like 'superpower' and 'transmogrifying'.",
+        "evidence_used": [
+          "Sandboxes That Feel Like a Superpower",
+          "transmogrifying them into lightweight virtual machines",
+          "No Terraform required."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The brand idea is not explicitly codified in a single manifesto statement."
+        ],
+        "human_review_recommended": true
+      },
+      "attributes": {
+        "block": "attributes",
+        "question": "Which 1-3 attributes are consistently demonstrated by product, behavior, proof, or language?",
+        "answer": "Developer-centric, secure-by-default, and pragmatic.",
+        "claim_type": "performed",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "Demonstrated through product design (secure-by-default sandboxes), billing behavior (refunding mistakes), and messaging focus (developer-centric).",
+        "evidence_used": [
+          "developer-focused public cloud",
+          "no-footguns secure",
+          "Easy to deploy on, powerful to grow on."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "values": {
+        "block": "values",
+        "question": "Which values does the brand appear to defend through what it says or does? Mark absent if only generic feature words are present.",
+        "answer": "Empathy and transparency. The brand actively defends developers against predatory cloud billing practices by offering usage-based pricing and forgiving accidental scaling costs.",
+        "claim_type": "performed",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The explicit policy to refund unintended charges caused by typos or CI/CD errors is a strong behavioral defense of empathy and fairness.",
+        "evidence_used": [
+          "Whatever it was: if you didn't expect it, and it looks weird on your bill, tell us. We'll waive or refund any unintended charges for paid support customers.",
+          "Plans get complicated, so we just charge based on usage."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "mission": {
+        "block": "mission",
+        "question": "What does the brand concretely do today? Do not use CTAs, future aspirations, blog posts, or pricing copy as mission.",
+        "answer": "Runs containers as lightweight, hardware-isolated virtual machines on its own global hardware network.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "conservative variant for batch comparison",
+        "evidence_used": [
+          "Fly.io runs containers by transmogrifying them into lightweight virtual machines running, under memory-safe hypervisors, on our own hardware around the world."
+        ],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "The strategist answer synthesizes available evidence rather than quoting a direct brand declaration."
+        ],
+        "human_review_recommended": true,
+        "content": "Runs containers as lightweight, hardware-isolated virtual machines on its own global hardware network.",
+        "rationale": "conservative variant for batch comparison"
+      },
+      "vision": {
+        "block": "vision",
+        "question": "What future or category change is the brand trying to build? Require explicit future/change language; otherwise mark absent.",
+        "answer": null,
+        "claim_type": "inferred",
+        "mode": "not_detected",
+        "confidence": "low",
+        "reasoning": "The evidence focuses entirely on present capabilities, current product offerings, and immediate developer benefits. There is no explicit language about a future world or long-term category transformation.",
+        "evidence_used": [],
+        "evidence_sources": [],
+        "counter_evidence": [
+          "No sufficient public evidence was found for this TLDR block."
+        ],
+        "human_review_recommended": true
+      }
+    }
+  }
+}

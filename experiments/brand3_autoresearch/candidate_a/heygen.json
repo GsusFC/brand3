@@ -1,0 +1,190 @@
+{
+  "payload": {
+    "tldr_brand3": {
+      "core_purpose": {
+        "block": "core_purpose",
+        "question": "Why does this brand appear to exist beyond the product?",
+        "answer": "Make video creation and localization easy enough for teams to scale without a studio bottleneck.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The audit summary and public presence inventory indicate a scalable AI video platform.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "magnetism": {
+        "block": "magnetism",
+        "question": "What phrase, tension, or promise is most likely to be remembered?",
+        "answer": "Video creation, without the studio bottleneck.",
+        "claim_type": "inferred",
+        "mode": "compressed",
+        "confidence": "medium",
+        "reasoning": "The strongest remembered tension is scale versus production friction.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "value_proposition": {
+        "block": "value_proposition",
+        "question": "What does the brand offer, to whom, and what changes for that audience?",
+        "answer": "HeyGen lets teams create talking-avatar videos and localize content at scale.",
+        "claim_type": "declared",
+        "mode": "compressed",
+        "confidence": "high",
+        "reasoning": "The product offer is a straightforward summary of the platform.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "personality": {
+        "block": "personality",
+        "question": "What personality does the brand perform through tone, vocabulary, behavior, and visual stance?",
+        "answer": "Polished, product-led, scalable.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The public evidence points to a polished product organization more than a quirky one.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "brand_idea": {
+        "block": "brand_idea",
+        "question": "What conceptual idea connects category, offer, expression, and metaphor?",
+        "answer": "Video localization at scale.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The platform, product and discovery evidence point to this conceptual core.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "attributes": {
+        "block": "attributes",
+        "question": "Which attributes are consistently demonstrated by product, behavior, proof, or language?",
+        "answer": "Scalable, localized, video-first.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "These are the most stable repeated qualities in the audit output.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "values": {
+        "block": "values",
+        "question": "Which values does the brand appear to defend through what it says or does?",
+        "answer": "Accessibility, speed, scale.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "The platform promise implies these values without overclaiming them as explicit declarations.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true
+      },
+      "mission": {
+        "block": "mission",
+        "question": "What does the brand concretely do today?",
+        "answer": "Help teams create and localize video at scale.",
+        "claim_type": "inferred",
+        "mode": "interpreted_from_discourse",
+        "confidence": "medium",
+        "reasoning": "conservative variant for batch comparison",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [],
+        "human_review_recommended": true,
+        "content": "Help teams create and localize video at scale.",
+        "rationale": "conservative variant for batch comparison"
+      },
+      "vision": {
+        "block": "vision",
+        "question": "What future or category change is the brand trying to build?",
+        "answer": "Video creation becomes faster, more scalable, and more accessible.",
+        "claim_type": "inferred",
+        "mode": "needs_human_review",
+        "confidence": "low",
+        "reasoning": "The future frame is plausible but not explicitly declared in the current audit snapshot.",
+        "evidence_used": [
+          "HeyGen is an AI video creation platform centered on avatars, localization, and scalable video production."
+        ],
+        "evidence_sources": [
+          {
+            "source_key": "https://www.heygen.com",
+            "source_type": "owned_official"
+          }
+        ],
+        "counter_evidence": [
+          "No current magnetism scan exists in the corpus, so future direction remains reviewable."
+        ],
+        "human_review_recommended": true
+      }
+    }
+  }
+}

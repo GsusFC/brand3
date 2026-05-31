@@ -1,0 +1,20 @@
+{
+  "payload": {
+    "tldr_brand3": {
+      "mission": {
+        "answer": "Help teams build software with less friction.",
+        "content": "Help teams build software with less friction.",
+        "claim_type": "inferred",
+        "confidence": "medium",
+        "mode": "interpreted_from_discourse",
+        "detected": true,
+        "evidence_used": [],
+        "evidence": [],
+        "reasoning": "conservative variant for comparison",
+        "rationale": "conservative variant for comparison",
+        "counter_evidence": [],
+        "human_review_recommended": true
+      }
+    }
+  }
+}

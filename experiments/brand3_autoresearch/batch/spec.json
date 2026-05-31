@@ -1,0 +1,39 @@
+{
+  "runs": [
+    {
+      "name": "base44",
+      "candidate_file": "../candidate_a/base44.json",
+      "candidate_file_b": "../candidate_b/base44.json",
+      "candidate_slug": "base44",
+      "candidate_slug_b": "base44"
+    },
+    {
+      "name": "bokeroon",
+      "candidate_file": "../candidate_a/bokeroon.json",
+      "candidate_file_b": "../candidate_b/bokeroon.json",
+      "candidate_slug": "bokeroon",
+      "candidate_slug_b": "bokeroon"
+    },
+    {
+      "name": "fly-io",
+      "candidate_file": "../candidate_a/fly-io.json",
+      "candidate_file_b": "../candidate_b/fly-io.json",
+      "candidate_slug": "fly-io",
+      "candidate_slug_b": "fly-io"
+    },
+    {
+      "name": "creatify-ai-es",
+      "candidate_file": "../candidate_a/creatify-ai-es.json",
+      "candidate_file_b": "../candidate_b/creatify-ai-es.json",
+      "candidate_slug": "creatify-ai-es",
+      "candidate_slug_b": "creatify-ai-es"
+    },
+    {
+      "name": "heygen",
+      "candidate_file": "../candidate_a/heygen.json",
+      "candidate_file_b": "../candidate_b/heygen.json",
+      "candidate_slug": "heygen",
+      "candidate_slug_b": "heygen"
+    }
+  ]
+}

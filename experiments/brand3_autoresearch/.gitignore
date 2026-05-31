@@ -1,4 +1,5 @@
 runs/
 candidate/
+history/
 __pycache__/
 *.pyc

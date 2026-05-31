@@ -1,0 +1,34 @@
+{
+  "payload": {
+    "tldr_brand3": {
+      "mission": {
+        "answer": "Help anyone create their own apps with zero hassle.",
+        "content": "Help anyone create their own apps with zero hassle.",
+        "claim_type": "declared",
+        "confidence": "high",
+        "mode": "compressed",
+        "detected": true,
+        "evidence_used": [],
+        "evidence": [],
+        "reasoning": "candidate benchmark hypothesis",
+        "rationale": "candidate benchmark hypothesis",
+        "counter_evidence": [],
+        "human_review_recommended": false
+      },
+      "offer": {
+        "answer": "Base44 lets builders, founders, and teams turn natural language prompts into working apps, including tools, back-office apps, customer portals, and enterprise products.",
+        "content": "Base44 lets builders, founders, and teams turn natural language prompts into working apps, including tools, back-office apps, customer portals, and enterprise products.",
+        "claim_type": "declared",
+        "confidence": "high",
+        "mode": "compressed",
+        "detected": true,
+        "evidence_used": [],
+        "evidence": [],
+        "reasoning": "candidate benchmark hypothesis",
+        "rationale": "candidate benchmark hypothesis",
+        "counter_evidence": [],
+        "human_review_recommended": false
+      }
+    }
+  }
+}

@@ -11,8 +11,10 @@ from typing import Literal
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 
-from src.config import BRAND3_DB_PATH
+from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
+from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
+from src.features.magnetism.translation import apply_magnetism_translation, translate_magnetism_payload
 from src.storage.sqlite_store import SQLiteStore
 
 from ..storage import (
@@ -21,6 +23,7 @@ from ..storage import (
     insert_magnetism_job,
     insert_magnetism_scan,
     list_magnetism_scans,
+    update_magnetism_scan_payload,
 )
 from ..templates_env import templates
 from ..workers.queue import get_queue
@@ -472,7 +475,7 @@ def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str)
 @router.get("/magnetism-scanner/scan/{scan_id}")
 async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render details sheet of a specific magnetism scan."""
-    model = _magnetism_scan_model(scan_id)
+    model = _magnetism_scan_model(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -493,7 +496,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
 @router.get("/magnetism-scanner/scan/{scan_id}/research")
 async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render research evidence for a specific Magnetism scan."""
-    model = _magnetism_scan_model(scan_id)
+    model = _magnetism_scan_model(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -515,7 +518,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
 @router.get("/magnetism-scanner/scan/{scan_id}/methodology")
 async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render methodology details for a specific Magnetism scan."""
-    model = _magnetism_scan_model(scan_id)
+    model = _magnetism_scan_model(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -541,7 +544,7 @@ def _attach_ui(model: dict, lang: _Lang) -> None:
     model["t"] = _ui(lang)
 
 
-def _magnetism_scan_model(scan_id: int) -> dict | None:
+def _magnetism_scan_model(scan_id: int, *, lang: _Lang = "es") -> dict | None:
     row = get_magnetism_scan(scan_id)
     if row is None:
         return None
@@ -554,6 +557,7 @@ def _magnetism_scan_model(scan_id: int) -> dict | None:
         payload = MagnetismExtractor(llm=None)._normalize_analysis(payload)
     else:
         payload = MagnetismExtractor(llm=None).ensure_tldr_v03_contract(payload)
+    payload = _payload_for_language(scan_id, payload, lang)
 
     # Format timestamp nicely
     try:
@@ -594,6 +598,37 @@ def _magnetism_scan_model(scan_id: int) -> dict | None:
         "fallback_used": payload.get("fallback_used", False),
         "payload": payload,
     }
+
+
+def _payload_for_language(scan_id: int, payload: dict, lang: _Lang) -> dict:
+    """Translate Magnetism prose on first read and reuse cached payload afterwards."""
+    translations = payload.get("translations")
+    if not isinstance(translations, dict):
+        translations = {}
+    magnetism_translations = translations.get("magnetism_tldr")
+    if not isinstance(magnetism_translations, dict):
+        magnetism_translations = {}
+
+    cached = magnetism_translations.get(lang)
+    if isinstance(cached, dict):
+        return apply_magnetism_translation(payload, cached)
+
+    if not BRAND3_LLM_API_KEY:
+        return payload
+
+    analyzer = LLMAnalyzer(api_key=BRAND3_LLM_API_KEY, model=LLM_CHEAP_MODEL)
+    translated = translate_magnetism_payload(payload, target_lang=lang, analyzer=analyzer)
+    if not translated:
+        return payload
+
+    updated_payload = dict(payload)
+    updated_translations = dict(translations)
+    updated_magnetism_translations = dict(magnetism_translations)
+    updated_magnetism_translations[lang] = translated
+    updated_translations["magnetism_tldr"] = updated_magnetism_translations
+    updated_payload["translations"] = updated_translations
+    update_magnetism_scan_payload(scan_id, json.dumps(updated_payload, ensure_ascii=False))
+    return apply_magnetism_translation(updated_payload, translated)
 
 
 def _research_evidence_model(payload: dict) -> dict:

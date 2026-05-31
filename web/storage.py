@@ -276,6 +276,16 @@ def get_magnetism_scan(scan_id: int) -> dict | None:
     return dict(row) if row else None
 
 
+def update_magnetism_scan_payload(scan_id: int, raw_payload: str) -> None:
+    """Update a scan payload without changing its scores or public metadata."""
+    with _connect() as conn:
+        conn.execute(
+            "UPDATE magnetism_scans SET raw_payload = ? WHERE id = ?",
+            (raw_payload, scan_id),
+        )
+        conn.commit()
+
+
 def list_magnetism_scans(limit: int = 20) -> list[dict]:
     """List recent magnetism scans."""
     with _connect() as conn:
@@ -290,4 +300,3 @@ def list_magnetism_scans(limit: int = 20) -> list[dict]:
             (limit,),
         ).fetchall()
     return [dict(r) for r in rows]
-

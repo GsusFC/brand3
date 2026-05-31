@@ -26,6 +26,9 @@ def _install_env(db_path: Path) -> None:
     os.environ["BRAND3_COOKIE_SECRET"] = "t" * 40
     os.environ["BRAND3_TEAM_TOKEN"] = "team"
     os.environ["BRAND3_MAX_CONCURRENT_ANALYSES"] = "1"
+    os.environ["BRAND3_LLM_API_KEY"] = ""
+    os.environ["GEMINI_API_KEY"] = ""
+    os.environ["GOOGLE_API_KEY"] = ""
 
 
 class FakeLLMAnalyzer:
@@ -93,6 +96,9 @@ class MagnetismScannerTests(unittest.TestCase):
             "BRAND3_COOKIE_SECRET",
             "BRAND3_TEAM_TOKEN",
             "BRAND3_MAX_CONCURRENT_ANALYSES",
+            "BRAND3_LLM_API_KEY",
+            "GEMINI_API_KEY",
+            "GOOGLE_API_KEY",
         ):
             os.environ.pop(key, None)
 
@@ -151,6 +157,51 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Grafo de evidencia", research_es.text)
         self.assertIn("Detalles de metodología", methodology_es.text)
         self.assertIn('<html lang="es">', detail_es.text)
+
+    def test_scan_detail_applies_cached_tldr_translation(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="We help finance teams close faster with reliable workflows.",
+            brand_name="Translated Brand",
+        )
+        payload["tldr_brand3"]["value_proposition"]["detected"] = True
+        payload["tldr_brand3"]["value_proposition"]["content"] = "Ayuda a equipos financieros a cerrar antes."
+        payload["diagnosis"]["headline"] = "Diagnóstico original."
+        payload["translations"] = {
+            "magnetism_tldr": {
+                "en": {
+                    "translation_version": 1,
+                    "translation_source": "magnetism_tldr_translation",
+                    "target_lang": "en",
+                    "tldr_brand3": {
+                        "value_proposition": {
+                            "content": "Helps finance teams close faster.",
+                        }
+                    },
+                    "diagnosis": {
+                        "headline": "Translated diagnosis.",
+                        "key_observations": payload["diagnosis"].get("key_observations") or [],
+                    },
+                }
+            }
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Helps finance teams close faster.", response.text)
+        self.assertIn("Translated diagnosis.", response.text)
+        self.assertNotIn("Ayuda a equipos financieros a cerrar antes.", response.text)
 
     def test_database_helpers(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan, list_magnetism_scans

@@ -23,5 +23,7 @@ Real scan export:
 
 Benchmark loop:
 - `python experiments/brand3_autoresearch/run_benchmark.py`
+- `python experiments/brand3_autoresearch/run_benchmark.py --scan-id <id> --candidate-dir candidate`
+- `python experiments/brand3_autoresearch/run_benchmark.py --scan-file path/to/scan.json --candidate-dir candidate`
 - writes `runs/report.json` and `runs/report.md`
 - prints a `retain` or `revert` decision for the current Analyst Pass benchmark

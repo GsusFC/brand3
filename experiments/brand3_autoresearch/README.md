@@ -17,3 +17,6 @@ Candidate file convention:
 - `candidate/<case_id>.json`
 - each file should contain the raw candidate payload for that case, or a `{"payload": ...}` wrapper
 
+Real scan export:
+- `python experiments/brand3_autoresearch/export_candidate.py --scan-id <id> --output candidate/<case_id>.json`
+- `python experiments/brand3_autoresearch/export_candidate.py --scan-file path/to/scan.json --output candidate/<case_id>.json`

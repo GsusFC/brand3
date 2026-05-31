@@ -15,7 +15,7 @@ from src.reports.brand_research_pack import BrandResearchPack
 from src.features.magnetism.tldr_guardrails import validate_analyst_tldr
 
 
-ANALYST_TLDR_PROMPT_VERSION = "brand3-analyst-tldr-v0.1"
+ANALYST_TLDR_PROMPT_VERSION = "brand3-analyst-tldr-v0.2"
 
 TLDR_KEYS = [
     "core_purpose",
@@ -57,6 +57,8 @@ Rules:
 - Every block must be separate and must answer its own question.
 - Do not promote founder story, press context, proof points, or page chrome into
   stronger claims than the evidence supports.
+- Prefer absent/not_detected over an elegant but unsupported interpretation.
+- Evidence gaps and confidence notes are negative evidence, not background noise.
 """
 
 ANALYST_TLDR_SOURCE_RULES = [
@@ -66,6 +68,25 @@ ANALYST_TLDR_SOURCE_RULES = [
     "social can support how the brand speaks or is perceived, but should be traceable.",
     "noise must not be used as positive evidence.",
     "If a block lacks usable evidence, mark it absent/not_detected rather than inventing a stronger reading.",
+]
+
+ANALYST_TLDR_NEGATIVE_EXAMPLES = [
+    {
+        "bad_move": "Using 'Book a demo', 'Login', pricing labels, newsletter text, or footer copy as a mission/value/personality claim.",
+        "correct_move": "Treat it as noise or page chrome unless the Research Pack explicitly promotes it as brand evidence.",
+    },
+    {
+        "bad_move": "Marking mission as declared because press says the company raised money to automate a category.",
+        "correct_move": "Use press as context only; mission requires owned present-tense action language or must be inferred/absent.",
+    },
+    {
+        "bad_move": "Calling values declared because the product has proof points or customer outcomes.",
+        "correct_move": "Use proof points for performed credibility; values need explicit value language or repeated behavior.",
+    },
+    {
+        "bad_move": "Turning a single decorative metaphor into the whole brand idea.",
+        "correct_move": "Require repeated conceptual evidence across offer, expression, product behavior, or language.",
+    },
 ]
 
 
@@ -145,14 +166,21 @@ def run_analyst_tldr_pass(
         research_pack=research_pack,
         current_tldr=current_tldr,
     )
-    raw = llm._call_json(ANALYST_TLDR_SYSTEM_PROMPT, prompt, max_tokens=9000)
+    raw_response = llm._call_json(
+        ANALYST_TLDR_SYSTEM_PROMPT,
+        prompt,
+        max_tokens=9000,
+        json_schema=analyst_tldr_response_schema(),
+        schema_name="brand3_analyst_tldr",
+    )
+    raw = _coerce_analyst_raw_json(raw_response)
     if not isinstance(raw, dict) or not raw:
         return {
             "analysis_error": {
                 "reason": "llm_error",
                 "detail": "The analyst pass did not return usable JSON.",
             },
-            "raw": raw if isinstance(raw, dict) else {},
+            "raw": raw_response if isinstance(raw_response, dict) else {},
             "validated": _fallback_payload(
                 current_tldr=current_tldr,
                 reason="llm_error",
@@ -169,6 +197,15 @@ def run_analyst_tldr_pass(
     }
 
 
+def _coerce_analyst_raw_json(raw: Any) -> dict[str, Any]:
+    """Accept provider JSON-object drift when the only item is the payload."""
+    if isinstance(raw, dict):
+        return raw
+    if isinstance(raw, list) and len(raw) == 1 and isinstance(raw[0], dict):
+        return raw[0]
+    return {}
+
+
 def build_analyst_tldr_prompt(
     *,
     brand_name: str,
@@ -183,11 +220,12 @@ def build_analyst_tldr_prompt(
             "url": url,
         },
         "task": "Write the 9 TLDR Brand3 blocks from the Research Pack only.",
-        "research_pack": _research_pack_dict(research_pack),
+        "research_pack": _compact_research_pack_for_prompt(_research_pack_dict(research_pack)),
         "current_tldr": _compact_current_tldr(current_tldr or {}),
         "block_questions": ANALYST_BLOCK_QUESTIONS,
         "block_exercises": ANALYST_BLOCK_QUESTIONS,
         "source_rules": ANALYST_TLDR_SOURCE_RULES,
+        "negative_examples": ANALYST_TLDR_NEGATIVE_EXAMPLES,
         "required_output": {
             "entity_reading": "short explanation of the entity reading",
             "verdict_vs_current": "better | similar | worse | unknown",
@@ -219,6 +257,102 @@ def build_analyst_tldr_prompt(
         },
     }
     return json.dumps(payload, ensure_ascii=False, indent=2)
+
+
+def analyst_tldr_response_schema() -> dict[str, Any]:
+    """Provider-facing JSON Schema for the Analyst Pass response.
+
+    Validation and semantic downgrades still happen in Python guardrails. The
+    provider schema only reduces syntactic drift and missing top-level keys.
+    """
+    block_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "block",
+            "question",
+            "answer",
+            "claim_type",
+            "mode",
+            "confidence",
+            "reasoning",
+            "evidence_used",
+            "evidence_sources",
+            "counter_evidence",
+            "human_review_recommended",
+        ],
+        "properties": {
+            "block": {"type": "string", "enum": TLDR_KEYS},
+            "question": {"type": "string"},
+            "answer": {"type": ["string", "null"]},
+            "claim_type": {"type": "string", "enum": ["declared", "performed", "inferred", "absent"]},
+            "mode": {
+                "type": "string",
+                "enum": [
+                    "literal",
+                    "compressed",
+                    "interpreted_from_discourse",
+                    "needs_human_review",
+                    "not_detected",
+                ],
+            },
+            "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
+            "reasoning": {"type": "string"},
+            "evidence_used": {"type": "array", "items": {"type": "string"}},
+            "evidence_sources": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["source_key", "source_type", "url", "label"],
+                    "properties": {
+                        "source_key": {"type": "string"},
+                        "source_type": {
+                            "type": "string",
+                            "enum": [
+                                "owned_official",
+                                "owned_product",
+                                "owned_about",
+                                "owned_security_trust",
+                                "press_or_founder",
+                                "proof_point",
+                                "social",
+                                "noise",
+                                "unknown",
+                            ],
+                        },
+                        "url": {"type": "string"},
+                        "label": {"type": "string"},
+                    },
+                },
+            },
+            "counter_evidence": {"type": "array", "items": {"type": "string"}},
+            "human_review_recommended": {"type": "boolean"},
+        },
+    }
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "entity_reading",
+            "verdict_vs_current",
+            "main_gain",
+            "main_risk",
+            "tldr_brand3",
+        ],
+        "properties": {
+            "entity_reading": {"type": "string"},
+            "verdict_vs_current": {"type": "string", "enum": ["better", "similar", "worse", "unknown"]},
+            "main_gain": {"type": "string"},
+            "main_risk": {"type": "string"},
+            "tldr_brand3": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": TLDR_KEYS,
+                "properties": {key: block_schema for key in TLDR_KEYS},
+            },
+        },
+    }
 
 
 def normalize_analyst_response(
@@ -421,6 +555,137 @@ def _research_pack_dict(research_pack: Any) -> dict[str, Any]:
         payload = research_pack.to_dict()
         return payload if isinstance(payload, dict) else {}
     return {}
+
+
+def _compact_research_pack_for_prompt(pack: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(pack, dict):
+        return {}
+    source_map = pack.get("source_map") if isinstance(pack.get("source_map"), dict) else {}
+    compact = {
+        "version": pack.get("version"),
+        "input_url": pack.get("input_url"),
+        "resolved_entity": pack.get("resolved_entity"),
+        "entity_type": pack.get("entity_type"),
+        "parent_brand": pack.get("parent_brand"),
+        "official_urls": _compact_list(pack.get("official_urls"), limit=12, text_limit=180),
+        "analyzed_urls": _compact_list(pack.get("analyzed_urls"), limit=20, text_limit=180),
+        "source_map": _compact_source_map(source_map),
+        "company_summary": _truncate_text(pack.get("company_summary"), 450),
+        "product_summary": _truncate_text(pack.get("product_summary"), 450),
+        "audience": _truncate_text(pack.get("audience"), 350),
+        "offer": _truncate_text(pack.get("offer"), 450),
+        "outcome": _truncate_text(pack.get("outcome"), 350),
+        "category": _truncate_text(pack.get("category"), 160),
+        "declared_purpose": _truncate_text(pack.get("declared_purpose"), 450),
+        "declared_mission": _truncate_text(pack.get("declared_mission"), 450),
+        "future_direction": _truncate_text(pack.get("future_direction"), 450),
+        "tone_of_voice": _truncate_text(pack.get("tone_of_voice"), 220),
+        "personality_signals": _compact_list(pack.get("personality_signals"), limit=8, text_limit=220),
+        "visual_or_conceptual_signals": _compact_list(pack.get("visual_or_conceptual_signals"), limit=8, text_limit=220),
+        "values_signals": _compact_list(pack.get("values_signals"), limit=8, text_limit=220),
+        "attributes_signals": _compact_list(pack.get("attributes_signals"), limit=8, text_limit=220),
+        "proof_points": _compact_evidence_list(pack.get("proof_points"), limit=8),
+        "founder_or_press_context": _compact_evidence_list(pack.get("founder_or_press_context"), limit=8),
+        "noise_rejected": _compact_evidence_list(pack.get("noise_rejected"), limit=4, text_limit=180),
+        "evidence_gaps": _compact_list(pack.get("evidence_gaps"), limit=8, text_limit=260),
+        "confidence_notes": _compact_list(pack.get("confidence_notes"), limit=8, text_limit=260),
+        "evidence_counts": {
+            "source_count": len(source_map),
+            "proof_points": _safe_len(pack.get("proof_points")),
+            "founder_or_press_context": _safe_len(pack.get("founder_or_press_context")),
+            "noise_rejected": _safe_len(pack.get("noise_rejected")),
+        },
+    }
+    return compact
+
+
+def _compact_source_map(source_map: dict[str, Any], *, limit: int = 35) -> dict[str, Any]:
+    def priority(item: tuple[str, Any]) -> tuple[int, str]:
+        value = item[1] if isinstance(item[1], dict) else {}
+        source_type = str(value.get("source_type") or "")
+        rank = {
+            "owned_official": 0,
+            "owned_product": 1,
+            "owned_about": 2,
+            "owned_security_trust": 3,
+            "proof_point": 4,
+            "press_or_founder": 5,
+            "social": 6,
+            "noise": 8,
+        }.get(source_type, 7)
+        return rank, str(item[0])
+
+    compact: dict[str, Any] = {}
+    for key, value in sorted(source_map.items(), key=priority)[:limit]:
+        if not isinstance(value, dict):
+            continue
+        compact[str(key)] = {
+            "url": _truncate_text(value.get("url"), 220),
+            "source_type": _truncate_text(value.get("source_type"), 80),
+            "label": _truncate_text(value.get("label"), 140),
+            "surface_role": _truncate_text(value.get("surface_role"), 80),
+            "entity_scope": _truncate_text(value.get("entity_scope"), 80),
+            "title": _truncate_text(value.get("title"), 160),
+        }
+    return compact
+
+
+def _compact_evidence_list(value: Any, *, limit: int, text_limit: int = 320) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    output: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        text = _truncate_text(item.get("text"), text_limit)
+        source_url = _truncate_text(item.get("source_url"), 220)
+        key = (text.lower(), source_url.lower())
+        if not text or key in seen:
+            continue
+        seen.add(key)
+        output.append(
+            {
+                "text": text,
+                "kind": _truncate_text(item.get("kind"), 40),
+                "source_url": source_url,
+                "source_type": _truncate_text(item.get("source_type"), 80),
+                "source_label": _truncate_text(item.get("source_label"), 100),
+                "topic": _truncate_text(item.get("topic"), 100),
+                "confidence": _truncate_text(item.get("confidence"), 40),
+            }
+        )
+        if len(output) >= limit:
+            break
+    return output
+
+
+def _compact_list(value: Any, *, limit: int, text_limit: int) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    output: list[str] = []
+    seen: set[str] = set()
+    for item in value:
+        text = _truncate_text(item, text_limit)
+        key = text.lower()
+        if not text or key in seen:
+            continue
+        seen.add(key)
+        output.append(text)
+        if len(output) >= limit:
+            break
+    return output
+
+
+def _truncate_text(value: Any, limit: int) -> str:
+    text = _clean_text(value)
+    if len(text) <= limit:
+        return text
+    return text[: max(0, limit - 1)].rstrip() + "…"
+
+
+def _safe_len(value: Any) -> int:
+    return len(value) if isinstance(value, list | dict) else 0
 
 
 def _normalize_choice(value: Any, allowed: set[str], fallback: str) -> str:

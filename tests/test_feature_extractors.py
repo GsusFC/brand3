@@ -418,6 +418,38 @@ class DiferenciacionExtractorTests(unittest.TestCase):
         self.assertEqual(len(feature.raw_value["evidence"]), 1)
         self.assertEqual(feature.confidence, 0.85)
 
+    def test_llm_positioning_prompt_preserves_structured_pack_beyond_legacy_limit(self):
+        llm = LLMAnalyzer(api_key="test")
+        captured = {}
+
+        def fake_call_json(system, user, *args, **kwargs):
+            captured["system"] = system
+            captured["user"] = user
+            return {
+                "clarity_score": 70,
+                "verdict": "clear",
+                "stated_position": "Structured pack position.",
+                "target_audience": "operators",
+                "differentiator_claimed": "deep marker evidence",
+                "evidence": [{"quote": "DEEP_STRUCTURED_MARKER", "signal": "clear"}],
+                "reasoning": "Uses deeper structured evidence.",
+            }
+
+        llm._call_json = fake_call_json
+        structured_pack = (
+            "Structured Brand Research Pack\n"
+            "Core evidence:\n"
+            + ("owned evidence " * 260)
+            + "DEEP_STRUCTURED_MARKER"
+        )
+
+        result = llm.analyze_positioning_clarity(structured_pack, "Structured Brand")
+
+        self.assertEqual(result["verdict"], "clear")
+        self.assertIn("DEEP_STRUCTURED_MARKER", captured["user"])
+        self.assertIn("rejected noise", captured["user"].lower())
+        self.assertIn("Evidence input", captured["user"])
+
     def test_positioning_clarity_invalid_verdict_falls_back(self):
         web = WebData(
             url="https://example.com",
@@ -469,6 +501,81 @@ class DiferenciacionExtractorTests(unittest.TestCase):
         self.assertEqual(feature.confidence, 0.5)
         self.assertEqual(feature.raw_value["reason"], "llm_partial_evidence")
         self.assertEqual(feature.raw_value["evidence"], [])
+
+    def test_positioning_clarity_uses_research_pack_instead_of_raw_truncated_copy(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("Navigation Login Sign up Pricing " * 160)
+            + "Deep evidence that should be invisible to legacy 3000 char truncation.",
+        )
+        research_pack = {
+            "version": "brand_research_pack_v0_1",
+            "input_url": "https://example.com",
+            "entity_type": "product",
+            "resolved_entity": {
+                "resolved_entity": "Example",
+                "entity_type": "product",
+                "canonical_url": "https://example.com",
+            },
+            "offer": "Example is a deterministic control layer for enterprise AI operations.",
+            "audience": "enterprise AI operations teams",
+            "outcome": "teams can audit and constrain autonomous workflows",
+            "category": "AI governance infrastructure",
+            "proof_points": [
+                {
+                    "text": "Example is a deterministic control layer for enterprise AI operations.",
+                    "source_url": "https://example.com/product",
+                    "source_type": "owned",
+                    "source_label": "product_offer",
+                    "confidence": "high",
+                }
+            ],
+            "noise_rejected": [
+                {
+                    "text": "Login Sign up Pricing",
+                    "source_url": "https://example.com",
+                    "source_type": "owned",
+                    "source_label": "noise",
+                    "confidence": "high",
+                }
+            ],
+        }
+        calls = {}
+
+        class FakeLLM:
+            api_key = "test"
+
+            def analyze_positioning_clarity(self, content, brand_name, competitor_snippets):
+                calls["positioning_content"] = content
+                return {
+                    "clarity_score": 84,
+                    "verdict": "clear",
+                    "stated_position": "AI governance infrastructure.",
+                    "target_audience": "enterprise AI operations teams",
+                    "differentiator_claimed": "deterministic control layer",
+                    "evidence": [
+                        {
+                            "quote": "Example is a deterministic control layer for enterprise AI operations.",
+                            "signal": "clear",
+                        }
+                    ],
+                    "reasoning": "The structured pack contains a concrete offer.",
+                }
+
+            def analyze_uniqueness(self, content, brand_name, competitor_snippets):
+                return {}
+
+        feature = DiferenciacionExtractor(llm=FakeLLM()).extract(
+            web=web,
+            research_pack=research_pack,
+        )["positioning_clarity"]
+
+        self.assertEqual(feature.source, "llm")
+        self.assertIn("Structured Brand Research Pack", calls["positioning_content"])
+        self.assertIn("deterministic control layer", calls["positioning_content"])
+        self.assertIn("Rejected noise", calls["positioning_content"])
+        self.assertNotEqual(calls["positioning_content"], web.markdown_content)
 
     def test_uniqueness_without_llm_uses_normalized_ratio_fallback(self):
         web = WebData(
@@ -559,6 +666,55 @@ class DiferenciacionExtractorTests(unittest.TestCase):
 
         self.assertEqual(feature.source, "heuristic_fallback")
         self.assertEqual(feature.raw_value["reason"], "llm_invalid_verdict")
+
+    def test_uniqueness_uses_research_pack_signals_as_llm_input(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("Generic SaaS navigation " * 250),
+        )
+        research_pack = {
+            "version": "brand_research_pack_v0_1",
+            "input_url": "https://example.com",
+            "entity_type": "product",
+            "resolved_entity": {"resolved_entity": "Example", "entity_type": "product"},
+            "offer": "Example turns agentic workflows into auditable control paths.",
+            "personality_signals": ["precise", "control-oriented"],
+            "visual_or_conceptual_signals": ["control paths"],
+            "attributes_signals": ["auditable", "deterministic"],
+            "values_signals": ["accountability"],
+            "evidence_gaps": ["No third-party adoption proof was found."],
+        }
+        calls = {}
+
+        class FakeLLM:
+            api_key = "test"
+
+            def analyze_positioning_clarity(self, content, brand_name, competitor_snippets):
+                return {}
+
+            def analyze_uniqueness(self, content, brand_name, competitor_snippets):
+                calls["uniqueness_content"] = content
+                return {
+                    "uniqueness_score": 78,
+                    "verdict": "moderately_unique",
+                    "unique_phrases": ["auditable control paths"],
+                    "generic_phrases": [],
+                    "brand_vocabulary": ["agentic workflows"],
+                    "competitor_overlap_signals": [],
+                    "reasoning": "The pack contains ownable vocabulary.",
+                }
+
+        feature = DiferenciacionExtractor(llm=FakeLLM()).extract(
+            web=web,
+            research_pack=research_pack,
+        )["uniqueness"]
+
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 78)
+        self.assertIn("agentic workflows", calls["uniqueness_content"])
+        self.assertIn("Evidence gaps", calls["uniqueness_content"])
+        self.assertNotEqual(calls["uniqueness_content"], web.markdown_content)
 
     def test_competitor_distance_uses_structured_raw_value(self):
         web = WebData(
@@ -1731,6 +1887,38 @@ class CoherenciaExtractorTests(unittest.TestCase):
         self.assertEqual(feature.value, 55.0)
         self.assertEqual(feature.raw_value["reason"], "llm_unavailable")
 
+    def test_exa_mentions_payload_excludes_owned_surfaces_before_limiting(self):
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(
+                url="https://example.com/about",
+                title="About",
+                text="Owned about page.",
+                source_class="owned",
+                relation="audited_surface",
+            ),
+            ExaResult(
+                url="https://docs.example.com",
+                title="Docs",
+                text="Owned docs.",
+                source_class="owned",
+                relation="same_root_surface",
+            ),
+            ExaResult(
+                url="https://external.example/article",
+                title="External article",
+                text="External coverage.",
+                source_class="external",
+                relation="external",
+            ),
+        ])
+
+        payload = CoherenciaExtractor._exa_mentions_payload(exa, limit=1)
+
+        self.assertEqual(len(payload), 1)
+        self.assertEqual(payload[0]["url"], "https://external.example/article")
+        self.assertEqual(payload[0]["source_class"], "external")
+        self.assertEqual(payload[0]["relation"], "external")
+
     def _make_coherence_llm(self, messaging_payload=None, tone_payload=None):
         class FakeLLM:
             api_key = "sk-test"
@@ -1760,6 +1948,78 @@ class CoherenciaExtractorTests(unittest.TestCase):
         self.assertEqual(feature.confidence, 0.85)
         self.assertEqual(feature.raw_value["verdict"], "aligned")
         self.assertIn("prediction", feature.raw_value["aligned_themes"])
+
+    def test_messaging_consistency_uses_research_pack_as_llm_input(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("Login Pricing Cookie banner " * 200),
+        )
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(
+                url="https://x.com/a",
+                title="Example launch",
+                text="Example is discussed as AI governance infrastructure.",
+            ),
+        ])
+        research_pack = {
+            "version": "brand_research_pack_v0_1",
+            "input_url": "https://example.com",
+            "entity_type": "product",
+            "resolved_entity": {"resolved_entity": "Example", "entity_type": "product"},
+            "category": "AI governance infrastructure",
+            "offer": "Example is a deterministic control layer for enterprise AI operations.",
+            "proof_points": [
+                {
+                    "text": "Example is a deterministic control layer for enterprise AI operations.",
+                    "source_url": "https://example.com/product",
+                    "source_type": "owned",
+                    "source_label": "product_offer",
+                    "confidence": "high",
+                }
+            ],
+            "noise_rejected": [
+                {
+                    "text": "Login Pricing Cookie banner",
+                    "source_url": "https://example.com",
+                    "source_type": "owned",
+                    "source_label": "noise",
+                    "confidence": "high",
+                }
+            ],
+        }
+        calls = {}
+
+        class FakeLLM:
+            api_key = "sk-test"
+
+            def analyze_messaging_consistency(self, web_content, mentions, brand_name):
+                calls["messaging_content"] = web_content
+                return {
+                    "consistency_score": 86,
+                    "verdict": "aligned",
+                    "self_category": "AI governance infrastructure",
+                    "third_party_category": "AI governance infrastructure",
+                    "aligned_themes": ["governance", "control"],
+                    "gaps": [],
+                    "reasoning": "The pack and mentions align.",
+                }
+
+            def analyze_tone_consistency(self, web_content, snippets, brand_name):
+                return {"tone_consistency_score": 70, "gap_signal": "none", "examples": []}
+
+        feature = CoherenciaExtractor(llm=FakeLLM(), skip_visual_analysis=True).extract(
+            web=web,
+            exa=exa,
+            research_pack=research_pack,
+        )["messaging_consistency"]
+
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 86.0)
+        self.assertIn("Structured Brand Research Pack", calls["messaging_content"])
+        self.assertIn("deterministic control layer", calls["messaging_content"])
+        self.assertIn("Rejected noise", calls["messaging_content"])
+        self.assertNotEqual(calls["messaging_content"], web.markdown_content)
 
     def test_messaging_consistency_with_invalid_verdict_falls_back(self):
         web = WebData(url="https://example.com", title="Example", markdown_content="x")
@@ -1825,6 +2085,116 @@ class CoherenciaExtractorTests(unittest.TestCase):
         self.assertEqual(feature.value, 78.0)
         self.assertEqual(feature.raw_value["gap_signal"], "mild")
         self.assertEqual(len(feature.raw_value["examples"]), 1)
+
+    def test_tone_consistency_uses_research_pack_tone_signals(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("Generic SaaS page copy " * 220),
+        )
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(
+                url="https://x.com/a",
+                title="Example profile",
+                text="Example is described as rigorous enterprise infrastructure.",
+            ),
+        ])
+        research_pack = {
+            "version": "brand_research_pack_v0_1",
+            "input_url": "https://example.com",
+            "entity_type": "product",
+            "resolved_entity": {"resolved_entity": "Example", "entity_type": "product"},
+            "tone_of_voice": "precise, rigorous, control-oriented",
+            "personality_signals": ["precise", "rigorous", "control-oriented"],
+            "proof_points": [
+                {
+                    "text": "Example uses precise operating language around deterministic control.",
+                    "source_url": "https://example.com/about",
+                    "source_type": "owned",
+                    "source_label": "tone",
+                    "confidence": "medium",
+                }
+            ],
+        }
+        calls = {}
+
+        class FakeLLM:
+            api_key = "sk-test"
+
+            def analyze_messaging_consistency(self, web_content, mentions, brand_name):
+                return {"consistency_score": 75, "verdict": "aligned", "gaps": []}
+
+            def analyze_tone_consistency(self, web_content, snippets, brand_name):
+                calls["tone_content"] = web_content
+                return {
+                    "tone_consistency_score": 82,
+                    "self_tone": "precise rigorous",
+                    "third_party_tone": "formal enterprise",
+                    "gap_signal": "none",
+                    "examples": [
+                        {
+                            "source": "web",
+                            "quote": "deterministic control",
+                            "tone_marker": "technical precision",
+                        },
+                        {
+                            "source": "mention",
+                            "quote": "rigorous enterprise infrastructure",
+                            "tone_marker": "formal enterprise framing",
+                        }
+                    ],
+                    "reasoning": "The pack exposes explicit tone evidence.",
+                }
+
+        feature = CoherenciaExtractor(llm=FakeLLM(), skip_visual_analysis=True).extract(
+            web=web,
+            exa=exa,
+            research_pack=research_pack,
+        )["tone_consistency"]
+
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.value, 82.0)
+        self.assertIn("Structured Brand Research Pack", calls["tone_content"])
+        self.assertIn("precise, rigorous, control-oriented", calls["tone_content"])
+        self.assertIn("personality_signals", calls["tone_content"])
+        self.assertNotEqual(calls["tone_content"], web.markdown_content)
+
+    def test_tone_consistency_degrades_when_no_mention_examples_support_gap_none(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content="Technical and precise product copy.",
+        )
+        exa = ExaData(brand_name="Example", mentions=[
+            ExaResult(
+                url="https://external.example/article",
+                title="External article",
+                text="External coverage exists.",
+                source_class="external",
+                relation="external",
+            )
+        ])
+        llm = self._make_coherence_llm(tone_payload={
+            "tone_consistency_score": 90,
+            "self_tone": "technical",
+            "third_party_tone": "no relevant third-party tone",
+            "gap_signal": "none",
+            "examples": [
+                {
+                    "source": "web",
+                    "quote": "Technical and precise product copy.",
+                    "tone_marker": "technical precision",
+                }
+            ],
+            "reasoning": "Only owned tone evidence was useful.",
+        })
+
+        feature = CoherenciaExtractor(llm=llm)._tone_consistency(web, exa)
+
+        self.assertEqual(feature.source, "llm")
+        self.assertEqual(feature.confidence, 0.5)
+        self.assertEqual(feature.value, 60.0)
+        self.assertEqual(feature.raw_value["reason"], "no_third_party_tone_evidence")
 
     def test_tone_consistency_without_llm_falls_back_to_heuristic(self):
         web = WebData(url="https://example.com", title="Example",

@@ -1,6 +1,7 @@
 """GET /reports — paginated public observatory list."""
 
 from fastapi import APIRouter, Query, Request
+from fastapi.responses import RedirectResponse
 
 from ..presenters import enrich
 from ..storage import list_public_reports
@@ -43,3 +44,8 @@ async def reports_list(
             "has_next": page < total_pages,
         },
     )
+
+
+@router.get("/latest_brand_audits")
+async def latest_brand_audits_alias():
+    return RedirectResponse("/reports", status_code=303)

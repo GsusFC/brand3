@@ -47,8 +47,8 @@ Archivo principal: `src/features/llm_analyzer.py`
   - Objetivo: sentimiento y controversia con evidencia literal.
   - Salida esperada: `sentiment_score`, `verdict`, `overall_tone`, `positive_themes`, `negative_themes`, `evidence`, `controversy_detected`, `controversy_details`, `reasoning`.
 
-- (Legacy disponible) `analyze_sentiment(mentions, brand_name)`
-  - Menos estricto que `analyze_brand_sentiment`.
+- Legacy retirado: `analyze_sentiment(mentions, brand_name)`.
+  - Reemplazado por `analyze_brand_sentiment`, que exige verdict estructurado, evidencia literal y controversia explícita.
 
 ---
 
@@ -64,7 +64,8 @@ Archivo principal: `src/features/llm_analyzer.py`
   - Objetivo: lenguaje único vs genérico.
   - Salida esperada: `uniqueness_score`, `verdict`, `unique_phrases`, `generic_phrases`, `brand_vocabulary`, `competitor_overlap_signals`, `reasoning`.
 
-- (Legacy disponible) `analyze_differentiation(...)` y `analyze_positioning(...)`.
+- Legacy retirado: `analyze_differentiation(...)` y `analyze_positioning(...)`.
+  - Reemplazados por `analyze_positioning_clarity` y `analyze_uniqueness`, alimentados desde el Research Pack cuando está disponible.
 
 ---
 
@@ -138,4 +139,3 @@ Si quieres, el siguiente paso es generar una versión **“prompt inventory”**
 - versión,
 - campos JSON esperados,
 - y dónde se usa en runtime (call stack).
-

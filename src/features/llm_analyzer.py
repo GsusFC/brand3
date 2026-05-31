@@ -25,6 +25,14 @@ from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MOD
 
 PROMPT_VERSION = "brand3-llm-v1"
 LLM_CALL_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_LLM_CALL_TIMEOUT_SECONDS", "35"))
+STRUCTURED_RESEARCH_PACK_LIMIT = 6000
+
+
+def _llm_prompt_input(value: str, *, default_limit: int) -> str:
+    """Preserve structured evidence packs while keeping legacy raw markdown bounded."""
+    text = value or ""
+    limit = STRUCTURED_RESEARCH_PACK_LIMIT if text.lstrip().startswith("Structured Brand Research Pack") else default_limit
+    return text[:limit]
 
 
 def _looks_like_timeout(exc: BaseException) -> bool:
@@ -145,6 +153,24 @@ def _llm_error_type(reason: str, error: str) -> str:
     return "provider_error"
 
 
+def _json_response_format(
+    *,
+    json_schema: dict[str, Any] | None = None,
+    schema_name: str | None = None,
+    strict_schema: bool = True,
+) -> dict[str, Any]:
+    if not json_schema:
+        return {"type": "json_object"}
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": schema_name or "brand3_json_response",
+            "strict": bool(strict_schema),
+            "schema": json_schema,
+        },
+    }
+
+
 class LLMAnalyzer:
     """LLM-powered brand content analyzer."""
 
@@ -186,11 +212,20 @@ class LLMAnalyzer:
     def _clear_failure(self) -> None:
         self.last_failure_reason = None
 
-    def _cache_key(self, response_type: str, system: str, user: str, max_tokens: int) -> str:
+    def _cache_key(
+        self,
+        response_type: str,
+        system: str,
+        user: str,
+        max_tokens: int,
+        *,
+        schema_name: str | None = None,
+    ) -> str:
         payload = {
             "prompt_version": PROMPT_VERSION,
             "model": self.model,
             "response_type": response_type,
+            "schema_name": schema_name or "",
             "system": system,
             "user": user,
             "max_tokens": max_tokens,
@@ -292,16 +327,27 @@ class LLMAnalyzer:
         print(f"  LLM call failed: {content}")
         return ""
 
-    def _call_json(self, system: str, user: str, max_tokens: int = 8000) -> dict:
+    def _call_json(
+        self,
+        system: str,
+        user: str,
+        max_tokens: int = 8000,
+        *,
+        json_schema: dict[str, Any] | None = None,
+        schema_name: str | None = None,
+        strict_schema: bool = True,
+    ) -> dict:
         """Make an LLM call expecting strict JSON response.
 
-        Uses `response_format={"type": "json_object"}` so the endpoint
-        forces JSON output. Thinking-compatible budget by default.
+        Uses JSON mode by default. When `json_schema` is provided, uses the
+        OpenAI-compatible `json_schema` response_format and falls back to plain
+        `json_object` if the provider rejects schema mode.
         """
         if not self.api_key:
             return {}
 
-        cache_key = self._cache_key("json", system, user, max_tokens)
+        normalized_schema_name = schema_name if json_schema else None
+        cache_key = self._cache_key("json", system, user, max_tokens, schema_name=normalized_schema_name)
         cached = self._cache_get(cache_key, "json")
         if cached is not None:
             self._clear_failure()
@@ -316,7 +362,11 @@ class LLMAnalyzer:
             ],
             "max_tokens": max_tokens,
             "temperature": 0.1,
-            "response_format": {"type": "json_object"},
+            "response_format": _json_response_format(
+                json_schema=json_schema,
+                schema_name=schema_name,
+                strict_schema=strict_schema,
+            ),
         }
 
         payload = json.dumps(body).encode()
@@ -329,6 +379,20 @@ class LLMAnalyzer:
             },
             timeout_seconds=self.timeout_seconds,
         )
+        if status != "ok" and json_schema is not None:
+            # Provider compatibility varies; keep production safe by falling back
+            # to JSON mode while preserving schema-specific cache separation.
+            fallback_body = dict(body)
+            fallback_body["response_format"] = {"type": "json_object"}
+            status, content = _run_llm_http_call(
+                url=f"{self.base_url}/chat/completions",
+                payload=json.dumps(fallback_body).encode(),
+                headers={
+                    "Content-Type": "application/json",
+                    "Authorization": f"Bearer {self.api_key}",
+                },
+                timeout_seconds=self.timeout_seconds,
+            )
         if status != "ok":
             reason = "llm_timeout" if status == "timeout" else "llm_error"
             self._record_failure(reason, content)
@@ -367,74 +431,11 @@ class LLMAnalyzer:
             )
             return {}
 
-    def analyze_positioning(self, web_content: str, brand_name: str) -> dict:
-        """
-        What category/positioning does the brand claim?
-        Returns: {category, value_prop, target_audience, key_messages, distinctive_concepts, positioning_clarity}
-        """
-        # Truncate content for LLM
-        content = web_content[:3000]
-
-        return self._call_json(
-            system="You are a brand analyst. Analyze the brand's positioning from its website content. Return ONLY valid JSON.",
-            user=f"""Analyze this brand's positioning from their website.
-
-Brand: {brand_name}
-Website content:
----
-{content}
----
-
-Return JSON with this exact structure:
-{{
-    "category": "what category/type of company they claim to be (e.g. 'payments infrastructure', 'project management tool')",
-    "value_prop": "their core value proposition in one sentence",
-    "target_audience": "who they're targeting (e.g. 'developers', 'enterprise teams', 'small businesses')",
-    "key_messages": ["list", "of", "their", "main", "messages"],
-    "distinctive_concepts": ["any unique terms", "or concepts they", "invented or popularized"],
-    "positioning_clarity": 0-100
-}}"""
-        )
-
-    def analyze_differentiation(self, web_content: str, brand_name: str,
-                                 competitor_content: str = "") -> dict:
-        """
-        Is the brand saying something DIFFERENT from competitors?
-        Returns: {uniqueness_score, generic_phrases, unique_phrases, positioning_clarity}
-        """
-        content = web_content[:2500]
-        comp_section = f"\n\nCompetitor context:\n{competitor_content[:1000]}" if competitor_content else ""
-
-        return self._call_json(
-            system="You are a brand differentiation analyst. Score how unique vs generic a brand's messaging is. Return ONLY valid JSON.",
-            user=f"""Analyze how differentiated this brand's messaging is.
-
-Brand: {brand_name}
-Website content:
----
-{content}
----{comp_section}
-
-Evaluate:
-1. How much of their language is generic marketing speak vs specific/unique?
-2. Do they articulate a clear, distinctive positioning?
-3. Do they have their own vocabulary/concepts?
-
-Return JSON:
-{{
-    "uniqueness_score": 0-100 (0=completely generic, 100=highly unique and distinctive),
-    "generic_phrases": ["list of generic phrases found"],
-    "unique_phrases": ["list of distinctive/original phrases"],
-    "positioning_clarity": 0-100 (how clearly they articulate what makes them different),
-    "reasoning": "brief explanation of the score"
-}}"""
-        )
-
     def analyze_positioning_clarity(
         self, web_content: str, brand_name: str, competitor_snippets: list[str] | None = None
     ) -> dict:
         """LLM judgment for positioning clarity with literal evidence."""
-        content = web_content[:3000]
+        content = _llm_prompt_input(web_content, default_limit=3000)
         competitor_block = ""
         if competitor_snippets:
             competitor_block = "\n\nCompetitor context:\n---\n" + "\n---\n".join(
@@ -444,23 +445,28 @@ Return JSON:
         return self._call_json(
             system=(
                 "You are a brand positioning analyst. Return ONLY valid JSON. "
-                "You must use literal quotes from the website as evidence."
+                "You must use literal evidence and respect source boundaries."
             ),
             user=f"""Analyze the positioning clarity of this brand.
 
 Brand: {brand_name}
-Website content:
+Evidence input:
 ---
 {content}
 ---{competitor_block}
 
 Instructions:
+- The input may be a Structured Brand Research Pack rather than raw website copy.
+- Treat owned/core evidence as the brand's self-description.
+- Treat proof points, press, founder context, and third-party mentions as context, not as self-positioning.
+- Never use rejected noise, page chrome, navigation, cookie text, or CTAs as positioning evidence.
+- Evidence gaps and confidence notes are negative evidence. Use them to lower confidence/verdict when relevant.
 - Distinguish:
   - clear: the position is articulated concretely and sustained in the content
   - diffuse: it gestures at a position but loses focus
   - generic: template SaaS language with little real positioning
-  - unclear: too little substance or under 500 words of usable content
-- Evidence quotes must be literal snippets from the website, not paraphrases.
+  - unclear: too little usable owned/self evidence, even if press/proof context exists
+- Evidence quotes must be literal snippets from the evidence input, not paraphrases.
 
 Return JSON with this exact structure:
 {{
@@ -480,7 +486,7 @@ Return JSON with this exact structure:
         self, web_content: str, brand_name: str, competitor_snippets: list[str] | None = None
     ) -> dict:
         """LLM judgment for brand uniqueness vs generic language."""
-        content = web_content[:3000]
+        content = _llm_prompt_input(web_content, default_limit=3000)
         competitor_block = ""
         if competitor_snippets:
             competitor_block = "\n\nCompetitor context:\n---\n" + "\n---\n".join(
@@ -495,15 +501,20 @@ Return JSON with this exact structure:
             user=f"""Analyze how unique this brand's language is.
 
 Brand: {brand_name}
-Website content:
+Evidence input:
 ---
 {content}
 ---{competitor_block}
 
 Instructions:
+- The input may be a Structured Brand Research Pack rather than raw website copy.
+- Judge uniqueness of the brand's own language, not uniqueness of the market category alone.
 - Distinguish generic SaaS language ("cutting edge", "seamless", "revolutionary").
 - Distinguish empty aspirational language ("we empower", "unlock potential").
 - Highlight authentic brand vocabulary and repeated ownable terms.
+- Do not mark a brand unique because press/proof points describe traction or funding.
+- Use competitor overlap to penalize vocabulary that mirrors category peers.
+- Never use rejected noise, page chrome, navigation, cookie text, or CTAs as uniqueness evidence.
 
 Return JSON with this exact structure:
 {{
@@ -514,33 +525,6 @@ Return JSON with this exact structure:
   "brand_vocabulary": ["term"],
   "competitor_overlap_signals": ["signal"],
   "reasoning": "1-2 sentences"
-}}"""
-        )
-
-    def analyze_sentiment(self, mentions: list[str], brand_name: str) -> dict:
-        """
-        Analyze sentiment from third-party mentions.
-        Returns: {overall_sentiment, key_themes, positive_signals, negative_signals}
-        """
-        mentions_text = "\n---\n".join(mentions[:10])
-
-        return self._call_json(
-            system="You are a brand perception analyst. Analyze sentiment from mentions about a brand. Return ONLY valid JSON.",
-            user=f"""Analyze the sentiment and perception of {brand_name} based on these mentions:
-
----
-{mentions_text}
----
-
-Return JSON:
-{{
-    "overall_sentiment": "positive" | "neutral" | "negative" | "mixed",
-    "sentiment_score": 0-100 (0=very negative, 50=neutral, 100=very positive),
-    "key_themes": ["main topics people discuss about this brand"],
-    "positive_signals": ["specific positive things mentioned"],
-    "negative_signals": ["specific negative things mentioned"],
-    "controversy_detected": true/false,
-    "controversy_details": "description if any, null otherwise"
 }}"""
         )
 
@@ -558,15 +542,17 @@ Return JSON:
         if not web_content or not isinstance(third_party_mentions, list):
             return {}
 
-        content = web_content[:3000]
+        content = _llm_prompt_input(web_content, default_limit=3000)
         lines = []
         for i, m in enumerate(third_party_mentions[:8], start=1):
             text = (m.get("text") or "")[:400].replace("\n", " ").strip()
             url = m.get("url") or ""
             title = (m.get("title") or "").replace("\n", " ").strip()
+            source_class = (m.get("source_class") or "unknown").replace("\n", " ").strip()
+            relation = (m.get("relation") or "unknown").replace("\n", " ").strip()
             if not text and not title:
                 continue
-            lines.append(f"[{i}] {url}\n{title}\n{text}")
+            lines.append(f"[{i}] {url}\nsource_class={source_class}; relation={relation}\n{title}\n{text}")
         mentions_block = "\n---\n".join(lines) if lines else "(no mentions available)"
 
         return self._call_json(
@@ -588,8 +574,12 @@ Third-party mentions:
 ---
 
 Rules:
+- The brand evidence may be a Structured Brand Research Pack. Use it as the self-description side.
+- Use only the Third-party mentions section as external perception.
+- Do not treat owned claims, proof points, founder context, or rejected noise inside the Research Pack as third-party validation.
 - Return literal quotes in `gaps`, not paraphrase.
 - If fewer than 2 third-party mentions are useful, return `verdict: "unclear"` and empty `gaps`.
+- Mentions with source_class=owned or relation=same_root_surface/audited_surface are not independent; do not count them as useful third-party mentions.
 - Ignore mentions that are clearly NOT about "{brand_name}" (scraping false positives).
 
 Return JSON with this exact structure:
@@ -617,14 +607,16 @@ Return JSON with this exact structure:
         if not web_content:
             return {}
 
-        content = web_content[:2500]
+        content = _llm_prompt_input(web_content, default_limit=2500)
         lines = []
         for i, m in enumerate((third_party_snippets or [])[:5], start=1):
             text = (m.get("text") or "")[:300].replace("\n", " ").strip()
             url = m.get("url") or ""
+            source_class = (m.get("source_class") or "unknown").replace("\n", " ").strip()
+            relation = (m.get("relation") or "unknown").replace("\n", " ").strip()
             if not text:
                 continue
-            lines.append(f"[{i}] {url}\n{text}")
+            lines.append(f"[{i}] {url}\nsource_class={source_class}; relation={relation}\n{text}")
         mentions_block = "\n---\n".join(lines) if lines else "(no third-party snippets)"
 
         return self._call_json(
@@ -646,9 +638,13 @@ Third-party mentions:
 ---
 
 Rules:
+- The brand evidence may be a Structured Brand Research Pack. Use it as the brand's own tone side.
+- Use only the Third-party mentions section for external tone.
 - Tone examples MUST be literal quotes.
-- If no useful third-party material, return `gap_signal: "none"`.
+- Return `gap_signal: "none"` only when brand tone and at least one useful independent mention tone are visibly aligned.
+- If no useful third-party material, return `gap_signal: "mild"` with conservative reasoning rather than pretending external tone is known.
 - If contradictions exist, return `gap_signal: "strong"` and a lower score.
+- Do not use rejected noise, page chrome, navigation, cookie text, or CTAs as tone evidence.
 
 Return JSON with this exact structure:
 {{
@@ -780,39 +776,5 @@ Return JSON with this exact structure:
         {{"quote": "literal quote from a mention", "source_url": "the url", "signal": "positive" | "negative" | "neutral"}}
     ],
     "reasoning": "1-2 sentences explaining the verdict"
-}}"""
-        )
-
-    def analyze_coherence(self, web_content: str, third_party_descriptions: list[str],
-                           brand_name: str) -> dict:
-        """
-        Does the brand describe itself consistently with how others describe it?
-        Returns: {alignment_score, self_description, third_party_description, gaps}
-        """
-        content = web_content[:2000]
-        third_text = "\n---\n".join(third_party_descriptions[:5])
-
-        return self._call_json(
-            system="You are a brand coherence analyst. Compare how a brand describes itself vs how others describe it. Return ONLY valid JSON.",
-            user=f"""Compare how {brand_name} describes itself vs how third parties describe it.
-
-Brand's own website:
----
-{content}
----
-
-Third-party descriptions:
----
-{third_text}
----
-
-Return JSON:
-{{
-    "alignment_score": 0-100 (how well aligned are self-perception and external perception),
-    "self_category": "what the brand says it is",
-    "third_party_category": "what others say it is",
-    "aligned_messages": ["topics where both agree"],
-    "gaps": ["areas where self-description and external perception differ"],
-    "reasoning": "brief explanation"
 }}"""
         )

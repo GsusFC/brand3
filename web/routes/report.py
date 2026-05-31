@@ -7,7 +7,9 @@ from typing import Literal
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 
+from src.config import BRAND3_DB_PATH
 from src.reports.renderer import ReportRenderer
+from src.storage.sqlite_store import SQLiteStore
 
 from ..storage import get_request
 from ..templates_env import templates
@@ -34,12 +36,20 @@ _WEB_REPORT_ANALYZER = _WebReportNarrativeFallback()
 
 
 def _load_snapshot(run_id: int) -> dict | None:
-    from src.config import BRAND3_DB_PATH
-    from src.storage.sqlite_store import SQLiteStore
-
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
         return store.get_run_snapshot(run_id)
+    finally:
+        store.close()
+
+
+def _translation_payload(run_id: int, snapshot: dict, lang: str) -> dict | None:
+    if lang == "en":
+        return None
+
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_report_translation(run_id, lang)
     finally:
         store.close()
 
@@ -49,6 +59,7 @@ async def report(
     request: Request,
     token: str,
     theme: Literal["dark", "light"] = Query("light"),
+    lang: Literal["es", "en"] = Query("es"),
 ):
     row = get_request(token)
     if row is None:
@@ -90,5 +101,8 @@ async def report(
         snapshot,
         theme=theme,
         analyzer=_WEB_REPORT_ANALYZER,
+        app_chrome=True,
+        lang=lang,
+        narrative_payload=_translation_payload(int(run_id), snapshot, lang),
     )
     return HTMLResponse(content=html)

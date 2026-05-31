@@ -1481,7 +1481,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
     def test_run_passes_captured_screenshot_to_coherencia_extraction(self):
         captured_screenshot_urls = []
 
-        def fake_coherencia_extract(self, web=None, exa=None, context=None, screenshot_url=None):
+        def fake_coherencia_extract(self, web=None, exa=None, context=None, screenshot_url=None, research_pack=None):
             captured_screenshot_urls.append(screenshot_url)
             return {
                 "visual_consistency": FeatureValue("visual_consistency", 80.0, confidence=0.8, source="visual_analysis"),
@@ -1491,7 +1491,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 "structured_identity": FeatureValue("structured_identity", 50.0, confidence=0.5, source="context"),
             }
 
-        def fake_diferenciacion_extract(self, web=None, exa=None, competitor_data=None, screenshot_url=None, context=None):
+        def fake_diferenciacion_extract(self, web=None, exa=None, competitor_data=None, screenshot_url=None, context=None, research_pack=None):
             return {
                 "positioning_clarity": FeatureValue("positioning_clarity", 70.0, confidence=0.8, source="heuristic"),
                 "uniqueness": FeatureValue("uniqueness", 70.0, confidence=0.8, source="heuristic"),

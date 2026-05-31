@@ -4,6 +4,7 @@ from typing import Any
 
 from src.features.magnetism.analyst_tldr import (
     ANALYST_TLDR_PROMPT_VERSION,
+    analyst_tldr_response_schema,
     build_analyst_tldr_prompt,
     maybe_build_analyst_tldr,
     normalize_analyst_response,
@@ -12,15 +13,16 @@ from src.reports.brand_research_pack import build_brand_research_pack_from_snaps
 
 
 class FakeAnalystLLM:
-    def __init__(self, response: dict[str, Any]):
+    def __init__(self, response: Any):
         self.api_key = "valid-key"
         self.response = response
         self.captured_system = ""
         self.captured_user = ""
 
-    def _call_json(self, system: str, user: str, max_tokens: int = 8000) -> dict[str, Any]:
+    def _call_json(self, system: str, user: str, max_tokens: int = 8000, **kwargs: Any) -> Any:
         self.captured_system = system
         self.captured_user = user
+        self.captured_kwargs = kwargs
         return self.response
 
 
@@ -114,6 +116,14 @@ def test_analyst_pass_normalizes_base44_and_captures_prompt() -> None:
     assert result["tldr_brand3"]["core_purpose"]["evidence_sources"][0]["source_key"] == "https://base44.com"
     assert result["tldr_brand3"]["vision"]["claim_type"] == "absent"
     assert result["tldr_brand3"]["vision"]["mode"] == "not_detected"
+    assert llm.captured_kwargs["schema_name"] == "brand3_analyst_tldr"
+    assert llm.captured_kwargs["json_schema"]["required"] == [
+        "entity_reading",
+        "verdict_vs_current",
+        "main_gain",
+        "main_risk",
+        "tldr_brand3",
+    ]
 
 
 def test_block_without_evidence_used_remains_visible_and_flagged() -> None:
@@ -212,6 +222,41 @@ def test_invalid_json_returns_controlled_fallback() -> None:
     assert result["tldr_brand3"]["value_proposition"]["claim_type"] == "declared"
 
 
+def test_single_item_array_response_is_accepted() -> None:
+    llm = FakeAnalystLLM(
+        [
+            {
+                "entity_reading": "Base44 reads as an AI app builder.",
+                "tldr_brand3": {
+                    "value_proposition": {
+                        "answer": "AI app builder for non-technical founders.",
+                        "claim_type": "declared",
+                        "mode": "compressed",
+                        "confidence": "high",
+                        "reasoning": "The offer is literal and traceable.",
+                        "evidence_used": ["Base44 is an AI app builder for non-technical founders."],
+                        "evidence_sources": [{"source_key": "https://base44.com", "source_type": "owned_official"}],
+                        "counter_evidence": [],
+                        "human_review_recommended": False,
+                    }
+                },
+            }
+        ]
+    )
+
+    result = maybe_build_analyst_tldr(
+        llm=llm,
+        brand_name="Base44",
+        url="https://base44.com",
+        research_pack=_research_pack(),
+        current_tldr={},
+    )
+
+    assert "analysis_error" not in result
+    assert result["entity_reading"] == "Base44 reads as an AI app builder."
+    assert result["tldr_brand3"]["value_proposition"]["answer"] == "AI app builder for non-technical founders."
+
+
 def test_prompt_is_driven_by_pack_not_brand_rules() -> None:
     pack = _research_pack("Bokeroon", "https://bokeroon.com")
     prompt = build_analyst_tldr_prompt(
@@ -223,4 +268,24 @@ def test_prompt_is_driven_by_pack_not_brand_rules() -> None:
 
     assert "Bokeroon" in prompt
     assert "source_rules" in prompt
+    assert "negative_examples" in prompt
+    assert "Book a demo" in prompt
+    assert "absent/not_detected" in prompt
     assert '"brand": {' in prompt
+
+
+def test_analyst_tldr_response_schema_requires_all_blocks() -> None:
+    schema = analyst_tldr_response_schema()
+
+    assert schema["properties"]["tldr_brand3"]["required"] == [
+        "core_purpose",
+        "magnetism",
+        "value_proposition",
+        "personality",
+        "brand_idea",
+        "attributes",
+        "values",
+        "mission",
+        "vision",
+    ]
+    assert schema["properties"]["tldr_brand3"]["additionalProperties"] is False

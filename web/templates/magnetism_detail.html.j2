@@ -4,11 +4,9 @@
 <section class="magnetism-hero-section">
   <div class="section-head">
     <span class="label">magnetism scanner</span>
-    <span class="tag">// result</span>
+    <span class="tag">// {{ model.t.result }}</span>
   </div>
-  <div class="lab-review-nav" style="margin-bottom: 14px;">
-    <a class="source-link" href="/magnetism-scanner">Back to Magnetism Scanner</a>
-  </div>
+  {% include "magnetism_scan_nav.html.j2" %}
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
       <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
@@ -29,7 +27,7 @@
       <div class="dim magnetism-hero-tier">{{ model.metrics.magnetism_tier }}</div>
     </div>
     <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">Coherence</div>
+      <div class="dim magnetism-hero-label">{{ model.t.coherence|title }}</div>
       <div class="hl-ok magnetism-hero-score">
         {{ model.coherence_score }}<span>/100</span>
       </div>
@@ -127,7 +125,7 @@
 
   <div class="section-head">
     <span class="label">TLDR Brand3</span>
-    <span class="tag">// 9 strategic blocks derived from 7 Magenta signals</span>
+    <span class="tag">// {{ model.t.detail_tag }}</span>
   </div>
 
   {% set blocks = [
@@ -141,7 +139,7 @@
     ("mission", "MISSION"),
     ("vision", "VISION")
   ] %}
-  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 14px;">
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px;">
     {% for key, label in blocks %}
     {% set block = model.tldr_brand3[key] %}
     <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
@@ -169,7 +167,7 @@
           <p class="magnetism-card-result">{{ block.content }}</p>
           {% endif %}
         {% else %}
-        <p class="dim magnetism-card-result">(no detectado)</p>
+        <p class="dim magnetism-card-result">{{ model.t.no_detected }}</p>
         {% endif %}
       </div>
       <div style="display:grid; gap:7px;">
@@ -205,13 +203,13 @@
 {% if model.system_reading and (model.system_reading.strategic_tensions or model.system_reading.validation_questions or (model.system_reading.credibility_support and model.system_reading.credibility_support.status == 'observed')) %}
 <section>
   <div class="section-head">
-    <span class="label">TLDR System Reading</span>
-    <span class="tag">// tensions and validation questions inside TLDR Brand3</span>
+    <span class="label">{{ model.t.system_reading }}</span>
+    <span class="tag">// {{ model.t.system_reading_tag }}</span>
   </div>
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;">
     {% if model.system_reading.credibility_support and model.system_reading.credibility_support.status == 'observed' %}
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
-      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">Credibility support</h2>
+      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">{{ model.t.credibility_support }}</h2>
       <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0 0 10px;">proof_points={{ model.system_reading.credibility_support.count }} · {{ model.system_reading.credibility_support.reading }}</p>
       {% if model.system_reading.credibility_support.evidence %}
       <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
@@ -227,7 +225,7 @@
     {% endif %}
     {% if model.system_reading.strategic_tensions %}
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
-      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">Strategic tensions</h2>
+      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">{{ model.t.strategic_tensions }}</h2>
       <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
         {% for tension in model.system_reading.strategic_tensions %}
         <li style="margin-bottom: 8px;">{{ tension }}</li>
@@ -237,7 +235,7 @@
     {% endif %}
     {% if model.system_reading.validation_questions %}
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
-      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--success); font-weight: 700; margin: 0 0 10px;">Validation questions</h2>
+      <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--success); font-weight: 700; margin: 0 0 10px;">{{ model.t.validation_questions }}</h2>
       <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
         {% for question in model.system_reading.validation_questions %}
         <li style="margin-bottom: 8px;">{{ question }}</li>
@@ -256,53 +254,9 @@
 {% endif %}
 
 <section>
-  <details class="magnetism-methodology-details">
-    <summary class="magnetism-methodology-summary">
-      <span class="magnetism-methodology-icon" aria-hidden="true"></span>
-      <span class="label">Methodology Details</span>
-      <span class="tag">// 7 technical Magenta signals</span>
-    </summary>
-
-  <div class="lab-applied-stack" style="display: grid; gap: 14px; margin-top: 14px;">
-    {% set layers = [
-      ("mindspace", "1. Emotions → Magnetism", "mindspace"),
-      ("aetherspace", "2. Essence → Core Purpose", "aetherspace"),
-      ("gamespace", "3. Voice → Personality", "gamespace"),
-      ("envispace", "4. Expression → Brand Idea", "envispace"),
-      ("netspace", "5. Exchange → Value Proposition", "netspace"),
-      ("tactispace", "6. Action / Direction → Mission + Vision", "tactispace"),
-      ("ambientspace", "7. Context / Beliefs → Attributes + Values", "ambientspace")
-    ] %}
-
-    {% for key, label, technical_name in layers %}
-    {% set layer = model.magenta_circle[key] %}
-    <article class="lab-applied-card" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
-        <h2 style="font-family: var(--font-ui); font-size: 14px; font-weight: 700; color: var(--text);">{{ label }}</h2>
-        <span class="badge {% if layer.detected %}badge-ready{% else %}badge-missing{% endif %}">{{ layer.status }} · {{ layer.confidence }}</span>
-      </div>
-      <span class="dim" style="font-family: var(--font-mono); font-size: 10px;">technical layer: {{ technical_name }}</span>
-      <p class="prose" style="margin: 0 0 12px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.5; color: var(--text-muted);">
-        {{ layer.finding or "No clear signal detected in the provided sources." }}
-      </p>
-      {% if layer.evidence %}
-      <div style="background: var(--surface-2); border-left: 3px solid var(--accent); padding: 10px 14px; margin-top: 10px;">
-        <span style="font-family: var(--font-mono); font-size: 10px; color: var(--accent); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 6px;">Evidence:</span>
-        <p style="margin:0; font-family: var(--font-mono); font-size: 12px; line-height: 1.5; color: var(--text); font-style: italic;">"{{ layer.evidence }}"</p>
-      </div>
-      {% endif %}
-    </article>
-    {% endfor %}
-  </div>
-  </details>
-</section>
-
-<hr class="rule-thin">
-
-<section>
   <div class="section-head">
-    <span class="label">diagnosis</span>
-    <span class="tag">// bounded by observed and missing signals</span>
+    <span class="label">{{ model.t.diagnosis }}</span>
+    <span class="tag">// {{ model.t.diagnosis_tag }}</span>
   </div>
   <div style="background: var(--soft-panel-bg); border: 1px solid var(--border); padding: 22px; margin-top: 14px;">
     <h2 style="font-family: var(--font-mono); font-size: 18px; margin: 0 0 14px; font-weight: 700; color: var(--accent);">{{ model.diagnosis.headline }}</h2>
@@ -313,7 +267,7 @@
     </ul>
     {% if model.limitations %}
     <hr class="rule" style="margin: 16px 0; border-top: 1px dashed var(--border);">
-    <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">limitations: {{ model.limitations|join('; ') }}</div>
+    <div class="dim" style="font-family: var(--font-mono); font-size: 12px;">{{ model.t.limitations }}: {{ model.limitations|join('; ') }}</div>
     {% endif %}
   </div>
 </section>

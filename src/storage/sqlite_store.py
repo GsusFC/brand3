@@ -551,6 +551,30 @@ class SQLiteStore:
         )
         self.conn.commit()
 
+    def save_report_translation(self, run_id: int, target_lang: str, payload: Any) -> None:
+        stored = dict(payload) if isinstance(payload, dict) else {"payload": payload}
+        stored["target_lang"] = target_lang
+        self.save_raw_input(run_id, "report_translation", stored)
+
+    def get_report_translation(self, run_id: int, target_lang: str) -> dict[str, Any] | None:
+        rows = self.conn.execute(
+            """
+            SELECT payload_json
+            FROM raw_inputs
+            WHERE run_id = ? AND source = 'report_translation'
+            ORDER BY created_at DESC
+            """,
+            (run_id,),
+        ).fetchall()
+        for row in rows:
+            try:
+                payload = json.loads(row["payload_json"])
+            except json.JSONDecodeError:
+                continue
+            if isinstance(payload, dict) and payload.get("target_lang") == target_lang:
+                return payload
+        return None
+
     def save_visual_signature_evidence(self, run_id: int, payload: Any) -> None:
         self.save_raw_input(run_id, "visual_signature", payload)
 

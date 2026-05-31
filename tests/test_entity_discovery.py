@@ -105,6 +105,16 @@ def test_generic_company_fallback_when_domain_matches_brand():
     assert result.confidence >= 0.7
 
 
+def test_url_like_brand_name_resolves_from_root_domain():
+    result = discover_entity("www.langchain.com", "https://www.langchain.com/")
+
+    assert result.entity_name == "LangChain"
+    assert result.entity_type == "company"
+    assert result.analysis_scope == "company_brand"
+    assert result.canonical_brand_name == "LangChain"
+    assert result.confidence >= 0.7
+
+
 def test_chatgpt_search_plan_combines_openai_and_chatgpt():
     discovery = discover_entity("ChatGPT", "https://chatgpt.com")
     plan = build_discovery_search_plan(discovery, "ChatGPT", "https://chatgpt.com")

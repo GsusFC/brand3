@@ -18,7 +18,7 @@ commits de git correspondientes.
 
 1. `src/features/percepcion.py` — reescritura completa. 4 features (`brand_sentiment`, `mention_volume`, `sentiment_trend`, `review_quality`) con `raw_value` dict nativo.
 2. `src/features/percepcion_llm.py` — **eliminado**.
-3. `src/features/llm_analyzer.py` — añadido `analyze_brand_sentiment`. `analyze_sentiment` se conserva.
+3. `src/features/llm_analyzer.py` — añadido `analyze_brand_sentiment`. Nota posterior: `analyze_sentiment` fue retirado al consolidar prompts legacy.
 4. `src/dimensions.py` — bloque `percepcion` actualizado: 4 features con pesos `0.40 / 0.25 / 0.20 / 0.15`. `controversy_flag` eliminada como feature. Rule `controversia_activa` eliminada de la lista (el cap se aplica ahora dentro de `brand_sentiment`).
 5. `src/scoring/engine.py` — rule `controversia_activa` eliminada del `_build_rules` y del return dict. `sin_datos_suficientes` se mantiene.
 6. `src/services/brand_service.py` — `PercepcionLLMExtractor` sustituido por `PercepcionExtractor(llm=llm)`.

@@ -86,6 +86,7 @@ def extract_features(
     use_llm: bool,
     data_quality: str,
     content_source: str,
+    research_pack,
     screenshot_url: str | None,
     screenshot_limitation: str | None,
     skip_visual_analysis: bool,
@@ -134,6 +135,7 @@ def extract_features(
             exa=exa_data,
             context=context_data,
             screenshot_url=screenshot_url,
+            research_pack=research_pack,
         )
         features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
             web=content_web,
@@ -141,6 +143,7 @@ def extract_features(
             competitor_data=competitor_data,
             screenshot_url=screenshot_url,
             context=context_data,
+            research_pack=research_pack,
         )
     features_by_dim["percepcion"] = percepcion_ext.extract(
         web=web_data,
@@ -172,6 +175,7 @@ def run_feature_pipeline(
     use_llm: bool,
     data_quality: str,
     content_source: str,
+    research_pack=None,
     take_screenshot_with_budget,
     screenshot_capture_diagnostic,
     presencia_cls,
@@ -198,6 +202,7 @@ def run_feature_pipeline(
         use_llm=use_llm,
         data_quality=data_quality,
         content_source=content_source,
+        research_pack=research_pack,
         screenshot_url=screenshot.screenshot_url,
         screenshot_limitation=screenshot.limitation,
         skip_visual_analysis=skip_visual_analysis,

@@ -180,6 +180,69 @@ class LLMCacheTests(unittest.TestCase):
         self.assertIsNone(llm.last_failure_reason)
         self.assertEqual(llm.call_failures, [])
 
+    def test_call_json_can_send_openai_compatible_json_schema(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+            schema = {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["score"],
+                "properties": {"score": {"type": "number"}},
+            }
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", json.dumps({"score": 88})),
+                ) as llm_http:
+                    result = llm._call_json(
+                        "system",
+                        "user",
+                        json_schema=schema,
+                        schema_name="score_schema",
+                    )
+
+        self.assertEqual(result, {"score": 88})
+        body = json.loads(llm_http.call_args.kwargs["payload"].decode("utf-8"))
+        self.assertEqual(body["response_format"]["type"], "json_schema")
+        self.assertEqual(body["response_format"]["json_schema"]["name"], "score_schema")
+        self.assertTrue(body["response_format"]["json_schema"]["strict"])
+        self.assertEqual(body["response_format"]["json_schema"]["schema"], schema)
+
+    def test_call_json_schema_mode_falls_back_to_json_object_when_rejected(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+            schema = {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["score"],
+                "properties": {"score": {"type": "number"}},
+            }
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    side_effect=[
+                        ("error", "HTTP 400: schema mode unsupported"),
+                        ("ok", json.dumps({"score": 77})),
+                    ],
+                ) as llm_http:
+                    result = llm._call_json(
+                        "system",
+                        "user",
+                        json_schema=schema,
+                        schema_name="score_schema",
+                    )
+
+        self.assertEqual(result, {"score": 77})
+        first_body = json.loads(llm_http.call_args_list[0].kwargs["payload"].decode("utf-8"))
+        second_body = json.loads(llm_http.call_args_list[1].kwargs["payload"].decode("utf-8"))
+        self.assertEqual(first_body["response_format"]["type"], "json_schema")
+        self.assertEqual(second_body["response_format"], {"type": "json_object"})
+        self.assertIsNone(llm.last_failure_reason)
+
 
 if __name__ == "__main__":
     unittest.main()

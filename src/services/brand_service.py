@@ -46,6 +46,8 @@ from src.discovery.search_plan import build_discovery_search_plan
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
 from src.reports.entity_research_packet import build_entity_research_packet
+from src.research.evidence_graph import build_evidence_graph_from_snapshot
+from src.research.research_pack_builder import build_brand_research_pack_from_graph
 from src.niche import (
     classify_brand_niche,
     get_calibration_profile,
@@ -1238,6 +1240,25 @@ def _emit_progress(progress_cb, phase: str) -> None:
     progress_cb(phase)
 
 
+def _build_research_pack_for_feature_prompts(
+    *,
+    store: SQLiteStore | None,
+    run_id: int | None,
+):
+    if not store or run_id is None:
+        return None
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        if not snapshot:
+            return None
+        return build_brand_research_pack_from_graph(
+            build_evidence_graph_from_snapshot(snapshot)
+        )
+    except Exception as exc:
+        print(f"  Research pack prompt input: skipped ({exc})")
+        return None
+
+
 def _check_cancel(cancel_check) -> None:
     if cancel_check is not None and cancel_check():
         raise AnalysisJobCancelled("Cancelled by user")
@@ -1797,6 +1818,8 @@ def run(
             brand_name=brand_name,
             entity_discovery=entity_discovery,
             discovery_search_plan=discovery_search_plan,
+            web_data=content_web or web_data,
+            exa_data=exa_data,
         ).to_dict()
         if run_id:
             _store_safely(store, "entity research packet save", lambda: store.save_raw_input(run_id, "entity_research_packet", entity_research_packet))
@@ -1813,6 +1836,10 @@ def run(
         calibration_profile = str(discovery_calibration_decision["calibration_profile"])
         profile_source = str(discovery_calibration_decision["profile_source"])
         discovery_payload = {"entity_discovery": entity_discovery, "discovery_search_plan": discovery_search_plan, "discovery_evidence_preview": discovery_evidence_preview, "discovery_trust_basis": discovery_trust_basis, "discovery_calibration_hint": discovery_calibration_hint}
+        research_pack_for_feature_prompts = _build_research_pack_for_feature_prompts(
+            store=store,
+            run_id=run_id,
+        )
 
         llm_setup = setup_llm(
             use_llm=use_llm,
@@ -1845,6 +1872,7 @@ def run(
             use_llm=use_llm,
             data_quality=data_quality,
             content_source=content_source,
+            research_pack=research_pack_for_feature_prompts,
             take_screenshot_with_budget=_take_screenshot_with_budget,
             screenshot_capture_diagnostic=_screenshot_capture_diagnostic,
             presencia_cls=PresenciaExtractor,

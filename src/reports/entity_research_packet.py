@@ -38,6 +38,7 @@ class EntityResearchPacket:
     product_name: str | None
     brand_architecture: str
     owned_surfaces: list[EntityResearchSurface] = field(default_factory=list)
+    product_surfaces: list[EntityResearchSurface] = field(default_factory=list)
     block_source_guidance: dict[str, list[str]] = field(default_factory=dict)
     confidence: str = "low"
     limitations: list[str] = field(default_factory=list)
@@ -52,6 +53,7 @@ class EntityResearchPacket:
             "product_name": self.product_name,
             "brand_architecture": self.brand_architecture,
             "owned_surfaces": [surface.to_dict() for surface in self.owned_surfaces],
+            "product_surfaces": [surface.to_dict() for surface in self.product_surfaces],
             "block_source_guidance": self.block_source_guidance,
             "confidence": self.confidence,
             "limitations": self.limitations,
@@ -64,6 +66,8 @@ def build_entity_research_packet(
     brand_name: str = "",
     entity_discovery: dict[str, Any] | None = None,
     discovery_search_plan: dict[str, Any] | None = None,
+    web_data: Any | None = None,
+    exa_data: Any | None = None,
 ) -> EntityResearchPacket:
     normalized_input = _normalize_url(input_url)
     host = _host(normalized_input)
@@ -75,6 +79,10 @@ def build_entity_research_packet(
     product_name = _clean_name(str(discovery.get("product_name") or "")) or _product_name_from_subdomain(subdomain)
     parent_brand = _clean_name(str(discovery.get("parent_brand_name") or "")) or _parent_name_from_root(root)
     entity_name = _clean_name(str(discovery.get("entity_name") or brand_name or "")) or product_name or parent_brand or root
+    if _looks_like_domain_name(entity_name):
+        entity_name = _brand_name_from_root(root) or entity_name
+    if _looks_like_domain_name(parent_brand):
+        parent_brand = _brand_name_from_root(root) or parent_brand
 
     if str(discovery.get("analysis_scope") or "") == "product_with_parent":
         audited_type = "product_surface"
@@ -92,7 +100,7 @@ def build_entity_research_packet(
         audited_type = "parent_home"
         architecture = "single_brand_surface"
         confidence = "medium" if root else "low"
-        parent_brand = parent_brand or entity_name
+        parent_brand = None
 
     surfaces = _owned_surfaces(
         input_url=normalized_input,
@@ -105,8 +113,13 @@ def build_entity_research_packet(
             or subdomain in {"lab", "labs", "app", "beta", "demo", "studio", "platform"}
             or audited_type in {"product_lab", "secondary_surface"}
         ),
-        owned_urls=list(plan.get("owned_urls") or []),
+        owned_urls=_unique_urls(
+            list(plan.get("owned_urls") or [])
+            + _web_owned_urls(web_data)
+            + _exa_owned_urls(exa_data, root=root)
+        ),
     )
+    product_surfaces = _product_surfaces_from_owned_surfaces(surfaces, root=root)
     limitations: list[str] = []
     if architecture != "single_brand_surface" and not root:
         limitations.append("Could not derive parent root domain from input URL.")
@@ -122,6 +135,7 @@ def build_entity_research_packet(
         product_name=product_name,
         brand_architecture=architecture,
         owned_surfaces=surfaces,
+        product_surfaces=product_surfaces,
         block_source_guidance=_block_source_guidance(),
         confidence=confidence if not limitations else "low",
         limitations=limitations,
@@ -186,9 +200,9 @@ def _owned_surfaces(
 
     for owned_url in owned_urls:
         role = _role_from_path(owned_url)
-        scope = "audited_surface" if _normalize_url(owned_url).rstrip("/") == input_url.rstrip("/") else "parent_brand"
+        scope = _entity_scope_from_role(role, owned_url, input_url)
         add(owned_url, role, scope, "Owned URL discovered by entity discovery/search plan.")
-    return surfaces[:10]
+    return surfaces[:20]
 
 
 def _role_from_path(url: str) -> str:
@@ -200,7 +214,7 @@ def _role_from_path(url: str) -> str:
         return "mission_about"
     if any(marker in path for marker in ("/privacy", "/security", "/trust", "/legal")):
         return "policy_security"
-    if any(marker in path for marker in ("/product", "/products", "/platform", "/solution", "/solutions", "/natureos")):
+    if any(marker in path for marker in ("/product", "/products", "/platform", "/solution", "/solutions", "/natureos", "/langsmith", "/langgraph", "/langchain")):
         return "product_system"
     if any(marker in path for marker in ("/pricing", "/plans")):
         return "pricing"
@@ -289,3 +303,111 @@ def _product_name_from_subdomain(subdomain: str) -> str:
 def _clean_name(value: str) -> str:
     cleaned = " ".join(str(value or "").split()).strip()
     return "" if cleaned.lower() in {"none", "unknown"} else cleaned
+
+
+def _brand_name_from_root(root: str) -> str:
+    label = (root or "").split(".")[0]
+    known = {
+        "langchain": "LangChain",
+        "openai": "OpenAI",
+        "anthropic": "Anthropic",
+        "naturaumana": "Natura Umana",
+        "sigmaos": "SigmaOS",
+    }
+    return known.get(label.lower(), label.replace("-", " ").title() if label else "")
+
+
+def _looks_like_domain_name(value: str) -> bool:
+    text = (value or "").strip().lower()
+    return bool(text and "." in text and " " not in text)
+
+
+def _web_owned_urls(web_data: Any | None) -> list[str]:
+    if web_data is None:
+        return []
+    urls: list[str] = []
+    urls.extend(str(item) for item in getattr(web_data, "owned_fallback_urls", []) or [])
+    urls.extend(str(item) for item in getattr(web_data, "links", []) or [])
+    return _unique_urls(urls)
+
+
+def _exa_owned_urls(exa_data: Any | None, *, root: str) -> list[str]:
+    if exa_data is None or not root:
+        return []
+    urls: list[str] = []
+    for attr in ("mentions", "news", "ai_visibility_results"):
+        for item in getattr(exa_data, attr, []) or []:
+            url = str(getattr(item, "url", "") or "")
+            host = _host(url)
+            if host == root or host.endswith("." + root):
+                urls.append(url)
+    return _unique_urls(urls)
+
+
+def _entity_scope_from_role(role: str, url: str, input_url: str) -> str:
+    if _normalize_url(url).rstrip("/") == input_url.rstrip("/"):
+        return "audited_surface"
+    if role == "product_system":
+        product = _product_name_from_path(url)
+        return f"product:{product}" if product else "product_surface"
+    if role in {"pricing", "proof_customer"}:
+        return "commercial_surface"
+    if role in {"mission_about", "parent_home", "policy_security"}:
+        return "parent_brand"
+    return "owned_surface"
+
+
+def _product_surfaces_from_owned_surfaces(
+    surfaces: list[EntityResearchSurface],
+    *,
+    root: str,
+) -> list[EntityResearchSurface]:
+    product_surfaces: list[EntityResearchSurface] = []
+    seen: set[str] = set()
+    for surface in surfaces:
+        if surface.role != "product_system":
+            continue
+        product = _product_name_from_path(surface.url)
+        if not product:
+            continue
+        key = f"{product}:{surface.url}"
+        if key in seen:
+            continue
+        seen.add(key)
+        product_surfaces.append(
+            EntityResearchSurface(
+                url=surface.url,
+                role=f"product:{product}",
+                entity_scope=f"product:{product}",
+                reason=f"Detected product surface for {product} under {_brand_name_from_root(root) or root}.",
+            )
+        )
+    return product_surfaces[:12]
+
+
+def _product_name_from_path(url: str) -> str:
+    path = (urlparse(_normalize_url(url)).path or "").lower()
+    known = (
+        ("langsmith", "LangSmith"),
+        ("langgraph", "LangGraph"),
+        ("langchain", "LangChain OSS"),
+        ("natureos", "NatureOS"),
+        ("humanpods", "HumanPods"),
+        ("tinynature", "tinyNature"),
+    )
+    for marker, name in known:
+        if marker in path:
+            return name
+    return ""
+
+
+def _unique_urls(urls: list[str]) -> list[str]:
+    seen: set[str] = set()
+    result: list[str] = []
+    for url in urls:
+        normalized = _normalize_url(str(url or ""))
+        if not normalized or normalized in seen:
+            continue
+        seen.add(normalized)
+        result.append(normalized)
+    return result

@@ -1,0 +1,190 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.t.research_evidence }} · {{ model.brand_name }}{% endblock %}
+{% block content %}
+<section class="magnetism-hero-section">
+  <div class="section-head">
+    <span class="label">magnetism scanner</span>
+    <span class="tag">// {{ model.t.research_tag }}</span>
+  </div>
+  {% include "magnetism_scan_nav.html.j2" %}
+  <div class="magnetism-hero-grid">
+    <div class="magnetism-hero-main">
+      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      <p class="prose intro-copy magnetism-hero-verdict">
+        {{ model.t.research_intro }}
+      </p>
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">{{ model.t.pack_source }}</div>
+      <div class="hl-accent" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">
+        {{ model.research.research_pack_source }}
+      </div>
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">{{ model.t.tldr_mode }}</div>
+      <div class="hl-ok" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">
+        {{ model.research.tldr_generation_mode }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin magnetism-compact-rule">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.entity_resolution }}</span>
+    <span class="tag">// {{ model.t.entity_tag }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">resolved_entity</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ model.research.entity.resolved_entity or model.brand_name }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">entity_type</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ model.research.entity.entity_type or "unknown" }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">entity_scope</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ model.research.entity.entity_scope or "unknown" }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">parent_brand</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ model.research.entity.parent_brand or "none" }}</strong>
+    </article>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.research_pack }}</span>
+    <span class="tag">// {{ model.t.research_pack_tag }}</span>
+  </div>
+  <div style="display:grid; gap:12px; margin-top:14px;">
+    {% for label, value in [
+      ("category", model.research.category),
+      ("offer", model.research.offer),
+      ("company_summary", model.research.company_summary),
+      ("product_summary", model.research.product_summary),
+      ("audience", model.research.audience),
+      ("outcome", model.research.outcome),
+      ("declared_mission", model.research.declared_mission),
+      ("future_direction", model.research.future_direction)
+    ] %}
+    {% if value %}
+    <article style="border:1px solid var(--border); background:var(--soft-panel-bg); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px; text-transform:uppercase;">{{ label }}</div>
+      <p style="margin:6px 0 0; font-family:var(--font-mono); font-size:13px; line-height:1.5;">{{ value }}</p>
+    </article>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.surface_map }}</span>
+    <span class="tag">// {{ model.t.surface_map_tag }}</span>
+  </div>
+  <div class="badge-line">
+    {% for source_type, count in model.research.source_counts.items() %}
+    <span class="badge">{{ source_type }}={{ count }}</span>
+    {% endfor %}
+  </div>
+
+  {% if model.research.product_surfaces %}
+  <h2 style="font-family:var(--font-ui); font-size:14px; margin:20px 0 10px;">{{ model.t.product_surfaces }}</h2>
+  <div style="display:grid; gap:8px;">
+    {% for surface in model.research.product_surfaces %}
+    <div style="border:1px solid var(--border); background:var(--surface); padding:10px 12px;">
+      <span class="badge badge-ready">{{ surface.entity_scope or surface.role }}</span>
+      <a class="source-link" href="{{ surface.url }}" target="_blank" rel="noopener noreferrer">{{ surface.url }}</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if model.research.source_rows %}
+  <h2 style="font-family:var(--font-ui); font-size:14px; margin:22px 0 10px;">{{ model.t.source_map }}</h2>
+  <div style="display:grid; gap:8px;">
+    {% for source in model.research.source_rows[:40] %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:10px 12px;">
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+        <span class="badge">{{ source.source_type }}</span>
+        {% if source.entity_scope %}<span class="badge">{{ source.entity_scope }}</span>{% endif %}
+        {% if source.surface_role %}<span class="badge">{{ source.surface_role }}</span>{% endif %}
+      </div>
+      <a href="{{ source.url }}" target="_blank" rel="noopener noreferrer" style="display:block; margin-top:8px; font-family:var(--font-mono); font-size:12px; overflow-wrap:anywhere;">{{ source.url }}</a>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.tldr_evidence }}</span>
+    <span class="tag">// {{ model.t.tldr_evidence_tag }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:14px;">
+    {% for block in model.research.block_evidence %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+        <strong style="font-family:var(--font-ui); font-size:13px;">{{ block.label }}</strong>
+        <span class="badge">{{ block.claim_type }} · {{ block.confidence }}</span>
+      </div>
+      {% if block.answer %}
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.45;">{{ block.answer }}</p>
+      {% endif %}
+      {% if block.evidence_used %}
+      <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:11px; line-height:1.45;">
+        {% for item in block.evidence_used[:3] %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+{% if model.research.noise_rejected or model.research.evidence_gaps %}
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.rejected_gaps }}</span>
+    <span class="tag">// {{ model.t.rejected_gaps_tag }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:14px;">
+    {% if model.research.evidence_gaps %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.evidence_gaps }}</strong>
+      <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:12px; line-height:1.5;">
+        {% for gap in model.research.evidence_gaps %}
+        <li>{{ gap }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endif %}
+    {% if model.research.noise_rejected %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.rejected_noise }}</strong>
+      <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:12px; line-height:1.5;">
+        {% for item in model.research.noise_rejected[:8] %}
+        <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
+    </article>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}

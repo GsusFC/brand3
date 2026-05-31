@@ -1,30 +1,36 @@
 {% extends "base.html.j2" %}
-{% block title %}Brand3 :: Magnetism Scanner{% endblock %}
+{% block title %}Brand3 :: {{ model.t.scanner_title }}{% endblock %}
 {% block content %}
 <section>
   <div class="section-head">
     <span class="label">magnetism_scanner</span>
-    <span class="tag">// competitive analysis and 7-layer audit</span>
+    <span class="tag">// {{ model.t.scanner_tag }}</span>
   </div>
 
-  <h1 class="page-title">Brand Magnetism Scanner</h1>
+  <div class="lab-review-nav" style="margin-bottom: 14px;">
+    <a class="source-link{% if model.lang == 'es' %} badge-ready{% endif %}" href="/magnetism-scanner?lang=es">ES</a>
+    <a class="source-link{% if model.lang == 'en' %} badge-ready{% endif %}" href="/magnetism-scanner?lang=en">EN</a>
+  </div>
+
+  <h1 class="page-title">{{ model.t.scanner_title }}</h1>
   <p class="prose dim intro-copy">
-    Evaluate a startup's brand power. Map its strategic positioning across the 7 layers of the Magenta Circle framework, score its competitive magnetism and message coherence, and check its location on the 2x2 positioning quadrant.
+    {{ model.t.scanner_intro }}
   </p>
 
   <form action="/magnetism-scanner/analyze" method="post">
+    <input type="hidden" name="lang" value="{{ model.lang }}">
     <div class="form-row">
       <input type="url" name="url" placeholder="https://your-brand.com" autofocus spellcheck="false" autocomplete="off" style="flex: 1 1 380px;">
-      <button type="submit">Scan Brand</button>
+      <button type="submit">{{ model.t.run_button }}</button>
     </div>
 
     <details style="margin-top: 18px; cursor: pointer; color: var(--text-muted); font-size: 12px; max-width: 820px;">
-      <summary style="font-weight: 600; font-family: var(--font-ui); outline: none; user-select: none;">❯ Manual text block input (CORS / Scraper Fallback)</summary>
+      <summary style="font-weight: 600; font-family: var(--font-ui); outline: none; user-select: none;">❯ {{ model.t.manual_summary }}</summary>
       <div style="margin-top: 10px; cursor: default;">
-        <label for="manual_text" style="display: block; margin-bottom: 6px; color: var(--text-soft); font-weight: 500;">Raw website content / landing page copy:</label>
-        <textarea id="manual_text" name="manual_text" rows="8" placeholder="Paste website homepage text copy here..." style="width: 100%; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: var(--font-mono); padding: 10px; font-size: 12px; resize: vertical; display: block; border-radius: 0; outline: none;"></textarea>
+        <label for="manual_text" style="display: block; margin-bottom: 6px; color: var(--text-soft); font-weight: 500;">{{ model.t.manual_label }}</label>
+        <textarea id="manual_text" name="manual_text" rows="8" placeholder="{{ model.t.manual_placeholder }}" style="width: 100%; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-family: var(--font-mono); padding: 10px; font-size: 12px; resize: vertical; display: block; border-radius: 0; outline: none;"></textarea>
         <p class="small dim form-note" style="margin-top: 6px; color: var(--text-soft);">
-          If scraping is blocked by Cloudflare, or direct crawler access fails, paste the copied home page text above to run the 7-layer analysis.
+          {{ model.t.manual_note }}
         </p>
       </div>
     </details>
@@ -35,21 +41,21 @@
 
 <section>
   <div class="section-head">
-    <span class="label">from_brand_audit</span>
-    <span class="tag">// reuse existing evidence packet</span>
+    <span class="label">{{ model.t.from_audit }}</span>
+    <span class="tag">// {{ model.t.from_audit_tag }}</span>
   </div>
   <p class="prose dim intro-copy">
-    Preferred path: generate Magnetism from an existing Brand Audit run. This reuses normalized evidence, confidence state, context readiness, and Visual Signature instead of scraping again.
+    {{ model.t.from_audit_intro }}
   </p>
   {% if model.audit_runs %}
   <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th class="col-date">run</th>
-        <th class="col-brand">brand</th>
-        <th>url</th>
-        <th class="num col-score">score</th>
+        <th class="col-date">{{ model.t.run }}</th>
+        <th class="col-brand">{{ model.t.brand }}</th>
+        <th>{{ model.t.url }}</th>
+        <th class="num col-score">{{ model.t.score }}</th>
         <th></th>
       </tr>
     </thead>
@@ -63,7 +69,8 @@
         <td>
           <form action="/magnetism-scanner/from-run" method="post" style="margin:0;">
             <input type="hidden" name="run_id" value="{{ run.id }}">
-            <button type="submit" style="padding: 6px 10px; font-size: 11px;">use evidence</button>
+            <input type="hidden" name="lang" value="{{ model.lang }}">
+            <button type="submit" style="padding: 6px 10px; font-size: 11px;">{{ model.t.use_evidence }}</button>
           </form>
         </td>
       </tr>
@@ -72,7 +79,7 @@
   </table>
   </div>
   {% else %}
-  <div class="empty">// no Brand Audit runs available yet — run a normal audit first, or use manual scanner input.</div>
+  <div class="empty">{{ model.t.no_audits }}</div>
   {% endif %}
 </section>
 
@@ -80,19 +87,19 @@
 
 <section>
   <div class="section-head">
-    <span class="label">recent_scans</span>
-    <span class="tag">// latest {{ model.scans|length }} runs</span>
+    <span class="label">{{ model.t.recent_scans }}</span>
+    <span class="tag">// {{ model.t.latest_runs }} {{ model.scans|length }}</span>
   </div>
   {% if model.scans %}
   <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th class="col-date">date</th>
-        <th class="col-brand">brand</th>
+        <th class="col-date">{{ model.t.date }}</th>
+        <th class="col-brand">{{ model.t.brand }}</th>
         <th class="num col-score">magnetism</th>
-        <th class="num col-score">coherence</th>
-        <th class="col-band-wide">positioning quadrant</th>
+        <th class="num col-score">{{ model.t.coherence }}</th>
+        <th class="col-band-wide">{{ model.t.quadrant }}</th>
         <th></th>
       </tr>
     </thead>
@@ -104,14 +111,14 @@
         <td class="num num-inline hl-accent" style="font-weight: 600;">{{ scan.magnetism_score }}</td>
         <td class="num num-inline hl-ok" style="font-weight: 600;">{{ scan.coherence_score }}</td>
         <td class="dim">{{ scan.quadrant }}</td>
-        <td><a href="/magnetism-scanner/scan/{{ scan.id }}">view sheet</a></td>
+        <td><a href="/magnetism-scanner/scan/{{ scan.id }}{{ model.lang_query }}">{{ model.t.view_sheet }}</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
   {% else %}
-  <div class="empty">// no magnetism scans recorded yet — run the first scan above.</div>
+  <div class="empty">{{ model.t.no_scans }}</div>
   {% endif %}
 </section>
 {% endblock %}

@@ -1,13 +1,13 @@
 <claude-mem-context>
 # Memory Context
 
-# [brand3] recent context, 2026-05-29 11:53am GMT+2
+# [brand3] recent context, 2026-05-30 9:45am GMT+2
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (22,700t read) | 325,191t work | 93% savings
+Stats: 50 obs (19,315t read) | 212,283t work | 91% savings
 
 ### May 20, 2026
 S335 Create TL;DR brand block interpreter specs documentation for Brand3 methodology (May 20 at 8:22 PM)
@@ -25,57 +25,58 @@ S348 Create a detailed operational report documenting everything the Brand3 app 
 S349 Brand3 Lab deprecation decision — which components to absorb into Brand Audit and Magnetism Scanner vs. delete (May 28 at 7:06 AM)
 S350 Continue (sigamos) — mapping new architecture after major brand3 cleanup to ensure strategist pass compiles and tests pass (May 28 at 7:47 AM)
 ### May 29, 2026
-5089 7:19a 🔴 Fixed Missing _unique_texts in strategist_tldr — Added Local _dedupe_texts
-5090 " 🟣 extractor.py Fully Wires BrandResearchPack into Strategist TLDR Guardrails Pipeline
-5091 " 🟣 Test Suite Added for tldr_guardrails.validate_analyst_tldr
-5092 7:20a 🔵 Brand3 Test and Example Artifact Inventory
-5093 " 🔴 Test Assertion Fixed: mission mode allows needs_human_review not just interpreted_from_discourse
-5094 " 🟣 Canonical Example Fixture Added for Validated TLDR Guardrails Output
-5095 7:21a 🔵 Branch State: Large Cleanup Alongside Guardrails Work — Perceptual Library and Brand3 Lab Deleted
-5096 " 🟣 TLDR Guardrails Feature Complete — 36 Tests Green, Clean Diff
-5097 9:17a ⚖️ Analyst Pass Architecture: LLM-Driven TLDR Brand3 Generation
 S351 Implement Analyst Pass: LLM-driven TLDR Brand3 generation from Research Pack, including post-LLM guardrails, normalizer, extractor integration, and full test suite (May 29 at 9:17 AM)
-5098 9:18a 🔵 LLMAnalyzer._call_json: Markdown Fence Stripping and Feature Flag Wiring
-5099 9:20a 🟣 Analyst Pass Module: `src/features/magnetism/analyst_tldr.py` Created
-5100 " 🔄 `strategist_tldr.py` Now Delegates Entirely to Analyst Pass + Guardrails
-5101 9:21a 🔴 Added `block_exercises` Key to Analyst TLDR Prompt Payload
-5102 " 🟣 Test Suite for Analyst Pass: `tests/test_magnetism_analyst_tldr.py`
-5103 9:22a 🔵 Test Fixture Bug: `_research_pack("Bokeroon")` Still Contains "Base44" in Markdown Content
-5104 " 🔴 Fixed Brand-Agnosticism Test: Replaced Overly Strict Content Assertion
-5105 " 🟣 Analyst Pass Complete: 41 Tests Pass, Three Files Pending Git Commit
-5106 " ⚖️ `maybe_build_strategist_tldr` Documented as Legacy Wrapper
-5107 9:23a 🟣 Analyst Pass Delivery Complete: 6 Files Changed, 15 Core Tests Green
-5108 9:48a ⚖️ Magnetism Scanner TLDR Brand3 Integration Plan Under Feature Flag
-5109 9:49a 🔵 Magnetism Scanner + TLDR Brand3 Pipeline: Full Architecture Mapped
-5110 " 🔵 TLDR v0.3 Contract Schema and Backward Compatibility Upgrade Path
-5111 " 🔵 Warning and Fallback Signal Architecture Across Magnetism Pipeline
-5112 9:50a 🟣 Feature Flag `BRAND3_MAGNETISM_RESEARCH_PACK_TLDR` Added to Config
-5113 " 🔄 `analyst_tldr.py` Refactored: `run_analyst_tldr_pass` Extracted to Return Raw + Normalized + Validated
-5114 " 🟣 Research Pack TLDR Flow Integrated into `extract_from_audit_snapshot` via `_apply_tldr_generation_flow`
-5115 9:51a 🟣 `tldr_generation_mode` Now Set for All Code Paths Including Legacy and Strategist Pass
-5116 " 🔵 Queue Worker Persists Extended Payload Fields Automatically — No Storage Changes Needed
-5117 " 🔵 Queue Worker Dispatches to Three Magnetism Service Functions Based on `input_type`
-5118 9:52a 🟣 Integration Tests Added for `BRAND3_MAGNETISM_RESEARCH_PACK_TLDR` Flag — Success and Fallback Paths
-5119 " 🔴 `analyst_tldr_analysis_error` Promoted to Top-Level Payload Field
-5120 9:53a 🔵 Three Test Failures After `analyst_tldr.py` Refactor — Contract Breaking Changes in `maybe_build_analyst_tldr`
-5121 " 🔴 `maybe_build_analyst_tldr` Return Contract Restored — Error Payload Now Flat With `analysis_error` Field
-5122 " 🔴 Three Test Assertions Corrected to Match Post-Guardrail and Fallback Behavior
-5123 " 🔴 Guardrail Absent Block Contract Confirmed: `human_review_recommended=False` When Block Is Absent
-5124 9:54a ✅ All 47 Magnetism Tests Pass — Integration Complete and Green
-5125 " 🔵 TLDR Brand3 Benchmark Doc Identifies 5 Real Failure Patterns Across Production Scans
-5126 9:55a 🔵 Production SQLite Database Scan ID Mapping for Benchmark Brands
-5127 " 🔵 Production Environment Verified: Both TLDR Flags Off, LLM Key Present
-5128 9:56a 🔵 Double Validation Risk: `strategist_tldr.py` Calls `validate_analyst_tldr` After `maybe_build_analyst_tldr` Which Now Also Validates Internally
-5129 " 🔵 `BrandResearchPack` Schema: Full Field Guide and Three Nested Dataclasses
-5130 10:12a ⚖️ Comparative Evaluation Framework Planned for TLDR Pipeline Variants
-5131 " 🔵 VaultBit.es Product Review Requested
-5132 10:13a 🟣 Gold Standard Dataset Created for TLDR Benchmark Evaluation
-5133 10:14a 🔵 Benchmark Dataset Infrastructure Already Exists Before Evaluation Script
-5134 " 🔵 Dataset Schema and Test Contracts Fully Defined for Benchmark Evaluation
-5135 " 🔵 Confirmed Schema Asymmetry Between analyst_tldr and scanner_current_tldr Block Keys
-5136 10:15a 🔵 Full Benchmark Directory Structure Confirmed — Evaluation Script Is the Only Missing Piece
-5137 " 🔵 BrandResearchPack Schema Has Rich Evidence Fields Available to Evaluation Script
-5138 10:18a 🟣 Deterministic TLDR Benchmark Evaluation Script Implemented
+### May 30, 2026
+5425 8:40a 🟣 BRAND3_MAGNETISM_RESEARCH_PACK_TLDR Analyst Pass Validated in Local A/B Test
+5428 " 🔵 Analyst Pass Failing Due to Gemini Returning JSON Array Instead of Object
+5429 " 🔴 _coerce_analyst_raw_json Added to Handle Gemini List-Wrapped JSON Response
+5430 8:41a 🟣 test_single_item_array_response_is_accepted Added to Cover Gemini JSON Array Drift
+5431 " 🔵 Full Research Pack + Analyst Pass Pipeline Validated End-to-End on LangChain (run #154)
+5432 " 🔵 run_web_dev_macos.sh Requires OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES for LLM Timeout Enforcement
+5433 8:42a 🔵 Magnetism Scan #48 (LangChain) Accessible via Web UI at /magnetism-scanner/scan/48
+5434 8:43a 🔵 Scan #48 Web UI Shows Analyst Pass TLDR Content; Mode Label Not Exposed to End Users
+5435 " 🔵 runs Table Has No raw_inputs Column; Use SQLiteStore.get_run_snapshot() Instead
+5436 " 🔵 LangChain Entity Discovery: 3 Product Surfaces, 17 Owned Surfaces, No Parent Brand
+5437 " ✅ Research Pack + Analyst Pass Feature Branch: 542 Insertions Across 15 Files, Not Yet Committed
+5438 9:01a 🔵 Brand3 Research Pipeline: Entity Scope and Offer Extraction Architecture
+5439 9:02a 🔵 EvidenceGraph → BrandResearchPack Bridge: Full Implementation Detail
+5440 " 🔵 Test Snapshot Fixtures for Evidence Graph Pipeline
+5441 " 🟣 Company-Brand Offer Extraction: Entity-Aware Scoring and Candidate Filtering
+5442 " 🟣 LangChain-Like Multi-Product Test Fixture Added to Evidence Graph Test Suite
+5443 9:03a 🔵 product_summary Falls Back to Company-Level Offer Due to Product Claims Being Typed as "audience"
+5444 " 🔴 Fixed: _product_summary_text() Now Finds Product-Scoped "audience" and "hero_claim" Claims
+5445 " ✅ Full Test Suite Green: 89 Tests Pass After Company-Brand Offer Extraction Improvements
+5446 " 🔵 Live LangChain Scan (ID 154) Validates Company-Brand Offer Extraction on Real Data
+5447 9:04a 🔵 LangChain Live Scan: /about Page Generates Multiple Claim Types from Same Source URL
+5448 " 🔴 Penalize Heading-Prefixed and Truncated Summary Claims in Offer Scoring
+5449 " 🔴 LangChain Scan 154: Offer Now Extracts Clean Distilled Sentence Instead of Heading-Prefixed Page Title
+5450 9:06a ✅ Full End-to-End LangChain Rescan Triggered via run_magnetism_from_audit_run(154) with LLM
+5451 " 🟣 End-to-End LangChain Rescan (Scan 50) Confirms Graph Pack Pipeline Produces Clean LLM TLDR Output
+5452 " 🟣 Scan 50 Verified in Browser: LangChain Company Offer Displays Correctly in Magnetism Scanner UI
+5453 9:07a 🔵 Working Tree State: New EvidenceGraph Research Pipeline Entirely Untracked, Plus 11 Modified Files
+5454 9:25a ⚖️ Magnetism Scanner: Three-Page Structure Planned
+5455 9:28a 🟣 Magnetism Scanner Three-Page Implementation Plan Active
+5456 " 🔵 Magnetism Scanner Codebase Structure Mapped
+5457 9:29a 🔵 Magnetism Detail Template: Current Single-Page Structure with Collapsible Methodology
+5458 " 🔵 No Existing Tab CSS Pattern; Existing Tests Assert Page-Level Text Presence
+5459 " 🔵 Reusable .vs-nav / .vs-nav-link CSS Pattern Available for Scanner Tabs
+5460 9:30a 🟣 Magnetism Scanner Routes Refactored for Three-Tab Architecture
+5461 " 🟣 Research Evidence Model: Fallback Surface Detection from Source Map
+5462 " 🟣 Shared Tab Navigation Partial: magnetism_scan_nav.html.j2
+5463 9:31a 🟣 magnetism_detail.html.j2: Nav Replaced with Partial, Methodology Section Removed
+5464 9:32a 🟣 New Template: magnetism_research.html.j2 — Research Evidence Tab
+5465 9:33a 🟣 New Template: magnetism_methodology.html.j2 — Methodology Details Tab
+5466 " 🟣 Three-Tab Magnetism Scanner: All 33 Tests Pass
+5467 " 🔵 pyenv Python 3.11.8: Missing blake2b/blake2s Hash Support
+5468 " 🟣 Three-Tab Scanner Verified Live Against Scan ID 50
+5469 " 🟣 New Test: test_scan_has_separate_research_and_methodology_pages
+5470 9:34a 🔴 Test Patch Retry: Anchor Mismatch Fixed for test_scan_has_separate_research_and_methodology_pages
+5471 " 🟣 Three-Tab Magnetism Scanner: Final Test Suite — 34/34 Passing
+5472 " 🟣 Full Magnetism + Research Pipeline Test Suite: 90/90 Passing
+5473 " ✅ Dev Server Restarted with New Three-Tab Routes Loaded
+5474 9:35a 🟣 Three-Tab Magnetism Scanner: Browser Verification Passed on Scan ID 50
+5475 " 🟣 Three-Tab Magnetism Scanner Feature: All Steps Complete
+5476 " 🔵 Full Uncommitted Changeset: Three-Tab Scanner Plus Broader Research Pipeline Work
 
-Access 325k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 212k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

@@ -58,7 +58,7 @@ def discover_entity(
     """Return deterministic entity-discovery metadata for a brand input."""
     input_name = (brand_name or "").strip()
     input_url = (url or "").strip()
-    normalized_name = _normalize_name(input_name)
+    normalized_name = _normalize_name(_name_for_matching(input_name, input_url))
     canonical_input_url = _normalize_url(input_url)
     domain = _root_domain(_host(canonical_input_url))
     evidence = [_evidence("input", "brand_name", input_name, 0.5)]
@@ -237,6 +237,35 @@ def _domain_matches_brand(domain: str, normalized_name: str) -> bool:
 
 
 def _title_from_input(input_name: str, domain: str) -> str:
-    if input_name:
+    if input_name and not _looks_like_domain(input_name):
         return input_name
-    return (domain.split(".")[0] if domain else "Unknown").replace("-", " ").title()
+    label = domain.split(".")[0] if domain else ""
+    known = {
+        "langchain": "LangChain",
+        "openai": "OpenAI",
+        "anthropic": "Anthropic",
+        "sigmaos": "SigmaOS",
+        "naturaumana": "Natura Umana",
+    }
+    return known.get(label.lower(), label.replace("-", " ").title() if label else "Unknown")
+
+
+def _name_for_matching(input_name: str, input_url: str) -> str:
+    candidate = (input_name or "").strip()
+    if candidate and not _looks_like_domain(candidate):
+        return candidate
+    parsed = urlparse(candidate if "://" in candidate else f"https://{candidate}") if candidate else None
+    host = ""
+    if parsed:
+        host = (parsed.netloc or parsed.path).split("@")[-1].split(":")[0].lower()
+    if not host and input_url:
+        host = _host(input_url)
+    root = _root_domain(host)
+    return root.split(".")[0] if root else candidate
+
+
+def _looks_like_domain(value: str) -> bool:
+    text = (value or "").strip().lower()
+    if "://" in text:
+        return True
+    return "." in text and " " not in text

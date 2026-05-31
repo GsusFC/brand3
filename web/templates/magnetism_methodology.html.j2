@@ -1,0 +1,173 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.t.methodology_details }} · {{ model.brand_name }}{% endblock %}
+{% block content %}
+<section class="magnetism-hero-section">
+  <div class="section-head">
+    <span class="label">magnetism scanner</span>
+    <span class="tag">// {{ model.t.methodology_tag }}</span>
+  </div>
+  {% include "magnetism_scan_nav.html.j2" %}
+  <div class="magnetism-hero-grid">
+    <div class="magnetism-hero-main">
+      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      <p class="prose intro-copy magnetism-hero-verdict">
+        {{ model.t.methodology_intro }}
+      </p>
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">{{ model.t.research_pack_metric }}</div>
+      <div class="hl-accent" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">
+        {{ model.methodology.research_pack_source }}
+      </div>
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">{{ model.t.tldr_generation }}</div>
+      <div class="hl-ok" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">
+        {{ model.methodology.tldr_generation_mode }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin magnetism-compact-rule">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.pipeline }}</span>
+    <span class="tag">// {{ model.t.pipeline_tag }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <span class="badge badge-ready">1</span>
+      <h2 style="font-family:var(--font-ui); font-size:15px; margin:10px 0 6px;">Brand Audit snapshot</h2>
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.5;">Collects public evidence, normalized features, context readiness, visual signals, Exa/search context, and confidence state.</p>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <span class="badge badge-ready">2</span>
+      <h2 style="font-family:var(--font-ui); font-size:15px; margin:10px 0 6px;">Research Graph</h2>
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.5;">Resolves the entity, separates company/product surfaces, labels source types, keeps noise apart, and compacts evidence into a Research Pack.</p>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <span class="badge badge-ready">3</span>
+      <h2 style="font-family:var(--font-ui); font-size:15px; margin:10px 0 6px;">Analyst Pass</h2>
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.5;">The LLM reads only the Research Pack and returns the 9 TLDR Brand3 blocks as structured JSON.</p>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+      <span class="badge badge-ready">4</span>
+      <h2 style="font-family:var(--font-ui); font-size:15px; margin:10px 0 6px;">Guardrails</h2>
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.5;">Post-LLM validation preserves absent states, evidence requirements, claim types, confidence, and human-review flags.</p>
+    </article>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.block_method }}</span>
+    <span class="tag">// {{ model.t.block_method_tag }}</span>
+  </div>
+  {% set block_rules = [
+    ("Core Purpose", "Why the brand appears to exist beyond the product."),
+    ("Magnetism", "The phrase, promise, or tension most likely to be remembered."),
+    ("Value Proposition", "What the brand offers, to whom, and what changes for that audience."),
+    ("Personality", "The personality performed through language, tone, behavior, and visual stance."),
+    ("Brand Idea", "The conceptual idea connecting category, offer, expression, and metaphor."),
+    ("Attributes", "The 1-3 attributes consistently demonstrated by product, proof, or language."),
+    ("Values", "The values the brand appears to defend through what it says or does."),
+    ("Mission", "What the brand concretely does today."),
+    ("Vision", "The future or category change the brand is trying to build.")
+  ] %}
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:14px;">
+    {% for title, description in block_rules %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ title }}</strong>
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.45; margin:8px 0 0;">{{ description }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.magenta_signals }}</span>
+    <span class="tag">// {{ model.t.magenta_signals_tag }}</span>
+  </div>
+  <div class="lab-applied-stack" style="display:grid; gap:14px; margin-top:14px;">
+    {% set layers = [
+      ("mindspace", "1. Emotions → Magnetism", "mindspace"),
+      ("aetherspace", "2. Essence → Core Purpose", "aetherspace"),
+      ("gamespace", "3. Voice → Personality", "gamespace"),
+      ("envispace", "4. Expression → Brand Idea", "envispace"),
+      ("netspace", "5. Exchange → Value Proposition", "netspace"),
+      ("tactispace", "6. Action / Direction → Mission + Vision", "tactispace"),
+      ("ambientspace", "7. Context / Beliefs → Attributes + Values", "ambientspace")
+    ] %}
+    {% for key, label, technical_name in layers %}
+    {% set layer = model.methodology.magenta_circle[key] %}
+    <article class="lab-applied-card" style="border:1px solid var(--border); padding:18px; background:var(--surface);">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
+        <h2 style="font-family:var(--font-ui); font-size:14px; font-weight:700; color:var(--text);">{{ label }}</h2>
+        <span class="badge {% if layer.detected %}badge-ready{% else %}badge-missing{% endif %}">{{ layer.status }} · {{ layer.confidence }}</span>
+      </div>
+      <span class="dim" style="font-family:var(--font-mono); font-size:10px;">technical layer: {{ technical_name }}</span>
+      <p class="prose" style="margin:8px 0 12px; font-family:var(--font-mono); font-size:13px; line-height:1.5; color:var(--text-muted);">
+        {{ layer.finding or model.t.no_clear_signal }}
+      </p>
+      {% if layer.evidence %}
+      <div style="background:var(--surface-2); border-left:3px solid var(--accent); padding:10px 14px; margin-top:10px;">
+        <span style="font-family:var(--font-mono); font-size:10px; color:var(--accent); text-transform:uppercase; font-weight:700; display:block; margin-bottom:6px;">{{ model.t.evidence }}</span>
+        <p style="margin:0; font-family:var(--font-mono); font-size:12px; line-height:1.5; color:var(--text); font-style:italic;">"{{ layer.evidence }}"</p>
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.run_limits }}</span>
+    <span class="tag">// {{ model.t.run_limits_tag }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.source_basis }}</strong>
+      <div style="font-family:var(--font-mono); font-size:12px; line-height:1.55; margin-top:10px;">
+        source={{ model.methodology.source }}<br>
+        extraction_mode={{ model.methodology.extraction_mode }}<br>
+        canonical_source={{ model.methodology.canonical_evidence_source or "none" }}<br>
+        direct_source={{ model.methodology.direct_source_provider or "none" }}
+      </div>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.validation_notes }}</strong>
+      {% if model.methodology.strategy.validation_notes %}
+      <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:12px; line-height:1.5;">
+        {% for note in model.methodology.strategy.validation_notes[:10] %}
+        <li>{{ note }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dim" style="font-family:var(--font-mono); font-size:12px;">{{ model.t.no_validation_notes }}</p>
+      {% endif %}
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.limitations|title }}</strong>
+      {% if model.methodology.limitations or model.methodology.warnings %}
+      <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:12px; line-height:1.5;">
+        {% for item in model.methodology.limitations + model.methodology.warnings %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dim" style="font-family:var(--font-mono); font-size:12px;">{{ model.t.no_limitations }}</p>
+      {% endif %}
+    </article>
+  </div>
+</section>
+{% endblock %}

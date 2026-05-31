@@ -267,6 +267,24 @@ def test_system_reading_places_strategic_diagnostics_inside_tldr() -> None:
     assert reading["derived_from"] == "TLDR Brand3 blocks and Magenta signal coverage"
 
 
+def test_limited_evidence_coverage_is_explained_without_changing_scores() -> None:
+    result = MagnetismExtractor(llm=None).extract(
+        url=None,
+        manual_text="Treasury platform for cash visibility.",
+        brand_name="Sparse Coverage Brand",
+    )
+
+    diagnosis_text = " ".join(result["diagnosis"]["key_observations"]).lower()
+    reading_text = " ".join(result["system_reading"]["strategic_tensions"]).lower()
+    questions_text = " ".join(result["system_reading"]["validation_questions"]).lower()
+
+    assert "cobertura insuficiente de evidencia publica" in diagnosis_text
+    assert "limited public evidence coverage" in reading_text
+    assert "before treating the score as a strategic verdict" in questions_text
+    assert isinstance(result["metrics"]["magnetism_score"], int)
+    assert isinstance(result["metrics"]["coherence_score"], int)
+
+
 
 def test_developer_cloud_billing_and_security_evidence_maps_attributes_and_values() -> None:
     result = MagnetismExtractor(llm=None).extract(

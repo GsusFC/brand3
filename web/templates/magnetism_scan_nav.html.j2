@@ -1,0 +1,8 @@
+<div class="lab-review-nav" style="margin-bottom: 14px;">
+  <a class="source-link" href="/magnetism-scanner{{ model.lang_query }}">{{ model.t.back }}</a>
+  <a class="source-link{% if model.active_tab == 'tldr' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}{{ model.lang_query }}">TLDR Brand3</a>
+  <a class="source-link{% if model.active_tab == 'research' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/research{{ model.lang_query }}">{{ model.t.research_evidence }}</a>
+  <a class="source-link{% if model.active_tab == 'methodology' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/methodology{{ model.lang_query }}">{{ model.t.methodology_details }}</a>
+  <a class="source-link{% if model.lang == 'es' %} badge-ready{% endif %}" href="{{ request.url.path }}?lang=es">ES</a>
+  <a class="source-link{% if model.lang == 'en' %} badge-ready{% endif %}" href="{{ request.url.path }}?lang=en">EN</a>
+</div>

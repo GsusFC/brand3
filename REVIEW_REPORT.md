@@ -62,7 +62,7 @@ Suite completa verde tras el fix. Tests focales de Diferenciación + scoring eng
 - ✅ `diferenciacion_llm.py` eliminado (no aparece en árbol).
 - ✅ Features viejas (`unique_value_prop`, `generic_language_score`, `brand_vocabulary` como top-level) eliminadas del extractor y de `dimensions.py`. `brand_vocabulary` sigue como **sub-key** del `raw_value` de `uniqueness`, no como feature independiente — correcto.
 - ✅ `DiferenciacionExtractor.__init__` acepta `llm` (verificado en tests y en `brand_service.py`).
-- ✅ `LLMAnalyzer` gana `analyze_positioning_clarity` y `analyze_uniqueness`; `analyze_positioning` y `analyze_differentiation` conservados.
+- ✅ `LLMAnalyzer` gana `analyze_positioning_clarity` y `analyze_uniqueness`; `analyze_positioning` y `analyze_differentiation` fueron retirados al consolidar prompts legacy.
 - ✅ Regla `lenguaje_generico` coherente cross-file (opción B).
 - ✅ Validación shape en `_positioning_clarity` (verdict enum, score numérico, `evidence` filtrada vía `_clean_positioning_evidence`, degradación a `llm_partial_evidence`).
 - ✅ Validación shape en `_uniqueness` tras el fix.
@@ -210,7 +210,7 @@ Verificación focal de Coherencia:
 - `coherencia_llm.py` no existe.
 - `CoherenciaExtractor` acepta `llm`, `visual_analyzer`, `skip_visual_analysis`.
 - `brand_service.py` instancia `CoherenciaExtractor(llm=llm, skip_visual_analysis=skip_visual_analysis)`.
-- `LLMAnalyzer` conserva `analyze_coherence` y añade `analyze_messaging_consistency` y `analyze_tone_consistency`.
+- `LLMAnalyzer` añade `analyze_messaging_consistency` y `analyze_tone_consistency`; `analyze_coherence` fue retirado al consolidar prompts legacy.
 - `test_weighted_average_and_composite_score` está matemáticamente correcto:
   `coherencia = 0.25*80 + 0.40*60 + 0.20*70 + 0.15*50 = 65.5`
   y el composite `69.2` también cuadra con los pesos de dimensión actuales.
@@ -257,7 +257,7 @@ Verificación focal:
 - `raw_value` de las 4 features sale como dict nativo en [src/features/percepcion.py](/Users/gsus/Antigravity/Brand3/brand3/src/features/percepcion.py).
 - `percepcion_llm.py` no existe.
 - `PercepcionExtractor` acepta `llm` y `brand_service.py` ya usa `PercepcionExtractor(llm=llm)`.
-- `LLMAnalyzer` conserva `analyze_sentiment` y añade `analyze_brand_sentiment`.
+- `LLMAnalyzer` añade `analyze_brand_sentiment`; `analyze_sentiment` fue retirado al consolidar prompts legacy.
 - `engine.py` ya no contiene `controversia_activa`; `sin_datos_suficientes` sigue operativa.
 - `test_weighted_average_and_composite_score` está matemáticamente correcto:
   `percepcion = 0.40*70 + 0.25*65 + 0.20*55 + 0.15*50 = 62.75`

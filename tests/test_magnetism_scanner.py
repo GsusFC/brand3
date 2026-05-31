@@ -37,9 +37,10 @@ class FakeLLMAnalyzer:
         self.captured_user = None
         self.mock_response: dict[str, Any] = {}
 
-    def _call_json(self, system: str, user: str, max_tokens: int = 8000) -> dict[str, Any]:
+    def _call_json(self, system: str, user: str, max_tokens: int = 8000, **kwargs: Any) -> dict[str, Any]:
         self.captured_system = system
         self.captured_user = user
+        self.captured_kwargs = kwargs
         return self.mock_response
 
 
@@ -98,7 +99,12 @@ class MagnetismScannerTests(unittest.TestCase):
     def test_web_routes_are_public_without_team_cookie(self):
         response = self.client.get("/magnetism-scanner")
         self.assertEqual(response.status_code, 200)
+        self.assertIn("Magnetism Scanner de marca", response.text)
+
+        response = self.client.get("/magnetism-scanner?lang=en")
+        self.assertEqual(response.status_code, 200)
         self.assertIn("Brand Magnetism Scanner", response.text)
+        self.assertIn('<html lang="en">', response.text)
 
         response = self.client.post(
             "/magnetism-scanner/analyze",
@@ -112,6 +118,39 @@ class MagnetismScannerTests(unittest.TestCase):
 
         response = self.client.get("/magnetism-scanner/scan/1")
         self.assertEqual(response.status_code, 404)
+
+    def test_magnetism_scanner_preserves_language_on_detail_tabs(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A memorable brand for teams that want clearer execution.",
+            brand_name="Language Brand",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        detail_es = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=es")
+        detail_en = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en")
+        research_es = self.client.get(f"/magnetism-scanner/scan/{scan_id}/research?lang=es")
+        methodology_es = self.client.get(f"/magnetism-scanner/scan/{scan_id}/methodology?lang=es")
+
+        self.assertEqual(detail_es.status_code, 200)
+        self.assertEqual(detail_en.status_code, 200)
+        self.assertEqual(research_es.status_code, 200)
+        self.assertEqual(methodology_es.status_code, 200)
+        self.assertIn("Evidencia de investigación", detail_es.text)
+        self.assertIn("Research Evidence", detail_en.text)
+        self.assertIn(f"/magnetism-scanner/scan/{scan_id}/research?lang=es", detail_es.text)
+        self.assertIn("Grafo de evidencia", research_es.text)
+        self.assertIn("Detalles de metodología", methodology_es.text)
+        self.assertIn('<html lang="es">', detail_es.text)
 
     def test_database_helpers(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan, list_magnetism_scans
@@ -216,6 +255,73 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("unknown", response.text)
         self.assertNotIn("llm_strategist_pass", response.text)
 
+    def test_scan_has_separate_research_and_methodology_pages(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="LangChain provides the agent engineering platform and open-source frameworks for reliable agents.",
+            brand_name="LangChain",
+        )
+        payload["research_pack_source"] = "evidence_graph"
+        payload["tldr_generation_mode"] = "analyst_pass_validated"
+        payload["research_pack"] = {
+            "resolved_entity": {
+                "resolved_entity": "LangChain",
+                "entity_type": "company",
+                "entity_scope": "audited_surface",
+                "parent_brand": "",
+            },
+            "category": "agent engineering platform",
+            "offer": "LangChain provides the agent engineering platform and open-source frameworks for reliable agents.",
+            "company_summary": "LangChain provides the agent engineering platform.",
+            "product_summary": "LangGraph provides durable execution for long-running agents.",
+            "source_map": {
+                "https://www.langchain.com/about": {
+                    "source_type": "owned_about",
+                    "surface_role": "mission_about",
+                    "entity_scope": "parent_brand",
+                    "title": "About LangChain",
+                },
+                "https://docs.langchain.com/oss/javascript/langgraph/graph-api": {
+                    "source_type": "owned_product",
+                    "surface_role": "product:LangGraph",
+                    "entity_scope": "product:LangGraph",
+                    "title": "LangGraph",
+                },
+            },
+            "noise_rejected": [],
+            "evidence_gaps": [],
+        }
+        payload["evidence_graph_summary"] = {
+            "source_counts": {"owned_about": 1, "owned_product": 1},
+            "claim_count": 2,
+        }
+
+        scan_id = insert_magnetism_scan(
+            brand_name="LangChain",
+            url="https://www.langchain.com",
+            magnetism_score=int(payload["magnetism_score"]),
+            coherence_score=int(payload["coherence_score"]),
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        detail = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+        research = self.client.get(f"/magnetism-scanner/scan/{scan_id}/research")
+        methodology = self.client.get(f"/magnetism-scanner/scan/{scan_id}/methodology")
+
+        self.assertEqual(detail.status_code, 200)
+        self.assertEqual(research.status_code, 200)
+        self.assertEqual(methodology.status_code, 200)
+        self.assertIn("TLDR Brand3", detail.text)
+        self.assertIn("Evidencia de investigación", detail.text)
+        self.assertNotIn("Magenta Circle Signals", detail.text)
+        self.assertIn("Superficies de producto", research.text)
+        self.assertIn("product:LangGraph", research.text)
+        self.assertIn("Detalles de metodología", methodology.text)
+        self.assertIn("Señales Magenta Circle", methodology.text)
+
     def test_scan_detail_shows_tldr_strategy_metadata(self):
         from web.storage import insert_magnetism_scan
 
@@ -242,7 +348,7 @@ class MagnetismScannerTests(unittest.TestCase):
             }
         )
         payload["tldr_strategy"] = {
-            "mode": "llm_strategist_pass",
+            "mode": "llm_analyst_pass",
             "verdict_vs_current": "better",
             "main_gain": "Sharper block interpretation.",
             "main_risk": "Evidence is still sparse.",
@@ -261,7 +367,7 @@ class MagnetismScannerTests(unittest.TestCase):
         response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn("llm_strategist_pass", response.text)
+        self.assertIn("llm_analyst_pass", response.text)
         self.assertIn("Guardrail corrections", response.text)
         self.assertIn("Sharper block interpretation.", response.text)
 
@@ -357,6 +463,7 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["direct_source_provider"], "manual_evidence")
         self.assertIsNone(result["canonical_evidence_source"])
         self.assertEqual(result["deprecation"]["replacement"], "extract_from_audit_snapshot")
+        self.assertNotIn("research_pack", result)
         self.assertEqual(result["magenta_circle"]["mindspace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["netspace"]["status"], "detected")
         self.assertEqual(result["magenta_circle"]["tactispace"]["status"], "not_detected")
@@ -409,6 +516,71 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Do not produce scores", fake_llm.captured_user)
         self.assertNotIn("comprehensive audit", fake_llm.captured_user.lower())
 
+    def test_extractor_prompt_rejects_page_chrome_as_brand_evidence(self):
+        fake_llm = FakeLLMAnalyzer(api_key="valid-key")
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+
+        fake_llm.mock_response = {
+            "brand_name": "Chrome Noise",
+            "url": "https://chrome-noise.test",
+            "magenta_circle": {
+                "mindspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "aetherspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "gamespace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "envispace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "netspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "tactispace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "ambientspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+            },
+        }
+
+        result = extractor.extract(
+            url="https://chrome-noise.test",
+            manual_text=(
+                "Pricing Log in Sign up Cookie settings Privacy Policy "
+                "Latest news: AI prediction roundup."
+            ),
+            brand_name="Chrome Noise",
+        )
+
+        self.assertEqual(result["fallback_used"], False)
+        self.assertIn("Do not use page chrome as brand evidence", fake_llm.captured_user)
+        self.assertIn("navigation labels", fake_llm.captured_user)
+        self.assertIn("cookie banners", fake_llm.captured_user)
+        self.assertIn("login/sign-up buttons", fake_llm.captured_user)
+        self.assertIn("generic CTAs", fake_llm.captured_user)
+        self.assertIn("blog/feed/news card titles", fake_llm.captured_user)
+        self.assertIn("mark the layer as not_detected", fake_llm.captured_user)
+
+    def test_extractor_prompt_includes_relevant_evidence_after_legacy_8k_cutoff(self):
+        fake_llm = FakeLLMAnalyzer(api_key="valid-key")
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        late_evidence = "Late evidence: We build resilient AI workflows for regulated finance teams."
+
+        fake_llm.mock_response = {
+            "brand_name": "Long Page",
+            "url": "https://long-page.test",
+            "magenta_circle": {
+                "mindspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "aetherspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "gamespace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "envispace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "netspace": {"detected": True, "finding": "AI workflows for finance teams", "evidence": late_evidence, "confidence": "high"},
+                "tactispace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+                "ambientspace": {"detected": False, "finding": None, "evidence": None, "confidence": "insufficient"},
+            },
+        }
+
+        result = extractor.extract(
+            url="https://long-page.test",
+            manual_text=("x" * 8500) + late_evidence,
+            brand_name="Long Page",
+        )
+
+        self.assertEqual(result["fallback_used"], False)
+        self.assertIn(late_evidence, fake_llm.captured_user)
+        self.assertEqual(result["magenta_circle"]["netspace"]["evidence"], late_evidence)
+
     def test_extractor_from_brand_audit_snapshot_reuses_evidence(self):
         extractor = MagnetismExtractor(llm=None)
         snapshot = {
@@ -435,7 +607,9 @@ class MagnetismScannerTests(unittest.TestCase):
             ],
         }
 
-        result = extractor.extract_from_audit_snapshot(snapshot)
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False):
+            result = extractor.extract_from_audit_snapshot(snapshot)
 
         self.assertEqual(result["source"], "brand_audit_snapshot")
         self.assertEqual(result["extraction_mode"], "canonical_snapshot")
@@ -520,7 +694,9 @@ class MagnetismScannerTests(unittest.TestCase):
             ],
         }
 
-        result = extractor.extract_from_audit_snapshot(snapshot)
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False):
+            result = extractor.extract_from_audit_snapshot(snapshot)
 
         value_prop = result["tldr_brand3"]["value_proposition"]
         self.assertEqual(value_prop["mode"], "compressed")
@@ -906,7 +1082,7 @@ class MagnetismScannerTests(unittest.TestCase):
         )
 
         self.assertEqual(response.status_code, 303)
-        self.assertRegex(response.headers["location"], r"^/magnetism-scanner/.+/status$")
+        self.assertRegex(response.headers["location"], r"^/magnetism-scanner/.+/status\?lang=es$")
         mock_validate_url.assert_called_once_with("https://example.com")
         token = response.headers["location"].split("/")[2]
 
@@ -995,7 +1171,7 @@ class MagnetismScannerTests(unittest.TestCase):
         }
 
         with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
-             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_TLDR_STRATEGIST_PASS", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False), \
              unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
             result = extractor.extract_from_audit_snapshot(snapshot)
 
@@ -1012,6 +1188,8 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
         self.assertIn("research_pack", result)
+        self.assertEqual(result["research_pack_source"], "snapshot_builder")
+        self.assertNotIn("evidence_graph_summary", result)
         self.assertIn("analyst_tldr_raw", result)
         self.assertIn("analyst_tldr_validated", result)
         self.assertIn("legacy_tldr_brand3", result)
@@ -1020,6 +1198,60 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(payload["tldr_generation_mode"], "analyst_pass_validated")
         self.assertIn("research_pack", payload)
         self.assertIn("analyst_tldr_validated", payload)
+
+    def test_graph_pack_flag_uses_evidence_graph_research_pack(self):
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "entity_reading": "SigmaOS is a browser product.",
+            "verdict_vs_current": "better",
+            "main_gain": "The graph recovers product offer claims.",
+            "main_risk": "Values remain under-evidenced.",
+            "tldr_brand3": {
+                "value_proposition": {
+                    "answer": "A browser that organizes tabs into workspaces and task-like lists.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "reasoning": "The EvidenceGraph contains recovered owned product claims.",
+                    "evidence_used": ["The new home for your internet. One window. Many workspaces. All your tabs."],
+                    "evidence_sources": [{"source_key": "https://sigmaos.com", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                }
+            },
+        }
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        snapshot = {
+            "run": {"id": 507, "brand_name": "SigmaOS", "url": "https://sigmaos.com"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://sigmaos.com",
+                        "markdown_content": (
+                            "A smarter way to browse the internet.\n"
+                            "The new home for your internet. One window. Many workspaces. All your tabs.\n"
+                            "Your tabs are like tasks in a to-do list. Mark them as done once they're complete.\n"
+                            "Download Free\n"
+                        ),
+                    },
+                }
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", True), \
+             unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
+        self.assertEqual(result["research_pack_source"], "evidence_graph")
+        self.assertIn("evidence_graph_summary", result)
+        self.assertGreater(result["evidence_graph_summary"]["claim_count"], 0)
+        self.assertIn("The new home for your internet", result["research_pack"]["offer"])
+        self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
 
     def test_research_pack_tldr_flag_falls_back_when_llm_fails(self):
         fake_llm = FakeLLMAnalyzer()
@@ -1061,7 +1293,6 @@ class MagnetismScannerTests(unittest.TestCase):
         }
 
         with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
-             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_TLDR_STRATEGIST_PASS", False), \
              unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
             result = extractor.extract_from_audit_snapshot(snapshot)
 
@@ -1141,8 +1372,11 @@ class MagnetismScannerTests(unittest.TestCase):
         # GET index page when empty
         r = self.client.get("/magnetism-scanner")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("Brand Magnetism Scanner", r.text)
-        self.assertIn("no magnetism scans recorded yet", r.text)
+        self.assertIn("Magnetism Scanner de marca", r.text)
+        self.assertIn("Ejecutar Audit + Magnetism", r.text)
+        self.assertIn("legacy/debug, no comparable", r.text)
+        self.assertIn("evita la adquisición de Brand Audit", r.text)
+        self.assertIn("todavía no hay escaneos Magnetism", r.text)
 
         # POST analyze error
         r_err = self.client.post("/magnetism-scanner/analyze", data={"url": "", "manual_text": ""})
@@ -1166,7 +1400,7 @@ class MagnetismScannerTests(unittest.TestCase):
         # Should redirect to status page while the queued scan runs.
         self.assertEqual(r_ok.status_code, 303)
         status_url = r_ok.headers["location"]
-        self.assertRegex(status_url, r"^/magnetism-scanner/.+/status$")
+        self.assertRegex(status_url, r"^/magnetism-scanner/.+/status\?lang=es$")
         r_status = self.client.get(status_url, follow_redirects=False)
         self.assertIn(r_status.status_code, {200, 303})
 
@@ -1189,12 +1423,12 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("legacy_extraction", r_detail.text)
         self.assertIn("Manual Upload Brand", r_detail.text)
         self.assertIn("TLDR Brand3", r_detail.text)
-        self.assertIn("9 strategic blocks derived from 7 Magenta signals", r_detail.text)
+        self.assertIn("9 bloques estratégicos derivados de 7 señales Magenta", r_detail.text)
         self.assertIn("source signal: Emotions → Magnetism", r_detail.text)
         self.assertIn("Method notes", r_detail.text)
         self.assertIn("Evidence", r_detail.text)
         self.assertIn("evidence_basis:", r_detail.text)
-        self.assertIn("Methodology Details", r_detail.text)
+        self.assertIn("Detalles de metodología", r_detail.text)
 
         # GET non-existent detail
         r_not_found = self.client.get("/magnetism-scanner/scan/99999")
@@ -1204,7 +1438,7 @@ class MagnetismScannerTests(unittest.TestCase):
         r_index_populated = self.client.get("/magnetism-scanner")
         self.assertEqual(r_index_populated.status_code, 200)
         self.assertIn("Manual Upload Brand", r_index_populated.text)
-        self.assertNotIn("no magnetism scans recorded yet", r_index_populated.text)
+        self.assertNotIn("todavía no hay escaneos Magnetism", r_index_populated.text)
 
     def test_human_research_language_produces_value_proposition(self):
         extractor = MagnetismExtractor(llm=None)

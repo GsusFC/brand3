@@ -14,7 +14,11 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.collectors.web_collector import WebCollector
-from src.config import BRAND3_MAGNETISM_RESEARCH_PACK_TLDR, BRAND3_TLDR_STRATEGIST_PASS
+from src.config import (
+    BRAND3_BRAND_RESEARCH_GRAPH_PACK,
+    BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT,
+    BRAND3_MAGNETISM_RESEARCH_PACK_TLDR,
+)
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.block_interpreters import (
     TLDR_BLOCK_INTERPRETER_SPECS,
@@ -26,12 +30,13 @@ from src.features.magnetism.block_interpreters import (
 )
 from src.features.magnetism.content_distiller import ContentDistiller
 from src.features.magnetism.analyst_tldr import run_analyst_tldr_pass
-from src.features.magnetism.strategist_tldr import maybe_build_strategist_tldr
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
 from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
+from src.research.evidence_graph import build_evidence_graph_from_snapshot
+from src.research.research_pack_builder import build_brand_research_pack_from_graph
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
 
 LAYER_KEYS = [
@@ -346,7 +351,7 @@ class MagnetismExtractor:
         evidence normalization, confidence, and degraded-state handling.
         """
         canonical_evidence = build_canonical_brand_evidence(snapshot)
-        research_pack = build_brand_research_pack_from_snapshot(snapshot)
+        research_pack, evidence_graph_summary = self._build_research_pack(snapshot)
         brand_name = canonical_evidence.brand_name
         url = canonical_evidence.url
         strategic_packet = canonical_evidence.strategic_packet
@@ -365,6 +370,11 @@ class MagnetismExtractor:
                     result["canonical_evidence_source"] = "brand_audit_snapshot"
                     result["limitations"].extend(canonical_evidence.limitations)
                     result["evidence_packet_summary"] = evidence_packet_summary
+                    if evidence_graph_summary:
+                        result["evidence_graph_summary"] = evidence_graph_summary
+                        result["research_pack_source"] = "evidence_graph"
+                    else:
+                        result["research_pack_source"] = "snapshot_builder"
                     result["strategic_evidence_packet"] = packet_dict
                     self._enrich_layers_from_strategic_packet(result["magenta_circle"], packet_dict)
                     brand_context_brief = build_brand_context_brief(
@@ -410,6 +420,11 @@ class MagnetismExtractor:
         result["canonical_evidence_source"] = "brand_audit_snapshot"
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
+        if evidence_graph_summary:
+            result["evidence_graph_summary"] = evidence_graph_summary
+            result["research_pack_source"] = "evidence_graph"
+        else:
+            result["research_pack_source"] = "snapshot_builder"
         packet_dict = strategic_packet.to_dict()
         result["strategic_evidence_packet"] = packet_dict
         brand_context_brief = build_brand_context_brief(
@@ -439,6 +454,13 @@ class MagnetismExtractor:
         )
         return result
 
+    @staticmethod
+    def _build_research_pack(snapshot: dict[str, Any]) -> tuple[Any, dict[str, Any] | None]:
+        if not BRAND3_BRAND_RESEARCH_GRAPH_PACK:
+            return build_brand_research_pack_from_snapshot(snapshot), None
+        graph = build_evidence_graph_from_snapshot(snapshot)
+        return build_brand_research_pack_from_graph(graph), graph.summary()
+
     def _apply_tldr_generation_flow(
         self,
         *,
@@ -460,42 +482,6 @@ class MagnetismExtractor:
                 research_pack=research_pack,
             )
             return
-
-        if not BRAND3_TLDR_STRATEGIST_PASS:
-            return
-        current_tldr = result.get("tldr_brand3")
-        if not isinstance(current_tldr, dict):
-            return
-        try:
-            strategist = maybe_build_strategist_tldr(
-                llm=self.llm,
-                brand_name=brand_name,
-                url=url,
-                magenta_circle=result.get("magenta_circle") or {},
-                strategic_evidence_packet=packet_dict,
-                brand_context_brief=brand_context_brief,
-                current_tldr=current_tldr,
-                research_pack=research_pack,
-            )
-        except Exception as exc:
-            result.setdefault("limitations", []).append(f"TLDR strategist pass failed: {exc}")
-            return
-        if not strategist or not isinstance(strategist.get("tldr_brand3"), dict):
-            return
-
-        result["tldr_brand3_current"] = current_tldr
-        result["tldr_brand3_strategist"] = strategist
-        result["tldr_brand3"] = strategist["tldr_brand3"]
-        result["tldr_generation_mode"] = "strategist_pass_legacy"
-        result["tldr_strategy"] = {
-            "mode": "llm_strategist_pass",
-            "verdict_vs_current": strategist.get("verdict_vs_current"),
-            "main_gain": strategist.get("main_gain"),
-            "main_risk": strategist.get("main_risk"),
-            "validation_notes": strategist.get("validation_notes") or [],
-            "validation_warnings": strategist.get("validation_warnings") or [],
-            "degraded_fields": strategist.get("degraded_fields") or [],
-        }
 
     def _apply_research_pack_tldr(
         self,
@@ -585,7 +571,7 @@ class MagnetismExtractor:
         url: str,
     ) -> dict[str, Any] | None:
         """Ask the LLM only for grounded layer signals, not final strategy."""
-        truncated_web = web_markdown[:8000]
+        truncated_web = web_markdown[:BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT]
         visual_data = {}
         if isinstance(visual_semantics, dict):
             visual_data = visual_semantics.get("data") or visual_semantics.get("semantics") or {}
@@ -632,6 +618,9 @@ Rules:
 - If a layer is weak or absent, set finding=null, evidence=null, detected=false, confidence="insufficient".
 - Do not produce scores, recommendations, quadrants, or action plans.
 - Do not use phrases like "management teams", "founders typically", "decision space", "should", or "could prioritize".
+- Do not use page chrome as brand evidence: navigation labels, menus, breadcrumbs, headers, footers, copyright, legal links, cookie banners, language selectors, login/sign-up buttons, or generic CTAs.
+- Do not treat isolated blog/feed/news card titles as mission, vision, values, personality, or value proposition unless the quoted text explicitly states the brand's own purpose, offer, audience, outcome, mission, vision, or values.
+- If the strongest available text is page chrome or generic interface copy, mark the layer as not_detected.
 
 Return exactly this JSON shape:
 {{
@@ -1280,6 +1269,10 @@ Return exactly this JSON shape:
             f"Capas sin evidencia suficiente: {', '.join(missing) if missing else 'ninguna'}.",
             "El diagnostico se limita a senales observables; no incluye recomendaciones estrategicas no validadas.",
         ]
+        if detected_count <= 5:
+            observations.append(
+                "Si el score baja, puede deberse a cobertura insuficiente de evidencia publica, no necesariamente a debilidad estrategica de la marca."
+            )
         return {"headline": headline, "key_observations": observations}
 
     def _derive_evidence_packet_summary(self, payload: dict[str, Any]) -> dict[str, Any]:
@@ -1392,6 +1385,9 @@ Return exactly this JSON shape:
 
         value_detected = detected("value_proposition")
         magnetism_score = int(metrics.get("magnetism_score") or 0)
+        weak_layers = [key for key, layer in layers.items() if isinstance(layer, dict) and not layer.get("detected")]
+        detected_block_count = sum(1 for key in TLDR_KEYS if detected(key))
+        limited_evidence_coverage = len(weak_layers) >= 2 or detected_block_count <= 7
 
         if value_detected and not detected("personality"):
             tensions.append(
@@ -1425,8 +1421,17 @@ Return exactly this JSON shape:
                 "Which phrase or tension should a buyer retain after the first visit?"
             )
 
+        if limited_evidence_coverage:
+            tensions.insert(
+                0,
+                "Some score pressure comes from limited public evidence coverage, not necessarily from strategic weakness in the brand itself."
+            )
+            questions.insert(
+                0,
+                "Which missing internal or public evidence should be supplied before treating the score as a strategic verdict?"
+            )
+
         if not tensions:
-            weak_layers = [key for key, layer in layers.items() if isinstance(layer, dict) and not layer.get("detected")]
             if len(weak_layers) >= 4:
                 tensions.append(
                     "The scan has limited observable signal coverage, so strategic conclusions should stay provisional."

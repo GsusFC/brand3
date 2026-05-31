@@ -228,11 +228,65 @@ class WebAppFlowTests(unittest.TestCase):
             report_resp = self.client.get(f"/r/{token}")
         self.assertEqual(report_resp.status_code, 200)
         self.assertIn("Fake Brand", report_resp.text)
-        self.assertIn("Reports", report_resp.text)
-        self.assertIn("Brand history", report_resp.text)
+        self.assertIn("brand3", report_resp.text)
+        self.assertIn("Brand Audit", report_resp.text)
+        self.assertIn("Informes", report_resp.text)
+        self.assertIn("Visual Signature Lab", report_resp.text)
+        self.assertIn("Magnetism Scanner", report_resp.text)
+        self.assertIn("Historial de marca", report_resp.text)
+        self.assertIn('class="main-nav-link is-active" href="/reports"', report_resp.text)
         self.assertIn("Persisted public narrative.", report_resp.text)
         self.assertIn("Persisted public finding", report_resp.text)
         self.assertIn("Persisted public tension.", report_resp.text)
+
+        en_resp = self.client.get(f"/r/{token}?lang=en")
+        self.assertEqual(en_resp.status_code, 200)
+        self.assertIn("Reports", en_resp.text)
+        self.assertIn("Brand history", en_resp.text)
+
+    def test_report_uses_cached_spanish_translation_without_rerunning_audit(self):
+        token, run_id = self._create_ready_run()
+        translated_payload = {
+            "version": 1,
+            "source": "report_narrative",
+            "translation_version": 1,
+            "translation_source": "report_translation",
+            "target_lang": "es",
+            "synthesis_prose": "Narrativa traducida persistida.",
+            "summary": "Narrativa traducida persistida.",
+            "tensions_prose": "Tensión traducida persistida.",
+            "findings_by_dimension": {
+                "coherencia": [
+                    {
+                        "title": "Hallazgo traducido",
+                        "observation": "Observación traducida.",
+                        "implication": "Implicación traducida.",
+                        "typical_decision": "Decisión traducida.",
+                        "evidence_urls": [],
+                    }
+                ]
+            },
+        }
+        with sqlite3.connect(self.db) as conn:
+            conn.execute(
+                """
+                INSERT INTO raw_inputs (run_id, source, payload_json, created_at)
+                VALUES (?, 'report_translation', ?, datetime('now'))
+                """,
+                (run_id, json.dumps(translated_payload)),
+            )
+            conn.commit()
+
+        with patch(
+            "src.features.llm_analyzer.LLMAnalyzer",
+            side_effect=AssertionError("cached translation must not call LLM"),
+        ):
+            report_resp = self.client.get(f"/r/{token}?lang=es")
+
+        self.assertEqual(report_resp.status_code, 200)
+        self.assertIn("Narrativa traducida persistida.", report_resp.text)
+        self.assertIn("Hallazgo traducido", report_resp.text)
+        self.assertIn("Tensión traducida persistida.", report_resp.text)
 
     def test_status_page_shows_live_phase_checklist(self):
         from web.workers.queue import set_run_analysis_override

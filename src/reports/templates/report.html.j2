@@ -1,8 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ t.html_lang }}">
 <head>
-<meta charset="UTF-8">
-<title>brand-audit :: {{ brand.url or brand.name }}{% if theme == 'dark' %} · night{% endif %}</title>
+<meta charset="UTF-8">{% if app_chrome %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>{% endif %}
+<title>brand-audit :: {{ brand.url or brand.name }}{% if theme == 'dark' %}{{ t.night_suffix }}{% endif %}</title>
 <style>
   @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap");
 
@@ -58,6 +62,22 @@
     border: 1px solid {% if theme == 'dark' %}transparent{% else %}var(--rule){% endif %};
     box-shadow: {% if theme == 'dark' %}none{% else %}0 10px 32px rgba(22, 22, 22, 0.035){% endif %};
   }
+  {%- if app_chrome %}
+  .page {
+    width: min(1440px, calc(100% - 48px));
+    max-width: calc(100% - 48px);
+    padding: 0;
+    background: {% if theme == 'dark' %}rgba(18, 22, 21, 0.94){% else %}rgba(245, 245, 245, 0.94){% endif %};
+    border: 1px solid var(--rule);
+    overflow-x: hidden;
+  }
+  .report-body {
+    padding: 28px;
+    max-width: 100%;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  {%- endif %}
   .report-app-nav {
     display: flex;
     flex-wrap: wrap;
@@ -85,11 +105,88 @@
   .report-app-nav .spacer {
     flex: 1 1 auto;
   }
+  {%- if app_chrome %}
+  .main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 14px 28px 12px;
+    min-width: 0;
+  }
+  .main-nav-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 4px 10px;
+    border: 1px solid var(--rule);
+    background: {% if theme == 'dark' %}rgba(18, 22, 21, 0.86){% else %}rgba(245, 245, 245, 0.82){% endif %};
+    color: var(--fg);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .main-nav-link:hover {
+    border-color: var(--accent);
+    color: var(--fg-bright);
+    text-decoration: none;
+  }
+  .main-nav-link.is-active {
+    border-color: {% if theme == 'dark' %}rgba(255, 106, 43, 0.46){% else %}rgba(239, 73, 13, 0.42){% endif %};
+    color: var(--accent);
+    background: {% if theme == 'dark' %}rgba(255, 106, 43, 0.12){% else %}rgba(242, 222, 212, 0.48){% endif %};
+  }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    margin-left: auto;
+    border: 1px solid var(--rule);
+    background: {% if theme == 'dark' %}rgba(18, 22, 21, 0.86){% else %}rgba(245, 245, 245, 0.82){% endif %};
+    color: var(--muted);
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    border-color: {% if theme == 'dark' %}rgba(255, 106, 43, 0.46){% else %}rgba(239, 73, 13, 0.42){% endif %};
+    color: var(--accent);
+    outline: none;
+  }
+  {%- endif %}
   .term-head {
     white-space: pre-wrap; margin: 0 0 6px;
     font-family: var(--font-mono); font-size: 12px; line-height: 1.65;
     font-feature-settings: "liga" 0, "calt" 0;
   }
+  {%- if app_chrome %}
+  .term-head {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0 28px;
+    border-bottom: 1px solid var(--rule);
+    background: {% if theme == 'dark' %}rgba(18, 22, 21, 0.82){% else %}rgba(238, 238, 238, 0.76){% endif %};
+    line-height: 1.5;
+  }
+  .report-command {
+    min-height: auto;
+    display: block;
+    padding: 0;
+    border-bottom: 0;
+    background: transparent;
+    line-height: 1.65;
+  }
+  .report-context-nav {
+    margin: 10px 0 0;
+  }
+  .shell-rule {
+    margin: 0;
+  }
+  {%- endif %}
   .prompt {
     color: {% if theme == 'dark' %}var(--ok){% else %}var(--accent){% endif %};
     user-select: none;
@@ -291,6 +388,22 @@
 
   @media (max-width: 640px) {
     .page { width: min(100% - 28px, 1180px); padding: 24px 0 60px; }
+    {%- if app_chrome %}
+    .page {
+      width: min(100% - 28px, 1440px);
+      max-width: calc(100% - 28px);
+      padding: 0;
+    }
+    .term-head,
+    .main-nav,
+    .report-body {
+      padding-left: 18px;
+      padding-right: 18px;
+    }
+    .theme-toggle {
+      margin-left: 0;
+    }
+    {%- endif %}
     .header-grid { grid-template-columns: 1fr; }
     dl.report-meta { grid-template-columns: 120px 1fr; }
     .score-panel { text-align: left; }
@@ -298,7 +411,12 @@
   }
   @media print {
     body { background: #fff; }
+    {%- if app_chrome %}
+    .report-app-nav,
+    .main-nav { display: none; }
+    {%- else %}
     .report-app-nav { display: none; }
+    {%- endif %}
     .cursor { display: none; }
   }
 </style>
@@ -306,53 +424,70 @@
 <body>
 <div class="page">
 
-<nav class="report-app-nav" aria-label="Brand3 report navigation">
-  <a href="/reports">Reports</a>
-  <a href="/brand/{{ brand.domain or brand.name }}">Brand history</a>
-  <span class="spacer"></span>
-  <a href="?theme=light">Light</a>
-  <a href="?theme=dark">Dark</a>
+{% if app_chrome %}
+<pre class="term-head"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· {{ t.public_observatory }}</span></pre>
+<nav class="main-nav" aria-label="Brand3 primary navigation">
+  <a class="main-nav-link" href="/">{{ t.brand_audit }}</a>
+  <a class="main-nav-link is-active" href="/reports">{{ t.reports }}</a>
+  <a class="main-nav-link" href="/visual-signature">{{ t.visual_signature_lab }}</a>
+  <a class="main-nav-link" href="/magnetism-scanner">{{ t.magnetism_scanner }}</a>
+  <a class="main-nav-link" href="?theme={{ theme }}&lang={{ 'en' if lang == 'es' else 'es' }}">{{ t.language }}: {{ lang|upper }}</a>
+  <button class="theme-toggle" type="button" data-report-theme-toggle aria-label="{{ t.toggle_theme }}">{% if theme == 'dark' %}{{ t.light }}{% else %}{{ t.dark }}{% endif %}</button>
 </nav>
-
-<pre class="term-head"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand-audit <span class="hl-accent">--target</span> {{ brand.url or brand.name }} <span class="hl-accent">--profile</span> {{ brand.profile }} <span class="hl-accent">--engine</span> {{ footer.engine }}
+<hr class="rule shell-rule">
+<div class="report-body">
+{% else -%}
+<nav class="report-app-nav" aria-label="Brand3 report navigation">
+  <a href="/reports">{{ t.reports }}</a>
+  <a href="/brand/{{ brand.domain or brand.name }}">{{ t.brand_history }}</a>
+  <span class="spacer"></span>
+  <a href="?theme=light">{{ t.light }}</a>
+  <a href="?theme=dark">{{ t.dark }}</a>
+</nav>
+{% endif %}
+{% if app_chrome -%}
+<p class="small dim report-context-nav"><a href="/brand/{{ brand.domain or brand.name }}">{{ t.brand_history }}</a></p>
+{% else -%}
+<pre class="term-head{% if app_chrome %} report-command{% endif %}"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand-audit <span class="hl-accent">--target</span> {{ brand.url or brand.name }} <span class="hl-accent">--profile</span> {{ brand.profile }} <span class="hl-accent">--engine</span> {{ footer.engine }}
 {%- for line in term_lines %}
 <span class="hl-{{ line.level }}">[{{ line.level }}]</span>{% if line.level == 'ok' %}   {% else %} {% endif %}<span class="dim">{{ line.text }}</span>
 {%- endfor %}</pre>
+{%- endif %}
 
 <hr class="rule">
 
 <div class="header-grid">
   <dl class="report-meta">
-    <dt>brand</dt>
+    <dt>{{ t.brand }}</dt>
     <dd>{{ brand.name }}</dd>
-    <dt>url</dt>
+    <dt>{{ t.url }}</dt>
     <dd>{% if brand.url %}<a href="{{ brand.url }}" target="_blank" rel="noopener">{{ brand.url }}</a>{% else %}<span class="empty">(no url)</span>{% endif %}</dd>
-    <dt>analysis_date</dt>
+    <dt>{{ t.analysis_date }}</dt>
     <dd>{{ brand.analysis_date or 'n/a' }}</dd>
-    <dt>profile</dt>
+    <dt>{{ t.profile }}</dt>
     <dd>{{ brand.profile }}{% if brand.profile_source %} · source={{ brand.profile_source }}{% endif %}</dd>
-    <dt>data_quality</dt>
+    <dt>{{ t.data_quality }}</dt>
     <dd>{{ brand.data_quality }}</dd>
-    <dt>scope</dt>
-    <dd>public web surface + organic mentions (no paid)</dd>
+    <dt>{{ t.scope }}</dt>
+    <dd>{{ t.scope_public_web }}</dd>
   </dl>
   <div class="score-panel">
-    <div class="small">SCORE_GLOBAL</div>
+    <div class="small">{{ t.score_global }}</div>
     <div class="score-huge num-inline">{{ score.global_display }}</div>
-    <div class="score-scale">/ 100 · <span class="dim">band: {{ score.band_letter }} · "{{ score.band_adjective }}"</span></div>
+    <div class="score-scale">/ 100 · <span class="dim">{{ t.band }}: {{ score.band_letter }} · "{{ score.band_adjective }}"</span></div>
   </div>
 </div>
 
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§1B  estado de confianza</span>
+  <span class="label">{{ t.confidence_state }}</span>
   <span class="tag">// {{ evaluation.overall_status }}</span>
 </div>
 <table>
   <tbody>
     <tr>
-      <th class="col-meta">estado agregado</th>
+      <th class="col-meta">{{ t.aggregate_status }}</th>
       <td>
         {%- if evaluation.overall_status == 'insufficient_data' -%}
           <span class="hl-alert">{{ evaluation.overall_status_label }}</span>
@@ -364,7 +499,7 @@
       </td>
     </tr>
     <tr>
-      <th>dimensiones</th>
+      <th>{{ t.dimensions }}</th>
       <td>
         good: {{ evaluation.dimension_status_counts.good }},
         degraded: {{ evaluation.dimension_status_counts.degraded }},
@@ -372,12 +507,12 @@
       </td>
     </tr>
     <tr>
-      <th>motivo</th>
+      <th>{{ t.reason }}</th>
       <td>{{ evaluation.overall_reason_label }}</td>
     </tr>
     {%- if trust_summary.limited_dimensions %}
     <tr>
-      <th>dimensiones limitadas</th>
+      <th>{{ t.limited_dimensions }}</th>
       <td>
         {%- for dim in trust_summary.limited_dimensions[:5] -%}
           {{ dim.display_name or dim.name }}{% if not loop.last %}, {% endif %}
@@ -387,11 +522,11 @@
     {%- endif %}
     {%- if cost_policy.available %}
     <tr>
-      <th>coste / ejecución</th>
+      <th>{{ t.cost_run }}</th>
       <td>
-        inputs: {% if cost_policy.raw_input_sources %}{{ cost_policy.raw_input_sources | join(', ') }}{% else %}<span class="dim">no persistidos</span>{% endif %}
+        {{ t.inputs }}: {% if cost_policy.raw_input_sources %}{{ cost_policy.raw_input_sources | join(', ') }}{% else %}<span class="dim">{{ t.not_persisted }}</span>{% endif %}
         {%- if cost_policy.skipped -%}
-          ; omitido:
+          ; {{ t.skipped }}:
           {%- for name, reason in cost_policy.skipped.items() -%}
             {{ name }}={{ reason }}{% if not loop.last %}, {% endif %}
           {%- endfor -%}
@@ -408,16 +543,31 @@
   'technical_diagnostic': 'Technical diagnostic',
   'insufficient_evidence': 'Insufficient evidence'
 } -%}
+{%- if lang == 'es' -%}
+{%- set report_mode_labels = {
+  'publishable_brand_report': 'Informe de marca publicable',
+  'technical_diagnostic': 'Diagnóstico técnico',
+  'insufficient_evidence': 'Evidencia insuficiente'
+} -%}
+{%- endif -%}
 {%- set readiness_state_labels = {
   'ready': 'Ready',
   'observation_only': 'Observation only',
   'technical_only': 'Technical only',
   'not_evaluable': 'Not evaluable'
 } -%}
+{%- if lang == 'es' -%}
+{%- set readiness_state_labels = {
+  'ready': 'Listo',
+  'observation_only': 'Solo observación',
+  'technical_only': 'Solo técnico',
+  'not_evaluable': 'No evaluable'
+} -%}
+{%- endif -%}
 <div class="diagnostic-block">
   <div class="section-head">
-    <span class="label">Report readiness</span>
-    <span class="tag">// diagnostic</span>
+    <span class="label">{{ t.report_readiness }}</span>
+    <span class="tag">// {{ t.diagnostic }}</span>
   </div>
   {%- if readiness.diagnostic_summary %}
   <p class="diagnostic-summary">{{ readiness.diagnostic_summary }}</p>
@@ -425,24 +575,24 @@
   <table>
     <tbody>
       <tr>
-        <th class="col-meta">mode</th>
+        <th class="col-meta">{{ t.mode }}</th>
         <td>{{ report_mode_labels.get(readiness.report_mode, readiness.report_mode) }}</td>
       </tr>
       {%- if readiness.blockers %}
       <tr>
-        <th>blockers</th>
+        <th>{{ t.blockers }}</th>
         <td><span class="hl-warn">{{ readiness.blockers | join(', ') }}</span></td>
       </tr>
       {%- endif %}
       {%- if readiness.warnings %}
       <tr>
-        <th>warnings</th>
+        <th>{{ t.warnings }}</th>
         <td><span class="dim">{{ readiness.warnings | join(', ') }}</span></td>
       </tr>
       {%- endif %}
       {%- if readiness.dimension_states %}
       <tr>
-        <th>dimensions</th>
+        <th>{{ t.dimensions }}</th>
         <td>
           <div class="state-list">
             {%- for name, state in readiness.dimension_states.items() %}
@@ -454,7 +604,7 @@
       {%- endif %}
       {%- if readiness.fallback_detected %}
       <tr>
-        <th>fallback</th>
+        <th>{{ t.fallback }}</th>
         <td>
           {%- for name, detected in readiness.fallback_detected.items() -%}
             {{ name }}{% if not loop.last %}, {% endif %}
@@ -464,7 +614,7 @@
       {%- endif %}
       {%- if readiness.missing_high_weight_features %}
       <tr>
-        <th>missing high-weight</th>
+        <th>{{ t.missing_high_weight }}</th>
         <td>
           {%- for name, features in readiness.missing_high_weight_features.items() -%}
             {{ name }}: {{ features | join(', ') }}{% if not loop.last %}; {% endif %}
@@ -474,7 +624,7 @@
       {%- endif %}
       {%- if presentation_policy %}
       <tr>
-        <th>Presentation policy</th>
+        <th>{{ t.presentation_policy }}</th>
         <td>
           <strong>{{ presentation_policy.headline }}</strong>
           {%- if presentation_policy.summary %}
@@ -483,16 +633,16 @@
         </td>
       </tr>
       <tr>
-        <th>Editorial conclusions</th>
-        <td>{% if presentation_policy.allow_editorial_conclusions %}allowed{% else %}blocked{% endif %}</td>
+        <th>{{ t.editorial_conclusions }}</th>
+        <td>{% if presentation_policy.allow_editorial_conclusions %}{{ t.allowed }}{% else %}{{ t.blocked }}{% endif %}</td>
       </tr>
       <tr>
-        <th>Strategic recommendations</th>
-        <td>{% if presentation_policy.allow_strategic_recommendations %}allowed{% else %}blocked{% endif %}</td>
+        <th>{{ t.strategic_recommendations }}</th>
+        <td>{% if presentation_policy.allow_strategic_recommendations %}{{ t.allowed }}{% else %}{{ t.blocked }}{% endif %}</td>
       </tr>
         {%- if presentation_policy.dimension_presentation %}
       <tr>
-        <th>Dimension language modes</th>
+        <th>{{ t.dimension_language_modes }}</th>
         <td>
           <div class="state-list">
             {%- for name, policy in presentation_policy.dimension_presentation.items() %}
@@ -513,19 +663,19 @@
 <hr class="rule">
 
 <div class="section-head">
-  <span class="label">§2  scores by dimension</span>
-  <span class="tag">// 0-100 · bars = 5%/block</span>
+  <span class="label">{{ t.scores_by_dimension }}</span>
+  <span class="tag">// {{ t.scores_tag }}</span>
 </div>
 
 <table>
   <thead>
     <tr>
-      <th class="col-dimension">dimension</th>
-      <th class="num col-score">score</th>
-      <th class="col-bar">bar</th>
-      <th class="col-compact">confianza</th>
-      <th class="col-compact">cobertura</th>
-      <th>verdict</th>
+      <th class="col-dimension">{{ t.dimension }}</th>
+      <th class="num col-score">{{ t.score }}</th>
+      <th class="col-bar">{{ t.bar }}</th>
+      <th class="col-compact">{{ t.confidence }}</th>
+      <th class="col-compact">{{ t.coverage }}</th>
+      <th>{{ t.verdict }}</th>
     </tr>
   </thead>
   <tbody>
@@ -545,14 +695,14 @@
 {%- set limited_dimensions = trust_summary.limited_dimensions or [] -%}
 {%- if limited_dimensions %}
 <div class="quality-note warn">
-  <strong>Lectura condicionada por evidencia incompleta.</strong>
+  <strong>{{ t.limited_reading }}</strong>
   {%- for dim in limited_dimensions[:3] %}
     <div class="quote-meta">
       {{ dim.display_name or dim.name }}:
       confianza {{ dim.confidence_label }}, cobertura {{ dim.coverage_label }}
       {%- if dim.confidence_reason_labels %}; {{ dim.confidence_reason_labels[:2] | join(', ') }}{% endif -%}
-      {%- if dim.missing_signals %}; faltan {{ dim.missing_signals[:3] | join(', ') }}{% endif -%}
-      {%- if dim.recommended_next_steps %}; siguiente: {{ dim.recommended_next_steps[0] }}{% endif -%}
+      {%- if dim.missing_signals %}; {{ t.missing }} {{ dim.missing_signals[:3] | join(', ') }}{% endif -%}
+      {%- if dim.recommended_next_steps %}; {{ t.next }}: {{ dim.recommended_next_steps[0] }}{% endif -%}
     </div>
   {%- endfor %}
 </div>
@@ -562,42 +712,42 @@
 
 {%- if evidence_summary %}
 <div class="section-head">
-  <span class="label">§2C  resumen de evidencia</span>
-  <span class="tag">// {{ evidence_summary.total }} items</span>
+  <span class="label">{{ t.evidence_summary }}</span>
+  <span class="tag">// {{ evidence_summary.total }} {{ t.item_label }}</span>
 </div>
 <table>
   <tbody>
     <tr>
-      <th class="col-meta">evidencia total</th>
+      <th class="col-meta">{{ t.total_evidence }}</th>
       <td>{{ evidence_summary.total }}</td>
     </tr>
     <tr>
-      <th>fuentes</th>
+      <th>{{ t.sources }}</th>
       <td>
         {%- if evidence_summary.by_source -%}
           {%- for source, count in evidence_summary.by_source.items() -%}
             {{ source }}: {{ count }}{% if not loop.last %}, {% endif %}
           {%- endfor -%}
         {%- else -%}
-          <span class="dim">sin evidencia trazable</span>
+          <span class="dim">{{ t.no_traceable_evidence }}</span>
         {%- endif -%}
       </td>
     </tr>
     <tr>
-      <th>calidad</th>
+      <th>{{ t.quality }}</th>
       <td>
         {%- if evidence_summary.by_quality -%}
           {%- for quality, count in evidence_summary.by_quality.items() -%}
             {{ quality }}: {{ count }}{% if not loop.last %}, {% endif %}
           {%- endfor -%}
         {%- else -%}
-          <span class="dim">sin clasificar</span>
+          <span class="dim">{{ t.unclassified }}</span>
         {%- endif -%}
       </td>
     </tr>
     <tr>
-      <th>sin evidencia</th>
-      <td>{% if evidence_summary.dimensions_without_evidence %}<span class="hl-alert">{{ evidence_summary.dimensions_without_evidence | join(', ') }}</span>{% else %}ninguna dimensión{% endif %}</td>
+      <th>{{ t.without_evidence }}</th>
+      <td>{% if evidence_summary.dimensions_without_evidence %}<span class="hl-alert">{{ evidence_summary.dimensions_without_evidence | join(', ') }}</span>{% else %}{{ t.no_dimension }}{% endif %}</td>
     </tr>
   </tbody>
 </table>
@@ -606,51 +756,51 @@
 
 {%- if context_readiness.available %}
 <div class="section-head">
-  <span class="label">§2B  legibilidad IA/buscadores</span>
-  <span class="tag">// context readiness</span>
+  <span class="label">{{ t.ai_search_readability }}</span>
+  <span class="tag">// {{ t.context_readiness }}</span>
 </div>
 
   {%- if context_readiness.status == 'insufficient_data' %}
   <div class="quality-note alert">
-    <strong>Datos insuficientes para una puntuación defendible.</strong>
-    El pre-scan encontró muy poca cobertura contextual; las conclusiones deben tratarse como parciales.
+    <strong>{{ t.insufficient_defensible_score }}</strong>
+    {{ t.pre_scan_partial }}
   </div>
   {%- elif context_readiness.confidence < 0.6 %}
   <div class="quality-note warn">
-    <strong>Lectura contextual limitada.</strong>
-    Las señales existen, pero la confianza es baja/media.
+    <strong>{{ t.limited_context_reading }}</strong>
+    {{ t.signals_low_confidence }}
   </div>
   {%- endif %}
   <table>
     <tbody>
       <tr>
-        <th class="col-meta">sitemap</th>
-        <td>{% if context_readiness.sitemap_found %}encontrado · {{ context_readiness.sitemap_url_count }} URLs{% else %}<span class="hl-alert">no encontrado</span>{% endif %}</td>
+        <th class="col-meta">{{ t.sitemap }}</th>
+        <td>{% if context_readiness.sitemap_found %}{{ t.found }} · {{ context_readiness.sitemap_url_count }} URLs{% else %}<span class="hl-alert">{{ t.not_found }}</span>{% endif %}</td>
       </tr>
       <tr>
-        <th>robots</th>
-        <td>{% if context_readiness.robots_found %}encontrado{% else %}<span class="hl-alert">no encontrado</span>{% endif %}</td>
+        <th>{{ t.robots }}</th>
+        <td>{% if context_readiness.robots_found %}{{ t.found }}{% else %}<span class="hl-alert">{{ t.not_found }}</span>{% endif %}</td>
       </tr>
       <tr>
         <th>llms.txt</th>
-        <td>{% if context_readiness.llms_txt_found %}encontrado{% else %}<span class="dim">no encontrado</span>{% endif %}</td>
+        <td>{% if context_readiness.llms_txt_found %}{{ t.found }}{% else %}<span class="dim">{{ t.not_found }}</span>{% endif %}</td>
       </tr>
       <tr>
-        <th>schema</th>
-        <td>{% if context_readiness.schema_types %}{{ context_readiness.schema_types[:8] | join(', ') }}{% else %}<span class="dim">sin schema detectado</span>{% endif %}</td>
+        <th>{{ t.schema }}</th>
+        <td>{% if context_readiness.schema_types %}{{ context_readiness.schema_types[:8] | join(', ') }}{% else %}<span class="dim">{{ t.no_schema }}</span>{% endif %}</td>
       </tr>
       <tr>
-        <th>páginas clave</th>
+        <th>{{ t.key_pages }}</th>
         <td>
           {%- set found_pages = [] -%}
           {%- for name, found in context_readiness.key_pages.items() -%}
             {%- if found -%}{%- set _ = found_pages.append(name) -%}{%- endif -%}
           {%- endfor -%}
-          {% if found_pages %}{{ found_pages | join(', ') }}{% else %}<span class="dim">ninguna detectada</span>{% endif %}
+          {% if found_pages %}{{ found_pages | join(', ') }}{% else %}<span class="dim">{{ t.none_detected }}</span>{% endif %}
         </td>
       </tr>
       <tr>
-        <th>cobertura / confianza</th>
+        <th>{{ t.coverage_confidence }}</th>
         <td>{{ context_readiness.coverage_label }} / {{ context_readiness.confidence_label }}</td>
       </tr>
     </tbody>
@@ -661,28 +811,27 @@
 
 {%- if evaluation.data_quality == 'degraded' %}
 <div class="quality-note warn">
-  <strong>Evaluation degraded.</strong> Some primary inputs were incomplete, so parts of this analysis rely on fallback evidence or partial coverage.
+  <strong>{{ t.evaluation_degraded }}</strong> {{ t.degraded_explanation }}
 </div>
 {%- elif evaluation.data_quality == 'insufficient' %}
 <div class="quality-note alert">
-  <strong>Insufficient data.</strong> This run could not evaluate the full brand surface reliably. Read any conclusions as partial.
+  <strong>{{ t.insufficient_data }}</strong> {{ t.insufficient_explanation }}
 </div>
 {%- endif %}
 
 <div class="tabs" data-tabs>
-  <div class="tab-list" role="tablist" aria-label="Analysis views">
-    <button class="tab-button" type="button" role="tab" id="tab-actual" aria-controls="panel-actual" aria-selected="false" data-tab-target="actual">Actual</button>
-    <button class="tab-button" type="button" role="tab" id="tab-new" aria-controls="panel-new" aria-selected="true" data-tab-target="new">Nueva</button>
+  <div class="tab-list" role="tablist" aria-label="{{ t.analysis_views }}">
+    <button class="tab-button" type="button" role="tab" id="tab-actual" aria-controls="panel-actual" aria-selected="false" data-tab-target="actual">{{ t.actual }}</button>
+    <button class="tab-button" type="button" role="tab" id="tab-new" aria-controls="panel-new" aria-selected="true" data-tab-target="new">{{ t.new }}</button>
   </div>
 
   <section class="tab-panel" id="panel-actual" role="tabpanel" aria-labelledby="tab-actual" hidden>
     <div class="section-head">
-      <span class="label">§3A  current reading</span>
-      <span class="tag">// metadata-first</span>
+      <span class="label">{{ t.current_reading }}</span>
+      <span class="tag">// {{ t.metadata_first }}</span>
     </div>
     <div class="quality-note">
-      <strong>Technical summary.</strong> The main narrative interpretation lives in the synthesis tab.
-      Current Reading keeps the score, band, trust, and coverage state visible without competing with that narrative.
+      <strong>{{ t.technical_summary }}</strong> {{ t.technical_summary_body | replace('. Current Reading', '.\n      Current Reading') }}
     </div>
 
     {%- set scored_dimensions = dimensions | selectattr('score', 'ne', none) | list -%}
@@ -693,46 +842,46 @@
     <table>
       <tbody>
         <tr>
-          <th class="col-meta">score</th>
+          <th class="col-meta">{{ t.score }}</th>
           <td>{{ score.global_display }}/100</td>
         </tr>
         <tr>
-          <th>band</th>
+          <th>{{ t.band }}</th>
           <td>{{ score.band_letter }} · {{ score.band_label }} · {{ score.band_adjective }}</td>
         </tr>
         <tr>
-          <th>strongest dimension</th>
-          <td>{% if strongest_dimension %}{{ strongest_dimension.display_name }} · {{ '%.0f'|format(strongest_dimension.score) }}/100{% else %}<span class="dim">no scored dimensions</span>{% endif %}</td>
+          <th>{{ t.strongest_dimension }}</th>
+          <td>{% if strongest_dimension %}{{ strongest_dimension.display_name }} · {{ '%.0f'|format(strongest_dimension.score) }}/100{% else %}<span class="dim">{{ t.no_scored_dimensions }}</span>{% endif %}</td>
         </tr>
         <tr>
-          <th>weakest dimension</th>
-          <td>{% if weakest_dimension %}{{ weakest_dimension.display_name }} · {{ '%.0f'|format(weakest_dimension.score) }}/100{% else %}<span class="dim">no scored dimensions</span>{% endif %}</td>
+          <th>{{ t.weakest_dimension }}</th>
+          <td>{% if weakest_dimension %}{{ weakest_dimension.display_name }} · {{ '%.0f'|format(weakest_dimension.score) }}/100{% else %}<span class="dim">{{ t.no_scored_dimensions }}</span>{% endif %}</td>
         </tr>
         <tr>
-          <th>data quality</th>
+          <th>{{ t.data_quality_reading }}</th>
           <td>{{ evaluation.data_quality }}</td>
         </tr>
         <tr>
-          <th>trust / readiness</th>
+          <th>{{ t.trust_readiness }}</th>
           <td>{{ trust_summary.overall_status_label }} · {{ readiness_mode | replace('_', ' ') }}</td>
         </tr>
         <tr>
-          <th>evidence coverage</th>
-          <td>{{ evidence_summary.total }} items{% if evidence_summary.dimensions_without_evidence %} · missing: {{ evidence_summary.dimensions_without_evidence | join(', ') }}{% endif %}</td>
+          <th>{{ t.evidence_coverage }}</th>
+          <td>{{ evidence_summary.total }} {{ t.item_label }}{% if evidence_summary.dimensions_without_evidence %} · {{ t.missing }}: {{ evidence_summary.dimensions_without_evidence | join(', ') }}{% endif %}</td>
         </tr>
       </tbody>
     </table>
 
     <details class="sources" style="margin-top: 12px;">
-      <summary>show legacy summary (collapsed)</summary>
+      <summary>{{ t.show_legacy_summary }}</summary>
       <div class="prose">{{ legacy_summary }}</div>
     </details>
 
     <hr class="rule">
 
     <div class="section-head">
-      <span class="label">§4A  observations by dimension</span>
-      <span class="tag">// direct signals</span>
+      <span class="label">{{ t.observations_by_dimension }}</span>
+      <span class="tag">// {{ t.direct_signals }}</span>
     </div>
     {%- for dim in dimensions %}
     <section class="legacy-section">
@@ -744,7 +893,7 @@
           {%- endfor %}
         </ul>
       {%- else %}
-        <p class="empty">no derived observations for this dimension.</p>
+        <p class="empty">{{ t.no_derived_observations }}</p>
       {%- endif %}
     </section>
     {%- if not loop.last %}
@@ -755,8 +904,8 @@
     <hr class="rule">
 
     <div class="section-head">
-      <span class="label">§5A  evidence by dimension</span>
-      <span class="tag">// raw support</span>
+      <span class="label">{{ t.evidence_by_dimension }}</span>
+      <span class="tag">// {{ t.raw_support }}</span>
     </div>
     {%- for dim in dimensions %}
     <section class="legacy-section">
@@ -775,7 +924,7 @@
           {%- endfor %}
         </ul>
       {%- else %}
-        <p class="empty">no direct evidence collected for this dimension.</p>
+        <p class="empty">{{ t.no_direct_evidence }}</p>
       {%- endif %}
     </section>
     {%- if not loop.last %}
@@ -786,8 +935,8 @@
     <hr class="rule">
 
     <div class="section-head">
-      <span class="label">§6A  all consulted sources</span>
-      <span class="tag">// {{ all_sources | length }} total</span>
+      <span class="label">{{ t.all_consulted_sources }}</span>
+      <span class="tag">// {{ all_sources | length }} {{ t.total }}</span>
     </div>
     {%- if all_sources %}
     <ul class="source-list">
@@ -796,22 +945,22 @@
       {%- endfor %}
     </ul>
     {%- else %}
-    <p class="empty">no citable URLs were collected in this run.</p>
+    <p class="empty">{{ t.no_citable_urls }}</p>
     {%- endif %}
   </section>
 
   <section class="tab-panel" id="panel-new" role="tabpanel" aria-labelledby="tab-new">
     <div class="section-head">
-      <span class="label">§3N  synthesis</span>
-      <span class="tag">// overview</span>
+      <span class="label">{{ t.synthesis }}</span>
+      <span class="tag">// {{ t.overview }}</span>
     </div>
     <div class="prose">{{ synthesis_prose }}</div>
 
     <hr class="rule">
 
     <div class="section-head">
-      <span class="label">§4N  findings by dimension</span>
-      <span class="tag">// consolidated evidence</span>
+      <span class="label">{{ t.findings_by_dimension }}</span>
+      <span class="tag">// {{ t.consolidated_evidence }}</span>
     </div>
 
     {%- for dim in dimensions %}
@@ -840,7 +989,7 @@
         </div>
         {%- endfor %}
       {%- else %}
-        <p class="empty">insufficient data to generate findings for this dimension.</p>
+        <p class="empty">{{ t.insufficient_findings }}</p>
       {%- endif %}
     </section>
     {%- if not loop.last %}
@@ -852,8 +1001,8 @@
     <hr class="rule">
 
     <div class="section-head">
-      <span class="label">§5N  cross-dimension tensions</span>
-      <span class="tag">// one observation</span>
+      <span class="label">{{ t.cross_dimension_tensions }}</span>
+      <span class="tag">// {{ t.one_observation }}</span>
     </div>
     <div class="prose">{{ tensions_prose }}</div>
     {%- endif %}
@@ -861,13 +1010,13 @@
     <hr class="rule">
 
     <div class="section-head">
-      <span class="label">§6N  grouped sources</span>
-      <span class="tag">// {{ all_sources | length }} total</span>
+      <span class="label">{{ t.grouped_sources }}</span>
+      <span class="tag">// {{ all_sources | length }} {{ t.total }}</span>
     </div>
 
     {%- if all_sources %}
     <details class="sources">
-      <summary>show all sources ({{ all_sources | length }})</summary>
+      <summary>{{ t.show_all_sources }} ({{ all_sources | length }})</summary>
       {%- for group_label, urls in sources_grouped.items() %}
       <h3>{{ group_label }}</h3>
       <ul>
@@ -878,7 +1027,7 @@
       {%- endfor %}
     </details>
     {%- else %}
-    <p class="empty">no citable URLs were collected in this run.</p>
+    <p class="empty">{{ t.no_citable_urls }}</p>
     {%- endif %}
   </section>
 </div>
@@ -889,23 +1038,25 @@
   <dl class="report-meta">
     <dt>engine</dt>
     <dd>{{ footer.engine }}</dd>
-    <dt>profile</dt>
+    <dt>{{ t.profile }}</dt>
     <dd>{{ footer.profile }}</dd>
     <dt>fingerprint</dt>
     <dd>{{ footer.fingerprint }}</dd>
-    <dt>runtime</dt>
+    <dt>{{ t.runtime }}</dt>
     <dd>{{ footer.runtime }}</dd>
-    <dt>report_id</dt>
+    <dt>{{ t.report_id }}</dt>
     <dd>{{ footer.report_id }}</dd>
   </dl>
   <div class="small footer-note">
-    This analysis was automatically generated by Brand3 using public data.
-    The scores are opinions derived from heuristics and LLM analysis, not facts.
-    If you own this brand and want the analysis removed, see <a href="/takedown">/takedown</a>.
+    {{ t.generated_notice }}
+    {{ t.scores_notice }}
+    {{ t.takedown_notice }} <a href="/takedown">/takedown</a>.
   </div>
   <div class="footer-cursor"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> _<span class="cursor"></span></div>
 </div>
 
+{% if app_chrome %}</div>
+{% endif -%}
 </div>
 <script>
 (() => {
@@ -931,6 +1082,18 @@
   });
   activate('new');
 })();
+{% if app_chrome %}
+(() => {
+  const button = document.querySelector("[data-report-theme-toggle]");
+  if (!button) return;
+  button.addEventListener("click", () => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("theme", "{{ 'light' if theme == 'dark' else 'dark' }}");
+    url.searchParams.set("lang", "{{ lang }}");
+    window.location.href = url.toString();
+  });
+})();
+{% endif -%}
 </script>
 </body>
 </html>

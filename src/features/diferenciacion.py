@@ -10,6 +10,7 @@ from ..collectors.context_collector import ContextData
 from ..collectors.exa_collector import ExaData
 from ..collectors.web_collector import WebData
 from ..models.brand import FeatureValue
+from ..reports.research_prompt_input import research_pack_prompt_input
 from .authenticity import AI_PHRASES, AI_STRUCTURAL_PATTERNS, AuthenticityAnalyzer
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 
@@ -98,8 +99,9 @@ UNIQUENESS_VERDICT_SCORES = {
 class DiferenciacionExtractor:
     """Extract diferenciacion features."""
 
-    def __init__(self, llm: LLMAnalyzer = None):
+    def __init__(self, llm: LLMAnalyzer = None, research_pack=None):
         self.llm = llm
+        self.research_pack = research_pack
 
     def extract(
         self,
@@ -109,10 +111,12 @@ class DiferenciacionExtractor:
         competitor_data: CompetitorData = None,
         screenshot_url: str = None,
         context: ContextData = None,
+        research_pack=None,
     ) -> dict[str, FeatureValue]:
+        pack = research_pack if research_pack is not None else self.research_pack
         return {
-            "positioning_clarity": self._positioning_clarity(web, competitor_data),
-            "uniqueness": self._uniqueness(web, competitor_data),
+            "positioning_clarity": self._positioning_clarity(web, competitor_data, pack),
+            "uniqueness": self._uniqueness(web, competitor_data, pack),
             "competitor_distance": self._competitor_distance(
                 web, exa, competitor_webs, competitor_data
             ),
@@ -247,7 +251,10 @@ class DiferenciacionExtractor:
         )
 
     def _positioning_clarity(
-        self, web: WebData = None, competitor_data: CompetitorData = None
+        self,
+        web: WebData = None,
+        competitor_data: CompetitorData = None,
+        research_pack=None,
     ) -> FeatureValue:
         content = self._content(web)
         if not content:
@@ -266,8 +273,12 @@ class DiferenciacionExtractor:
                     competitor_snippets.append(
                         f"{competitor.name}: {snippet}"
                     )
+        prompt_input = (
+            research_pack_prompt_input(research_pack, feature="positioning_clarity")
+            or content
+        )
         result = self.llm.analyze_positioning_clarity(
-            content,
+            prompt_input,
             self._brand_name(web),
             competitor_snippets,
         )
@@ -330,7 +341,10 @@ class DiferenciacionExtractor:
         )
 
     def _uniqueness(
-        self, web: WebData = None, competitor_data: CompetitorData = None
+        self,
+        web: WebData = None,
+        competitor_data: CompetitorData = None,
+        research_pack=None,
     ) -> FeatureValue:
         content = self._content(web)
         if not content:
@@ -346,8 +360,12 @@ class DiferenciacionExtractor:
                     snippet = competitor.web_data.markdown_content[:300]
                 if snippet:
                     competitor_snippets.append(f"{competitor.name}: {snippet}")
+        prompt_input = (
+            research_pack_prompt_input(research_pack, feature="uniqueness")
+            or content
+        )
         result = self.llm.analyze_uniqueness(
-            content,
+            prompt_input,
             self._brand_name(web),
             competitor_snippets,
         )

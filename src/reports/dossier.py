@@ -45,6 +45,7 @@ def build_brand_dossier(
     *,
     enable_perceptual_narrative: bool = False,
     prefer_persisted_narrative: bool = True,
+    narrative_payload: dict[str, Any] | None = None,
 ) -> dict:
     """Build the full report dossier from a run snapshot.
 
@@ -54,7 +55,7 @@ def build_brand_dossier(
     surfaces can reuse directly later.
     """
     base = build_report_base(snapshot, theme=theme)
-    persisted_narrative = (
+    persisted_narrative = narrative_payload or (
         _latest_persisted_report_narrative(snapshot)
         if prefer_persisted_narrative
         else None
@@ -142,13 +143,17 @@ def _apply_persisted_report_narrative(base: dict, payload: dict[str, Any]) -> No
 
 
 def _finding_to_payload(finding: Finding | dict[str, Any]) -> dict[str, Any]:
-    if isinstance(finding, Finding):
+    if isinstance(finding, Finding) or (
+        hasattr(finding, "title")
+        and hasattr(finding, "observation")
+        and hasattr(finding, "implication")
+    ):
         return {
             "title": finding.title,
             "observation": finding.observation,
             "implication": finding.implication,
-            "typical_decision": finding.typical_decision,
-            "evidence_urls": list(finding.evidence_urls),
+            "typical_decision": getattr(finding, "typical_decision", ""),
+            "evidence_urls": list(getattr(finding, "evidence_urls", [])),
         }
     return {
         "title": str(finding.get("title") or ""),

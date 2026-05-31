@@ -24,6 +24,7 @@ from ..models.brand import FeatureValue
 from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
+from ..reports.research_prompt_input import research_pack_prompt_input
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 from .visual_analyzer import VisualAnalyzer
 
@@ -163,6 +164,7 @@ class CoherenciaExtractor:
         llm: LLMAnalyzer | None = None,
         visual_analyzer: VisualAnalyzer | None = None,
         skip_visual_analysis: bool = False,
+        research_pack=None,
     ):
         # REVIEW: llm es opcional; cuando falta, messaging_consistency y
         # tone_consistency caen en heurística. skip_visual_analysis fuerza
@@ -170,6 +172,7 @@ class CoherenciaExtractor:
         self.llm = llm
         self.visual_analyzer = visual_analyzer or VisualAnalyzer()
         self.skip_visual_analysis = skip_visual_analysis
+        self.research_pack = research_pack
 
     def extract(
         self,
@@ -177,11 +180,13 @@ class CoherenciaExtractor:
         exa: ExaData = None,
         context: ContextData = None,
         screenshot_url: str | None = None,
+        research_pack=None,
     ) -> dict[str, FeatureValue]:
+        pack = research_pack if research_pack is not None else self.research_pack
         features = {
             "visual_consistency": self._visual_consistency(web, screenshot_url=screenshot_url),
-            "messaging_consistency": self._messaging_consistency(web, exa),
-            "tone_consistency": self._tone_consistency(web, exa),
+            "messaging_consistency": self._messaging_consistency(web, exa, research_pack=pack),
+            "tone_consistency": self._tone_consistency(web, exa, research_pack=pack),
             "cross_channel_coherence": self._cross_channel_coherence(web, exa),
         }
         if context is not None:
@@ -311,7 +316,10 @@ class CoherenciaExtractor:
     # ── messaging_consistency (LLM-first) ──────────────────────────────
 
     def _messaging_consistency(
-        self, web: WebData | None, exa: ExaData | None,
+        self,
+        web: WebData | None,
+        exa: ExaData | None,
+        research_pack=None,
     ) -> FeatureValue:
         if not web:
             return FeatureValue(
@@ -323,9 +331,17 @@ class CoherenciaExtractor:
         # Try LLM path first when available.
         if self.llm is not None and getattr(self.llm, "api_key", None):
             mentions = self._exa_mentions_payload(exa, limit=8)
+            prompt_input = (
+                research_pack_prompt_input(
+                    research_pack,
+                    feature="messaging_consistency",
+                )
+                or web.markdown_content
+                or ""
+            )
             try:
                 result = self.llm.analyze_messaging_consistency(
-                    web.markdown_content or "",
+                    prompt_input,
                     mentions,
                     exa.brand_name if exa else (web.title or "unknown"),
                 )
@@ -460,7 +476,10 @@ class CoherenciaExtractor:
     # ── tone_consistency (LLM-first) ───────────────────────────────────
 
     def _tone_consistency(
-        self, web: WebData | None, exa: ExaData | None,
+        self,
+        web: WebData | None,
+        exa: ExaData | None,
+        research_pack=None,
     ) -> FeatureValue:
         if not web:
             return FeatureValue(
@@ -471,9 +490,17 @@ class CoherenciaExtractor:
 
         if self.llm is not None and getattr(self.llm, "api_key", None):
             snippets = self._exa_mentions_payload(exa, limit=5)
+            prompt_input = (
+                research_pack_prompt_input(
+                    research_pack,
+                    feature="tone_consistency",
+                )
+                or web.markdown_content
+                or ""
+            )
             try:
                 result = self.llm.analyze_tone_consistency(
-                    web.markdown_content or "",
+                    prompt_input,
                     snippets,
                     exa.brand_name if exa else (web.title or "unknown"),
                 )
@@ -498,9 +525,14 @@ class CoherenciaExtractor:
             score = max(0.0, min(score, 100.0))
 
             cleaned, dropped_any = _clean_tone_examples(result.get("examples"))
+            has_mention_example = any(
+                isinstance(item, dict) and item.get("source") == "mention"
+                for item in cleaned
+            )
             partial_evidence = bool(snippets) and (
                 (not cleaned and (gap_signal != "none" or dropped_any))
                 or (dropped_any and not cleaned)
+                or (gap_signal == "none" and cleaned and not has_mention_example)
             )
             confidence = 0.5 if (gap_signal == "none" and not snippets) or partial_evidence else 0.85
 
@@ -515,6 +547,9 @@ class CoherenciaExtractor:
                 raw_payload["reason"] = "llm_partial_evidence"
 
             score = _reconcile_llm_score(score, gap_signal, _TONE_GAP_SCORES)
+            if gap_signal == "none" and snippets and cleaned and not has_mention_example:
+                score = min(score, 60.0)
+                raw_payload["reason"] = "no_third_party_tone_evidence"
 
             return FeatureValue(
                 "tone_consistency", score,
@@ -636,12 +671,21 @@ class CoherenciaExtractor:
         if not exa or not exa.mentions:
             return []
         payload: list[dict] = []
-        for r in exa.mentions[:limit]:
+        for r in exa.mentions:
+            source_class = r.source_class or ""
+            relation = r.relation or ""
+            if source_class == "owned" or relation in {"audited_surface", "same_root_surface"}:
+                continue
             payload.append({
                 "url": r.url or "",
                 "title": r.title or "",
                 "text": (r.text or "") or (r.summary or ""),
+                "source_class": source_class,
+                "relation": relation,
+                "requires_human_review": bool(r.requires_human_review),
             })
+            if len(payload) >= limit:
+                break
         return payload
 
     def _extract_category_signals(self, web: WebData) -> list[str]:

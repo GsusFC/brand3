@@ -6,7 +6,9 @@ import json
 import secrets
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Form, HTTPException, Request
+from typing import Literal
+
+from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
@@ -28,9 +30,207 @@ from ..workers.url_validator import validate_url
 router = APIRouter()
 
 
+_Lang = Literal["es", "en"]
+
+
+_MAGNETISM_UI = {
+    "en": {
+        "language": "Language",
+        "other_lang": "ES",
+        "scanner_title": "Brand Magnetism Scanner",
+        "scanner_intro": (
+            "Production URL scans first run Brand Audit acquisition, then interpret the persisted evidence "
+            "snapshot through the Magenta Circle. This keeps Magnetism comparable with Brand Audit instead "
+            "of running a separate crawler path."
+        ),
+        "scanner_tag": "competitive analysis and 7-layer audit",
+        "run_button": "Run Audit + Magnetism",
+        "manual_summary": "Manual text block input (legacy/debug, not comparable)",
+        "manual_label": "Raw website content / landing page copy:",
+        "manual_placeholder": "Paste website homepage text copy here...",
+        "manual_note": (
+            "Manual input bypasses Brand Audit acquisition and is marked as legacy direct evidence. Use it "
+            "only for debugging or ad-hoc review; production/comparable scans should use URL or an existing "
+            "Brand Audit run."
+        ),
+        "from_audit": "from_brand_audit",
+        "from_audit_tag": "reuse existing evidence packet",
+        "from_audit_intro": (
+            "Canonical path: generate Magnetism from an existing Brand Audit run. URL scans above create the "
+            "same kind of Brand Audit snapshot first; this table simply reuses one that already exists."
+        ),
+        "use_evidence": "use evidence",
+        "no_audits": "// no Brand Audit runs available yet — run a URL scan above or create a normal audit first.",
+        "recent_scans": "recent_scans",
+        "latest_runs": "latest runs",
+        "view_sheet": "view sheet",
+        "no_scans": "// no magnetism scans recorded yet — run the first scan above.",
+        "date": "date",
+        "brand": "brand",
+        "score": "score",
+        "coherence": "coherence",
+        "quadrant": "positioning quadrant",
+        "url": "url",
+        "run": "run",
+        "result": "result",
+        "back": "Back to Magnetism Scanner",
+        "research_evidence": "Research Evidence",
+        "methodology_details": "Methodology Details",
+        "detail_tag": "9 strategic blocks derived from 7 Magenta signals",
+        "no_detected": "(not detected)",
+        "system_reading": "TLDR System Reading",
+        "system_reading_tag": "tensions and validation questions inside TLDR Brand3",
+        "credibility_support": "Credibility support",
+        "strategic_tensions": "Strategic tensions",
+        "validation_questions": "Validation questions",
+        "diagnosis": "diagnosis",
+        "diagnosis_tag": "bounded by observed and missing signals",
+        "limitations": "limitations",
+        "research_intro": "Evidence graph and Research Pack used to produce the TLDR Brand3 reading.",
+        "research_tag": "research evidence",
+        "pack_source": "Pack Source",
+        "tldr_mode": "TLDR Mode",
+        "entity_resolution": "Entity Resolution",
+        "entity_tag": "product and company boundaries",
+        "research_pack": "Research Pack",
+        "research_pack_tag": "normalized strategic inputs",
+        "surface_map": "Surface Map",
+        "surface_map_tag": "owned, product, proof, and external surfaces",
+        "product_surfaces": "Product surfaces",
+        "source_map": "Source map",
+        "tldr_evidence": "TLDR Evidence",
+        "tldr_evidence_tag": "what each block used",
+        "rejected_gaps": "Rejected / Gaps",
+        "rejected_gaps_tag": "bounded interpretation",
+        "evidence_gaps": "Evidence gaps",
+        "rejected_noise": "Rejected noise",
+        "methodology_intro": "Method, interpretation rules, and limits behind this scan.",
+        "methodology_tag": "methodology details",
+        "research_pack_metric": "Research Pack",
+        "tldr_generation": "TLDR Generation",
+        "pipeline": "Pipeline",
+        "pipeline_tag": "deterministic steps and LLM step",
+        "block_method": "TLDR Block Method",
+        "block_method_tag": "what each block is allowed to answer",
+        "magenta_signals": "Magenta Circle Signals",
+        "magenta_signals_tag": "7 technical inputs",
+        "run_limits": "Run Limits",
+        "run_limits_tag": "warnings and bounded interpretation",
+        "source_basis": "Source basis",
+        "validation_notes": "Validation notes",
+        "no_validation_notes": "No validation notes were persisted for this scan.",
+        "no_limitations": "No explicit limitations were persisted for this scan.",
+        "no_clear_signal": "No clear signal detected in the provided sources.",
+        "evidence": "Evidence",
+    },
+    "es": {
+        "language": "Idioma",
+        "other_lang": "EN",
+        "scanner_title": "Magnetism Scanner de marca",
+        "scanner_intro": (
+            "Los escaneos de URL en producción ejecutan primero la adquisición de Brand Audit y después "
+            "interpretan esa evidencia persistida con el Magenta Circle. Así Magnetism sigue siendo comparable "
+            "con Brand Audit y no usa un crawler paralelo."
+        ),
+        "scanner_tag": "análisis competitivo y auditoría de 7 capas",
+        "run_button": "Ejecutar Audit + Magnetism",
+        "manual_summary": "Entrada manual de texto (legacy/debug, no comparable)",
+        "manual_label": "Contenido web bruto / copy de landing:",
+        "manual_placeholder": "Pega aquí el texto de la homepage...",
+        "manual_note": (
+            "La entrada manual evita la adquisición de Brand Audit y se marca como evidencia directa legacy. "
+            "Úsala solo para debug o revisión ad hoc; los escaneos comparables de producción deben usar URL "
+            "o un Brand Audit existente."
+        ),
+        "from_audit": "desde_brand_audit",
+        "from_audit_tag": "reutilizar paquete de evidencia existente",
+        "from_audit_intro": (
+            "Ruta canónica: generar Magnetism desde un Brand Audit existente. Los escaneos por URL de arriba "
+            "crean primero ese mismo tipo de snapshot; esta tabla solo reutiliza uno ya disponible."
+        ),
+        "use_evidence": "usar evidencia",
+        "no_audits": "// todavía no hay Brand Audits disponibles — ejecuta una URL arriba o crea un audit normal primero.",
+        "recent_scans": "escaneos_recientes",
+        "latest_runs": "últimas ejecuciones",
+        "view_sheet": "ver ficha",
+        "no_scans": "// todavía no hay escaneos Magnetism — ejecuta el primero arriba.",
+        "date": "fecha",
+        "brand": "marca",
+        "score": "score",
+        "coherence": "coherencia",
+        "quadrant": "cuadrante de posicionamiento",
+        "url": "url",
+        "run": "run",
+        "result": "resultado",
+        "back": "Volver a Magnetism Scanner",
+        "research_evidence": "Evidencia de investigación",
+        "methodology_details": "Detalles de metodología",
+        "detail_tag": "9 bloques estratégicos derivados de 7 señales Magenta",
+        "no_detected": "(no detectado)",
+        "system_reading": "Lectura de sistema TLDR",
+        "system_reading_tag": "tensiones y preguntas de validación dentro del TLDR Brand3",
+        "credibility_support": "Soporte de credibilidad",
+        "strategic_tensions": "Tensiones estratégicas",
+        "validation_questions": "Preguntas de validación",
+        "diagnosis": "diagnóstico",
+        "diagnosis_tag": "limitado por señales observadas y ausentes",
+        "limitations": "limitaciones",
+        "research_intro": "Grafo de evidencia y Research Pack usados para producir la lectura TLDR Brand3.",
+        "research_tag": "evidencia de investigación",
+        "pack_source": "Fuente del pack",
+        "tldr_mode": "Modo TLDR",
+        "entity_resolution": "Resolución de entidad",
+        "entity_tag": "límites entre producto y compañía",
+        "research_pack": "Research Pack",
+        "research_pack_tag": "inputs estratégicos normalizados",
+        "surface_map": "Mapa de superficies",
+        "surface_map_tag": "superficies owned, producto, prueba y externas",
+        "product_surfaces": "Superficies de producto",
+        "source_map": "Mapa de fuentes",
+        "tldr_evidence": "Evidencia TLDR",
+        "tldr_evidence_tag": "qué usó cada bloque",
+        "rejected_gaps": "Rechazado / Gaps",
+        "rejected_gaps_tag": "interpretación acotada",
+        "evidence_gaps": "Gaps de evidencia",
+        "rejected_noise": "Ruido rechazado",
+        "methodology_intro": "Método, reglas de interpretación y límites detrás de este escaneo.",
+        "methodology_tag": "detalles de metodología",
+        "research_pack_metric": "Research Pack",
+        "tldr_generation": "Generación TLDR",
+        "pipeline": "Pipeline",
+        "pipeline_tag": "pasos deterministas y paso LLM",
+        "block_method": "Método de bloques TLDR",
+        "block_method_tag": "qué puede responder cada bloque",
+        "magenta_signals": "Señales Magenta Circle",
+        "magenta_signals_tag": "7 inputs técnicos",
+        "run_limits": "Límites de ejecución",
+        "run_limits_tag": "warnings e interpretación acotada",
+        "source_basis": "Base de fuentes",
+        "validation_notes": "Notas de validación",
+        "no_validation_notes": "No se persistieron notas de validación para este escaneo.",
+        "no_limitations": "No se persistieron limitaciones explícitas para este escaneo.",
+        "no_clear_signal": "No se detectó una señal clara en las fuentes proporcionadas.",
+        "evidence": "Evidencia",
+    },
+}
+
+
+def _ui(lang: _Lang) -> dict:
+    labels = dict(_MAGNETISM_UI["en"])
+    labels.update(_MAGNETISM_UI.get(lang, {}))
+    return labels
+
+
+def _lang_q(lang: _Lang) -> str:
+    return f"?lang={lang}"
+
+
+def _with_lang(path: str, lang: _Lang) -> str:
+    return f"{path}{_lang_q(lang)}"
+
 
 @router.get("/magnetism-scanner")
-async def magnetism_scanner_index(request: Request):
+async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
     scans = list_magnetism_scans(limit=25)
     store = SQLiteStore(BRAND3_DB_PATH)
@@ -59,6 +259,10 @@ async def magnetism_scanner_index(request: Request):
                 ),
                 "scans": scans,
                 "audit_runs": audit_runs,
+                "lang": lang,
+                "other_lang": "en" if lang == "es" else "es",
+                "lang_query": _lang_q(lang),
+                "t": _ui(lang),
             }
         },
     )
@@ -69,6 +273,7 @@ async def magnetism_scanner_analyze(
     request: Request,
     url: str = Form(None),
     manual_text: str = Form(None),
+    lang: _Lang = Form("es"),
 ):
     """Queue analysis on the provided URL or copy-pasted text block."""
     url_val = (url or "").strip()
@@ -117,13 +322,14 @@ async def magnetism_scanner_analyze(
         input_value=input_value,
     )
     await get_queue().enqueue_magnetism(token)
-    return RedirectResponse(f"/magnetism-scanner/{token}/status", status_code=303)
+    return RedirectResponse(_with_lang(f"/magnetism-scanner/{token}/status", lang), status_code=303)
 
 
 @router.post("/magnetism-scanner/from-run")
 async def magnetism_scanner_from_run(
     request: Request,
     run_id: int = Form(...),
+    lang: _Lang = Form("es"),
 ):
     """Queue a Magnetism scan from an existing Brand Audit run snapshot."""
     store = SQLiteStore(BRAND3_DB_PATH)
@@ -151,7 +357,7 @@ async def magnetism_scanner_from_run(
         source_run_id=run_id,
     )
     await get_queue().enqueue_magnetism(token)
-    return RedirectResponse(f"/magnetism-scanner/{token}/status", status_code=303)
+    return RedirectResponse(_with_lang(f"/magnetism-scanner/{token}/status", lang), status_code=303)
 
 
 _MAGNETISM_PHASES = [
@@ -171,7 +377,7 @@ _MAGNETISM_PHASE_LABELS = {
 
 
 @router.get("/magnetism-scanner/{token}/status")
-async def magnetism_scanner_status(request: Request, token: str):
+async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Query("es")):
     """Render the shared waiting page for an in-flight Magnetism scan."""
     row = get_magnetism_scan_by_token(token)
     if row is None:
@@ -182,7 +388,7 @@ async def magnetism_scanner_status(request: Request, token: str):
             status_code=404,
         )
     if row.get("status") == "ready":
-        return RedirectResponse("/magnetism-scanner/scan/{}".format(row["id"]), status_code=303)
+        return RedirectResponse(_with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang), status_code=303)
 
     phase = _magnetism_phase(row)
     return templates.TemplateResponse(
@@ -198,8 +404,8 @@ async def magnetism_scanner_status(request: Request, token: str):
             "phase": phase,
             "phase_label": _MAGNETISM_PHASE_LABELS.get(phase, "Working"),
             "phase_steps": _phase_steps(_MAGNETISM_PHASES, phase, row.get("status") or "queued"),
-            "ready_href": "/magnetism-scanner/scan/{}".format(row["id"]),
-            "back_href": "/magnetism-scanner",
+            "ready_href": _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang),
+            "back_href": _with_lang("/magnetism-scanner", lang),
             "status_label": "magnetism_status",
             "typical_run_label": "1-4 min",
             "status_note": "Page auto-refreshes every 5 seconds. This checklist reflects Magnetism Scanner phase, not a percentage estimate.",
@@ -264,16 +470,81 @@ def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str)
 
 
 @router.get("/magnetism-scanner/scan/{scan_id}")
-async def magnetism_scanner_detail(request: Request, scan_id: int):
+async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render details sheet of a specific magnetism scan."""
-    row = get_magnetism_scan(scan_id)
-    if row is None:
+    model = _magnetism_scan_model(scan_id)
+    if model is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
             {"resource": f"Magnetism scan #{scan_id}"},
             status_code=404,
         )
+    model["active_tab"] = "tldr"
+    _attach_ui(model, lang)
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_detail.html.j2",
+        {"model": model},
+    )
+
+
+@router.get("/magnetism-scanner/scan/{scan_id}/research")
+async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render research evidence for a specific Magnetism scan."""
+    model = _magnetism_scan_model(scan_id)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}"},
+            status_code=404,
+        )
+    model["active_tab"] = "research"
+    model["research"] = _research_evidence_model(model["payload"])
+    _attach_ui(model, lang)
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_research.html.j2",
+        {"model": model},
+    )
+
+
+@router.get("/magnetism-scanner/scan/{scan_id}/methodology")
+async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render methodology details for a specific Magnetism scan."""
+    model = _magnetism_scan_model(scan_id)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}"},
+            status_code=404,
+        )
+    model["active_tab"] = "methodology"
+    model["methodology"] = _methodology_model(model["payload"])
+    _attach_ui(model, lang)
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_methodology.html.j2",
+        {"model": model},
+    )
+
+
+def _attach_ui(model: dict, lang: _Lang) -> None:
+    model["lang"] = lang
+    model["other_lang"] = "en" if lang == "es" else "es"
+    model["lang_query"] = _lang_q(lang)
+    model["t"] = _ui(lang)
+
+
+def _magnetism_scan_model(scan_id: int) -> dict | None:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        return None
 
     try:
         payload = json.loads(row["raw_payload"])
@@ -292,39 +563,149 @@ async def magnetism_scanner_detail(request: Request, scan_id: int):
     except Exception:
         formatted_date = row["created_at"]
 
-    return templates.TemplateResponse(
-        request,
-        "magnetism_detail.html.j2",
+    return {
+        "id": scan_id,
+        "title": f"Magnetism: {payload['brand_name']}",
+        "brand_name": payload["brand_name"],
+        "url": payload["url"],
+        "created_at": formatted_date,
+        "magnetism_score": payload["magnetism_score"],
+        "coherence_score": payload["coherence_score"],
+        "quadrant": payload["quadrant"],
+        "executive_headline": payload["executive_headline"],
+        "observations": payload["observations"],
+        "tldr_grid": payload["tldr_grid"],
+        "tldr_brand3": payload.get("tldr_brand3") or {},
+        "tldr_strategy": payload.get("tldr_strategy") or {},
+        "metrics": payload.get("metrics") or {},
+        "diagnosis": payload.get("diagnosis") or {},
+        "limitations": payload.get("limitations") or [],
+        "source": payload.get("source") or "direct_scan",
+        "source_run_id": payload.get("source_run_id"),
+        "extraction_mode": payload.get("extraction_mode") or "unknown",
+        "canonical_evidence_source": payload.get("canonical_evidence_source"),
+        "direct_source_provider": payload.get("direct_source_provider"),
+        "deprecation": payload.get("deprecation") or {},
+        "evidence_packet_summary": payload.get("evidence_packet_summary") or {},
+        "content_distillation_summary": payload.get("content_distillation_summary") or {},
+        "system_reading": payload.get("system_reading") or {},
+        "score_breakdown": payload["score_breakdown"],
+        "magenta_circle": payload["magenta_circle"],
+        "fallback_used": payload.get("fallback_used", False),
+        "payload": payload,
+    }
+
+
+def _research_evidence_model(payload: dict) -> dict:
+    research_pack = payload.get("research_pack") or {}
+    entity = research_pack.get("resolved_entity") or {}
+    source_map = research_pack.get("source_map") or {}
+    graph_summary = payload.get("evidence_graph_summary") or {}
+    entity_packet = _entity_research_packet(payload)
+    product_surfaces = list(entity_packet.get("product_surfaces") or [])
+    owned_surfaces = list(entity_packet.get("owned_surfaces") or [])
+    tldr_blocks = payload.get("analyst_tldr_validated", {}).get("tldr_brand3") or payload.get("tldr_brand3") or {}
+
+    block_evidence = []
+    for key, block in tldr_blocks.items():
+        if not isinstance(block, dict):
+            continue
+        block_evidence.append({
+            "key": key,
+            "label": str(key).replace("_", " ").title(),
+            "answer": block.get("answer") or block.get("content"),
+            "claim_type": block.get("claim_type") or "unknown",
+            "confidence": block.get("confidence") or "unknown",
+            "evidence_used": block.get("evidence_used") or block.get("evidence") or [],
+            "evidence_sources": block.get("evidence_sources") or [],
+        })
+
+    source_counts = graph_summary.get("source_counts") or {}
+    source_rows = [
         {
-            "model": {
-                "id": scan_id,
-                "title": f"Magnetism: {payload['brand_name']}",
-                "brand_name": payload["brand_name"],
-                "url": payload["url"],
-                "created_at": formatted_date,
-                "magnetism_score": payload["magnetism_score"],
-                "coherence_score": payload["coherence_score"],
-                "quadrant": payload["quadrant"],
-                "executive_headline": payload["executive_headline"],
-                "observations": payload["observations"],
-                "tldr_grid": payload["tldr_grid"],
-                "tldr_brand3": payload.get("tldr_brand3") or {},
-                "tldr_strategy": payload.get("tldr_strategy") or {},
-                "metrics": payload.get("metrics") or {},
-                "diagnosis": payload.get("diagnosis") or {},
-                "limitations": payload.get("limitations") or [],
-                "source": payload.get("source") or "direct_scan",
-                "source_run_id": payload.get("source_run_id"),
-                "extraction_mode": payload.get("extraction_mode") or "unknown",
-                "canonical_evidence_source": payload.get("canonical_evidence_source"),
-                "direct_source_provider": payload.get("direct_source_provider"),
-                "deprecation": payload.get("deprecation") or {},
-                "evidence_packet_summary": payload.get("evidence_packet_summary") or {},
-                "content_distillation_summary": payload.get("content_distillation_summary") or {},
-                "system_reading": payload.get("system_reading") or {},
-                "score_breakdown": payload["score_breakdown"],
-                "magenta_circle": payload["magenta_circle"],
-                "fallback_used": payload.get("fallback_used", False),
+            "url": url,
+            "source_type": source.get("source_type") or "unknown",
+            "surface_role": source.get("surface_role") or "",
+            "entity_scope": source.get("entity_scope") or "",
+            "title": source.get("title") or source.get("label") or url,
+        }
+        for url, source in source_map.items()
+        if isinstance(source, dict)
+    ]
+    source_rows.sort(key=lambda item: (item["source_type"], item["url"]))
+    if not product_surfaces:
+        product_surfaces = [
+            {
+                "url": item["url"],
+                "role": item["surface_role"] or item["source_type"],
+                "entity_scope": item["entity_scope"],
+                "reason": "Detected from persisted Research Pack source map.",
             }
-        },
-    )
+            for item in source_rows
+            if str(item.get("entity_scope") or "").startswith("product:")
+        ]
+    if not owned_surfaces:
+        owned_surfaces = [
+            {
+                "url": item["url"],
+                "role": item["surface_role"] or item["source_type"],
+                "entity_scope": item["entity_scope"],
+                "reason": "Persisted Research Pack source.",
+            }
+            for item in source_rows
+            if str(item.get("source_type") or "").startswith("owned_")
+        ]
+
+    return {
+        "entity": entity,
+        "entity_packet": entity_packet,
+        "research_pack_source": payload.get("research_pack_source") or "legacy_snapshot",
+        "tldr_generation_mode": payload.get("tldr_generation_mode") or "unknown",
+        "category": research_pack.get("category") or "",
+        "offer": research_pack.get("offer") or "",
+        "company_summary": research_pack.get("company_summary") or "",
+        "product_summary": research_pack.get("product_summary") or "",
+        "audience": research_pack.get("audience") or "",
+        "outcome": research_pack.get("outcome") or "",
+        "declared_mission": research_pack.get("declared_mission") or "",
+        "future_direction": research_pack.get("future_direction") or "",
+        "owned_surfaces": owned_surfaces,
+        "product_surfaces": product_surfaces,
+        "source_counts": source_counts,
+        "source_rows": source_rows,
+        "block_evidence": block_evidence,
+        "proof_points": research_pack.get("proof_points") or [],
+        "noise_rejected": research_pack.get("noise_rejected") or [],
+        "evidence_gaps": research_pack.get("evidence_gaps") or [],
+        "confidence_notes": research_pack.get("confidence_notes") or [],
+        "graph_summary": graph_summary,
+    }
+
+
+def _methodology_model(payload: dict) -> dict:
+    return {
+        "tldr_generation_mode": payload.get("tldr_generation_mode") or "unknown",
+        "research_pack_source": payload.get("research_pack_source") or "legacy_snapshot",
+        "analysis_error": payload.get("analyst_tldr_analysis_error"),
+        "strategy": payload.get("tldr_strategy") or {},
+        "magenta_circle": payload.get("magenta_circle") or {},
+        "metrics": payload.get("metrics") or {},
+        "score_breakdown": payload.get("score_breakdown") or {},
+        "evidence_packet_summary": payload.get("evidence_packet_summary") or {},
+        "content_distillation_summary": payload.get("content_distillation_summary") or {},
+        "extraction_mode": payload.get("extraction_mode") or "unknown",
+        "source": payload.get("source") or "direct_scan",
+        "canonical_evidence_source": payload.get("canonical_evidence_source"),
+        "direct_source_provider": payload.get("direct_source_provider"),
+        "limitations": payload.get("limitations") or [],
+        "warnings": payload.get("warnings") or [],
+        "research_pack": payload.get("research_pack") or {},
+    }
+
+
+def _entity_research_packet(payload: dict) -> dict:
+    research_pack = payload.get("research_pack") or {}
+    entity = research_pack.get("entity") or {}
+    if isinstance(entity, dict) and (entity.get("owned_surfaces") or entity.get("product_surfaces")):
+        return entity
+    return {}

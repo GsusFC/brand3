@@ -15,6 +15,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from web.app import app
+from web.templates_env import STATIC_ASSET_VERSION
+
 
 def _install_env(db_path: Path) -> None:
     os.environ["BRAND3_DB_PATH"] = str(db_path)
@@ -36,8 +39,6 @@ class WebAppFlowTests(unittest.TestCase):
                 importlib.reload(sys.modules[mod_name])
 
         from fastapi.testclient import TestClient
-
-        from web.app import app
         from web.workers.queue import set_run_analysis_override
 
         self._resolver_patcher = patch(
@@ -131,7 +132,7 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("Start here. Brand Audit remains available as a dedicated route", response.text)
         self.assertIn("brand3-theme", response.text)
         self.assertIn('data-theme-toggle', response.text)
-        self.assertIn("brand3-magnetism-score-bars-20260529", response.text)
+        self.assertIn(f"/static/main.css?v={STATIC_ASSET_VERSION}", response.text)
         self.assertNotIn("Brand3 Lab", response.text)
         self.assertNotIn("/brand3-lab", response.text)
 

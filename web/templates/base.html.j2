@@ -23,13 +23,16 @@
 </head>
 <body>
 <div class="page">
-  <pre class="term-head"><span class="prompt">❯</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· public observatory</span></pre>
+  <div class="term-head">
+    <a class="term-home" href="/" aria-label="Brand3 home">
+      <span class="prompt">❯</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· public observatory</span>
+    </a>
+    <button class="theme-toggle theme-toggle-term" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
+  </div>
   <nav class="main-nav" aria-label="Brand3 primary navigation">
-    <a class="main-nav-link{% if request.url.path == '/' %} is-active{% endif %}" href="/">Brand Audit</a>
     <a class="main-nav-link{% if request.url.path.startswith('/reports') or request.url.path.startswith('/r/') or request.url.path.startswith('/brand/') %} is-active{% endif %}" href="/reports">Reports</a>
     <a class="main-nav-link{% if request.url.path.startswith('/visual-signature') %} is-active{% endif %}" href="/visual-signature">Visual Signature Lab</a>
     <a class="main-nav-link{% if request.url.path.startswith('/magnetism-scanner') %} is-active{% endif %}" href="/magnetism-scanner">Magnetism Scanner</a>
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
   </nav>
   <hr class="rule">
   {% block content %}{% endblock %}
@@ -37,7 +40,7 @@
   <footer class="footer">
     <div class="kv">
       <span class="k">engine</span>    <span class="v">brand3 v0.1.0</span>
-      <span class="k">about</span>     <span class="v"><a href="/">Brand Audit</a> · <a href="/reports">Reports</a> · <a href="/visual-signature">Visual Signature Lab</a> · <a href="/magnetism-scanner">Magnetism Scanner</a> · <a href="/takedown">/takedown</a></span>
+      <span class="k">about</span>     <span class="v"><a href="/">Home</a> · <a href="/reports">Reports</a> · <a href="/visual-signature">Visual Signature Lab</a> · <a href="/magnetism-scanner">Magnetism Scanner</a> · <a href="/takedown">/takedown</a></span>
     </div>
     <div class="small footer-note">
       Brand3 Scoring is the working audit product. Visual Signature Lab is a secondary evidence and research layer.

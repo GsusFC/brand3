@@ -33,12 +33,12 @@
     <tbody>
     {% for row in rows %}
       <tr>
-        <td>{{ row.date }}</td>
-        <td><a href="/brand/{{ row.brand_slug }}">{{ row.brand_slug }}</a></td>
-        <td class="num num-inline">{{ row.score_display }}</td>
-        <td class="bar">{{ row.bar }}</td>
-        <td class="dim">{{ row.band }}</td>
-        <td><a href="/r/{{ row.token }}">view</a></td>
+        <td class="col-date">{{ row.date }}</td>
+        <td class="col-brand"><a href="/brand/{{ row.brand_slug }}">{{ row.brand_slug }}</a></td>
+        <td class="num num-inline col-score">{{ row.score_display }}</td>
+        <td class="bar col-bar">{{ row.bar }}</td>
+        <td class="dim col-band">{{ row.band }}</td>
+        <td class="action-cell col-action"><a href="/r/{{ row.token }}">view</a></td>
       </tr>
     {% endfor %}
     </tbody>

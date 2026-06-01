@@ -126,6 +126,8 @@ body {
   min-height: 44px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin: 0;
   padding: 0 28px;
   border-bottom: 1px solid var(--border);
@@ -135,6 +137,16 @@ body {
   line-height: 1.5;
   white-space: pre-wrap;
   font-feature-settings: "liga" 0, "calt" 0;
+}
+
+.term-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  color: inherit;
+  text-decoration: none;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .main-nav {
@@ -169,7 +181,6 @@ body {
   display: inline-flex;
   align-items: center;
   min-height: 30px;
-  margin-left: auto;
   border: 1px solid var(--border);
   background: var(--nav-link-bg);
   color: var(--text-muted);
@@ -185,6 +196,10 @@ body {
   border-color: var(--nav-active-border);
   color: var(--accent);
   outline: none;
+}
+
+.theme-toggle-term {
+  margin-left: auto;
 }
 
 .prompt {
@@ -239,35 +254,23 @@ h4 {
   font-size: 13px;
 }
 
-.home-feature-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 22px;
+.home-hero {
+  max-width: 860px;
+  margin: 0 auto;
 }
 
-.home-feature {
-  min-width: 0;
-  padding: 14px;
-  border: 1px solid var(--border);
-  background: var(--soft-panel-bg);
+.home-scanner-shell {
+  max-width: 860px;
+  margin: 0 auto;
 }
 
-.home-feature h2 {
-  margin: 0 0 6px;
-  font-family: var(--font-ui);
-  font-size: 14px;
+.home-scanner-form {
+  margin-top: 2px;
 }
 
-.home-feature p {
-  margin: 0;
-  color: var(--text-muted);
-  font-family: var(--font-ui);
-  line-height: 1.55;
-}
-
-.home-feature-lab {
-  border-color: rgba(239, 73, 13, 0.32);
+.home-secondary-actions {
+  margin-top: 12px;
+  text-align: center;
 }
 
 .section-head {
@@ -306,6 +309,7 @@ h4 {
 table {
   width: 100%;
   min-width: 720px;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 12px;
   font-feature-settings: "liga" 0, "calt" 0;
@@ -315,8 +319,10 @@ th,
 td {
   text-align: left;
   padding: 10px 12px;
-  vertical-align: top;
+  vertical-align: middle;
   font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 th {
@@ -346,17 +352,67 @@ th.num {
   font-variant-numeric: tabular-nums;
 }
 
-.col-date { width: 14%; }
-.col-brand { width: 26%; }
+.table-wrap table td:first-child,
+.table-wrap table th:first-child {
+  white-space: nowrap;
+}
+
+.table-wrap td.dim,
+.table-wrap th.dim {
+  white-space: nowrap;
+}
+
+.col-date { width: 12%; }
+.col-brand { width: 24%; }
+.col-type { width: 10%; }
 .col-score { width: 8%; }
-.col-bar { width: 28%; }
-.col-bar-wide { width: 38%; }
-.col-band { width: 16%; }
-.col-band-wide { width: 20%; }
+.col-bar { width: 26%; }
+.col-bar-wide { width: 36%; }
+.col-band { width: 14%; }
+.col-band-wide { width: 18%; }
+.col-action { width: 8%; }
+
+.scanner-recent-table .col-date { width: 20%; }
+.scanner-recent-table .col-brand { width: 15%; }
+.scanner-recent-table .col-band-wide { width: 32%; }
+.scanner-recent-table td.dim.col-band-wide {
+  white-space: normal;
+}
 
 .bar {
   color: var(--accent);
   white-space: pre;
+}
+
+td.action-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+td.action-cell form {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.home-kind {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid rgba(239, 73, 13, 0.24);
+  background: rgba(242, 222, 212, 0.32);
+  color: var(--accent);
+  padding: 2px 7px;
+  font-family: var(--font-ui);
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.home-kind-audit {
+  border-color: rgba(183, 121, 43, 0.24);
+  background: rgba(183, 121, 43, 0.08);
+  color: var(--warning);
 }
 
 .kv {
@@ -1989,6 +2045,13 @@ a:focus-visible {
   padding-top: 16px;
 }
 
+.magnetism-tldr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
 .magnetism-methodology-details {
   border: 1px solid var(--border);
   background: var(--surface);
@@ -2139,6 +2202,10 @@ a:focus-visible {
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 14px;
+}
+
+.lab-review-nav-center {
+  justify-content: center;
 }
 
 .lab-review-stack,
@@ -2646,12 +2713,12 @@ a:hover {
     height: clamp(360px, calc(100vh - 190px), 1024px);
   }
 
-  .home-feature-strip {
+  .magnetism-hero-grid {
     grid-template-columns: 1fr;
   }
 
-  .magnetism-hero-grid {
-    grid-template-columns: 1fr;
+  .magnetism-tldr-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .magnetism-hero-main,
@@ -2700,6 +2767,10 @@ a:hover {
   .matrix-dot {
     width: var(--matrix-cell);
     height: var(--matrix-cell);
+  }
+
+  .magnetism-tldr-grid {
+    grid-template-columns: 1fr;
   }
 
   .status-step {

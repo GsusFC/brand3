@@ -123,16 +123,29 @@ class WebAppFlowTests(unittest.TestCase):
     def test_homepage_prioritizes_brand_audit_and_supported_surfaces(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("brand3 — brand audit", response.text)
-        self.assertIn("run brand audit", response.text)
-        self.assertIn("dimension scores", response.text)
+        self.assertIn("Magnetism Scanner", response.text)
+        self.assertIn("run scanner", response.text)
+        self.assertIn(">Brand Audit<", response.text)
+        self.assertIn('href="/brand-audit"', response.text)
         self.assertIn("Visual Signature Lab", response.text)
-        self.assertIn("Brand3 Scoring is the working audit product", response.text)
+        self.assertIn("Start here. Brand Audit remains available as a dedicated route", response.text)
         self.assertIn("brand3-theme", response.text)
         self.assertIn('data-theme-toggle', response.text)
         self.assertIn("brand3-magnetism-score-bars-20260529", response.text)
         self.assertNotIn("Brand3 Lab", response.text)
         self.assertNotIn("/brand3-lab", response.text)
+
+    def test_brand_audit_landing_page_is_dedicated_route(self):
+        response = self.client.get("/brand-audit")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Brand Audit", response.text)
+        self.assertIn("run an audit", response.text)
+        self.assertIn('action="/analyze"', response.text)
+        self.assertIn("run audit", response.text)
+        self.assertIn("Magnetism Scanner", response.text)
+        self.assertIn("Visual Signature Lab", response.text)
+        self.assertIn("recent_audits", response.text)
+        self.assertIn('href="/reports"', response.text)
 
     def test_brand3_lab_surface_is_removed(self):
         for path in (

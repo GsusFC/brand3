@@ -110,22 +110,80 @@ class ListingsTests(unittest.TestCase):
             conn.commit()
         return token
 
+    def _seed_ready_scan(
+        self,
+        brand_name: str,
+        magnetism_score: int,
+        coherence_score: int,
+        days_ago: int = 0,
+    ) -> int:
+        with sqlite3.connect(self.db) as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   created_at, status, token, phase, phase_updated_at, completed_at)
+                VALUES (?, ?, ?, ?, ?, ?, datetime('now', ?), 'ready', ?, 'ready',
+                        datetime('now', ?), datetime('now', ?))
+                """,
+                (
+                    brand_name,
+                    f"https://{brand_name}.com",
+                    magnetism_score,
+                    coherence_score,
+                    "quadrant",
+                    "{}",
+                    f"-{days_ago} days",
+                    f"scan-{brand_name}-{time.time_ns()}",
+                    f"-{days_ago} days",
+                    f"-{days_ago} days",
+                ),
+            )
+            conn.commit()
+        return int(cur.lastrowid)
+
     def test_index_empty_shows_placeholder(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("no public audits yet", r.text)
+        self.assertIn("Magnetism Scanner", r.text)
+        self.assertIn(">Brand Audit<", r.text)
+        self.assertIn('href="/brand-audit"', r.text)
+        self.assertIn("no analyses yet", r.text)
 
     def test_index_limits_to_ten(self):
-        for i in range(15):
+        for i in range(20):
             self._seed_ready_run(f"brand{i:02d}", composite=50.0 + i, days_ago=i)
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        # 10 visible rows (brand00 is the newest since days_ago=0).
         rendered = r.text.count("<tr>")
-        # 1 <tr> is the thead row → 11 total.
-        self.assertEqual(rendered, 11)
+        self.assertEqual(rendered, 16)  # header + 15 rows
         self.assertIn("brand00", r.text)  # newest
-        self.assertNotIn("brand10", r.text)  # 11th excluded
+        self.assertNotIn("brand15", r.text)  # 16th excluded
+
+    def test_index_merges_scanners_and_audits(self):
+        self._seed_ready_run("auditco", composite=66.0, days_ago=1)
+        self._seed_ready_scan("scanco", magnetism_score=83, coherence_score=72, days_ago=0)
+        r = self.client.get("/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("score", r.text)
+        self.assertIn("band", r.text)
+        self.assertIn("Scanner", r.text)
+        self.assertIn("Audit", r.text)
+        self.assertIn('class="home-kind home-kind-scanner"', r.text)
+        self.assertIn('class="home-kind home-kind-audit"', r.text)
+        self.assertIn("/magnetism-scanner/scan/", r.text)
+        self.assertIn("/r/tok-", r.text)
+
+    def test_index_dedupes_repeated_scans_per_brand(self):
+        self._seed_ready_scan("dupco", magnetism_score=81, coherence_score=70, days_ago=0)
+        self._seed_ready_scan("dupco", magnetism_score=82, coherence_score=71, days_ago=1)
+        self._seed_ready_scan("dupco", magnetism_score=83, coherence_score=72, days_ago=2)
+        r = self.client.get("/")
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.text.count("dupco"), 1)
+        self.assertEqual(r.text.count("<tr>"), 2)  # header + 1 row
+        self.assertIn("81", r.text)
+        self.assertIn("[", r.text)
 
     def test_brand_page_shows_all_history(self):
         for i in range(3):

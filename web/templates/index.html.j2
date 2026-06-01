@@ -1,40 +1,20 @@
 {% extends "base.html.j2" %}
-{% block title %}Brand3 — brand audit{% endblock %}
+{% block title %}Brand3 — Magnetism Scanner{% endblock %}
 {% block content %}
-<section>
-  <div class="section-head">
-    <span class="label">brand_audit</span>
-    <span class="tag">// primary product · scoring first</span>
-  </div>
-
-  <h1 class="page-title">brand3 — brand audit</h1>
+<section class="home-hero">
+  <h1 class="page-title">Magnetism Scanner</h1>
   <p class="prose dim intro-copy">
-    Brand3 Scoring is the working audit product. Paste a URL to generate a public brand audit with dimension scores, report prose, and listed results.
+    Start here. Brand Audit remains available as a dedicated route, and the recent list below mixes both kinds of analysis without extra clutter.
   </p>
 
-  <form action="/analyze" method="post" class="form-row">
-    <input type="url" name="url" placeholder="https://your-brand.com" required autofocus spellcheck="false" autocomplete="off">
-    <button type="submit">run brand audit</button>
-  </form>
-
-  <p class="small dim form-note">
-    Brand Audit produces dimension scores, public report prose, and a shareable result page. Limit: 5 analyses per IP every 24h · FLOC team: <a href="/team/unlock?token=...">/team/unlock?token=...</a>
-  </p>
-
-  <div class="home-feature-strip">
-    <article class="home-feature">
-      <h2>Dimension scores</h2>
-      <p>See the five scoring dimensions and the rendered explanation that comes with each analysis.</p>
-    </article>
-    <article class="home-feature">
-      <h2>Reports</h2>
-      <p>Open the public observatory and per-brand report pages from the same product surface.</p>
-    </article>
-    <article class="home-feature home-feature-lab">
-      <h2>Visual Signature Lab</h2>
-      <p>Secondary research area for evidence-only human visual perception. Accessible, but not foregrounded.</p>
-      <a class="source-link" href="/visual-signature">open lab</a>
-    </article>
+  <div class="home-scanner-shell">
+    <form action="/magnetism-scanner/analyze" method="post" class="form-row home-scanner-form">
+      <input type="url" name="url" placeholder="https://your-brand.com" required autofocus spellcheck="false" autocomplete="off">
+      <button type="submit">run scanner</button>
+    </form>
+    <p class="small dim home-secondary-actions">
+      <a href="/brand-audit">Brand Audit</a> · <a href="/visual-signature">Visual Signature Lab</a>
+    </p>
   </div>
 </section>
 
@@ -42,8 +22,8 @@
 
 <section>
   <div class="section-head">
-    <span class="label">latest_brand_audits</span>
-    <span class="tag">// last {{ latest_analyses|length }} public</span>
+    <span class="label">recent_analyses</span>
+    <span class="tag">// scanners and audits</span>
   </div>
   {% if latest_analyses %}
   <div class="table-wrap">
@@ -52,6 +32,7 @@
       <tr>
         <th class="col-date">date</th>
         <th class="col-brand">brand</th>
+        <th class="col-type">type</th>
         <th class="num col-score">score</th>
         <th class="col-bar">bar</th>
         <th class="col-band">band</th>
@@ -61,20 +42,20 @@
     <tbody>
     {% for row in latest_analyses %}
       <tr>
-        <td>{{ row.date }}</td>
-        <td><a href="/brand/{{ row.brand_slug }}">{{ row.brand_slug }}</a></td>
-        <td class="num num-inline">{{ row.score_display }}</td>
-        <td class="bar">{{ row.bar }}</td>
-        <td class="dim">{{ row.band }}</td>
-        <td><a href="/r/{{ row.token }}">view</a></td>
+        <td class="col-date">{{ row.date }}</td>
+        <td class="col-brand"><a href="{{ row.href }}">{{ row.brand_name }}</a></td>
+        <td class="col-type"><span class="home-kind home-kind-{{ (row.kind or 'Item')|lower }}">{{ row.kind or 'Item' }}</span></td>
+        <td class="num num-inline col-score">{{ row.score_display }}</td>
+        <td class="bar col-bar">{{ row.bar }}</td>
+        <td class="dim col-band">{{ row.band }}</td>
+        <td class="action-cell col-action"><a href="{{ row.href }}">view</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
-  <p class="small dim block-note"><a href="/reports">→ browse full reports</a> · <a href="/visual-signature">Visual Signature Lab</a></p>
   {% else %}
-  <div class="empty">// no public audits yet — submit the first one above.</div>
+  <div class="empty">// no analyses yet — run a scanner or open Brand Audit.</div>
   {% endif %}
 </section>
 {% endblock %}

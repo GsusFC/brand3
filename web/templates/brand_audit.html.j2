@@ -1,0 +1,60 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: Brand Audit{% endblock %}
+{% block content %}
+<section class="home-hero">
+  <h1 class="page-title">Brand Audit</h1>
+  <p class="prose dim intro-copy">
+    Enter a brand URL to run an audit. Recent audits are listed below, and the full public observatory remains one click away.
+  </p>
+
+  <div class="home-scanner-shell">
+    <form action="/analyze" method="post" class="form-row home-scanner-form">
+      <input type="url" name="url" placeholder="https://your-brand.com" required autofocus spellcheck="false" autocomplete="off">
+      <button type="submit">run audit</button>
+    </form>
+    <p class="small dim home-secondary-actions">
+      <a href="/magnetism-scanner">Magnetism Scanner</a> · <a href="/visual-signature">Visual Signature Lab</a>
+    </p>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">recent_audits</span>
+    <span class="tag"><a href="/reports">open full public observatory</a></span>
+  </div>
+
+  {% if recent_audits %}
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="col-date">date</th>
+          <th class="col-brand">brand</th>
+          <th class="num col-score">score</th>
+          <th class="col-bar">bar</th>
+          <th class="col-band">band</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for row in recent_audits %}
+        <tr>
+          <td>{{ row.date }}</td>
+          <td><a href="/r/{{ row.token }}">{{ row.brand_slug }}</a></td>
+          <td class="num num-inline">{{ row.score_display }}</td>
+          <td class="bar">{{ row.bar }}</td>
+          <td class="dim">{{ row.band }}</td>
+          <td><a href="/r/{{ row.token }}">view</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">// no public audits yet.</div>
+  {% endif %}
+</section>
+{% endblock %}

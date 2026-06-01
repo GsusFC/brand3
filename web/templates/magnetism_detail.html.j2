@@ -139,7 +139,7 @@
     ("mission", "MISSION"),
     ("vision", "VISION")
   ] %}
-  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px;">
+  <div class="magnetism-tldr-grid">
     {% for key, label in blocks %}
     {% set block = model.tldr_brand3[key] %}
     <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">

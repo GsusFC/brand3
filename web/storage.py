@@ -8,6 +8,7 @@ and short-lived, reads are bounded by a handful of queries per request.
 from __future__ import annotations
 
 import sqlite3
+import json
 from contextlib import contextmanager
 from pathlib import Path
 
@@ -120,6 +121,33 @@ def _attach_composite(rows: list[dict]) -> list[dict]:
     for r in rows:
         r["composite"] = score_by_id.get(r.get("run_id"))
     return rows
+
+
+def _normalize_magnetism_listing_row(row: dict) -> dict:
+    """Prefer the canonical payload values when the stored columns are stale."""
+    raw_payload = row.get("raw_payload")
+    if not raw_payload:
+        return row
+    try:
+        payload = json.loads(raw_payload)
+    except Exception:
+        return row
+    if not isinstance(payload, dict):
+        return row
+
+    normalized = dict(row)
+    for key in (
+        "brand_name",
+        "url",
+        "magnetism_score",
+        "coherence_score",
+        "quadrant",
+        "source_run_id",
+        "source",
+    ):
+        if key in payload and payload.get(key) is not None:
+            normalized[key] = payload.get(key)
+    return normalized
 
 
 def list_latest_public(limit: int = 10) -> list[dict]:
@@ -291,7 +319,8 @@ def list_magnetism_scans(limit: int = 20) -> list[dict]:
     with _connect() as conn:
         rows = conn.execute(
             """
-            SELECT id, brand_name, url, magnetism_score, coherence_score, quadrant, created_at
+            SELECT id, brand_name, url, magnetism_score, coherence_score, quadrant,
+                   source_run_id, raw_payload, created_at
             FROM magnetism_scans
             WHERE status = 'ready'
             ORDER BY created_at DESC
@@ -299,4 +328,4 @@ def list_magnetism_scans(limit: int = 20) -> list[dict]:
             """,
             (limit,),
         ).fetchall()
-    return [dict(r) for r in rows]
+    return [_normalize_magnetism_listing_row(dict(r)) for r in rows]

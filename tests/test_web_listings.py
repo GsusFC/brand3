@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 import sqlite3
 import sys
@@ -116,7 +117,11 @@ class ListingsTests(unittest.TestCase):
         magnetism_score: int,
         coherence_score: int,
         days_ago: int = 0,
+        raw_payload: dict | None = None,
     ) -> int:
+        payload_json = "{}"
+        if raw_payload is not None:
+            payload_json = json.dumps(raw_payload, ensure_ascii=False)
         with sqlite3.connect(self.db) as conn:
             cur = conn.execute(
                 """
@@ -132,7 +137,7 @@ class ListingsTests(unittest.TestCase):
                     magnetism_score,
                     coherence_score,
                     "quadrant",
-                    "{}",
+                    payload_json,
                     f"-{days_ago} days",
                     f"scan-{brand_name}-{time.time_ns()}",
                     f"-{days_ago} days",
@@ -184,6 +189,36 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(r.text.count("<tr>"), 2)  # header + 1 row
         self.assertIn("81", r.text)
         self.assertIn("[", r.text)
+
+    def test_scanner_recent_list_prefers_magnetism_payload_when_columns_are_stale(self):
+        self._seed_ready_scan(
+            "stale",
+            magnetism_score=0,
+            coherence_score=52,
+            days_ago=0,
+            raw_payload={
+                "brand_name": "stale",
+                "url": "https://stale.com",
+                "magnetism_score": 64,
+                "coherence_score": 74,
+                "quadrant": "Canonical quadrant",
+                "source_run_id": 160,
+                "source": "brand_audit_snapshot",
+            },
+        )
+        from web.storage import list_magnetism_scans
+
+        row = list_magnetism_scans(limit=1)[0]
+        self.assertEqual(row["magnetism_score"], 64)
+        self.assertEqual(row["coherence_score"], 74)
+        self.assertEqual(row["quadrant"], "Canonical quadrant")
+        self.assertEqual(row["source_run_id"], 160)
+
+        r = self.client.get("/magnetism-scanner")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("64", r.text)
+        self.assertIn("74", r.text)
+        self.assertIn("Canonical quadrant", r.text)
 
     def test_brand_page_shows_all_history(self):
         for i in range(3):

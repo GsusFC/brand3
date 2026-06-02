@@ -1307,6 +1307,85 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("The new home for your internet", result["research_pack"]["offer"])
         self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
 
+    def test_contextdev_visual_enrichment_shadow_records_dry_run_without_mutating_research_pack(self):
+        extractor = MagnetismExtractor(llm=None)
+        snapshot = {
+            "run": {"id": 509, "brand_name": "Audit Brand", "url": "https://audit.test"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://audit.test",
+                        "markdown_content": "Audit Brand is workflow infrastructure for finance operators.",
+                    },
+                }
+            ],
+            "evidence_items": [],
+            "contextdev_candidate_summary": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "candidate_id": "ctxdev_visual_fonts_1",
+                        "candidate_type": "visual_fonts",
+                        "supports_channel": "visual_identity",
+                        "text": "Aeonik, Twklausanne",
+                        "source_url": "https://audit.test",
+                        "provider": "contextdev",
+                        "raw_ref": "test",
+                    }
+                ],
+            },
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT", True):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        shadow = result["contextdev_visual_enrichment_shadow"]
+        self.assertEqual(shadow["status"], "evaluated")
+        self.assertEqual(shadow["promotion_report"]["status_counts"]["promotable"], 1)
+        self.assertEqual(shadow["field_updates"][0]["field"], "visual_or_conceptual_signals")
+        self.assertIn(
+            "Font signal: Aeonik, Twklausanne",
+            shadow["enriched_pack_delta"]["visual_or_conceptual_signals"][0],
+        )
+        self.assertNotIn(
+            "Font signal: Aeonik, Twklausanne",
+            " ".join(result["research_pack"]["visual_or_conceptual_signals"]),
+        )
+
+    def test_contextdev_visual_enrichment_shadow_is_absent_when_flag_is_disabled(self):
+        extractor = MagnetismExtractor(llm=None)
+        snapshot = {
+            "run": {"id": 510, "brand_name": "Audit Brand", "url": "https://audit.test"},
+            "features": [],
+            "raw_inputs": [],
+            "evidence_items": [],
+            "contextdev_candidate_summary": {
+                "candidate_count": 1,
+                "candidates": [
+                    {
+                        "candidate_id": "ctxdev_visual_fonts_1",
+                        "candidate_type": "visual_fonts",
+                        "supports_channel": "visual_identity",
+                        "text": "Aeonik, Twklausanne",
+                        "source_url": "https://audit.test",
+                        "provider": "contextdev",
+                        "raw_ref": "test",
+                    }
+                ],
+            },
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT", False):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        self.assertNotIn("contextdev_visual_enrichment_shadow", result)
+
     def test_extract_from_audit_snapshot_does_not_surface_acquisition_lab_payload(self):
         extractor = MagnetismExtractor(llm=None)
         snapshot = {

@@ -16,6 +16,7 @@ from urllib.parse import urlparse
 from src.collectors.web_collector import WebCollector
 from src.config import (
     BRAND3_BRAND_RESEARCH_GRAPH_PACK,
+    BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT,
     BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT,
     BRAND3_MAGNETISM_RESEARCH_PACK_TLDR,
 )
@@ -35,6 +36,7 @@ from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
+from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
 from src.research.evidence_graph import build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
@@ -352,6 +354,7 @@ class MagnetismExtractor:
         """
         canonical_evidence = build_canonical_brand_evidence(snapshot)
         research_pack, evidence_graph_summary = self._build_research_pack(snapshot)
+        contextdev_candidate_summary = self._contextdev_candidate_summary_from_snapshot(snapshot)
         brand_name = canonical_evidence.brand_name
         url = canonical_evidence.url
         strategic_packet = canonical_evidence.strategic_packet
@@ -392,6 +395,7 @@ class MagnetismExtractor:
                         packet_dict=packet_dict,
                         brand_context_brief=brand_context_brief,
                         research_pack=research_pack,
+                        contextdev_candidate_summary=contextdev_candidate_summary,
                     )
                     result.setdefault("tldr_generation_mode", "legacy_code")
                     result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
@@ -442,6 +446,7 @@ class MagnetismExtractor:
             packet_dict=packet_dict,
             brand_context_brief=brand_context_brief,
             research_pack=research_pack,
+            contextdev_candidate_summary=contextdev_candidate_summary,
         )
         result.setdefault("tldr_generation_mode", "legacy_code")
         result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
@@ -470,8 +475,14 @@ class MagnetismExtractor:
         packet_dict: dict[str, Any],
         brand_context_brief: dict[str, Any],
         research_pack: Any | None = None,
+        contextdev_candidate_summary: dict[str, Any] | None = None,
     ) -> None:
         result["research_pack"] = research_pack.to_dict() if hasattr(research_pack, "to_dict") else research_pack
+        self._apply_contextdev_visual_enrichment_shadow(
+            result=result,
+            research_pack=research_pack,
+            candidate_summary=contextdev_candidate_summary,
+        )
         if BRAND3_MAGNETISM_RESEARCH_PACK_TLDR:
             self._apply_research_pack_tldr(
                 result=result,
@@ -482,6 +493,70 @@ class MagnetismExtractor:
                 research_pack=research_pack,
             )
             return
+
+    @staticmethod
+    def _contextdev_candidate_summary_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:
+        summary = snapshot.get("contextdev_candidate_summary")
+        if isinstance(summary, dict):
+            return summary
+
+        contextdev = snapshot.get("contextdev")
+        if isinstance(contextdev, dict):
+            summary = contextdev.get("candidate_summary")
+            if isinstance(summary, dict):
+                return summary
+        return None
+
+    @staticmethod
+    def _apply_contextdev_visual_enrichment_shadow(
+        *,
+        result: dict[str, Any],
+        research_pack: Any | None,
+        candidate_summary: dict[str, Any] | None,
+    ) -> None:
+        if not BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT:
+            return
+
+        if research_pack is None:
+            result["contextdev_visual_enrichment_shadow"] = {
+                "status": "skipped",
+                "reason": "missing_research_pack",
+            }
+            return
+
+        if not isinstance(candidate_summary, dict):
+            result["contextdev_visual_enrichment_shadow"] = {
+                "status": "skipped",
+                "reason": "missing_candidate_summary",
+            }
+            return
+
+        try:
+            dry_run = build_contextdev_research_pack_dry_run(
+                research_pack,
+                candidate_summary,
+            ).to_dict()
+        except Exception as exc:
+            result["contextdev_visual_enrichment_shadow"] = {
+                "status": "error",
+                "reason": str(exc),
+            }
+            return
+
+        enriched_pack = dry_run.get("enriched_pack", {})
+        if not isinstance(enriched_pack, dict):
+            enriched_pack = {}
+        result["contextdev_visual_enrichment_shadow"] = {
+            "status": "evaluated",
+            "version": dry_run.get("version"),
+            "field_updates": dry_run.get("field_updates") or [],
+            "promotion_report": dry_run.get("promotion_report") or {},
+            "enriched_pack_delta": {
+                "visual_or_conceptual_signals": enriched_pack.get("visual_or_conceptual_signals", []),
+                "product_summary": enriched_pack.get("product_summary"),
+                "confidence_notes": enriched_pack.get("confidence_notes", []),
+            },
+        }
 
     def _apply_research_pack_tldr(
         self,

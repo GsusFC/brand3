@@ -351,6 +351,34 @@ class MagnetismScannerTests(unittest.TestCase):
             "source_counts": {"owned_about": 1, "owned_product": 1},
             "claim_count": 2,
         }
+        payload["research_pack_quality"] = {
+            "version": "brand_research_pack_quality_v0_1",
+            "total_score": 92.5,
+            "status": "pass",
+            "dimensions": {
+                "offer": {"name": "offer", "score": 100.0, "status": "pass", "reasons": []},
+                "audience": {"name": "audience", "score": 85.0, "status": "pass", "reasons": []},
+                "differentiation": {
+                    "name": "differentiation",
+                    "score": 70.0,
+                    "status": "warn",
+                    "reasons": ["thin_differentiation_signal"],
+                },
+                "frictions": {"name": "frictions", "score": 100.0, "status": "pass", "reasons": []},
+                "proof": {"name": "proof", "score": 100.0, "status": "pass", "reasons": []},
+                "traceability": {"name": "traceability", "score": 100.0, "status": "pass", "reasons": []},
+                "noise": {"name": "noise", "score": 92.5, "status": "pass", "reasons": []},
+            },
+            "warnings": ["thin_differentiation_signal"],
+            "pack_summary": {
+                "entity_type": "company",
+                "official_url_count": 1,
+                "analyzed_url_count": 2,
+                "proof_point_count": 1,
+                "evidence_gap_count": 0,
+            },
+            "gate": {"passed": True, "failures": []},
+        }
 
         scan_id = insert_magnetism_scan(
             brand_name="LangChain",
@@ -363,18 +391,39 @@ class MagnetismScannerTests(unittest.TestCase):
 
         detail = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
         research = self.client.get(f"/magnetism-scanner/scan/{scan_id}/research")
+        reliability = self.client.get(f"/magnetism-scanner/scan/{scan_id}/evidence-reliability")
         methodology = self.client.get(f"/magnetism-scanner/scan/{scan_id}/methodology")
 
         self.assertEqual(detail.status_code, 200)
         self.assertEqual(research.status_code, 200)
+        self.assertEqual(reliability.status_code, 200)
         self.assertEqual(methodology.status_code, 200)
         self.assertIn("TLDR Brand3", detail.text)
         self.assertIn("Evidencia de investigación", detail.text)
+        self.assertIn("Fiabilidad de evidencia", detail.text)
         self.assertNotIn("Magenta Circle Signals", detail.text)
         self.assertIn("Superficies de producto", research.text)
         self.assertIn("product:LangGraph", research.text)
+        self.assertIn("calidad del input, no de la marca", reliability.text)
+        self.assertIn("thin_differentiation_signal", reliability.text)
+        self.assertIn("gate_passed", reliability.text)
         self.assertIn("Detalles de metodología", methodology.text)
         self.assertIn("Señales Magenta Circle", methodology.text)
+
+        legacy_payload = dict(payload)
+        legacy_payload.pop("research_pack_quality", None)
+        legacy_scan_id = insert_magnetism_scan(
+            brand_name="LangChain Legacy",
+            url="https://www.langchain.com",
+            magnetism_score=int(legacy_payload["magnetism_score"]),
+            coherence_score=int(legacy_payload["coherence_score"]),
+            quadrant=legacy_payload["quadrant"],
+            raw_payload=json.dumps(legacy_payload),
+        )
+        legacy_reliability = self.client.get(f"/magnetism-scanner/scan/{legacy_scan_id}/evidence-reliability")
+
+        self.assertEqual(legacy_reliability.status_code, 200)
+        self.assertIn("No se persistió diagnóstico de calidad del Research Pack", legacy_reliability.text)
 
     def test_scan_detail_shows_tldr_strategy_metadata(self):
         from web.storage import insert_magnetism_scan

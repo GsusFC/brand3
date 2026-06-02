@@ -74,6 +74,7 @@ _MAGNETISM_UI = {
         "result": "result",
         "back": "Back to Magnetism Scanner",
         "research_evidence": "Research Evidence",
+        "evidence_reliability": "Evidence Reliability",
         "methodology_details": "Methodology Details",
         "detail_tag": "9 strategic blocks derived from 7 Magenta signals",
         "no_detected": "(not detected)",
@@ -87,6 +88,22 @@ _MAGNETISM_UI = {
         "limitations": "limitations",
         "research_intro": "Evidence graph and Research Pack used to produce the TLDR Brand3 reading.",
         "research_tag": "research evidence",
+        "evidence_reliability_intro": (
+            "Objective diagnostic for the Research Pack used as TLDR input. It evaluates evidence quality, "
+            "not the brand, and does not change the TLDR blocks."
+        ),
+        "evidence_reliability_tag": "input quality, not brand quality",
+        "quality_status": "Status",
+        "quality_score": "Score",
+        "quality_gate": "Gate",
+        "quality_dimensions": "Quality dimensions",
+        "quality_dimensions_tag": "offer, audience, proof, traceability, and noise",
+        "quality_warnings": "Warnings",
+        "quality_failures": "Gate failures",
+        "quality_pack_summary": "Pack summary",
+        "quality_missing": "No Research Pack quality diagnostic was persisted for this scan.",
+        "no_quality_warnings": "No warnings persisted.",
+        "no_quality_failures": "No gate failures.",
         "pack_source": "Pack Source",
         "tldr_mode": "TLDR Mode",
         "entity_resolution": "Entity Resolution",
@@ -158,6 +175,7 @@ _MAGNETISM_UI = {
         "result": "resultado",
         "back": "Volver a Magnetism Scanner",
         "research_evidence": "Evidencia de investigación",
+        "evidence_reliability": "Fiabilidad de evidencia",
         "methodology_details": "Detalles de metodología",
         "detail_tag": "9 bloques estratégicos derivados de 7 señales Magenta",
         "no_detected": "(no detectado)",
@@ -171,6 +189,22 @@ _MAGNETISM_UI = {
         "limitations": "limitaciones",
         "research_intro": "Grafo de evidencia y Research Pack usados para producir la lectura TLDR Brand3.",
         "research_tag": "evidencia de investigación",
+        "evidence_reliability_intro": (
+            "Diagnóstico objetivo del Research Pack usado como input del TLDR. Evalúa calidad de evidencia, "
+            "no la marca, y no cambia los bloques TLDR."
+        ),
+        "evidence_reliability_tag": "calidad del input, no de la marca",
+        "quality_status": "Estado",
+        "quality_score": "Score",
+        "quality_gate": "Gate",
+        "quality_dimensions": "Dimensiones de calidad",
+        "quality_dimensions_tag": "oferta, audiencia, prueba, trazabilidad y ruido",
+        "quality_warnings": "Warnings",
+        "quality_failures": "Fallos de gate",
+        "quality_pack_summary": "Resumen del pack",
+        "quality_missing": "No se persistió diagnóstico de calidad del Research Pack para este escaneo.",
+        "no_quality_warnings": "No se persistieron warnings.",
+        "no_quality_failures": "No hay fallos de gate.",
         "pack_source": "Fuente del pack",
         "tldr_mode": "Modo TLDR",
         "entity_resolution": "Resolución de entidad",
@@ -505,6 +539,28 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     )
 
 
+@router.get("/magnetism-scanner/scan/{scan_id}/evidence-reliability")
+async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render Research Pack quality diagnostics for a specific Magnetism scan."""
+    model = _magnetism_scan_model(scan_id, lang=lang)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
+            status_code=404,
+        )
+    model["active_tab"] = "evidence_reliability"
+    model["quality"] = _evidence_reliability_model(model["payload"])
+    _attach_ui(model, lang)
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_evidence_reliability.html.j2",
+        {"model": model, "ui_lang": lang},
+    )
+
+
 @router.get("/magnetism-scanner/scan/{scan_id}/methodology")
 async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render methodology details for a specific Magnetism scan."""
@@ -704,6 +760,53 @@ def _research_evidence_model(payload: dict) -> dict:
         "evidence_gaps": research_pack.get("evidence_gaps") or [],
         "confidence_notes": research_pack.get("confidence_notes") or [],
         "graph_summary": graph_summary,
+    }
+
+
+def _evidence_reliability_model(payload: dict) -> dict:
+    quality = payload.get("research_pack_quality")
+    if not isinstance(quality, dict):
+        return {
+            "available": False,
+            "status": "missing",
+            "total_score": None,
+            "gate": {"passed": False, "failures": []},
+            "dimensions": [],
+            "warnings": [],
+            "pack_summary": {},
+            "reason": "missing_research_pack_quality",
+        }
+
+    raw_dimensions = quality.get("dimensions") if isinstance(quality.get("dimensions"), dict) else {}
+    dimensions = []
+    for name in ("offer", "audience", "differentiation", "frictions", "proof", "traceability", "noise"):
+        dimension = raw_dimensions.get(name)
+        if not isinstance(dimension, dict):
+            continue
+        dimensions.append(
+            {
+                "name": name,
+                "label": name.replace("_", " ").title(),
+                "score": dimension.get("score"),
+                "status": dimension.get("status") or "unknown",
+                "reasons": dimension.get("reasons") or [],
+            }
+        )
+
+    gate = quality.get("gate") if isinstance(quality.get("gate"), dict) else {}
+    return {
+        "available": True,
+        "version": quality.get("version") or "unknown",
+        "status": quality.get("status") or "unknown",
+        "total_score": quality.get("total_score"),
+        "gate": {
+            "passed": bool(gate.get("passed")),
+            "failures": gate.get("failures") or [],
+        },
+        "dimensions": dimensions,
+        "warnings": quality.get("warnings") or [],
+        "pack_summary": quality.get("pack_summary") or {},
+        "reason": quality.get("reason") or "",
     }
 
 

@@ -1356,6 +1356,49 @@ class MagnetismScannerTests(unittest.TestCase):
             " ".join(result["research_pack"]["visual_or_conceptual_signals"]),
         )
 
+    def test_contextdev_visual_enrichment_shadow_reads_persisted_raw_input_summary(self):
+        extractor = MagnetismExtractor(llm=None)
+        snapshot = {
+            "run": {"id": 511, "brand_name": "Audit Brand", "url": "https://audit.test"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://audit.test",
+                        "markdown_content": "Audit Brand is workflow infrastructure for finance operators.",
+                    },
+                },
+                {
+                    "source": "contextdev_candidate_summary",
+                    "payload": {
+                        "candidate_count": 1,
+                        "candidates": [
+                            {
+                                "candidate_id": "ctxdev_visual_colors_1",
+                                "candidate_type": "visual_colors",
+                                "supports_channel": "visual_identity",
+                                "text": "near-black background, electric blue accent",
+                                "source_url": "https://audit.test",
+                                "provider": "contextdev",
+                                "raw_ref": "test",
+                            }
+                        ],
+                    },
+                },
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT", True):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        shadow = result["contextdev_visual_enrichment_shadow"]
+        self.assertEqual(shadow["status"], "evaluated")
+        self.assertEqual(shadow["field_updates"][0]["candidate_type"], "visual_colors")
+
     def test_contextdev_visual_enrichment_shadow_is_absent_when_flag_is_disabled(self):
         extractor = MagnetismExtractor(llm=None)
         snapshot = {

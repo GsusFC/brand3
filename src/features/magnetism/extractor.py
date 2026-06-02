@@ -505,6 +505,15 @@ class MagnetismExtractor:
             summary = contextdev.get("candidate_summary")
             if isinstance(summary, dict):
                 return summary
+
+        for raw_input in reversed(snapshot.get("raw_inputs") or []):
+            if not isinstance(raw_input, dict):
+                continue
+            if raw_input.get("source") != "contextdev_candidate_summary":
+                continue
+            payload = raw_input.get("payload")
+            if isinstance(payload, dict):
+                return payload
         return None
 
     @staticmethod

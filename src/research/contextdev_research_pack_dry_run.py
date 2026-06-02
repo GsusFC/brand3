@@ -13,6 +13,7 @@ from src.research.contextdev_candidate_gate import (
     ContextDevPromotionReport,
     evaluate_contextdev_summary_promotion,
 )
+from src.research.contextdev_visual_normalizer import normalize_contextdev_visual_signal
 
 
 CONTEXTDEV_RESEARCH_PACK_DRY_RUN_VERSION = "contextdev_research_pack_dry_run_v0_1"
@@ -75,8 +76,9 @@ def build_contextdev_research_pack_dry_run(
         if not text:
             continue
         if decision.target_contract == "research_pack.visual_or_conceptual_signals":
-            if _append_unique(enriched_pack, "visual_or_conceptual_signals", text):
-                updates.append(_update("visual_or_conceptual_signals", "append", text, candidate))
+            visual_signal = normalize_contextdev_visual_signal(str(candidate.get("candidate_type") or ""), text)
+            if _append_unique(enriched_pack, "visual_or_conceptual_signals", visual_signal):
+                updates.append(_update("visual_or_conceptual_signals", "append", visual_signal, candidate))
             continue
         if decision.target_contract == "research_pack.product_summary":
             if not _clean_text(enriched_pack.get("product_summary")):

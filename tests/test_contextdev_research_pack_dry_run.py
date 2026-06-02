@@ -26,7 +26,7 @@ def test_contextdev_research_pack_dry_run_appends_promotable_signals_without_mut
     assert payload["original_pack"]["visual_or_conceptual_signals"] == ["existing visual signal"]
     assert payload["enriched_pack"]["visual_or_conceptual_signals"] == [
         "existing visual signal",
-        "Example Sans, Example Serif",
+        "Font signal: Example Sans, Example Serif, suggesting a defined visual voice.",
     ]
     assert payload["enriched_pack"]["product_summary"] == "Existing product synthesis."
     assert "Context.dev product candidate: Example Platform helps AI teams evaluate agents." in payload["enriched_pack"]["confidence_notes"]
@@ -57,6 +57,7 @@ def test_contextdev_research_pack_dry_run_sets_empty_product_summary() -> None:
 
 def test_contextdev_research_pack_dry_run_deduplicates_existing_visual_signal() -> None:
     pack = _pack(product_summary="Existing product synthesis.")
+    pack.visual_or_conceptual_signals = ["Font signal: existing visual signal, suggesting a defined visual voice."]
     summary = summarize_contextdev_candidates(
         [_candidate("visual_fonts", "visual_identity", "existing visual signal")]
     )
@@ -64,7 +65,9 @@ def test_contextdev_research_pack_dry_run_deduplicates_existing_visual_signal() 
     result = build_contextdev_research_pack_dry_run(pack, summary)
     payload = result.to_dict()
 
-    assert payload["enriched_pack"]["visual_or_conceptual_signals"] == ["existing visual signal"]
+    assert payload["enriched_pack"]["visual_or_conceptual_signals"] == [
+        "Font signal: existing visual signal, suggesting a defined visual voice."
+    ]
     assert payload["field_updates"] == []
 
 
@@ -86,7 +89,7 @@ def test_contextdev_research_pack_dry_run_filters_candidates_by_pack_domain() ->
     assert [candidate["source_url"] for candidate in filtered["candidates"]] == ["https://www.example.com/fonts"]
     assert payload["enriched_pack"]["visual_or_conceptual_signals"] == [
         "existing visual signal",
-        "Example Sans",
+        "Font signal: Example Sans, suggesting a defined visual voice.",
     ]
 
 

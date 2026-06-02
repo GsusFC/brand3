@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 BENCHMARK_VERSION = "brand_intelligence_benchmark_v0_1"
+LIVE_PROBE_SUPPORTED_REQUIRED_CHANNELS = frozenset({"owned_web", "parent_owned_web", "search", "reviews", "news"})
 
 
 @dataclass(frozen=True)
@@ -36,8 +37,10 @@ def default_benchmark_cases() -> list[BrandIntelligenceBenchmarkCase]:
     return [
         BrandIntelligenceBenchmarkCase("ChatGPT", "https://chatgpt.com", label="chatgpt-firecrawl", owned_web_provider="firecrawl", exa_results=3),
         BrandIntelligenceBenchmarkCase("ChatGPT", "https://chatgpt.com", label="chatgpt-playwright", owned_web_provider="playwright", exa_results=3),
+        BrandIntelligenceBenchmarkCase("ChatGPT", "https://chatgpt.com", label="chatgpt-tinyfish", owned_web_provider="tinyfish", exa_results=3),
         BrandIntelligenceBenchmarkCase("LangChain", "https://www.langchain.com", label="langchain-firecrawl", owned_web_provider="firecrawl", exa_results=3),
         BrandIntelligenceBenchmarkCase("LangChain", "https://www.langchain.com", label="langchain-playwright", owned_web_provider="playwright", exa_results=3),
+        BrandIntelligenceBenchmarkCase("LangChain", "https://www.langchain.com", label="langchain-tinyfish", owned_web_provider="tinyfish", exa_results=3),
         BrandIntelligenceBenchmarkCase("Base", "https://base.org", label="base-firecrawl", owned_web_provider="firecrawl", exa_results=3),
         BrandIntelligenceBenchmarkCase("Base", "https://base.org", label="base-playwright", owned_web_provider="playwright", exa_results=3),
         BrandIntelligenceBenchmarkCase("Allbirds", "https://www.allbirds.com", label="allbirds-firecrawl", owned_web_provider="firecrawl", exa_results=3),
@@ -56,18 +59,21 @@ def summarize_brand_intelligence_benchmark(probe_payloads: list[dict[str, Any]],
     provider_metrics = _aggregate_provider_metrics(probe_payloads)
     channel_coverage = _aggregate_channel_coverage(case_rows)
     ready_case_count = sum(1 for row in case_rows if row["inventory_ready"])
+    supported_ready_case_count = sum(1 for row in case_rows if row["supported_inventory_ready"])
     provisional_case_count = sum(1 for row in case_rows if row["resolution_status"] == "provisional")
     unresolved_case_count = sum(1 for row in case_rows if row["resolution_status"] == "unresolved")
     return {
         "version": BENCHMARK_VERSION,
         "case_count": len(case_rows),
         "inventory_ready_count": ready_case_count,
+        "supported_inventory_ready_count": supported_ready_case_count,
         "provisional_case_count": provisional_case_count,
         "unresolved_case_count": unresolved_case_count,
         "provider_metrics": provider_metrics,
         "channel_coverage": channel_coverage,
         "cases": case_rows,
         "most_common_missing_channels": _most_common_missing_channels(case_rows),
+        "unsupported_missing_channels": _unsupported_missing_channels(case_rows),
     }
 
 
@@ -77,20 +83,23 @@ def render_brand_intelligence_benchmark_markdown(summary: dict[str, object]) -> 
         "",
         f"- Cases: {summary.get('case_count', 0)}",
         f"- Inventory ready: {summary.get('inventory_ready_count', 0)}",
+        f"- Supported inventory ready: {summary.get('supported_inventory_ready_count', 0)}",
         f"- Provisional: {summary.get('provisional_case_count', 0)}",
         f"- Unresolved: {summary.get('unresolved_case_count', 0)}",
         "",
         "## Cases",
         "",
-        "| Brand | Web Provider | Status | Eligible | Missing | Evidence | Warnings |",
-        "| --- | --- | --- | --- | --- | --- | --- |",
+        "| Brand | Web Provider | Status | Ready | Supported Ready | Eligible | Missing | Evidence | Warnings |",
+        "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in summary.get("cases", []):
         lines.append(
-            "| {brand} | {provider} | {status} | {eligible} | {missing} | {evidence} | {warnings} |".format(
+            "| {brand} | {provider} | {status} | {ready} | {supported_ready} | {eligible} | {missing} | {evidence} | {warnings} |".format(
                 brand=row.get("brand", ""),
                 provider=row.get("owned_web_provider", ""),
                 status=row.get("resolution_status", ""),
+                ready="yes" if row.get("inventory_ready") else "no",
+                supported_ready="yes" if row.get("supported_inventory_ready") else "no",
                 eligible=", ".join(row.get("eligible_channels", [])) or "none",
                 missing=", ".join(row.get("missing_required_channels", [])) or "none",
                 evidence=row.get("evidence_count", 0),
@@ -131,6 +140,16 @@ def render_brand_intelligence_benchmark_markdown(summary: dict[str, object]) -> 
         )
         for channel, count in summary["most_common_missing_channels"]:
             lines.append(f"- {channel}: {count}")
+    if summary.get("unsupported_missing_channels"):
+        lines.extend(
+            [
+                "",
+                "## Unsupported Missing Channels",
+                "",
+            ]
+        )
+        for channel, count in summary["unsupported_missing_channels"]:
+            lines.append(f"- {channel}: {count}")
     return "\n".join(lines).strip() + "\n"
 
 
@@ -151,16 +170,21 @@ def _summarize_probe_payload(payload: dict[str, Any], *, case: BrandIntelligence
     evidence_graph = _dict(payload.get("evidence_graph"))
     observations = _list(payload.get("observations"))
     provider_metrics = _aggregate_provider_metrics([payload])
+    interpretation_ready = bool(_dict(payload.get("plan")).get("interpretation_ready"))
+    missing_required_channels = list(inventory.get("missing_required_channels") or [])
+    unsupported_missing_channels = _unsupported_channels(missing_required_channels)
     return {
         "brand": str(_dict(payload.get("input")).get("brand") or (case.brand if case else "")),
         "url": str(_dict(payload.get("input")).get("url") or (case.url if case else "")),
         "label": case.label if case else "",
         "owned_web_provider": str(_dict(payload.get("input")).get("owned_web_provider") or (case.owned_web_provider if case else "")),
         "resolution_status": str(_dict(payload.get("entity")).get("resolution_status") or ""),
-        "interpretation_ready": bool(_dict(payload.get("plan")).get("interpretation_ready")),
-        "inventory_ready": bool(_dict(payload.get("plan")).get("interpretation_ready")) and not list(inventory.get("missing_required_channels") or []),
+        "interpretation_ready": interpretation_ready,
+        "inventory_ready": interpretation_ready and not missing_required_channels,
+        "supported_inventory_ready": interpretation_ready and sorted(missing_required_channels) == sorted(unsupported_missing_channels),
         "eligible_channels": list(inventory.get("eligible_channels") or []),
-        "missing_required_channels": list(inventory.get("missing_required_channels") or []),
+        "missing_required_channels": missing_required_channels,
+        "unsupported_missing_channels": unsupported_missing_channels,
         "duplicate_source_urls": list(inventory.get("duplicate_source_urls") or []),
         "conflicting_source_urls": list(inventory.get("conflicting_source_urls") or []),
         "evidence_count": int(_dict(evidence_graph.get("summary")).get("evidence_count") or 0),
@@ -244,6 +268,17 @@ def _most_common_missing_channels(case_rows: list[dict[str, object]], limit: int
     for row in case_rows:
         counts.update(str(channel) for channel in row.get("missing_required_channels", []))
     return counts.most_common(limit)
+
+
+def _unsupported_missing_channels(case_rows: list[dict[str, object]], limit: int = 10) -> list[tuple[str, int]]:
+    counts: Counter[str] = Counter()
+    for row in case_rows:
+        counts.update(str(channel) for channel in row.get("unsupported_missing_channels", []))
+    return counts.most_common(limit)
+
+
+def _unsupported_channels(channels: list[str]) -> list[str]:
+    return [channel for channel in channels if channel not in LIVE_PROBE_SUPPORTED_REQUIRED_CHANNELS]
 
 
 def _case_id(payload: dict[str, Any]) -> str:

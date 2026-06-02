@@ -10,9 +10,12 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import asdict, is_dataclass
+import os
+from dataclasses import asdict, is_dataclass, replace
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
+from urllib.request import Request, urlopen
 
 from src.collectors.exa_collector import ExaCollector, ExaResult
 from src.collectors.web_collector import WebCollector, WebData
@@ -41,17 +44,18 @@ def main() -> int:
     )
     inventory = payload["inventory"]
     graph = payload["evidence_graph"]
+    graph_summary = graph.get("summary") or {}
     print(
         "Summary:"
         f" observations={len(payload['observations'])}"
-        f" eligible_channels={len(inventory.eligible_channels)}"
-        f" evidence={graph.summary()['evidence_count']}"
-        f" rejected={graph.summary()['rejected_count']}"
+        f" eligible_channels={len(inventory.get('eligible_channels') or [])}"
+        f" evidence={graph_summary.get('evidence_count', 0)}"
+        f" rejected={graph_summary.get('rejected_count', 0)}"
     )
-    if inventory.limitations:
-        print(f"Inventory limitations: {', '.join(inventory.limitations)}")
-    if graph.warnings:
-        print(f"Graph warnings: {', '.join(graph.warnings)}")
+    if inventory.get("limitations"):
+        print(f"Inventory limitations: {', '.join(inventory['limitations'])}")
+    if graph.get("warnings"):
+        print(f"Graph warnings: {', '.join(graph['warnings'])}")
     return 0
 
 
@@ -85,6 +89,13 @@ def run_probe(
             provider="exa",
             channel=_channel_for_exa_result(result),
         )
+        observation = _ensure_external_result_matches_entity(
+            observation,
+            result,
+            brand=brand,
+            seed_url=url,
+            entity=entity,
+        )
         observations.append(observation)
         evidence_items.append(
             evidence_item_from_observation(
@@ -93,22 +104,26 @@ def run_probe(
             )
         )
 
-    web_data = None
+    web_captures: list[tuple[str, WebData]] = []
     if use_web:
-        try:
-            web_data = _collect_web(url, owned_web_provider=owned_web_provider)
-        except Exception as exc:
-            message = f"web_error:{owned_web_provider}:{exc}"
-            print(f"Web capture error ({owned_web_provider}): {exc}")
-            probe_errors.append(message)
-    if web_data is not None:
-        observation = owned_web_source_observation(
-            _web_data_payload(web_data),
-            provider=owned_web_provider,
-            channel="owned_web",
-        )
-        observations.append(observation)
-        evidence_items.append(evidence_item_from_observation(observation, web_data.markdown_content))
+        for channel, source_url in _planned_owned_web_sources(plan):
+            try:
+                web_data = _collect_web(source_url, owned_web_provider=owned_web_provider)
+            except Exception as exc:
+                message = f"web_error:{owned_web_provider}:{source_url}:{exc}"
+                print(f"Web capture error ({owned_web_provider}, {source_url}): {exc}")
+                probe_errors.append(message)
+                continue
+            if web_data is None:
+                continue
+            web_captures.append((channel, web_data))
+            observation = owned_web_source_observation(
+                _web_data_payload(web_data),
+                provider=owned_web_provider,
+                channel=channel,
+            )
+            observations.append(observation)
+            evidence_items.append(evidence_item_from_observation(observation, web_data.markdown_content))
 
     inventory = build_brand_source_inventory(plan, observations)
     graph = build_brand_evidence_graph(inventory, evidence_items)
@@ -121,7 +136,8 @@ def run_probe(
         "observations": [observation.to_dict() for observation in observations],
         "raw_counts": {
             "exa_results": len(exa_results_data),
-            "web_chars": len(web_data.markdown_content) if web_data else 0,
+            "web_chars": sum(len(web_data.markdown_content) for _, web_data in web_captures),
+            "web_capture_count": len(web_captures),
             "owned_web_provider": owned_web_provider,
         },
         "errors": probe_errors,
@@ -131,6 +147,22 @@ def run_probe(
         output.write_text(json.dumps(_jsonable(payload), ensure_ascii=False, indent=2), encoding="utf-8")
         print(f"Wrote {output}")
     return payload
+
+
+def _planned_owned_web_sources(plan) -> list[tuple[str, str]]:
+    sources: list[tuple[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for request in plan.source_requests:
+        if request.channel not in {"owned_web", "parent_owned_web"}:
+            continue
+        if not request.url:
+            continue
+        key = (request.channel, request.url)
+        if key in seen:
+            continue
+        seen.add(key)
+        sources.append(key)
+    return sources
 
 
 def _parse_args() -> argparse.Namespace:
@@ -143,7 +175,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--use-web", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument(
         "--owned-web-provider",
-        choices=("firecrawl", "playwright", "none"),
+        choices=("firecrawl", "playwright", "tinyfish", "none"),
         default="firecrawl",
         help="Owned-web capture provider used when --use-web is enabled.",
     )
@@ -163,6 +195,8 @@ def _collect_web(url: str, *, owned_web_provider: str = "firecrawl") -> WebData 
     if owned_web_provider == "none":
         print("Web skipped: owned web provider disabled")
         return None
+    if owned_web_provider == "tinyfish":
+        return _collect_tinyfish_fetch(url)
     collector = WebCollector(api_key=FIRECRAWL_API_KEY)
     if owned_web_provider == "playwright":
         payload, error = collector._fetch_browser_fallback(url)
@@ -182,6 +216,63 @@ def _collect_web(url: str, *, owned_web_provider: str = "firecrawl") -> WebData 
         print("Web skipped: FIRECRAWL_API_KEY not set")
         return None
     return collector.scrape(url, crawl_subpages=False)
+
+
+def _collect_tinyfish_fetch(url: str) -> WebData:
+    api_key = os.environ.get("TINYFISH_API_KEY", "").strip()
+    if not api_key:
+        return WebData(url=url, error="TINYFISH_API_KEY not set", content_source="tinyfish_fetch")
+
+    request = Request(
+        "https://api.fetch.tinyfish.ai",
+        data=json.dumps(
+            {
+                "urls": [url],
+                "format": "markdown",
+                "links": True,
+                "image_links": True,
+                "ttl": 0,
+            }
+        ).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "X-API-Key": api_key,
+        },
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=150) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except Exception as exc:
+        return WebData(url=url, error=str(exc), content_source="tinyfish_fetch")
+
+    results = payload.get("results") if isinstance(payload, dict) else []
+    errors = payload.get("errors") if isinstance(payload, dict) else []
+    if errors:
+        first = errors[0] if isinstance(errors[0], dict) else {"error": str(errors[0])}
+        return WebData(
+            url=str(first.get("url") or url),
+            error=str(first.get("error") or "tinyfish_fetch_error"),
+            content_source="tinyfish_fetch",
+        )
+    if not results:
+        return WebData(url=url, error="tinyfish_fetch_empty_results", content_source="tinyfish_fetch")
+
+    result = results[0]
+    text = result.get("text") if isinstance(result, dict) else ""
+    if isinstance(text, dict):
+        text = json.dumps(text, ensure_ascii=False)
+    return WebData(
+        url=url,
+        title=str(result.get("title") or "") if isinstance(result, dict) else "",
+        meta_description=str(result.get("description") or "") if isinstance(result, dict) else "",
+        markdown_content=str(text or ""),
+        canonical_url=str(result.get("final_url") or result.get("url") or url) if isinstance(result, dict) else url,
+        links=list(result.get("links") or []) if isinstance(result, dict) else [],
+        images=list(result.get("image_links") or []) if isinstance(result, dict) else [],
+        load_time_ms=int(result.get("latency_ms") or 0) if isinstance(result, dict) else 0,
+        content_source="tinyfish_fetch",
+    )
 
 
 def _exa_result_payload(result: ExaResult) -> dict[str, Any]:
@@ -218,6 +309,67 @@ def _channel_for_exa_result(result: ExaResult) -> str:
     if any(token in haystack for token in ("news", "press", "launch", "announces", "funding")):
         return "news"
     return "search"
+
+
+def _ensure_external_result_matches_entity(
+    observation,
+    result: ExaResult,
+    *,
+    brand: str,
+    seed_url: str,
+    entity,
+):
+    if observation.status != "observed" or observation.channel not in {"search", "reviews", "news"}:
+        return observation
+    if _external_result_matches_entity(result, brand=brand, seed_url=seed_url, entity=entity):
+        return observation
+    return replace(
+        observation,
+        evidence_eligibility="ineligible",
+        confidence=min(observation.confidence, 0.2),
+        reason="external_result_entity_relevance_not_confirmed",
+    )
+
+
+def _external_result_matches_entity(result: ExaResult, *, brand: str, seed_url: str, entity) -> bool:
+    haystack = _normalize_match_text(
+        " ".join(
+            [
+                str(result.url or ""),
+                str(result.title or ""),
+                str(result.text or "")[:1200],
+                str(result.summary or "")[:1200],
+            ]
+        )
+    )
+    seed_host = _host(seed_url)
+    result_host = _host(result.url)
+    if seed_host and (seed_host == result_host or seed_host in haystack):
+        return True
+
+    exact_anchors = [
+        brand,
+        getattr(entity, "resolved_name", ""),
+        getattr(entity, "product_name", "") or "",
+        getattr(entity, "parent_brand", "") or "",
+    ]
+    anchors = [_normalize_match_text(anchor) for anchor in exact_anchors if anchor]
+    anchors = [anchor for anchor in anchors if len(anchor) >= 4]
+
+    if getattr(entity, "resolution_status", "") != "resolved":
+        return any(" " in anchor and anchor in haystack for anchor in anchors)
+
+    return any(anchor in haystack for anchor in anchors)
+
+
+def _normalize_match_text(value: str) -> str:
+    return " ".join(str(value or "").lower().replace("_", " ").replace("-", " ").split())
+
+
+def _host(url: str) -> str:
+    parsed = urlparse(str(url or ""))
+    host = parsed.netloc or parsed.path
+    return host.lower().removeprefix("www.").split("/")[0]
 
 
 def _evidence_excerpt(text: str, limit: int = 1400) -> str:

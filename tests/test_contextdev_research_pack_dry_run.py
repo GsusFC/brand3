@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from src.reports.brand_research_pack import BrandResearchPack, EntityResolution
 from src.research.contextdev_candidates import ContextDevEvidenceCandidate, summarize_contextdev_candidates
-from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
+from src.research.contextdev_research_pack_dry_run import (
+    build_contextdev_research_pack_dry_run,
+    filter_contextdev_candidate_summary_for_pack,
+)
 
 
 def test_contextdev_research_pack_dry_run_appends_promotable_signals_without_mutating_original() -> None:
@@ -65,6 +68,28 @@ def test_contextdev_research_pack_dry_run_deduplicates_existing_visual_signal() 
     assert payload["field_updates"] == []
 
 
+def test_contextdev_research_pack_dry_run_filters_candidates_by_pack_domain() -> None:
+    pack = _pack(product_summary="Existing product synthesis.")
+    summary = summarize_contextdev_candidates(
+        [
+            _candidate("visual_fonts", "visual_identity", "Example Sans", source_url="https://www.example.com/fonts"),
+            _candidate("visual_colors", "visual_identity", "Other colors", source_url="https://other.example.net"),
+        ]
+    )
+
+    filtered = filter_contextdev_candidate_summary_for_pack(pack, summary)
+    result = build_contextdev_research_pack_dry_run(pack, summary)
+    payload = result.to_dict()
+
+    assert filtered["candidate_count"] == 1
+    assert filtered["by_channel"] == {"visual_identity": 1}
+    assert [candidate["source_url"] for candidate in filtered["candidates"]] == ["https://www.example.com/fonts"]
+    assert payload["enriched_pack"]["visual_or_conceptual_signals"] == [
+        "existing visual signal",
+        "Example Sans",
+    ]
+
+
 def _pack(*, product_summary: str) -> BrandResearchPack:
     return BrandResearchPack(
         version="brand_research_pack_v0_1",
@@ -78,12 +103,18 @@ def _pack(*, product_summary: str) -> BrandResearchPack:
     )
 
 
-def _candidate(candidate_type: str, supports_channel: str, text: str) -> ContextDevEvidenceCandidate:
+def _candidate(
+    candidate_type: str,
+    supports_channel: str,
+    text: str,
+    *,
+    source_url: str = "https://example.com",
+) -> ContextDevEvidenceCandidate:
     return ContextDevEvidenceCandidate(
         candidate_id=f"ctxdev_{candidate_type}_{len(text)}",
         candidate_type=candidate_type,
         supports_channel=supports_channel,
         text=text,
-        source_url="https://example.com",
+        source_url=source_url,
         raw_ref="test",
     )

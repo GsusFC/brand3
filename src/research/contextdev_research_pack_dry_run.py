@@ -5,6 +5,7 @@ from __future__ import annotations
 from copy import deepcopy
 from dataclasses import asdict, dataclass
 from typing import Any
+from urllib.parse import urlparse
 
 from src.reports.brand_research_pack import BrandResearchPack
 from src.research.contextdev_candidate_gate import (
@@ -54,6 +55,7 @@ def build_contextdev_research_pack_dry_run(
     """Build a non-production enrichment preview from promotable candidates."""
 
     original_pack = BrandResearchPack.from_dict(pack).to_dict() if isinstance(pack, dict) else pack.to_dict()
+    candidate_summary = filter_contextdev_candidate_summary_for_pack(original_pack, candidate_summary)
     enriched_pack = deepcopy(original_pack)
     promotion_report = evaluate_contextdev_summary_promotion(candidate_summary)
     candidates_by_id = {
@@ -100,6 +102,24 @@ def build_contextdev_research_pack_dry_run(
     )
 
 
+def filter_contextdev_candidate_summary_for_pack(
+    pack: BrandResearchPack | dict[str, Any],
+    candidate_summary: dict[str, Any],
+) -> dict[str, Any]:
+    """Keep only candidates whose source domain belongs to the Research Pack."""
+
+    pack_payload = BrandResearchPack.from_dict(pack).to_dict() if isinstance(pack, dict) else pack.to_dict()
+    allowed_domains = _pack_domains(pack_payload)
+    if not allowed_domains:
+        return {**candidate_summary, "candidates": []}
+    candidates = [
+        item
+        for item in _list(candidate_summary.get("candidates"))
+        if isinstance(item, dict) and _domain_matches(str(item.get("source_url") or ""), allowed_domains)
+    ]
+    return _summary_with_candidates(candidate_summary, candidates)
+
+
 def _summary_note(*, promotion_report: ContextDevPromotionReport, update_count: int) -> str:
     counts = promotion_report.status_counts
     return (
@@ -134,6 +154,67 @@ def _append_unique(payload: dict[str, Any], field: str, value: str) -> bool:
 
 def _clean_text(value: Any) -> str:
     return " ".join(str(value or "").split())
+
+
+def _pack_domains(pack: dict[str, Any]) -> set[str]:
+    domains = set()
+    for value in [
+        pack.get("input_url"),
+        *_list(pack.get("official_urls")),
+        *_list(pack.get("analyzed_urls")),
+    ]:
+        domain = _normalized_domain(str(value or ""))
+        if domain:
+            domains.add(domain)
+
+    source_map = pack.get("source_map")
+    if isinstance(source_map, dict):
+        for source in source_map.values():
+            if isinstance(source, dict):
+                domain = _normalized_domain(str(source.get("url") or ""))
+                if domain:
+                    domains.add(domain)
+
+    resolved = pack.get("resolved_entity")
+    if isinstance(resolved, dict):
+        domain = _normalized_domain(str(resolved.get("canonical_url") or ""))
+        if domain:
+            domains.add(domain)
+    return domains
+
+
+def _summary_with_candidates(candidate_summary: dict[str, Any], candidates: list[dict[str, Any]]) -> dict[str, Any]:
+    by_channel: dict[str, int] = {}
+    by_type: dict[str, int] = {}
+    for candidate in candidates:
+        channel = str(candidate.get("supports_channel") or "")
+        candidate_type = str(candidate.get("candidate_type") or "")
+        if channel:
+            by_channel[channel] = by_channel.get(channel, 0) + 1
+        if candidate_type:
+            by_type[candidate_type] = by_type.get(candidate_type, 0) + 1
+    return {
+        **candidate_summary,
+        "candidate_count": len(candidates),
+        "by_channel": dict(sorted(by_channel.items())),
+        "by_type": dict(sorted(by_type.items())),
+        "candidates": candidates,
+    }
+
+
+def _domain_matches(url: str, allowed_domains: set[str]) -> bool:
+    domain = _normalized_domain(url)
+    if not domain:
+        return False
+    return any(domain == allowed or domain.endswith(f".{allowed}") for allowed in allowed_domains)
+
+
+def _normalized_domain(url: str) -> str:
+    parsed = urlparse(url if "://" in url else f"https://{url}")
+    domain = (parsed.netloc or parsed.path or "").lower().strip()
+    if domain.startswith("www."):
+        domain = domain[4:]
+    return domain.split("/")[0]
 
 
 def _list(value: Any) -> list[Any]:

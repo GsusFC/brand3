@@ -34,3 +34,9 @@ Optional override:
 ```bash
 ./.venv/bin/python scripts/brand_intelligence_benchmark.py --cases-file examples/benchmarks/brand_intelligence_acquisition/cases.json
 ```
+
+Run only configured providers:
+
+```bash
+./.venv/bin/python scripts/brand_intelligence_benchmark.py --providers firecrawl,playwright
+```

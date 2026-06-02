@@ -9,7 +9,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-from brand_intelligence_live_probe import run_probe
+try:
+    from scripts.brand_intelligence_live_probe import run_probe
+except ModuleNotFoundError:  # pragma: no cover - direct script execution fallback
+    from brand_intelligence_live_probe import run_probe
 from src.research.brand_intelligence_benchmark import (
     BrandIntelligenceBenchmarkCase,
     default_benchmark_cases,
@@ -21,6 +24,7 @@ from src.research.brand_intelligence_benchmark import (
 def main() -> int:
     args = _parse_args()
     cases = _load_cases(args.cases_file) if args.cases_file and args.cases_file.exists() else default_benchmark_cases()
+    cases = _filter_cases_by_providers(cases, args.providers)
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -65,6 +69,11 @@ def _parse_args() -> argparse.Namespace:
         help="JSON file with benchmark cases.",
     )
     parser.add_argument("--output-dir", type=Path, default=Path("out/brand_intelligence_benchmark"))
+    parser.add_argument(
+        "--providers",
+        default="",
+        help="Optional comma-separated owned-web providers to run, e.g. firecrawl,playwright or tinyfish.",
+    )
     return parser.parse_args()
 
 
@@ -84,6 +93,16 @@ def _load_cases(path: Path) -> list[BrandIntelligenceBenchmarkCase]:
             )
         )
     return cases
+
+
+def _filter_cases_by_providers(
+    cases: list[BrandIntelligenceBenchmarkCase],
+    providers_csv: str,
+) -> list[BrandIntelligenceBenchmarkCase]:
+    providers = {item.strip().lower() for item in providers_csv.split(",") if item.strip()}
+    if not providers:
+        return cases
+    return [case for case in cases if case.owned_web_provider.lower() in providers]
 
 
 def _slugify(value: str) -> str:

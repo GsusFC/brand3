@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import urlparse
 
 from src.reports.brand_research_pack import BrandResearchPack
@@ -17,6 +17,7 @@ from src.research.contextdev_visual_normalizer import normalize_contextdev_visua
 
 
 CONTEXTDEV_RESEARCH_PACK_DRY_RUN_VERSION = "contextdev_research_pack_dry_run_v0_1"
+ContextDevResearchPackDryRunMode = Literal["full", "visual_only"]
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,6 +35,7 @@ class ContextDevPackFieldUpdate:
 @dataclass(frozen=True, slots=True)
 class ContextDevResearchPackDryRun:
     version: str
+    mode: ContextDevResearchPackDryRunMode
     original_pack: dict[str, Any]
     enriched_pack: dict[str, Any]
     promotion_report: ContextDevPromotionReport
@@ -42,6 +44,7 @@ class ContextDevResearchPackDryRun:
     def to_dict(self) -> dict[str, Any]:
         return {
             "version": self.version,
+            "mode": self.mode,
             "original_pack": self.original_pack,
             "enriched_pack": self.enriched_pack,
             "promotion_report": self.promotion_report.to_dict(),
@@ -52,8 +55,13 @@ class ContextDevResearchPackDryRun:
 def build_contextdev_research_pack_dry_run(
     pack: BrandResearchPack | dict[str, Any],
     candidate_summary: dict[str, Any],
+    *,
+    mode: ContextDevResearchPackDryRunMode = "full",
 ) -> ContextDevResearchPackDryRun:
     """Build a non-production enrichment preview from promotable candidates."""
+
+    if mode not in {"full", "visual_only"}:
+        raise ValueError(f"Unsupported Context.dev Research Pack dry-run mode: {mode}")
 
     original_pack = BrandResearchPack.from_dict(pack).to_dict() if isinstance(pack, dict) else pack.to_dict()
     candidate_summary = filter_contextdev_candidate_summary_for_pack(original_pack, candidate_summary)
@@ -81,6 +89,8 @@ def build_contextdev_research_pack_dry_run(
                 updates.append(_update("visual_or_conceptual_signals", "append", visual_signal, candidate))
             continue
         if decision.target_contract == "research_pack.product_summary":
+            if mode == "visual_only":
+                continue
             if not _clean_text(enriched_pack.get("product_summary")):
                 enriched_pack["product_summary"] = text
                 updates.append(_update("product_summary", "set", text, candidate))
@@ -97,6 +107,7 @@ def build_contextdev_research_pack_dry_run(
 
     return ContextDevResearchPackDryRun(
         version=CONTEXTDEV_RESEARCH_PACK_DRY_RUN_VERSION,
+        mode=mode,
         original_pack=original_pack,
         enriched_pack=enriched_pack,
         promotion_report=promotion_report,

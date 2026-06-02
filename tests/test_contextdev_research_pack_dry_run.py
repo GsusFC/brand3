@@ -55,6 +55,33 @@ def test_contextdev_research_pack_dry_run_sets_empty_product_summary() -> None:
     assert payload["field_updates"][0]["field"] == "product_summary"
 
 
+def test_contextdev_research_pack_visual_only_excludes_product_candidates() -> None:
+    pack = _pack(product_summary="")
+    summary = summarize_contextdev_candidates(
+        [
+            _candidate("visual_fonts", "visual_identity", "Example Sans"),
+            _candidate("product_profile", "product_extraction", "Example Platform helps AI teams evaluate agents."),
+        ]
+    )
+
+    result = build_contextdev_research_pack_dry_run(pack, summary, mode="visual_only")
+    payload = result.to_dict()
+
+    assert payload["mode"] == "visual_only"
+    assert payload["enriched_pack"]["product_summary"] == ""
+    assert "Context.dev product candidate: Example Platform helps AI teams evaluate agents." not in payload["enriched_pack"]["confidence_notes"]
+    assert payload["enriched_pack"]["visual_or_conceptual_signals"] == [
+        "existing visual signal",
+        "Font signal: Example Sans, suggesting a defined visual voice.",
+    ]
+    assert payload["promotion_report"]["status_counts"] == {
+        "promotable": 2,
+        "review_required": 0,
+        "blocked": 0,
+    }
+    assert [update["field"] for update in payload["field_updates"]] == ["visual_or_conceptual_signals"]
+
+
 def test_contextdev_research_pack_dry_run_deduplicates_existing_visual_signal() -> None:
     pack = _pack(product_summary="Existing product synthesis.")
     pack.visual_or_conceptual_signals = ["Font signal: existing visual signal, suggesting a defined visual voice."]

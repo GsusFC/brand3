@@ -22,7 +22,10 @@ def main() -> int:
     store = SQLiteStore(str(args.db))
     try:
         run_ids = args.run_ids or _latest_run_ids(store, args.limit)
-        reports = [_build_run_report(store, run_id, candidate_summary, builder=args.builder) for run_id in run_ids]
+        reports = [
+            _build_run_report(store, run_id, candidate_summary, builder=args.builder, mode=args.mode)
+            for run_id in run_ids
+        ]
     finally:
         store.close()
 
@@ -31,7 +34,7 @@ def main() -> int:
         run_id = report.get("run_id") or "unknown"
         (args.output_dir / f"run-{run_id}.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    summary = _summarize_reports(reports, builder=args.builder, db_path=str(args.db))
+    summary = _summarize_reports(reports, builder=args.builder, mode=args.mode, db_path=str(args.db))
     (args.output_dir / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Wrote {args.output_dir}")
     print(f"Summary: runs={summary['run_count']} updates={summary['total_updates']} statuses={summary['status_counts']}")
@@ -44,6 +47,7 @@ def _build_run_report(
     candidate_summary: dict[str, Any],
     *,
     builder: str,
+    mode: str,
 ) -> dict[str, Any]:
     snapshot = store.get_run_snapshot(run_id)
     if snapshot is None:
@@ -52,7 +56,7 @@ def _build_run_report(
     run = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
     try:
         pack = _build_pack(snapshot, builder=builder)
-        dry_run = build_contextdev_research_pack_dry_run(pack, candidate_summary).to_dict()
+        dry_run = build_contextdev_research_pack_dry_run(pack, candidate_summary, mode=mode).to_dict()
     except Exception as exc:  # pragma: no cover - defensive for ad hoc local runs.
         return {
             "run_id": run_id,
@@ -66,6 +70,7 @@ def _build_run_report(
         "run_id": run_id,
         "status": "ok",
         "builder": builder,
+        "mode": mode,
         "brand_name": str(run.get("brand_name") or ""),
         "url": str(run.get("url") or ""),
         "pack_entity_type": dry_run["original_pack"].get("entity_type"),
@@ -98,7 +103,7 @@ def _latest_run_ids(store: SQLiteStore, limit: int) -> list[int]:
     return [int(row["id"]) for row in rows]
 
 
-def _summarize_reports(reports: list[dict[str, Any]], *, builder: str, db_path: str) -> dict[str, Any]:
+def _summarize_reports(reports: list[dict[str, Any]], *, builder: str, mode: str, db_path: str) -> dict[str, Any]:
     status_counts = {"promotable": 0, "review_required": 0, "blocked": 0}
     total_updates = 0
     rows = []
@@ -122,6 +127,7 @@ def _summarize_reports(reports: list[dict[str, Any]], *, builder: str, db_path: 
     return {
         "version": "contextdev_run_pack_dry_run_batch_v0_1",
         "builder": builder,
+        "mode": mode,
         "db_path": db_path,
         "run_count": len(reports),
         "ok_count": sum(1 for report in reports if report.get("status") == "ok"),
@@ -137,6 +143,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=8)
     parser.add_argument("--db", type=Path, default=Path(BRAND3_DB_PATH))
     parser.add_argument("--builder", choices=("graph", "legacy"), default="graph")
+    parser.add_argument("--mode", choices=("full", "visual_only"), default="full")
     parser.add_argument("--candidate-summary", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, default=Path("out/contextdev_run_pack_dry_run"))
     return parser.parse_args()

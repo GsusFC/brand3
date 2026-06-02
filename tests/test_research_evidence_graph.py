@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
-from src.research.evidence_graph import EvidenceGraph, build_evidence_graph_from_snapshot
+from src.research.evidence_graph import BrandResearchRun, EvidenceClaim, EvidenceGraph, ResearchSource, build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
 
 
@@ -416,6 +416,113 @@ def test_evidence_graph_recovers_low_signal_owned_product_claims() -> None:
     assert any(marker in pack["offer"].lower() for marker in ("new home for your internet", "tabs are like tasks"))
     assert any("value_proposition" in claim["supports_blocks"] for claim in recovered)
     assert all("Download Free" not in claim["text"] for claim in recovered)
+    assert pack["audience"] == "browser users"
+
+
+def test_graph_pack_rejects_pricing_labels_as_product_summary() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=1006,
+            brand_name="Galtea",
+            input_url="https://galtea.ai",
+            resolved_entity="Galtea",
+            entity_type="company",
+        ),
+        sources={
+            "home": ResearchSource(
+                source_id="home",
+                url="https://galtea.ai",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            ),
+            "pricing": ResearchSource(
+                source_id="pricing",
+                url="https://galtea.ai/pricing",
+                source_type="owned_pricing",
+                surface_role="product:pricing",
+                entity_scope="product:plans",
+            ),
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="offer",
+                text="Galtea is the Quality Assurance platform for companies deploying Generative AI solutions.",
+                claim_type="product_offer",
+                source_id="home",
+                source_url="https://galtea.ai",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            ),
+            EvidenceClaim(
+                claim_id="pricing",
+                text="Free Pro Enterprise",
+                claim_type="product_offer",
+                source_id="pricing",
+                source_url="https://galtea.ai/pricing",
+                source_type="owned_pricing",
+                surface_role="product:pricing",
+                entity_scope="product:plans",
+            ),
+            EvidenceClaim(
+                claim_id="pricing-detail",
+                text="From solo developers evaluating their first LLM feature to enterprise teams validating AI at scale. Pick the plan that fits your stage.",
+                claim_type="product_offer",
+                source_id="pricing",
+                source_url="https://galtea.ai/pricing",
+                source_type="owned_pricing",
+                surface_role="product:pricing",
+                entity_scope="product:plans",
+            ),
+            EvidenceClaim(
+                claim_id="pricing-billing",
+                text="Your evaluations will pause until the next billing cycle. With a Pro or Enterprise plan, you can top up with a credit package at any time without changing your plan.",
+                claim_type="product_offer",
+                source_id="pricing",
+                source_url="https://galtea.ai/pricing",
+                source_type="owned_pricing",
+                surface_role="product:pricing",
+                entity_scope="product:plans",
+            ),
+            EvidenceClaim(
+                claim_id="plan-audience",
+                text="Enterprise",
+                claim_type="audience",
+                source_id="pricing",
+                source_url="https://galtea.ai/pricing",
+                source_type="owned_pricing",
+                surface_role="product:pricing",
+                entity_scope="product:plans",
+            ),
+            EvidenceClaim(
+                claim_id="founder-page-audience",
+                text="Meet the founders",
+                claim_type="audience",
+                source_id="home",
+                source_url="https://galtea.ai/company/about-us",
+                source_type="owned_about",
+                surface_role="mission_about",
+                entity_scope="audited_surface",
+            ),
+            EvidenceClaim(
+                claim_id="bad-audience",
+                text="The unit of evaluation is what users experience, not individual model calls, regardless of how many models, agents, or nodes are running underneath.",
+                claim_type="audience",
+                source_id="pricing",
+                source_url="https://galtea.ai/pricing",
+                source_type="owned_pricing",
+                surface_role="product:pricing",
+                entity_scope="product:plans",
+            ),
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert pack["product_summary"] == "Galtea is the Quality Assurance platform for companies deploying Generative AI solutions."
+    assert pack["audience"] == "companies deploying generative AI"
 
 
 def test_company_brand_pack_prefers_parent_offer_over_single_product_copy() -> None:

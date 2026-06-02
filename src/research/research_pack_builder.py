@@ -59,8 +59,8 @@ def build_brand_research_pack_from_graph(graph: EvidenceGraph) -> BrandResearchP
     offer = _offer_text(claims, graph=graph)
     product_summary = _product_summary_text(claims) or offer or _first_claim_text(claims, ("hero_claim", "outcome"))
     company_summary = _company_summary_text(claims, graph=graph) or offer
-    audience = _first_claim_text(claims, ("audience",))
     outcome = _first_claim_text(claims, ("outcome",)) or _infer_outcome([offer, product_summary, company_summary])
+    audience = _audience_text(claims, [offer, product_summary, company_summary, outcome])
     declared_mission = _first_claim_text(claims, ("mission",))
     future_direction = _first_claim_text(claims, ("vision",))
     signal_texts = _signal_texts(claims)
@@ -297,8 +297,109 @@ def _company_summary_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGra
 
 def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
     for claim in claims:
-        if claim.claim_type in {"product_offer", "feature_evidence", "outcome", "audience", "hero_claim"} and claim.text and _is_product_scoped_claim(claim):
+        if (
+            claim.claim_type in {"product_offer", "feature_evidence", "outcome", "audience", "hero_claim"}
+            and claim.text
+            and _is_product_scoped_claim(claim)
+            and not _looks_like_product_summary_noise(claim.text)
+            and not _looks_like_audience_noise(claim.text)
+        ):
             return claim.text
+    return ""
+
+
+def _audience_text(claims: Iterable[EvidenceClaim], fallback_texts: Iterable[str]) -> str:
+    for claim in claims:
+        if claim.claim_type == "audience" and claim.text and not _looks_like_audience_noise(claim.text):
+            return claim.text
+    return _infer_audience_from_texts(fallback_texts)
+
+
+def _looks_like_product_summary_noise(text: str) -> bool:
+    low = " ".join(str(text or "").lower().split())
+    if not low:
+        return True
+    pricing_markers = {"free", "basic", "pro", "max", "enterprise", "plan", "plans", "pricing"}
+    tokens = set(low.replace("/", " ").split())
+    if len(tokens) <= 5 and tokens & pricing_markers:
+        return True
+    return any(
+        marker in low
+        for marker in (
+            "free pro enterprise",
+            "basic pro max",
+            "pricing plans",
+            "compare plans",
+            "pick the plan",
+            "plan that fits",
+            "fits your stage",
+            "billing cycle",
+            "credit package",
+            "changing your plan",
+            "top up",
+        )
+    )
+
+
+def _looks_like_audience_noise(text: str) -> bool:
+    cleaned = " ".join(str(text or "").split()).strip()
+    low = cleaned.lower()
+    if not cleaned:
+        return True
+    if low in {"free", "basic", "pro", "max", "enterprise", "startup", "starter"}:
+        return True
+    if low.startswith("meet the "):
+        return True
+    if "|" in cleaned or cleaned.count(" - ") >= 1:
+        return True
+    if any(
+        marker in low
+        for marker in (
+            "evaluate your",
+            "free pro enterprise",
+            "pricing",
+            "copyright",
+            "privacy policy",
+            "unit of evaluation",
+            "model calls",
+            "nodes are running",
+            "pick the plan",
+            "plan that fits",
+            "fits your stage",
+            "billing cycle",
+            "credit package",
+            "changing your plan",
+            "top up",
+        )
+    ):
+        return True
+    return False
+
+
+def _infer_audience_from_texts(texts: Iterable[str]) -> str:
+    low = " ".join(str(text or "") for text in texts).lower()
+    if not low:
+        return ""
+    if "legal and development teams" in low:
+        return "legal and development teams"
+    if "development teams" in low:
+        return "development teams"
+    if "ai teams" in low or "agent" in low and "teams" in low:
+        return "AI teams"
+    if "companies" in low and ("generative ai" in low or "ai" in low):
+        return "companies deploying generative AI"
+    if "enterprise" in low or "enterprises" in low:
+        return "enterprise teams"
+    if "operations teams" in low:
+        return "operations teams"
+    if "teams" in low:
+        return "teams"
+    if "founders" in low:
+        return "founders"
+    if "traders" in low:
+        return "traders"
+    if "browser" in low or "tabs" in low or "workspaces" in low or "internet" in low:
+        return "browser users"
     return ""
 
 

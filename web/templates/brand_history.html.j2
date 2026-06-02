@@ -3,8 +3,8 @@
 {% block content %}
 <section>
   <div class="section-head">
-    <span class="label">brand_history · {{ domain }}</span>
-    <span class="tag">// {{ analyses|length }} runs</span>
+    <span class="label">{{ 'historial_de_marca' if current_lang == 'es' else 'brand_history' }} · {{ domain }}</span>
+    <span class="tag">// {{ analyses|length }} {{ 'ejecuciones' if current_lang == 'es' else 'runs' }}</span>
   </div>
 
   {% if analyses %}
@@ -12,8 +12,8 @@
   <table>
     <thead>
       <tr>
-        <th class="col-date">date</th>
-        <th class="num col-score">score</th>
+        <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
+        <th class="num col-score">{{ 'puntuación' if current_lang == 'es' else 'score' }}</th>
         <th class="col-bar-wide">bar</th>
         <th class="col-band-wide">band</th>
         <th></th>
@@ -26,21 +26,25 @@
         <td class="num num-inline col-score">{{ row.score_display }}</td>
         <td class="bar col-bar-wide">{{ row.bar }}</td>
         <td class="dim col-band-wide">{{ row.band }}</td>
-        <td class="action-cell col-action"><a href="/r/{{ row.token }}">view</a></td>
+        <td class="action-cell col-action"><a href="/r/{{ row.token }}{{ lang_suffix }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
   {% if analyses|length > 1 %}
-  <p class="small dim block-note">// evolution: older runs → newer runs read top-down</p>
+  <p class="small dim block-note">// {% if current_lang == 'es' %}evolución: las ejecuciones más antiguas → las más nuevas se leen de arriba abajo{% else %}evolution: older runs → newer runs read top-down{% endif %}</p>
   {% endif %}
   <p class="small dim block-note">
-    own this brand? <a href="/takedown?domain={{ domain }}">request takedown →</a>
+    {% if current_lang == 'es' %}
+    ¿Eres propietario de esta marca? <a href="/takedown?domain={{ domain }}{{ lang_query }}">solicitar retirada →</a>
+    {% else %}
+    own this brand? <a href="/takedown?domain={{ domain }}{{ lang_query }}">request takedown →</a>
+    {% endif %}
   </p>
   {% else %}
-  <div class="empty">// no public analyses for this brand.</div>
-  <p class="small dim block-note"><a href="/">← run the first analysis</a></p>
+  <div class="empty">// {% if current_lang == 'es' %}no hay análisis públicos para esta marca.{% else %}no public analyses for this brand.{% endif %}</div>
+  <p class="small dim block-note"><a href="/{{ lang_suffix }}">{{ '← ejecutar el primer análisis' if current_lang == 'es' else '← run the first analysis' }}</a></p>
   {% endif %}
 </section>
 {% endblock %}

@@ -3,18 +3,21 @@
 {% block content %}
 <section>
   <div class="section-head">
-    <span class="label">public_observatory</span>
-    <span class="tag">// {{ total }} total · page {{ page }}/{{ total_pages }}</span>
+    <span class="label">{{ 'observatorio_público' if current_lang == 'es' else 'public_observatory' }}</span>
+    <span class="tag">// {{ total }} {{ 'total' if current_lang == 'es' else 'total' }} · {{ 'página' if current_lang == 'es' else 'page' }} {{ page }}/{{ total_pages }}</span>
   </div>
 
   <form method="get" action="/reports" class="form-row reports-filter">
-    <input type="text" name="q" value="{{ query }}" placeholder="filter brand slug ...">
+    {% if ui_lang == 'en' %}
+    <input type="hidden" name="lang" value="en">
+    {% endif %}
+    <input type="text" name="q" value="{{ query }}" placeholder="{{ 'filtrar slug de marca ...' if current_lang == 'es' else 'filter brand slug ...' }}">
     <select name="sort">
-      <option value="newest" {% if sort == "newest" %}selected{% endif %}>newest</option>
-      <option value="score_desc" {% if sort == "score_desc" %}selected{% endif %}>score ↓</option>
-      <option value="score_asc" {% if sort == "score_asc" %}selected{% endif %}>score ↑</option>
+      <option value="newest" {% if sort == "newest" %}selected{% endif %}>{{ 'más recientes' if current_lang == 'es' else 'newest' }}</option>
+      <option value="score_desc" {% if sort == "score_desc" %}selected{% endif %}>{{ 'puntuación ↓' if current_lang == 'es' else 'score ↓' }}</option>
+      <option value="score_asc" {% if sort == "score_asc" %}selected{% endif %}>{{ 'puntuación ↑' if current_lang == 'es' else 'score ↑' }}</option>
     </select>
-    <button type="submit">filter</button>
+    <button type="submit">{{ 'filtrar' if current_lang == 'es' else 'filter' }}</button>
   </form>
 
   {% if rows %}
@@ -22,9 +25,9 @@
   <table>
     <thead>
       <tr>
-        <th class="col-date">date</th>
-        <th class="col-brand">brand</th>
-        <th class="num col-score">score</th>
+        <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
+        <th class="col-brand">{{ 'marca' if current_lang == 'es' else 'brand' }}</th>
+        <th class="num col-score">{{ 'puntuación' if current_lang == 'es' else 'score' }}</th>
         <th class="col-bar">bar</th>
         <th class="col-band">band</th>
         <th></th>
@@ -34,24 +37,24 @@
     {% for row in rows %}
       <tr>
         <td class="col-date">{{ row.date }}</td>
-        <td class="col-brand"><a href="/brand/{{ row.brand_slug }}">{{ row.brand_slug }}</a></td>
+        <td class="col-brand"><a href="/brand/{{ row.brand_slug }}{{ lang_suffix }}">{{ row.brand_slug }}</a></td>
         <td class="num num-inline col-score">{{ row.score_display }}</td>
         <td class="bar col-bar">{{ row.bar }}</td>
         <td class="dim col-band">{{ row.band }}</td>
-        <td class="action-cell col-action"><a href="/r/{{ row.token }}">view</a></td>
+        <td class="action-cell col-action"><a href="/r/{{ row.token }}{{ lang_suffix }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
   {% else %}
-  <div class="empty">// no analyses match this filter.</div>
+  <div class="empty">// {% if current_lang == 'es' %}ningún análisis coincide con este filtro.{% else %}no analyses match this filter.{% endif %}</div>
   {% endif %}
 
   <nav class="pager small">
-    {% if has_prev %}<a href="/reports?page={{ page - 1 }}&q={{ query }}&sort={{ sort }}">← prev</a>{% endif %}
-    <span class="dim">page {{ page }} of {{ total_pages }}</span>
-    {% if has_next %}<a href="/reports?page={{ page + 1 }}&q={{ query }}&sort={{ sort }}">next →</a>{% endif %}
+    {% if has_prev %}<a href="/reports?page={{ page - 1 }}&q={{ query }}&sort={{ sort }}{{ lang_query }}">{{ '← anterior' if current_lang == 'es' else '← prev' }}</a>{% endif %}
+    <span class="dim">{{ 'página' if current_lang == 'es' else 'page' }} {{ page }} {{ 'de' if current_lang == 'es' else 'of' }} {{ total_pages }}</span>
+    {% if has_next %}<a href="/reports?page={{ page + 1 }}&q={{ query }}&sort={{ sort }}{{ lang_query }}">{{ 'siguiente →' if current_lang == 'es' else 'next →' }}</a>{% endif %}
   </nav>
 </section>
 {% endblock %}

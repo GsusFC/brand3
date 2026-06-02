@@ -2,18 +2,21 @@
 {% block title %}Brand3 — Magnetism Scanner{% endblock %}
 {% block content %}
 <section class="home-hero">
-  <h1 class="page-title">Magnetism Scanner</h1>
+  <h1 class="page-title">{{ landing.title }}</h1>
   <p class="prose dim intro-copy">
-    Start here. Brand Audit remains available as a dedicated route, and the recent list below mixes both kinds of analysis without extra clutter.
+    {{ landing.intro }}
   </p>
 
   <div class="home-scanner-shell">
     <form action="/magnetism-scanner/analyze" method="post" class="form-row home-scanner-form">
       <input type="url" name="url" placeholder="https://your-brand.com" required autofocus spellcheck="false" autocomplete="off">
-      <button type="submit">run scanner</button>
+    {% if ui_lang == 'en' %}
+      <input type="hidden" name="lang" value="en">
+      {% endif %}
+      <button type="submit">{{ landing.button }}</button>
     </form>
     <p class="small dim home-secondary-actions">
-      <a href="/brand-audit">Brand Audit</a> · <a href="/visual-signature">Visual Signature Lab</a>
+      <a href="/brand-audit{{ lang_suffix }}">{{ 'Auditoría de Marca' if current_lang == 'es' else 'Brand Audit' }}</a> · <a href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a>
     </p>
   </div>
 </section>
@@ -22,18 +25,18 @@
 
 <section>
   <div class="section-head">
-    <span class="label">recent_analyses</span>
-    <span class="tag">// scanners and audits</span>
+    <span class="label">{{ 'analisis_recientes' if current_lang == 'es' else 'recent_analyses' }}</span>
+    <span class="tag">// {{ 'escáneres y auditorías' if current_lang == 'es' else 'scanners and audits' }}</span>
   </div>
   {% if latest_analyses %}
   <div class="table-wrap">
   <table>
     <thead>
       <tr>
-        <th class="col-date">date</th>
-        <th class="col-brand">brand</th>
-        <th class="col-type">type</th>
-        <th class="num col-score">score</th>
+        <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
+        <th class="col-brand">{{ 'marca' if current_lang == 'es' else 'brand' }}</th>
+        <th class="col-type">{{ 'tipo' if current_lang == 'es' else 'type' }}</th>
+        <th class="num col-score">{{ 'puntuación' if current_lang == 'es' else 'score' }}</th>
         <th class="col-bar">bar</th>
         <th class="col-band">band</th>
         <th></th>
@@ -43,19 +46,27 @@
     {% for row in latest_analyses %}
       <tr>
         <td class="col-date">{{ row.date }}</td>
-        <td class="col-brand"><a href="{{ row.href }}">{{ row.brand_name }}</a></td>
-        <td class="col-type"><span class="home-kind home-kind-{{ (row.kind or 'Item')|lower }}">{{ row.kind or 'Item' }}</span></td>
+        <td class="col-brand"><a href="{{ row.href }}{{ lang_suffix }}">{{ row.brand_name }}</a></td>
+        <td class="col-type">
+          <span class="home-kind home-kind-{{ (row.kind or 'Item')|lower }}">
+            {% if current_lang == 'es' %}
+              {% if row.kind == 'Scanner' %}Escáner{% elif row.kind == 'Audit' %}Auditoría{% else %}{{ row.kind or 'Item' }}{% endif %}
+            {% else %}
+              {{ row.kind or 'Item' }}
+            {% endif %}
+          </span>
+        </td>
         <td class="num num-inline col-score">{{ row.score_display }}</td>
         <td class="bar col-bar">{{ row.bar }}</td>
         <td class="dim col-band">{{ row.band }}</td>
-        <td class="action-cell col-action"><a href="{{ row.href }}">view</a></td>
+        <td class="action-cell col-action"><a href="{{ row.href }}{{ lang_suffix }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
   {% else %}
-  <div class="empty">// no analyses yet — run a scanner or open Brand Audit.</div>
+  <div class="empty">// {% if current_lang == 'es' %}todavía no hay análisis — ejecuta un escáner o abre Brand Audit.{% else %}no analyses yet — run a scanner or open Brand Audit.{% endif %}</div>
   {% endif %}
 </section>
 {% endblock %}

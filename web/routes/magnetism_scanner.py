@@ -17,6 +17,7 @@ from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.translation import apply_magnetism_translation, translate_magnetism_payload
 from src.storage.sqlite_store import SQLiteStore
 
+from ..i18n import magnetism_landing_copy
 from ..storage import (
     get_magnetism_scan,
     get_magnetism_scan_by_token,
@@ -40,14 +41,8 @@ _MAGNETISM_UI = {
     "en": {
         "language": "Language",
         "other_lang": "ES",
-        "scanner_title": "Brand Magnetism Scanner",
-        "scanner_intro": (
-            "Production URL scans first run Brand Audit acquisition, then interpret the persisted evidence "
-            "snapshot through the Magenta Circle. This keeps Magnetism comparable with Brand Audit instead "
-            "of running a separate crawler path."
-        ),
+        "scanner_title": "Magnetism Scanner",
         "scanner_tag": "competitive analysis and 7-layer audit",
-        "run_button": "Run Audit + Magnetism",
         "manual_summary": "Manual text block input (legacy/debug, not comparable)",
         "manual_label": "Raw website content / landing page copy:",
         "manual_placeholder": "Paste website homepage text copy here...",
@@ -67,6 +62,7 @@ _MAGNETISM_UI = {
         "recent_scans": "recent_scans",
         "latest_runs": "latest runs",
         "view_sheet": "view sheet",
+        "audit_score": "audit score",
         "no_scans": "// no magnetism scans recorded yet — run the first scan above.",
         "date": "date",
         "brand": "brand",
@@ -129,14 +125,8 @@ _MAGNETISM_UI = {
     "es": {
         "language": "Idioma",
         "other_lang": "EN",
-        "scanner_title": "Magnetism Scanner de marca",
-        "scanner_intro": (
-            "Los escaneos de URL en producción ejecutan primero la adquisición de Brand Audit y después "
-            "interpretan esa evidencia persistida con el Magenta Circle. Así Magnetism sigue siendo comparable "
-            "con Brand Audit y no usa un crawler paralelo."
-        ),
+        "scanner_title": "Escáner de Magnetismo",
         "scanner_tag": "análisis competitivo y auditoría de 7 capas",
-        "run_button": "Ejecutar Audit + Magnetism",
         "manual_summary": "Entrada manual de texto (legacy/debug, no comparable)",
         "manual_label": "Contenido web bruto / copy de landing:",
         "manual_placeholder": "Pega aquí el texto de la homepage...",
@@ -156,6 +146,7 @@ _MAGNETISM_UI = {
         "recent_scans": "escaneos_recientes",
         "latest_runs": "últimas ejecuciones",
         "view_sheet": "ver ficha",
+        "audit_score": "score audit",
         "no_scans": "// todavía no hay escaneos Magnetism — ejecuta el primero arriba.",
         "date": "fecha",
         "brand": "marca",
@@ -254,12 +245,9 @@ async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
         request,
         "magnetism_scanner.html.j2",
         {
+            "ui_lang": lang,
+            "landing": magnetism_landing_copy(lang),
             "model": {
-                "title": "Magnetism Scanner",
-                "intro": (
-                    "Dissect any brand's positioning across the 7 layers of the Magenta Circle "
-                    "and map its competitive magnetism and message coherence."
-                ),
                 "scans": scans,
                 "audit_runs": audit_runs,
                 "lang": lang,
@@ -289,6 +277,7 @@ async def magnetism_scanner_analyze(
             {
                 "status_code": 400,
                 "error": "Input required: Please provide either a website URL to scan or paste manual text content.",
+                "ui_lang": lang,
             },
             status_code=400,
         )
@@ -300,7 +289,7 @@ async def magnetism_scanner_analyze(
             return templates.TemplateResponse(
                 request,
                 "error.html.j2",
-                {"status_code": 400, "error": f"URL rejected: {result}"},
+                {"status_code": 400, "error": f"URL rejected: {result}", "ui_lang": lang},
                 status_code=400,
             )
         normalized_url = result
@@ -345,7 +334,7 @@ async def magnetism_scanner_from_run(
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"Brand Audit run #{run_id}"},
+            {"resource": f"Brand Audit run #{run_id}", "ui_lang": lang},
             status_code=404,
         )
 
@@ -387,7 +376,7 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"Magnetism scan token {token}"},
+            {"resource": f"Magnetism scan token {token}", "ui_lang": lang},
             status_code=404,
         )
     if row.get("status") == "ready":
@@ -398,6 +387,7 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
         request,
         "status.html.j2",
         {
+            "ui_lang": lang,
             "token": token,
             "brand_slug": row.get("brand_name") or "magnetism scan",
             "status": row.get("status") or "queued",
@@ -480,7 +470,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}"},
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
             status_code=404,
         )
     model["active_tab"] = "tldr"
@@ -489,7 +479,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
     return templates.TemplateResponse(
         request,
         "magnetism_detail.html.j2",
-        {"model": model},
+        {"model": model, "ui_lang": lang},
     )
 
 
@@ -501,7 +491,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}"},
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
             status_code=404,
         )
     model["active_tab"] = "research"
@@ -511,7 +501,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     return templates.TemplateResponse(
         request,
         "magnetism_research.html.j2",
-        {"model": model},
+        {"model": model, "ui_lang": lang},
     )
 
 
@@ -523,7 +513,7 @@ async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _L
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}"},
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
             status_code=404,
         )
     model["active_tab"] = "methodology"
@@ -533,7 +523,7 @@ async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _L
     return templates.TemplateResponse(
         request,
         "magnetism_methodology.html.j2",
-        {"model": model},
+        {"model": model, "ui_lang": lang},
     )
 
 

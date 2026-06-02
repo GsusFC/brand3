@@ -1,6 +1,8 @@
 """GET /brand/{domain} — per-brand history + ASCII evolution chart."""
 
-from fastapi import APIRouter, Request
+from typing import Literal
+
+from fastapi import APIRouter, Query, Request
 
 from ..presenters import enrich
 from ..storage import list_brand_history
@@ -10,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/brand/{domain}")
-async def brand_history(request: Request, domain: str):
+async def brand_history(request: Request, domain: str, lang: Literal["es", "en"] = Query("es")):
     analyses = enrich(list_brand_history(domain))
     return templates.TemplateResponse(
         request,
@@ -18,5 +20,6 @@ async def brand_history(request: Request, domain: str):
         {
             "domain": domain,
             "analyses": analyses,
+            "ui_lang": lang,
         },
     )

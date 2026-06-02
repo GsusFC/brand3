@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Request
+from typing import Literal
+
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
 
 from ..templates_env import templates
@@ -16,48 +18,56 @@ router = APIRouter()
 
 
 @router.get("/visual-signature")
-async def visual_signature_index(request: Request):
-    return _render(request, "overview")
+async def visual_signature_index(request: Request, lang: Literal["es", "en"] = Query("es")):
+    return _render(request, "overview", lang)
 
 
 @router.get("/visual-signature/governance")
-async def visual_signature_governance(request: Request):
-    return _render(request, "governance")
+async def visual_signature_governance(request: Request, lang: Literal["es", "en"] = Query("es")):
+    return _render(request, "governance", lang)
 
 
 @router.get("/visual-signature/calibration")
-async def visual_signature_calibration(request: Request):
-    return _render(request, "calibration")
+async def visual_signature_calibration(request: Request, lang: Literal["es", "en"] = Query("es")):
+    return _render(request, "calibration", lang)
 
 
 @router.get("/visual-signature/corpus")
-async def visual_signature_corpus(request: Request):
-    return _render(request, "corpus")
+async def visual_signature_corpus(request: Request, lang: Literal["es", "en"] = Query("es")):
+    return _render(request, "corpus", lang)
 
 
 @router.get("/visual-signature/reviewer")
-async def visual_signature_reviewer(request: Request):
-    return _render(request, "reviewer")
+async def visual_signature_reviewer(request: Request, lang: Literal["es", "en"] = Query("es")):
+    return _render(request, "reviewer", lang)
 
 
 @router.get("/visual-signature/reviewer/human-review")
-async def visual_signature_human_review(request: Request):
-    return _render_human_review(request, None)
+async def visual_signature_human_review(request: Request, lang: Literal["es", "en"] = Query("es")):
+    return _render_human_review(request, None, lang)
 
 
 @router.get("/visual-signature/reviewer/human-review/{brand}")
-async def visual_signature_human_review_brand(request: Request, brand: str):
-    return _render_human_review(request, brand)
+async def visual_signature_human_review_brand(
+    request: Request,
+    brand: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    return _render_human_review(request, brand, lang)
 
 
 @router.get("/visual-signature/artifacts/{artifact_key}")
-async def visual_signature_artifact(request: Request, artifact_key: str):
+async def visual_signature_artifact(
+    request: Request,
+    artifact_key: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
     payload = artifact_file_response_payload(artifact_key)
     if payload is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"visual signature artifact {artifact_key}"},
+            {"resource": f"visual signature artifact {artifact_key}", "ui_lang": lang},
             status_code=404,
         )
     path, media_type = payload
@@ -65,55 +75,63 @@ async def visual_signature_artifact(request: Request, artifact_key: str):
 
 
 @router.get("/visual-signature/screenshots/{filename}/preview")
-async def visual_signature_screenshot_preview(request: Request, filename: str):
+async def visual_signature_screenshot_preview(
+    request: Request,
+    filename: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
     model = build_screenshot_preview_model(filename)
     if model is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"visual signature screenshot preview {filename}"},
+            {"resource": f"visual signature screenshot preview {filename}", "ui_lang": lang},
             status_code=404,
         )
     return templates.TemplateResponse(
         request,
         "visual_signature_screenshot_preview.html.j2",
-        {"model": model},
+        {"model": model, "ui_lang": lang},
     )
 
 
 @router.get("/visual-signature/screenshots/{filename:path}")
-async def visual_signature_screenshot(request: Request, filename: str):
+async def visual_signature_screenshot(
+    request: Request,
+    filename: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
     payload = screenshot_file_response_payload(filename)
     if payload is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"visual signature screenshot {filename}"},
+            {"resource": f"visual signature screenshot {filename}", "ui_lang": lang},
             status_code=404,
         )
     path, media_type = payload
     return FileResponse(path, media_type=media_type)
 
 
-def _render(request: Request, section: str):
+def _render(request: Request, section: str, lang: str):
     return templates.TemplateResponse(
         request,
         "visual_signature.html.j2",
-        {"model": build_visual_signature_model(section)},
+        {"model": build_visual_signature_model(section), "ui_lang": lang},
     )
 
 
-def _render_human_review(request: Request, brand: str | None):
+def _render_human_review(request: Request, brand: str | None, lang: str):
     model = build_human_review_model(brand)
     if model is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": "visual signature human review evidence"},
+            {"resource": "visual signature human review evidence", "ui_lang": lang},
             status_code=404,
         )
     return templates.TemplateResponse(
         request,
         "visual_signature_human_review.html.j2",
-        {"model": model},
+        {"model": model, "ui_lang": lang},
     )

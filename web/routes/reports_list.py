@@ -1,5 +1,7 @@
 """GET /reports — paginated public observatory list."""
 
+from typing import Literal
+
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import RedirectResponse
 
@@ -19,6 +21,7 @@ async def reports_list(
     q: str | None = Query(None),
     sort: str = Query("newest"),
     page: int = Query(1, ge=1),
+    lang: Literal["es", "en"] = Query("es"),
 ):
     if sort not in _ALLOWED_SORTS:
         sort = "newest"
@@ -42,10 +45,14 @@ async def reports_list(
             "total": total,
             "has_prev": page > 1,
             "has_next": page < total_pages,
+            "ui_lang": lang,
         },
     )
 
 
 @router.get("/latest_brand_audits")
-async def latest_brand_audits_alias():
-    return RedirectResponse("/reports", status_code=303)
+async def latest_brand_audits_alias(lang: Literal["es", "en"] = Query("es")):
+    target = "/reports"
+    if lang == "en":
+        target += "?lang=en"
+    return RedirectResponse(target, status_code=303)

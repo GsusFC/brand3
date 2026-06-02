@@ -139,6 +139,20 @@ body {
   font-feature-settings: "liga" 0, "calt" 0;
 }
 
+.term-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lang-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
 .term-home {
   display: inline-flex;
   align-items: center;

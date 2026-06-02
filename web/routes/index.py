@@ -1,8 +1,11 @@
 """GET / — scanner-first landing + latest analyses."""
 
-from fastapi import APIRouter, Request
+from typing import Literal
+
+from fastapi import APIRouter, Query, Request
 
 from ..presenters import enrich
+from ..i18n import magnetism_landing_copy, normalize_lang
 from ..storage import list_latest_public, list_magnetism_scans
 from ..templates_env import templates
 
@@ -75,10 +78,15 @@ def _recent_home_items(limit: int = 10) -> list[dict]:
 
 
 @router.get("/")
-async def index(request: Request):
+async def index(request: Request, lang: Literal["es", "en"] = Query("es")):
+    ui_lang = normalize_lang(lang)
     rows = _recent_home_items(limit=15)
     return templates.TemplateResponse(
         request,
         "index.html.j2",
-        {"latest_analyses": rows},
+        {
+            "latest_analyses": rows,
+            "ui_lang": ui_lang,
+            "landing": magnetism_landing_copy(ui_lang),
+        },
     )

@@ -3,10 +3,12 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from typing import Literal
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Query, Request
 from fastapi.responses import RedirectResponse
 
+from ..i18n import lang_suffix
 from ..storage import get_request
 from ..templates_env import templates
 
@@ -28,17 +30,21 @@ _PHASE_LABELS = {
 
 
 @router.get("/r/{token}/status")
-async def analysis_status(request: Request, token: str):
+async def analysis_status(
+    request: Request,
+    token: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
     row = get_request(token)
     if row is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"request {token}"},
+            {"resource": f"request {token}", "ui_lang": lang},
             status_code=404,
         )
     if row["status"] == "ready":
-        return RedirectResponse(f"/r/{token}", status_code=303)
+        return RedirectResponse(f"/r/{token}{lang_suffix(lang)}", status_code=303)
 
     return templates.TemplateResponse(
         request,
@@ -53,6 +59,9 @@ async def analysis_status(request: Request, token: str):
             "phase": _phase(row),
             "phase_label": _PHASE_LABELS.get(_phase(row), "Working"),
             "phase_steps": _phase_steps(_phase(row), row["status"]),
+            "ready_href": f"/r/{token}{lang_suffix(lang)}",
+            "back_href": f"/brand-audit{lang_suffix(lang)}",
+            "ui_lang": lang,
         },
     )
 

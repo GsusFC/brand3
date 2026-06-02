@@ -1,0 +1,4 @@
+[
+  {"brand": "ChatGPT", "url": "https://chatgpt.com", "label": "chatgpt"},
+  {"brand": "LangChain", "url": "https://www.langchain.com", "label": "langchain"}
+]

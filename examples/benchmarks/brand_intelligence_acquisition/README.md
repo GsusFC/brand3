@@ -7,9 +7,11 @@ Default cases:
 - ChatGPT with Firecrawl
 - ChatGPT with Playwright
 - ChatGPT with TinyFish
+- ChatGPT with Context.dev
 - LangChain with Firecrawl
 - LangChain with Playwright
 - LangChain with TinyFish
+- LangChain with Context.dev
 - Base with Firecrawl
 - Base with Playwright
 - Allbirds with Firecrawl
@@ -27,7 +29,7 @@ Run:
 ./.venv/bin/python scripts/brand_intelligence_benchmark.py
 ```
 
-TinyFish cases require `TINYFISH_API_KEY` in the environment. Keep provider keys in local env files or shell session variables; do not commit them.
+TinyFish cases require `TINYFISH_API_KEY` in the environment. Context.dev cases require `CONTEXT_DEV_API_KEY`. Keep provider keys in local env files or shell session variables; do not commit them.
 
 Optional override:
 

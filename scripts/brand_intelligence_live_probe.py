@@ -14,7 +14,8 @@ import os
 from dataclasses import asdict, is_dataclass, replace
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.error import HTTPError
+from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from src.collectors.exa_collector import ExaCollector, ExaResult
@@ -175,7 +176,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--use-web", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument(
         "--owned-web-provider",
-        choices=("firecrawl", "playwright", "tinyfish", "none"),
+        choices=("contextdev", "firecrawl", "playwright", "tinyfish", "none"),
         default="firecrawl",
         help="Owned-web capture provider used when --use-web is enabled.",
     )
@@ -195,6 +196,8 @@ def _collect_web(url: str, *, owned_web_provider: str = "firecrawl") -> WebData 
     if owned_web_provider == "none":
         print("Web skipped: owned web provider disabled")
         return None
+    if owned_web_provider == "contextdev":
+        return _collect_contextdev_markdown(url)
     if owned_web_provider == "tinyfish":
         return _collect_tinyfish_fetch(url)
     collector = WebCollector(api_key=FIRECRAWL_API_KEY)
@@ -216,6 +219,64 @@ def _collect_web(url: str, *, owned_web_provider: str = "firecrawl") -> WebData 
         print("Web skipped: FIRECRAWL_API_KEY not set")
         return None
     return collector.scrape(url, crawl_subpages=False)
+
+
+def _collect_contextdev_markdown(url: str) -> WebData:
+    api_key = os.environ.get("CONTEXT_DEV_API_KEY", "").strip()
+    if not api_key:
+        return WebData(url=url, error="CONTEXT_DEV_API_KEY not set", content_source="contextdev_markdown")
+
+    query = urlencode(
+        {
+            "url": url,
+            "includeLinks": "true",
+            "includeImages": "true",
+            "useMainContentOnly": "false",
+            "maxAgeMs": "0",
+            "timeoutMS": "150000",
+        }
+    )
+    request = Request(
+        f"https://api.context.dev/v1/web/scrape/markdown?{query}",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+            "User-Agent": "Brand3-Lab/0.1",
+        },
+        method="GET",
+    )
+    try:
+        with urlopen(request, timeout=150) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except HTTPError as exc:
+        return WebData(url=url, error=_http_error_message(exc), content_source="contextdev_markdown")
+    except Exception as exc:
+        return WebData(url=url, error=str(exc), content_source="contextdev_markdown")
+
+    if not isinstance(payload, dict):
+        return WebData(url=url, error="contextdev_unexpected_response", content_source="contextdev_markdown")
+    if payload.get("success") is False or payload.get("status") == "error":
+        return WebData(
+            url=str(payload.get("url") or url),
+            error=str(payload.get("message") or payload.get("error") or "contextdev_scrape_error"),
+            content_source="contextdev_markdown",
+        )
+    return WebData(
+        url=url,
+        markdown_content=str(payload.get("markdown") or ""),
+        canonical_url=str(payload.get("url") or url),
+        content_source="contextdev_markdown",
+    )
+
+
+def _http_error_message(exc: HTTPError) -> str:
+    try:
+        payload = json.loads(exc.read().decode("utf-8"))
+    except Exception:
+        return f"HTTP {exc.code}: {exc.reason}"
+    if isinstance(payload, dict):
+        return str(payload.get("message") or payload.get("error") or f"HTTP {exc.code}: {exc.reason}")
+    return f"HTTP {exc.code}: {exc.reason}"
 
 
 def _collect_tinyfish_fetch(url: str) -> WebData:

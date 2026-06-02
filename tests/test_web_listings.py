@@ -150,10 +150,10 @@ class ListingsTests(unittest.TestCase):
     def test_index_empty_shows_placeholder(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("Magnetism Scanner", r.text)
-        self.assertIn(">Brand Audit<", r.text)
+        self.assertIn("Escáner de Magnetismo", r.text)
+        self.assertIn(">Auditoría de Marca<", r.text)
         self.assertIn('href="/brand-audit"', r.text)
-        self.assertIn("no analyses yet", r.text)
+        self.assertIn("todavía no hay análisis", r.text)
 
     def test_index_limits_to_ten(self):
         for i in range(20):
@@ -172,8 +172,8 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn("score", r.text)
         self.assertIn("band", r.text)
-        self.assertIn("Scanner", r.text)
-        self.assertIn("Audit", r.text)
+        self.assertIn("Escáner", r.text)
+        self.assertIn("Auditoría", r.text)
         self.assertIn('class="home-kind home-kind-scanner"', r.text)
         self.assertIn('class="home-kind home-kind-audit"', r.text)
         self.assertIn("/magnetism-scanner/scan/", r.text)
@@ -251,6 +251,15 @@ class ListingsTests(unittest.TestCase):
         idx_high = r.text.find(">high<")
         idx_low = r.text.find(">low<")
         self.assertGreater(idx_low, idx_high)  # high appears before low
+
+    def test_reports_preserves_ui_language_and_links(self):
+        self._seed_ready_run("langco", composite=77.0)
+        r = self.client.get("/reports?lang=en")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('<html lang="en">', r.text)
+        self.assertIn('href="/brand/langco?lang=en"', r.text)
+        self.assertIn('href="/r/tok-langco', r.text)
+        self.assertIn('lang=en', r.text)
 
     def test_taken_down_row_is_hidden(self):
         self._seed_ready_run("hidden", composite=50.0, takedown=1)

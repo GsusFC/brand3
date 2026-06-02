@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="{{ model.lang if model is defined and model.lang is defined else 'es' }}">
+{% set current_lang = ui_lang if ui_lang is defined else (model.lang if model is defined and model.lang is defined else 'es') %}
+{% set lang_suffix = '?lang=' ~ current_lang if current_lang == 'en' else '' %}
+{% set lang_query = '&lang=' ~ current_lang if current_lang == 'en' else '' %}
+<html lang="{{ current_lang }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,15 +27,21 @@
 <body>
 <div class="page">
   <div class="term-head">
-    <a class="term-home" href="/" aria-label="Brand3 home">
-      <span class="prompt">❯</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· public observatory</span>
+    <a class="term-home" href="/{{ lang_suffix }}" aria-label="{{ 'Inicio de Brand3' if current_lang == 'es' else 'Brand3 home' }}">
+      <span class="prompt">❯</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· {{ 'observatorio público' if current_lang == 'es' else 'public observatory' }}</span>
     </a>
-    <button class="theme-toggle theme-toggle-term" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
+    <div class="term-actions">
+      <div class="lang-toggle" aria-label="Language switch">
+        <a class="source-link{% if current_lang == 'es' %} badge-ready{% endif %}" href="{{ request.url.include_query_params(lang='es') }}">ES</a>
+        <a class="source-link{% if current_lang == 'en' %} badge-ready{% endif %}" href="{{ request.url.include_query_params(lang='en') }}">EN</a>
+      </div>
+      <button class="theme-toggle theme-toggle-term" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
+    </div>
   </div>
-  <nav class="main-nav" aria-label="Brand3 primary navigation">
-    <a class="main-nav-link{% if request.url.path.startswith('/reports') or request.url.path.startswith('/r/') or request.url.path.startswith('/brand/') %} is-active{% endif %}" href="/reports">Reports</a>
-    <a class="main-nav-link{% if request.url.path.startswith('/visual-signature') %} is-active{% endif %}" href="/visual-signature">Visual Signature Lab</a>
-    <a class="main-nav-link{% if request.url.path.startswith('/magnetism-scanner') %} is-active{% endif %}" href="/magnetism-scanner">Magnetism Scanner</a>
+  <nav class="main-nav" aria-label="{{ 'Navegación principal de Brand3' if current_lang == 'es' else 'Brand3 primary navigation' }}">
+    <a class="main-nav-link{% if request.url.path.startswith('/reports') or request.url.path.startswith('/r/') or request.url.path.startswith('/brand/') %} is-active{% endif %}" href="/reports{{ lang_suffix }}">{{ 'Informes' if current_lang == 'es' else 'Reports' }}</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/visual-signature') %} is-active{% endif %}" href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a>
+    <a class="main-nav-link{% if request.url.path.startswith('/magnetism-scanner') %} is-active{% endif %}" href="/magnetism-scanner{{ lang_suffix }}">{{ 'Escáner de Magnetismo' if current_lang == 'es' else 'Magnetism Scanner' }}</a>
   </nav>
   <hr class="rule">
   {% block content %}{% endblock %}
@@ -40,12 +49,18 @@
   <footer class="footer">
     <div class="kv">
       <span class="k">engine</span>    <span class="v">brand3 v0.1.0</span>
-      <span class="k">about</span>     <span class="v"><a href="/">Home</a> · <a href="/reports">Reports</a> · <a href="/visual-signature">Visual Signature Lab</a> · <a href="/magnetism-scanner">Magnetism Scanner</a> · <a href="/takedown">/takedown</a></span>
+      <span class="k">{{ 'acerca' if current_lang == 'es' else 'about' }}</span>     <span class="v"><a href="/{{ lang_suffix }}">{{ 'Inicio' if current_lang == 'es' else 'Home' }}</a> · <a href="/reports{{ lang_suffix }}">{{ 'Informes' if current_lang == 'es' else 'Reports' }}</a> · <a href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a> · <a href="/magnetism-scanner{{ lang_suffix }}">{{ 'Escáner de Magnetismo' if current_lang == 'es' else 'Magnetism Scanner' }}</a> · <a href="/takedown{{ lang_suffix }}">/takedown</a></span>
     </div>
     <div class="small footer-note">
+      {% if current_lang == 'es' %}
+      Brand3 Scoring es el producto de auditoría en uso. Visual Signature Lab es una capa secundaria de evidencia e investigación.
+      Las puntuaciones son opiniones derivadas de heurísticas + análisis LLM, no hechos.
+      ¿Eres propietario de una marca y quieres retirar el análisis? Consulta <a href="/takedown{{ lang_suffix }}">/takedown</a>.
+      {% else %}
       Brand3 Scoring is the working audit product. Visual Signature Lab is a secondary evidence and research layer.
       Scores are opinions derived from heuristics + LLM analysis, not facts.
-      Own a brand and want the analysis removed? See <a href="/takedown">/takedown</a>.
+      Own a brand and want the analysis removed? See <a href="/takedown{{ lang_suffix }}">/takedown</a>.
+      {% endif %}
     </div>
     <div class="footer-cursor"><span class="prompt">❯</span> _<span class="cursor"></span></div>
   </footer>

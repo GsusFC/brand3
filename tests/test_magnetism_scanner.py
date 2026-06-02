@@ -105,11 +105,11 @@ class MagnetismScannerTests(unittest.TestCase):
     def test_web_routes_are_public_without_team_cookie(self):
         response = self.client.get("/magnetism-scanner")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Magnetism Scanner de marca", response.text)
+        self.assertIn("Escáner de Magnetismo", response.text)
 
         response = self.client.get("/magnetism-scanner?lang=en")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Brand Magnetism Scanner", response.text)
+        self.assertIn("Magnetism Scanner", response.text)
         self.assertIn('<html lang="en">', response.text)
 
         response = self.client.post(
@@ -155,6 +155,9 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Research Evidence", detail_en.text)
         self.assertIn(f"/magnetism-scanner/scan/{scan_id}/research?lang=es", detail_es.text)
         self.assertIn("Grafo de evidencia", research_es.text)
+        self.assertNotIn("Plan de adquisición", research_es.text)
+        self.assertNotIn("Traza de adquisición", research_es.text)
+        self.assertNotIn("Calidad de adquisición", research_es.text)
         self.assertIn("Detalles de metodología", methodology_es.text)
         self.assertIn('<html lang="es">', detail_es.text)
 
@@ -1304,6 +1307,44 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("The new home for your internet", result["research_pack"]["offer"])
         self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
 
+    def test_extract_from_audit_snapshot_does_not_surface_acquisition_lab_payload(self):
+        extractor = MagnetismExtractor(llm=None)
+        snapshot = {
+            "run": {"id": 508, "brand_name": "SigmaOS", "url": "https://sigmaos.com"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "brand_research_acquisition_plan",
+                    "payload": {"resolved_entity": "SigmaOS"},
+                },
+                {
+                    "source": "brand_research_acquisition_trace",
+                    "payload": {"coverage": {"planned_sources": 1}},
+                },
+                {
+                    "source": "brand_research_acquisition_quality",
+                    "payload": {"score": 72, "label": "degraded"},
+                },
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://sigmaos.com",
+                        "markdown_content": "SigmaOS is a browser that organizes tabs into workspaces.",
+                    },
+                },
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", False), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        self.assertEqual(result["source"], "brand_audit_snapshot")
+        self.assertNotIn("brand_research_acquisition_plan", result)
+        self.assertNotIn("brand_research_acquisition_trace", result)
+        self.assertNotIn("brand_research_acquisition_quality", result)
+
     def test_research_pack_tldr_flag_falls_back_when_llm_fails(self):
         fake_llm = FakeLLMAnalyzer()
         fake_llm.mock_response = {}
@@ -1423,8 +1464,8 @@ class MagnetismScannerTests(unittest.TestCase):
         # GET index page when empty
         r = self.client.get("/magnetism-scanner")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("Magnetism Scanner de marca", r.text)
-        self.assertIn("Ejecutar Audit + Magnetism", r.text)
+        self.assertIn("Escáner de Magnetismo", r.text)
+        self.assertIn("Ejecutar escáner", r.text)
         self.assertIn("legacy/debug, no comparable", r.text)
         self.assertIn("evita la adquisición de Brand Audit", r.text)
         self.assertIn("todavía no hay escaneos Magnetism", r.text)

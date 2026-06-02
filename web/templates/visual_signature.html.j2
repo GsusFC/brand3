@@ -12,13 +12,13 @@
 
   <nav class="vs-nav" aria-label="Visual Signature sections">
     {% for item in model.nav %}
-    <a class="vs-nav-link{% if item.active %} active{% endif %}" href="{{ item.href }}">{{ item.label }}</a>
+    <a class="vs-nav-link{% if item.active %} active{% endif %}" href="{{ item.href }}{{ lang_suffix }}">{{ item.label }}</a>
     {% endfor %}
   </nav>
 
   <div class="guardrail-banner">
     <strong>Brand3 Scoring remains separate.</strong>
-    <span class="dim">New brand scans still run through <a href="{{ model.initial_scoring.href }}">Brand Audit</a>. Dimension prose is render-time derived by the current report renderer; no persisted generated_texts_per_dimension artifact is invented here.</span>
+    <span class="dim">New brand scans still run through <a href="{{ model.initial_scoring.href }}{{ lang_suffix }}">Brand Audit</a>. Dimension prose is render-time derived by the current report renderer; no persisted generated_texts_per_dimension artifact is invented here.</span>
   </div>
 
   <div class="badge-line">
@@ -76,9 +76,9 @@
             <code>{{ screenshot.filename }}</code>
             {% if screenshot.exists %}
             <a class="source-link screenshot-source-link" href="{{ screenshot.href }}" target="_blank" rel="noopener">open full-resolution</a>
-            {% endif %}
-          </figcaption>
-        </figure>
+          {% endif %}
+        </figcaption>
+      </figure>
         {% endfor %}
       </div>
 
@@ -195,13 +195,13 @@
     <span class="tag">// screenshot first · local-only draft</span>
   </div>
   <div class="vs-report-item">
-    <div class="vs-report-main">
-      <div class="vs-report-title">
-        <h2>Evidence-first human review</h2>
-        <p class="dim">Inspect Headspace and Allbirds screenshots, answer structured visual questions, and draft outcome/confidence/notes without creating completed review records.</p>
+      <div class="vs-report-main">
+        <div class="vs-report-title">
+          <h2>Evidence-first human review</h2>
+          <p class="dim">Inspect Headspace and Allbirds screenshots, answer structured visual questions, and draft outcome/confidence/notes without creating completed review records.</p>
+        </div>
+      <a class="source-link" href="/visual-signature/reviewer/human-review{{ lang_suffix }}">open human review</a>
       </div>
-      <a class="source-link" href="/visual-signature/reviewer/human-review">open human review</a>
-    </div>
   </div>
 </section>
 {% endif %}

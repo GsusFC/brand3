@@ -1,6 +1,8 @@
 """GET /brand-audit — dedicated Brand Audit hub."""
 
-from fastapi import APIRouter, Request
+from typing import Literal
+
+from fastapi import APIRouter, Query, Request
 
 from ..presenters import enrich
 from ..storage import list_latest_public
@@ -10,7 +12,7 @@ router = APIRouter()
 
 
 @router.get("/brand-audit")
-async def brand_audit(request: Request):
+async def brand_audit(request: Request, lang: Literal["es", "en"] = Query("es")):
     rows = enrich(list_latest_public(limit=5))
     return templates.TemplateResponse(
         request,
@@ -18,5 +20,6 @@ async def brand_audit(request: Request):
         {
             "title": "Brand Audit",
             "recent_audits": rows,
+            "ui_lang": lang,
         },
     )

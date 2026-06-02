@@ -8,6 +8,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import RedirectResponse
 
 from ..config import settings
+from ..i18n import lang_suffix, normalize_lang
 from ..middleware.rate_limit import get_client_ip
 from ..middleware.team_cookie import create_serializer, is_team_request
 from ..storage import insert_request
@@ -20,13 +21,14 @@ router = APIRouter()
 
 
 @router.post("/analyze")
-async def analyze(request: Request, url: str = Form(...)):
+async def analyze(request: Request, url: str = Form(...), lang: str = Form("es")):
+    lang = normalize_lang(lang)
     valid, result = validate_url(url)
     if not valid:
         return templates.TemplateResponse(
             request,
             "error.html.j2",
-            {"status_code": 400, "error": f"URL rejected: {result}"},
+            {"status_code": 400, "error": f"URL rejected: {result}", "ui_lang": lang},
             status_code=400,
         )
 
@@ -44,4 +46,4 @@ async def analyze(request: Request, url: str = Form(...)):
         requester_is_team=is_team,
     )
     await get_queue().enqueue(token)
-    return RedirectResponse(f"/r/{token}/status", status_code=303)
+    return RedirectResponse(f"/r/{token}/status{lang_suffix(lang)}", status_code=303)

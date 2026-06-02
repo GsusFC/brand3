@@ -66,16 +66,17 @@ async def report(
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"report {token}"},
+            {"resource": f"report {token}", "ui_lang": lang},
             status_code=404,
         )
     if row["status"] != "ready":
-        return RedirectResponse(f"/r/{token}/status", status_code=303)
+        suffix = "?lang=en" if lang == "en" else ""
+        return RedirectResponse(f"/r/{token}/status{suffix}", status_code=303)
     if row.get("takedown_requested"):
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
-            {"resource": f"report {token} (taken down)"},
+            {"resource": f"report {token} (taken down)", "ui_lang": lang},
             status_code=404,
         )
 
@@ -84,7 +85,7 @@ async def report(
         return templates.TemplateResponse(
             request,
             "error.html.j2",
-            {"status_code": 500, "error": "ready state without run_id"},
+            {"status_code": 500, "error": "ready state without run_id", "ui_lang": lang},
             status_code=500,
         )
 
@@ -93,7 +94,7 @@ async def report(
         return templates.TemplateResponse(
             request,
             "error.html.j2",
-            {"status_code": 500, "error": f"run {run_id} missing from store"},
+            {"status_code": 500, "error": f"run {run_id} missing from store", "ui_lang": lang},
             status_code=500,
         )
 

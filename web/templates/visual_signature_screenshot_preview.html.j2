@@ -14,7 +14,7 @@
 
   <nav class="vs-nav" aria-label="Visual Signature sections">
     {% for item in model.nav %}
-    <a class="vs-nav-link{% if item.active %} active{% endif %}" href="{{ item.href }}">{{ item.label }}</a>
+    <a class="vs-nav-link{% if item.active %} active{% endif %}" href="{{ item.href }}{{ lang_suffix }}">{{ item.label }}</a>
     {% endfor %}
   </nav>
 
@@ -28,13 +28,13 @@
 
   <nav class="preview-step-nav" aria-label="Related screenshot navigation">
     {% if model.previous %}
-    <a class="source-link" href="{{ model.previous.preview_href }}">Previous: {{ model.previous.label }}</a>
+    <a class="source-link" href="{{ model.previous.preview_href }}{{ lang_suffix }}">Previous: {{ model.previous.label }}</a>
     {% else %}
     <span class="source-link is-disabled">Previous</span>
     {% endif %}
-    <a class="source-link" href="/visual-signature">Back to overview</a>
+    <a class="source-link" href="/visual-signature{{ lang_suffix }}">Back to overview</a>
     {% if model.next %}
-    <a class="source-link" href="{{ model.next.preview_href }}">Next: {{ model.next.label }}</a>
+    <a class="source-link" href="{{ model.next.preview_href }}{{ lang_suffix }}">Next: {{ model.next.label }}</a>
     {% else %}
     <span class="source-link is-disabled">Next</span>
     {% endif %}
@@ -91,7 +91,7 @@
       {% if screenshot.is_current %}
       <span class="badge">current</span>
       {% else %}
-      <a class="source-link" href="{{ screenshot.preview_href }}">preview</a>
+      <a class="source-link" href="{{ screenshot.preview_href }}{{ lang_suffix }}">preview</a>
       {% endif %}
       {% else %}
       <span class="dim">{% if screenshot.label == "clean attempt" %}No clean attempt available{% else %}missing screenshot{% endif %}</span>

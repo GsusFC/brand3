@@ -1,0 +1,16 @@
+[
+  {"brand": "ChatGPT", "url": "https://chatgpt.com", "label": "chatgpt-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "ChatGPT", "url": "https://chatgpt.com", "label": "chatgpt-playwright", "use_exa": true, "use_web": true, "owned_web_provider": "playwright", "exa_results": 3},
+  {"brand": "LangChain", "url": "https://www.langchain.com", "label": "langchain-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "LangChain", "url": "https://www.langchain.com", "label": "langchain-playwright", "use_exa": true, "use_web": true, "owned_web_provider": "playwright", "exa_results": 3},
+  {"brand": "Base", "url": "https://base.org", "label": "base-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "Base", "url": "https://base.org", "label": "base-playwright", "use_exa": true, "use_web": true, "owned_web_provider": "playwright", "exa_results": 3},
+  {"brand": "Allbirds", "url": "https://www.allbirds.com", "label": "allbirds-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "Allbirds", "url": "https://www.allbirds.com", "label": "allbirds-playwright", "use_exa": true, "use_web": true, "owned_web_provider": "playwright", "exa_results": 3},
+  {"brand": "Headway", "url": "https://makeheadway.com", "label": "headway-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "Headway", "url": "https://makeheadway.com", "label": "headway-playwright", "use_exa": true, "use_web": true, "owned_web_provider": "playwright", "exa_results": 3},
+  {"brand": "Hasura", "url": "https://hasura.io", "label": "hasura-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "Hasura", "url": "https://hasura.io", "label": "hasura-playwright", "use_exa": true, "use_web": true, "owned_web_provider": "playwright", "exa_results": 3},
+  {"brand": "lab.naturaumana.ai", "url": "https://lab.naturaumana.ai", "label": "lab-naturaumana-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3},
+  {"brand": "Obscure Thing", "url": "https://example.com", "label": "obscure-example-firecrawl", "use_exa": true, "use_web": true, "owned_web_provider": "firecrawl", "exa_results": 3}
+]

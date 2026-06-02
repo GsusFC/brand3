@@ -1,0 +1,34 @@
+{
+  "cases": [
+    {
+      "id": "nav_heavy_saas_homepage",
+      "expected_terms": [
+        "agentic workflows",
+        "revenue operations",
+        "soc 2",
+        "pricing"
+      ],
+      "rejected_terms": [
+        "login",
+        "careers",
+        "privacy policy",
+        "terms of service"
+      ],
+      "html": "<html><head><title>Northstar Ops</title><meta name=\"description\" content=\"Revenue operations automation for complex enterprise teams.\" /></head><body><header><nav><ul><li>Login</li><li>Careers</li><li>Contact us</li></ul></nav></header><main><h1>Agentic workflows for revenue operations</h1><p>Northstar Ops connects CRM, billing, and customer success systems into auditable agentic workflows.</p><p>Enterprise teams use the platform to reduce manual handoffs and protect SOC 2 controls.</p><h2>Customers</h2><p>Customer operations leaders use Northstar to coordinate renewal, pricing, and expansion motions.</p></main><footer><ul><li>Privacy policy</li><li>Terms of service</li></ul></footer></body></html>"
+    },
+    {
+      "id": "cookie_banner_before_product_copy",
+      "expected_terms": [
+        "developer observability",
+        "incident response",
+        "enterprise"
+      ],
+      "rejected_terms": [
+        "accept cookies",
+        "reject all",
+        "manage preferences"
+      ],
+      "html": "<html><head><title>Traceframe</title><meta name=\"description\" content=\"Developer observability for incident response.\" /></head><body><div class=\"cookie-banner\"><p>Accept cookies</p><p>Reject all</p><p>Manage preferences</p></div><main><h1>Developer observability for incident response</h1><p>Traceframe gives enterprise engineering teams a platform for debugging production workflows.</p><p>Security, automation, and workflow context are preserved in every incident timeline.</p></main></body></html>"
+    }
+  ]
+}

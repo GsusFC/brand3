@@ -39,6 +39,7 @@ from src.reports.strategic_evidence_packet import StrategicEvidencePacket
 from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
 from src.research.evidence_graph import build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
+from src.research.research_pack_quality import evaluate_research_pack_quality, evaluate_research_pack_quality_gate
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
 
 LAYER_KEYS = [
@@ -478,6 +479,7 @@ class MagnetismExtractor:
         contextdev_candidate_summary: dict[str, Any] | None = None,
     ) -> None:
         result["research_pack"] = research_pack.to_dict() if hasattr(research_pack, "to_dict") else research_pack
+        self._apply_research_pack_quality_diagnostic(result=result, research_pack=research_pack)
         self._apply_contextdev_visual_enrichment_shadow(
             result=result,
             research_pack=research_pack,
@@ -493,6 +495,30 @@ class MagnetismExtractor:
                 research_pack=research_pack,
             )
             return
+
+    @staticmethod
+    def _apply_research_pack_quality_diagnostic(
+        *,
+        result: dict[str, Any],
+        research_pack: Any | None,
+    ) -> None:
+        if research_pack is None:
+            result["research_pack_quality"] = {
+                "status": "skipped",
+                "reason": "missing_research_pack",
+            }
+            return
+
+        try:
+            quality = evaluate_research_pack_quality(research_pack)
+            quality_payload = quality.to_dict()
+            quality_payload["gate"] = evaluate_research_pack_quality_gate(quality)
+            result["research_pack_quality"] = quality_payload
+        except Exception as exc:
+            result["research_pack_quality"] = {
+                "status": "error",
+                "reason": str(exc),
+            }
 
     @staticmethod
     def _contextdev_candidate_summary_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any] | None:

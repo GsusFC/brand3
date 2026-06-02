@@ -1242,6 +1242,9 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
         self.assertIn("research_pack", result)
+        self.assertIn("research_pack_quality", result)
+        self.assertIn(result["research_pack_quality"]["status"], {"pass", "warn", "fail"})
+        self.assertIn("gate", result["research_pack_quality"])
         self.assertEqual(result["research_pack_source"], "snapshot_builder")
         self.assertNotIn("evidence_graph_summary", result)
         self.assertIn("analyst_tldr_raw", result)
@@ -1251,6 +1254,7 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
         self.assertEqual(payload["tldr_generation_mode"], "analyst_pass_validated")
         self.assertIn("research_pack", payload)
+        self.assertIn("research_pack_quality", payload)
         self.assertIn("analyst_tldr_validated", payload)
 
     def test_graph_pack_flag_uses_evidence_graph_research_pack(self):
@@ -1302,6 +1306,9 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
         self.assertEqual(result["research_pack_source"], "evidence_graph")
+        self.assertIn("research_pack_quality", result)
+        self.assertEqual(result["research_pack_quality"]["version"], "brand_research_pack_quality_v0_1")
+        self.assertIn("audience", result["research_pack_quality"]["dimensions"])
         self.assertIn("evidence_graph_summary", result)
         self.assertGreater(result["evidence_graph_summary"]["claim_count"], 0)
         self.assertIn("The new home for your internet", result["research_pack"]["offer"])

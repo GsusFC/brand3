@@ -1,0 +1,486 @@
+{
+  "case_count": 7,
+  "case_evaluations": [
+    {
+      "archetype": "multiproduct_saas",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [],
+      "recommendations": [],
+      "slug": "langchain-like",
+      "source_url": "https://langchain.example",
+      "total_score": 100.0
+    },
+    {
+      "archetype": "single_product_saas",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [],
+      "recommendations": [],
+      "slug": "single-product-saas",
+      "source_url": "https://saas.example",
+      "total_score": 100.0
+    },
+    {
+      "archetype": "ecommerce",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [],
+      "recommendations": [],
+      "slug": "retail",
+      "source_url": "https://retail.example",
+      "total_score": 100.0
+    },
+    {
+      "archetype": "parent_brand_product_surface",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [],
+      "recommendations": [],
+      "slug": "product-subdomain",
+      "source_url": "https://lab.example.com",
+      "total_score": 100.0
+    },
+    {
+      "archetype": "founder_proof_overpromotion",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [
+            "differentiation_missing_required_term: expected 'software creation becomes a conversation'"
+          ],
+          "passed": false,
+          "score": 65.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [
+            "personality_contains_forbidden_term: found 'founder'",
+            "personality_contains_forbidden_term: found '$80m exit'",
+            "personality_contains_forbidden_term: found 'exit'"
+          ],
+          "passed": false,
+          "score": 0.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [
+        "differentiation_missing_required_term: expected 'software creation becomes a conversation'",
+        "personality_contains_forbidden_term: found 'founder'",
+        "personality_contains_forbidden_term: found '$80m exit'",
+        "personality_contains_forbidden_term: found 'exit'"
+      ],
+      "recommendations": [
+        "Review fixture expectations and TLDR block evidence for strategic mismatch."
+      ],
+      "slug": "base44-current-regression",
+      "source_url": "https://base44.com",
+      "total_score": 83.12
+    },
+    {
+      "archetype": "performance_marketing_proof_overcompression",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [
+            "offer_missing_required_term: expected 'AI ad platform'",
+            "offer_contains_forbidden_term: found 'cost reduction'",
+            "offer_contains_forbidden_term: found 'higher conversion'"
+          ],
+          "passed": false,
+          "score": 0.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [
+            "audience_missing_required_term: expected 'performance marketers'"
+          ],
+          "passed": false,
+          "score": 65.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [
+            "differentiation_missing_required_term: expected 'autonomous creative optimization'"
+          ],
+          "passed": false,
+          "score": 65.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [
+            "vision_contains_forbidden_term: found 'all customer touchpoints'"
+          ],
+          "passed": false,
+          "score": 55.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [
+        "offer_missing_required_term: expected 'AI ad platform'",
+        "offer_contains_forbidden_term: found 'cost reduction'",
+        "offer_contains_forbidden_term: found 'higher conversion'",
+        "audience_missing_required_term: expected 'performance marketers'",
+        "differentiation_missing_required_term: expected 'autonomous creative optimization'",
+        "vision_contains_forbidden_term: found 'all customer touchpoints'"
+      ],
+      "recommendations": [
+        "Review fixture expectations and TLDR block evidence for strategic mismatch."
+      ],
+      "slug": "creatify-current-regression",
+      "source_url": "https://creatify.ai/es/",
+      "total_score": 73.12
+    },
+    {
+      "archetype": "parent_brand_product_surface",
+      "checks": [
+        {
+          "dimension": "offer",
+          "failures": [
+            "offer_missing_required_concept: expected one of ['Natura Umana', 'parent brand']"
+          ],
+          "passed": false,
+          "score": 65.0
+        },
+        {
+          "dimension": "audience",
+          "failures": [
+            "audience_missing_required_concept: expected one of ['people', 'users', 'teams']"
+          ],
+          "passed": false,
+          "score": 65.0
+        },
+        {
+          "dimension": "differentiation",
+          "failures": [
+            "differentiation_missing_required_term: expected 'nature-inspired'",
+            "differentiation_contains_forbidden_term: found 'centralized command center'"
+          ],
+          "passed": false,
+          "score": 20.0
+        },
+        {
+          "dimension": "personality",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "vision",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "frictions",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "evidence_traceability",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        },
+        {
+          "dimension": "entity_separation",
+          "failures": [],
+          "passed": true,
+          "score": 100.0
+        }
+      ],
+      "failures": [
+        "offer_missing_required_concept: expected one of ['Natura Umana', 'parent brand']",
+        "audience_missing_required_concept: expected one of ['people', 'users', 'teams']",
+        "differentiation_missing_required_term: expected 'nature-inspired'",
+        "differentiation_contains_forbidden_term: found 'centralized command center'"
+      ],
+      "recommendations": [
+        "Review fixture expectations and TLDR block evidence for strategic mismatch."
+      ],
+      "slug": "naturaumana-product-surface-regression",
+      "source_url": "https://lab.naturaumana.ai",
+      "total_score": 81.25
+    }
+  ],
+  "dimension_scores": {
+    "audience": 90.0,
+    "differentiation": 78.57,
+    "entity_separation": 100.0,
+    "evidence_traceability": 100.0,
+    "frictions": 100.0,
+    "offer": 80.71,
+    "personality": 85.71,
+    "vision": 93.57
+  },
+  "recommendations": [
+    "Separate the core offer from proof metrics and preserve the expected offer category.",
+    "Strengthen brand_idea checks so weak metaphors or generic product mechanics do not pass as differentiation.",
+    "Keep founder, funding, and press context out of personality unless owned expression supports it.",
+    "Downgrade vision when future language is over-broad or not directly supported by owned evidence."
+  ],
+  "taxonomy_counts": {
+    "audience_missing_required_concept": 1,
+    "audience_missing_required_term": 1,
+    "differentiation_contains_forbidden_term": 1,
+    "differentiation_missing_required_term": 3,
+    "offer_contains_forbidden_term": 2,
+    "offer_missing_required_concept": 1,
+    "offer_missing_required_term": 1,
+    "personality_contains_forbidden_term": 3,
+    "vision_contains_forbidden_term": 1
+  },
+  "total_score": 91.07,
+  "version": "tldr_brand3_strategic_quality_v0_1"
+}

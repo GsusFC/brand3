@@ -1,0 +1,404 @@
+{
+  "version": "tldr_brand3_strategic_quality_cases_v0_1",
+  "cases": [
+    {
+      "slug": "langchain-like",
+      "source_url": "https://langchain.example",
+      "archetype": "multiproduct_saas",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://langchain.example",
+        "entity_type": "company",
+        "parent_brand": "",
+        "official_urls": ["https://langchain.example"],
+        "analyzed_urls": ["https://langchain.example"],
+        "source_map": {
+          "https://langchain.example": {
+            "url": "https://langchain.example",
+            "source_type": "owned_official",
+            "label": "home",
+            "surface_role": "audited_surface",
+            "entity_scope": "audited_surface",
+            "title": "LangChain-like",
+            "notes": []
+          }
+        },
+        "evidence_gaps": ["Mission evidence remains thin."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "Agent engineering platform for AI teams building reliable agents.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Agent engineering platform for AI teams building reliable agents."],
+            "evidence_sources": [{"source_key": "https://langchain.example", "source_type": "owned_official", "url": "https://langchain.example", "label": "home"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "Reliability layer for agent engineering across products.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Reliability layer for agent engineering across products."],
+            "evidence_sources": [{"source_key": "https://langchain.example", "source_type": "owned_official", "url": "https://langchain.example", "label": "home"}],
+            "counter_evidence": []
+          },
+          "mission": {
+            "answer": "Mission evidence remains thin.",
+            "claim_type": "inferred",
+            "confidence": "low",
+            "evidence_used": ["Mission evidence remains thin."],
+            "evidence_sources": [{"source_key": "https://langchain.example", "source_type": "owned_official", "url": "https://langchain.example", "label": "home"}],
+            "counter_evidence": ["Mission evidence remains thin."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["agent engineering platform"], "must_not_include": ["LangSmith only"]},
+        "audience": {"must_include": ["AI teams"]},
+        "differentiation": {"must_include": ["reliability layer"]},
+        "frictions": {"must_acknowledge": ["thin"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"company_offer_must_not_include": ["LangSmith only"], "forbid_press_as_declared_mission": true}
+      }
+    },
+    {
+      "slug": "single-product-saas",
+      "source_url": "https://saas.example",
+      "archetype": "single_product_saas",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://saas.example",
+        "entity_type": "company",
+        "parent_brand": "",
+        "official_urls": ["https://saas.example"],
+        "analyzed_urls": ["https://saas.example"],
+        "source_map": {
+          "https://saas.example": {"url": "https://saas.example", "source_type": "owned_official", "label": "home", "surface_role": "audited_surface", "entity_scope": "audited_surface", "title": "SaaS", "notes": []}
+        },
+        "evidence_gaps": ["Mission evidence remains thin."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "Workflow automation software for operations teams.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Workflow automation software for operations teams."],
+            "evidence_sources": [{"source_key": "https://saas.example", "source_type": "owned_official", "url": "https://saas.example", "label": "home"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "Operational clarity through automated workflows.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Operational clarity through automated workflows."],
+            "evidence_sources": [{"source_key": "https://saas.example", "source_type": "owned_official", "url": "https://saas.example", "label": "home"}],
+            "counter_evidence": []
+          },
+          "mission": {
+            "answer": "Mission evidence remains thin.",
+            "claim_type": "inferred",
+            "confidence": "low",
+            "evidence_used": ["Mission evidence remains thin."],
+            "evidence_sources": [{"source_key": "https://saas.example", "source_type": "owned_official", "url": "https://saas.example", "label": "home"}],
+            "counter_evidence": ["Mission evidence remains thin."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["workflow automation software"]},
+        "audience": {"must_include": ["operations teams"]},
+        "differentiation": {"must_include": ["operational clarity"]},
+        "frictions": {"must_acknowledge": ["thin"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"forbid_press_as_declared_mission": true}
+      }
+    },
+    {
+      "slug": "retail",
+      "source_url": "https://retail.example",
+      "archetype": "ecommerce",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://retail.example",
+        "entity_type": "company",
+        "parent_brand": "",
+        "official_urls": ["https://retail.example"],
+        "analyzed_urls": ["https://retail.example"],
+        "source_map": {
+          "https://retail.example": {"url": "https://retail.example", "source_type": "owned_official", "label": "home", "surface_role": "audited_surface", "entity_scope": "audited_surface", "title": "Retail", "notes": []}
+        },
+        "evidence_gaps": ["Mission evidence remains thin."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "Durable home goods for design-conscious buyers.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Durable home goods for design-conscious buyers."],
+            "evidence_sources": [{"source_key": "https://retail.example", "source_type": "owned_official", "url": "https://retail.example", "label": "home"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "Quiet durability as a retail promise.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Quiet durability as a retail promise."],
+            "evidence_sources": [{"source_key": "https://retail.example", "source_type": "owned_official", "url": "https://retail.example", "label": "home"}],
+            "counter_evidence": []
+          },
+          "mission": {
+            "answer": "Mission evidence remains thin.",
+            "claim_type": "inferred",
+            "confidence": "low",
+            "evidence_used": ["Mission evidence remains thin."],
+            "evidence_sources": [{"source_key": "https://retail.example", "source_type": "owned_official", "url": "https://retail.example", "label": "home"}],
+            "counter_evidence": ["Mission evidence remains thin."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["durable home goods"]},
+        "audience": {"must_include": ["design-conscious buyers"]},
+        "differentiation": {"must_include": ["quiet durability"]},
+        "frictions": {"must_acknowledge": ["thin"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"forbid_press_as_declared_mission": true}
+      }
+    },
+    {
+      "slug": "product-subdomain",
+      "source_url": "https://lab.example.com",
+      "archetype": "parent_brand_product_surface",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://lab.example.com",
+        "entity_type": "product",
+        "parent_brand": "Example Parent",
+        "official_urls": ["https://lab.example.com"],
+        "analyzed_urls": ["https://lab.example.com"],
+        "source_map": {
+          "https://lab.example.com": {"url": "https://lab.example.com", "source_type": "owned_product", "label": "lab", "surface_role": "audited_surface", "entity_scope": "product_surface", "title": "Lab", "notes": []}
+        },
+        "evidence_gaps": ["Parent mission evidence remains thin."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "AI assistant product for teams under Example Parent.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["AI assistant product for teams under Example Parent."],
+            "evidence_sources": [{"source_key": "https://lab.example.com", "source_type": "owned_product", "url": "https://lab.example.com", "label": "lab"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "Parent-backed product lab for practical AI assistance.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Parent-backed product lab for practical AI assistance."],
+            "evidence_sources": [{"source_key": "https://lab.example.com", "source_type": "owned_product", "url": "https://lab.example.com", "label": "lab"}],
+            "counter_evidence": []
+          },
+          "mission": {
+            "answer": "Parent mission evidence remains thin.",
+            "claim_type": "inferred",
+            "confidence": "low",
+            "evidence_used": ["Parent mission evidence remains thin."],
+            "evidence_sources": [{"source_key": "https://lab.example.com", "source_type": "owned_product", "url": "https://lab.example.com", "label": "lab"}],
+            "counter_evidence": ["Parent mission evidence remains thin."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["AI assistant product"]},
+        "audience": {"must_include": ["teams"]},
+        "differentiation": {"must_include": ["parent-backed"]},
+        "frictions": {"must_acknowledge": ["thin"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"require_parent_context": true, "forbid_press_as_declared_mission": true}
+      }
+    },
+    {
+      "slug": "base44-current-regression",
+      "source_url": "https://base44.com",
+      "archetype": "founder_proof_overpromotion",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://base44.com",
+        "entity_type": "company",
+        "parent_brand": "",
+        "official_urls": ["https://base44.com"],
+        "analyzed_urls": ["https://base44.com", "https://techcrunch.com/base44-founder-exit"],
+        "source_map": {
+          "https://base44.com": {"url": "https://base44.com", "source_type": "owned_official", "label": "home", "surface_role": "audited_surface", "entity_scope": "audited_surface", "title": "Base44", "notes": []},
+          "https://techcrunch.com/base44-founder-exit": {"url": "https://techcrunch.com/base44-founder-exit", "source_type": "press_or_founder", "label": "founder exit", "surface_role": "external_context", "entity_scope": "external_context", "title": "Founder exit", "notes": []}
+        },
+        "evidence_gaps": ["Brand idea and future-direction evidence remain thin."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "An AI app builder for non-technical founders.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Base44 is an AI app builder for non-technical founders."],
+            "evidence_sources": [{"source_key": "https://base44.com", "source_type": "owned_official", "url": "https://base44.com", "label": "home"}],
+            "counter_evidence": []
+          },
+          "personality": {
+            "answer": "The founder story makes Base44 feel ambitious and builder-oriented after an $80m exit.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Founder exit lands new platform."],
+            "evidence_sources": [{"source_key": "https://techcrunch.com/base44-founder-exit", "source_type": "press_or_founder", "url": "https://techcrunch.com/base44-founder-exit", "label": "founder exit"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "",
+            "claim_type": "absent",
+            "confidence": "low",
+            "evidence_used": [],
+            "evidence_sources": [],
+            "counter_evidence": ["Brand idea evidence remains thin."]
+          },
+          "mission": {
+            "answer": "To help teams ship software.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["We are on a mission to help teams ship software."],
+            "evidence_sources": [{"source_key": "https://base44.com", "source_type": "owned_official", "url": "https://base44.com", "label": "home"}],
+            "counter_evidence": ["Brand idea and future-direction evidence remain thin."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["AI app builder"]},
+        "audience": {"must_include": ["non-technical founders"]},
+        "differentiation": {"must_include": ["software creation becomes a conversation"]},
+        "personality": {"must_not_include": ["founder", "$80m exit", "exit"]},
+        "frictions": {"must_acknowledge": ["thin"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"forbid_press_as_declared_mission": true}
+      }
+    },
+    {
+      "slug": "creatify-current-regression",
+      "source_url": "https://creatify.ai/es/",
+      "archetype": "performance_marketing_proof_overcompression",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://creatify.ai/es/",
+        "entity_type": "company",
+        "parent_brand": "",
+        "official_urls": ["https://creatify.ai/es/"],
+        "analyzed_urls": ["https://creatify.ai/es/"],
+        "source_map": {
+          "https://creatify.ai/es/": {"url": "https://creatify.ai/es/", "source_type": "owned_official", "label": "home", "surface_role": "audited_surface", "entity_scope": "audited_surface", "title": "Creatify", "notes": []}
+        },
+        "evidence_gaps": ["Audience and proof separation need review."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "Massive cost reduction and higher conversion through AI ads.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Massive cost reduction and higher conversion through AI ads."],
+            "evidence_sources": [{"source_key": "https://creatify.ai/es/", "source_type": "owned_official", "url": "https://creatify.ai/es/", "label": "home"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "Instantly transforming customer touchpoints into personalized video.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Instantly transform customer touchpoints."],
+            "evidence_sources": [{"source_key": "https://creatify.ai/es/", "source_type": "owned_official", "url": "https://creatify.ai/es/", "label": "home"}],
+            "counter_evidence": []
+          },
+          "vision": {
+            "answer": "A future where all customer touchpoints are dynamically generated.",
+            "claim_type": "declared",
+            "confidence": "high",
+            "evidence_used": ["A future where all customer touchpoints are dynamically generated."],
+            "evidence_sources": [{"source_key": "https://creatify.ai/es/", "source_type": "owned_official", "url": "https://creatify.ai/es/", "label": "home"}],
+            "counter_evidence": []
+          },
+          "mission": {
+            "answer": "Generate and optimize ad creatives at scale.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Generate and optimize ad creatives at scale."],
+            "evidence_sources": [{"source_key": "https://creatify.ai/es/", "source_type": "owned_official", "url": "https://creatify.ai/es/", "label": "home"}],
+            "counter_evidence": ["Audience and proof separation need review."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["AI ad platform"], "must_not_include": ["cost reduction", "higher conversion"]},
+        "audience": {"must_include": ["performance marketers"]},
+        "differentiation": {"must_include": ["autonomous creative optimization"]},
+        "vision": {"must_not_include": ["all customer touchpoints"]},
+        "frictions": {"must_acknowledge": ["audience"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"forbid_press_as_declared_mission": true}
+      }
+    },
+    {
+      "slug": "naturaumana-product-surface-regression",
+      "source_url": "https://lab.naturaumana.ai",
+      "archetype": "parent_brand_product_surface",
+      "research_pack": {
+        "version": "brand_research_pack_v0_1",
+        "input_url": "https://lab.naturaumana.ai",
+        "entity_type": "product",
+        "parent_brand": "Natura Umana",
+        "official_urls": ["https://lab.naturaumana.ai", "https://www.naturaumana.ai/mission"],
+        "analyzed_urls": ["https://lab.naturaumana.ai", "https://www.naturaumana.ai/mission"],
+        "source_map": {
+          "https://lab.naturaumana.ai": {"url": "https://lab.naturaumana.ai", "source_type": "owned_product", "label": "tinyNature lab", "surface_role": "audited_surface", "entity_scope": "product_surface", "title": "tinyNature", "notes": []},
+          "https://www.naturaumana.ai/mission": {"url": "https://www.naturaumana.ai/mission", "source_type": "owned_about", "label": "mission", "surface_role": "mission_about", "entity_scope": "parent_brand", "title": "Mission", "notes": []}
+        },
+        "evidence_gaps": ["Parent-brand context remains required before stronger purpose or vision claims."]
+      },
+      "analyst_tldr": {
+        "tldr_brand3": {
+          "value_proposition": {
+            "answer": "A personal AI assistant that acts as a centralized command center.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["tinyNature is a personal AI assistant command center."],
+            "evidence_sources": [{"source_key": "https://lab.naturaumana.ai", "source_type": "owned_product", "url": "https://lab.naturaumana.ai", "label": "tinyNature lab"}],
+            "counter_evidence": []
+          },
+          "brand_idea": {
+            "answer": "The AI as a centralized command center.",
+            "claim_type": "inferred",
+            "confidence": "medium",
+            "evidence_used": ["Command center."],
+            "evidence_sources": [{"source_key": "https://lab.naturaumana.ai", "source_type": "owned_product", "url": "https://lab.naturaumana.ai", "label": "tinyNature lab"}],
+            "counter_evidence": []
+          },
+          "mission": {
+            "answer": "To build personal AI agents and platforms that provide useful assistance.",
+            "claim_type": "declared",
+            "confidence": "medium",
+            "evidence_used": ["Natura Umana mission page."],
+            "evidence_sources": [{"source_key": "https://www.naturaumana.ai/mission", "source_type": "owned_about", "url": "https://www.naturaumana.ai/mission", "label": "mission"}],
+            "counter_evidence": ["Parent-brand context remains required before stronger purpose or vision claims."]
+          }
+        }
+      },
+      "strategic_expectations": {
+        "offer": {"must_include": ["personal AI assistant"], "must_include_any": [["Natura Umana", "parent brand"]]},
+        "audience": {"must_include_any": [["people", "users", "teams"]]},
+        "differentiation": {"must_include": ["nature-inspired"], "must_not_include": ["centralized command center"]},
+        "frictions": {"must_acknowledge": ["parent-brand context"], "require_counter_evidence": true},
+        "evidence_traceability": {"require_traceable_sources": true, "forbid_source_types": ["noise"]},
+        "entity_separation": {"require_parent_context": true, "forbid_press_as_declared_mission": true}
+      }
+    }
+  ]
+}

@@ -10,6 +10,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel, Field
 
 from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
@@ -36,6 +37,14 @@ router = APIRouter()
 
 
 _Lang = Literal["es", "en"]
+
+
+class ScannerCreateRequest(BaseModel):
+    url: str | None = None
+    audit_run_id: int | None = None
+    lang: _Lang = "es"
+    mode: str = Field(default="advanced")
+    include_audit: bool = True
 
 
 class _ReportReadAnalyzer:
@@ -661,6 +670,183 @@ def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str,
     return steps
 
 
+def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
+    scan_id = int(row.get("id") or 0)
+    status = str(row.get("status") or "queued")
+    phase = _magnetism_phase(row)
+    return {
+        "id": scan_id,
+        "status": status,
+        "phase": phase,
+        "brand_name": row.get("brand_name"),
+        "url": row.get("url"),
+        "source_run_id": row.get("source_run_id"),
+        "created_at": row.get("created_at"),
+        "started_at": row.get("started_at"),
+        "completed_at": row.get("completed_at"),
+        "error_message": row.get("error_message"),
+        "result_available": status == "ready",
+        "status_url": f"/api/v1/scanner/{scan_id}",
+        "result_url": f"/api/v1/scanner/{scan_id}/result",
+        "evidence_url": f"/api/v1/scanner/{scan_id}/evidence",
+        "methodology_url": f"/api/v1/scanner/{scan_id}/methodology",
+        "audit_url": f"/api/v1/scanner/{scan_id}/audit",
+        "ui_url": _with_lang(f"/magnetism-scanner/scan/{scan_id}", lang) if status == "ready" else None,
+    }
+
+
+@router.post("/api/v1/scanner", status_code=202)
+async def scanner_api_create(payload: ScannerCreateRequest) -> dict:
+    """Queue a complete Brand3 Scanner run from URL or an existing Brand Audit run."""
+    if not payload.include_audit:
+        raise HTTPException(status_code=400, detail="include_audit=false is not supported for Brand3 Scanner API.")
+    url_val = (payload.url or "").strip()
+    audit_run_id = payload.audit_run_id
+    if bool(url_val) == bool(audit_run_id):
+        raise HTTPException(status_code=400, detail="Provide exactly one of url or audit_run_id.")
+
+    token = secrets.token_urlsafe(12)
+    if audit_run_id:
+        store = SQLiteStore(BRAND3_DB_PATH)
+        try:
+            snapshot = store.get_run_snapshot(int(audit_run_id))
+        finally:
+            store.close()
+        if snapshot is None:
+            raise HTTPException(status_code=404, detail=f"Brand Audit run #{audit_run_id} not found.")
+        run = snapshot.get("run") or {}
+        scan_id = insert_magnetism_job(
+            token=token,
+            brand_name=str(run.get("brand_name") or f"Brand Audit run #{audit_run_id}"),
+            url=str(run.get("url") or "Brand Audit snapshot"),
+            input_type="audit_run",
+            input_value=str(audit_run_id),
+            source_run_id=int(audit_run_id),
+        )
+    else:
+        valid, result = validate_url(url_val)
+        if not valid:
+            raise HTTPException(status_code=400, detail=f"URL rejected: {result}")
+        scan_id = insert_magnetism_job(
+            token=token,
+            brand_name=slug_from_url(result),
+            url=result,
+            input_type="url",
+            input_value=result,
+        )
+
+    await get_queue().enqueue_magnetism(token)
+    row = get_magnetism_scan(scan_id) or {"id": scan_id, "status": "queued", "phase": "queued", "token": token}
+    return _api_scan_status(row, lang=payload.lang)
+
+
+@router.get("/api/v1/scanner/{scan_id}")
+async def scanner_api_status(scan_id: int, lang: _Lang = Query("es")) -> dict:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+    return _api_scan_status(row, lang=lang)
+
+
+@router.get("/api/v1/scanner/{scan_id}/result")
+async def scanner_api_result(scan_id: int, lang: _Lang = Query("es")) -> dict:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+    if row.get("status") != "ready":
+        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang=lang))
+    model = _api_magnetism_scan_model(row)
+    payload = model["payload"]
+    metadata = _scanner_result_metadata(payload)
+    return {
+        "id": model["id"],
+        "status": row.get("status") or "ready",
+        "brand_name": model["brand_name"],
+        "url": model["url"],
+        "created_at": model["created_at"],
+        "scores": {
+            "magnetism": model["magnetism_score"],
+            "coherence": model["coherence_score"],
+            "quadrant": model["quadrant"],
+        },
+        "result_metadata": metadata,
+        "audit": {
+            "available": bool(model.get("source_run_id")),
+            "source_run_id": model.get("source_run_id"),
+            "api_url": f"/api/v1/scanner/{scan_id}/audit" if model.get("source_run_id") else None,
+        },
+        "tldr_brand3": payload.get("tldr_brand3") or {},
+        "tldr_strategy": payload.get("tldr_strategy") or {},
+        "evidence_api_url": f"/api/v1/scanner/{scan_id}/evidence",
+        "methodology_api_url": f"/api/v1/scanner/{scan_id}/methodology",
+        "ui_url": _with_lang(f"/magnetism-scanner/scan/{scan_id}", lang),
+    }
+
+
+@router.get("/api/v1/scanner/{scan_id}/evidence")
+async def scanner_api_evidence(scan_id: int) -> dict:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+    if row.get("status") != "ready":
+        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang="es"))
+    model = _api_magnetism_scan_model(row)
+    return {
+        "id": model["id"],
+        "brand_name": model["brand_name"],
+        "evidence": _research_evidence_model(model["payload"]),
+    }
+
+
+@router.get("/api/v1/scanner/{scan_id}/methodology")
+async def scanner_api_methodology(scan_id: int) -> dict:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+    if row.get("status") != "ready":
+        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang="es"))
+    model = _api_magnetism_scan_model(row)
+    return {
+        "id": model["id"],
+        "brand_name": model["brand_name"],
+        "methodology": _methodology_model(model["payload"]),
+    }
+
+
+@router.get("/api/v1/scanner/{scan_id}/audit")
+async def scanner_api_audit(scan_id: int) -> dict:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+    if row.get("status") != "ready":
+        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang="es"))
+    model = _api_magnetism_scan_model(row)
+    source_run_id = model.get("source_run_id")
+    if not source_run_id:
+        return {"id": scan_id, "available": False, "reason": "missing_source_run"}
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(int(source_run_id))
+    finally:
+        store.close()
+    if snapshot is None:
+        raise HTTPException(status_code=404, detail=f"Brand Audit run #{source_run_id} not found.")
+    run = snapshot.get("run") or {}
+    return {
+        "id": scan_id,
+        "available": True,
+        "source_run_id": int(source_run_id),
+        "run": {
+            "id": run.get("id"),
+            "brand_name": run.get("brand_name"),
+            "url": run.get("url"),
+            "composite_score": run.get("composite_score"),
+            "completed_at": run.get("completed_at"),
+        },
+        "audit": run.get("audit") if isinstance(run.get("audit"), dict) else {},
+    }
+
+
 @router.get("/magnetism-scanner/scan/{scan_id}")
 async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render details sheet of a specific magnetism scan."""
@@ -819,6 +1005,17 @@ def _magnetism_scan_model(scan_id: int, *, lang: _Lang = "es") -> dict | None:
     if row is None:
         return None
 
+    payload = _normalized_scan_payload(row)
+    payload = _payload_for_language(scan_id, payload, lang)
+    return _scan_model_from_payload(row, payload, scan_id=scan_id)
+
+
+def _api_magnetism_scan_model(row: dict) -> dict:
+    payload = _normalized_scan_payload(row)
+    return _scan_model_from_payload(row, payload, scan_id=int(row["id"]))
+
+
+def _normalized_scan_payload(row: dict) -> dict:
     try:
         payload = json.loads(row["raw_payload"])
     except Exception:
@@ -827,8 +1024,10 @@ def _magnetism_scan_model(scan_id: int, *, lang: _Lang = "es") -> dict | None:
         payload = MagnetismExtractor(llm=None)._normalize_analysis(payload)
     else:
         payload = MagnetismExtractor(llm=None).ensure_tldr_v03_contract(payload)
-    payload = _payload_for_language(scan_id, payload, lang)
+    return payload
 
+
+def _scan_model_from_payload(row: dict, payload: dict, *, scan_id: int) -> dict:
     # Format timestamp nicely
     try:
         # In SQLite, row['created_at'] is 'YYYY-MM-DD HH:MM:SS' or ISO format

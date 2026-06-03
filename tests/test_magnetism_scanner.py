@@ -634,6 +634,112 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(legacy_reliability.status_code, 200)
         self.assertIn("No se persistió diagnóstico de calidad del Research Pack", legacy_reliability.text)
 
+    def test_scanner_api_can_queue_from_audit_run_and_expose_sections(self):
+        from src.models.brand import BrandScore, DimensionScore
+        from web.storage import insert_magnetism_scan
+        from web.workers.queue import set_run_magnetism_override
+
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("API Linked", "https://api-linked.test")
+            run_id = store.create_run(
+                brand_id,
+                "API Linked",
+                "https://api-linked.test",
+                use_llm=True,
+                use_social=True,
+            )
+            store.save_scores(
+                run_id,
+                BrandScore(
+                    url="https://api-linked.test",
+                    brand_name="API Linked",
+                    dimensions={
+                        "coherencia": DimensionScore(
+                            name="coherencia",
+                            score=74.0,
+                            insights=["API linked owned evidence."],
+                        )
+                    },
+                    composite_score=74.0,
+                ),
+            )
+            store.save_run_audit(
+                run_id,
+                {
+                    "scoring_state_fingerprint": "apilinked12345",
+                    "executive_analysis_v2": {
+                        "executive_summary": "API Linked has an attached audit snapshot.",
+                        "primary_risk": "Proof remains thin.",
+                        "primary_opportunity": "Use API access for team workflows.",
+                        "dimensions": {},
+                    }
+                },
+            )
+            store.finalize_run(
+                run_id=run_id,
+                composite_score=74.0,
+                llm_used=True,
+                social_scraped=True,
+                result_path="",
+                summary="API Linked has an attached audit snapshot.",
+            )
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(
+            {
+                "run": {
+                    "id": run_id,
+                    "brand_name": "API Linked",
+                    "url": "https://api-linked.test",
+                },
+                "features": [],
+                "raw_inputs": [],
+                "evidence_items": [],
+            }
+        )
+        payload["source_run_id"] = run_id
+        set_run_magnetism_override(lambda job, progress_cb=None: payload)
+
+        queued = self.client.post("/api/v1/scanner", json={"audit_run_id": run_id})
+
+        self.assertEqual(queued.status_code, 202)
+        queued_payload = queued.json()
+        self.assertEqual(queued_payload["status"], "queued")
+        self.assertEqual(queued_payload["source_run_id"], run_id)
+        self.assertIn("/api/v1/scanner/", queued_payload["result_url"])
+
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=run_id,
+        )
+
+        status = self.client.get(f"/api/v1/scanner/{scan_id}")
+        result = self.client.get(f"/api/v1/scanner/{scan_id}/result")
+        evidence = self.client.get(f"/api/v1/scanner/{scan_id}/evidence")
+        methodology = self.client.get(f"/api/v1/scanner/{scan_id}/methodology")
+        audit = self.client.get(f"/api/v1/scanner/{scan_id}/audit")
+
+        self.assertEqual(status.status_code, 200)
+        self.assertTrue(status.json()["result_available"])
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json()["audit"]["source_run_id"], run_id)
+        self.assertIn("tldr_brand3", result.json())
+        self.assertIn("scanner_result_v1", result.text)
+        self.assertEqual(evidence.status_code, 200)
+        self.assertIn("research_pack_source", evidence.text)
+        self.assertEqual(methodology.status_code, 200)
+        self.assertIn("result_metadata", methodology.json()["methodology"])
+        self.assertEqual(audit.status_code, 200)
+        self.assertTrue(audit.json()["available"])
+        self.assertIn("API Linked has an attached audit snapshot.", audit.text)
+
     def test_scan_detail_shows_tldr_strategy_metadata(self):
         from web.storage import insert_magnetism_scan
 

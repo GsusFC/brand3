@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from typing import Literal
 
 from fastapi import APIRouter, Form, HTTPException, Query, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
 from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
@@ -47,6 +47,238 @@ class ScannerCreateRequest(BaseModel):
     include_audit: bool = True
 
 
+def _scanner_openapi_spec() -> dict:
+    base_url = "/"
+    error_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "detail": {"type": "string"},
+        },
+        "required": ["detail"],
+    }
+    scan_status_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "id": {"type": "integer"},
+            "status": {"type": "string", "enum": ["queued", "running", "ready", "failed"]},
+            "phase": {"type": "string"},
+            "brand_name": {"type": ["string", "null"]},
+            "url": {"type": ["string", "null"]},
+            "source_run_id": {"type": ["integer", "null"]},
+            "created_at": {"type": ["string", "null"], "format": "date-time"},
+            "started_at": {"type": ["string", "null"], "format": "date-time"},
+            "completed_at": {"type": ["string", "null"], "format": "date-time"},
+            "error_message": {"type": ["string", "null"]},
+            "result_available": {"type": "boolean"},
+            "status_url": {"type": "string"},
+            "result_url": {"type": "string"},
+            "evidence_url": {"type": "string"},
+            "methodology_url": {"type": "string"},
+            "audit_url": {"type": "string"},
+            "ui_url": {"type": ["string", "null"]},
+        },
+        "required": [
+            "id",
+            "status",
+            "phase",
+            "brand_name",
+            "url",
+            "source_run_id",
+            "created_at",
+            "started_at",
+            "completed_at",
+            "error_message",
+            "result_available",
+            "status_url",
+            "result_url",
+            "evidence_url",
+            "methodology_url",
+            "audit_url",
+            "ui_url",
+        ],
+    }
+    return {
+        "openapi": "3.1.0",
+        "info": {
+            "title": "Brand3 Scanner API",
+            "version": "0.1.0",
+            "description": (
+                "Dedicated contract for the Brand3 Scanner. "
+                "Create a scanner job, poll status, then read result, evidence, methodology, or audit."
+            ),
+        },
+        "servers": [{"url": base_url}],
+        "paths": {
+            "/api/v1/scanner": {
+                "post": {
+                    "operationId": "createScanner",
+                    "summary": "Create a scanner job",
+                    "description": "Queue a Brand3 Scanner run from a URL or from an existing Brand Audit run.",
+                    "requestBody": {
+                        "required": True,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "additionalProperties": False,
+                                    "properties": {
+                                        "url": {"type": "string"},
+                                        "audit_run_id": {"type": "integer"},
+                                        "lang": {"type": "string", "enum": ["es", "en"]},
+                                        "mode": {"type": "string"},
+                                        "include_audit": {"type": "boolean"},
+                                    },
+                                    "oneOf": [
+                                        {"required": ["url"]},
+                                        {"required": ["audit_run_id"]},
+                                    ],
+                                },
+                                "examples": {
+                                    "from_url": {
+                                        "summary": "Create from URL",
+                                        "value": {
+                                            "url": "https://example.com",
+                                            "lang": "es",
+                                            "mode": "advanced",
+                                            "include_audit": True,
+                                        },
+                                    },
+                                    "from_audit": {
+                                        "summary": "Create from Brand Audit run",
+                                        "value": {
+                                            "audit_run_id": 165,
+                                            "lang": "es",
+                                            "include_audit": True,
+                                        },
+                                    },
+                                },
+                            }
+                        },
+                    },
+                    "responses": {
+                        "202": {
+                            "description": "Scanner job accepted",
+                            "content": {"application/json": {"schema": scan_status_schema}},
+                        },
+                        "400": {"description": "Invalid request", "content": {"application/json": {"schema": error_schema}}},
+                        "404": {"description": "Referenced Brand Audit not found", "content": {"application/json": {"schema": error_schema}}},
+                    },
+                }
+            },
+            "/api/v1/scanner/{scan_id}": {
+                "get": {
+                    "operationId": "getScannerStatus",
+                    "summary": "Read scanner status",
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                        {"name": "lang", "in": "query", "required": False, "schema": {"type": "string", "enum": ["es", "en"], "default": "es"}},
+                    ],
+                    "responses": {
+                        "200": {"description": "Scanner status", "content": {"application/json": {"schema": scan_status_schema}}},
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                    },
+                }
+            },
+            "/api/v1/scanner/{scan_id}/result": {
+                "get": {
+                    "operationId": "getScannerResult",
+                    "summary": "Read scanner result",
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                        {"name": "lang", "in": "query", "required": False, "schema": {"type": "string", "enum": ["es", "en"], "default": "es"}},
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Result payload",
+                            "content": {
+                                "application/json": {
+                                    "schema": {
+                                        "type": "object",
+                                        "additionalProperties": True,
+                                    }
+                                }
+                            },
+                        },
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                    },
+                }
+            },
+            "/api/v1/scanner/{scan_id}/evidence": {
+                "get": {
+                    "operationId": "getScannerEvidence",
+                    "summary": "Read scanner evidence",
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Evidence payload",
+                            "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
+                        },
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                    },
+                }
+            },
+            "/api/v1/scanner/{scan_id}/methodology": {
+                "get": {
+                    "operationId": "getScannerMethodology",
+                    "summary": "Read scanner methodology",
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Methodology payload",
+                            "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
+                        },
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                    },
+                }
+            },
+            "/api/v1/scanner/{scan_id}/audit": {
+                "get": {
+                    "operationId": "getScannerAudit",
+                    "summary": "Read scanner audit snapshot",
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Audit snapshot or missing-source indicator",
+                            "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
+                        },
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                    },
+                }
+            },
+        },
+        "components": {
+            "schemas": {
+                "ScannerCreateRequest": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "url": {"type": "string"},
+                        "audit_run_id": {"type": "integer"},
+                        "lang": {"type": "string", "enum": ["es", "en"]},
+                        "mode": {"type": "string"},
+                        "include_audit": {"type": "boolean"},
+                    },
+                    "oneOf": [{"required": ["url"]}, {"required": ["audit_run_id"]}],
+                },
+                "ScannerStatus": scan_status_schema,
+                "Error": error_schema,
+            }
+        },
+    }
+
+
 class _ReportReadAnalyzer:
     """Keep scanner audit reads deterministic and side-effect free."""
 
@@ -58,6 +290,11 @@ class _ReportReadAnalyzer:
 
 
 _REPORT_READ_ANALYZER = _ReportReadAnalyzer()
+
+
+@router.get("/scanner-api/openapi.json", include_in_schema=False)
+async def scanner_api_openapi() -> JSONResponse:
+    return JSONResponse(_scanner_openapi_spec())
 
 
 _MAGNETISM_UI = {

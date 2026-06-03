@@ -92,6 +92,32 @@
 
 <section>
   <div class="section-head">
+    <span class="label">{{ 'schema' if current_lang == 'es' else 'schema' }}</span>
+    <span class="tag">// openapi</span>
+  </div>
+  <div style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+    {% if current_lang == 'es' %}
+    <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0 0 10px;">
+      Esquema dedicado para agentes y clientes internos. El contrato compacto vive en <code>/scanner-api/openapi.json</code>.
+    </p>
+    <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0;">
+      Usa este spec si quieres integrar el scanner como herramienta sin inferir formatos ni rutas.
+    </p>
+    {% else %}
+    <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0 0 10px;">
+      Dedicated schema for agents and internal clients. The compact contract lives at <code>/scanner-api/openapi.json</code>.
+    </p>
+    <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0;">
+      Use this spec if you want to integrate the scanner as a tool without inferring formats or routes.
+    </p>
+    {% endif %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
     <span class="label">{{ 'ejemplos' if current_lang == 'es' else 'examples' }}</span>
     <span class="tag">// json</span>
   </div>

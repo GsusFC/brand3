@@ -155,6 +155,7 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("Brand3 Scanner API", response.text)
         self.assertIn("/api/v1/scanner/{id}/result", response.text)
         self.assertIn("/api/v1/scanner/{id}/audit", response.text)
+        self.assertIn("/scanner-api/openapi.json", response.text)
         self.assertIn("shadow_sources", response.text)
         self.assertIn("no se regeneran", response.text)
 
@@ -162,6 +163,15 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertEqual(response_en.status_code, 200)
         self.assertIn('<html lang="en">', response_en.text)
         self.assertIn("Historic results are read as persisted", response_en.text)
+
+        spec = self.client.get("/scanner-api/openapi.json")
+        self.assertEqual(spec.status_code, 200)
+        payload = spec.json()
+        self.assertEqual(payload["openapi"], "3.1.0")
+        self.assertEqual(payload["info"]["title"], "Brand3 Scanner API")
+        self.assertIn("/api/v1/scanner", payload["paths"])
+        self.assertIn("/api/v1/scanner/{scan_id}/result", payload["paths"])
+        self.assertIn("ScannerCreateRequest", payload["components"]["schemas"])
 
     def test_brand_audit_landing_page_is_dedicated_route(self):
         response = self.client.get("/brand-audit")

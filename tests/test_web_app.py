@@ -146,7 +146,22 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertNotIn('href="/brand-audit?lang=en"', response.text)
         self.assertIn('href="/visual-signature?lang=en"', response.text)
         self.assertIn('href="/magnetism-scanner?lang=en"', response.text)
+        self.assertIn('href="/scanner-api?lang=en"', response.text)
         self.assertIn('href="/takedown?lang=en"', response.text)
+
+    def test_scanner_api_page_documents_internal_endpoints(self):
+        response = self.client.get("/scanner-api")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Brand3 Scanner API", response.text)
+        self.assertIn("/api/v1/scanner/{id}/result", response.text)
+        self.assertIn("/api/v1/scanner/{id}/audit", response.text)
+        self.assertIn("shadow_sources", response.text)
+        self.assertIn("no se regeneran", response.text)
+
+        response_en = self.client.get("/scanner-api?lang=en")
+        self.assertEqual(response_en.status_code, 200)
+        self.assertIn('<html lang="en">', response_en.text)
+        self.assertIn("Historic results are read as persisted", response_en.text)
 
     def test_brand_audit_landing_page_is_dedicated_route(self):
         response = self.client.get("/brand-audit")

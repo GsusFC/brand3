@@ -90,3 +90,15 @@ async def index(request: Request, lang: Literal["es", "en"] = Query("es")):
             "landing": magnetism_landing_copy(ui_lang),
         },
     )
+
+
+@router.get("/scanner-api")
+async def scanner_api_page(request: Request, lang: Literal["es", "en"] = Query("es")):
+    ui_lang = normalize_lang(lang)
+    return templates.TemplateResponse(
+        request,
+        "scanner_api.html.j2",
+        {
+            "ui_lang": ui_lang,
+        },
+    )

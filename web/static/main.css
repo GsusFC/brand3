@@ -2022,6 +2022,15 @@ a:focus-visible {
   min-height: 130px;
 }
 
+.magnetism-hero-metric-value-compact {
+  max-width: 100%;
+  font-size: 15px !important;
+  line-height: 1.08 !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .magnetism-hero-label,
 .magnetism-hero-tier {
   font-family: var(--font-mono);

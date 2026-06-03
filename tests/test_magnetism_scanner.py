@@ -161,10 +161,12 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("Plan de adquisición", research_es.text)
         self.assertNotIn("Traza de adquisición", research_es.text)
         self.assertNotIn("Calidad de adquisición", research_es.text)
+        self.assertIn("magnetism-hero-metric-value-compact", research_es.text)
         self.assertIn("Detalles de metodología", methodology_es.text)
         self.assertIn("Snapshot de Brand Audit", methodology_es.text)
         self.assertIn("Por qué parece existir la marca", methodology_es.text)
         self.assertIn("capa técnica", methodology_es.text)
+        self.assertIn("magnetism-hero-metric-value-compact", methodology_es.text)
         self.assertNotIn("Why the brand appears to exist beyond the product.", methodology_es.text)
         self.assertIn('<html lang="es">', detail_es.text)
 

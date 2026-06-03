@@ -82,6 +82,7 @@ def research_pack_prompt_input(
 
     sections.extend(_evidence_section("Proof points", pack.get("proof_points"), limit=6))
     sections.extend(_evidence_section("Founder or press context", pack.get("founder_or_press_context"), limit=4))
+    sections.extend(_evidence_section("Competitive context", pack.get("competitive_context"), limit=4))
     sections.extend(_evidence_section("Rejected noise", pack.get("noise_rejected"), limit=6))
 
     gaps = _str_list(pack.get("evidence_gaps"), limit=8)

@@ -346,7 +346,31 @@ class MagnetismScannerTests(unittest.TestCase):
             },
             "noise_rejected": [],
             "evidence_gaps": [],
+            "confidence_notes": [
+                "entity_boundary_collision: external evidence includes near-name collisions; quarantined from TLDR input."
+            ],
         }
+        payload["research_pack"]["noise_rejected"] = [
+            {
+                "text": "Publicis Media is a separate near-name entity and must not inform the audited brand.",
+                "kind": "noise",
+                "topic": "entity_boundary_collision",
+                "source_url": "https://www.publicisgroupe.com",
+                "source_type": "noise",
+                "source_label": "entity_boundary_collision",
+            }
+        ]
+        payload["research_pack"]["competitive_context"] = [
+            {
+                "text": "Competitive context source: BrowserOS",
+                "kind": "context",
+                "source_url": "https://browseros.com/",
+                "source_type": "competitive_context",
+                "source_label": "competitive_context",
+                "topic": "competitive_context",
+                "confidence": "medium",
+            }
+        ]
         payload["evidence_graph_summary"] = {
             "source_counts": {"owned_about": 1, "owned_product": 1},
             "claim_count": 2,
@@ -404,6 +428,11 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("Magenta Circle Signals", detail.text)
         self.assertIn("Superficies de producto", research.text)
         self.assertIn("product:LangGraph", research.text)
+        self.assertIn("Warnings de límite de entidad", research.text)
+        self.assertIn("entity_boundary_collision", research.text)
+        self.assertIn("Publicis Media is a separate near-name entity", research.text)
+        self.assertIn("Contexto competitivo", research.text)
+        self.assertIn("Competitive context source: BrowserOS", research.text)
         self.assertIn("calidad del input, no de la marca", reliability.text)
         self.assertIn("thin_differentiation_signal", reliability.text)
         self.assertIn("gate_passed", reliability.text)

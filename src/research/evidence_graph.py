@@ -312,7 +312,7 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
     sources = _build_sources(snapshot, entity_packet=entity_packet)
     claims = _build_claims(snapshot, sources=sources, strategic_packet=strategic_packet)
     gaps = _graph_gaps(sources, claims)
-    warnings = _str_list(strategic_packet.warnings)
+    warnings = _unique(_str_list(strategic_packet.warnings) + _entity_boundary_warnings(sources))
     return EvidenceGraph(
         version=GRAPH_VERSION,
         run=run,
@@ -326,6 +326,7 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
 def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | None) -> dict[str, ResearchSource]:
     run = _dict(snapshot.get("run"))
     input_url = _normalize_url(str(run.get("url") or ""))
+    brand_name = str((entity_packet or {}).get("entity_name") or run.get("brand_name") or "")
     brand_domain = _root_domain(_host(input_url))
     sources: dict[str, ResearchSource] = {}
 
@@ -421,6 +422,17 @@ def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | 
                         text=text,
                         external=True,
                     )
+                    notes = ["External discovery evidence collected by Brand Audit."]
+                    if collection != "competitors" and _external_entity_boundary_collision(
+                        url,
+                        text,
+                        brand_name=brand_name,
+                        brand_domain=brand_domain,
+                    ):
+                        source_type = "noise"
+                        notes.append(
+                            "entity_boundary_collision: external evidence appears to reference a near-name entity, not the audited entity."
+                        )
                     add(
                         url,
                         source_type=source_type,
@@ -429,7 +441,7 @@ def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | 
                         origin=f"raw_inputs.exa.{collection}",
                         surface_role="external_context",
                         entity_scope="external_context",
-                        notes=["External discovery evidence collected by Brand Audit."],
+                        notes=notes,
                     )
         elif source == "social":
             for url in _social_urls(payload):
@@ -508,6 +520,16 @@ def _build_claims(snapshot: dict[str, Any], *, sources: dict[str, ResearchSource
         source_id = _source_id(source_url_norm) if source_url_norm else ""
         source = sources.get(source_id)
         source_type = source.source_type if source else ("noise" if claim_type == "noise" else "unknown")
+        if source and _is_entity_boundary_quarantined_source(source) and claim_type != "noise":
+            claim_type = "noise"
+            supports_blocks = []
+            noise_reason = noise_reason or "entity_boundary_collision"
+            notes = _unique(
+                (notes or [])
+                + [
+                    "Quarantined from TLDR input because the external source appears to reference a near-name entity."
+                ]
+            )
         key = (cleaned.lower(), source_id, claim_type)
         if key in seen:
             return
@@ -716,6 +738,14 @@ def _graph_gaps(sources: dict[str, ResearchSource], claims: list[EvidenceClaim])
     return gaps
 
 
+def _entity_boundary_warnings(sources: dict[str, ResearchSource]) -> list[str]:
+    if any(_is_entity_boundary_quarantined_source(source) for source in sources.values()):
+        return [
+            "entity_boundary_collision: external evidence includes near-name collisions; quarantined from TLDR input."
+        ]
+    return []
+
+
 def _entity_packet(snapshot: dict[str, Any]) -> dict[str, Any] | None:
     for raw_input in reversed(snapshot.get("raw_inputs") or []):
         if raw_input.get("source") == "entity_research_packet" and isinstance(raw_input.get("payload"), dict):
@@ -825,6 +855,63 @@ def _classify_source_url(url: str, *, brand_domain: str, text: str = "", externa
     if external:
         return "third_party_context"
     return "unknown"
+
+
+def _external_entity_boundary_collision(url: str, text: str, *, brand_name: str, brand_domain: str) -> bool:
+    token = _identity_token(brand_name=brand_name, brand_domain=brand_domain)
+    if len(token) < 5:
+        return False
+    observed_tokens = _identity_tokens(" ".join([url, text]))
+    if not observed_tokens or token in observed_tokens:
+        return False
+    for observed in observed_tokens:
+        if len(observed) < 5:
+            continue
+        if observed.startswith(token) or token.startswith(observed):
+            return True
+        if abs(len(observed) - len(token)) <= 2 and _edit_distance_at_most(observed, token, 2):
+            return True
+    return False
+
+
+def _identity_token(*, brand_name: str, brand_domain: str) -> str:
+    for value in (brand_name, brand_domain.split(".", 1)[0]):
+        tokens = sorted(_identity_tokens(value), key=lambda item: (-len(item), item))
+        if tokens:
+            return tokens[0]
+    return ""
+
+
+def _identity_tokens(value: str) -> set[str]:
+    return {
+        token
+        for token in re.findall(r"[a-z0-9]+", str(value or "").lower())
+        if len(token) >= 3 and token not in {"www", "com", "app", "ai", "io", "co", "inc", "the"}
+    }
+
+
+def _edit_distance_at_most(left: str, right: str, limit: int) -> bool:
+    if abs(len(left) - len(right)) > limit:
+        return False
+    previous = list(range(len(right) + 1))
+    for i, left_char in enumerate(left, start=1):
+        current = [i]
+        row_min = i
+        for j, right_char in enumerate(right, start=1):
+            cost = 0 if left_char == right_char else 1
+            value = min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
+            current.append(value)
+            row_min = min(row_min, value)
+        if row_min > limit:
+            return False
+        previous = current
+    return previous[-1] <= limit
+
+
+def _is_entity_boundary_quarantined_source(source: ResearchSource) -> bool:
+    return source.source_type == "noise" and any(
+        str(note).startswith("entity_boundary_collision") for note in source.notes
+    )
 
 
 def _source_type_from_entity_role(role: str, url: str) -> str:

@@ -307,6 +307,132 @@ def _langchain_like_snapshot() -> dict:
     }
 
 
+def _publicit_collision_snapshot() -> dict:
+    return {
+        "run": {"id": 1007, "brand_name": "Publicit", "url": "https://www.publicit.com"},
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "url": "https://www.publicit.com",
+                    "title": "Publicit",
+                    "markdown_content": (
+                        "Publicit is an advertising automation platform for local operators.\n"
+                        "Plan campaigns, publish creatives, and track results from one workspace."
+                    ),
+                },
+            },
+            {
+                "source": "exa",
+                "payload": {
+                    "mentions": [
+                        {
+                            "url": "https://tech.example/publicit-launch",
+                            "title": "Publicit launch brings campaign automation to local retailers",
+                            "summary": "The Publicit team launched an advertising platform for small businesses.",
+                        },
+                        {
+                            "url": "https://www.publicisgroupe.com/news/microsoft-publicis",
+                            "title": "Microsoft and Publicis Groupe expand media partnership",
+                            "summary": "Publicis Media announces a global advertising collaboration.",
+                        },
+                    ],
+                    "competitors": [],
+                    "ai_visibility_results": [],
+                    "news": [],
+                },
+            },
+            {
+                "source": "entity_research_packet",
+                "payload": {
+                    "version": "entity_research_packet_v0_1",
+                    "input_url": "https://www.publicit.com",
+                    "audited_surface_type": "parent_home",
+                    "entity_name": "Publicit",
+                    "parent_brand": None,
+                    "product_name": "",
+                    "brand_architecture": "single_brand_surface",
+                    "owned_surfaces": [
+                        {
+                            "url": "https://www.publicit.com",
+                            "role": "audited_surface",
+                            "entity_scope": "audited_surface",
+                            "reason": "input",
+                        }
+                    ],
+                    "confidence": "medium",
+                    "limitations": [],
+                },
+            },
+        ],
+        "features": [],
+        "evidence_items": [],
+    }
+
+
+def _sigmaos_collision_snapshot() -> dict:
+    return {
+        "run": {"id": 1008, "brand_name": "SigmaOS", "url": "https://sigmaos.com"},
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "url": "https://sigmaos.com",
+                    "title": "SigmaOS",
+                    "markdown_content": (
+                        "SigmaOS is a browser designed for faster work.\n"
+                        "The new home for your internet, organized with workspaces and vertical tabs."
+                    ),
+                },
+            },
+            {
+                "source": "exa",
+                "payload": {
+                    "mentions": [
+                        {
+                            "url": "https://www.ycombinator.com/companies/sigmaos",
+                            "title": "SigmaOS: The new home for your internet",
+                            "summary": "SigmaOS is a MacOS web browser designed for faster work.",
+                        },
+                        {
+                            "url": "https://sigma.software/about/media/sigma-software-and-near-ai",
+                            "title": "Sigma Software and NEAR AI partner on infrastructure",
+                            "summary": "Sigma Software Group announced secure AI infrastructure for enterprise workloads.",
+                        },
+                    ],
+                    "competitors": [],
+                    "ai_visibility_results": [],
+                    "news": [],
+                },
+            },
+            {
+                "source": "entity_research_packet",
+                "payload": {
+                    "version": "entity_research_packet_v0_1",
+                    "input_url": "https://sigmaos.com",
+                    "audited_surface_type": "parent_home",
+                    "entity_name": "SigmaOS",
+                    "parent_brand": None,
+                    "product_name": "",
+                    "brand_architecture": "single_brand_surface",
+                    "owned_surfaces": [
+                        {
+                            "url": "https://sigmaos.com",
+                            "role": "audited_surface",
+                            "entity_scope": "audited_surface",
+                            "reason": "input",
+                        }
+                    ],
+                    "confidence": "medium",
+                    "limitations": [],
+                },
+            },
+        ],
+        "features": [],
+        "evidence_items": [],
+    }
+
+
 def test_evidence_graph_from_snapshot_tracks_sources_and_block_claims() -> None:
     graph = build_evidence_graph_from_snapshot(_base44_snapshot())
     payload = graph.to_dict()
@@ -536,3 +662,90 @@ def test_company_brand_pack_prefers_parent_offer_over_single_product_copy() -> N
     assert "LangSmith Agent Engineering Platform" not in pack["offer"]
     assert pack["product_summary"]
     assert "LangSmith" in pack["product_summary"] or "LangGraph" in pack["product_summary"]
+
+
+def test_evidence_graph_quarantines_external_near_name_entity_collisions() -> None:
+    graph = build_evidence_graph_from_snapshot(_publicit_collision_snapshot())
+    payload = graph.to_dict()
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    publicis_sources = [
+        source
+        for source in payload["sources"].values()
+        if "publicis" in source["url"].lower() or "publicis" in source["title"].lower()
+    ]
+    assert publicis_sources
+    assert all(source["source_type"] == "noise" for source in publicis_sources)
+    assert all(
+        any(note.startswith("entity_boundary_collision") for note in source["notes"])
+        for source in publicis_sources
+    )
+    assert any(warning.startswith("entity_boundary_collision") for warning in payload["warnings"])
+
+    publicis_claims = [claim for claim in payload["claims"] if "publicis" in claim["text"].lower()]
+    assert publicis_claims
+    assert all(claim["claim_type"] == "noise" for claim in publicis_claims)
+    assert all(claim["noise_reason"] == "entity_boundary_collision" for claim in publicis_claims)
+    assert all(not claim["supports_blocks"] for claim in publicis_claims)
+
+    assert "Publicit launch" in " ".join(item["text"] for item in pack["founder_or_press_context"])
+    assert "Publicis" not in pack["offer"]
+    assert "Publicis" not in " ".join(item["text"] for item in pack["proof_points"])
+    assert "Publicis" in " ".join(item["text"] for item in pack["noise_rejected"])
+    assert any(note.startswith("entity_boundary_collision") for note in pack["confidence_notes"])
+
+
+def test_evidence_graph_quarantines_sigmaos_sigma_family_collisions() -> None:
+    graph = build_evidence_graph_from_snapshot(_sigmaos_collision_snapshot())
+    payload = graph.to_dict()
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    sigma_software_sources = [
+        source
+        for source in payload["sources"].values()
+        if "sigma.software" in source["url"].lower()
+    ]
+    assert sigma_software_sources
+    assert all(source["source_type"] == "noise" for source in sigma_software_sources)
+    assert any(warning.startswith("entity_boundary_collision") for warning in payload["warnings"])
+
+    sigma_software_claims = [
+        claim
+        for claim in payload["claims"]
+        if "sigma software" in claim["text"].lower()
+    ]
+    assert sigma_software_claims
+    assert all(claim["claim_type"] == "noise" for claim in sigma_software_claims)
+    assert all(not claim["supports_blocks"] for claim in sigma_software_claims)
+
+    assert "browser" in pack["offer"].lower() or "internet" in pack["offer"].lower()
+    assert "Sigma Software" not in pack["offer"]
+    assert "Sigma Software" in " ".join(item["text"] for item in pack["noise_rejected"])
+
+
+def test_competitor_sources_remain_competitive_context_not_brand_noise() -> None:
+    snapshot = _sigmaos_collision_snapshot()
+    exa_payload = snapshot["raw_inputs"][1]["payload"]
+    exa_payload["mentions"] = []
+    exa_payload["competitors"] = [
+        {
+            "url": "https://browseros.com/",
+            "title": "BrowserOS",
+            "summary": "BrowserOS is an alternative browser project.",
+        }
+    ]
+
+    graph = build_evidence_graph_from_snapshot(snapshot)
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    competitor_sources = [
+        source for source in graph.to_dict()["sources"].values() if source["url"] == "https://browseros.com"
+    ]
+    assert competitor_sources
+    assert competitor_sources[0]["source_type"] == "competitor_context"
+    assert pack["competitive_context"]
+    assert pack["competitive_context"][0]["source_type"] == "competitive_context"
+    assert pack["competitive_context"][0]["kind"] == "context"
+    assert "BrowserOS" in pack["competitive_context"][0]["text"]
+    assert "BrowserOS" not in pack["offer"]
+    assert "BrowserOS" not in " ".join(item["text"] for item in pack["noise_rejected"])

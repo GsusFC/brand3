@@ -52,6 +52,7 @@ def build_brand_research_pack_from_graph(graph: EvidenceGraph) -> BrandResearchP
         [claim for claim in graph.claims if claim.claim_type == "founder_press"],
         kind="context",
     )
+    competitive_context = _competitive_context_evidence(graph)
     noise_rejected = _research_evidence(
         [claim for claim in graph.claims if claim.claim_type == "noise"],
         kind="noise",
@@ -116,6 +117,7 @@ def build_brand_research_pack_from_graph(graph: EvidenceGraph) -> BrandResearchP
         attributes_signals=attributes_signals,
         proof_points=proof_points,
         founder_or_press_context=founder_or_press_context,
+        competitive_context=competitive_context,
         noise_rejected=noise_rejected,
         evidence_gaps=evidence_gaps,
         confidence_notes=_confidence_notes(graph),
@@ -143,6 +145,36 @@ def _research_evidence(claims: Iterable[EvidenceClaim], *, kind: str) -> list[Re
                 topic=claim.noise_reason or claim.claim_type,
                 confidence=claim.confidence,
                 notes=list(claim.notes),
+            )
+        )
+    return items
+
+
+def _competitive_context_evidence(graph: EvidenceGraph) -> list[ResearchEvidence]:
+    items: list[ResearchEvidence] = []
+    seen: set[str] = set()
+    for source in graph.sources.values():
+        if source.source_type != "competitor_context" or not source.url:
+            continue
+        key = source.url.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        label = source.title or source.label or source.url
+        items.append(
+            ResearchEvidence(
+                text=f"Competitive context source: {label}",
+                kind="context",
+                source_url=source.url,
+                source_type=_pack_source_type(source.source_type),
+                source_label="competitive_context",
+                surface_role=source.surface_role,
+                entity_scope=source.entity_scope,
+                topic="competitive_context",
+                confidence="medium",
+                notes=[
+                    "Competitor context only; do not use as evidence of the audited brand's identity, offer, proof, or TLDR claims."
+                ],
             )
         )
     return items
@@ -730,7 +762,7 @@ def _pack_source_type(value: str) -> str:
         "third_party_review": "proof_point",
         "third_party_context": "press_or_founder",
         "social": "social",
-        "competitor_context": "noise",
+        "competitor_context": "competitive_context",
         "noise": "noise",
     }.get(value, "unknown")
 

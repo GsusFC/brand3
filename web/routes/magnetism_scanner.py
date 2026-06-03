@@ -114,12 +114,18 @@ _MAGNETISM_UI = {
         "surface_map_tag": "owned, product, proof, and external surfaces",
         "product_surfaces": "Product surfaces",
         "source_map": "Source map",
+        "competitive_context": "Competitive context",
+        "competitive_context_tag": "context only, not audited-brand evidence",
         "tldr_evidence": "TLDR Evidence",
         "tldr_evidence_tag": "what each block used",
         "rejected_gaps": "Rejected / Gaps",
         "rejected_gaps_tag": "bounded interpretation",
         "evidence_gaps": "Evidence gaps",
         "rejected_noise": "Rejected noise",
+        "entity_boundary_warnings": "Entity boundary warnings",
+        "entity_boundary_warnings_tag": "external evidence quarantined before TLDR input",
+        "entity_boundary_rejections": "Quarantined evidence",
+        "no_entity_boundary_warnings": "No entity boundary collisions were persisted for this scan.",
         "methodology_intro": "Method, interpretation rules, and limits behind this scan.",
         "methodology_tag": "methodology details",
         "research_pack_metric": "Research Pack",
@@ -215,12 +221,18 @@ _MAGNETISM_UI = {
         "surface_map_tag": "superficies owned, producto, prueba y externas",
         "product_surfaces": "Superficies de producto",
         "source_map": "Mapa de fuentes",
+        "competitive_context": "Contexto competitivo",
+        "competitive_context_tag": "solo contexto, no evidencia de la marca auditada",
         "tldr_evidence": "Evidencia TLDR",
         "tldr_evidence_tag": "qué usó cada bloque",
         "rejected_gaps": "Rechazado / Gaps",
         "rejected_gaps_tag": "interpretación acotada",
         "evidence_gaps": "Gaps de evidencia",
         "rejected_noise": "Ruido rechazado",
+        "entity_boundary_warnings": "Warnings de límite de entidad",
+        "entity_boundary_warnings_tag": "evidencia externa en cuarentena antes del TLDR",
+        "entity_boundary_rejections": "Evidencia cuarentenada",
+        "no_entity_boundary_warnings": "No se persistieron colisiones de límite de entidad para este escaneo.",
         "methodology_intro": "Método, reglas de interpretación y límites detrás de este escaneo.",
         "methodology_tag": "detalles de metodología",
         "research_pack_metric": "Research Pack",
@@ -756,11 +768,53 @@ def _research_evidence_model(payload: dict) -> dict:
         "source_rows": source_rows,
         "block_evidence": block_evidence,
         "proof_points": research_pack.get("proof_points") or [],
+        "competitive_context": research_pack.get("competitive_context") or [],
         "noise_rejected": research_pack.get("noise_rejected") or [],
+        "entity_boundary_warnings": _entity_boundary_warnings(research_pack),
+        "entity_boundary_rejections": _entity_boundary_rejections(research_pack),
         "evidence_gaps": research_pack.get("evidence_gaps") or [],
         "confidence_notes": research_pack.get("confidence_notes") or [],
         "graph_summary": graph_summary,
     }
+
+
+def _entity_boundary_warnings(research_pack: dict) -> list[str]:
+    warnings: list[str] = []
+    for note in research_pack.get("confidence_notes") or []:
+        text = str(note or "").strip()
+        if text.startswith("entity_boundary_collision"):
+            warnings.append(text)
+    return list(dict.fromkeys(warnings))
+
+
+def _entity_boundary_rejections(research_pack: dict) -> list[dict]:
+    rejections: list[dict] = []
+    for item in research_pack.get("noise_rejected") or []:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or "")
+        topic = str(item.get("topic") or item.get("source_label") or "")
+        reason_text = " ".join(
+            str(value or "")
+            for value in (
+                item.get("reason"),
+                item.get("noise_reason"),
+                item.get("source_label"),
+                item.get("topic"),
+                item.get("text"),
+            )
+        )
+        if "entity_boundary_collision" not in reason_text:
+            continue
+        rejections.append(
+            {
+                "text": text,
+                "topic": topic or "entity_boundary_collision",
+                "source_url": item.get("source_url") or "",
+                "source_type": item.get("source_type") or "",
+            }
+        )
+    return rejections
 
 
 def _evidence_reliability_model(payload: dict) -> dict:

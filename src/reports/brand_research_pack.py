@@ -30,6 +30,7 @@ Field guide:
 - attributes_signals: repeated attribute signals.
 - proof_points: supporting proof, credibility, or validation evidence.
 - founder_or_press_context: founder, press, or other contextual evidence.
+- competitive_context: competitor or alternative sources, context only.
 - noise_rejected: rejected evidence kept for auditability.
 - evidence_gaps: missing evidence that still blocks a stronger reading.
 - confidence_notes: short notes about confidence or limitations.
@@ -88,6 +89,7 @@ FIELD_DESCRIPTIONS: dict[str, str] = {
     "attributes_signals": "Repeated attribute signals describing the brand.",
     "proof_points": "Evidence that supports credibility or claims.",
     "founder_or_press_context": "Founder, press, or contextual evidence that should not become the main claim by default.",
+    "competitive_context": "Competitor or alternative evidence kept as context; it must not redefine the audited entity.",
     "noise_rejected": "Noise or fragments explicitly rejected during analysis.",
     "evidence_gaps": "Important gaps still blocking a stronger reading.",
     "confidence_notes": "Short notes explaining confidence or uncertainty.",
@@ -248,6 +250,7 @@ class BrandResearchPack:
     attributes_signals: list[str] = field(default_factory=list)
     proof_points: list[ResearchEvidence] = field(default_factory=list)
     founder_or_press_context: list[ResearchEvidence] = field(default_factory=list)
+    competitive_context: list[ResearchEvidence] = field(default_factory=list)
     noise_rejected: list[ResearchEvidence] = field(default_factory=list)
     evidence_gaps: list[str] = field(default_factory=list)
     confidence_notes: list[str] = field(default_factory=list)
@@ -283,6 +286,7 @@ class BrandResearchPack:
             "attributes_signals": list(self.attributes_signals),
             "proof_points": [item.to_dict() for item in self.proof_points],
             "founder_or_press_context": [item.to_dict() for item in self.founder_or_press_context],
+            "competitive_context": [item.to_dict() for item in self.competitive_context],
             "noise_rejected": [item.to_dict() for item in self.noise_rejected],
             "evidence_gaps": list(self.evidence_gaps),
             "confidence_notes": list(self.confidence_notes),
@@ -324,6 +328,7 @@ class BrandResearchPack:
             attributes_signals=_str_list(data.get("attributes_signals")),
             proof_points=_evidence_list(data.get("proof_points")),
             founder_or_press_context=_evidence_list(data.get("founder_or_press_context")),
+            competitive_context=_evidence_list(data.get("competitive_context")),
             noise_rejected=_evidence_list(data.get("noise_rejected")),
             evidence_gaps=_str_list(data.get("evidence_gaps")),
             confidence_notes=_str_list(data.get("confidence_notes")),

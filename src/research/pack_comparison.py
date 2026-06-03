@@ -35,6 +35,7 @@ LIST_FIELDS = (
 EVIDENCE_FIELDS = (
     "proof_points",
     "founder_or_press_context",
+    "competitive_context",
     "noise_rejected",
 )
 
@@ -177,4 +178,3 @@ def _optional_int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
-

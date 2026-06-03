@@ -65,6 +65,7 @@ ANALYST_TLDR_SOURCE_RULES = [
     "owned_official, owned_product, owned_about, and owned_security_trust can support declared claims when the text is literal.",
     "press_or_founder can support context or inference, but should not become a declared mission or personality on its own.",
     "proof_point can support credibility, values, or outcome language, but not values without behavior.",
+    "competitive_context can support category contrast only; it must not support identity, offer, proof, superiority, traction, or TLDR claims about the audited brand.",
     "social can support how the brand speaks or is perceived, but should be traceable.",
     "noise must not be used as positive evidence.",
     "If a block lacks usable evidence, mark it absent/not_detected rather than inventing a stronger reading.",
@@ -586,6 +587,7 @@ def _compact_research_pack_for_prompt(pack: dict[str, Any]) -> dict[str, Any]:
         "attributes_signals": _compact_list(pack.get("attributes_signals"), limit=8, text_limit=220),
         "proof_points": _compact_evidence_list(pack.get("proof_points"), limit=8),
         "founder_or_press_context": _compact_evidence_list(pack.get("founder_or_press_context"), limit=8),
+        "competitive_context": _compact_evidence_list(pack.get("competitive_context"), limit=4),
         "noise_rejected": _compact_evidence_list(pack.get("noise_rejected"), limit=4, text_limit=180),
         "evidence_gaps": _compact_list(pack.get("evidence_gaps"), limit=8, text_limit=260),
         "confidence_notes": _compact_list(pack.get("confidence_notes"), limit=8, text_limit=260),
@@ -593,6 +595,7 @@ def _compact_research_pack_for_prompt(pack: dict[str, Any]) -> dict[str, Any]:
             "source_count": len(source_map),
             "proof_points": _safe_len(pack.get("proof_points")),
             "founder_or_press_context": _safe_len(pack.get("founder_or_press_context")),
+            "competitive_context": _safe_len(pack.get("competitive_context")),
             "noise_rejected": _safe_len(pack.get("noise_rejected")),
         },
     }

@@ -89,6 +89,22 @@
       "notes": []
     }
   ],
+  "competitive_context": [
+    {
+      "text": "Competitive context source: Example alternative product.",
+      "kind": "context",
+      "source_url": "https://alternatives.example.com/example-lab",
+      "source_type": "competitive_context",
+      "source_label": "competitive_context",
+      "surface_role": "external_context",
+      "entity_scope": "external_context",
+      "topic": "competitive_context",
+      "confidence": "medium",
+      "notes": [
+        "Competitor context only; do not use as evidence of the audited brand's identity, offer, proof, or TLDR claims."
+      ]
+    }
+  ],
   "noise_rejected": [
     {
       "text": "top of page",

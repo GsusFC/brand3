@@ -25,6 +25,7 @@ PACK_SOURCE_TYPES = {
     "owned_security_trust",
     "proof_point",
     "press_or_founder",
+    "competitive_context",
     "social",
     "noise",
     "unknown",
@@ -137,6 +138,14 @@ def validate_brand_research_pack_contract(pack: BrandResearchPack | dict[str, An
     _validate_evidence_collection(
         pack_obj.founder_or_press_context,
         field="founder_or_press_context",
+        expected_kind="context",
+        known_urls=known_urls,
+        errors=errors,
+        warnings=warnings,
+    )
+    _validate_evidence_collection(
+        pack_obj.competitive_context,
+        field="competitive_context",
         expected_kind="context",
         known_urls=known_urls,
         errors=errors,

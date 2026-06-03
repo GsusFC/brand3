@@ -8,10 +8,11 @@ seed for a brand investigation.
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from typing import Literal
 from urllib.parse import urlparse
 import hashlib
+import re
 
 
 SEED_CONTRACT_VERSION = "brand_intelligence_seed_v0_1"
@@ -732,6 +733,33 @@ def search_source_observation(
     )
 
 
+def scope_external_observation_to_entity(
+    observation: BrandSourceObservation,
+    result: dict[str, object],
+    *,
+    entity: ResolvedBrandEntity,
+    seed_url: str = "",
+    brand: str = "",
+) -> BrandSourceObservation:
+    """Quarantine external observations that do not prove the URL-resolved entity."""
+    if observation.status != "observed" or observation.channel not in {"search", "reviews", "news"}:
+        return observation
+    text = _external_result_text(result)
+    if _external_result_matches_entity(text, entity=entity, seed_url=seed_url, brand=brand):
+        return observation
+    reason = (
+        "external_result_entity_boundary_collision"
+        if _near_entity_token_collision(text, entity=entity, brand=brand)
+        else "external_result_entity_relevance_not_confirmed"
+    )
+    return replace(
+        observation,
+        evidence_eligibility="ineligible",
+        confidence=min(observation.confidence, 0.2),
+        reason=reason,
+    )
+
+
 def owned_web_source_observation(
     capture: dict[str, object],
     *,
@@ -1411,6 +1439,90 @@ def _coerce_float(value: object, *, default: float) -> float:
         return float(value)
     except (TypeError, ValueError):
         return default
+
+
+def _external_result_text(result: dict[str, object]) -> str:
+    return " ".join(
+        str(result.get(key) or "")
+        for key in ("url", "title", "text", "summary", "snippet")
+    )
+
+
+def _external_result_matches_entity(
+    text: str,
+    *,
+    entity: ResolvedBrandEntity,
+    seed_url: str = "",
+    brand: str = "",
+) -> bool:
+    haystack = _match_text(text)
+    tokens = set(_match_tokens(haystack))
+    seed_host = _host(seed_url or entity.canonical_url)
+    if seed_host and seed_host in haystack:
+        return True
+
+    anchors = _entity_match_anchors(entity, brand=brand)
+    if entity.resolution_status != "resolved" and entity.requested_kind != "url":
+        return any(" " in anchor and anchor in haystack for anchor in anchors)
+    return any((anchor in haystack if " " in anchor else anchor in tokens) for anchor in anchors)
+
+
+def _near_entity_token_collision(text: str, *, entity: ResolvedBrandEntity, brand: str = "") -> bool:
+    tokens = set(_match_tokens(_match_text(text)))
+    anchors = [anchor for anchor in _entity_match_anchors(entity, brand=brand) if " " not in anchor and len(anchor) >= 5]
+    if not anchors or any(anchor in tokens for anchor in anchors):
+        return False
+    for anchor in anchors:
+        for token in tokens:
+            if len(token) < 5:
+                continue
+            if token.startswith(anchor) or anchor.startswith(token):
+                return True
+            if abs(len(token) - len(anchor)) <= 2 and _edit_distance_at_most(token, anchor, 2):
+                return True
+    return False
+
+
+def _entity_match_anchors(entity: ResolvedBrandEntity, *, brand: str = "") -> list[str]:
+    values = [
+        brand,
+        entity.resolved_name,
+        entity.product_name or "",
+        entity.parent_brand or "",
+        _label_from_host(_host(entity.canonical_url)),
+    ]
+    anchors = [_match_text(value) for value in values if value]
+    return _unique([anchor for anchor in anchors if len(anchor) >= 4])
+
+
+def _match_text(value: str) -> str:
+    return " ".join(str(value or "").lower().replace("_", " ").replace("-", " ").split())
+
+
+def _match_tokens(value: str) -> list[str]:
+    return [
+        token
+        for token in re.findall(r"[a-z0-9]+", str(value or "").lower())
+        if len(token) >= 3 and token not in {"www", "com", "app", "ai", "io", "co", "inc", "the"}
+    ]
+
+
+def _edit_distance_at_most(left: str, right: str, limit: int) -> bool:
+    if abs(len(left) - len(right)) > limit:
+        return False
+    previous = list(range(len(right) + 1))
+    for i, left_char in enumerate(left, start=1):
+        current = [i]
+        row_min = i
+        for j, right_char in enumerate(right, start=1):
+            cost = 0 if left_char == right_char else 1
+            value = min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
+            current.append(value)
+            row_min = min(row_min, value)
+        if row_min > limit:
+            return False
+        previous = current
+    return previous[-1] <= limit
 
 
 def _looks_like_placeholder(root: str) -> bool:

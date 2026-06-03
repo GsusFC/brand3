@@ -21,6 +21,7 @@ from src.research.brand_intelligence import (
     resolve_brand_identity_from_signals,
     resolve_brand_identity,
     resolve_brand_seed,
+    scope_external_observation_to_entity,
     search_source_observation,
     search_result_identity_signal,
 )
@@ -406,6 +407,77 @@ def test_search_source_observation_keeps_thin_result_limited_not_full_coverage_q
     assert observation.status == "observed"
     assert observation.evidence_eligibility == "limited"
     assert observation.reason == "search_result_without_rich_context"
+
+
+def test_external_source_observation_must_match_url_resolved_entity_boundary() -> None:
+    entity = resolve_brand_seed(BrandSeed("https://www.publicit.com", kind="url", provided_name="Publicit"))
+    valid = {
+        "url": "https://tech.example/publicit-launch",
+        "title": "Publicit launch brings campaign automation to local retailers",
+        "text": "The Publicit team launched an advertising platform for small businesses, with campaign planning, creative publishing, and performance reporting in one workspace.",
+        "score": 0.84,
+    }
+    collision = {
+        "url": "https://www.publicisgroupe.com/news/microsoft-publicis",
+        "title": "Microsoft and Publicis Groupe expand media partnership",
+        "text": "Publicis Media announces a global advertising collaboration.",
+        "score": 0.87,
+    }
+
+    valid_observation = scope_external_observation_to_entity(
+        search_source_observation(valid),
+        valid,
+        entity=entity,
+        seed_url="https://www.publicit.com",
+        brand="Publicit",
+    )
+    collision_observation = scope_external_observation_to_entity(
+        search_source_observation(collision),
+        collision,
+        entity=entity,
+        seed_url="https://www.publicit.com",
+        brand="Publicit",
+    )
+
+    assert valid_observation.evidence_eligibility == "eligible"
+    assert collision_observation.evidence_eligibility == "ineligible"
+    assert collision_observation.reason == "external_result_entity_boundary_collision"
+    assert collision_observation.confidence <= 0.2
+
+
+def test_external_source_observation_blocks_sigmaos_sigma_family_collisions() -> None:
+    entity = resolve_brand_seed(BrandSeed("https://sigmaos.com", kind="url", provided_name="SigmaOS"))
+    valid = {
+        "url": "https://www.ycombinator.com/companies/sigmaos",
+        "title": "SigmaOS: The new home for your internet",
+        "text": "SigmaOS is a MacOS web browser designed for faster work with workspaces and vertical tabs.",
+        "score": 0.85,
+    }
+    collision = {
+        "url": "https://sigma.software/about/media/sigma-software-and-near-ai",
+        "title": "Sigma Software and NEAR AI partner on infrastructure",
+        "text": "Sigma Software Group announced secure AI infrastructure for enterprise and government workloads.",
+        "score": 0.88,
+    }
+
+    valid_observation = scope_external_observation_to_entity(
+        search_source_observation(valid),
+        valid,
+        entity=entity,
+        seed_url="https://sigmaos.com",
+        brand="SigmaOS",
+    )
+    collision_observation = scope_external_observation_to_entity(
+        search_source_observation(collision),
+        collision,
+        entity=entity,
+        seed_url="https://sigmaos.com",
+        brand="SigmaOS",
+    )
+
+    assert valid_observation.evidence_eligibility == "eligible"
+    assert collision_observation.evidence_eligibility == "ineligible"
+    assert collision_observation.reason == "external_result_entity_boundary_collision"
 
 
 def test_owned_web_source_observation_marks_firecrawl_like_capture_quality() -> None:

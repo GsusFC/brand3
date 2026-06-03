@@ -250,10 +250,8 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn('class="source-link badge-ready" href="?theme=dark&lang=es"', html)
         self.assertIn('class="source-link" href="?theme=dark&lang=en"', html)
         self.assertIn('class="theme-toggle theme-toggle-term"', html)
-        self.assertIn('class="main-nav-link is-active" href="/reports"', html)
-        self.assertIn('href="/visual-signature"', html)
-        self.assertIn('href="/magnetism-scanner"', html)
-        self.assertNotIn('class="main-nav-link" href="/"><', html)
+        self.assertNotIn('class="main-nav-link is-active" href="/reports"', html)
+        self.assertNotIn('aria-label="Brand3 primary navigation"', html)
         self.assertNotIn("Idioma:", html)
 
     def test_render_shows_cost_policy_when_available(self):

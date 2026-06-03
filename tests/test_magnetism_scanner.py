@@ -105,11 +105,11 @@ class MagnetismScannerTests(unittest.TestCase):
     def test_web_routes_are_public_without_team_cookie(self):
         response = self.client.get("/magnetism-scanner")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Escáner de Magnetismo", response.text)
+        self.assertIn("Brand3 Scanner", response.text)
 
         response = self.client.get("/magnetism-scanner?lang=en")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Magnetism Scanner", response.text)
+        self.assertIn("Brand3 Scanner", response.text)
         self.assertIn('<html lang="en">', response.text)
 
         response = self.client.post(
@@ -151,14 +151,21 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(detail_en.status_code, 200)
         self.assertEqual(research_es.status_code, 200)
         self.assertEqual(methodology_es.status_code, 200)
-        self.assertIn("Evidencia de investigación", detail_es.text)
-        self.assertIn("Research Evidence", detail_en.text)
+        self.assertIn("Auditoría", detail_es.text)
+        self.assertIn("Evidencia", detail_es.text)
+        self.assertIn("Audit", detail_en.text)
+        self.assertIn("Evidence", detail_en.text)
+        self.assertIn(f"/magnetism-scanner/scan/{scan_id}/audit?lang=es", detail_es.text)
         self.assertIn(f"/magnetism-scanner/scan/{scan_id}/research?lang=es", detail_es.text)
         self.assertIn("Grafo de evidencia", research_es.text)
         self.assertNotIn("Plan de adquisición", research_es.text)
         self.assertNotIn("Traza de adquisición", research_es.text)
         self.assertNotIn("Calidad de adquisición", research_es.text)
         self.assertIn("Detalles de metodología", methodology_es.text)
+        self.assertIn("Snapshot de Brand Audit", methodology_es.text)
+        self.assertIn("Por qué parece existir la marca", methodology_es.text)
+        self.assertIn("capa técnica", methodology_es.text)
+        self.assertNotIn("Why the brand appears to exist beyond the product.", methodology_es.text)
         self.assertIn('<html lang="es">', detail_es.text)
 
     def test_scan_detail_applies_cached_tldr_translation(self):
@@ -423,8 +430,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(reliability.status_code, 200)
         self.assertEqual(methodology.status_code, 200)
         self.assertIn("TLDR Brand3", detail.text)
-        self.assertIn("Evidencia de investigación", detail.text)
-        self.assertIn("Fiabilidad de evidencia", detail.text)
+        self.assertIn("Auditoría", detail.text)
+        self.assertIn("Evidencia", detail.text)
         self.assertNotIn("Magenta Circle Signals", detail.text)
         self.assertIn("Superficies de producto", research.text)
         self.assertIn("product:LangGraph", research.text)
@@ -438,6 +445,98 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("gate_passed", reliability.text)
         self.assertIn("Detalles de metodología", methodology.text)
         self.assertIn("Señales Magenta Circle", methodology.text)
+
+    def test_scan_audit_tab_uses_unified_scanner_layout_with_brand_audit_data(self):
+        from src.models.brand import BrandScore, DimensionScore
+        from web.storage import insert_magnetism_scan
+
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Audit Linked", "https://audit-linked.test")
+            run_id = store.create_run(
+                brand_id,
+                "Audit Linked",
+                "https://audit-linked.test",
+                use_llm=True,
+                use_social=True,
+            )
+            store.save_scores(
+                run_id,
+                BrandScore(
+                    url="https://audit-linked.test",
+                    brand_name="Audit Linked",
+                    dimensions={
+                        "coherencia": DimensionScore(
+                            name="coherencia",
+                            score=72.0,
+                            insights=["Clear owned positioning."],
+                        ),
+                        "diferenciacion": DimensionScore(
+                            name="diferenciacion",
+                            score=51.0,
+                            insights=["Differentiation needs sharper proof."],
+                        ),
+                    },
+                    composite_score=63.0,
+                ),
+            )
+            store.save_run_audit(
+                run_id,
+                {
+                    "scoring_state_fingerprint": "auditlinked12345",
+                    "executive_analysis_v2": {
+                        "executive_summary": "Audit Linked has a clear offer with limited proof.",
+                        "dimensions": {},
+                    },
+                },
+            )
+            store.finalize_run(
+                run_id=run_id,
+                composite_score=63.0,
+                llm_used=True,
+                social_scraped=True,
+                result_path="",
+                summary="Audit Linked has a clear offer with limited proof.",
+            )
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(
+            {
+                "run": {
+                    "id": run_id,
+                    "brand_name": "Audit Linked",
+                    "url": "https://audit-linked.test",
+                },
+                "features": [],
+                "raw_inputs": [],
+                "evidence_items": [],
+            }
+        )
+        payload["source_run_id"] = run_id
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=run_id,
+        )
+
+        detail = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+        audit = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit")
+
+        self.assertEqual(detail.status_code, 200)
+        self.assertIn(f"/magnetism-scanner/scan/{scan_id}/audit?lang=es", detail.text)
+        self.assertEqual(audit.status_code, 200)
+        self.assertIn("brand3 scanner", audit.text)
+        self.assertIn("Auditoría", audit.text)
+        self.assertIn("TLDR Brand3", audit.text)
+        self.assertIn("Audit Linked", audit.text)
+        self.assertIn("Resumen ejecutivo", audit.text)
+        self.assertIn("Auditoría por dimensión", audit.text)
+        self.assertNotIn("<title>brand-audit", audit.text)
 
         legacy_payload = dict(payload)
         legacy_payload.pop("research_pack_quality", None)
@@ -1649,10 +1748,23 @@ class MagnetismScannerTests(unittest.TestCase):
             self.assertEqual(row["phase"], "interpreting")
             status_resp = self.client.get(status_url, follow_redirects=False)
             self.assertEqual(status_resp.status_code, 200)
-            self.assertIn("magnetism_status", status_resp.text)
-            self.assertIn("Interpreting TLDR Brand3 blocks", status_resp.text)
-            self.assertIn("Scoring magnetism and coherence", status_resp.text)
-            self.assertIn("This checklist reflects Magnetism Scanner phase", status_resp.text)
+            self.assertIn("brand_scanner_status", status_resp.text)
+            self.assertIn("Recopilando web pública", status_resp.text)
+            self.assertIn("Leyendo señales externas", status_resp.text)
+            self.assertIn("Construyendo evidencia", status_resp.text)
+            self.assertIn("Calculando salud de marca", status_resp.text)
+            self.assertIn("Generando TLDR estratégico", status_resp.text)
+            self.assertIn("Esta lista muestra la fase del Brand3 Scanner", status_resp.text)
+
+            status_resp_en = self.client.get(status_url.replace("?lang=es", "?lang=en"), follow_redirects=False)
+            self.assertEqual(status_resp_en.status_code, 200)
+            self.assertIn("Collecting public web evidence", status_resp_en.text)
+            self.assertIn("Reading external signals", status_resp_en.text)
+            self.assertIn("Building evidence", status_resp_en.text)
+            self.assertIn("Calculating brand health", status_resp_en.text)
+            self.assertIn("Generating strategic TLDR", status_resp_en.text)
+            self.assertIn("This list shows the Brand3 Scanner phase", status_resp_en.text)
+            self.assertNotIn("Recopilando web pública", status_resp_en.text)
         finally:
             release.set()
 
@@ -1671,8 +1783,12 @@ class MagnetismScannerTests(unittest.TestCase):
         # GET index page when empty
         r = self.client.get("/magnetism-scanner")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("Escáner de Magnetismo", r.text)
-        self.assertIn("Ejecutar escáner", r.text)
+        self.assertIn("Brand3 Scanner", r.text)
+        self.assertIn("Analizar marca", r.text)
+        self.assertIn("Auditoría, evidencia y TLDR estratégico de una marca pública.", r.text)
+        self.assertIn("Resultado incluido", r.text)
+        self.assertIn("TLDR Brand3", r.text)
+        self.assertIn("Auditoría de Marca", r.text)
         self.assertIn("legacy/debug, no comparable", r.text)
         self.assertIn("evita la adquisición de Brand Audit", r.text)
         self.assertIn("todavía no hay escaneos Magnetism", r.text)

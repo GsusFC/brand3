@@ -14,11 +14,11 @@
 
   <pre class="term-head">
 {%- if status == "queued" -%}
-<span class="hl-warn">[queued]</span>   <span class="dim">{{ brand_slug }} — waiting for worker</span>
+<span class="hl-warn">[queued]</span>   <span class="dim">{{ brand_slug }} — {{ queued_message if queued_message else "waiting for worker" }}</span>
 {%- elif status == "running" -%}
 <span class="hl-accent">[running]</span>  <span class="dim">{{ brand_slug }} — {{ phase_label }}</span>
 {%- elif status == "ready" -%}
-<span class="hl-ok">[ready]</span>    <span class="dim">{{ brand_slug }} — redirecting to report ...</span>
+<span class="hl-ok">[ready]</span>    <span class="dim">{{ brand_slug }} — {{ ready_message if ready_message else "redirecting to report ..." }}</span>
 {%- elif status == "failed" -%}
 <span class="hl-alert">[failed]</span>   <span class="dim">{{ brand_slug }} — {{ error_message or "unknown error" }}</span>
 {%- endif -%}
@@ -67,9 +67,9 @@
 
   <p class="small dim">{{ status_note if status_note else "Page auto-refreshes every 5 seconds. This checklist reflects pipeline phase, not a percentage estimate." }}</p>
   {% elif status == "ready" %}
-  <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">→ open report</a></p>
+  <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">{{ ready_link_label if ready_link_label else "→ open report" }}</a></p>
   {% elif status == "failed" %}
-  <p><a href="{{ back_href if back_href else '/' }}">← back to form</a></p>
+  <p><a href="{{ back_href if back_href else '/' }}">{{ back_link_label if back_link_label else "← back to form" }}</a></p>
   {% endif %}
 </section>
 {% endblock %}

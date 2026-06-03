@@ -21,12 +21,22 @@ def magnetism_landing_copy(lang: _Lang) -> dict[str, str]:
     """Shared entry copy so home and scanner stay aligned."""
     if lang == "es":
         return {
-            "title": "Escáner de Magnetismo",
-            "intro": "Empieza aquí. Usa el escáner para abrir un análisis; Brand Audit sigue disponible como ruta dedicada.",
-            "button": "Ejecutar escáner",
+            "title": "Brand3 Scanner",
+            "intro": "Auditoría, evidencia y TLDR estratégico de una marca pública.",
+            "button": "Analizar marca",
+            "result_label": "Resultado incluido",
+            "result_tldr": "TLDR Brand3",
+            "result_audit": "Auditoría de Marca",
+            "result_evidence": "Evidencia",
+            "result_methodology": "Metodología",
         }
     return {
-        "title": "Magnetism Scanner",
-        "intro": "Start here. Use the scanner to open an analysis; Brand Audit remains available as a dedicated route.",
-        "button": "Run scanner",
+        "title": "Brand3 Scanner",
+        "intro": "Brand audit, evidence, and strategic TLDR for a public brand.",
+        "button": "Analyze brand",
+        "result_label": "Included result",
+        "result_tldr": "TLDR Brand3",
+        "result_audit": "Brand Audit",
+        "result_evidence": "Evidence",
+        "result_methodology": "Methodology",
     }

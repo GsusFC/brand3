@@ -150,10 +150,11 @@ class ListingsTests(unittest.TestCase):
     def test_index_empty_shows_placeholder(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("Escáner de Magnetismo", r.text)
-        self.assertIn(">Auditoría de Marca<", r.text)
-        self.assertIn('href="/brand-audit"', r.text)
+        self.assertIn("Brand3 Scanner", r.text)
+        self.assertIn("Auditoría de Marca", r.text)
+        self.assertNotIn('href="/brand-audit"', r.text)
         self.assertIn("todavía no hay análisis", r.text)
+        self.assertIn("scanner de marca", r.text)
 
     def test_index_limits_to_ten(self):
         for i in range(20):

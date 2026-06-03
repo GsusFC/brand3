@@ -481,12 +481,6 @@
     <button class="theme-toggle theme-toggle-term" type="button" data-report-theme-toggle aria-label="{{ t.toggle_theme }}">{% if theme == 'dark' %}{{ t.light }}{% else %}{{ t.dark }}{% endif %}</button>
   </div>
 </div>
-<nav class="main-nav" aria-label="Brand3 primary navigation">
-  <a class="main-nav-link is-active" href="/reports{% if lang == 'en' %}?lang=en{% endif %}">{{ t.reports }}</a>
-  <a class="main-nav-link" href="/visual-signature{% if lang == 'en' %}?lang=en{% endif %}">{{ t.visual_signature_lab }}</a>
-  <a class="main-nav-link" href="/magnetism-scanner{% if lang == 'en' %}?lang=en{% endif %}">{{ t.magnetism_scanner }}</a>
-</nav>
-<hr class="rule shell-rule">
 <div class="report-body">
 {% else -%}
 <nav class="report-app-nav" aria-label="Brand3 report navigation">

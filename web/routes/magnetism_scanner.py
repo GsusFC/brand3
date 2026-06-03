@@ -15,6 +15,7 @@ from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.translation import apply_magnetism_translation, translate_magnetism_payload
+from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
 
 from ..i18n import magnetism_landing_copy
@@ -37,11 +38,24 @@ router = APIRouter()
 _Lang = Literal["es", "en"]
 
 
+class _ReportReadAnalyzer:
+    """Keep scanner audit reads deterministic and side-effect free."""
+
+    def _call(self, *args, **kwargs) -> str:
+        return ""
+
+    def _call_json(self, *args, **kwargs) -> dict:
+        return {}
+
+
+_REPORT_READ_ANALYZER = _ReportReadAnalyzer()
+
+
 _MAGNETISM_UI = {
     "en": {
         "language": "Language",
         "other_lang": "ES",
-        "scanner_title": "Magnetism Scanner",
+        "scanner_title": "Brand3 Scanner",
         "scanner_tag": "competitive analysis and 7-layer audit",
         "manual_summary": "Manual text block input (legacy/debug, not comparable)",
         "manual_label": "Raw website content / landing page copy:",
@@ -72,9 +86,23 @@ _MAGNETISM_UI = {
         "url": "url",
         "run": "run",
         "result": "result",
-        "back": "Back to Magnetism Scanner",
+        "back": "Back to Brand3 Scanner",
         "research_evidence": "Research Evidence",
+        "audit": "Audit",
+        "audit_tag": "Brand Audit inside the scanner result",
+        "audit_intro": "Executive Brand Audit reading attached to this scanner result.",
+        "audit_unavailable": "No Brand Audit snapshot is attached to this scan.",
+        "audit_run": "Brand Audit run",
+        "executive_summary": "Executive summary",
+        "primary_risk": "Primary risk",
+        "primary_opportunity": "Primary opportunity",
+        "dimension_audit": "Dimension audit",
+        "findings": "Findings",
+        "recommendation": "Recommendation",
+        "confidence": "Confidence",
+        "legacy_audit": "Legacy audit fallback",
         "evidence_reliability": "Evidence Reliability",
+        "evidence": "Evidence",
         "methodology_details": "Methodology Details",
         "detail_tag": "9 strategic blocks derived from 7 Magenta signals",
         "no_detected": "(not detected)",
@@ -148,7 +176,7 @@ _MAGNETISM_UI = {
     "es": {
         "language": "Idioma",
         "other_lang": "EN",
-        "scanner_title": "Escáner de Magnetismo",
+        "scanner_title": "Brand3 Scanner",
         "scanner_tag": "análisis competitivo y auditoría de 7 capas",
         "manual_summary": "Entrada manual de texto (legacy/debug, no comparable)",
         "manual_label": "Contenido web bruto / copy de landing:",
@@ -179,9 +207,23 @@ _MAGNETISM_UI = {
         "url": "url",
         "run": "run",
         "result": "resultado",
-        "back": "Volver a Magnetism Scanner",
+        "back": "Volver a Brand3 Scanner",
         "research_evidence": "Evidencia de investigación",
+        "audit": "Auditoría",
+        "audit_tag": "Brand Audit dentro del resultado del scanner",
+        "audit_intro": "Lectura ejecutiva de Brand Audit asociada a este resultado del scanner.",
+        "audit_unavailable": "Este scan no tiene un snapshot de Brand Audit asociado.",
+        "audit_run": "Brand Audit run",
+        "executive_summary": "Resumen ejecutivo",
+        "primary_risk": "Riesgo principal",
+        "primary_opportunity": "Oportunidad principal",
+        "dimension_audit": "Auditoría por dimensión",
+        "findings": "Hallazgos",
+        "recommendation": "Recomendación",
+        "confidence": "Confianza",
+        "legacy_audit": "Fallback de auditoría legacy",
         "evidence_reliability": "Fiabilidad de evidencia",
+        "evidence": "Evidencia",
         "methodology_details": "Detalles de metodología",
         "detail_tag": "9 bloques estratégicos derivados de 7 señales Magenta",
         "no_detected": "(no detectado)",
@@ -398,19 +440,51 @@ async def magnetism_scanner_from_run(
     return RedirectResponse(_with_lang(f"/magnetism-scanner/{token}/status", lang), status_code=303)
 
 
-_MAGNETISM_PHASES = [
-    ("queued", "Queued"),
-    ("collecting", "Collecting Brand Audit evidence"),
-    ("extracting", "Extracting Magnetism signals"),
-    ("interpreting", "Interpreting TLDR Brand3 blocks"),
-    ("scoring", "Scoring magnetism and coherence"),
-    ("finalizing", "Writing Magnetism report"),
-]
+_MAGNETISM_PHASES = {
+    "es": [
+        ("queued", "En cola"),
+        ("collecting", "Recopilando web pública"),
+        ("extracting", "Leyendo señales externas"),
+        ("interpreting", "Construyendo evidencia"),
+        ("scoring", "Calculando salud de marca"),
+        ("finalizing", "Generando TLDR estratégico"),
+    ],
+    "en": [
+        ("queued", "Queued"),
+        ("collecting", "Collecting public web evidence"),
+        ("extracting", "Reading external signals"),
+        ("interpreting", "Building evidence"),
+        ("scoring", "Calculating brand health"),
+        ("finalizing", "Generating strategic TLDR"),
+    ],
+}
 
-_MAGNETISM_PHASE_LABELS = {
-    **{key: label for key, label in _MAGNETISM_PHASES},
-    "ready": "Magnetism report ready",
-    "failed": "Magnetism scan failed",
+_MAGNETISM_PHASE_FINAL_LABELS = {
+    "es": {
+        "ready": "Informe de marca listo",
+        "failed": "Análisis de marca fallido",
+    },
+    "en": {
+        "ready": "Brand report ready",
+        "failed": "Brand analysis failed",
+    },
+}
+
+_MAGNETISM_STATUS_COPY = {
+    "es": {
+        "note": "La página se actualiza cada 5 segundos. Esta lista muestra la fase del Brand3 Scanner, no una estimación porcentual.",
+        "queued": "esperando turno de análisis",
+        "ready": "abriendo informe ...",
+        "ready_link": "→ abrir informe",
+        "back_link": "← volver al scanner",
+    },
+    "en": {
+        "note": "Page auto-refreshes every 5 seconds. This list shows the Brand3 Scanner phase, not a percentage estimate.",
+        "queued": "waiting for analysis slot",
+        "ready": "opening report ...",
+        "ready_link": "→ open report",
+        "back_link": "← back to scanner",
+    },
 }
 
 
@@ -429,25 +503,34 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
         return RedirectResponse(_with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang), status_code=303)
 
     phase = _magnetism_phase(row)
+    phase_labels = {
+        **{key: label for key, label in _MAGNETISM_PHASES[lang]},
+        **_MAGNETISM_PHASE_FINAL_LABELS[lang],
+    }
+    status_copy = _MAGNETISM_STATUS_COPY[lang]
     return templates.TemplateResponse(
         request,
         "status.html.j2",
         {
             "ui_lang": lang,
             "token": token,
-            "brand_slug": row.get("brand_name") or "magnetism scan",
+            "brand_slug": row.get("brand_name") or "brand scan",
             "status": row.get("status") or "queued",
             "elapsed_seconds": _elapsed(row.get("started_at")),
             "elapsed_label": _elapsed_label(_elapsed(row.get("started_at"))),
             "error_message": row.get("error_message"),
             "phase": phase,
-            "phase_label": _MAGNETISM_PHASE_LABELS.get(phase, "Working"),
-            "phase_steps": _phase_steps(_MAGNETISM_PHASES, phase, row.get("status") or "queued"),
+            "phase_label": phase_labels.get(phase, "Working" if lang == "en" else "Trabajando"),
+            "phase_steps": _phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
             "ready_href": _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang),
             "back_href": _with_lang("/magnetism-scanner", lang),
-            "status_label": "magnetism_status",
+            "status_label": "brand_scanner_status",
             "typical_run_label": "1-4 min",
-            "status_note": "Page auto-refreshes every 5 seconds. This checklist reflects Magnetism Scanner phase, not a percentage estimate.",
+            "status_note": status_copy["note"],
+            "queued_message": status_copy["queued"],
+            "ready_message": status_copy["ready"],
+            "ready_link_label": status_copy["ready_link"],
+            "back_link_label": status_copy["back_link"],
         },
     )
 
@@ -480,7 +563,7 @@ def _magnetism_phase(row: dict) -> str:
     return str(phase)
 
 
-def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str) -> list[dict]:
+def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str, *, lang: _Lang = "es") -> list[dict]:
     if status == "failed":
         current_phase = "failed"
     if status == "ready":
@@ -502,9 +585,9 @@ def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str)
             state = "pending"
         steps.append({"key": key, "label": label, "state": state})
     if current_phase == "failed":
-        steps.append({"key": "failed", "label": "Magnetism scan failed", "state": "failed"})
+        steps.append({"key": "failed", "label": _MAGNETISM_PHASE_FINAL_LABELS[lang]["failed"], "state": "failed"})
     if current_phase == "ready":
-        steps.append({"key": "ready", "label": "Magnetism report ready", "state": "done"})
+        steps.append({"key": "ready", "label": _MAGNETISM_PHASE_FINAL_LABELS[lang]["ready"], "state": "done"})
     return steps
 
 
@@ -547,6 +630,59 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     return templates.TemplateResponse(
         request,
         "magnetism_research.html.j2",
+        {"model": model, "ui_lang": lang},
+    )
+
+
+@router.get("/magnetism-scanner/scan/{scan_id}/audit")
+async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render the Brand Audit tab inside the unified Scanner layout."""
+    model = _magnetism_scan_model(scan_id, lang=lang)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
+            status_code=404,
+        )
+    model["active_tab"] = "audit"
+    _attach_ui(model, lang)
+    source_run_id = model.get("source_run_id")
+    if not source_run_id:
+        model["audit"] = {"available": False, "reason": "missing_source_run"}
+        return templates.TemplateResponse(
+            request,
+            "magnetism_audit.html.j2",
+            {"model": model, "ui_lang": lang},
+        )
+
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(int(source_run_id))
+        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
+    finally:
+        store.close()
+    if snapshot is None:
+        model["audit"] = {
+            "available": False,
+            "reason": "missing_snapshot",
+            "source_run_id": source_run_id,
+        }
+    else:
+        model["audit"] = {
+            "available": True,
+            "source_run_id": int(source_run_id),
+            "context": build_brand_dossier(
+                snapshot,
+                theme="light",
+                analyzer=_REPORT_READ_ANALYZER,
+                narrative_payload=narrative_payload,
+            ),
+        }
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_audit.html.j2",
         {"model": model, "ui_lang": lang},
     )
 
@@ -643,7 +779,7 @@ def _magnetism_scan_model(scan_id: int, *, lang: _Lang = "es") -> dict | None:
         "diagnosis": payload.get("diagnosis") or {},
         "limitations": payload.get("limitations") or [],
         "source": payload.get("source") or "direct_scan",
-        "source_run_id": payload.get("source_run_id"),
+        "source_run_id": payload.get("source_run_id") or row.get("source_run_id"),
         "extraction_mode": payload.get("extraction_mode") or "unknown",
         "canonical_evidence_source": payload.get("canonical_evidence_source"),
         "direct_source_provider": payload.get("direct_source_provider"),
@@ -687,6 +823,15 @@ def _payload_for_language(scan_id: int, payload: dict, lang: _Lang) -> dict:
     updated_payload["translations"] = updated_translations
     update_magnetism_scan_payload(scan_id, json.dumps(updated_payload, ensure_ascii=False))
     return apply_magnetism_translation(updated_payload, translated)
+
+
+def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) -> dict | None:
+    if lang == "en":
+        return None
+    try:
+        return store.get_report_translation(run_id, lang)
+    except Exception:
+        return None
 
 
 def _research_evidence_model(payload: dict) -> dict:

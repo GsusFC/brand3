@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}Brand3 — Magnetism Scanner{% endblock %}
+{% block title %}Brand3 Scanner{% endblock %}
 {% block content %}
 <section class="home-hero">
   <h1 class="page-title">{{ landing.title }}</h1>
@@ -15,9 +15,13 @@
       {% endif %}
       <button type="submit">{{ landing.button }}</button>
     </form>
-    <p class="small dim home-secondary-actions">
-      <a href="/brand-audit{{ lang_suffix }}">{{ 'Auditoría de Marca' if current_lang == 'es' else 'Brand Audit' }}</a> · <a href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a>
-    </p>
+    <div class="scanner-result-includes" aria-label="{{ landing.result_label }}">
+      <span class="scanner-result-label">{{ landing.result_label }}</span>
+      <span>{{ landing.result_tldr }}</span>
+      <span>{{ landing.result_audit }}</span>
+      <span>{{ landing.result_evidence }}</span>
+      <span>{{ landing.result_methodology }}</span>
+    </div>
   </div>
 </section>
 
@@ -66,7 +70,7 @@
   </table>
   </div>
   {% else %}
-  <div class="empty">// {% if current_lang == 'es' %}todavía no hay análisis — ejecuta un escáner o abre Brand Audit.{% else %}no analyses yet — run a scanner or open Brand Audit.{% endif %}</div>
+  <div class="empty">// {% if current_lang == 'es' %}todavía no hay análisis — ejecuta un scanner de marca.{% else %}no analyses yet — run a brand scanner.{% endif %}</div>
   {% endif %}
 </section>
 {% endblock %}

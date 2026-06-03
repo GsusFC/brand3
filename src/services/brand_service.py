@@ -45,6 +45,7 @@ from src.discovery.calibration import apply_discovery_calibration_hint, build_di
 from src.discovery.search_plan import build_discovery_search_plan
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
+from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
 from src.reports.entity_research_packet import build_entity_research_packet
 from src.research.evidence_graph import build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
@@ -1952,6 +1953,27 @@ def run(
         )
         trust_summary = _trust_summary_payload(data_quality=data_quality, context_summary=confidence_summary, evidence_summary=evidence_summary, dimension_confidence=dimension_confidence, context_enrichment_summary=context_enrichment_summary, context_effective_readiness=context_effective_readiness)
         trust_summary["evidence_basis_summary"] = discovery_trust_basis["user_message"]
+        run_audit_context = (
+            _build_run_audit_context(
+                store,
+                calibration_profile=calibration_profile,
+                niche_classification=niche_classification,
+            )
+            if store
+            else _build_run_audit_context(
+                calibration_profile=calibration_profile,
+                niche_classification=niche_classification,
+            )
+        )
+        run_audit_context["executive_analysis_v2"] = run_brand_audit_analyst_pass(
+            llm=llm,
+            brand_name=brand_score.brand_name,
+            url=brand_score.url,
+            research_pack=research_pack_for_feature_prompts,
+            dimensions=brand_score.breakdown,
+            features_by_dim=features_by_dim,
+        )
+
         result = {
             "brand": brand_score.brand_name,
             "brand_profile": _build_brand_profile(brand_score.brand_name, brand_score.url, store),
@@ -2004,18 +2026,7 @@ def run(
             "dimensions": brand_score.breakdown,
             "llm_used": use_llm and llm is not None,
             "social_scraped": social_data is not None and len(social_data.platforms) > 0,
-            "audit": (
-                _build_run_audit_context(
-                    store,
-                    calibration_profile=calibration_profile,
-                    niche_classification=niche_classification,
-                )
-                if store
-                else _build_run_audit_context(
-                    calibration_profile=calibration_profile,
-                    niche_classification=niche_classification,
-                )
-            ),
+            "audit": run_audit_context,
             "timestamp": datetime.now().isoformat(),
         }
         result["audit"]["discovery_calibration_decision"] = discovery_calibration_decision

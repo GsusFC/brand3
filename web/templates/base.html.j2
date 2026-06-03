@@ -38,18 +38,12 @@
       <button class="theme-toggle theme-toggle-term" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
     </div>
   </div>
-  <nav class="main-nav" aria-label="{{ 'Navegación principal de Brand3' if current_lang == 'es' else 'Brand3 primary navigation' }}">
-    <a class="main-nav-link{% if request.url.path.startswith('/reports') or request.url.path.startswith('/r/') or request.url.path.startswith('/brand/') %} is-active{% endif %}" href="/reports{{ lang_suffix }}">{{ 'Informes' if current_lang == 'es' else 'Reports' }}</a>
-    <a class="main-nav-link{% if request.url.path.startswith('/visual-signature') %} is-active{% endif %}" href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a>
-    <a class="main-nav-link{% if request.url.path.startswith('/magnetism-scanner') %} is-active{% endif %}" href="/magnetism-scanner{{ lang_suffix }}">{{ 'Escáner de Magnetismo' if current_lang == 'es' else 'Magnetism Scanner' }}</a>
-  </nav>
-  <hr class="rule">
   {% block content %}{% endblock %}
   <hr class="rule">
   <footer class="footer">
     <div class="kv">
       <span class="k">engine</span>    <span class="v">brand3 v0.1.0</span>
-      <span class="k">{{ 'acerca' if current_lang == 'es' else 'about' }}</span>     <span class="v"><a href="/{{ lang_suffix }}">{{ 'Inicio' if current_lang == 'es' else 'Home' }}</a> · <a href="/reports{{ lang_suffix }}">{{ 'Informes' if current_lang == 'es' else 'Reports' }}</a> · <a href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a> · <a href="/magnetism-scanner{{ lang_suffix }}">{{ 'Escáner de Magnetismo' if current_lang == 'es' else 'Magnetism Scanner' }}</a> · <a href="/takedown{{ lang_suffix }}">/takedown</a></span>
+      <span class="k">{{ 'acerca' if current_lang == 'es' else 'about' }}</span>     <span class="v"><a href="/{{ lang_suffix }}">{{ 'Inicio' if current_lang == 'es' else 'Home' }}</a> · <a href="/reports{{ lang_suffix }}">{{ 'Informes' if current_lang == 'es' else 'Reports' }}</a> · <a href="/visual-signature{{ lang_suffix }}">{{ 'Laboratorio de firma visual' if current_lang == 'es' else 'Visual Signature Lab' }}</a> · <a href="/magnetism-scanner{{ lang_suffix }}">Brand3 Scanner</a> · <a href="/takedown{{ lang_suffix }}">/takedown</a></span>
     </div>
     <div class="small footer-note">
       {% if current_lang == 'es' %}

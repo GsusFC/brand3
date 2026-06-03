@@ -1,0 +1,144 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: {{ model.t.audit }} · {{ model.brand_name }}{% endblock %}
+{% block content %}
+<section class="magnetism-hero-section">
+  <div class="section-head">
+    <span class="label">brand3 scanner</span>
+    <span class="tag">// {{ model.t.audit_tag }}</span>
+  </div>
+  {% include "magnetism_scan_nav.html.j2" %}
+  <div class="magnetism-hero-grid">
+    <div class="magnetism-hero-main">
+      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      <p class="prose intro-copy magnetism-hero-verdict">{{ model.t.audit_intro }}</p>
+    </div>
+    {% if model.audit.available %}
+    {% set audit_ctx = model.audit.context %}
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">{{ model.t.audit_score }}</div>
+      <div class="hl-accent magnetism-hero-score">
+        {{ audit_ctx.score.global_display }}<span>/100</span>
+      </div>
+      <div class="magnetism-score-bar" aria-hidden="true">
+        <span style="--score-width: {{ audit_ctx.score.global or 0 }}%;"></span>
+      </div>
+      <div class="dim magnetism-hero-tier">{{ audit_ctx.score.band_letter }} · {{ audit_ctx.score.band_label }}</div>
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">data_quality</div>
+      <div class="{% if audit_ctx.brand.data_quality == 'good' %}hl-ok{% elif audit_ctx.brand.data_quality == 'insufficient' %}hl-warn{% else %}hl-accent{% endif %}" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">
+        {{ audit_ctx.brand.data_quality }}
+      </div>
+      <div class="dim magnetism-hero-tier">{{ model.t.audit_run }} #{{ model.audit.source_run_id }}</div>
+    </div>
+    {% else %}
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">{{ model.t.audit }}</div>
+      <div class="hl-warn" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">n/a</div>
+      <div class="dim magnetism-hero-tier">{{ model.audit.reason }}</div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<hr class="rule-thin magnetism-compact-rule">
+
+{% if not model.audit.available %}
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.audit }}</span>
+    <span class="tag">// {{ model.audit.reason }}</span>
+  </div>
+  <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
+    <p class="dim" style="font-family:var(--font-mono); font-size:13px; line-height:1.5; margin:0;">
+      {{ model.t.audit_unavailable }}
+    </p>
+  </article>
+</section>
+{% else %}
+{% set audit_ctx = model.audit.context %}
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.executive_summary }}</span>
+    <span class="tag">// {{ audit_ctx.presentation_policy.headline }}</span>
+  </div>
+  <article class="magnetism-audit-summary">
+    <p class="magnetism-audit-summary-text">
+      {{ audit_ctx.synthesis_prose or audit_ctx.summary }}
+    </p>
+  </article>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.dimension_audit }}</span>
+    <span class="tag">// {{ audit_ctx.trust_summary.overall_status_label }}</span>
+  </div>
+  <div class="magnetism-audit-dimension-grid">
+    {% for dim in audit_ctx.dimensions %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+        <strong style="font-family:var(--font-ui); font-size:13px;">{{ dim.display_name }}</strong>
+        <span class="badge {% if dim.confidence_status == 'good' %}badge-ready{% else %}badge-missing{% endif %}">
+          {{ dim.score_display }}/100 · {{ dim.confidence_label }}
+        </span>
+      </div>
+      <p style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:10px 0 0;">{{ dim.verdict }}</p>
+      {% if dim.findings %}
+      <div style="display:grid; gap:8px; margin-top:12px;">
+        {% for finding in dim.findings[:2] %}
+        <div style="border-left:3px solid var(--accent); padding-left:10px;">
+          <strong style="display:block; font-family:var(--font-ui); font-size:12px;">{{ finding.title }}</strong>
+          <span class="dim" style="font-family:var(--font-mono); font-size:11px; line-height:1.45;">{{ finding.observation }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif dim.observations %}
+      <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:12px; line-height:1.5;">
+        {% for item in dim.observations[:3] %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      {% if dim.evidence %}
+      <details style="margin-top:12px;">
+        <summary class="source-link" style="cursor:pointer; width:max-content;">{{ model.t.evidence }} · {{ dim.evidence|length }}</summary>
+        <ul style="margin:10px 0 0; padding-left:18px; font-family:var(--font-mono); font-size:11px; line-height:1.45;">
+          {% for item in dim.evidence[:4] %}
+          <li>{{ item.quote or item.source_url }}</li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.evidence }}</span>
+    <span class="tag">// Brand Audit</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">total_evidence</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ audit_ctx.evidence_summary.total }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">overall_status</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ audit_ctx.trust_summary.overall_status_label }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">report_mode</div>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ audit_ctx.readiness.report_mode }}</strong>
+    </article>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

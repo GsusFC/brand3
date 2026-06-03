@@ -287,6 +287,31 @@ h4 {
   text-align: center;
 }
 
+.scanner-result-includes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.scanner-result-includes span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 12px;
+}
+
+.scanner-result-includes .scanner-result-label {
+  border-color: transparent;
+  background: transparent;
+  color: var(--text-muted);
+}
+
 .section-head {
   display: flex;
   justify-content: space-between;
@@ -2055,6 +2080,27 @@ a:focus-visible {
   margin: 10px 0 0;
 }
 
+.magnetism-audit-summary {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.magnetism-audit-summary-text {
+  max-width: none;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.magnetism-audit-dimension-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
 .magnetism-tldr-section {
   padding-top: 16px;
 }
@@ -2733,6 +2779,10 @@ a:hover {
 
   .magnetism-tldr-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .magnetism-audit-dimension-grid {
+    grid-template-columns: 1fr;
   }
 
   .magnetism-hero-main,

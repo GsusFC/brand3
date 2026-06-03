@@ -242,16 +242,17 @@ def insert_magnetism_scan(
     coherence_score: int,
     quadrant: str,
     raw_payload: str,
+    source_run_id: int | None = None,
 ) -> int:
     """Insert a new magnetism scan and return its primary key ID."""
     with _connect() as conn:
         cur = conn.execute(
             """
             INSERT INTO magnetism_scans
-              (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+              (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload, source_run_id, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))
             """,
-            (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload),
+            (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload, source_run_id),
         )
         conn.commit()
         last_id = cur.lastrowid

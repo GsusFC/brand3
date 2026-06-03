@@ -651,6 +651,135 @@ def test_graph_pack_rejects_pricing_labels_as_product_summary() -> None:
     assert pack["audience"] == "companies deploying generative AI"
 
 
+def test_graph_pack_rejects_docs_navigation_and_sitemap_as_strategy() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=1007,
+            brand_name="docs.parallel.ai",
+            input_url="https://docs.parallel.ai/getting-started/overview",
+            resolved_entity="Parallel",
+            entity_type="company",
+            parent_brand="Parallel",
+        ),
+        sources={
+            "docs": ResearchSource(
+                source_id="docs",
+                url="https://docs.parallel.ai/getting-started/overview",
+                source_type="owned_docs",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            ),
+            "integration": ResearchSource(
+                source_id="integration",
+                url="https://docs.parallel.ai/integrations/google-gemini-enterprise",
+                source_type="owned_docs",
+                surface_role="product:docs",
+                entity_scope="product:docs",
+            ),
+            "home": ResearchSource(
+                source_id="home",
+                url="https://www.parallel.ai",
+                source_type="owned_home",
+                surface_role="parent_home",
+                entity_scope="parent_brand",
+            ),
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="chrome-offer",
+                text="Overview - Parallel Skip to main content Parallel home page Search... Cmd K Ask Assistant API Playground",
+                claim_type="product_offer",
+                source_id="docs",
+                source_url="https://docs.parallel.ai/getting-started/overview",
+                source_type="owned_docs",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            ),
+            EvidenceClaim(
+                claim_id="sitemap-audience",
+                text="<loc>https://docs.parallel.ai/integrations/google-gemini-enterprise</loc>",
+                claim_type="audience",
+                source_id="docs",
+                source_url="https://docs.parallel.ai/sitemap.xml",
+                source_type="owned_docs",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            ),
+            EvidenceClaim(
+                claim_id="integration-title",
+                text="Google Gemini Enterprise",
+                claim_type="audience",
+                source_id="integration",
+                source_url="https://docs.parallel.ai/integrations/google-gemini-enterprise",
+                source_type="owned_docs",
+                surface_role="product:docs",
+                entity_scope="product:docs",
+            ),
+            EvidenceClaim(
+                claim_id="clean-offer",
+                text="Parallel's web APIs give AI agents and developers high-quality, low-latency access to the web.",
+                claim_type="product_offer",
+                source_id="home",
+                source_url="https://www.parallel.ai",
+                source_type="owned_home",
+                surface_role="parent_home",
+                entity_scope="parent_brand",
+            ),
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert pack["offer"] == "Parallel's web APIs give AI agents and developers high-quality, low-latency access to the web."
+    assert pack["audience"] == "AI builders and developers"
+    assert "Skip to main content" not in pack["offer"]
+    assert "Google Gemini Enterprise" not in pack["audience"]
+
+
+def test_graph_pack_strips_cta_tail_from_offer() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=1008,
+            brand_name="Publicit",
+            input_url="https://www.publicit.com",
+            resolved_entity="Publicit",
+            entity_type="company",
+        ),
+        sources={
+            "home": ResearchSource(
+                source_id="home",
+                url="https://www.publicit.com",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            )
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="offer",
+                text=(
+                    "Plataforma de Publicidad Omnicanal Self-Service La primera infraestructura self-service "
+                    "para lanzar campanas en todos los espacios publicitarios Unete a Publicit Quieres unirte"
+                ),
+                claim_type="product_offer",
+                source_id="home",
+                source_url="https://www.publicit.com",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            )
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert pack["offer"].endswith("espacios publicitarios")
+    assert "Unete a" not in pack["offer"]
+    assert "Quieres unirte" not in pack["offer"]
+
+
 def test_company_brand_pack_prefers_parent_offer_over_single_product_copy() -> None:
     graph = build_evidence_graph_from_snapshot(_langchain_like_snapshot())
     pack = build_brand_research_pack_from_graph(graph).to_dict()

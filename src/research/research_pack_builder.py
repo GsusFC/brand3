@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from typing import Iterable
+from urllib.parse import urlparse
+import unicodedata
 
 from src.reports.brand_research_pack import (
     BrandResearchPack,
@@ -199,12 +201,15 @@ def _offer_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGraph | None 
         if claim.claim_type in claim_types
         and claim.text
         and _looks_like_offer(claim.text)
+        and not _looks_like_extraction_artifact(claim.text)
+        and not _looks_like_product_summary_noise(claim.text)
     ]
     if graph and _is_company_brand_graph(graph):
         candidates = _company_level_offer_candidates(candidates, graph) or candidates
     if candidates:
         return _compact_offer_text(max(candidates, key=lambda claim: _offer_score(claim, graph=graph)).text)
-    return _compact_offer_text(_first_claim_text(claim_list, ("product_offer", "hero_claim", "outcome", "audience")))
+    fallback = _first_clean_claim_text(claim_list, ("product_offer", "hero_claim", "outcome", "audience"))
+    return _compact_offer_text(fallback)
 
 
 def _looks_like_offer(text: str) -> bool:
@@ -263,6 +268,10 @@ def _offer_score(claim: EvidenceClaim, *, graph: EvidenceGraph | None = None) ->
         score -= 25
     if "founder" in low or "founders" in low:
         score -= 5
+    if _looks_like_extraction_artifact(claim.text):
+        score -= 80
+    if _looks_like_product_summary_noise(claim.text):
+        score -= 45
     if graph and _is_company_brand_graph(graph):
         entity = str(graph.run.resolved_entity or graph.run.brand_name or "").lower()
         if entity and entity in low:
@@ -295,6 +304,29 @@ def _looks_like_heading_or_truncated_summary(text: str) -> bool:
     )
 
 
+def _looks_like_extraction_artifact(text: str) -> bool:
+    cleaned = " ".join(str(text or "").split()).strip()
+    low = cleaned.lower()
+    if not cleaned:
+        return True
+    if low.startswith(("<loc>", "</loc>", "<lastmod>", "</url>", "urlset ")):
+        return True
+    return any(
+        marker in low
+        for marker in (
+            "skip to main content",
+            "search... ",
+            "search...\u2318",
+            "api playground",
+            "ask assistant",
+            "\u2318 k",
+            "ctrl k",
+            "main content parallel home page",
+            "privacy policy terms",
+        )
+    )
+
+
 def _company_level_offer_candidates(
     candidates: list[EvidenceClaim],
     graph: EvidenceGraph,
@@ -321,10 +353,12 @@ def _company_summary_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGra
         and claim.text
         and _is_company_scoped_claim(claim)
         and not _product_specific_without_parent(claim, graph)
+        and not _looks_like_extraction_artifact(claim.text)
+        and not _looks_like_product_summary_noise(claim.text)
     ]
     if preferred:
         return max(preferred, key=lambda claim: _offer_score(claim, graph=graph)).text
-    return _first_claim_text(claim_list, ("mission", "hero_claim", "product_offer"))
+    return _first_clean_claim_text(claim_list, ("mission", "hero_claim", "product_offer"))
 
 
 def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
@@ -333,6 +367,7 @@ def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
             claim.claim_type in {"product_offer", "feature_evidence", "outcome", "audience", "hero_claim"}
             and claim.text
             and _is_product_scoped_claim(claim)
+            and not _looks_like_extraction_artifact(claim.text)
             and not _looks_like_product_summary_noise(claim.text)
             and not _looks_like_audience_noise(claim.text)
         ):
@@ -342,7 +377,13 @@ def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
 
 def _audience_text(claims: Iterable[EvidenceClaim], fallback_texts: Iterable[str]) -> str:
     for claim in claims:
-        if claim.claim_type == "audience" and claim.text and not _looks_like_audience_noise(claim.text):
+        if (
+            claim.claim_type == "audience"
+            and claim.text
+            and not _looks_like_audience_noise(claim.text)
+            and not _looks_like_extraction_artifact(claim.text)
+            and not _looks_like_integration_title_audience(claim)
+        ):
             return claim.text
     return _infer_audience_from_texts(fallback_texts)
 
@@ -369,6 +410,9 @@ def _looks_like_product_summary_noise(text: str) -> bool:
             "credit package",
             "changing your plan",
             "top up",
+            "skip to main content",
+            "ask assistant",
+            "api playground",
         )
     )
 
@@ -381,6 +425,10 @@ def _looks_like_audience_noise(text: str) -> bool:
     if low in {"free", "basic", "pro", "max", "enterprise", "startup", "starter"}:
         return True
     if low.startswith("meet the "):
+        return True
+    if low.startswith(("<loc>", "</loc>", "<lastmod>", "</url>")):
+        return True
+    if low.startswith("http://") or low.startswith("https://"):
         return True
     if "|" in cleaned or cleaned.count(" - ") >= 1:
         return True
@@ -402,10 +450,24 @@ def _looks_like_audience_noise(text: str) -> bool:
             "credit package",
             "changing your plan",
             "top up",
+            "google gemini enterprise",
+            "sitemap",
+            "lastmod",
+            "skip to main content",
+            "ask assistant",
+            "api playground",
         )
     ):
         return True
     return False
+
+
+def _looks_like_integration_title_audience(claim: EvidenceClaim) -> bool:
+    text = " ".join(str(claim.text or "").split())
+    low = text.lower()
+    path = urlparse(str(claim.source_url or "")).path.lower()
+    has_audience_marker = any(marker in low for marker in (" teams", " users", " developers", " companies", " for "))
+    return "/integrations/" in path and len(text.split()) <= 5 and not has_audience_marker
 
 
 def _infer_audience_from_texts(texts: Iterable[str]) -> str:
@@ -416,6 +478,8 @@ def _infer_audience_from_texts(texts: Iterable[str]) -> str:
         return "legal and development teams"
     if "development teams" in low:
         return "development teams"
+    if "ai agents" in low and "developers" in low:
+        return "AI builders and developers"
     if "ai teams" in low or "agent" in low and "teams" in low:
         return "AI teams"
     if "companies" in low and ("generative ai" in low or "ai" in low):
@@ -482,6 +546,7 @@ def _product_names(graph: EvidenceGraph) -> list[str]:
 
 def _compact_offer_text(text: str) -> str:
     cleaned = " ".join(str(text or "").split()).strip()
+    cleaned = _strip_offer_cta_tail(cleaned)
     if len(cleaned) <= 420:
         return cleaned
     sentences = [part.strip() for part in cleaned.replace("?", ".").replace("!", ".").split(".") if part.strip()]
@@ -506,11 +571,46 @@ def _compact_offer_text(text: str) -> str:
     selected = priority[:3] or sentences[:3]
     compact = ". ".join(selected).strip()
     compact = compact.replace("Get a demo ", "").strip()
+    compact = _strip_offer_cta_tail(compact)
     if " Observability Evaluation " in compact:
         compact = compact.split(" Observability Evaluation ", 1)[0].strip()
     if compact and not compact.endswith("."):
         compact += "."
     return compact[:420].rstrip()
+
+
+def _strip_offer_cta_tail(text: str) -> str:
+    cleaned = " ".join(str(text or "").split()).strip()
+    normalized = unicodedata.normalize("NFKD", cleaned).encode("ascii", "ignore").decode("ascii").lower()
+    for marker in (
+        " unete a ",
+        " quieres unirte",
+        " get started",
+        " start free",
+        " try for free",
+        " download free",
+        " book a demo",
+        " contact us",
+    ):
+        idx = normalized.find(marker)
+        if idx > 40:
+            cleaned = cleaned[:idx].strip(" .,:;")
+            break
+    return cleaned
+
+
+def _first_clean_claim_text(claims: Iterable[EvidenceClaim], claim_types: tuple[str, ...]) -> str:
+    for claim_type in claim_types:
+        for claim in claims:
+            if (
+                claim.claim_type == claim_type
+                and claim.text
+                and not _looks_like_extraction_artifact(claim.text)
+                and not _looks_like_product_summary_noise(claim.text)
+                and not _looks_like_audience_noise(claim.text)
+            ):
+                return claim.text
+    return ""
 
 
 def _claim_texts(

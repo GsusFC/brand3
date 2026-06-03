@@ -195,6 +195,93 @@
 
 <section>
   <div class="section-head">
+    <span class="label">{{ model.t.parallel_shadow }}</span>
+    <span class="tag">// {{ model.t.parallel_shadow_tag }}</span>
+  </div>
+  <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; max-width:860px; margin:10px 0 0;">
+    {{ model.t.parallel_shadow_intro }}
+  </p>
+  {% if model.research.shadow_sources %}
+  <div style="display:grid; gap:14px; margin-top:14px;">
+    {% for shadow in model.research.shadow_sources %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:10px; align-items:flex-start;">
+        <div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+            <span class="badge badge-ready">{{ shadow.provider }}</span>
+            <span class="badge">{{ shadow.mode }}</span>
+            <span class="badge">{{ shadow.status }}</span>
+          </div>
+          {% if shadow.notes %}
+          <p class="dim" style="font-family:var(--font-mono); font-size:11px; line-height:1.45; margin:8px 0 0;">{{ shadow.notes[0] }}</p>
+          {% endif %}
+        </div>
+        <div style="display:flex; gap:16px; font-family:var(--font-mono); font-size:12px;">
+          <span>results={{ shadow.result_total }}</span>
+          <span>domains={{ shadow.unique_domain_count }}</span>
+        </div>
+      </div>
+
+      {% if shadow.unique_domains %}
+      <div style="margin-top:12px;">
+        <strong style="font-family:var(--font-ui); font-size:12px;">{{ model.t.parallel_shadow_domains }}</strong>
+        <div class="badge-line" style="margin-top:8px;">
+          {% for domain in shadow.unique_domains[:12] %}
+          <span class="badge">{{ domain }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if shadow.intents %}
+      <div style="margin-top:14px;">
+        <strong style="font-family:var(--font-ui); font-size:12px;">{{ model.t.parallel_shadow_intents }}</strong>
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap:8px; margin-top:8px;">
+          {% for intent in shadow.intents %}
+          <div style="border:1px solid var(--border); background:var(--soft-panel-bg); padding:10px;">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+              <strong style="font-family:var(--font-ui); font-size:12px;">{{ intent.name }}</strong>
+              <span class="badge {% if intent.status == 'ok' %}badge-ready{% else %}badge-missing{% endif %}">{{ intent.status }}</span>
+            </div>
+            <p class="dim" style="font-family:var(--font-mono); font-size:11px; margin:8px 0 0;">results={{ intent.result_count }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if shadow.results %}
+      <div style="margin-top:14px;">
+        <strong style="font-family:var(--font-ui); font-size:12px;">{{ model.t.parallel_shadow_results }}</strong>
+        <div style="display:grid; gap:8px; margin-top:8px;">
+          {% for result in shadow.results %}
+          <div style="border:1px solid var(--border); background:var(--soft-panel-bg); padding:10px 12px;">
+            <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
+              <span class="badge">{{ result.intent }}</span>
+              <a href="{{ result.url }}" target="_blank" rel="noopener noreferrer" style="font-family:var(--font-mono); font-size:12px; overflow-wrap:anywhere;">{{ result.title }}</a>
+            </div>
+            {% if result.excerpt %}
+            <p class="dim" style="font-family:var(--font-mono); font-size:11px; line-height:1.45; margin:7px 0 0;">{{ result.excerpt }}</p>
+            {% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <article style="border:1px solid var(--border); background:var(--surface); padding:14px; margin-top:14px;">
+    <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0;">{{ model.t.parallel_shadow_missing }}</p>
+  </article>
+  {% endif %}
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
     <span class="label">{{ model.t.tldr_evidence }}</span>
     <span class="tag">// {{ model.t.tldr_evidence_tag }}</span>
   </div>

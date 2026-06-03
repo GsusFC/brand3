@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
+from src.research.evidence_graph import build_evidence_graph_from_snapshot
+from src.research.research_pack_builder import build_brand_research_pack_from_graph
 
 
 def _base44_snapshot() -> dict:
@@ -83,6 +85,37 @@ def _base44_snapshot() -> dict:
             }
         ],
         "evidence_items": [],
+    }
+
+
+def _parallel_shadow_raw_input() -> dict:
+    return {
+        "source": "parallel_shadow",
+        "payload": {
+            "version": "parallel_shadow_v0_1",
+            "provider": "parallel",
+            "mode": "advanced",
+            "status": "ok",
+            "summary": {
+                "result_total": 2,
+                "unique_domain_count": 2,
+                "unique_domains": ["g2.com", "reddit.com"],
+            },
+            "intents": {
+                "mentions": {
+                    "status": "ok",
+                    "result_count": 2,
+                    "unique_domains": ["g2.com", "reddit.com"],
+                    "results": [
+                        {
+                            "url": "https://g2.com/products/base44/reviews",
+                            "title": "Base44 Reviews",
+                            "excerpt": "Third-party review shadow signal.",
+                        }
+                    ],
+                }
+            },
+        },
     }
 
 
@@ -229,6 +262,37 @@ def test_brand_research_pack_builder_roundtrips_and_preserves_source_map() -> No
     assert rebuilt.to_dict() == payload
     assert payload["source_map"]
     assert all(source["source_type"] for source in payload["source_map"].values())
+
+
+def test_brand_research_pack_records_parallel_shadow_without_promoting_to_evidence() -> None:
+    snapshot = _base44_snapshot()
+    snapshot["raw_inputs"].append(_parallel_shadow_raw_input())
+
+    pack = build_brand_research_pack_from_snapshot(snapshot)
+    payload = pack.to_dict()
+
+    assert payload["shadow_sources"][0]["provider"] == "parallel"
+    assert payload["shadow_sources"][0]["result_total"] == 2
+    assert payload["shadow_sources"][0]["intents"]["mentions"]["results"][0]["url"] == (
+        "https://g2.com/products/base44/reviews"
+    )
+    assert "g2.com" not in " ".join(payload["source_map"].keys())
+    assert not any("Third-party review shadow signal" in item["text"] for item in payload["proof_points"])
+    assert pack.__class__.from_dict(payload).to_dict() == payload
+
+
+def test_evidence_graph_pack_carries_parallel_shadow_as_metadata_only() -> None:
+    snapshot = _base44_snapshot()
+    snapshot["raw_inputs"].append(_parallel_shadow_raw_input())
+
+    graph = build_evidence_graph_from_snapshot(snapshot)
+    pack = build_brand_research_pack_from_graph(graph)
+    payload = pack.to_dict()
+
+    assert graph.summary()["shadow_source_count"] == 1
+    assert payload["shadow_sources"][0]["provider"] == "parallel"
+    assert payload["shadow_sources"][0]["intents"]["mentions"]["results"][0]["title"] == "Base44 Reviews"
+    assert not any(source.origin == "parallel_shadow" for source in graph.sources.values())
 
 
 def test_brand_research_pack_builder_example_json_written() -> None:

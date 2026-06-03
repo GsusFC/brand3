@@ -242,6 +242,7 @@ class EvidenceGraph:
     claims: list[EvidenceClaim] = field(default_factory=list)
     gaps: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+    shadow_sources: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -251,6 +252,7 @@ class EvidenceGraph:
             "claims": [claim.to_dict() for claim in self.claims],
             "gaps": list(self.gaps),
             "warnings": list(self.warnings),
+            "shadow_sources": [dict(item) for item in self.shadow_sources if isinstance(item, dict)],
             "summary": self.summary(),
         }
 
@@ -269,6 +271,7 @@ class EvidenceGraph:
             claims=[EvidenceClaim.from_dict(item) for item in claims_raw if isinstance(item, dict)],
             gaps=_str_list(data.get("gaps")),
             warnings=_str_list(data.get("warnings")),
+            shadow_sources=_dict_list(data.get("shadow_sources")),
         )
 
     def summary(self) -> dict[str, Any]:
@@ -284,6 +287,7 @@ class EvidenceGraph:
         return {
             "source_count": len(self.sources),
             "claim_count": len(self.claims),
+            "shadow_source_count": len(self.shadow_sources),
             "source_counts": dict(sorted(source_counts.items())),
             "claim_counts": dict(sorted(claim_counts.items())),
             "supported_block_counts": dict(sorted(block_counts.items())),
@@ -320,6 +324,7 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
         claims=claims,
         gaps=gaps,
         warnings=warnings,
+        shadow_sources=_shadow_sources_from_snapshot(snapshot),
     )
 
 
@@ -1042,6 +1047,68 @@ def _str_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if str(item).strip()]
+
+
+def _dict_list(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [dict(item) for item in value if isinstance(item, dict)]
+
+
+def _shadow_sources_from_snapshot(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw_input in snapshot.get("raw_inputs") or []:
+        if raw_input.get("source") != "parallel_shadow":
+            continue
+        payload = raw_input.get("payload")
+        if not isinstance(payload, dict):
+            continue
+        summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+        intents = payload.get("intents") if isinstance(payload.get("intents"), dict) else {}
+        rows.append(
+            {
+                "provider": str(payload.get("provider") or "parallel"),
+                "mode": str(payload.get("mode") or ""),
+                "status": str(payload.get("status") or ""),
+                "result_total": int(summary.get("result_total") or 0),
+                "unique_domain_count": int(summary.get("unique_domain_count") or 0),
+                "unique_domains": _str_list(summary.get("unique_domains"))[:20],
+                "intents": {
+                    str(name): {
+                        "status": str(item.get("status") or ""),
+                        "result_count": int(item.get("result_count") or 0),
+                        "unique_domains": _str_list(item.get("unique_domains"))[:20],
+                        "results": _shadow_results(item.get("results"))[:5],
+                    }
+                    for name, item in intents.items()
+                    if isinstance(item, dict)
+                },
+                "notes": [
+                    "Shadow provider only; not used for scoring, TLDR claims, proof points, or recommendations."
+                ],
+            }
+        )
+    return rows
+
+
+def _shadow_results(value: Any) -> list[dict[str, str]]:
+    if not isinstance(value, list):
+        return []
+    rows: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "").strip()
+        if not url:
+            continue
+        rows.append(
+            {
+                "url": url,
+                "title": str(item.get("title") or url),
+                "excerpt": str(item.get("excerpt") or ""),
+            }
+        )
+    return rows
 
 
 def _unique(values) -> list[str]:

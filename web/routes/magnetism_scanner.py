@@ -155,6 +155,16 @@ _MAGNETISM_UI = {
         "source_map": "Source map",
         "competitive_context": "Competitive context",
         "competitive_context_tag": "context only, not audited-brand evidence",
+        "parallel_shadow": "Parallel Shadow",
+        "parallel_shadow_tag": "coverage probe, not scoring evidence",
+        "parallel_shadow_intro": (
+            "Parallel is running as an observational provider. These results help compare coverage and are not "
+            "used for scoring, TLDR claims, proof points, or recommendations."
+        ),
+        "parallel_shadow_missing": "No Parallel shadow data was persisted for this scan.",
+        "parallel_shadow_domains": "Domains",
+        "parallel_shadow_intents": "Intents",
+        "parallel_shadow_results": "Sample results",
         "tldr_evidence": "TLDR Evidence",
         "tldr_evidence_tag": "what each block used",
         "rejected_gaps": "Rejected / Gaps",
@@ -287,6 +297,16 @@ _MAGNETISM_UI = {
         "source_map": "Mapa de fuentes",
         "competitive_context": "Contexto competitivo",
         "competitive_context_tag": "solo contexto, no evidencia de la marca auditada",
+        "parallel_shadow": "Parallel Shadow",
+        "parallel_shadow_tag": "prueba de cobertura, no evidencia de scoring",
+        "parallel_shadow_intro": (
+            "Parallel está corriendo como proveedor observacional. Estos resultados sirven para comparar "
+            "cobertura y no se usan en scoring, claims TLDR, proof points ni recomendaciones."
+        ),
+        "parallel_shadow_missing": "No se persistió data shadow de Parallel para este escaneo.",
+        "parallel_shadow_domains": "Dominios",
+        "parallel_shadow_intents": "Intents",
+        "parallel_shadow_results": "Resultados de muestra",
         "tldr_evidence": "Evidencia TLDR",
         "tldr_evidence_tag": "qué usó cada bloque",
         "rejected_gaps": "Rechazado / Gaps",
@@ -968,6 +988,7 @@ def _research_evidence_model(payload: dict) -> dict:
         "block_evidence": block_evidence,
         "proof_points": research_pack.get("proof_points") or [],
         "competitive_context": research_pack.get("competitive_context") or [],
+        "shadow_sources": _shadow_source_rows(research_pack),
         "noise_rejected": research_pack.get("noise_rejected") or [],
         "entity_boundary_warnings": _entity_boundary_warnings(research_pack),
         "entity_boundary_rejections": _entity_boundary_rejections(research_pack),
@@ -975,6 +996,55 @@ def _research_evidence_model(payload: dict) -> dict:
         "confidence_notes": research_pack.get("confidence_notes") or [],
         "graph_summary": graph_summary,
     }
+
+
+def _shadow_source_rows(research_pack: dict) -> list[dict]:
+    rows: list[dict] = []
+    for item in research_pack.get("shadow_sources") or []:
+        if not isinstance(item, dict):
+            continue
+        intents = item.get("intents") if isinstance(item.get("intents"), dict) else {}
+        intent_rows = []
+        result_rows = []
+        for name, intent in intents.items():
+            if not isinstance(intent, dict):
+                continue
+            intent_rows.append(
+                {
+                    "name": str(name),
+                    "status": str(intent.get("status") or "unknown"),
+                    "result_count": int(intent.get("result_count") or 0),
+                    "unique_domains": [str(value) for value in (intent.get("unique_domains") or []) if value],
+                }
+            )
+            for result in intent.get("results") or []:
+                if not isinstance(result, dict):
+                    continue
+                url = str(result.get("url") or "").strip()
+                if not url:
+                    continue
+                result_rows.append(
+                    {
+                        "intent": str(name),
+                        "url": url,
+                        "title": str(result.get("title") or url),
+                        "excerpt": str(result.get("excerpt") or ""),
+                    }
+                )
+        rows.append(
+            {
+                "provider": str(item.get("provider") or "parallel"),
+                "mode": str(item.get("mode") or ""),
+                "status": str(item.get("status") or ""),
+                "result_total": int(item.get("result_total") or 0),
+                "unique_domain_count": int(item.get("unique_domain_count") or 0),
+                "unique_domains": [str(value) for value in (item.get("unique_domains") or []) if value],
+                "intents": intent_rows,
+                "results": result_rows[:10],
+                "notes": [str(value) for value in (item.get("notes") or []) if value],
+            }
+        )
+    return rows
 
 
 def _entity_boundary_warnings(research_pack: dict) -> list[str]:

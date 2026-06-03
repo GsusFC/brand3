@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 
 from src.collectors.competitor_collector import (
     CompetitorCollector,
@@ -12,6 +13,7 @@ from src.collectors.competitor_collector import (
 )
 from src.collectors.context_collector import ContextCollector, ContextData
 from src.collectors.exa_collector import ExaCollector, ExaData, ExaResult
+from src.collectors.parallel_shadow_collector import ParallelShadowCollector, ParallelShadowData
 from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebCollector, WebData
 from src.config import BRAND3_CACHE_TTL_HOURS, EXA_API_KEY, FIRECRAWL_API_KEY
@@ -30,6 +32,7 @@ class RawInputs:
     web_data: WebData | None
     effective_brand_url: str
     exa_data: ExaData | None
+    parallel_shadow_data: ParallelShadowData | None
     social_data: SocialData | None
     social_limitation: str | None
     competitor_data: CompetitorData | None
@@ -56,6 +59,10 @@ def from_exa_payload(payload: dict | None) -> ExaData | None:
         raw_responses=payload.get("raw_responses", {}),
         diagnostics=payload.get("diagnostics", {}),
     )
+
+
+def from_parallel_shadow_payload(payload: dict | None) -> dict | None:
+    return payload if isinstance(payload, dict) else None
 
 
 def from_social_payload(payload: dict | None) -> SocialData | None:
@@ -280,6 +287,52 @@ def _collect_exa_input(
     return exa_data, exa_collector
 
 
+def _collect_parallel_shadow_input(
+    *,
+    store: SQLiteStore | None,
+    run_id: int | None,
+    brand_name: str,
+    effective_brand_url: str,
+    cache_read,
+    raw_input_cache: dict[str, str],
+    parallel_shadow_collector_cls=ParallelShadowCollector,
+) -> ParallelShadowData | None:
+    if not _parallel_shadow_enabled():
+        raw_input_cache["parallel_shadow"] = "disabled"
+        return None
+
+    cached = cache_read("parallel_shadow", BRAND3_CACHE_TTL_HOURS, from_parallel_shadow_payload)
+    if cached:
+        raw_input_cache["parallel_shadow"] = "hit"
+        if run_id:
+            store_safely(store, "parallel shadow cache save", lambda: store.save_raw_input(run_id, "parallel_shadow", cached))
+        return ParallelShadowData.from_dict(
+            {
+                **cached,
+                "brand_name": cached.get("brand_name") or brand_name,
+                "brand_url": cached.get("brand_url") or effective_brand_url,
+            }
+        )
+
+    collector = parallel_shadow_collector_cls()
+    shadow_data = collector.collect(brand_name, effective_brand_url)
+    raw_input_cache["parallel_shadow"] = shadow_data.status
+    summary = shadow_data.summary()
+    print(
+        "  Parallel shadow:"
+        f" status={shadow_data.status}"
+        f" results={summary['result_total']}"
+        f" domains={summary['unique_domain_count']}"
+    )
+    if run_id:
+        store_safely(store, "parallel shadow save", lambda: store.save_raw_input(run_id, "parallel_shadow", shadow_data.to_dict()))
+    return shadow_data
+
+
+def _parallel_shadow_enabled() -> bool:
+    return os.environ.get("BRAND3_PARALLEL_SHADOW_ENABLED", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _collect_social_input(
     *,
     store: SQLiteStore | None,
@@ -431,6 +484,14 @@ def collect_raw_inputs(
         raw_input_cache=raw_input_cache,
         exa_collector_cls=exa_collector_cls,
     )
+    parallel_shadow_data = _collect_parallel_shadow_input(
+        store=store,
+        run_id=run_id,
+        brand_name=brand_name,
+        effective_brand_url=effective_brand_url,
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+    )
     social_data, social_limitation = _collect_social_input(
         store=store,
         run_id=run_id,
@@ -459,6 +520,7 @@ def collect_raw_inputs(
         web_data=web_data,
         effective_brand_url=effective_brand_url,
         exa_data=exa_data,
+        parallel_shadow_data=parallel_shadow_data,
         social_data=social_data,
         social_limitation=social_limitation,
         competitor_data=competitor_data,

@@ -32,6 +32,7 @@ Field guide:
 - founder_or_press_context: founder, press, or other contextual evidence.
 - competitive_context: competitor or alternative sources, context only.
 - noise_rejected: rejected evidence kept for auditability.
+- shadow_sources: provider coverage observed in shadow mode; not decision evidence.
 - evidence_gaps: missing evidence that still blocks a stronger reading.
 - confidence_notes: short notes about confidence or limitations.
 """
@@ -252,6 +253,7 @@ class BrandResearchPack:
     founder_or_press_context: list[ResearchEvidence] = field(default_factory=list)
     competitive_context: list[ResearchEvidence] = field(default_factory=list)
     noise_rejected: list[ResearchEvidence] = field(default_factory=list)
+    shadow_sources: list[dict[str, Any]] = field(default_factory=list)
     evidence_gaps: list[str] = field(default_factory=list)
     confidence_notes: list[str] = field(default_factory=list)
 
@@ -288,6 +290,7 @@ class BrandResearchPack:
             "founder_or_press_context": [item.to_dict() for item in self.founder_or_press_context],
             "competitive_context": [item.to_dict() for item in self.competitive_context],
             "noise_rejected": [item.to_dict() for item in self.noise_rejected],
+            "shadow_sources": [dict(item) for item in self.shadow_sources if isinstance(item, dict)],
             "evidence_gaps": list(self.evidence_gaps),
             "confidence_notes": list(self.confidence_notes),
         }
@@ -330,6 +333,7 @@ class BrandResearchPack:
             founder_or_press_context=_evidence_list(data.get("founder_or_press_context")),
             competitive_context=_evidence_list(data.get("competitive_context")),
             noise_rejected=_evidence_list(data.get("noise_rejected")),
+            shadow_sources=_dict_list(data.get("shadow_sources")),
             evidence_gaps=_str_list(data.get("evidence_gaps")),
             confidence_notes=_str_list(data.get("confidence_notes")),
         )
@@ -345,6 +349,12 @@ def _str_list(value: Any) -> list[str]:
     if not isinstance(value, list):
         return []
     return [str(item) for item in value if str(item).strip()]
+
+
+def _dict_list(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    return [dict(item) for item in value if isinstance(item, dict)]
 
 
 def _require_dict(value: Any, field_name: str) -> dict[str, Any]:
@@ -547,10 +557,67 @@ def build_brand_research_pack_from_snapshot(snapshot: dict[str, Any]) -> BrandRe
         proof_points=proof_points,
         founder_or_press_context=founder_or_press_context,
         noise_rejected=noise_rejected,
+        shadow_sources=_shadow_sources_from_snapshot(snapshot),
         evidence_gaps=evidence_gaps,
         confidence_notes=confidence_notes,
     )
     return pack
+
+
+def _shadow_sources_from_snapshot(snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for raw_input in snapshot.get("raw_inputs") or []:
+        if raw_input.get("source") != "parallel_shadow":
+            continue
+        payload = raw_input.get("payload")
+        if not isinstance(payload, dict):
+            continue
+        summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+        intents = payload.get("intents") if isinstance(payload.get("intents"), dict) else {}
+        rows.append(
+            {
+                "provider": str(payload.get("provider") or "parallel"),
+                "mode": str(payload.get("mode") or ""),
+                "status": str(payload.get("status") or ""),
+                "result_total": int(summary.get("result_total") or 0),
+                "unique_domain_count": int(summary.get("unique_domain_count") or 0),
+                "unique_domains": _str_list(summary.get("unique_domains"))[:20],
+                "intents": {
+                    str(name): {
+                        "status": str(item.get("status") or ""),
+                        "result_count": int(item.get("result_count") or 0),
+                        "unique_domains": _str_list(item.get("unique_domains"))[:20],
+                        "results": _shadow_results(item.get("results"))[:5],
+                    }
+                    for name, item in intents.items()
+                    if isinstance(item, dict)
+                },
+                "notes": [
+                    "Shadow provider only; not used for scoring, TLDR claims, proof points, or recommendations."
+                ],
+            }
+        )
+    return rows
+
+
+def _shadow_results(value: Any) -> list[dict[str, str]]:
+    if not isinstance(value, list):
+        return []
+    rows: list[dict[str, str]] = []
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        url = str(item.get("url") or "").strip()
+        if not url:
+            continue
+        rows.append(
+            {
+                "url": url,
+                "title": str(item.get("title") or url),
+                "excerpt": str(item.get("excerpt") or ""),
+            }
+        )
+    return rows
 
 
 def _entity_packet(snapshot: dict[str, Any]) -> dict[str, Any] | None:

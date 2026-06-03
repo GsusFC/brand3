@@ -121,6 +121,7 @@ def build_brand_research_pack_from_graph(graph: EvidenceGraph) -> BrandResearchP
         founder_or_press_context=founder_or_press_context,
         competitive_context=competitive_context,
         noise_rejected=noise_rejected,
+        shadow_sources=[dict(item) for item in graph.shadow_sources if isinstance(item, dict)],
         evidence_gaps=evidence_gaps,
         confidence_notes=_confidence_notes(graph),
     )

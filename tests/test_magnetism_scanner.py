@@ -378,6 +378,33 @@ class MagnetismScannerTests(unittest.TestCase):
                 "confidence": "medium",
             }
         ]
+        payload["research_pack"]["shadow_sources"] = [
+            {
+                "provider": "parallel",
+                "mode": "advanced",
+                "status": "ok",
+                "result_total": 2,
+                "unique_domain_count": 2,
+                "unique_domains": ["g2.com", "reddit.com"],
+                "intents": {
+                    "mentions": {
+                        "status": "ok",
+                        "result_count": 2,
+                        "unique_domains": ["g2.com", "reddit.com"],
+                        "results": [
+                            {
+                                "url": "https://g2.com/products/langchain/reviews",
+                                "title": "LangChain Reviews",
+                                "excerpt": "Third-party review shadow signal.",
+                            }
+                        ],
+                    }
+                },
+                "notes": [
+                    "Shadow provider only; not used for scoring, TLDR claims, proof points, or recommendations."
+                ],
+            }
+        ]
         payload["evidence_graph_summary"] = {
             "source_counts": {"owned_about": 1, "owned_product": 1},
             "claim_count": 2,
@@ -440,6 +467,10 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Publicis Media is a separate near-name entity", research.text)
         self.assertIn("Contexto competitivo", research.text)
         self.assertIn("Competitive context source: BrowserOS", research.text)
+        self.assertIn("Parallel Shadow", research.text)
+        self.assertIn("prueba de cobertura, no evidencia de scoring", research.text)
+        self.assertIn("g2.com", research.text)
+        self.assertIn("Third-party review shadow signal.", research.text)
         self.assertIn("calidad del input, no de la marca", reliability.text)
         self.assertIn("thin_differentiation_signal", reliability.text)
         self.assertIn("gate_passed", reliability.text)

@@ -451,6 +451,16 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
 
     audit = run.get("audit") or {}
     fingerprint = audit.get("scoring_state_fingerprint") or ""
+    executive_analysis_v2 = (
+        audit.get("executive_analysis_v2")
+        if isinstance(audit.get("executive_analysis_v2"), dict)
+        else {}
+    )
+    executive_analysis_v2_translations = (
+        audit.get("executive_analysis_v2_translations")
+        if isinstance(audit.get("executive_analysis_v2_translations"), dict)
+        else {}
+    )
 
     runtime_seconds = run.get("run_duration_seconds")
     run_id = run.get("id")
@@ -556,6 +566,8 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
             "engine": "brand3 v0.1.0",
             "profile": f"{profile}" + (f" · source={profile_source}" if profile_source else ""),
             "fingerprint": fingerprint or "n/a",
+            "executive_analysis_v2": executive_analysis_v2,
+            "executive_analysis_v2_translations": executive_analysis_v2_translations,
             "runtime": (
                 f"{runtime_seconds:.2f}s" if isinstance(runtime_seconds, (int, float)) else "n/a"
             ),
@@ -617,6 +629,8 @@ def build_report_context_from_base(base: dict) -> dict:
         "presentation_policy": presentation_policy,
         "cost_policy": evaluation.get("cost_policy") or {},
         "trust_summary": evaluation.get("trust_summary") or {},
+        "executive_analysis_v2": audit.get("executive_analysis_v2") or {},
+        "executive_analysis_v2_translations": audit.get("executive_analysis_v2_translations") or {},
         "narrative": narrative,
         "sources": sources,
         "audit": audit,

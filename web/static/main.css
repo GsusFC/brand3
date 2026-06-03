@@ -2083,15 +2083,39 @@ a:focus-visible {
 .magnetism-audit-summary {
   border: 1px solid var(--border);
   background: var(--surface);
-  padding: 18px;
+  padding: 20px;
 }
 
 .magnetism-audit-summary-text {
   max-width: none;
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.magnetism-audit-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.magnetism-audit-summary-grid p,
+.magnetism-audit-dimension-body p {
+  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.magnetism-audit-mini-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .magnetism-audit-dimension-grid {
@@ -2099,6 +2123,120 @@ a:focus-visible {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-top: 14px;
+}
+
+.magnetism-audit-dimension-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 16px;
+}
+
+.magnetism-audit-dimension-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.magnetism-audit-dimension-head strong {
+  font-family: var(--font-ui);
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.magnetism-audit-dimension-body {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.magnetism-audit-dimension-body ul {
+  display: grid;
+  gap: 5px;
+  margin: 6px 0 0;
+  padding-left: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.magnetism-audit-recommendation {
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-2);
+}
+
+.magnetism-audit-legacy-verdict {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.magnetism-audit-legacy-findings {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.magnetism-audit-legacy-findings > div {
+  border-left: 3px solid var(--accent);
+  padding-left: 10px;
+}
+
+.magnetism-audit-legacy-findings strong {
+  display: block;
+  font-family: var(--font-ui);
+  font-size: 12px;
+}
+
+.magnetism-audit-legacy-findings span,
+.magnetism-audit-evidence-details ul {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.magnetism-audit-legacy-list {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.magnetism-audit-evidence-details {
+  margin-top: 12px;
+}
+
+.magnetism-audit-evidence-details summary {
+  cursor: pointer;
+  width: max-content;
+}
+
+.magnetism-audit-evidence-details ul {
+  margin: 10px 0 0;
+  padding-left: 18px;
+}
+
+.magnetism-audit-evidence-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.magnetism-audit-evidence-strip article {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 14px;
+}
+
+.magnetism-audit-evidence-strip strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-ui);
+  font-size: 17px;
+  line-height: 1.25;
 }
 
 .magnetism-tldr-section {
@@ -2782,6 +2920,14 @@ a:hover {
   }
 
   .magnetism-audit-dimension-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .magnetism-audit-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .magnetism-audit-evidence-strip {
     grid-template-columns: 1fr;
   }
 

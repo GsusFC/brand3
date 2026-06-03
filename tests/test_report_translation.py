@@ -1,4 +1,7 @@
-from src.reports.translation import translate_report_narrative_payload
+from src.reports.translation import (
+    translate_executive_analysis_v2,
+    translate_report_narrative_payload,
+)
 
 
 class FakeTranslator:
@@ -69,3 +72,55 @@ def test_translate_report_narrative_payload_returns_none_without_analyzer():
     )
 
     assert translated is None
+
+
+class FakeExecutiveTranslator:
+    def _call_json(self, **kwargs):
+        return {
+            "executive_summary": "Resumen ejecutivo traducido.",
+            "primary_risk": "Riesgo traducido.",
+            "primary_opportunity": "Oportunidad traducida.",
+            "dimensions": {
+                "coherencia": {
+                    "diagnosis": "Diagnóstico traducido.",
+                    "findings": ["Hallazgo traducido."],
+                    "evidence": ["Evidencia traducida."],
+                    "recommendation": "Recomendación traducida.",
+                    "confidence": "translated-should-not-win",
+                }
+            },
+        }
+
+
+def test_translate_executive_analysis_v2_preserves_dimension_keys_and_confidence():
+    source = {
+        "executive_summary": "Original summary.",
+        "primary_risk": "Original risk.",
+        "primary_opportunity": "Original opportunity.",
+        "dimensions": {
+            "coherencia": {
+                "diagnosis": "Original diagnosis.",
+                "findings": ["Original finding."],
+                "evidence": ["Original evidence."],
+                "recommendation": "Original recommendation.",
+                "confidence": "high",
+            }
+        },
+    }
+
+    translated = translate_executive_analysis_v2(
+        source,
+        target_lang="es",
+        analyzer=FakeExecutiveTranslator(),
+    )
+
+    assert translated is not None
+    assert translated["target_lang"] == "es"
+    assert translated["executive_summary"] == "Resumen ejecutivo traducido."
+    assert set(translated["dimensions"]) == {"coherencia"}
+    dimension = translated["dimensions"]["coherencia"]
+    assert dimension["diagnosis"] == "Diagnóstico traducido."
+    assert dimension["findings"] == ["Hallazgo traducido."]
+    assert dimension["evidence"] == ["Evidencia traducida."]
+    assert dimension["recommendation"] == "Recomendación traducida."
+    assert dimension["confidence"] == "high"

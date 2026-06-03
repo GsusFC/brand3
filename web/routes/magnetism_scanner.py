@@ -103,6 +103,17 @@ _MAGNETISM_UI = {
         "legacy_audit": "Legacy audit fallback",
         "evidence_reliability": "Evidence Reliability",
         "evidence": "Evidence",
+        "evidence_basis": "Evidence basis",
+        "total_evidence": "Total evidence",
+        "overall_status": "Overall status",
+        "report_mode": "Report mode",
+        "dimension_names": {
+            "coherencia": "Coherence",
+            "presencia": "Presence",
+            "percepcion": "Perception",
+            "diferenciacion": "Differentiation",
+            "vitalidad": "Vitality",
+        },
         "methodology_details": "Methodology Details",
         "detail_tag": "9 strategic blocks derived from 7 Magenta signals",
         "no_detected": "(not detected)",
@@ -224,6 +235,17 @@ _MAGNETISM_UI = {
         "legacy_audit": "Fallback de auditoría legacy",
         "evidence_reliability": "Fiabilidad de evidencia",
         "evidence": "Evidencia",
+        "evidence_basis": "Base de evidencia",
+        "total_evidence": "Evidencia total",
+        "overall_status": "Estado general",
+        "report_mode": "Modo de informe",
+        "dimension_names": {
+            "coherencia": "Coherencia",
+            "presencia": "Presencia",
+            "percepcion": "Percepción",
+            "diferenciacion": "Diferenciación",
+            "vitalidad": "Vitalidad",
+        },
         "methodology_details": "Detalles de metodología",
         "detail_tag": "9 bloques estratégicos derivados de 7 señales Magenta",
         "no_detected": "(no detectado)",
@@ -669,15 +691,21 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
             "source_run_id": source_run_id,
         }
     else:
+        audit_context = build_brand_dossier(
+            snapshot,
+            theme="light",
+            analyzer=_REPORT_READ_ANALYZER,
+            narrative_payload=narrative_payload,
+        )
+        audit_context["executive_analysis_v2"] = _executive_analysis_for_language(
+            audit_context,
+            narrative_payload,
+            lang,
+        )
         model["audit"] = {
             "available": True,
             "source_run_id": int(source_run_id),
-            "context": build_brand_dossier(
-                snapshot,
-                theme="light",
-                analyzer=_REPORT_READ_ANALYZER,
-                narrative_payload=narrative_payload,
-            ),
+            "context": audit_context,
         }
 
     return templates.TemplateResponse(
@@ -832,6 +860,32 @@ def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) ->
         return store.get_report_translation(run_id, lang)
     except Exception:
         return None
+
+
+def _executive_analysis_for_language(
+    audit_context: dict,
+    narrative_payload: dict | None,
+    lang: _Lang,
+) -> dict:
+    original = audit_context.get("executive_analysis_v2")
+    if not isinstance(original, dict):
+        original = {}
+    if lang == "en":
+        return original
+
+    translated_from_report = (
+        narrative_payload.get("executive_analysis_v2")
+        if isinstance(narrative_payload, dict)
+        else None
+    )
+    if isinstance(translated_from_report, dict) and translated_from_report:
+        return translated_from_report
+
+    translations = audit_context.get("executive_analysis_v2_translations")
+    translated = translations.get(lang) if isinstance(translations, dict) else None
+    if isinstance(translated, dict) and translated:
+        return translated
+    return original
 
 
 def _research_evidence_model(payload: dict) -> dict:

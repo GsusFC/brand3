@@ -74,12 +74,84 @@ def translate_report_narrative_payload(
     return translated
 
 
+def translate_executive_analysis_v2(
+    payload: dict[str, Any],
+    *,
+    target_lang: str,
+    analyzer,
+) -> dict[str, Any] | None:
+    """Translate Brand Audit analyst pass prose while preserving its schema."""
+    if target_lang not in {"es", "en"} or analyzer is None or not isinstance(payload, dict):
+        return None
+    call_json = getattr(analyzer, "_call_json", None)
+    if not callable(call_json):
+        return None
+
+    source = _executive_analysis_translation_input(payload)
+    if not _has_executive_analysis_text(source):
+        return None
+
+    result = call_json(
+        system=(
+            "You are a precise Brand3 analyst-pass translator. Return only valid JSON. "
+            "Translate prose into the requested language without adding analysis, facts, "
+            "recommendations, evidence, URLs, scores, or claims. Preserve exact dimension keys, "
+            "list lengths where possible, proper nouns, product names, and confidence values."
+        ),
+        user=(
+            f"Target language: {target_lang}\n\n"
+            "Translate this Brand Audit executive_analysis_v2 JSON. Preserve the exact schema.\n"
+            "JSON:\n"
+            f"{json.dumps(source, ensure_ascii=False, sort_keys=True)}"
+        ),
+        max_tokens=6000,
+    )
+    if not isinstance(result, dict):
+        return None
+    translated = _validated_executive_analysis_translation(source, result)
+    if not translated:
+        return None
+    translated.update(
+        {
+            "translation_version": REPORT_TRANSLATION_VERSION,
+            "translation_source": REPORT_TRANSLATION_SOURCE,
+            "target_lang": target_lang,
+            "translated_at": datetime.now().isoformat(),
+        }
+    )
+    return translated
+
+
 def _translation_input(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "synthesis_prose": str(payload.get("synthesis_prose") or payload.get("summary") or ""),
         "summary": str(payload.get("summary") or payload.get("synthesis_prose") or ""),
         "tensions_prose": str(payload.get("tensions_prose") or ""),
         "findings_by_dimension": payload.get("findings_by_dimension") or {},
+    }
+
+
+def _executive_analysis_translation_input(payload: dict[str, Any]) -> dict[str, Any]:
+    dimensions = payload.get("dimensions") if isinstance(payload.get("dimensions"), dict) else {}
+    return {
+        "executive_summary": str(payload.get("executive_summary") or ""),
+        "primary_risk": str(payload.get("primary_risk") or ""),
+        "primary_opportunity": str(payload.get("primary_opportunity") or ""),
+        "dimensions": {
+            str(name): _executive_dimension_translation_input(item)
+            for name, item in dimensions.items()
+            if isinstance(item, dict)
+        },
+    }
+
+
+def _executive_dimension_translation_input(item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "diagnosis": str(item.get("diagnosis") or ""),
+        "findings": _clean_string_list(item.get("findings")),
+        "evidence": _clean_string_list(item.get("evidence")),
+        "recommendation": str(item.get("recommendation") or ""),
+        "confidence": str(item.get("confidence") or ""),
     }
 
 
@@ -97,6 +169,22 @@ def _has_translatable_text(payload: dict[str, Any]) -> bool:
                 continue
             if item.get("title") or item.get("observation") or item.get("implication"):
                 return True
+    return False
+
+
+def _has_executive_analysis_text(payload: dict[str, Any]) -> bool:
+    if payload.get("executive_summary") or payload.get("primary_risk") or payload.get("primary_opportunity"):
+        return True
+    dimensions = payload.get("dimensions")
+    if not isinstance(dimensions, dict):
+        return False
+    for item in dimensions.values():
+        if not isinstance(item, dict):
+            continue
+        if item.get("diagnosis") or item.get("recommendation"):
+            return True
+        if item.get("findings") or item.get("evidence"):
+            return True
     return False
 
 
@@ -132,6 +220,42 @@ def _validated_translation(source: dict[str, Any], result: dict[str, Any]) -> di
     }
 
 
+def _validated_executive_analysis_translation(source: dict[str, Any], result: dict[str, Any]) -> dict[str, Any] | None:
+    dimensions = result.get("dimensions")
+    if not isinstance(dimensions, dict):
+        return None
+    source_dimensions = source.get("dimensions")
+    if not isinstance(source_dimensions, dict):
+        source_dimensions = {}
+
+    translated_dimensions: dict[str, dict[str, Any]] = {}
+    for name, source_item in source_dimensions.items():
+        translated_item = dimensions.get(name)
+        if not isinstance(source_item, dict):
+            continue
+        translated_dimensions[name] = _validated_executive_dimension(
+            source_item,
+            translated_item if isinstance(translated_item, dict) else {},
+        )
+
+    return {
+        "executive_summary": _clean_text(result.get("executive_summary")) or source.get("executive_summary", ""),
+        "primary_risk": _clean_text(result.get("primary_risk")) or source.get("primary_risk", ""),
+        "primary_opportunity": _clean_text(result.get("primary_opportunity")) or source.get("primary_opportunity", ""),
+        "dimensions": translated_dimensions,
+    }
+
+
+def _validated_executive_dimension(source_item: dict[str, Any], translated_item: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "diagnosis": _clean_text(translated_item.get("diagnosis")) or str(source_item.get("diagnosis") or ""),
+        "findings": _validated_string_list(source_item.get("findings"), translated_item.get("findings")),
+        "evidence": _validated_string_list(source_item.get("evidence"), translated_item.get("evidence")),
+        "recommendation": _clean_text(translated_item.get("recommendation")) or str(source_item.get("recommendation") or ""),
+        "confidence": str(source_item.get("confidence") or translated_item.get("confidence") or ""),
+    }
+
+
 def _validated_finding(source_item: dict[str, Any], translated_item: dict[str, Any]) -> dict[str, Any]:
     return {
         **source_item,
@@ -152,3 +276,21 @@ def _validated_finding(source_item: dict[str, Any], translated_item: dict[str, A
 
 def _clean_text(value: Any) -> str:
     return str(value or "").strip()
+
+
+def _clean_string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    return [_clean_text(item) for item in value if _clean_text(item)]
+
+
+def _validated_string_list(source_value: Any, translated_value: Any) -> list[str]:
+    source_items = _clean_string_list(source_value)
+    translated_items = _clean_string_list(translated_value)
+    if not source_items:
+        return []
+    if not translated_items:
+        return source_items
+    if len(translated_items) < len(source_items):
+        translated_items.extend(source_items[len(translated_items):])
+    return translated_items[: len(source_items)]

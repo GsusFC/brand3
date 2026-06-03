@@ -486,7 +486,33 @@ class MagnetismScannerTests(unittest.TestCase):
                     "scoring_state_fingerprint": "auditlinked12345",
                     "executive_analysis_v2": {
                         "executive_summary": "Audit Linked has a clear offer with limited proof.",
-                        "dimensions": {},
+                        "primary_risk": "The proof base does not yet support the clarity of the offer.",
+                        "primary_opportunity": "Use the owned positioning as the anchor for stronger proof.",
+                        "dimensions": {
+                            "coherencia": {
+                                "diagnosis": "The owned offer is coherent across the available evidence.",
+                                "findings": ["The homepage and score evidence point to a stable message."],
+                                "evidence": ["Clear owned positioning."],
+                                "recommendation": "Keep the core offer language stable while adding proof.",
+                                "confidence": "high",
+                            }
+                        },
+                    },
+                    "executive_analysis_v2_translations": {
+                        "es": {
+                            "executive_summary": "Audit Linked tiene una oferta clara con prueba limitada.",
+                            "primary_risk": "La base de prueba todavía no sostiene la claridad de la oferta.",
+                            "primary_opportunity": "Usar el posicionamiento propio como ancla para reforzar la prueba.",
+                            "dimensions": {
+                                "coherencia": {
+                                    "diagnosis": "La oferta propia es coherente en la evidencia disponible.",
+                                    "findings": ["La homepage y la puntuación apuntan a un mensaje estable."],
+                                    "evidence": ["Posicionamiento propio claro."],
+                                    "recommendation": "Mantener estable el lenguaje central mientras se añade prueba.",
+                                    "confidence": "high",
+                                }
+                            },
+                        }
                     },
                 },
             )
@@ -526,6 +552,7 @@ class MagnetismScannerTests(unittest.TestCase):
 
         detail = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
         audit = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit")
+        audit_en = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit?lang=en")
 
         self.assertEqual(detail.status_code, 200)
         self.assertIn(f"/magnetism-scanner/scan/{scan_id}/audit?lang=es", detail.text)
@@ -535,8 +562,18 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("TLDR Brand3", audit.text)
         self.assertIn("Audit Linked", audit.text)
         self.assertIn("Resumen ejecutivo", audit.text)
+        self.assertIn("La base de prueba todavía no sostiene la claridad de la oferta.", audit.text)
+        self.assertIn("La oferta propia es coherente en la evidencia disponible.", audit.text)
+        self.assertIn("La homepage y la puntuación apuntan a un mensaje estable.", audit.text)
+        self.assertIn("Mantener estable el lenguaje central mientras se añade prueba.", audit.text)
         self.assertIn("Auditoría por dimensión", audit.text)
+        self.assertIn("Coherencia", audit.text)
+        self.assertIn("Base de evidencia", audit.text)
+        self.assertIn("Evidencia total", audit.text)
         self.assertNotIn("<title>brand-audit", audit.text)
+        self.assertEqual(audit_en.status_code, 200)
+        self.assertIn("The proof base does not yet support the clarity of the offer.", audit_en.text)
+        self.assertIn("The owned offer is coherent across the available evidence.", audit_en.text)
 
         legacy_payload = dict(payload)
         legacy_payload.pop("research_pack_quality", None)

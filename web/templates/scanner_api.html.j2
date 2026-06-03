@@ -96,6 +96,15 @@
     <span class="tag">// openapi</span>
   </div>
   <div style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+    <p style="margin:0 0 12px;">
+      <a
+        class="source-link badge-ready"
+        href="/scanner-api/openapi.json"
+        aria-label="{{ 'Abrir contrato OpenAPI JSON del Brand3 Scanner' if current_lang == 'es' else 'Open the Brand3 Scanner OpenAPI JSON contract' }}"
+      >
+        {{ 'Abrir OpenAPI JSON' if current_lang == 'es' else 'Open OpenAPI JSON' }}
+      </a>
+    </p>
     {% if current_lang == 'es' %}
     <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0 0 10px;">
       Esquema dedicado para agentes y clientes internos. El contrato compacto vive en <code>/scanner-api/openapi.json</code>.

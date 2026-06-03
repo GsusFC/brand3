@@ -155,6 +155,7 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("Brand3 Scanner API", response.text)
         self.assertIn("/api/v1/scanner/{id}/result", response.text)
         self.assertIn("/api/v1/scanner/{id}/audit", response.text)
+        self.assertIn('href="/scanner-api/openapi.json"', response.text)
         self.assertIn("/scanner-api/openapi.json", response.text)
         self.assertIn("shadow_sources", response.text)
         self.assertIn("no se regeneran", response.text)

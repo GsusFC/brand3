@@ -33,6 +33,37 @@
 
 <section>
   <div class="section-head">
+    <span class="label">{{ model.t.result_metadata }}</span>
+    <span class="tag">// {{ model.t.result_metadata_tag }}</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:12px; margin-top:14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.result_version }}</div>
+      <strong style="font-family:var(--font-ui); font-size:16px;">{{ model.methodology.result_metadata.result_version }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.pipeline_version }}</div>
+      <strong style="font-family:var(--font-ui); font-size:16px;">{{ model.methodology.result_metadata.pipeline_version }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.stale_against_current_pipeline }}</div>
+      <strong class="{% if model.methodology.result_metadata.stale_against_current_pipeline %}hl-warn{% else %}hl-ok{% endif %}" style="font-family:var(--font-ui); font-size:16px;">{{ model.methodology.result_metadata.stale_against_current_pipeline }}</strong>
+    </article>
+  </div>
+  <div style="border:1px solid var(--border); background:var(--surface); padding:14px; margin-top:12px;">
+    <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.generated_with }}</strong>
+    <div class="badge-line" style="margin-top:10px;">
+      {% for key, value in model.methodology.result_metadata.generated_with.items() %}
+      <span class="badge {% if value %}badge-ready{% else %}badge-missing{% endif %}">{{ key }}={{ value }}</span>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
     <span class="label">{{ model.t.pipeline }}</span>
     <span class="tag">// {{ model.t.pipeline_tag }}</span>
   </div>

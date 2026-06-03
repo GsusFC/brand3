@@ -149,6 +149,7 @@ _MAGNETISM_UI = {
         "entity_tag": "product and company boundaries",
         "research_pack": "Research Pack",
         "research_pack_tag": "normalized strategic inputs",
+        "research_sections": "Sections",
         "surface_map": "Surface Map",
         "surface_map_tag": "owned, product, proof, and external surfaces",
         "product_surfaces": "Product surfaces",
@@ -156,15 +157,21 @@ _MAGNETISM_UI = {
         "competitive_context": "Competitive context",
         "competitive_context_tag": "context only, not audited-brand evidence",
         "parallel_shadow": "Parallel Shadow",
-        "parallel_shadow_tag": "coverage probe, not scoring evidence",
+        "parallel_shadow_tag": "external signals for manual review",
         "parallel_shadow_intro": (
-            "Parallel is running as an observational provider. These results help compare coverage and are not "
-            "used for scoring, TLDR claims, proof points, or recommendations."
+            "Parallel is running as an observational provider. This readout summarizes external coverage "
+            "candidates for review; it is not used for scoring, TLDR claims, proof points, or recommendations."
         ),
+        "parallel_shadow_readout": "External signal readout",
+        "parallel_shadow_coverage": "Coverage",
+        "parallel_shadow_candidate_count": "External candidates",
+        "parallel_shadow_domain_count": "Domains",
+        "parallel_shadow_signal_types": "Signal types",
+        "parallel_shadow_manual_review": "Manual review candidates",
         "parallel_shadow_missing": "No Parallel shadow data was persisted for this scan.",
         "parallel_shadow_domains": "Domains",
         "parallel_shadow_intents": "Intents",
-        "parallel_shadow_results": "Sample results",
+        "parallel_shadow_results": "Source candidates",
         "tldr_evidence": "TLDR Evidence",
         "tldr_evidence_tag": "what each block used",
         "rejected_gaps": "Rejected / Gaps",
@@ -174,9 +181,16 @@ _MAGNETISM_UI = {
         "entity_boundary_warnings": "Entity boundary warnings",
         "entity_boundary_warnings_tag": "external evidence quarantined before TLDR input",
         "entity_boundary_rejections": "Quarantined evidence",
+        "entity_boundary_open_source": "Open source",
         "no_entity_boundary_warnings": "No entity boundary collisions were persisted for this scan.",
         "methodology_intro": "Method, interpretation rules, and limits behind this scan.",
         "methodology_tag": "methodology details",
+        "result_metadata": "Result metadata",
+        "result_metadata_tag": "derived compatibility flags",
+        "result_version": "Result version",
+        "pipeline_version": "Pipeline version",
+        "generated_with": "Generated with",
+        "stale_against_current_pipeline": "Historic against current pipeline",
         "research_pack_metric": "Research Pack",
         "tldr_generation": "TLDR Generation",
         "pipeline": "Pipeline",
@@ -291,6 +305,7 @@ _MAGNETISM_UI = {
         "entity_tag": "límites entre producto y compañía",
         "research_pack": "Research Pack",
         "research_pack_tag": "inputs estratégicos normalizados",
+        "research_sections": "Secciones",
         "surface_map": "Mapa de superficies",
         "surface_map_tag": "superficies owned, producto, prueba y externas",
         "product_surfaces": "Superficies de producto",
@@ -298,15 +313,21 @@ _MAGNETISM_UI = {
         "competitive_context": "Contexto competitivo",
         "competitive_context_tag": "solo contexto, no evidencia de la marca auditada",
         "parallel_shadow": "Parallel Shadow",
-        "parallel_shadow_tag": "prueba de cobertura, no evidencia de scoring",
+        "parallel_shadow_tag": "señales externas para revisión manual",
         "parallel_shadow_intro": (
-            "Parallel está corriendo como proveedor observacional. Estos resultados sirven para comparar "
-            "cobertura y no se usan en scoring, claims TLDR, proof points ni recomendaciones."
+            "Parallel está corriendo como proveedor observacional. Esta lectura resume candidatos de "
+            "cobertura externa para revisión; no se usa en scoring, claims TLDR, proof points ni recomendaciones."
         ),
+        "parallel_shadow_readout": "Lectura de señales externas",
+        "parallel_shadow_coverage": "Cobertura",
+        "parallel_shadow_candidate_count": "Candidatos externos",
+        "parallel_shadow_domain_count": "Dominios",
+        "parallel_shadow_signal_types": "Tipos de señal",
+        "parallel_shadow_manual_review": "Candidatos a revisión manual",
         "parallel_shadow_missing": "No se persistió data shadow de Parallel para este escaneo.",
         "parallel_shadow_domains": "Dominios",
         "parallel_shadow_intents": "Intents",
-        "parallel_shadow_results": "Resultados de muestra",
+        "parallel_shadow_results": "Fuentes candidatas",
         "tldr_evidence": "Evidencia TLDR",
         "tldr_evidence_tag": "qué usó cada bloque",
         "rejected_gaps": "Rechazado / Gaps",
@@ -316,9 +337,16 @@ _MAGNETISM_UI = {
         "entity_boundary_warnings": "Warnings de límite de entidad",
         "entity_boundary_warnings_tag": "evidencia externa en cuarentena antes del TLDR",
         "entity_boundary_rejections": "Evidencia cuarentenada",
+        "entity_boundary_open_source": "Abrir fuente",
         "no_entity_boundary_warnings": "No se persistieron colisiones de límite de entidad para este escaneo.",
         "methodology_intro": "Método, reglas de interpretación y límites detrás de este escaneo.",
         "methodology_tag": "detalles de metodología",
+        "result_metadata": "Metadata del resultado",
+        "result_metadata_tag": "flags derivados de compatibilidad",
+        "result_version": "Versión del resultado",
+        "pipeline_version": "Versión del pipeline",
+        "generated_with": "Generado con",
+        "stale_against_current_pipeline": "Histórico frente al pipeline actual",
         "research_pack_metric": "Research Pack",
         "tldr_generation": "Generación TLDR",
         "pipeline": "Pipeline",
@@ -1041,10 +1069,63 @@ def _shadow_source_rows(research_pack: dict) -> list[dict]:
                 "unique_domains": [str(value) for value in (item.get("unique_domains") or []) if value],
                 "intents": intent_rows,
                 "results": result_rows[:10],
+                "readout": _shadow_readout(
+                    result_total=int(item.get("result_total") or 0),
+                    unique_domain_count=int(item.get("unique_domain_count") or 0),
+                    unique_domains=[str(value) for value in (item.get("unique_domains") or []) if value],
+                    intents=intent_rows,
+                    results=result_rows,
+                ),
                 "notes": [str(value) for value in (item.get("notes") or []) if value],
             }
         )
     return rows
+
+
+def _shadow_readout(
+    *,
+    result_total: int,
+    unique_domain_count: int,
+    unique_domains: list[str],
+    intents: list[dict],
+    results: list[dict],
+) -> dict:
+    active_intents = [
+        {
+            "name": str(item.get("name") or ""),
+            "label": _shadow_intent_label(str(item.get("name") or "")),
+            "result_count": int(item.get("result_count") or 0),
+        }
+        for item in intents
+        if int(item.get("result_count") or 0) > 0
+    ]
+    top_domains = unique_domains[:5]
+    review_candidates = [
+        {
+            "label": _shadow_intent_label(str(item.get("intent") or "")),
+            "url": item.get("url") or "",
+            "title": item.get("title") or item.get("url") or "",
+            "excerpt": item.get("excerpt") or "",
+        }
+        for item in results[:5]
+    ]
+    return {
+        "result_total": result_total,
+        "unique_domain_count": unique_domain_count,
+        "domain_summary": ", ".join(top_domains),
+        "signal_types": active_intents,
+        "review_candidates": review_candidates,
+    }
+
+
+def _shadow_intent_label(intent: str) -> str:
+    labels = {
+        "mentions": "mentions / reviews / community",
+        "competitors": "competitors / alternatives",
+        "news": "news / launches / public updates",
+        "ai_visibility": "AI visibility / machine-readable presence",
+    }
+    return labels.get(intent, intent.replace("_", " ") or "external signal")
 
 
 def _entity_boundary_warnings(research_pack: dict) -> list[str]:
@@ -1135,6 +1216,7 @@ def _evidence_reliability_model(payload: dict) -> dict:
 
 def _methodology_model(payload: dict) -> dict:
     return {
+        "result_metadata": _scanner_result_metadata(payload),
         "tldr_generation_mode": payload.get("tldr_generation_mode") or "unknown",
         "research_pack_source": payload.get("research_pack_source") or "legacy_snapshot",
         "analysis_error": payload.get("analyst_tldr_analysis_error"),
@@ -1151,6 +1233,35 @@ def _methodology_model(payload: dict) -> dict:
         "limitations": payload.get("limitations") or [],
         "warnings": payload.get("warnings") or [],
         "research_pack": payload.get("research_pack") or {},
+    }
+
+
+def _scanner_result_metadata(payload: dict) -> dict:
+    research_pack = payload.get("research_pack") if isinstance(payload.get("research_pack"), dict) else {}
+    quality = payload.get("research_pack_quality") if isinstance(payload.get("research_pack_quality"), dict) else {}
+    graph_summary = payload.get("evidence_graph_summary") if isinstance(payload.get("evidence_graph_summary"), dict) else {}
+    shadow_sources = research_pack.get("shadow_sources") if isinstance(research_pack.get("shadow_sources"), list) else []
+    tldr_mode = str(payload.get("tldr_generation_mode") or "")
+    pack_source = str(payload.get("research_pack_source") or "")
+    generated_with = {
+        "audit_snapshot": bool(payload.get("source_run_id")),
+        "research_pack": bool(research_pack),
+        "evidence_graph": pack_source == "evidence_graph" or bool(graph_summary),
+        "analyst_pass": tldr_mode == "analyst_pass_validated" or bool(payload.get("analyst_tldr_validated")),
+        "research_pack_quality": bool(quality),
+        "parallel_shadow": bool(shadow_sources),
+    }
+    freshness_requirements = (
+        generated_with["research_pack"],
+        generated_with["evidence_graph"],
+        generated_with["analyst_pass"],
+        generated_with["research_pack_quality"],
+    )
+    return {
+        "result_version": "scanner_result_v1",
+        "pipeline_version": "brand3_scanner_pipeline_2026_06_03",
+        "generated_with": generated_with,
+        "stale_against_current_pipeline": not all(freshness_requirements),
     }
 
 

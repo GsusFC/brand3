@@ -241,6 +241,21 @@ class ReportRendererTests(unittest.TestCase):
         self.assertNotIn("/brand3-lab/cases/run/", html)
         self.assertNotIn("diagnostic · no scoring impact", html)
 
+    def test_app_chrome_report_header_matches_public_observatory_navigation(self):
+        html = ReportRenderer().render(_sample_snapshot(), theme="dark", app_chrome=True, lang="es")
+
+        self.assertIn('class="term-head"', html)
+        self.assertIn('class="term-actions"', html)
+        self.assertIn('class="lang-toggle"', html)
+        self.assertIn('class="source-link badge-ready" href="?theme=dark&lang=es"', html)
+        self.assertIn('class="source-link" href="?theme=dark&lang=en"', html)
+        self.assertIn('class="theme-toggle theme-toggle-term"', html)
+        self.assertIn('class="main-nav-link is-active" href="/reports"', html)
+        self.assertIn('href="/visual-signature"', html)
+        self.assertIn('href="/magnetism-scanner"', html)
+        self.assertNotIn('class="main-nav-link" href="/"><', html)
+        self.assertNotIn("Idioma:", html)
+
     def test_render_shows_cost_policy_when_available(self):
         snapshot = _sample_snapshot()
         snapshot["run"]["use_llm"] = 0

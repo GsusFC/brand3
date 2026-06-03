@@ -139,7 +139,6 @@
     display: inline-flex;
     align-items: center;
     min-height: 30px;
-    margin-left: auto;
     border: 1px solid var(--rule);
     background: {% if theme == 'dark' %}rgba(18, 22, 21, 0.86){% else %}rgba(245, 245, 245, 0.82){% endif %};
     color: var(--muted);
@@ -148,6 +147,9 @@
     font-size: 12px;
     line-height: 1;
     cursor: pointer;
+  }
+  .theme-toggle-term {
+    margin-left: auto;
   }
   .theme-toggle:hover,
   .theme-toggle:focus-visible {
@@ -166,11 +168,34 @@
     min-height: 44px;
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 12px;
     margin: 0;
     padding: 0 28px;
     border-bottom: 1px solid var(--rule);
     background: {% if theme == 'dark' %}rgba(18, 22, 21, 0.82){% else %}rgba(238, 238, 238, 0.76){% endif %};
     line-height: 1.5;
+  }
+  .term-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+  }
+  .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+  .term-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+    min-width: 0;
   }
   .report-command {
     min-height: auto;
@@ -359,6 +384,25 @@
     font-size: 12px; text-transform: uppercase; letter-spacing: 0;
     font-weight: 700; color: var(--fg-bright);
   }
+  {%- if app_chrome %}
+  .source-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    border: 1px solid var(--rule);
+    background: var(--chip-bg);
+    color: var(--fg);
+    padding: 4px 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .badge-ready {
+    border-color: {% if theme == 'dark' %}rgba(155, 207, 130, 0.45){% else %}rgba(95, 116, 92, 0.45){% endif %};
+    color: var(--ok);
+  }
+  {%- endif %}
   .badge.warn { border-color: var(--alert); color: var(--alert); }
   .badge.ok { border-color: var(--ok); color: var(--ok); }
   .hl-alert { color: var(--alert); }
@@ -425,14 +469,22 @@
 <div class="page">
 
 {% if app_chrome %}
-<pre class="term-head"><span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· {{ t.public_observatory }}</span></pre>
+<div class="term-head">
+  <a class="term-home" href="/{% if lang == 'en' %}?lang=en{% endif %}" aria-label="Brand3 home">
+    <span class="prompt">{% if theme == 'dark' %}❯{% else %}${% endif %}</span> brand3 <span class="hl-accent">--mode</span> web <span class="dim">· {{ t.public_observatory }}</span>
+  </a>
+  <div class="term-actions">
+    <div class="lang-toggle" aria-label="Language switch">
+      <a class="source-link{% if lang == 'es' %} badge-ready{% endif %}" href="?theme={{ theme }}&lang=es">ES</a>
+      <a class="source-link{% if lang == 'en' %} badge-ready{% endif %}" href="?theme={{ theme }}&lang=en">EN</a>
+    </div>
+    <button class="theme-toggle theme-toggle-term" type="button" data-report-theme-toggle aria-label="{{ t.toggle_theme }}">{% if theme == 'dark' %}{{ t.light }}{% else %}{{ t.dark }}{% endif %}</button>
+  </div>
+</div>
 <nav class="main-nav" aria-label="Brand3 primary navigation">
-  <a class="main-nav-link" href="/">{{ t.brand_audit }}</a>
-  <a class="main-nav-link is-active" href="/reports">{{ t.reports }}</a>
-  <a class="main-nav-link" href="/visual-signature">{{ t.visual_signature_lab }}</a>
-  <a class="main-nav-link" href="/magnetism-scanner">{{ t.magnetism_scanner }}</a>
-  <a class="main-nav-link" href="?theme={{ theme }}&lang={{ 'en' if lang == 'es' else 'es' }}">{{ t.language }}: {{ lang|upper }}</a>
-  <button class="theme-toggle" type="button" data-report-theme-toggle aria-label="{{ t.toggle_theme }}">{% if theme == 'dark' %}{{ t.light }}{% else %}{{ t.dark }}{% endif %}</button>
+  <a class="main-nav-link is-active" href="/reports{% if lang == 'en' %}?lang=en{% endif %}">{{ t.reports }}</a>
+  <a class="main-nav-link" href="/visual-signature{% if lang == 'en' %}?lang=en{% endif %}">{{ t.visual_signature_lab }}</a>
+  <a class="main-nav-link" href="/magnetism-scanner{% if lang == 'en' %}?lang=en{% endif %}">{{ t.magnetism_scanner }}</a>
 </nav>
 <hr class="rule shell-rule">
 <div class="report-body">

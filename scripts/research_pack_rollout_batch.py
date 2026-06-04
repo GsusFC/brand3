@@ -173,6 +173,7 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
         "promotion_status_counts": dict(sorted(promotion_status_counts.items())),
         "critical_loss_counts": dict(sorted(critical_loss_counts.items(), key=lambda item: (-item[1], item[0]))),
         "cohort_metrics": cohort_metrics,
+        "cohort_rollout_policy": _cohort_rollout_policy(cohort_metrics),
         "rollout_readiness": _rollout_readiness(cohort_metrics, critical_loss_counts),
         "runs": rows,
     }
@@ -212,6 +213,26 @@ def render_rollout_summary_markdown(summary: dict[str, Any]) -> str:
             )
         )
 
+    rollout_policy = summary.get("cohort_rollout_policy") or []
+    if rollout_policy:
+        lines.extend(
+            [
+                "",
+                "## Cohort Policy",
+                "",
+                "| Cohort | Status | Reasons |",
+                "| --- | --- | --- |",
+            ]
+        )
+        for row in rollout_policy:
+            lines.append(
+                "| {cohort} | {status} | {reasons} |".format(
+                    cohort=_md_cell(row.get("cohort")),
+                    status=row.get("status") or "",
+                    reasons=_md_cell(", ".join(row.get("reason_codes") or [])),
+                )
+            )
+
     critical_loss_counts = summary.get("critical_loss_counts") or {}
     if critical_loss_counts:
         lines.extend(
@@ -249,6 +270,36 @@ def render_rollout_summary_markdown(summary: dict[str, Any]) -> str:
             )
         )
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _cohort_rollout_policy(cohort_metrics: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for row in cohort_metrics:
+        reasons: list[str] = []
+        promotion_rate = float(row.get("promotion_rate") or 0.0)
+        blocked_rate = float(row.get("blocked_rate") or 0.0)
+        review_rate = float(row.get("review_required_rate") or 0.0)
+        critical_losses = int(row.get("critical_loss_total") or 0)
+        if promotion_rate < READY_PROMOTION_RATE:
+            reasons.append("promotion_rate_below_threshold")
+        if blocked_rate > 0.0:
+            reasons.append("blocked_runs_present")
+        if review_rate > 0.0:
+            reasons.append("review_required_runs_present")
+        if critical_losses > 0:
+            reasons.append("critical_losses_present")
+        rows.append(
+            {
+                "cohort": row.get("cohort"),
+                "status": "ready" if not reasons else "not_ready",
+                "reason_codes": reasons or ["meets_rollout_thresholds"],
+                "promotion_rate": promotion_rate,
+                "blocked_rate": blocked_rate,
+                "review_rate": review_rate,
+                "critical_loss_total": critical_losses,
+            }
+        )
+    return rows
 
 
 def _rollout_readiness(cohort_metrics: list[dict[str, Any]], critical_loss_counts: dict[str, int]) -> dict[str, Any]:

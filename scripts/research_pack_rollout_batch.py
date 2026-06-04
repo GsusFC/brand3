@@ -15,6 +15,7 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 CRITICAL_FIELDS = ("company_summary", "product_summary", "offer")
+READY_PROMOTION_RATE = 0.95
 
 
 def main() -> int:
@@ -164,6 +165,7 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
         "promotion_status_counts": dict(sorted(promotion_status_counts.items())),
         "critical_loss_counts": dict(sorted(critical_loss_counts.items(), key=lambda item: (-item[1], item[0]))),
         "cohort_metrics": cohort_metrics,
+        "rollout_readiness": _rollout_readiness(cohort_metrics, critical_loss_counts),
         "runs": rows,
     }
 
@@ -175,6 +177,7 @@ def render_rollout_summary_markdown(summary: dict[str, Any]) -> str:
         f"- Runs: `{summary['run_count']}`",
         f"- OK: `{summary['ok_count']}`",
         f"- Promotion statuses: `{summary['promotion_status_counts']}`",
+        f"- Rollout readiness: `{(summary.get('rollout_readiness') or {}).get('status')}`",
         "",
     ]
     lines.extend(
@@ -238,6 +241,59 @@ def render_rollout_summary_markdown(summary: dict[str, Any]) -> str:
             )
         )
     return "\n".join(lines).rstrip() + "\n"
+
+
+def _rollout_readiness(cohort_metrics: list[dict[str, Any]], critical_loss_counts: dict[str, int]) -> dict[str, Any]:
+    if not cohort_metrics:
+        return {
+            "status": "not_ready",
+            "reason_codes": ["no_cohort_data"],
+            "notes": ["No runs were available to evaluate rollout readiness."],
+        }
+
+    promotion_rate = max(float(row.get("promotion_rate") or 0.0) for row in cohort_metrics)
+    blocked_rate = max(float(row.get("blocked_rate") or 0.0) for row in cohort_metrics)
+    review_rate = max(float(row.get("review_required_rate") or 0.0) for row in cohort_metrics)
+    critical_loss_total = sum(int(value) for value in critical_loss_counts.values())
+
+    reason_codes = []
+    if promotion_rate < READY_PROMOTION_RATE:
+        reason_codes.append("promotion_rate_below_threshold")
+    if blocked_rate > 0.0:
+        reason_codes.append("blocked_runs_present")
+    if review_rate > 0.0:
+        reason_codes.append("review_required_runs_present")
+    if critical_loss_total > 0:
+        reason_codes.append("critical_losses_present")
+
+    if not reason_codes:
+        return {
+            "status": "ready",
+            "reason_codes": ["meets_rollout_thresholds"],
+            "thresholds": {
+                "promotion_rate_min": READY_PROMOTION_RATE,
+                "blocked_rate_max": 0.0,
+                "review_rate_max": 0.0,
+                "critical_loss_total_max": 0,
+            },
+        }
+
+    return {
+        "status": "not_ready",
+        "reason_codes": reason_codes,
+        "thresholds": {
+            "promotion_rate_min": READY_PROMOTION_RATE,
+            "blocked_rate_max": 0.0,
+            "review_rate_max": 0.0,
+            "critical_loss_total_max": 0,
+        },
+        "notes": [
+            f"Best promotion rate observed: {promotion_rate:.2%}",
+            f"Blocked rate observed: {blocked_rate:.2%}",
+            f"Review-required rate observed: {review_rate:.2%}",
+            f"Critical losses observed: {critical_loss_total}",
+        ],
+    }
 
 
 def _critical_losses(summary: dict[str, Any]) -> list[str]:

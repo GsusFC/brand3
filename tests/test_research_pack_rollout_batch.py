@@ -25,6 +25,9 @@ def test_research_pack_rollout_batch_summarizes_cohort_metrics() -> None:
     assert company_cohort["promotable_count"] == 1
     assert company_cohort["blocked_count"] == 1
     assert company_cohort["promotion_rate"] == 0.5
+    assert summary["rollout_readiness"]["status"] == "not_ready"
+    assert "promotion_rate_below_threshold" in summary["rollout_readiness"]["reason_codes"]
+    assert "critical_losses_present" in summary["rollout_readiness"]["reason_codes"]
 
 
 def test_research_pack_rollout_batch_renders_markdown_tables() -> None:
@@ -40,6 +43,7 @@ def test_research_pack_rollout_batch_renders_markdown_tables() -> None:
     assert "# Research Pack Rollout" in markdown
     assert "Pipe \\| Brand" in markdown
     assert "company:10-24" in markdown
+    assert "Rollout readiness" in markdown
     assert "## Cohorts" in markdown
     assert "## Runs" in markdown
 

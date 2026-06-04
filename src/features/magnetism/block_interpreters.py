@@ -96,7 +96,7 @@ LOW_TRUST_BLOCK_SOURCE_ROLES = {"blog_feed", "proof_customer", "legal_navigation
 def source_role_for_candidate(item: dict[str, Any]) -> str:
     surface_role = str(item.get("surface_role") or "")
     if surface_role:
-        return {
+        mapped_role = {
             "audited_surface": "homepage",
             "parent_home": "homepage",
             "mission_about": "about",
@@ -104,7 +104,9 @@ def source_role_for_candidate(item: dict[str, Any]) -> str:
             "policy_security": "legal_navigation",
             "blog_feed": "blog_feed",
             "proof_customer": "proof_customer",
-        }.get(surface_role, surface_role)
+        }.get(surface_role)
+        if mapped_role:
+            return mapped_role
     return source_role_for_url(str(item.get("url") or ""))
 
 
@@ -123,9 +125,9 @@ def source_role_for_url(url: str) -> str:
         return "blog_feed"
     if any(marker in path for marker in ("/customers", "/customer", "/clients", "/client", "/case-stud", "/stories", "/reviews", "/testimonials", "/casos", "/opiniones")):
         return "proof_customer"
-    if any(marker in path for marker in ("/privacy", "/terms", "/legal", "/cookies", "/security")):
+    if any(marker in path for marker in ("privacy", "privacidad", "terms", "legal", "aviso-legal", "cookies", "security", "proteccion-de-datos", "protección-de-datos")):
         return "legal_navigation"
-    if any(marker in path for marker in ("/about", "/company", "/mission", "/manifesto", "/principles")):
+    if any(marker in path for marker in ("about", "company", "mission", "manifesto", "principles", "conocenos", "conócenos")):
         return "about"
     if any(marker in path for marker in ("/product", "/products", "/platform", "/solution", "/solutions", "/services", "/features")):
         return "product"
@@ -426,8 +428,8 @@ def evidence_sufficiency_from_spec(
             minimum_rule = TLDR_BLOCK_INTERPRETER_SPECS[block]["minimum_evidence_rule"]
             missing_evidence.append(f"No candidate evidence met the minimum rule: {minimum_rule}")
     elif block == "value_proposition":
-        strong = diagnostics.get("has_offer") and diagnostics.get("has_audience") and diagnostics.get("has_outcome")
-        status = "sufficient" if strong and not noise_detected else "partial"
+        strong = diagnostics.get("has_offer") and diagnostics.get("has_outcome")
+        status = "sufficient" if strong else "partial"
     elif block == "mission":
         status = "sufficient" if diagnostics.get("has_operating_activity") and not noise_detected else "partial"
     elif block == "vision":
@@ -1061,6 +1063,12 @@ def _has_outcome_signal(text: str) -> bool:
             "transform",
             "reduce",
             "save",
+            "last over time",
+            "built to last",
+            "duren en el tiempo",
+            "dure en el tiempo",
+            "duraderos",
+            "duraderas",
             "build relationships",
             "get things done",
             "improve",
@@ -1139,6 +1147,8 @@ def _clean_value_prop_answer_text(text: str) -> str:
 def _is_bad_value_prop_candidate(text: str) -> bool:
     stripped = text.strip()
     low = stripped.lower()
+    if low.startswith("source:"):
+        return True
     if _is_truncated_evidence(low):
         return True
     if stripped.startswith("![") or "![" in stripped:
@@ -1168,6 +1178,12 @@ def _is_bad_value_prop_candidate(text: str) -> bool:
     if "customers logos" in low or "_next/image" in low:
         return True
     if "book a demo" in low and low.startswith(("book a demo", "talk to")):
+        return True
+    if any(marker in low for marker in ("política de privacidad", "politica de privacidad", "política de cookies", "politica de cookies", "rgpd", "lssi", "protección de datos", "proteccion de datos")):
+        return True
+    if "hashtag" in low and any(marker in low for marker in ("instagram", "comparte tus propias fotos", "inspírate", "inspirate")):
+        return True
+    if low.startswith(("inclusión ", "inclusion ")) and "valoramos" in low:
         return True
     if stripped.count("**](http") or stripped.endswith("]"):
         return True

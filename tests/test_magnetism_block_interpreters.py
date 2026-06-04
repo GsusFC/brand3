@@ -11,6 +11,7 @@ from src.features.magnetism.block_interpreters import (
     get_tldr_block_interpreter_spec,
     human_review_from_spec,
     interpret_tldr_block,
+    source_role_for_candidate,
     source_role_for_url,
     strategic_packet_candidates,
 )
@@ -230,6 +231,67 @@ def test_value_proposition_acceptance_rejects_non_offer_layer_evidence() -> None
     ]
 
 
+def test_owned_surface_legal_urls_are_reclassified_by_path() -> None:
+    assert (
+        source_role_for_candidate(
+            {
+                "surface_role": "owned_surface",
+                "url": "https://www.sklum.com/es/content/84-politica-de-privacidad",
+            }
+        )
+        == "legal_navigation"
+    )
+    assert (
+        source_role_for_candidate(
+            {
+                "surface_role": "owned_surface",
+                "url": "https://www.sklum.com/es/content/66-conocenos",
+            }
+        )
+        == "about"
+    )
+
+
+def test_value_proposition_rejects_legal_and_source_metadata_candidates() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Sklum Home and Deco SL ha adecuado esta web a las exigencias del Reglamento RGPD y la LSSI.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "legal_navigation",
+        },
+        {
+            "text": "Estas cookies permiten al Sitio ofrecer funcionalidades mejoradas y personalización.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "legal_navigation",
+        },
+        {
+            "text": "Source: https://www.sklum.com/products",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Nos esforzamos por ofrecer productos excepcionales que duren en el tiempo y sean dignos de tus momentos más preciados.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "Nos esforzamos por ofrecer productos excepcionales que duren en el tiempo y sean dignos de tus momentos más preciados."
+    ]
+
+
 def test_value_proposition_diagnostics_drive_confidence_and_review() -> None:
     accepted = [
         {
@@ -280,6 +342,37 @@ def test_value_proposition_missing_outcome_lowers_confidence() -> None:
     assert counter_evidence == [
         "The available value proposition evidence does not clearly state the outcome or change for the audience."
     ]
+
+
+def test_value_proposition_spanish_durability_counts_as_outcome() -> None:
+    accepted = [
+        {
+            "text": "Nos esforzamos por ofrecer productos excepcionales que duren en el tiempo y sean dignos de tus momentos más preciados.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        }
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+    confidence = confidence_from_spec("value_proposition", diagnostics, accepted)
+
+    assert diagnostics["has_offer"] is True
+    assert diagnostics["has_outcome"] is True
+    assert confidence == "medium"
+    assert counter_evidence == [
+        "The available value proposition evidence does not clearly name the audience."
+    ]
+    assert (
+        human_review_from_spec("value_proposition", diagnostics, confidence, counter_evidence)
+        is False
+    )
 
 
 
@@ -393,6 +486,70 @@ def test_evidence_sufficiency_marks_partial_value_proposition_for_missing_outcom
     assert sufficiency["missing_evidence"] == [
         "The available value proposition evidence does not clearly state the outcome or change for the audience."
     ]
+
+
+def test_evidence_sufficiency_allows_value_proposition_with_offer_and_outcome() -> None:
+    accepted = [
+        {
+            "text": "Nos esforzamos por ofrecer productos excepcionales que duren en el tiempo y sean dignos de tus momentos más preciados.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        }
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+
+    sufficiency = evidence_sufficiency_from_spec(
+        "value_proposition", accepted, accepted, diagnostics, counter_evidence
+    )
+
+    assert sufficiency["status"] == "sufficient"
+    assert sufficiency["decision"] == "interpret"
+    assert sufficiency["missing_evidence"] == [
+        "The available value proposition evidence does not clearly name the audience."
+    ]
+
+
+def test_evidence_sufficiency_ignores_rejected_noise_when_value_evidence_is_strong() -> None:
+    candidates = [
+        {
+            "text": "Source: https://www.sklum.com/products",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Nos esforzamos por ofrecer productos excepcionales que duren en el tiempo y sean dignos de tus momentos más preciados.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        },
+    ]
+    accepted = [candidates[1]]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+
+    sufficiency = evidence_sufficiency_from_spec(
+        "value_proposition", candidates, accepted, diagnostics, counter_evidence
+    )
+
+    assert sufficiency["noise_detected"] is True
+    assert sufficiency["status"] == "sufficient"
+    assert sufficiency["decision"] == "interpret"
 
 
 def test_evidence_sufficiency_marks_vision_market_prediction_polluted() -> None:

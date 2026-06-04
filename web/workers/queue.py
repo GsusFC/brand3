@@ -19,6 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.features.magnetism.readiness import assess_scanner_readiness
+from src.quality.publication_readiness import publication_decision_from_report_readiness
 from ..config import settings
 
 log = logging.getLogger("brand3.web.queue")
@@ -340,9 +341,7 @@ def _analysis_report_readiness(result: dict, *, run_id: int | None = None) -> di
 
 
 def _is_publishable_report(readiness: dict | None) -> bool:
-    if readiness is None:
-        return False
-    return readiness.get("report_mode") == "publishable_brand_report"
+    return publication_decision_from_report_readiness(readiness).publishable
 
 
 def _load_request(token: str) -> dict | None:

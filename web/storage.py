@@ -14,6 +14,7 @@ from pathlib import Path
 
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.readiness import assess_scanner_readiness
+from src.quality.publication_readiness import publication_decision_from_scanner_readiness
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -293,8 +294,9 @@ def _magnetism_payload_insert_state(
         readiness = assess_scanner_readiness(input_type, payload).to_payload()
         payload["scanner_readiness"] = readiness
 
-    if readiness.get("status") == "failed":
-        reason_codes = readiness.get("reason_codes") if isinstance(readiness.get("reason_codes"), list) else []
+    publication = publication_decision_from_scanner_readiness(readiness)
+    if publication.status == "failed":
+        reason_codes = list(publication.reason_codes)
         reason = str(reason_codes[0]) if reason_codes else "scanner_readiness_failed"
         return json.dumps(payload, ensure_ascii=False), "failed", f"failed:{reason}"
 

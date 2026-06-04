@@ -367,47 +367,16 @@ class MagnetismExtractor:
             try:
                 result = self._extract_via_llm(evidence_text, visual_semantics, brand_name, url)
                 if result:
-                    packet_dict = strategic_packet.to_dict()
-                    result["source_run_id"] = canonical_evidence.run_id
-                    result["source"] = "brand_audit_snapshot"
-                    result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
-                    result["canonical_evidence_source"] = "brand_audit_snapshot"
-                    result["limitations"].extend(canonical_evidence.limitations)
-                    result["evidence_packet_summary"] = evidence_packet_summary
-                    if evidence_graph_summary:
-                        result["evidence_graph_summary"] = evidence_graph_summary
-                        result["research_pack_source"] = "evidence_graph"
-                    else:
-                        result["research_pack_source"] = "snapshot_builder"
-                    result["strategic_evidence_packet"] = packet_dict
-                    self._enrich_layers_from_strategic_packet(result["magenta_circle"], packet_dict)
-                    brand_context_brief = build_brand_context_brief(
-                        brand_name=brand_name,
-                        url=url,
-                        layers=result["magenta_circle"],
-                        strategic_packet=packet_dict,
-                    ).to_dict()
-                    result["brand_context_brief"] = brand_context_brief
-                    result["tldr_brand3"] = self._derive_tldr(result["magenta_circle"], packet_dict, brand_context_brief)
-                    self._apply_tldr_generation_flow(
+                    return self._enrich_result_from_audit_snapshot(
                         result=result,
-                        brand_name=brand_name,
-                        url=url,
-                        packet_dict=packet_dict,
-                        brand_context_brief=brand_context_brief,
+                        canonical_evidence=canonical_evidence,
+                        strategic_packet=strategic_packet,
+                        evidence_packet_summary=evidence_packet_summary,
+                        evidence_graph_summary=evidence_graph_summary,
                         research_pack=research_pack,
                         contextdev_candidate_summary=contextdev_candidate_summary,
+                        enrich_layers_from_packet=True,
                     )
-                    result.setdefault("tldr_generation_mode", "legacy_code")
-                    result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
-                    result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
-                    result["system_reading"] = self._derive_system_reading(
-                        result["tldr_brand3"],
-                        result["magenta_circle"],
-                        result["metrics"],
-                        evidence_packet_summary,
-                    )
-                    return result
             except Exception:
                 pass
 
@@ -419,6 +388,33 @@ class MagnetismExtractor:
             collector_error="",
             strategic_evidence_packet=strategic_packet.to_dict(),
         )
+        return self._enrich_result_from_audit_snapshot(
+            result=result,
+            canonical_evidence=canonical_evidence,
+            strategic_packet=strategic_packet,
+            evidence_packet_summary=evidence_packet_summary,
+            evidence_graph_summary=evidence_graph_summary,
+            research_pack=research_pack,
+            contextdev_candidate_summary=contextdev_candidate_summary,
+            enrich_layers_from_packet=False,
+        )
+
+    def _enrich_result_from_audit_snapshot(
+        self,
+        *,
+        result: dict[str, Any],
+        canonical_evidence: Any,
+        strategic_packet: StrategicEvidencePacket,
+        evidence_packet_summary: dict[str, Any],
+        evidence_graph_summary: dict[str, Any] | None,
+        research_pack: Any | None,
+        contextdev_candidate_summary: dict[str, Any] | None,
+        enrich_layers_from_packet: bool,
+    ) -> dict[str, Any]:
+        packet_dict = strategic_packet.to_dict()
+        brand_name = canonical_evidence.brand_name
+        url = canonical_evidence.url
+
         result["source_run_id"] = canonical_evidence.run_id
         result["source"] = "brand_audit_snapshot"
         result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
@@ -430,8 +426,9 @@ class MagnetismExtractor:
             result["research_pack_source"] = "evidence_graph"
         else:
             result["research_pack_source"] = "snapshot_builder"
-        packet_dict = strategic_packet.to_dict()
         result["strategic_evidence_packet"] = packet_dict
+        if enrich_layers_from_packet:
+            self._enrich_layers_from_strategic_packet(result["magenta_circle"], packet_dict)
         brand_context_brief = build_brand_context_brief(
             brand_name=brand_name,
             url=url,

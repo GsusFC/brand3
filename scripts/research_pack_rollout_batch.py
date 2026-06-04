@@ -10,7 +10,7 @@ from typing import Any
 
 from src.config import BRAND3_DB_PATH
 from src.research.pack_comparison import compare_pack_builders_from_snapshot
-from src.research.research_pack_promotion import evaluate_research_pack_promotion
+from src.research.research_pack_promotion import evaluate_research_pack_promotion, recommend_research_pack_builder
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -56,6 +56,7 @@ def build_run_rollout_report(store: SQLiteStore, run_id: int) -> dict[str, Any]:
     try:
         comparison = compare_pack_builders_from_snapshot(snapshot)
         promotion = evaluate_research_pack_promotion(snapshot)
+        recommendation = recommend_research_pack_builder(snapshot)
     except Exception as exc:  # pragma: no cover - defensive for ad hoc local runs.
         return {
             "run_id": run_id,
@@ -77,6 +78,8 @@ def build_run_rollout_report(store: SQLiteStore, run_id: int) -> dict[str, Any]:
         "graph_summary": comparison.graph_summary,
         "comparison": comparison.to_dict(),
         "promotion_report": promotion.to_dict(),
+        "recommended_builder": recommendation.builder,
+        "recommendation": recommendation.to_dict(),
         "promotion_status": promotion.decisions[0].status if promotion.decisions else "unknown",
         "gained_count": summary["gained_count"],
         "lost_count": summary["lost_count"],
@@ -87,6 +90,7 @@ def build_run_rollout_report(store: SQLiteStore, run_id: int) -> dict[str, Any]:
 
 def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) -> dict[str, Any]:
     promotion_status_counts: dict[str, int] = {}
+    recommended_builder_counts: dict[str, int] = {}
     critical_loss_counts: dict[str, int] = {}
     cohort_rows: dict[str, dict[str, Any]] = {}
     rows: list[dict[str, Any]] = []
@@ -98,6 +102,8 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
 
         status = str(report.get("promotion_status") or "unknown")
         promotion_status_counts[status] = promotion_status_counts.get(status, 0) + 1
+        recommended_builder = str(report.get("recommended_builder") or "unknown")
+        recommended_builder_counts[recommended_builder] = recommended_builder_counts.get(recommended_builder, 0) + 1
         critical_losses = list(report.get("critical_losses") or [])
         for field in critical_losses:
             critical_loss_counts[field] = critical_loss_counts.get(field, 0) + 1
@@ -140,6 +146,7 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
                 "url": report.get("url"),
                 "cohort": cohort,
                 "promotion_status": status,
+                "recommended_builder": recommended_builder,
                 "gained_count": report.get("gained_count"),
                 "lost_count": report.get("lost_count"),
                 "changed_count": report.get("changed_count"),
@@ -171,6 +178,7 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
         "run_count": len(reports),
         "ok_count": sum(1 for report in reports if report.get("status") == "ok"),
         "promotion_status_counts": dict(sorted(promotion_status_counts.items())),
+        "recommended_builder_counts": dict(sorted(recommended_builder_counts.items())),
         "critical_loss_counts": dict(sorted(critical_loss_counts.items(), key=lambda item: (-item[1], item[0]))),
         "cohort_metrics": cohort_metrics,
         "cohort_rollout_policy": _cohort_rollout_policy(cohort_metrics),
@@ -186,6 +194,7 @@ def render_rollout_summary_markdown(summary: dict[str, Any]) -> str:
         f"- Runs: `{summary['run_count']}`",
         f"- OK: `{summary['ok_count']}`",
         f"- Promotion statuses: `{summary['promotion_status_counts']}`",
+        f"- Recommended builders: `{summary.get('recommended_builder_counts') or {}}`",
         f"- Rollout readiness: `{(summary.get('rollout_readiness') or {}).get('status')}`",
         "",
     ]
@@ -269,6 +278,20 @@ def render_rollout_summary_markdown(summary: dict[str, Any]) -> str:
                 losses=_md_cell(losses),
             )
         )
+
+    recommended_builder_counts = summary.get("recommended_builder_counts") or {}
+    if recommended_builder_counts:
+        lines.extend(
+            [
+                "",
+                "## Recommended Builders",
+                "",
+                "| Builder | Count |",
+                "| --- | ---: |",
+            ]
+        )
+        for builder, count in recommended_builder_counts.items():
+            lines.append(f"| {builder} | {count} |")
     return "\n".join(lines).rstrip() + "\n"
 
 

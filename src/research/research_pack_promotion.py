@@ -58,6 +58,23 @@ class ResearchPackPromotionReport:
         }
 
 
+@dataclass(frozen=True, slots=True)
+class ResearchPackBuilderRecommendation:
+    run_id: int | None
+    brand_name: str
+    url: str
+    builder: str
+    reason_codes: tuple[str, ...]
+    promotion_status: str
+    notes: tuple[str, ...] = ()
+
+    def to_dict(self) -> dict[str, Any]:
+        payload = asdict(self)
+        payload["reason_codes"] = list(self.reason_codes)
+        payload["notes"] = list(self.notes)
+        return payload
+
+
 def evaluate_research_pack_promotion(snapshot: dict[str, Any]) -> ResearchPackPromotionReport:
     """Evaluate whether the EvidenceGraph-backed pack is ready to promote."""
 
@@ -102,6 +119,42 @@ def evaluate_research_pack_promotion(snapshot: dict[str, Any]) -> ResearchPackPr
             notes=_promotion_notes(summary),
         )
     return ResearchPackPromotionReport(version=RESEARCH_PACK_PROMOTION_VERSION, decisions=(decision,))
+
+
+def recommend_research_pack_builder(snapshot: dict[str, Any]) -> ResearchPackBuilderRecommendation:
+    """Recommend which builder should be used for this snapshot."""
+
+    promotion = evaluate_research_pack_promotion(snapshot)
+    decision = promotion.decisions[0] if promotion.decisions else None
+    if decision and decision.status == PROMOTABLE:
+        builder = "graph"
+        notes = ("Snapshot passed promotion gate.",)
+        reason_codes = decision.reason_codes
+    elif decision and decision.status == REVIEW_REQUIRED:
+        builder = "legacy"
+        notes = ("Identity-sensitive changes still need review before promotion.",)
+        reason_codes = decision.reason_codes
+    else:
+        builder = "legacy"
+        notes = ("Graph-backed pack is not yet safe as the default builder for this snapshot.",)
+        reason_codes = decision.reason_codes if decision else ("promotion_unknown",)
+
+    run_id = None
+    brand_name = ""
+    url = ""
+    if decision:
+        run_id = decision.run_id
+        brand_name = decision.brand_name
+        url = decision.url
+    return ResearchPackBuilderRecommendation(
+        run_id=run_id,
+        brand_name=brand_name,
+        url=url,
+        builder=builder,
+        reason_codes=reason_codes,
+        promotion_status=decision.status if decision else "unknown",
+        notes=notes,
+    )
 
 
 def _build_decision(

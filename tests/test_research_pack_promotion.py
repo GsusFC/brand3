@@ -8,6 +8,7 @@ from src.research.research_pack_promotion import (
     PROMOTABLE,
     REVIEW_REQUIRED,
     evaluate_research_pack_promotion,
+    recommend_research_pack_builder,
 )
 
 
@@ -98,3 +99,59 @@ def test_evaluate_research_pack_promotion_requires_review_for_identity_changes(m
     decision = report.decisions[0]
     assert decision.status == REVIEW_REQUIRED
     assert "entity_type_changed" in decision.reason_codes
+
+
+def test_recommend_research_pack_builder_prefers_graph_for_promotable_snapshot(monkeypatch) -> None:
+    monkeypatch.setattr(
+        promotion_module,
+        "compare_pack_builders_from_snapshot",
+        lambda snapshot: SimpleNamespace(
+            run_id=14,
+            brand_name="Sklum",
+            url="https://www.sklum.com",
+            graph_summary={"claim_count": 10, "source_count": 15},
+            summary=lambda: {
+                "gained_count": 2,
+                "lost_count": 0,
+                "changed_count": 1,
+                "entity_type_changed": False,
+                "parent_brand_changed": False,
+                "gained_fields": ["offer"],
+                "lost_fields": [],
+            },
+        ),
+    )
+
+    recommendation = recommend_research_pack_builder({"run": {"id": 14}})
+
+    assert recommendation.builder == "graph"
+    assert recommendation.promotion_status == PROMOTABLE
+    assert recommendation.reason_codes == ("graph_no_regressions",)
+
+
+def test_recommend_research_pack_builder_keeps_legacy_when_not_promotable(monkeypatch) -> None:
+    monkeypatch.setattr(
+        promotion_module,
+        "compare_pack_builders_from_snapshot",
+        lambda snapshot: SimpleNamespace(
+            run_id=15,
+            brand_name="Example",
+            url="https://example.com",
+            graph_summary={"claim_count": 2, "source_count": 1},
+            summary=lambda: {
+                "gained_count": 0,
+                "lost_count": 3,
+                "changed_count": 2,
+                "entity_type_changed": False,
+                "parent_brand_changed": False,
+                "gained_fields": [],
+                "lost_fields": ["offer"],
+            },
+        ),
+    )
+
+    recommendation = recommend_research_pack_builder({"run": {"id": 15}})
+
+    assert recommendation.builder == "legacy"
+    assert recommendation.promotion_status == BLOCKED
+    assert "legacy_fields_lost" in recommendation.reason_codes

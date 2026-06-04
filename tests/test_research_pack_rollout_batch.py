@@ -19,6 +19,7 @@ def test_research_pack_rollout_batch_summarizes_cohort_metrics() -> None:
         "promotable": 1,
         "review_required": 1,
     }
+    assert summary["recommended_builder_counts"] == {"graph": 1, "legacy": 2}
     assert summary["critical_loss_counts"] == {"entity_type": 1, "offer": 1}
     clean_cohort = next(row for row in summary["cohort_metrics"] if row["cohort"] == "company:10-24:clean")
     blocked_cohort = next(row for row in summary["cohort_metrics"] if row["cohort"] == "company:10-24:critical-loss")
@@ -52,6 +53,7 @@ def test_research_pack_rollout_batch_renders_markdown_tables() -> None:
     assert "Pipe \\| Brand" in markdown
     assert "company:10-24:clean" in markdown
     assert "## Cohort Policy" in markdown
+    assert "## Recommended Builders" in markdown
     assert "Rollout readiness" in markdown
     assert "## Cohorts" in markdown
     assert "## Runs" in markdown
@@ -88,6 +90,12 @@ def _report(
         "graph_summary": {"source_count": 12, "claim_count": 30},
         "comparison": {"summary": summary},
         "promotion_report": {"decisions": [{"status": promotion_status}]},
+        "recommended_builder": "graph" if promotion_status == "promotable" else "legacy",
+        "recommendation": {
+            "builder": "graph" if promotion_status == "promotable" else "legacy",
+            "promotion_status": promotion_status,
+            "reason_codes": ["graph_no_regressions"] if promotion_status == "promotable" else ["legacy_fields_lost"],
+        },
         "promotion_status": promotion_status,
         "gained_count": gained,
         "lost_count": lost,

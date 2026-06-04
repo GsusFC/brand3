@@ -15,6 +15,7 @@ from pydantic import BaseModel, ConfigDict
 from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
+from src.features.magnetism.readiness import assess_scanner_readiness
 from src.features.magnetism.translation import apply_magnetism_translation, translate_magnetism_payload
 from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
@@ -95,6 +96,7 @@ def _scanner_openapi_spec() -> dict:
             "started_at": {"type": ["string", "null"], "format": "date-time"},
             "completed_at": {"type": ["string", "null"], "format": "date-time"},
             "error_message": {"type": ["string", "null"]},
+            "scanner_readiness": {"$ref": "#/components/schemas/ScannerReadiness"},
             "result_available": {"type": "boolean"},
             "status_url": {"type": "string"},
             "result_url": {"type": "string"},
@@ -114,6 +116,7 @@ def _scanner_openapi_spec() -> dict:
             "started_at",
             "completed_at",
             "error_message",
+            "scanner_readiness",
             "result_available",
             "status_url",
             "result_url",
@@ -122,6 +125,19 @@ def _scanner_openapi_spec() -> dict:
             "audit_url",
             "ui_url",
         ],
+    }
+    scanner_readiness_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "status": {
+                "type": "string",
+                "enum": ["publishable", "degraded", "debug_only", "failed"],
+            },
+            "publishable": {"type": "boolean"},
+            "reason_codes": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["status", "publishable", "reason_codes"],
     }
     return {
         "openapi": "3.1.0",
@@ -314,6 +330,7 @@ def _scanner_openapi_spec() -> dict:
                     "oneOf": [{"required": ["url"]}, {"required": ["audit_run_id"]}],
                 },
                 "ScannerStatus": scan_status_schema,
+                "ScannerReadiness": scanner_readiness_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,
             },
@@ -485,6 +502,7 @@ _MAGNETISM_UI = {
         "result_metadata_tag": "derived compatibility flags",
         "result_version": "Result version",
         "pipeline_version": "Pipeline version",
+        "scanner_readiness": "Scanner readiness",
         "generated_with": "Generated with",
         "stale_against_current_pipeline": "Historic against current pipeline",
         "research_pack_metric": "Research Pack",
@@ -641,6 +659,7 @@ _MAGNETISM_UI = {
         "result_metadata_tag": "flags derivados de compatibilidad",
         "result_version": "Versión del resultado",
         "pipeline_version": "Versión del pipeline",
+        "scanner_readiness": "Readiness del scanner",
         "generated_with": "Generado con",
         "stale_against_current_pipeline": "Histórico frente al pipeline actual",
         "research_pack_metric": "Research Pack",
@@ -961,6 +980,7 @@ def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
     scan_id = int(row.get("id") or 0)
     status = str(row.get("status") or "queued")
     phase = _magnetism_phase(row)
+    readiness = _scanner_readiness_from_row(row)
     return {
         "id": scan_id,
         "status": status,
@@ -972,6 +992,7 @@ def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
         "started_at": row.get("started_at"),
         "completed_at": row.get("completed_at"),
         "error_message": row.get("error_message"),
+        "scanner_readiness": readiness,
         "result_available": status == "ready",
         "status_url": f"/api/v1/scanner/{scan_id}",
         "result_url": f"/api/v1/scanner/{scan_id}/result",
@@ -1796,8 +1817,43 @@ def _scanner_result_metadata(payload: dict) -> dict:
         "result_version": "scanner_result_v1",
         "pipeline_version": "brand3_scanner_pipeline_2026_06_03",
         "generated_with": generated_with,
+        "scanner_readiness": _scanner_readiness_from_payload(payload),
         "stale_against_current_pipeline": not all(freshness_requirements),
     }
+
+
+def _scanner_readiness_from_row(row: dict) -> dict:
+    payload: dict = {}
+    raw_payload = row.get("raw_payload")
+    if raw_payload:
+        try:
+            loaded = json.loads(raw_payload)
+        except Exception:
+            loaded = {}
+        if isinstance(loaded, dict):
+            payload = loaded
+    input_type = str(row.get("input_type") or ("audit_run" if row.get("source_run_id") else "url"))
+    readiness = payload.get("scanner_readiness")
+    if isinstance(readiness, dict):
+        return readiness
+    return assess_scanner_readiness(input_type, payload).to_payload()
+
+
+def _scanner_readiness_from_payload(payload: dict) -> dict:
+    readiness = payload.get("scanner_readiness")
+    if isinstance(readiness, dict):
+        return readiness
+    input_type = "manual" if _is_manual_magnetism_payload(payload) else "url"
+    return assess_scanner_readiness(input_type, payload).to_payload()
+
+
+def _is_manual_magnetism_payload(payload: dict) -> bool:
+    return (
+        payload.get("source") in {"legacy_direct", "direct_magnetism_legacy"}
+        or payload.get("extraction_mode") == "legacy_direct"
+        or bool(payload.get("direct_source_provider"))
+        or payload.get("url") == "manual"
+    )
 
 
 def _entity_research_packet(payload: dict) -> dict:

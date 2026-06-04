@@ -1,0 +1,18 @@
+{
+  "version": "search_enrichment_lab_cases_v0_1",
+  "purpose": "Low-cost benchmark for query quality on lesser-known or ambiguous entities.",
+  "cases": [
+    {
+      "brand": "Bokeroon",
+      "url": "https://bokeroon.com",
+      "case_type": "small_brand",
+      "reason": "Less-known brand to measure whether richer identity research queries improve source quality."
+    },
+    {
+      "brand": "Obscure Thing",
+      "url": "https://example.com",
+      "case_type": "ambiguous_or_unresolved",
+      "reason": "Negative control: name and domain do not establish a real brand identity."
+    }
+  ]
+}

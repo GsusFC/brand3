@@ -1,0 +1,35 @@
+{
+  "version": "search_enrichment_lab_cases_v0_1",
+  "cases": [
+    {
+      "brand": "LangChain",
+      "url": "https://www.langchain.com",
+      "case_type": "company_brand",
+      "reason": "Known company with owned product, docs, community, competitors, and external AI ecosystem context."
+    },
+    {
+      "brand": "ChatGPT",
+      "url": "https://chatgpt.com",
+      "case_type": "product_with_parent",
+      "reason": "Product surface where parent-brand context from OpenAI should matter."
+    },
+    {
+      "brand": "Base",
+      "url": "https://base.org",
+      "case_type": "ecosystem",
+      "reason": "Protocol/ecosystem case where developer docs and community sources matter."
+    },
+    {
+      "brand": "Bokeroon",
+      "url": "https://bokeroon.com",
+      "case_type": "small_brand",
+      "reason": "Less-known brand to measure source discovery beyond obvious search results."
+    },
+    {
+      "brand": "Obscure Thing",
+      "url": "https://example.com",
+      "case_type": "ambiguous_or_unresolved",
+      "reason": "Negative control: name and domain do not establish a real brand identity."
+    }
+  ]
+}

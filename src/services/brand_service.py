@@ -46,6 +46,7 @@ from src.discovery.search_plan import build_discovery_search_plan
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
 from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
+from src.reports.derivation import build_report_readiness_from_snapshot
 from src.reports.entity_research_packet import build_entity_research_packet
 from src.research.evidence_graph import build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
@@ -1724,6 +1725,22 @@ def _build_run_audit_context(
             store.close()
 
 
+def _persist_report_readiness(
+    store: SQLiteStore,
+    run_id: int,
+    audit: dict[str, Any],
+) -> dict[str, Any] | None:
+    snapshot = store.get_run_snapshot(run_id)
+    if not snapshot:
+        return None
+    readiness = build_report_readiness_from_snapshot(snapshot)
+    if not readiness:
+        return None
+    audit["report_readiness"] = readiness
+    store.save_run_audit(run_id, audit)
+    return readiness
+
+
 def run(
     url: str,
     brand_name: str = None,
@@ -2055,6 +2072,12 @@ def run(
                     result_path=str(output_path),
                     summary=summary,
                 ),
+            )
+        if run_id:
+            _store_safely(
+                store,
+                "report readiness persistence",
+                lambda: _persist_report_readiness(store, run_id, result["audit"]),
             )
         if run_id and llm is not None:
             def _persist_report_narrative() -> None:

@@ -18,6 +18,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
+from src.features.magnetism.readiness import assess_scanner_readiness
 from ..config import settings
 
 log = logging.getLogger("brand3.web.queue")
@@ -237,6 +238,7 @@ class AnalysisQueue:
             return
 
         run_id = int(result.get("run_id") or 0) or None
+        readiness = _analysis_report_readiness(result)
         _set_status(
             token,
             status="ready",
@@ -244,6 +246,7 @@ class AnalysisQueue:
             phase_updated_at=_now(),
             completed_at=_now(),
             run_id=run_id,
+            is_public=1 if _is_publishable_report(readiness) else 0,
         )
         log.info("analysis ready token=%s run_id=%s", token, run_id)
 
@@ -294,12 +297,33 @@ class AnalysisQueue:
             log.exception("magnetism failed token=%s", token)
             return
 
+        readiness = assess_scanner_readiness(str(scan.get("input_type") or "url"), result)
+        result["scanner_readiness"] = readiness.to_payload()
+        if readiness.status == "failed":
+            _fail_magnetism_scan_with_payload(token, readiness.error_message or "failed", result)
+            log.warning("magnetism blocked token=%s reason=%s", token, readiness.error_message)
+            return
+
         _complete_magnetism_scan(token, result)
         log.info("magnetism ready token=%s", token)
 
 
 def _now() -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+
+
+def _analysis_report_readiness(result: dict) -> dict | None:
+    audit = result.get("audit") if isinstance(result, dict) else None
+    if not isinstance(audit, dict):
+        return None
+    readiness = audit.get("report_readiness")
+    return readiness if isinstance(readiness, dict) else None
+
+
+def _is_publishable_report(readiness: dict | None) -> bool:
+    if readiness is None:
+        return True
+    return readiness.get("report_mode") == "publishable_brand_report"
 
 
 def _load_request(token: str) -> dict | None:
@@ -342,6 +366,32 @@ def _set_magnetism_status(token: str, **columns) -> None:
         conn.execute(
             f"UPDATE magnetism_scans SET {assignments} WHERE token = ?",
             values,
+        )
+        conn.commit()
+
+
+def _fail_magnetism_scan_with_payload(token: str, reason: str, payload: dict) -> None:
+    import json
+
+    with sqlite3.connect(str(_db_path())) as conn:
+        conn.execute(
+            """
+            UPDATE magnetism_scans
+            SET raw_payload = ?,
+                status = 'failed',
+                phase = 'failed',
+                phase_updated_at = ?,
+                completed_at = ?,
+                error_message = ?
+            WHERE token = ?
+            """,
+            (
+                json.dumps(payload, ensure_ascii=False),
+                _now(),
+                _now(),
+                reason[:500],
+                token,
+            ),
         )
         conn.commit()
 

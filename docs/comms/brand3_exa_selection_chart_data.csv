@@ -1,0 +1,16 @@
+metric,exa,tavily,unit,chart_group,source
+provider_score,70.0101,31.5,points,score,out/search_enrichment_lab/20260604T084043Z/summary.json
+eligible_sources,24,19,count,quality,out/search_enrichment_lab/20260604T084043Z/summary.json
+ineligible_sources,6,11,count,quality,out/search_enrichment_lab/20260604T084043Z/summary.json
+owned_hits,8,4,count,source_class,out/search_enrichment_lab/20260604T084043Z/summary.json
+external_hits,20,21,count,source_class,out/search_enrichment_lab/20260604T084043Z/summary.json
+noise_hits,0,4,count,risk,out/search_enrichment_lab/20260604T084043Z/summary.json
+human_review_count,2,5,count,risk,out/search_enrichment_lab/20260604T084043Z/summary.json
+average_latency_ms,989.9,4099.3,ms,performance,out/search_enrichment_lab/20260604T084043Z/summary.json
+consensus_hits,2,2,count,consensus,out/search_enrichment_lab/20260604T084043Z/summary.json
+marketplace_hits,0,1,count,risk,out/search_enrichment_lab/20260604T084043Z/summary.json
+related_unresolved_hits,2,0,count,risk,out/search_enrichment_lab/20260604T084043Z/summary.json
+errors,0,0,count,reliability,out/search_enrichment_lab/20260604T084043Z/summary.json
+observed_sources,30,30,count,sample,out/search_enrichment_lab/20260604T084043Z/summary.json
+case_count,5,5,count,sample,out/search_enrichment_lab/20260604T084043Z/summary.json
+

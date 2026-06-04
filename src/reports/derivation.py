@@ -435,6 +435,9 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         readiness,
         context_readiness=context_readiness,
     )
+    persisted_readiness = ((snapshot.get("run") or {}).get("audit") or {}).get("report_readiness")
+    if isinstance(persisted_readiness, dict):
+        readiness = persisted_readiness
     cost_policy = _cost_policy_from_snapshot(snapshot)
     dimension_status_counts = dimension_status_counts_from_report_dimensions(dimensions_ctx)
 
@@ -577,7 +580,9 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         "ui": {
             "theme": theme,
             "term_lines": term_lines,
-            "show_readiness_diagnostic": False,
+            "show_readiness_diagnostic": (
+                readiness.get("report_mode") != "publishable_brand_report"
+            ),
         },
     }
 
@@ -715,6 +720,11 @@ def _dimension_presentation_policy(
 def build_report_context(snapshot: dict, theme: str = "dark") -> dict:
     """Backward-compatible wrapper used by existing tests and callers."""
     return build_report_context_from_base(build_report_base(snapshot, theme=theme))
+
+
+def build_report_readiness_from_snapshot(snapshot: dict) -> dict:
+    """Return the report readiness contract for a run snapshot."""
+    return build_report_base(snapshot).get("evaluation", {}).get("readiness") or {}
 
 
 def _editorial_policy_from_readiness(readiness: dict) -> dict:

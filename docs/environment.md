@@ -10,6 +10,14 @@ Use `.env.example` as the committed template and `.env` as your local private fi
 cp .env.example .env
 ```
 
+Put real provider keys only in:
+
+```text
+/Users/gsus/Antigravity/Brand3/brand3/.env
+```
+
+Do not paste real keys in chat, docs, tests, screenshots, commits, PR descriptions, or `.env.example`.
+
 Rules:
 
 - Commit `.env.example`.
@@ -37,6 +45,42 @@ Fallback LLM key names accepted by `src/config.py`:
 | `OPENROUTER_API_KEY` | Fallback LLM provider key | Yes |
 
 `BRAND3_LLM_API_KEY` takes precedence over the fallback names.
+
+## Search Enrichment Lab Provider Keys
+
+These variables are for isolated Lab/bake-off work only. They should not be wired into canonical Brand3 scoring, Brand Audit, Magnetism, Research Pack, public routes, or production API without an explicit promotion decision.
+
+### Services With Existing Brand3 Key Slots
+
+These are already part of the current Brand3 provider-backed setup:
+
+| Variable | Provider | Current Role | Secret |
+| --- | --- | --- | --- |
+| `FIRECRAWL_API_KEY` | Firecrawl | Current web scrape/social/optional screenshot provider | Yes |
+| `EXA_API_KEY` | Exa | Current search, mentions, competitor/context discovery provider | Yes |
+| `BRAND3_LLM_API_KEY` | OpenAI-compatible LLM provider | Current scoring/report narrative/vision LLM key | Yes |
+
+### New Lab Provider Key Slots
+
+| Variable | Provider | Intended Lab Role | Secret |
+| --- | --- | --- | --- |
+| `PARALLEL_API_KEY` | Parallel | Shadow search/research comparison; already used by the Parallel shadow collector and bake-off script | Yes |
+| `TAVILY_API_KEY` | Tavily | Search/extract/crawl/map comparison for agent-oriented research | Yes |
+| `LINKUP_API_KEY` | Linkup | AI/RAG-oriented search and extraction comparison | Yes |
+| `BRAVE_SEARCH_API_KEY` | Brave Search API | Independent web index and LLM-context search comparison | Yes |
+| `SERPAPI_API_KEY` | SerpApi | SERP fallback/comparison for Google-like market visibility | Yes |
+| `PERPLEXITY_API_KEY` | Perplexity Sonar | Cited answer/source discovery comparison; summaries must not be treated as final evidence | Yes |
+| `CONTEXT_DEV_API_KEY` | Context.dev | Existing experimental visual/context enrichment scripts | Yes |
+| `TINYFISH_API_KEY` | Tinyfish | Existing experimental fetch/probe scripts | Yes |
+
+Lab outputs should normalize provider responses into source observations and write only to experimental artifacts or explicitly experimental database namespaces/tables.
+
+Provider selection rule:
+
+- If a Lab provider key is present in `.env`, that provider is eligible for Lab evaluation.
+- If a Lab provider key is absent or blank, treat that provider as intentionally discarded for the current Lab cycle, not as a setup error.
+- Context.dev is strategically interesting for identity discovery and Visual Signature enrichment, but should remain inactive unless credits/cost make testing viable.
+- Google Search direct integrations and Gemini Deep Research are intentionally excluded from the Search Enrichment Lab for now. This does not remove Gemini as the configured LLM provider for analysis/narrative paths.
 
 ## Optional LLM And Vision Configuration
 

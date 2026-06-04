@@ -176,11 +176,17 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("/api/v1/scanner", payload["paths"])
         self.assertIn("/api/v1/scanner/{scan_id}/result", payload["paths"])
         self.assertIn("ScannerCreateRequest", payload["components"]["schemas"])
+        self.assertIn("ScannerReadiness", payload["components"]["schemas"])
         self.assertIn("ScannerApiKey", payload["components"]["securitySchemes"])
         self.assertEqual(payload["paths"]["/api/v1/scanner"]["post"]["security"], [{"ScannerApiKey": []}])
         create_props = payload["components"]["schemas"]["ScannerCreateRequest"]["properties"]
         self.assertNotIn("mode", create_props)
         self.assertNotIn("include_audit", create_props)
+        status_props = payload["components"]["schemas"]["ScannerStatus"]["properties"]
+        self.assertEqual(
+            status_props["scanner_readiness"],
+            {"$ref": "#/components/schemas/ScannerReadiness"},
+        )
         error_schema = payload["components"]["schemas"]["Error"]
         self.assertIn("error", error_schema["required"])
         self.assertIn("409", payload["paths"]["/api/v1/scanner/{scan_id}/result"]["get"]["responses"])
@@ -308,6 +314,61 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertEqual(en_resp.status_code, 200)
         self.assertIn("Brand history", en_resp.text)
         self.assertNotIn('aria-label="Brand3 primary navigation"', en_resp.text)
+
+    def test_non_publishable_brand_audit_ready_but_not_public(self):
+        from web.workers.queue import set_run_analysis_override
+
+        def _technical_engine(url: str) -> dict:
+            with sqlite3.connect(self.db) as conn:
+                cur = conn.execute(
+                    "INSERT INTO brands (brand_name, url, domain, created_at, "
+                    "last_seen_at) VALUES (?, ?, ?, datetime('now'), datetime('now'))",
+                    ("Technical Only", url, "technical-only.test"),
+                )
+                brand_id = int(cur.lastrowid)
+                cur = conn.execute(
+                    "INSERT INTO runs (brand_id, brand_name, url, started_at, "
+                    "completed_at, use_llm, use_social, composite_score) "
+                    "VALUES (?, ?, ?, datetime('now'), datetime('now'), 1, 1, ?)",
+                    (brand_id, "Technical Only", url, 42.0),
+                )
+                run_id = int(cur.lastrowid)
+                conn.commit()
+            return {
+                "run_id": run_id,
+                "audit": {
+                    "report_readiness": {
+                        "report_mode": "technical_diagnostic",
+                        "blockers": ["core_dimensions_not_evaluable"],
+                    }
+                },
+            }
+
+        set_run_analysis_override(_technical_engine)
+        response = self.client.post(
+            "/analyze",
+            data={"url": "https://technical-only.test"},
+            follow_redirects=False,
+        )
+        token = response.headers["location"].split("/")[2]
+
+        row = None
+        for _ in range(30):
+            with sqlite3.connect(self.db) as conn:
+                row = conn.execute(
+                    "SELECT status, is_public FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()
+            if row and row[0] == "ready":
+                break
+            time.sleep(0.2)
+
+        self.assertEqual(row[0], "ready")
+        self.assertEqual(row[1], 0)
+        reports = self.client.get("/reports?q=technical-only")
+        self.assertIn("0 total", reports.text)
+        self.assertIn("ningún análisis coincide", reports.text)
+        self.assertNotIn("/r/" + token, reports.text)
 
     def test_report_uses_cached_spanish_translation_without_rerunning_audit(self):
         token, run_id = self._create_ready_run()

@@ -707,7 +707,14 @@ class MagnetismScannerTests(unittest.TestCase):
             }
         )
         payload["source_run_id"] = run_id
-        set_run_magnetism_override(lambda job, progress_cb=None: payload)
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        set_run_magnetism_override(
+            lambda job, progress_cb=None: json.loads(json.dumps(payload))
+        )
 
         queued = self.client.post(
             "/api/v1/scanner",
@@ -739,14 +746,23 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(status.status_code, 200)
         self.assertTrue(status.json()["result_available"])
+        self.assertEqual(status.json()["scanner_readiness"]["status"], "publishable")
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json()["audit"]["source_run_id"], run_id)
+        self.assertEqual(
+            result.json()["result_metadata"]["scanner_readiness"]["status"],
+            "publishable",
+        )
         self.assertIn("tldr_brand3", result.json())
         self.assertIn("scanner_result_v1", result.text)
         self.assertEqual(evidence.status_code, 200)
         self.assertIn("research_pack_source", evidence.text)
         self.assertEqual(methodology.status_code, 200)
         self.assertIn("result_metadata", methodology.json()["methodology"])
+        self.assertEqual(
+            methodology.json()["methodology"]["result_metadata"]["scanner_readiness"]["status"],
+            "publishable",
+        )
         self.assertEqual(audit.status_code, 200)
         self.assertTrue(audit.json()["available"])
         self.assertIn("API Linked has an attached audit snapshot.", audit.text)
@@ -1627,6 +1643,116 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(payload["source_run_id"], 77)
         self.assertEqual(captured_jobs[0]["input_type"], "url")
         self.assertNotIn("deprecation", payload)
+
+    @unittest.mock.patch("web.routes.magnetism_scanner.validate_url")
+    def test_web_route_url_analysis_blocks_degraded_canonical_tldr(
+        self,
+        mock_validate_url,
+    ):
+        from web.workers.queue import set_run_magnetism_override
+
+        def fake_degraded_magnetism(job: dict) -> dict:
+            return {
+                "brand_name": "Degraded Canonical",
+                "url": "https://example.com",
+                "magnetism_score": 0,
+                "coherence_score": 36,
+                "quadrant": "pending",
+                "source": "brand_audit_snapshot",
+                "extraction_mode": "canonical_snapshot",
+                "source_run_id": 77,
+                "tldr_generation_mode": "legacy_fallback_no_llm",
+                "warnings": ["Analyst Pass disabled because no LLM API key is available."],
+                "tldr_brand3": {},
+            }
+
+        set_run_magnetism_override(fake_degraded_magnetism)
+        mock_validate_url.return_value = (True, "https://example.com")
+
+        self._unlock_team_cookie()
+        response = self.client.post(
+            "/magnetism-scanner/analyze",
+            data={"url": "https://example.com", "manual_text": ""},
+            follow_redirects=False,
+        )
+
+        self.assertEqual(response.status_code, 303)
+        token = response.headers["location"].split("/")[2]
+
+        from web.storage import get_magnetism_scan_by_token
+
+        scan = None
+        for _ in range(30):
+            scan = get_magnetism_scan_by_token(token)
+            if scan and scan["status"] == "failed":
+                break
+            time.sleep(0.2)
+
+        self.assertEqual(scan["status"], "failed")
+        self.assertEqual(
+            scan["error_message"],
+            "failed:canonical_tldr_degraded:no_llm",
+        )
+        payload = json.loads(scan["raw_payload"])
+        self.assertEqual(payload["tldr_generation_mode"], "legacy_fallback_no_llm")
+        self.assertEqual(payload["scanner_readiness"]["status"], "failed")
+        self.assertEqual(
+            payload["scanner_readiness"]["reason_codes"],
+            ["canonical_tldr_degraded:no_llm"],
+        )
+
+    def test_direct_scan_insert_marks_degraded_canonical_payload_failed(self):
+        from web.storage import get_magnetism_scan, insert_magnetism_scan
+
+        payload = {
+            "brand_name": "Direct Degraded",
+            "url": "https://example.com",
+            "magnetism_score": 0,
+            "coherence_score": 36,
+            "quadrant": "pending",
+            "source": "brand_audit_snapshot",
+            "source_run_id": 123,
+            "tldr_generation_mode": "legacy_fallback_llm_error",
+            "tldr_brand3": {},
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=123,
+        )
+
+        row = get_magnetism_scan(scan_id)
+        self.assertEqual(row["status"], "failed")
+        self.assertEqual(row["error_message"], "failed:canonical_tldr_degraded:llm_error")
+        stored = json.loads(row["raw_payload"])
+        self.assertEqual(stored["scanner_readiness"]["status"], "failed")
+
+    def test_direct_manual_scan_insert_marks_payload_debug_only(self):
+        from web.storage import get_magnetism_scan, insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="Manual evidence for a debug-only scanner result.",
+            brand_name="Manual Debug",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        row = get_magnetism_scan(scan_id)
+        self.assertEqual(row["status"], "ready")
+        stored = json.loads(row["raw_payload"])
+        self.assertEqual(stored["scanner_readiness"]["status"], "debug_only")
+        self.assertFalse(stored["scanner_readiness"]["publishable"])
 
     def test_research_pack_tldr_flag_on_uses_analyst_pass_and_persists_payload(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan

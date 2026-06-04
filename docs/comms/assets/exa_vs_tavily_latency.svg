@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+<rect x="0.0" y="0.0" width="1200.0" height="675.0" rx="0" fill="#f7f4ee"/>
+<text x="72.0" y="86.0" fill="#6f6a61" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600">FLOC* / Brand3 Search Enrichment Lab</text>
+<text x="72.0" y="142.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="750">Exa responde mas rapido</text>
+<text x="72.0" y="184.0" fill="#6f6a61" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="500">Latencia media observada</text>
+<text x="72.0" y="320.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="750">EXA</text>
+<rect x="280.0" y="275.0" width="760.0" height="68.0" rx="6" fill="#ebe5d9"/>
+<rect x="280.0" y="275.0" width="183.5" height="68.0" rx="6" fill="#166bff"/>
+<text x="1068.0" y="321.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="750">989.9 ms</text>
+<text x="72.0" y="442.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="750">TAVILY</text>
+<rect x="280.0" y="397.0" width="760.0" height="68.0" rx="6" fill="#ebe5d9"/>
+<rect x="280.0" y="397.0" width="760.0" height="68.0" rx="6" fill="#ea5b2a"/>
+<text x="1068.0" y="443.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="750">4.099.3 ms</text>
+<text x="72.0" y="560.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="650">La latencia no decide sola, pero importa en un pipeline con multiples consultas por entidad.</text>
+<text x="72.0" y="625.0" fill="#6f6a61" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Muestra: 5 casos, 30 observaciones por proveedor. Score experimental, no benchmark definitivo.</text>
+</svg>

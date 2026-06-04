@@ -1,0 +1,83 @@
+{
+  "title": "Search Enrichment Lab: Exa vs Tavily",
+  "source_run": "out/search_enrichment_lab/20260604T084043Z/summary.json",
+  "generated_for": "FLOC* communications: LinkedIn, X and internal graphics",
+  "status": "lab_evidence_not_production_benchmark",
+  "sample": {
+    "case_count": 5,
+    "providers": ["exa", "tavily"],
+    "observations_per_provider": 30,
+    "total_observations": 60,
+    "cases": ["LangChain", "ChatGPT", "Base", "Bokeroon", "Obscure Thing"]
+  },
+  "providers": {
+    "exa": {
+      "provider_score": 70.0101,
+      "eligible_sources": 24,
+      "ineligible_sources": 6,
+      "owned_hits": 8,
+      "external_hits": 20,
+      "noise_hits": 0,
+      "human_review_count": 2,
+      "average_latency_ms": 989.9,
+      "consensus_hits": 2,
+      "marketplace_hits": 0,
+      "related_unresolved_hits": 2,
+      "errors": 0
+    },
+    "tavily": {
+      "provider_score": 31.5,
+      "eligible_sources": 19,
+      "ineligible_sources": 11,
+      "owned_hits": 4,
+      "external_hits": 21,
+      "noise_hits": 4,
+      "human_review_count": 5,
+      "average_latency_ms": 4099.3,
+      "consensus_hits": 2,
+      "marketplace_hits": 1,
+      "related_unresolved_hits": 0,
+      "errors": 0
+    }
+  },
+  "chart_suggestions": [
+    {
+      "id": "provider_score",
+      "type": "horizontal_bar",
+      "metrics": ["provider_score"],
+      "caption": "Exa funciona mejor como baseline del Lab: mas evidencia util con menos penalizaciones operativas."
+    },
+    {
+      "id": "eligible_vs_ineligible",
+      "type": "stacked_bar",
+      "metrics": ["eligible_sources", "ineligible_sources"],
+      "caption": "La diferencia no esta en encontrar enlaces, sino en cuantos pueden entrar al pipeline sin contaminar identidad."
+    },
+    {
+      "id": "risk_signals",
+      "type": "grouped_bar",
+      "metrics": ["human_review_count", "noise_hits", "marketplace_hits", "related_unresolved_hits"],
+      "caption": "El proveedor base debe reducir trabajo manual y ambiguedad, no ampliarlos."
+    },
+    {
+      "id": "latency",
+      "type": "bar",
+      "metrics": ["average_latency_ms"],
+      "caption": "La latencia importa cuando el analisis requiere varias consultas por entidad."
+    },
+    {
+      "id": "source_class_composition",
+      "type": "stacked_bar",
+      "metrics": ["external_hits", "owned_hits", "noise_hits", "marketplace_hits", "related_unresolved_hits"],
+      "caption": "Para identidad, una fuente owned bien clasificada puede valer mas que varios resultados externos ambiguos."
+    }
+  ],
+  "method_note": "Score experimental: eligible*3 + consensus*2 + owned*1.25 - ineligible*1.5 - review - marketplace - unresolved*2 - noise*2 - errors*3 - latency_penalty.",
+  "communication_guardrails": [
+    "No presentar como benchmark definitivo.",
+    "Indicar siempre que es una muestra de Lab: 5 casos, 30 observaciones por proveedor.",
+    "No afirmar que Tavily queda descartado globalmente.",
+    "Presentar Exa como baseline provisional sujeto a mas evidencia.",
+    "No convertir la decision en integracion productiva hasta medir coste y mejora final."
+  ]
+}

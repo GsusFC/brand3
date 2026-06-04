@@ -193,6 +193,13 @@ class BrandSourceObservation:
     evidence_eligibility: EvidenceEligibility = "ineligible"
     reason: str = ""
     errors: list[str] = field(default_factory=list)
+    query_intent: str = ""
+    source_class: str = ""
+    relation_to_entity: str = ""
+    requires_human_review: bool = False
+    cost_estimate: float | None = None
+    latency_ms: int = 0
+    diagnostics: dict[str, object] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, object]:
         return asdict(self)
@@ -1114,6 +1121,12 @@ def _source_observation_metrics(observations: list[BrandSourceObservation]) -> d
         if observation.status == "observed" and observation.evidence_eligibility in {"eligible", "limited"}
     ]
     confidence_values = [observation.confidence for observation in observations if observation.confidence > 0]
+    latency_values = [observation.latency_ms for observation in observations if observation.latency_ms > 0]
+    cost_values = [observation.cost_estimate for observation in observations if observation.cost_estimate is not None]
+    source_class_counts: dict[str, int] = {}
+    for observation in observations:
+        source_class = observation.source_class or "unknown"
+        source_class_counts[source_class] = source_class_counts.get(source_class, 0) + 1
     return {
         "observation_count": len(observations),
         "observed_count": sum(1 for item in observations if item.status == "observed"),
@@ -1121,8 +1134,13 @@ def _source_observation_metrics(observations: list[BrandSourceObservation]) -> d
         "limited_count": sum(1 for item in observations if item.evidence_eligibility == "limited"),
         "ineligible_count": sum(1 for item in observations if item.evidence_eligibility == "ineligible"),
         "error_count": sum(1 for item in observations if item.status == "error"),
+        "human_review_count": sum(1 for item in observations if item.requires_human_review),
         "covered_channels": _unique([item.channel for item in eligible_observations]),
         "average_confidence": round(sum(confidence_values) / len(confidence_values), 4) if confidence_values else 0.0,
+        "average_latency_ms": round(sum(latency_values) / len(latency_values), 1) if latency_values else 0.0,
+        "total_cost_estimate": round(sum(cost_values), 8) if cost_values else 0.0,
+        "average_cost_estimate": round(sum(cost_values) / len(cost_values), 8) if cost_values else 0.0,
+        "source_class_counts": dict(sorted(source_class_counts.items())),
     }
 
 

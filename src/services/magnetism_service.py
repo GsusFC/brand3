@@ -10,7 +10,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import Any
 
-from src.config import BRAND3_DB_PATH
+from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.services.brand_service import run as run_brand_audit
@@ -28,6 +28,7 @@ def run_magnetism_from_url(
     db_path: str = BRAND3_DB_PATH,
 ) -> dict[str, Any]:
     """Run canonical Magnetism for a URL via a persisted Brand Audit snapshot."""
+    llm = _effective_llm(llm)
     audit_result = audit_runner(url)
     run_id = audit_result.get("run_id") if isinstance(audit_result, dict) else None
     if not run_id:
@@ -44,6 +45,7 @@ def run_magnetism_from_audit_run(
     db_path: str = BRAND3_DB_PATH,
 ) -> dict[str, Any]:
     """Run Magnetism from an existing Brand Audit run snapshot."""
+    llm = _effective_llm(llm)
     snapshot = load_brand_audit_snapshot(run_id, db_path=db_path)
     return run_magnetism_from_audit_snapshot(snapshot, llm=llm)
 
@@ -54,7 +56,7 @@ def run_magnetism_from_audit_snapshot(
     llm: LLMAnalyzer | None = None,
 ) -> dict[str, Any]:
     """Run Magnetism from an already loaded Brand Audit snapshot."""
-    return MagnetismExtractor(llm=llm).extract_from_audit_snapshot(snapshot)
+    return MagnetismExtractor(llm=_effective_llm(llm)).extract_from_audit_snapshot(snapshot)
 
 
 def run_legacy_manual_magnetism(
@@ -63,7 +65,17 @@ def run_legacy_manual_magnetism(
     llm: LLMAnalyzer | None = None,
 ) -> dict[str, Any]:
     """Run legacy direct Magnetism for pasted evidence without public acquisition."""
-    return MagnetismExtractor(llm=llm).extract(url=None, manual_text=manual_text or None)
+    return MagnetismExtractor(llm=_effective_llm(llm)).extract(url=None, manual_text=manual_text or None)
+
+
+def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
+    """Use the configured Magnetism analyst LLM unless the caller supplied one."""
+    if llm is not None:
+        return llm
+    candidate = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
+    if getattr(candidate, "api_key", None):
+        return candidate
+    return None
 
 
 def load_brand_audit_snapshot(

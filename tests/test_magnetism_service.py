@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from src.services.magnetism_service import run_magnetism_from_url
+from src.services.magnetism_service import run_magnetism_from_audit_snapshot, run_magnetism_from_url
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -64,3 +64,29 @@ def test_run_magnetism_from_url_uses_brand_audit_snapshot(tmp_path: Path):
     assert "deprecation" not in result
     assert result["evidence_packet_summary"]["source"] == "brand_audit_snapshot"
     assert result["tldr_brand3"]["value_proposition"]["detected"] is True
+
+
+def test_run_magnetism_from_audit_snapshot_builds_default_llm_when_available(monkeypatch) -> None:
+    captured = {}
+
+    class FakeLLM:
+        def __init__(self, model=None):
+            self.api_key = "test-key"
+            self.model = model
+
+    class FakeExtractor:
+        def __init__(self, llm=None):
+            captured["llm"] = llm
+
+        def extract_from_audit_snapshot(self, snapshot):
+            return {"source": "brand_audit_snapshot", "snapshot": snapshot}
+
+    monkeypatch.setattr("src.services.magnetism_service.LLMAnalyzer", FakeLLM)
+    monkeypatch.setattr("src.services.magnetism_service.MagnetismExtractor", FakeExtractor)
+    monkeypatch.setattr("src.services.magnetism_service.LLM_PREMIUM_MODEL", "premium-model")
+
+    result = run_magnetism_from_audit_snapshot({"run": {"id": 1}})
+
+    assert result["source"] == "brand_audit_snapshot"
+    assert captured["llm"].api_key == "test-key"
+    assert captured["llm"].model == "premium-model"

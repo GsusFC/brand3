@@ -408,10 +408,26 @@ class ReportRendererTests(unittest.TestCase):
         self.assertIn("example.com/stored", html)
 
     def test_readiness_diagnostic_does_not_render_by_default(self):
-        html = ReportRenderer().render(_sample_snapshot(), theme="dark")
+        snapshot = _sample_snapshot()
+        snapshot["run"]["audit"]["report_readiness"] = {
+            "report_mode": "publishable_brand_report",
+            "blockers": [],
+            "warnings": [],
+            "dimension_states": {},
+            "diagnostic_summary": "Publishable fixture.",
+        }
+
+        html = ReportRenderer().render(snapshot, theme="dark")
 
         self.assertNotIn("Report readiness", html)
         self.assertNotIn("Presentation policy", html)
+
+    def test_readiness_diagnostic_renders_automatically_for_non_publishable_report(self):
+        html = ReportRenderer().render(_sample_snapshot(), theme="dark")
+
+        self.assertIn("Report readiness", html)
+        self.assertIn("Insufficient evidence", html)
+        self.assertIn("diagnostic-summary", html)
 
     def test_readiness_diagnostic_renders_when_flag_enabled(self):
         ctx = build_report_context(_sample_snapshot(), theme="dark")

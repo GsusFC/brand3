@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+<rect x="0.0" y="0.0" width="1200.0" height="675.0" rx="0" fill="#f7f4ee"/>
+<text x="72.0" y="86.0" fill="#6f6a61" font-family="Inter, Arial, sans-serif" font-size="20" font-weight="600">FLOC* / Brand3 Search Enrichment Lab</text>
+<text x="72.0" y="142.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="750">Mas evidencia util, menos descarte</text>
+<text x="72.0" y="184.0" fill="#6f6a61" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="500">Fuentes elegibles frente a no elegibles</text>
+<rect x="72.0" y="215.0" width="22.0" height="22.0" rx="3" fill="#228b5a"/>
+<text x="108.0" y="234.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="600">Elegibles</text>
+<rect x="250.0" y="215.0" width="22.0" height="22.0" rx="3" fill="#c44737"/>
+<text x="286.0" y="234.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="21" font-weight="600">No elegibles</text>
+<text x="72.0" y="327.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="750">EXA</text>
+<rect x="300.0" y="275.0" width="576.0" height="82.0" rx="6" fill="#228b5a"/>
+<rect x="876.0" y="275.0" width="144.0" height="82.0" rx="6" fill="#c44737"/>
+<text x="324.0" y="327.0" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="750">24/30</text>
+<text x="1048.0" y="327.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">6 fuera</text>
+<text x="72.0" y="463.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="30" font-weight="750">TAVILY</text>
+<rect x="300.0" y="411.0" width="456.0" height="82.0" rx="6" fill="#228b5a"/>
+<rect x="756.0" y="411.0" width="264.0" height="82.0" rx="6" fill="#c44737"/>
+<text x="324.0" y="463.0" fill="#ffffff" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="750">19/30</text>
+<text x="1048.0" y="463.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700">11 fuera</text>
+<text x="72.0" y="560.0" fill="#151515" font-family="Inter, Arial, sans-serif" font-size="25" font-weight="650">La diferencia critica es cuantos resultados pueden entrar al pipeline sin contaminar identidad.</text>
+<text x="72.0" y="625.0" fill="#6f6a61" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="500">Muestra: 5 casos, 30 observaciones por proveedor. Score experimental, no benchmark definitivo.</text>
+</svg>

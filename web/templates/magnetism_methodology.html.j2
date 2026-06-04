@@ -49,6 +49,14 @@
       <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.stale_against_current_pipeline }}</div>
       <strong class="{% if model.methodology.result_metadata.stale_against_current_pipeline %}hl-warn{% else %}hl-ok{% endif %}" style="font-family:var(--font-ui); font-size:16px;">{{ model.methodology.result_metadata.stale_against_current_pipeline }}</strong>
     </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.scanner_readiness }}</div>
+      {% set readiness = model.methodology.result_metadata.scanner_readiness %}
+      <strong class="{% if readiness.publishable %}hl-ok{% else %}hl-warn{% endif %}" style="font-family:var(--font-ui); font-size:16px;">{{ readiness.status }}</strong>
+      {% if readiness.reason_codes %}
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px; margin-top:6px;">{{ readiness.reason_codes | join(', ') }}</div>
+      {% endif %}
+    </article>
   </div>
   <div style="border:1px solid var(--border); background:var(--surface); padding:14px; margin-top:12px;">
     <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.generated_with }}</strong>

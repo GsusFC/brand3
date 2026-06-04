@@ -31,6 +31,7 @@ from src.services.brand_service import (
     _llm_model_roles_payload,
     _llm_provider_payload,
     _public_presence_inventory_summary,
+    _persist_report_readiness,
     _recover_owned_web_content,
     _run_visual_signature_shadow,
     _screenshot_capture_diagnostic,
@@ -53,6 +54,60 @@ class _VisualSignatureStore:
         if self.should_fail:
             raise RuntimeError("fixture persistence failure")
         self.saved.append((run_id, payload))
+
+
+class BrandAuditReadinessPersistenceTests(unittest.TestCase):
+    def test_persist_report_readiness_updates_run_audit(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            try:
+                brand_id = store.upsert_brand("Readiness Brand", "https://readiness.test")
+                run_id = store.create_run(
+                    brand_id,
+                    "Readiness Brand",
+                    "https://readiness.test",
+                    use_llm=True,
+                    use_social=False,
+                )
+                store.save_run_audit(
+                    run_id,
+                    {
+                        "scoring_state_fingerprint": "readiness123",
+                        "executive_analysis_v2": {
+                            "executive_summary": "Readable executive summary.",
+                        },
+                    },
+                )
+                store.finalize_run(
+                    run_id=run_id,
+                    composite_score=72.0,
+                    llm_used=False,
+                    social_scraped=False,
+                    result_path="/tmp/readiness.json",
+                    summary="summary",
+                )
+
+                readiness = _persist_report_readiness(
+                    store,
+                    run_id,
+                    {
+                        "scoring_state_fingerprint": "readiness123",
+                        "executive_analysis_v2": {
+                            "executive_summary": "Readable executive summary.",
+                        },
+                    },
+                )
+                snapshot = store.get_run_snapshot(run_id)
+            finally:
+                store.close()
+
+        self.assertIsNotNone(readiness)
+        self.assertEqual(readiness["report_mode"], "insufficient_evidence")
+        self.assertEqual(
+            snapshot["run"]["audit"]["report_readiness"]["report_mode"],
+            "insufficient_evidence",
+        )
 
 
 class VisualSignatureShadowRunTests(unittest.TestCase):

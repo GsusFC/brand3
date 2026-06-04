@@ -8,6 +8,7 @@ import unittest
 from src.reports.derivation import (
     Evidence,
     build_report_context,
+    build_report_readiness_from_snapshot,
     collect_evidences,
     derive_data_quality,
     derive_verdict,
@@ -564,6 +565,25 @@ class BuildReportReadinessContextTests(unittest.TestCase):
         self.assertIn("editorial_policy", ctx)
         self.assertIn("presentation_policy", ctx)
 
+    def test_persisted_report_readiness_is_preserved(self):
+        snapshot = _publishable_snapshot()
+        snapshot["run"].setdefault("audit", {})["report_readiness"] = {
+            "report_mode": "technical_diagnostic",
+            "blockers": ["persisted_gate"],
+            "warnings": [],
+            "dimension_states": {},
+            "diagnostic_summary": "Persisted readiness wins.",
+        }
+
+        ctx = build_report_context(snapshot, theme="dark")
+
+        self.assertEqual(ctx["readiness"]["report_mode"], "technical_diagnostic")
+        self.assertEqual(ctx["readiness"]["blockers"], ["persisted_gate"])
+        self.assertEqual(
+            build_report_readiness_from_snapshot(snapshot)["diagnostic_summary"],
+            "Persisted readiness wins.",
+        )
+
     def test_readiness_does_not_change_scores(self):
         snapshot = _publishable_snapshot()
         ctx = build_report_context(snapshot, theme="dark")
@@ -778,6 +798,7 @@ class BuildReportReadinessContextTests(unittest.TestCase):
 
         self.assertIn("diagnostic_summary", ctx["readiness"])
         self.assertIn("enough evidence and confidence", ctx["readiness"]["diagnostic_summary"])
+        self.assertFalse(ctx["ui"]["show_readiness_diagnostic"])
 
     def test_technical_readiness_has_plain_language_diagnostic_summary(self):
         snapshot = _publishable_snapshot()
@@ -797,6 +818,7 @@ class BuildReportReadinessContextTests(unittest.TestCase):
         self.assertEqual(ctx["readiness"]["report_mode"], REPORT_MODE_TECHNICAL)
         self.assertIn("Technical diagnostic", ctx["readiness"]["diagnostic_summary"])
         self.assertIn("technical-only dimensions", ctx["readiness"]["diagnostic_summary"])
+        self.assertTrue(ctx["ui"]["show_readiness_diagnostic"])
 
     def test_insufficient_readiness_has_diagnostic_summary(self):
         ctx = build_report_context(_legacy_score_only_snapshot(), theme="dark")

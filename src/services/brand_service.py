@@ -477,6 +477,18 @@ def _build_content_web(
     }
 
 
+def _web_content_changed(original: WebData | None, effective: WebData | None) -> bool:
+    if not effective:
+        return False
+    if not original:
+        return True
+    return (
+        (original.markdown_content or "") != (effective.markdown_content or "")
+        or list(original.owned_fallback_urls or []) != list(effective.owned_fallback_urls or [])
+        or (original.content_source or "") != (effective.content_source or "")
+    )
+
+
 def _public_presence_inventory_summary(
     *,
     brand_name: str,
@@ -1929,9 +1941,16 @@ def run(
             _store_safely(store, "entity research packet save", lambda: store.save_raw_input(run_id, "entity_research_packet", entity_research_packet))
         discovery_evidence_preview = _to_jsonable(build_discovery_evidence_preview(discovery_search_plan, exa_data=exa_data, web_data=content_web or web_data, context_data=context_data))
         discovery_enrichment = build_discovery_enrichment(discovery_search_plan, discovery_evidence_preview, exa_data=exa_data, web_data=content_web or web_data, web_collector=web_collector, exa_collector=raw_inputs.exa_collector, entity_research_packet=entity_research_packet)
+        raw_web_data = web_data
         exa_data = discovery_enrichment.exa_data
         content_web = discovery_enrichment.web_data or content_web
         web_data = discovery_enrichment.web_data or web_data
+        if run_id and _web_content_changed(raw_web_data, content_web):
+            _store_safely(
+                store,
+                "effective web input save",
+                lambda: store.save_raw_input(run_id, "web", content_web),
+            )
         discovery_enrichment_payload = discovery_enrichment.payload
         acquisition_provenance = _acquisition_provenance_summary(
             brand_name=brand_name,

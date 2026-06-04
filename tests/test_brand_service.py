@@ -803,6 +803,64 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         )
         self.assertEqual(recovered.content_source, "owned_fallback")
 
+    def test_run_persists_effective_owned_fallback_web_input(self):
+        with TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            context = ContextData(
+                url="https://example.com",
+                robots_found=True,
+                sitemap_found=True,
+                key_pages={"about": True, "products": True},
+                coverage=1.0,
+                confidence=1.0,
+            )
+            homepage = WebData(
+                url="https://example.com",
+                title="Example",
+                markdown_content="Short homepage with a real headline. " * 10,
+            )
+            about = WebData(
+                url="https://example.com/about",
+                title="About",
+                markdown_content="About page explains the company mission and proof. " * 12,
+            )
+            product = WebData(
+                url="https://example.com/products",
+                title="Products",
+                markdown_content="Product page explains the offer, audience, and outcome. " * 12,
+            )
+            exa = ExaData(brand_name="Example")
+
+            with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):
+                with patch("src.services.brand_service.ContextCollector.scan", return_value=context):
+                    with patch("src.services.brand_service.WebCollector.scrape", return_value=homepage):
+                        with patch("src.services.brand_service.WebCollector.scrape_multiple", return_value=[about, product]):
+                            with patch("src.services.brand_service.ExaCollector.collect_brand_data", return_value=exa):
+                                result = brand_service.run(
+                                    "https://example.com",
+                                    "Example",
+                                    use_llm=False,
+                                    use_social=False,
+                                    use_competitors=False,
+                                    skip_visual_analysis=True,
+                                    refresh=True,
+                                )
+
+            store = SQLiteStore(str(db_path))
+            try:
+                snapshot = store.get_run_snapshot(result["run_id"])
+            finally:
+                store.close()
+
+        web_inputs = [item["payload"] for item in snapshot["raw_inputs"] if item["source"] == "web"]
+        self.assertEqual(web_inputs[-1]["content_source"], "owned_fallback")
+        self.assertEqual(
+            web_inputs[-1]["owned_fallback_urls"],
+            ["https://example.com/about", "https://example.com/products"],
+        )
+        self.assertIn("Short homepage with a real headline", web_inputs[-1]["markdown_content"])
+        self.assertIn("Product page explains the offer", web_inputs[-1]["markdown_content"])
+
     def test_owned_fallback_uses_same_scheme_and_host_only(self):
         initial = WebData(url="https://www.example.com/start", markdown_content="", error="blocked")
 

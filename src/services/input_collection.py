@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import os
 
 from src.collectors.competitor_collector import (
@@ -37,8 +37,29 @@ class RawInputs:
     social_limitation: str | None
     competitor_data: CompetitorData | None
     raw_input_cache: dict[str, str]
+    acquisition_steps: dict[str, "AcquisitionResult"]
     web_collector: WebCollector
     exa_collector: ExaCollector
+
+
+@dataclass(frozen=True)
+class AcquisitionResult:
+    source: str
+    status: str
+    cache_status: str
+    eligible: bool
+    error: str | None = None
+    details: dict[str, object] = field(default_factory=dict)
+
+    def to_payload(self) -> dict[str, object]:
+        return {
+            "source": self.source,
+            "status": self.status,
+            "cache_status": self.cache_status,
+            "eligible": self.eligible,
+            "error": self.error,
+            "details": dict(self.details),
+        }
 
 
 def from_web_payload(payload: dict | None) -> WebData | None:
@@ -108,6 +129,28 @@ def from_context_payload(payload: dict | None) -> ContextData | None:
     if not payload:
         return None
     return ContextData(**payload)
+
+
+def _record_acquisition(
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
+    *,
+    source: str,
+    status: str,
+    cache_status: str,
+    eligible: bool,
+    error: str | None = None,
+    details: dict[str, object] | None = None,
+) -> None:
+    if acquisition_steps is None:
+        return
+    acquisition_steps[source] = AcquisitionResult(
+        source=source,
+        status=status,
+        cache_status=cache_status,
+        eligible=eligible,
+        error=error,
+        details=details or {},
+    )
 
 
 def load_cached(store, brand_name: str, url: str, source: str, ttl_hours: int, decoder):
@@ -182,12 +225,24 @@ def _collect_context_input(
     url: str,
     cache_read,
     raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
     context_evidence_builder,
     context_collector_cls,
 ) -> ContextData:
     context_data = cache_read("context", 24, from_context_payload)
     if context_data:
         raw_input_cache["context"] = "hit"
+        _record_acquisition(
+            acquisition_steps,
+            source="context",
+            status="hit",
+            cache_status="hit",
+            eligible=True,
+            details={
+                "score": context_data.context_score,
+                "confidence": context_data.confidence,
+            },
+        )
         print(
             "  Context: cache hit"
             f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
@@ -202,6 +257,13 @@ def _collect_context_input(
         return context_data
 
     raw_input_cache["context"] = "miss"
+    _record_acquisition(
+        acquisition_steps,
+        source="context",
+        status="fetched",
+        cache_status="miss",
+        eligible=True,
+    )
     context_data = context_collector_cls().scan(url)
     print(
         "  Context:"
@@ -226,18 +288,34 @@ def _collect_web_input(
     url: str,
     cache_read,
     raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
     web_collector_cls,
 ) -> tuple[WebData, WebCollector]:
     web_collector = web_collector_cls(api_key=FIRECRAWL_API_KEY)
     web_data = cache_read("web", BRAND3_CACHE_TTL_HOURS, from_web_payload)
     if web_data:
         raw_input_cache["web"] = "hit"
+        _record_acquisition(
+            acquisition_steps,
+            source="web",
+            status="hit",
+            cache_status="hit",
+            eligible=True,
+            details={"chars": len(web_data.markdown_content)},
+        )
         print(f"  Web: cache hit ({len(web_data.markdown_content)} chars)")
         if run_id:
             store_safely(store, "web cache save", lambda: store.save_raw_input(run_id, "web", web_data))
         return web_data, web_collector
 
     raw_input_cache["web"] = "miss"
+    _record_acquisition(
+        acquisition_steps,
+        source="web",
+        status="fetched",
+        cache_status="miss",
+        eligible=True,
+    )
     web_data = web_collector.scrape(url)
     print(f"  Web: {len(web_data.markdown_content)} chars scraped")
     if run_id:
@@ -253,34 +331,76 @@ def _collect_exa_input(
     effective_brand_url: str,
     cache_read,
     raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
     exa_collector_cls,
 ) -> tuple[ExaData, ExaCollector]:
     exa_collector = exa_collector_cls(api_key=EXA_API_KEY)
     exa_data = cache_read("exa", BRAND3_CACHE_TTL_HOURS, from_exa_payload)
     if exa_data:
         raw_input_cache["exa"] = "hit"
+        _record_acquisition(
+            acquisition_steps,
+            source="exa",
+            status="hit",
+            cache_status="hit",
+            eligible=True,
+            details={
+                "mentions": len(exa_data.mentions),
+                "news": len(exa_data.news),
+            },
+        )
         print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
         if run_id:
             store_safely(store, "exa cache save", lambda: store.save_raw_input(run_id, "exa", exa_data))
         return exa_data, exa_collector
 
     raw_input_cache["exa"] = "miss"
+    _record_acquisition(
+        acquisition_steps,
+        source="exa",
+        status="fetched",
+        cache_status="miss",
+        eligible=True,
+    )
     exa_data = exa_collector.collect_brand_data(brand_name, effective_brand_url)
     diagnostics = dict(exa_data.diagnostics or {})
     failed_intents = diagnostics.get("failed_intents") or []
     no_result_intents = diagnostics.get("no_result_intents") or []
     if failed_intents:
         raw_input_cache["exa"] = "partial"
+        _record_acquisition(
+            acquisition_steps,
+            source="exa",
+            status="partial",
+            cache_status="miss",
+            eligible=True,
+            details={"failed_intents": list(failed_intents)},
+        )
         print(
             f"  Exa: partial ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)"
             f" failed_intents={','.join(failed_intents)}"
         )
     elif no_result_intents:
+        _record_acquisition(
+            acquisition_steps,
+            source="exa",
+            status="empty",
+            cache_status="miss",
+            eligible=True,
+            details={"no_result_intents": list(no_result_intents)},
+        )
         print(
             f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news"
             f" no_results={','.join(no_result_intents)}"
         )
     else:
+        _record_acquisition(
+            acquisition_steps,
+            source="exa",
+            status="ok",
+            cache_status="miss",
+            eligible=True,
+        )
         print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
     if run_id:
         store_safely(store, "exa save", lambda: store.save_raw_input(run_id, "exa", exa_data))
@@ -295,15 +415,30 @@ def _collect_parallel_shadow_input(
     effective_brand_url: str,
     cache_read,
     raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
     parallel_shadow_collector_cls=ParallelShadowCollector,
 ) -> ParallelShadowData | None:
     if not _parallel_shadow_enabled():
         raw_input_cache["parallel_shadow"] = "disabled"
+        _record_acquisition(
+            acquisition_steps,
+            source="parallel_shadow",
+            status="disabled",
+            cache_status="disabled",
+            eligible=False,
+        )
         return None
 
     cached = cache_read("parallel_shadow", BRAND3_CACHE_TTL_HOURS, from_parallel_shadow_payload)
     if cached:
         raw_input_cache["parallel_shadow"] = "hit"
+        _record_acquisition(
+            acquisition_steps,
+            source="parallel_shadow",
+            status="hit",
+            cache_status="hit",
+            eligible=True,
+        )
         if run_id:
             store_safely(store, "parallel shadow cache save", lambda: store.save_raw_input(run_id, "parallel_shadow", cached))
         return ParallelShadowData.from_dict(
@@ -317,6 +452,14 @@ def _collect_parallel_shadow_input(
     collector = parallel_shadow_collector_cls()
     shadow_data = collector.collect(brand_name, effective_brand_url)
     raw_input_cache["parallel_shadow"] = shadow_data.status
+    _record_acquisition(
+        acquisition_steps,
+        source="parallel_shadow",
+        status=shadow_data.status,
+        cache_status="miss",
+        eligible=shadow_data.status not in {"error", "failed"},
+        details=shadow_data.summary(),
+    )
     summary = shadow_data.summary()
     print(
         "  Parallel shadow:"
@@ -342,15 +485,31 @@ def _collect_social_input(
     use_social: bool,
     cache_read,
     raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
     social_collector,
 ) -> tuple[SocialData | None, str | None]:
     if not use_social:
         raw_input_cache["social"] = "skipped"
+        _record_acquisition(
+            acquisition_steps,
+            source="social",
+            status="skipped",
+            cache_status="skipped",
+            eligible=False,
+        )
         return None, None
 
     social_data = cache_read("social", BRAND3_CACHE_TTL_HOURS, from_social_payload)
     if social_data:
         raw_input_cache["social"] = "hit"
+        _record_acquisition(
+            acquisition_steps,
+            source="social",
+            status="hit",
+            cache_status="hit",
+            eligible=True,
+            details={"platforms": len(social_data.platforms), "followers": social_data.total_followers},
+        )
         print(f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)")
         if run_id:
             store_safely(store, "social cache save", lambda: store.save_raw_input(run_id, "social", social_data))
@@ -366,14 +525,38 @@ def _collect_social_input(
         platforms_count = len(social_data.platforms)
         if social_limitation:
             raw_input_cache["social"] = social_limitation
+            _record_acquisition(
+                acquisition_steps,
+                source="social",
+                status=social_limitation,
+                cache_status="miss",
+                eligible=True,
+                details={"platforms": len(social_data.platforms)},
+            )
             print(f"  Social: {social_limitation} - continuing without blocking analysis")
         else:
+            _record_acquisition(
+                acquisition_steps,
+                source="social",
+                status="ok",
+                cache_status="miss",
+                eligible=True,
+                details={"platforms": len(social_data.platforms), "followers": social_data.total_followers},
+            )
             print(f"  Social: {platforms_count} platforms, {social_data.total_followers:,} total followers")
         if run_id:
             store_safely(store, "social save", lambda: store.save_raw_input(run_id, "social", social_data))
         return social_data, social_limitation
     except Exception as e:
         raw_input_cache["social"] = "error"
+        _record_acquisition(
+            acquisition_steps,
+            source="social",
+            status="error",
+            cache_status="miss",
+            eligible=False,
+            error=str(e),
+        )
         print(f"  Social: error - {e}")
         social_data = SocialData(brand_name=brand_name, error=str(e))
         if run_id:
@@ -394,9 +577,17 @@ def _collect_competitor_input(
     use_competitors: bool,
     cache_read,
     raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None,
 ) -> CompetitorData | None:
     if not use_competitors:
         raw_input_cache["competitors"] = "skipped"
+        _record_acquisition(
+            acquisition_steps,
+            source="competitors",
+            status="skipped",
+            cache_status="skipped",
+            eligible=False,
+        )
         print("  Competitors: skipped (--fast mode)")
         return None
 
@@ -408,6 +599,14 @@ def _collect_competitor_input(
     competitor_data = cache_read("competitors", BRAND3_CACHE_TTL_HOURS, from_competitor_payload)
     if competitor_data:
         raw_input_cache["competitors"] = "hit"
+        _record_acquisition(
+            acquisition_steps,
+            source="competitors",
+            status="hit",
+            cache_status="hit",
+            eligible=True,
+            details={"competitors": len(competitor_data.competitors)},
+        )
         print(f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)")
         if run_id:
             store_safely(
@@ -418,6 +617,13 @@ def _collect_competitor_input(
         return competitor_data
 
     raw_input_cache["competitors"] = "miss"
+    _record_acquisition(
+        acquisition_steps,
+        source="competitors",
+        status="fetched",
+        cache_status="miss",
+        eligible=True,
+    )
     competitor_data = competitor_collector.collect(
         brand_name=brand_name,
         brand_url=effective_brand_url,
@@ -450,6 +656,7 @@ def collect_raw_inputs(
     exa_collector_cls=ExaCollector,
 ) -> RawInputs:
     raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, AcquisitionResult] = {}
     cache_read = _cache_reader(
         store=store,
         brand_name=brand_name,
@@ -463,6 +670,7 @@ def collect_raw_inputs(
         url=url,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         context_evidence_builder=context_evidence_builder,
         context_collector_cls=context_collector_cls,
     )
@@ -472,6 +680,7 @@ def collect_raw_inputs(
         url=url,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         web_collector_cls=web_collector_cls,
     )
     effective_brand_url = effective_brand_url_builder(url, web_data)
@@ -482,6 +691,7 @@ def collect_raw_inputs(
         effective_brand_url=effective_brand_url,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         exa_collector_cls=exa_collector_cls,
     )
     parallel_shadow_data = _collect_parallel_shadow_input(
@@ -491,6 +701,7 @@ def collect_raw_inputs(
         effective_brand_url=effective_brand_url,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
     )
     social_data, social_limitation = _collect_social_input(
         store=store,
@@ -500,6 +711,7 @@ def collect_raw_inputs(
         use_social=use_social,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         social_collector=social_collector,
     )
     competitor_data = _collect_competitor_input(
@@ -514,6 +726,7 @@ def collect_raw_inputs(
         use_competitors=use_competitors,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
     )
     return RawInputs(
         context_data=context_data,
@@ -525,6 +738,7 @@ def collect_raw_inputs(
         social_limitation=social_limitation,
         competitor_data=competitor_data,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         web_collector=web_collector,
         exa_collector=exa_collector,
     )

@@ -5,6 +5,7 @@ from scripts.search_enrichment_lab import (
     _classify_lab_source,
     _guard_lab_entity_boundary,
     _profiled_query,
+    _provider_run_to_acquisition_step,
     _search_exa,
     _planned_run_payload,
     _provider_scores,
@@ -285,6 +286,35 @@ def test_run_case_builds_inventory_from_mocked_provider(monkeypatch) -> None:
     assert payload["observations"][0]["source_class"] == "external"
     assert payload["inventory"]["eligible_channels"]
     assert isinstance(payload["provider_runs"][0]["observations"][0], dict)
+    assert payload["acquisition_steps"][0]["provider"] == "exa"
+    assert payload["acquisition_steps"][0]["status"] == "ok"
+    assert payload["acquisition_steps"][0]["eligible"] is True
+    assert payload["acquisition_steps"][0]["cache_status"] == "n/a"
+
+
+def test_provider_run_to_acquisition_step_collapses_provider_run_state() -> None:
+    step = _provider_run_to_acquisition_step(
+        {
+            "provider": "serpapi",
+            "status": "error",
+            "elapsed_ms": 87,
+            "error": "timeout",
+            "observations": [
+                {
+                    "status": "error",
+                    "reason": "provider_exception",
+                    "diagnostics": {"provider_variant": "serpapi"},
+                }
+            ],
+        }
+    )
+
+    assert step.provider == "serpapi"
+    assert step.status == "error"
+    assert step.eligible is False
+    assert step.error == "timeout"
+    assert step.details["elapsed_ms"] == 87
+    assert step.details["observation_count"] == 1
 
 
 def test_render_summary_md_includes_provider_metrics_and_errors() -> None:
@@ -309,6 +339,18 @@ def test_render_summary_md_includes_provider_metrics_and_errors() -> None:
                             "source_classes": ["owned"],
                         }
                     ],
+                }
+            ],
+            "provider_acquisition": [
+                {
+                    "case_id": "langchain",
+                    "provider": "exa",
+                    "status": "ok",
+                    "eligible": True,
+                    "cache_status": "n/a",
+                    "observation_count": 1,
+                    "elapsed_ms": 87,
+                    "error": "",
                 }
             ],
             "bakeoff": {
@@ -361,6 +403,8 @@ def test_render_summary_md_includes_provider_metrics_and_errors() -> None:
         }
     )
 
+    assert "## Provider Acquisition Steps" in markdown
+    assert "| langchain | exa | ok | yes | n/a | 1 | 87 |  |" in markdown
     assert "## Provider Metrics" in markdown
     assert "| exa | 1 | 1 | 0 | 0 | 0 | 0 | 123 | 0.02 | 0.01 | search | external:1 | 0.8 |" in markdown
     assert "## Experimental Provider Score" in markdown

@@ -18,6 +18,7 @@ from src.config import (
 )
 from src.services.brand_service import (
     _aggregate_exa_content,
+    _acquisition_provenance_summary,
     _build_content_web,
     _compute_data_quality,
     _context_effective_readiness,
@@ -57,6 +58,41 @@ class _VisualSignatureStore:
 
 
 class BrandAuditReadinessPersistenceTests(unittest.TestCase):
+    def test_acquisition_provenance_summary_exposes_plan_trace_and_quality(self):
+        context = ContextData(
+            url="https://example.com",
+            robots_found=True,
+            sitemap_found=True,
+            sitemap_url_count=3,
+            coverage=0.8,
+            confidence=0.8,
+        )
+        web = WebData(
+            url="https://example.com",
+            markdown_content="Example brand builds reliable software. " * 12,
+        )
+        exa = ExaData(
+            brand_name="Example",
+            mentions=[],
+        )
+
+        payload = _acquisition_provenance_summary(
+            brand_name="Example",
+            url="https://example.com",
+            web_data=web,
+            exa_data=exa,
+            context_data=context,
+            discovery_enrichment_payload={"applied": False, "urls_used": [], "queries_used": []},
+            raw_input_cache={"context": "hit", "web": "miss", "exa": "partial"},
+            content_source="firecrawl",
+            data_quality="good",
+        )
+
+        assert payload["plan"]["resolved_entity"] == "Example"
+        assert payload["trace"]["provider_summary"]["web_cache"] == "miss"
+        assert payload["quality"]["metrics"]["planned_sources"] >= 1
+        assert payload["quality"]["version"] == "brand_research_acquisition_quality_v0_1"
+
     def test_persist_report_readiness_updates_run_audit(self):
         with TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"
@@ -1376,6 +1412,14 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             self.assertEqual(second["data_sources"]["raw_input_cache"]["web"], "hit")
             self.assertEqual(second["data_sources"]["raw_input_cache"]["exa"], "hit")
             self.assertEqual(second["data_sources"]["raw_input_cache"]["social"], "skipped")
+            self.assertIn("acquisition_provenance", second["data_sources"])
+            self.assertIn("acquisition_steps", second["data_sources"])
+            self.assertEqual(second["data_sources"]["acquisition_steps"]["web"]["status"], "hit")
+            self.assertEqual(second["data_sources"]["acquisition_steps"]["web"]["cache_status"], "hit")
+            self.assertEqual(
+                second["data_sources"]["acquisition_provenance"]["trace"]["provider_summary"]["web_cache"],
+                "hit",
+            )
             self.assertEqual(second["data_sources"]["cost_policy"]["cache_hits"], 3)
             self.assertEqual(second["data_sources"]["cost_policy"]["skipped"]["llm"], "disabled_by_request")
             self.assertEqual(second["data_sources"]["cost_policy"]["skipped"]["social"], "disabled_by_request")
@@ -1442,6 +1486,8 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["exa"], "miss")
             self.assertEqual(refreshed["data_sources"]["raw_input_cache"]["social"], "skipped")
             self.assertIn("public_presence_inventory", refreshed["data_sources"])
+            self.assertEqual(refreshed["data_sources"]["acquisition_steps"]["web"]["status"], "fetched")
+            self.assertEqual(refreshed["data_sources"]["acquisition_steps"]["web"]["cache_status"], "miss")
             self.assertEqual(
                 refreshed["data_sources"]["public_presence_inventory"]["primary_page"]["url"],
                 "https://example.com",

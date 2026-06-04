@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from src.collectors.exa_collector import ExaData
 from src.collectors.parallel_shadow_collector import ParallelShadowData, ParallelShadowIntent, ParallelShadowResult
-from src.services.input_collection import _collect_exa_input, _collect_parallel_shadow_input, from_exa_payload
+from src.services.input_collection import (
+    _collect_exa_input,
+    _collect_parallel_shadow_input,
+    from_exa_payload,
+)
 
 
 def test_from_exa_payload_preserves_diagnostics():
@@ -39,6 +43,7 @@ class _FakeExaCollector:
 
 def test_collect_exa_input_marks_partial_when_failed_intents_exist():
     raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
 
     exa_data, _collector = _collect_exa_input(
         store=None,
@@ -47,11 +52,14 @@ def test_collect_exa_input_marks_partial_when_failed_intents_exist():
         effective_brand_url="https://brand.com",
         cache_read=lambda *_args, **_kwargs: None,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         exa_collector_cls=_FakeExaCollector,
     )
 
     assert raw_input_cache["exa"] == "partial"
     assert exa_data.diagnostics["status"] == "degraded"
+    assert acquisition_steps["exa"].status == "partial"
+    assert acquisition_steps["exa"].eligible is True
 
 
 class _FakeParallelShadowCollector:
@@ -81,6 +89,7 @@ class _FakeParallelShadowCollector:
 def test_collect_parallel_shadow_input_is_disabled_by_default(monkeypatch):
     monkeypatch.delenv("BRAND3_PARALLEL_SHADOW_ENABLED", raising=False)
     raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
 
     result = _collect_parallel_shadow_input(
         store=None,
@@ -89,16 +98,20 @@ def test_collect_parallel_shadow_input_is_disabled_by_default(monkeypatch):
         effective_brand_url="https://brand.com",
         cache_read=lambda *_args, **_kwargs: None,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         parallel_shadow_collector_cls=_FakeParallelShadowCollector,
     )
 
     assert result is None
     assert raw_input_cache["parallel_shadow"] == "disabled"
+    assert acquisition_steps["parallel_shadow"].status == "disabled"
+    assert acquisition_steps["parallel_shadow"].eligible is False
 
 
 def test_collect_parallel_shadow_input_runs_when_enabled(monkeypatch):
     monkeypatch.setenv("BRAND3_PARALLEL_SHADOW_ENABLED", "1")
     raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
 
     result = _collect_parallel_shadow_input(
         store=None,
@@ -107,17 +120,21 @@ def test_collect_parallel_shadow_input_runs_when_enabled(monkeypatch):
         effective_brand_url="https://brand.com",
         cache_read=lambda *_args, **_kwargs: None,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         parallel_shadow_collector_cls=_FakeParallelShadowCollector,
     )
 
     assert result is not None
     assert result.summary()["result_total"] == 1
     assert raw_input_cache["parallel_shadow"] == "ok"
+    assert acquisition_steps["parallel_shadow"].status == "ok"
+    assert acquisition_steps["parallel_shadow"].eligible is True
 
 
 def test_collect_parallel_shadow_input_reuses_cached_payload(monkeypatch):
     monkeypatch.setenv("BRAND3_PARALLEL_SHADOW_ENABLED", "1")
     raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
     cached = _FakeParallelShadowCollector().collect("Brand", "https://brand.com").to_dict()
 
     result = _collect_parallel_shadow_input(
@@ -127,9 +144,12 @@ def test_collect_parallel_shadow_input_reuses_cached_payload(monkeypatch):
         effective_brand_url="https://brand.com",
         cache_read=lambda *_args, **_kwargs: cached,
         raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
         parallel_shadow_collector_cls=_FakeParallelShadowCollector,
     )
 
     assert result is not None
     assert result.summary()["result_total"] == 1
     assert raw_input_cache["parallel_shadow"] == "hit"
+    assert acquisition_steps["parallel_shadow"].status == "hit"
+    assert acquisition_steps["parallel_shadow"].eligible is True

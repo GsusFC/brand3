@@ -39,6 +39,11 @@ from src.config import (
     VISION_MODEL,
 )
 from src.discovery.entity_discovery import discover_entity
+from src.research.acquisition_plan import build_brand_research_acquisition_plan
+from src.research.acquisition_trace import (
+    build_brand_research_acquisition_quality_summary,
+    build_brand_research_acquisition_trace,
+)
 from src.discovery.enrichment import build_discovery_enrichment
 from src.discovery.evidence_preview import build_discovery_evidence_preview
 from src.discovery.calibration import apply_discovery_calibration_hint, build_discovery_calibration_hint
@@ -1442,6 +1447,42 @@ def _cost_policy_summary(
     }
 
 
+def _acquisition_provenance_summary(
+    *,
+    brand_name: str,
+    url: str,
+    web_data: WebData | None,
+    exa_data: ExaData | None,
+    context_data: ContextData | None,
+    discovery_enrichment_payload: dict[str, object] | None,
+    raw_input_cache: dict[str, str],
+    content_source: str,
+    data_quality: str,
+) -> dict[str, object]:
+    plan = build_brand_research_acquisition_plan(
+        seed_url=url,
+        brand_name=brand_name,
+        web_data=web_data,
+        exa_data=exa_data,
+        context_data=context_data,
+    ).to_dict()
+    trace = build_brand_research_acquisition_trace(
+        acquisition_plan=plan,
+        discovery_enrichment=discovery_enrichment_payload,
+        raw_input_cache=raw_input_cache,
+        content_source=content_source,
+        data_quality=data_quality,
+        web_data=web_data,
+        exa_data=exa_data,
+    )
+    quality = build_brand_research_acquisition_quality_summary(trace)
+    return {
+        "plan": plan,
+        "trace": trace,
+        "quality": quality,
+    }
+
+
 def _context_evidence_items(context_data: ContextData | None) -> list[dict[str, object]]:
     if not context_data:
         return []
@@ -1796,6 +1837,7 @@ def run(
         social_limitation = raw_inputs.social_limitation
         competitor_data = raw_inputs.competitor_data
         raw_input_cache = raw_inputs.raw_input_cache
+        acquisition_steps = raw_inputs.acquisition_steps
         web_collector = raw_inputs.web_collector
 
         niche = select_niche_profile(
@@ -1849,6 +1891,17 @@ def run(
         content_web = discovery_enrichment.web_data or content_web
         web_data = discovery_enrichment.web_data or web_data
         discovery_enrichment_payload = discovery_enrichment.payload
+        acquisition_provenance = _acquisition_provenance_summary(
+            brand_name=brand_name,
+            url=url,
+            web_data=web_data,
+            exa_data=exa_data,
+            context_data=context_data,
+            discovery_enrichment_payload=discovery_enrichment_payload,
+            raw_input_cache=raw_input_cache,
+            content_source=content_source,
+            data_quality=data_quality,
+        )
         discovery_trust_basis = build_discovery_trust_basis(entity_discovery, discovery_search_plan, discovery_evidence_preview, discovery_enrichment_payload)
         discovery_calibration_hint = build_discovery_calibration_hint(entity_discovery, discovery_trust_basis, niche_classification)
         available_profiles = {item["profile_id"] for item in list_calibration_profiles()}
@@ -2012,6 +2065,8 @@ def run(
             "data_quality": data_quality,
             "data_sources": {
                 **data_sources,
+                "acquisition_provenance": acquisition_provenance,
+                "acquisition_steps": {name: step.to_payload() for name, step in acquisition_steps.items()},
                 "public_presence_inventory": public_presence_inventory,
                 "screenshot_capture": screenshot_capture,
                 "social_limitation": social_limitation,

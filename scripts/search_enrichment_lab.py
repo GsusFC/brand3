@@ -12,7 +12,7 @@ import argparse
 import json
 import os
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -130,6 +130,26 @@ class LabCase:
         return _slugify(self.brand or self.url)
 
 
+@dataclass(frozen=True)
+class LabAcquisitionStep:
+    provider: str
+    status: str
+    cache_status: str
+    eligible: bool
+    error: str = ""
+    details: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "provider": self.provider,
+            "status": self.status,
+            "cache_status": self.cache_status,
+            "eligible": self.eligible,
+            "error": self.error,
+            "details": self.details,
+        }
+
+
 def main() -> int:
     args = _parse_args()
     providers = _selected_providers(args.providers)
@@ -195,6 +215,7 @@ def main() -> int:
 
     bakeoff = evaluate_brand_source_bakeoff(bakeoff_cases)
     provider_scores = _provider_scores(bakeoff.get("provider_metrics") or {}, case_payloads)
+    provider_acquisition = _provider_acquisition_rows(case_payloads)
     summary = {
         "version": LAB_VERSION,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -203,6 +224,7 @@ def main() -> int:
         "discarded_providers": _discarded_providers(providers),
         "case_count": len(case_payloads),
         "cases": [_case_summary(item) for item in case_payloads],
+        "provider_acquisition": provider_acquisition,
         "provider_scores": provider_scores,
         "bakeoff": bakeoff,
     }
@@ -267,6 +289,7 @@ def run_case(
 
     inventory = build_brand_source_inventory(plan, observations)
     source_consensus = _source_consensus(observations)
+    acquisition_steps = [_provider_run_to_acquisition_step(item).to_dict() for item in provider_runs]
     return {
         "version": LAB_VERSION,
         "case": {"case_id": case.case_id, "brand": case.brand, "url": case.url},
@@ -275,6 +298,7 @@ def run_case(
         "query_profile": query_profile,
         "providers": providers,
         "provider_runs": [_provider_run_to_dict(item) for item in provider_runs],
+        "acquisition_steps": acquisition_steps,
         "observations": [observation.to_dict() for observation in observations],
         "inventory": inventory.to_dict(),
         "source_consensus": source_consensus,
@@ -1003,6 +1027,42 @@ def _provider_run_to_dict(run: dict[str, Any]) -> dict[str, Any]:
     return payload
 
 
+def _provider_run_to_acquisition_step(run: dict[str, Any]) -> LabAcquisitionStep:
+    payload = dict(run)
+    observations = payload.get("observations") if isinstance(payload.get("observations"), list) else []
+    observation_rows = [
+        item.to_dict() if isinstance(item, BrandSourceObservation) else item
+        for item in observations
+        if isinstance(item, (BrandSourceObservation, dict))
+    ]
+    observation_rows = [item for item in observation_rows if isinstance(item, dict)]
+    error = str(payload.get("error") or "")
+    status = str(payload.get("status") or "")
+    step_status = "error" if status == "error" or error else ("empty" if not observation_rows else "ok")
+    eligible = step_status != "error" and any(
+        str(item.get("evidence_eligibility") or "") in {"eligible", "limited"} for item in observation_rows
+    )
+    first_row = observation_rows[0] if observation_rows else {}
+    diagnostics = first_row.get("diagnostics") if isinstance(first_row.get("diagnostics"), dict) else {}
+    source_classes = sorted({str(item.get("source_class") or "unknown") for item in observation_rows if item.get("source_class")})
+    channels = sorted({str(item.get("channel") or "unknown") for item in observation_rows if item.get("channel")})
+    return LabAcquisitionStep(
+        provider=str(payload.get("provider") or "unknown"),
+        status=step_status,
+        cache_status="n/a",
+        eligible=eligible,
+        error=error or (str(first_row.get("reason") or "") if step_status == "error" else ""),
+        details={
+            "elapsed_ms": int(payload.get("elapsed_ms") or 0),
+            "observation_count": len(observation_rows),
+            "provider_variant": str(diagnostics.get("provider_variant") or payload.get("provider") or "unknown"),
+            "query_intent": str(first_row.get("query_intent") or ""),
+            "source_classes": source_classes,
+            "channels": channels,
+        },
+    )
+
+
 def _source_consensus(observations: list[BrandSourceObservation]) -> dict[str, Any]:
     by_url: dict[str, list[BrandSourceObservation]] = {}
     for observation in observations:
@@ -1096,6 +1156,7 @@ def _provider_scores(provider_metrics: dict[str, Any], case_payloads: list[dict[
 def _render_summary_md(summary: dict[str, Any]) -> str:
     provider_metrics = ((summary.get("bakeoff") or {}).get("provider_metrics") or {})
     provider_scores = summary.get("provider_scores") if isinstance(summary.get("provider_scores"), dict) else {}
+    provider_acquisition = summary.get("provider_acquisition") if isinstance(summary.get("provider_acquisition"), list) else []
     lines = [
         "# Search Enrichment Lab Summary",
         "",
@@ -1147,6 +1208,29 @@ def _render_summary_md(summary: dict[str, Any]) -> str:
             )
         )
     lines.append("")
+    if provider_acquisition:
+        lines.extend(
+            [
+                "## Provider Acquisition Steps",
+                "",
+                "| Case | Provider | Status | Eligible | Cache | Observations | Latency | Error |",
+                "| --- | --- | --- | ---: | --- | ---: | ---: | --- |",
+            ]
+        )
+        for row in provider_acquisition:
+            lines.append(
+                "| {case_id} | {provider} | {status} | {eligible} | {cache_status} | {observations} | {latency} | {error} |".format(
+                    case_id=row.get("case_id") or "",
+                    provider=row.get("provider") or "",
+                    status=row.get("status") or "",
+                    eligible="yes" if row.get("eligible") else "no",
+                    cache_status=row.get("cache_status") or "",
+                    observations=row.get("observation_count") or 0,
+                    latency=row.get("elapsed_ms") or 0,
+                    error=(row.get("error") or "").replace("|", "\\|")[:160],
+                )
+            )
+        lines.append("")
     if provider_scores:
         lines.extend(
             [
@@ -1237,6 +1321,29 @@ def _summary_consensus_rows(summary: dict[str, Any]) -> list[dict[str, Any]]:
     for case in summary.get("cases") or []:
         for row in case.get("consensus_sources") or []:
             rows.append({"case_id": case.get("case_id") or "", **row})
+    return rows
+
+
+def _provider_acquisition_rows(case_payloads: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for payload in case_payloads:
+        case_id = str((payload.get("case") or {}).get("case_id") or "")
+        for step in payload.get("acquisition_steps") or []:
+            if not isinstance(step, dict):
+                continue
+            details = step.get("details") if isinstance(step.get("details"), dict) else {}
+            rows.append(
+                {
+                    "case_id": case_id,
+                    "provider": str(step.get("provider") or "unknown"),
+                    "status": str(step.get("status") or "unknown"),
+                    "eligible": bool(step.get("eligible")),
+                    "cache_status": str(step.get("cache_status") or ""),
+                    "observation_count": int(details.get("observation_count") or 0),
+                    "elapsed_ms": int(details.get("elapsed_ms") or 0),
+                    "error": str(step.get("error") or ""),
+                }
+            )
     return rows
 
 

@@ -37,6 +37,7 @@ from ..templates_env import templates
 from ..workers.queue import get_queue
 from ..workers.slug import slug_from_url
 from ..workers.url_validator import validate_url
+from ..scanner_api.presenters import scanner_status_payload
 from ..scanner_api.schemas import ScannerCreateRequest, scanner_openapi_spec
 
 router = APIRouter()
@@ -676,30 +677,9 @@ def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str,
 
 
 def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
-    scan_id = int(row.get("id") or 0)
-    status = str(row.get("status") or "queued")
     phase = _magnetism_phase(row)
     readiness = _scanner_readiness_from_row(row)
-    return {
-        "id": scan_id,
-        "status": status,
-        "phase": phase,
-        "brand_name": row.get("brand_name"),
-        "url": row.get("url"),
-        "source_run_id": row.get("source_run_id"),
-        "created_at": row.get("created_at"),
-        "started_at": row.get("started_at"),
-        "completed_at": row.get("completed_at"),
-        "error_message": row.get("error_message"),
-        "scanner_readiness": readiness,
-        "result_available": status == "ready",
-        "status_url": f"/api/v1/scanner/{scan_id}",
-        "result_url": f"/api/v1/scanner/{scan_id}/result",
-        "evidence_url": f"/api/v1/scanner/{scan_id}/evidence",
-        "methodology_url": f"/api/v1/scanner/{scan_id}/methodology",
-        "audit_url": f"/api/v1/scanner/{scan_id}/audit",
-        "ui_url": _with_lang(f"/magnetism-scanner/scan/{scan_id}", lang) if status == "ready" else None,
-    }
+    return scanner_status_payload(row, phase=phase, readiness=readiness, lang=lang)
 
 
 def _scan_not_found(scan_id: int) -> JSONResponse:

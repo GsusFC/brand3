@@ -103,3 +103,248 @@ def scanner_methodology_payload(
         "warnings": payload.get("warnings") or [],
         "research_pack": payload.get("research_pack") or {},
     }
+
+
+def scanner_research_evidence_payload(
+    payload: dict[str, Any],
+    *,
+    entity_packet: dict[str, Any],
+) -> dict[str, Any]:
+    research_pack = payload.get("research_pack") if isinstance(payload.get("research_pack"), dict) else {}
+    entity = research_pack.get("resolved_entity") if isinstance(research_pack.get("resolved_entity"), dict) else {}
+    source_map = research_pack.get("source_map") if isinstance(research_pack.get("source_map"), dict) else {}
+    graph_summary = payload.get("evidence_graph_summary") if isinstance(payload.get("evidence_graph_summary"), dict) else {}
+    product_surfaces = list(entity_packet.get("product_surfaces") or [])
+    owned_surfaces = list(entity_packet.get("owned_surfaces") or [])
+    tldr_blocks = _tldr_blocks(payload)
+
+    block_evidence = []
+    for key, block in tldr_blocks.items():
+        if not isinstance(block, dict):
+            continue
+        block_evidence.append(
+            {
+                "key": key,
+                "label": str(key).replace("_", " ").title(),
+                "answer": block.get("answer") or block.get("content"),
+                "claim_type": block.get("claim_type") or "unknown",
+                "confidence": block.get("confidence") or "unknown",
+                "evidence_used": block.get("evidence_used") or block.get("evidence") or [],
+                "evidence_sources": block.get("evidence_sources") or [],
+            }
+        )
+
+    source_counts = graph_summary.get("source_counts") or {}
+    source_rows = [
+        {
+            "url": url,
+            "source_type": source.get("source_type") or "unknown",
+            "surface_role": source.get("surface_role") or "",
+            "entity_scope": source.get("entity_scope") or "",
+            "title": source.get("title") or source.get("label") or url,
+        }
+        for url, source in source_map.items()
+        if isinstance(source, dict)
+    ]
+    source_rows.sort(key=lambda item: (item["source_type"], item["url"]))
+    if not product_surfaces:
+        product_surfaces = [
+            {
+                "url": item["url"],
+                "role": item["surface_role"] or item["source_type"],
+                "entity_scope": item["entity_scope"],
+                "reason": "Detected from persisted Research Pack source map.",
+            }
+            for item in source_rows
+            if str(item.get("entity_scope") or "").startswith("product:")
+        ]
+    if not owned_surfaces:
+        owned_surfaces = [
+            {
+                "url": item["url"],
+                "role": item["surface_role"] or item["source_type"],
+                "entity_scope": item["entity_scope"],
+                "reason": "Persisted Research Pack source.",
+            }
+            for item in source_rows
+            if str(item.get("source_type") or "").startswith("owned_")
+        ]
+
+    return {
+        "entity": entity,
+        "entity_packet": entity_packet,
+        "research_pack_source": payload.get("research_pack_source") or "legacy_snapshot",
+        "tldr_generation_mode": payload.get("tldr_generation_mode") or "unknown",
+        "category": research_pack.get("category") or "",
+        "offer": research_pack.get("offer") or "",
+        "company_summary": research_pack.get("company_summary") or "",
+        "product_summary": research_pack.get("product_summary") or "",
+        "audience": research_pack.get("audience") or "",
+        "outcome": research_pack.get("outcome") or "",
+        "declared_mission": research_pack.get("declared_mission") or "",
+        "future_direction": research_pack.get("future_direction") or "",
+        "owned_surfaces": owned_surfaces,
+        "product_surfaces": product_surfaces,
+        "source_counts": source_counts,
+        "source_rows": source_rows,
+        "block_evidence": block_evidence,
+        "proof_points": research_pack.get("proof_points") or [],
+        "competitive_context": research_pack.get("competitive_context") or [],
+        "shadow_sources": _shadow_source_rows(research_pack),
+        "noise_rejected": research_pack.get("noise_rejected") or [],
+        "entity_boundary_warnings": _entity_boundary_warnings(research_pack),
+        "entity_boundary_rejections": _entity_boundary_rejections(research_pack),
+        "evidence_gaps": research_pack.get("evidence_gaps") or [],
+        "confidence_notes": research_pack.get("confidence_notes") or [],
+        "graph_summary": graph_summary,
+    }
+
+
+def _tldr_blocks(payload: dict[str, Any]) -> dict[str, Any]:
+    analyst_payload = payload.get("analyst_tldr_validated")
+    if isinstance(analyst_payload, dict) and isinstance(analyst_payload.get("tldr_brand3"), dict):
+        return analyst_payload["tldr_brand3"]
+    tldr_brand3 = payload.get("tldr_brand3")
+    return tldr_brand3 if isinstance(tldr_brand3, dict) else {}
+
+
+def _shadow_source_rows(research_pack: dict[str, Any]) -> list[dict[str, Any]]:
+    rows: list[dict[str, Any]] = []
+    for item in research_pack.get("shadow_sources") or []:
+        if not isinstance(item, dict):
+            continue
+        intents = item.get("intents") if isinstance(item.get("intents"), dict) else {}
+        intent_rows = []
+        result_rows = []
+        for name, intent in intents.items():
+            if not isinstance(intent, dict):
+                continue
+            intent_rows.append(
+                {
+                    "name": str(name),
+                    "status": str(intent.get("status") or "unknown"),
+                    "result_count": int(intent.get("result_count") or 0),
+                    "unique_domains": [str(value) for value in (intent.get("unique_domains") or []) if value],
+                }
+            )
+            for result in intent.get("results") or []:
+                if not isinstance(result, dict):
+                    continue
+                url = str(result.get("url") or "").strip()
+                if not url:
+                    continue
+                result_rows.append(
+                    {
+                        "intent": str(name),
+                        "url": url,
+                        "title": str(result.get("title") or url),
+                        "excerpt": str(result.get("excerpt") or ""),
+                    }
+                )
+        unique_domains = [str(value) for value in (item.get("unique_domains") or []) if value]
+        rows.append(
+            {
+                "provider": str(item.get("provider") or "parallel"),
+                "mode": str(item.get("mode") or ""),
+                "status": str(item.get("status") or ""),
+                "result_total": int(item.get("result_total") or 0),
+                "unique_domain_count": int(item.get("unique_domain_count") or 0),
+                "unique_domains": unique_domains,
+                "intents": intent_rows,
+                "results": result_rows[:10],
+                "readout": _shadow_readout(
+                    result_total=int(item.get("result_total") or 0),
+                    unique_domain_count=int(item.get("unique_domain_count") or 0),
+                    unique_domains=unique_domains,
+                    intents=intent_rows,
+                    results=result_rows,
+                ),
+                "notes": [str(value) for value in (item.get("notes") or []) if value],
+            }
+        )
+    return rows
+
+
+def _shadow_readout(
+    *,
+    result_total: int,
+    unique_domain_count: int,
+    unique_domains: list[str],
+    intents: list[dict[str, Any]],
+    results: list[dict[str, Any]],
+) -> dict[str, Any]:
+    active_intents = [
+        {
+            "name": str(item.get("name") or ""),
+            "label": _shadow_intent_label(str(item.get("name") or "")),
+            "result_count": int(item.get("result_count") or 0),
+        }
+        for item in intents
+        if int(item.get("result_count") or 0) > 0
+    ]
+    top_domains = unique_domains[:5]
+    review_candidates = [
+        {
+            "label": _shadow_intent_label(str(item.get("intent") or "")),
+            "url": item.get("url") or "",
+            "title": item.get("title") or item.get("url") or "",
+            "excerpt": item.get("excerpt") or "",
+        }
+        for item in results[:5]
+    ]
+    return {
+        "result_total": result_total,
+        "unique_domain_count": unique_domain_count,
+        "domain_summary": ", ".join(top_domains),
+        "signal_types": active_intents,
+        "review_candidates": review_candidates,
+    }
+
+
+def _shadow_intent_label(intent: str) -> str:
+    labels = {
+        "mentions": "mentions / reviews / community",
+        "competitors": "competitors / alternatives",
+        "news": "news / launches / public updates",
+        "ai_visibility": "AI visibility / machine-readable presence",
+    }
+    return labels.get(intent, intent.replace("_", " ") or "external signal")
+
+
+def _entity_boundary_warnings(research_pack: dict[str, Any]) -> list[str]:
+    warnings: list[str] = []
+    for note in research_pack.get("confidence_notes") or []:
+        text = str(note or "").strip()
+        if text.startswith("entity_boundary_collision"):
+            warnings.append(text)
+    return list(dict.fromkeys(warnings))
+
+
+def _entity_boundary_rejections(research_pack: dict[str, Any]) -> list[dict[str, Any]]:
+    rejections: list[dict[str, Any]] = []
+    for item in research_pack.get("noise_rejected") or []:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or "")
+        topic = str(item.get("topic") or item.get("source_label") or "")
+        reason_text = " ".join(
+            str(value or "")
+            for value in (
+                item.get("reason"),
+                item.get("noise_reason"),
+                item.get("source_label"),
+                item.get("topic"),
+                item.get("text"),
+            )
+        )
+        if "entity_boundary_collision" not in reason_text:
+            continue
+        rejections.append(
+            {
+                "text": text,
+                "topic": topic or "entity_boundary_collision",
+                "source_url": item.get("source_url") or "",
+                "source_type": item.get("source_type") or "",
+            }
+        )
+    return rejections

@@ -1,5 +1,6 @@
 from web.scanner_api.presenters import (
     scanner_methodology_payload,
+    scanner_research_evidence_payload,
     scanner_result_metadata,
     scanner_status_payload,
 )
@@ -91,3 +92,116 @@ def test_scanner_methodology_payload_uses_defaults_for_legacy_payloads():
     assert payload["score_breakdown"] == {"offer": 0.7}
     assert payload["limitations"] == ["limited evidence"]
     assert payload["research_pack"] == {}
+
+
+def test_scanner_research_evidence_payload_falls_back_to_source_map_surfaces():
+    payload = scanner_research_evidence_payload(
+        {
+            "research_pack_source": "evidence_graph",
+            "tldr_generation_mode": "analyst_pass_validated",
+            "research_pack": {
+                "resolved_entity": {"name": "LangChain"},
+                "source_map": {
+                    "https://langchain.com": {
+                        "source_type": "owned_official",
+                        "surface_role": "homepage",
+                        "entity_scope": "audited_surface",
+                    },
+                    "https://langchain.com/langgraph": {
+                        "source_type": "owned_product",
+                        "surface_role": "product_page",
+                        "entity_scope": "product:LangGraph",
+                    },
+                },
+                "offer": "Build reliable AI agents.",
+            },
+            "evidence_graph_summary": {"source_counts": {"owned_official": 1, "owned_product": 1}},
+            "analyst_tldr_validated": {
+                "tldr_brand3": {
+                    "value_proposition": {
+                        "answer": "Build reliable AI agents.",
+                        "claim_type": "offer",
+                        "confidence": "high",
+                        "evidence_used": ["Build reliable AI agents."],
+                    }
+                }
+            },
+        },
+        entity_packet={},
+    )
+
+    assert payload["entity"]["name"] == "LangChain"
+    assert payload["research_pack_source"] == "evidence_graph"
+    assert payload["owned_surfaces"][0]["url"] == "https://langchain.com"
+    assert payload["product_surfaces"][0]["entity_scope"] == "product:LangGraph"
+    assert payload["source_counts"] == {"owned_official": 1, "owned_product": 1}
+    assert payload["block_evidence"][0]["key"] == "value_proposition"
+    assert payload["block_evidence"][0]["confidence"] == "high"
+
+
+def test_scanner_research_evidence_payload_exposes_shadow_and_entity_boundary_review():
+    payload = scanner_research_evidence_payload(
+        {
+            "research_pack": {
+                "confidence_notes": [
+                    "entity_boundary_collision: near-name result quarantined.",
+                    "entity_boundary_collision: near-name result quarantined.",
+                    "other note",
+                ],
+                "noise_rejected": [
+                    {
+                        "text": "Publicis Media is a separate near-name entity",
+                        "topic": "entity_boundary_collision",
+                        "source_url": "https://example.com/publicis",
+                        "source_type": "external_review",
+                    },
+                    {
+                        "text": "Generic unrelated result",
+                        "topic": "noise",
+                    },
+                ],
+                "shadow_sources": [
+                    {
+                        "provider": "parallel",
+                        "mode": "audit",
+                        "status": "complete",
+                        "result_total": 2,
+                        "unique_domain_count": 1,
+                        "unique_domains": ["g2.com"],
+                        "intents": {
+                            "mentions": {
+                                "status": "complete",
+                                "result_count": 2,
+                                "unique_domains": ["g2.com"],
+                                "results": [
+                                    {
+                                        "url": "https://g2.com/example",
+                                        "title": "Example reviews",
+                                        "excerpt": "Third-party review shadow signal.",
+                                    }
+                                ],
+                            }
+                        },
+                    }
+                ],
+            }
+        },
+        entity_packet={"owned_surfaces": [], "product_surfaces": []},
+    )
+
+    assert payload["entity_boundary_warnings"] == [
+        "entity_boundary_collision: near-name result quarantined."
+    ]
+    assert payload["entity_boundary_rejections"] == [
+        {
+            "text": "Publicis Media is a separate near-name entity",
+            "topic": "entity_boundary_collision",
+            "source_url": "https://example.com/publicis",
+            "source_type": "external_review",
+        }
+    ]
+    shadow = payload["shadow_sources"][0]
+    assert shadow["provider"] == "parallel"
+    assert shadow["readout"]["domain_summary"] == "g2.com"
+    assert shadow["readout"]["signal_types"][0]["label"] == "mentions / reviews / community"
+    assert shadow["readout"]["review_candidates"][0]["excerpt"] == "Third-party review shadow signal."

@@ -238,7 +238,7 @@ class AnalysisQueue:
             return
 
         run_id = int(result.get("run_id") or 0) or None
-        readiness = _analysis_report_readiness(result)
+        readiness = _analysis_report_readiness(result, run_id=run_id)
         _set_status(
             token,
             status="ready",
@@ -312,17 +312,36 @@ def _now() -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
 
 
-def _analysis_report_readiness(result: dict) -> dict | None:
+def _analysis_report_readiness(result: dict, *, run_id: int | None = None) -> dict | None:
     audit = result.get("audit") if isinstance(result, dict) else None
     if not isinstance(audit, dict):
-        return None
+        audit = {}
     readiness = audit.get("report_readiness")
-    return readiness if isinstance(readiness, dict) else None
+    if isinstance(readiness, dict):
+        return readiness
+    if not run_id:
+        return None
+    try:
+        from src.reports.derivation import build_report_readiness_from_snapshot
+        from src.storage.sqlite_store import SQLiteStore
+
+        store = SQLiteStore(str(_db_path()))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+        finally:
+            store.close()
+        if not snapshot:
+            return None
+        derived = build_report_readiness_from_snapshot(snapshot)
+        return derived if isinstance(derived, dict) else None
+    except Exception:  # noqa: BLE001
+        log.exception("report readiness derivation failed run_id=%s", run_id)
+        return None
 
 
 def _is_publishable_report(readiness: dict | None) -> bool:
     if readiness is None:
-        return True
+        return False
     return readiness.get("report_mode") == "publishable_brand_report"
 
 

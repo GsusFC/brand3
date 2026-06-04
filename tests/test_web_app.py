@@ -370,6 +370,58 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("ningún análisis coincide", reports.text)
         self.assertNotIn("/r/" + token, reports.text)
 
+    def test_missing_readiness_is_derived_from_snapshot_before_publishing(self):
+        from web.workers.queue import set_run_analysis_override
+
+        def _legacy_engine_without_readiness(url: str) -> dict:
+            with sqlite3.connect(self.db) as conn:
+                cur = conn.execute(
+                    "INSERT INTO brands (brand_name, url, domain, created_at, "
+                    "last_seen_at) VALUES (?, ?, ?, datetime('now'), datetime('now'))",
+                    ("Legacy Thin", url, "legacy-thin.test"),
+                )
+                brand_id = int(cur.lastrowid)
+                cur = conn.execute(
+                    "INSERT INTO runs (brand_id, brand_name, url, started_at, "
+                    "completed_at, use_llm, use_social, composite_score) "
+                    "VALUES (?, ?, ?, datetime('now'), datetime('now'), 1, 1, ?)",
+                    (brand_id, "Legacy Thin", url, 50.0),
+                )
+                run_id = int(cur.lastrowid)
+                conn.execute(
+                    "INSERT INTO scores (run_id, dimension_name, score, insights_json, "
+                    "rules_json, created_at) "
+                    "VALUES (?, 'coherencia', 50, '[]', '[]', datetime('now'))",
+                    (run_id,),
+                )
+                conn.commit()
+            return {"run_id": run_id, "composite_score": 50.0}
+
+        set_run_analysis_override(_legacy_engine_without_readiness)
+        response = self.client.post(
+            "/analyze",
+            data={"url": "https://legacy-thin.test"},
+            follow_redirects=False,
+        )
+        token = response.headers["location"].split("/")[2]
+
+        row = None
+        for _ in range(30):
+            with sqlite3.connect(self.db) as conn:
+                row = conn.execute(
+                    "SELECT status, is_public FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()
+            if row and row[0] == "ready":
+                break
+            time.sleep(0.2)
+
+        self.assertEqual(row[0], "ready")
+        self.assertEqual(row[1], 0)
+        reports = self.client.get("/reports?q=legacy-thin")
+        self.assertIn("0 total", reports.text)
+        self.assertNotIn("/r/" + token, reports.text)
+
     def test_report_uses_cached_spanish_translation_without_rerunning_audit(self):
         token, run_id = self._create_ready_run()
         translated_payload = {

@@ -162,6 +162,11 @@ def test_mission_acceptance_rejects_ctas_and_future_language() -> None:
             "group": "mission_language",
         },
         {
+            "text": "Valoramos la creatividad y la belleza en cada pieza que creamos.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+        },
+        {
             "text": "The All-in-one AI Video Platform for Business Play video Pause video our mission Helping people w",
             "source": "strategic:mission_language",
             "group": "mission_language",
@@ -545,6 +550,40 @@ def test_evidence_sufficiency_ignores_rejected_noise_when_value_evidence_is_stro
 
     sufficiency = evidence_sufficiency_from_spec(
         "value_proposition", candidates, accepted, diagnostics, counter_evidence
+    )
+
+    assert sufficiency["noise_detected"] is True
+    assert sufficiency["status"] == "sufficient"
+    assert sufficiency["decision"] == "interpret"
+
+
+def test_evidence_sufficiency_ignores_rejected_noise_when_mission_evidence_is_operational() -> None:
+    candidates = [
+        {
+            "text": "Estas cookies permiten al Sitio ofrecer funcionalidades mejoradas y personalización.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+            "layer": "tactispace",
+            "source_role": "legal_navigation",
+        },
+        {
+            "text": "Nos esforzamos por ofrecer productos excepcionales que duren en el tiempo y sean dignos de tus momentos más preciados.",
+            "source": "strategic:mission_language",
+            "group": "mission_language",
+            "layer": "tactispace",
+            "source_role": "about",
+        },
+    ]
+    accepted = [candidates[1]]
+    diagnostics = block_evidence_diagnostics(
+        "mission",
+        accepted,
+        {"tactispace": {"detected": True}},
+        "tactispace",
+    )
+
+    sufficiency = evidence_sufficiency_from_spec(
+        "mission", candidates, accepted, diagnostics, []
     )
 
     assert sufficiency["noise_detected"] is True

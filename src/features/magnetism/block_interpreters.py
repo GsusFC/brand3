@@ -431,7 +431,7 @@ def evidence_sufficiency_from_spec(
         strong = diagnostics.get("has_offer") and diagnostics.get("has_outcome")
         status = "sufficient" if strong else "partial"
     elif block == "mission":
-        status = "sufficient" if diagnostics.get("has_operating_activity") and not noise_detected else "partial"
+        status = "sufficient" if diagnostics.get("has_operating_activity") else "partial"
     elif block == "vision":
         status = "sufficient" if diagnostics.get("has_formal_vision") and not noise_detected else "partial"
     else:
@@ -479,7 +479,7 @@ def _noise_detected_for_block(
             return True
         if block == "vision" and (_is_market_prediction_noise(text) or _is_rhetorical_future_question_noise(text)):
             return True
-        if block == "mission" and (_is_vague_mission_slogan(low) or _is_testimonial_evidence(low)):
+        if block == "mission" and (_is_vague_mission_slogan(low) or _is_testimonial_evidence(low) or _is_values_statement_as_mission(low)):
             return True
         if block == "value_proposition" and _is_bad_value_prop_candidate(text):
             return True
@@ -511,6 +511,7 @@ def accepted_block_evidence(
                 or _is_truncated_evidence(low)
                 or _is_feed_or_article_noise(text)
                 or _is_vague_mission_slogan(low)
+                or _is_values_statement_as_mission(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
@@ -531,6 +532,7 @@ def accepted_block_evidence(
                 _is_truncated_evidence(low)
                 or _is_feed_or_article_noise(text)
                 or _is_vague_mission_slogan(low)
+                or _is_values_statement_as_mission(low)
                 or not (_has_operating_activity_signal(low) or _has_formal_mission_signal(low))
             ):
                 continue
@@ -846,6 +848,11 @@ def _has_operating_activity_signal(text: str) -> bool:
 def _is_vague_mission_slogan(text: str) -> bool:
     low = text.strip().lower()
     return low in {"we make good shit"} or "shit" in low
+
+
+def _is_values_statement_as_mission(text: str) -> bool:
+    low = text.strip().lower()
+    return low.startswith(("valoramos ", "we value ", "we believe ")) and not _has_formal_mission_signal(low)
 
 
 def _is_feed_or_article_noise(text: str) -> bool:

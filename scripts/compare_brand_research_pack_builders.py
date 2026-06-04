@@ -6,6 +6,7 @@ from typing import Any
 
 from src.config import BRAND3_DB_PATH
 from src.research.pack_comparison import compare_pack_builders_from_snapshot
+from src.research.research_pack_promotion import evaluate_research_pack_promotion
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -27,22 +28,40 @@ def main(argv: list[str] | None = None) -> int:
             if snapshot is None:
                 print(f"run {run_id}: not found")
                 continue
-            comparisons.append(compare_pack_builders_from_snapshot(snapshot))
+            comparison = compare_pack_builders_from_snapshot(snapshot)
+            promotion = evaluate_research_pack_promotion(snapshot)
+            comparisons.append((comparison, promotion))
     finally:
         store.close()
 
     if args.json:
-        print(json.dumps([comparison.to_dict() for comparison in comparisons], ensure_ascii=False, indent=2))
+        print(
+            json.dumps(
+                [
+                    {
+                        "comparison": comparison.to_dict(),
+                        "promotion_report": promotion.to_dict(),
+                    }
+                    for comparison, promotion in comparisons
+                ],
+                ensure_ascii=False,
+                indent=2,
+            )
+        )
         return 0
 
-    for comparison in comparisons:
+    for comparison, promotion in comparisons:
         summary = comparison.summary()
         print(
             f"run={comparison.run_id} brand={comparison.brand_name} "
             f"sources={comparison.graph_summary.get('source_count')} "
             f"claims={comparison.graph_summary.get('claim_count')} "
-            f"gained={summary['gained_count']} lost={summary['lost_count']} changed={summary['changed_count']}"
+            f"gained={summary['gained_count']} lost={summary['lost_count']} changed={summary['changed_count']} "
+            f"promotion={promotion.decisions[0].status}"
         )
+        if promotion.decisions:
+            decision = promotion.decisions[0]
+            print(f"  reasons: {', '.join(decision.reason_codes)}")
         if summary["gained_fields"]:
             print("  gained:", ", ".join(summary["gained_fields"]))
         if summary["lost_fields"]:
@@ -71,4 +90,3 @@ def _latest_run_ids(store: SQLiteStore, limit: int) -> list[int]:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

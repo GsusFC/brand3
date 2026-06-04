@@ -20,6 +20,7 @@ from src.services.brand_service import (
     _aggregate_exa_content,
     _acquisition_provenance_summary,
     _build_content_web,
+    _build_research_pack_for_feature_prompts,
     _compute_data_quality,
     _context_effective_readiness,
     _context_enrichment_summary,
@@ -57,7 +58,34 @@ class _VisualSignatureStore:
         self.saved.append((run_id, payload))
 
 
+class _SnapshotStore:
+    def __init__(self, snapshot):
+        self.snapshot = snapshot
+
+    def get_run_snapshot(self, run_id):
+        return self.snapshot
+
+
+class _PackRecommendation:
+    def __init__(self, builder: str):
+        self.builder = builder
+
+    def to_dict(self):
+        return {"builder": self.builder}
+
+
 class BrandAuditReadinessPersistenceTests(unittest.TestCase):
+    def test_research_pack_for_feature_prompts_uses_legacy_when_graph_is_not_recommended(self):
+        snapshot = {"run": {"id": 1, "brand_name": "Example", "url": "https://example.com"}}
+
+        with patch("src.services.brand_service.recommend_research_pack_builder", return_value=_PackRecommendation("legacy")), \
+             patch("src.services.brand_service.build_brand_research_pack_from_snapshot", return_value="legacy-pack"), \
+             patch("src.services.brand_service.build_evidence_graph_from_snapshot") as graph_mock:
+            pack = _build_research_pack_for_feature_prompts(store=_SnapshotStore(snapshot), run_id=1)
+
+        self.assertEqual(pack, "legacy-pack")
+        graph_mock.assert_not_called()
+
     def test_acquisition_provenance_summary_exposes_plan_trace_and_quality(self):
         context = ContextData(
             url="https://example.com",

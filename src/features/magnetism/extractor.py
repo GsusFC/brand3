@@ -39,6 +39,7 @@ from src.reports.strategic_evidence_packet import StrategicEvidencePacket
 from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
 from src.research.evidence_graph import build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
+from src.research.research_pack_promotion import recommend_research_pack_builder
 from src.research.research_pack_quality import evaluate_research_pack_quality, evaluate_research_pack_quality_gate
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
 
@@ -354,7 +355,7 @@ class MagnetismExtractor:
         evidence normalization, confidence, and degraded-state handling.
         """
         canonical_evidence = build_canonical_brand_evidence(snapshot)
-        research_pack, evidence_graph_summary = self._build_research_pack(snapshot)
+        research_pack, evidence_graph_summary, research_pack_recommendation = self._build_research_pack(snapshot)
         contextdev_candidate_summary = self._contextdev_candidate_summary_from_snapshot(snapshot)
         brand_name = canonical_evidence.brand_name
         url = canonical_evidence.url
@@ -373,6 +374,7 @@ class MagnetismExtractor:
                         strategic_packet=strategic_packet,
                         evidence_packet_summary=evidence_packet_summary,
                         evidence_graph_summary=evidence_graph_summary,
+                        research_pack_recommendation=research_pack_recommendation,
                         research_pack=research_pack,
                         contextdev_candidate_summary=contextdev_candidate_summary,
                         enrich_layers_from_packet=True,
@@ -394,6 +396,7 @@ class MagnetismExtractor:
             strategic_packet=strategic_packet,
             evidence_packet_summary=evidence_packet_summary,
             evidence_graph_summary=evidence_graph_summary,
+            research_pack_recommendation=research_pack_recommendation,
             research_pack=research_pack,
             contextdev_candidate_summary=contextdev_candidate_summary,
             enrich_layers_from_packet=False,
@@ -407,6 +410,7 @@ class MagnetismExtractor:
         strategic_packet: StrategicEvidencePacket,
         evidence_packet_summary: dict[str, Any],
         evidence_graph_summary: dict[str, Any] | None,
+        research_pack_recommendation: dict[str, Any] | None,
         research_pack: Any | None,
         contextdev_candidate_summary: dict[str, Any] | None,
         enrich_layers_from_packet: bool,
@@ -421,6 +425,8 @@ class MagnetismExtractor:
         result["canonical_evidence_source"] = "brand_audit_snapshot"
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
+        if research_pack_recommendation:
+            result["research_pack_recommendation"] = research_pack_recommendation
         if evidence_graph_summary:
             result["evidence_graph_summary"] = evidence_graph_summary
             result["research_pack_source"] = "evidence_graph"
@@ -458,11 +464,14 @@ class MagnetismExtractor:
         return result
 
     @staticmethod
-    def _build_research_pack(snapshot: dict[str, Any]) -> tuple[Any, dict[str, Any] | None]:
+    def _build_research_pack(snapshot: dict[str, Any]) -> tuple[Any, dict[str, Any] | None, dict[str, Any] | None]:
         if not BRAND3_BRAND_RESEARCH_GRAPH_PACK:
-            return build_brand_research_pack_from_snapshot(snapshot), None
+            return build_brand_research_pack_from_snapshot(snapshot), None, None
+        recommendation = recommend_research_pack_builder(snapshot)
+        if recommendation.builder != "graph":
+            return build_brand_research_pack_from_snapshot(snapshot), None, recommendation.to_dict()
         graph = build_evidence_graph_from_snapshot(snapshot)
-        return build_brand_research_pack_from_graph(graph), graph.summary()
+        return build_brand_research_pack_from_graph(graph), graph.summary(), recommendation.to_dict()
 
     def _apply_tldr_generation_flow(
         self,

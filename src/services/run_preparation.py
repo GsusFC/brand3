@@ -100,6 +100,7 @@ def plan_content(
     url: str,
     brand_name: str,
     web_data: WebData | None,
+    context_data: ContextData | None,
     web_collector: WebCollector,
     exa_data: ExaData | None,
     recover_owned_web_content,
@@ -110,7 +111,7 @@ def plan_content(
     content_web, content_source, data_sources = build_content_web(
         url,
         brand_name,
-        recover_owned_web_content(url, web_data, web_collector) or web_data,
+        recover_owned_web_content(url, web_data, web_collector, context_data) or web_data,
         exa_data,
     )
     data_quality = compute_data_quality(exa_data, content_source)

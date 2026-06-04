@@ -670,7 +670,11 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 return [about, WebData(url="https://example.com/docs", error="404"), pricing]
 
         collector = FakeCollector()
-        recovered = _recover_owned_web_content("https://example.com", initial, collector)
+        context = ContextData(
+            url="https://example.com",
+            key_pages={"about": True, "products": True},
+        )
+        recovered = _recover_owned_web_content("https://example.com", initial, collector, context)
         content_web, content_source, data_sources = _build_content_web(
             "https://example.com",
             "Example",
@@ -682,10 +686,19 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
             collector.urls,
             [
                 "https://example.com/about",
+                "https://example.com/products",
+                "https://example.com/product",
+                "https://example.com/collections",
+                "https://example.com/shop",
+                "https://example.com/solutions",
                 "https://example.com/pricing",
                 "https://example.com/docs",
                 "https://example.com/blog",
                 "https://example.com/news",
+                "https://example.com/reviews",
+                "https://example.com/testimonials",
+                "https://example.com/customers",
+                "https://example.com/case-studies",
                 "https://example.com/help",
                 "https://example.com/support",
                 "https://example.com/trust",
@@ -732,11 +745,11 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(data_sources["content_source"], "exa_fallback")
         self.assertEqual(data_sources["exa_fallback_mentions_used"], 4)
 
-    def test_owned_fallback_is_not_attempted_when_initial_web_data_is_usable(self):
+    def test_owned_fallback_is_not_attempted_when_initial_web_data_has_strategic_coverage(self):
         initial = WebData(
             url="https://example.com",
             title="Example",
-            markdown_content="Usable homepage content. " * 12,
+            markdown_content="Strategic homepage content with product, audience, proof, and company context. " * 40,
         )
 
         class FakeCollector:
@@ -746,6 +759,49 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         recovered = _recover_owned_web_content("https://example.com", initial, FakeCollector())
 
         self.assertIsNone(recovered)
+
+    def test_owned_fallback_enriches_short_but_usable_homepage(self):
+        initial = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content="Short homepage with a real headline. " * 10,
+        )
+        product = WebData(
+            url="https://example.com/products",
+            title="Products",
+            markdown_content="Product page explains the offer, audience, and outcome. " * 12,
+        )
+        about = WebData(
+            url="https://example.com/about",
+            title="About",
+            markdown_content="About page explains the company mission and proof. " * 12,
+        )
+
+        class FakeCollector:
+            def __init__(self):
+                self.urls = []
+
+            def scrape_multiple(self, urls):
+                self.urls = urls
+                return [about, product]
+
+        collector = FakeCollector()
+        context = ContextData(
+            url="https://example.com",
+            key_pages={"about": True, "products": True},
+        )
+        recovered = _recover_owned_web_content("https://example.com", initial, collector, context)
+
+        self.assertIsNotNone(recovered)
+        self.assertIn("https://example.com/products", collector.urls)
+        self.assertIn("Short homepage with a real headline", recovered.markdown_content)
+        self.assertIn("Product page explains the offer", recovered.markdown_content)
+        self.assertIn("About page explains the company mission", recovered.markdown_content)
+        self.assertEqual(
+            recovered.owned_fallback_urls,
+            ["https://example.com/about", "https://example.com/products"],
+        )
+        self.assertEqual(recovered.content_source, "owned_fallback")
 
     def test_owned_fallback_uses_same_scheme_and_host_only(self):
         initial = WebData(url="https://www.example.com/start", markdown_content="", error="blocked")

@@ -100,6 +100,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DIMENSIONS_PATH = (PROJECT_ROOT / "src" / "dimensions.py").resolve()
 ENGINE_PATH = (PROJECT_ROOT / "src" / "scoring" / "engine.py").resolve()
 _MIN_USABLE_WEB_CHARS = 200
+_MIN_STRATEGIC_WEB_CHARS = 2500
 _MIN_EXA_FALLBACK_MENTIONS = 3
 _MIN_EXA_FALLBACK_CHARS = 300
 _MAX_EXA_FALLBACK_ITEMS = 8
@@ -107,10 +108,19 @@ _SOCIAL_COLLECTION_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_SOCIAL_TIMEOUT_S
 _VISUAL_SCREENSHOT_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_VISUAL_SCREENSHOT_TIMEOUT_SECONDS", "20"))
 _OWNED_FALLBACK_PATHS = (
     "/about",
+    "/products",
+    "/product",
+    "/collections",
+    "/shop",
+    "/solutions",
     "/pricing",
     "/docs",
     "/blog",
     "/news",
+    "/reviews",
+    "/testimonials",
+    "/customers",
+    "/case-studies",
     "/help",
     "/support",
     "/trust",
@@ -298,6 +308,27 @@ def _has_usable_web_content(web_data: WebData | None) -> bool:
     return len((web_data.markdown_content or "").strip()) >= _MIN_USABLE_WEB_CHARS
 
 
+def _has_strategic_web_coverage(web_data: WebData | None) -> bool:
+    if not _has_usable_web_content(web_data):
+        return False
+    if getattr(web_data, "owned_fallback_urls", None):
+        return True
+    return len((web_data.markdown_content or "").strip()) >= _MIN_STRATEGIC_WEB_CHARS
+
+
+def _should_enrich_owned_web_content(
+    web_data: WebData | None,
+    context_data: ContextData | None,
+) -> bool:
+    if not _has_usable_web_content(web_data):
+        return True
+    if _has_strategic_web_coverage(web_data):
+        return False
+    if not context_data:
+        return False
+    return any(bool(found) for found in (context_data.key_pages or {}).values())
+
+
 def _aggregate_exa_content(exa_data: ExaData | None) -> tuple[str, int]:
     if not exa_data or len(exa_data.mentions) < _MIN_EXA_FALLBACK_MENTIONS:
         return "", 0
@@ -338,8 +369,9 @@ def _recover_owned_web_content(
     url: str,
     web_data: WebData | None,
     web_collector: WebCollector,
+    context_data: ContextData | None = None,
 ) -> WebData | None:
-    if _has_usable_web_content(web_data):
+    if not _should_enrich_owned_web_content(web_data, context_data):
         return None
 
     candidates = _owned_fallback_urls(url)
@@ -353,10 +385,16 @@ def _recover_owned_web_content(
     if not recovered_pages:
         return None
 
-    aggregate = "\n\n---\n\n".join(
+    aggregate_parts = []
+    if web_data and (web_data.markdown_content or "").strip():
+        aggregate_parts.append(
+            f"Source: {web_data.url or url}\n\n{(web_data.markdown_content or '').strip()}"
+        )
+    aggregate_parts.extend(
         f"Source: {page.url}\n\n{(page.markdown_content or '').strip()}"
         for page in recovered_pages
-    ).strip()
+    )
+    aggregate = "\n\n---\n\n".join(aggregate_parts).strip()
     if len(aggregate) < _MIN_USABLE_WEB_CHARS:
         return None
 
@@ -1864,6 +1902,7 @@ def run(
             url=url,
             brand_name=brand_name,
             web_data=web_data,
+            context_data=context_data,
             web_collector=web_collector,
             exa_data=exa_data,
             recover_owned_web_content=_recover_owned_web_content,

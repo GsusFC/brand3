@@ -19,7 +19,10 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.features.magnetism.readiness import assess_scanner_readiness
-from src.quality.publication_readiness import publication_decision_from_report_readiness
+from src.quality.publication_readiness import (
+    publication_decision_from_report_readiness,
+    publication_decision_from_scanner_readiness,
+)
 from ..config import settings
 
 log = logging.getLogger("brand3.web.queue")
@@ -300,6 +303,9 @@ class AnalysisQueue:
 
         readiness = assess_scanner_readiness(str(scan.get("input_type") or "url"), result)
         result["scanner_readiness"] = readiness.to_payload()
+        result["publication_decision"] = publication_decision_from_scanner_readiness(
+            result["scanner_readiness"]
+        ).to_payload()
         if readiness.status == "failed":
             _fail_magnetism_scan_with_payload(token, readiness.error_message or "failed", result)
             log.warning("magnetism blocked token=%s reason=%s", token, readiness.error_message)

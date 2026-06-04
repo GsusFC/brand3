@@ -295,6 +295,7 @@ def _magnetism_payload_insert_state(
         payload["scanner_readiness"] = readiness
 
     publication = publication_decision_from_scanner_readiness(readiness)
+    payload["publication_decision"] = publication.to_payload()
     if publication.status == "failed":
         reason_codes = list(publication.reason_codes)
         reason = str(reason_codes[0]) if reason_codes else "scanner_readiness_failed"

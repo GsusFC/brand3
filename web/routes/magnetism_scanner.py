@@ -16,6 +16,7 @@ from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.readiness import assess_scanner_readiness
+from src.quality.publication_readiness import publication_decision_from_scanner_readiness
 from src.features.magnetism.translation import apply_magnetism_translation, translate_magnetism_payload
 from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
@@ -1818,6 +1819,7 @@ def _scanner_result_metadata(payload: dict) -> dict:
         "pipeline_version": "brand3_scanner_pipeline_2026_06_03",
         "generated_with": generated_with,
         "scanner_readiness": _scanner_readiness_from_payload(payload),
+        "publication_decision": _publication_decision_from_payload(payload),
         "stale_against_current_pipeline": not all(freshness_requirements),
     }
 
@@ -1845,6 +1847,15 @@ def _scanner_readiness_from_payload(payload: dict) -> dict:
         return readiness
     input_type = "manual" if _is_manual_magnetism_payload(payload) else "url"
     return assess_scanner_readiness(input_type, payload).to_payload()
+
+
+def _publication_decision_from_payload(payload: dict) -> dict:
+    decision = payload.get("publication_decision")
+    if isinstance(decision, dict):
+        return decision
+    return publication_decision_from_scanner_readiness(
+        _scanner_readiness_from_payload(payload)
+    ).to_payload()
 
 
 def _is_manual_magnetism_payload(payload: dict) -> bool:

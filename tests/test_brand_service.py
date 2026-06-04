@@ -108,6 +108,14 @@ class BrandAuditReadinessPersistenceTests(unittest.TestCase):
             snapshot["run"]["audit"]["report_readiness"]["report_mode"],
             "insufficient_evidence",
         )
+        self.assertEqual(
+            snapshot["run"]["audit"]["publication_decision"]["status"],
+            "non_public",
+        )
+        self.assertEqual(
+            snapshot["run"]["audit"]["publication_decision"]["source_status"],
+            "insufficient_evidence",
+        )
 
 
 class VisualSignatureShadowRunTests(unittest.TestCase):

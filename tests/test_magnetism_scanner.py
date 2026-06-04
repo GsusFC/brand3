@@ -753,6 +753,13 @@ class MagnetismScannerTests(unittest.TestCase):
             result.json()["result_metadata"]["scanner_readiness"]["status"],
             "publishable",
         )
+        self.assertEqual(
+            result.json()["result_metadata"]["publication_decision"]["status"],
+            "publishable",
+        )
+        self.assertTrue(
+            result.json()["result_metadata"]["publication_decision"]["publishable"]
+        )
         self.assertIn("tldr_brand3", result.json())
         self.assertIn("scanner_result_v1", result.text)
         self.assertEqual(evidence.status_code, 200)
@@ -761,6 +768,10 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("result_metadata", methodology.json()["methodology"])
         self.assertEqual(
             methodology.json()["methodology"]["result_metadata"]["scanner_readiness"]["status"],
+            "publishable",
+        )
+        self.assertEqual(
+            methodology.json()["methodology"]["result_metadata"]["publication_decision"]["status"],
             "publishable",
         )
         self.assertEqual(audit.status_code, 200)
@@ -1696,6 +1707,8 @@ class MagnetismScannerTests(unittest.TestCase):
         payload = json.loads(scan["raw_payload"])
         self.assertEqual(payload["tldr_generation_mode"], "legacy_fallback_no_llm")
         self.assertEqual(payload["scanner_readiness"]["status"], "failed")
+        self.assertEqual(payload["publication_decision"]["status"], "failed")
+        self.assertEqual(payload["publication_decision"]["source_status"], "failed")
         self.assertEqual(
             payload["scanner_readiness"]["reason_codes"],
             ["canonical_tldr_degraded:no_llm"],
@@ -1730,6 +1743,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(row["error_message"], "failed:canonical_tldr_degraded:llm_error")
         stored = json.loads(row["raw_payload"])
         self.assertEqual(stored["scanner_readiness"]["status"], "failed")
+        self.assertEqual(stored["publication_decision"]["status"], "failed")
+        self.assertEqual(stored["publication_decision"]["source_status"], "failed")
 
     def test_direct_manual_scan_insert_marks_payload_debug_only(self):
         from web.storage import get_magnetism_scan, insert_magnetism_scan
@@ -1753,6 +1768,9 @@ class MagnetismScannerTests(unittest.TestCase):
         stored = json.loads(row["raw_payload"])
         self.assertEqual(stored["scanner_readiness"]["status"], "debug_only")
         self.assertFalse(stored["scanner_readiness"]["publishable"])
+        self.assertEqual(stored["publication_decision"]["status"], "debug_only")
+        self.assertFalse(stored["publication_decision"]["publishable"])
+        self.assertTrue(stored["publication_decision"]["ui_readable"])
 
     def test_research_pack_tldr_flag_on_uses_analyst_pass_and_persists_payload(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan

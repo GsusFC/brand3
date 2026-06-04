@@ -66,6 +66,7 @@ from src.learning.applier import CandidateApplyError, apply_candidate
 from src.learning.calibration import CalibrationAnalyzer
 from src.quality.dimension_confidence import dimension_confidence_from_features, dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_from_features, summarize_evidence_records
+from src.quality.publication_readiness import publication_decision_from_report_readiness
 from src.quality.trust import (
     build_trust_interpretation,
     build_trust_summary,
@@ -1737,6 +1738,7 @@ def _persist_report_readiness(
     if not readiness:
         return None
     audit["report_readiness"] = readiness
+    audit["publication_decision"] = publication_decision_from_report_readiness(readiness).to_payload()
     store.save_run_audit(run_id, audit)
     return readiness
 

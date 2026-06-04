@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     team_token: str = ""
     cookie_secret: str = ""
 
+    # Scanner API access
+    scanner_api_token: str = ""
+
     # Queue
     max_concurrent_analyses: int = 2
     analysis_timeout_seconds: int = 600
@@ -39,6 +42,8 @@ def get_settings() -> Settings:
             missing.append("BRAND3_TEAM_TOKEN")
         if not s.cookie_secret or len(s.cookie_secret) < 32:
             missing.append("BRAND3_COOKIE_SECRET (min 32 chars)")
+        if not s.scanner_api_token or len(s.scanner_api_token) < 24:
+            missing.append("BRAND3_SCANNER_API_TOKEN (min 24 chars)")
         if missing:
             raise RuntimeError(
                 "production environment missing secrets: " + ", ".join(missing)

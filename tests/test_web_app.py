@@ -159,6 +159,9 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("/scanner-api/openapi.json", response.text)
         self.assertIn("shadow_sources", response.text)
         self.assertIn("no se regeneran", response.text)
+        self.assertIn("Authorization: Bearer", response.text)
+        self.assertNotIn('"mode": "advanced"', response.text)
+        self.assertNotIn('"include_audit": true', response.text)
 
         response_en = self.client.get("/scanner-api?lang=en")
         self.assertEqual(response_en.status_code, 200)
@@ -173,6 +176,14 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("/api/v1/scanner", payload["paths"])
         self.assertIn("/api/v1/scanner/{scan_id}/result", payload["paths"])
         self.assertIn("ScannerCreateRequest", payload["components"]["schemas"])
+        self.assertIn("ScannerApiKey", payload["components"]["securitySchemes"])
+        self.assertEqual(payload["paths"]["/api/v1/scanner"]["post"]["security"], [{"ScannerApiKey": []}])
+        create_props = payload["components"]["schemas"]["ScannerCreateRequest"]["properties"]
+        self.assertNotIn("mode", create_props)
+        self.assertNotIn("include_audit", create_props)
+        error_schema = payload["components"]["schemas"]["Error"]
+        self.assertIn("error", error_schema["required"])
+        self.assertIn("409", payload["paths"]["/api/v1/scanner/{scan_id}/result"]["get"]["responses"])
 
     def test_brand_audit_landing_page_is_dedicated_route(self):
         response = self.client.get("/brand-audit")

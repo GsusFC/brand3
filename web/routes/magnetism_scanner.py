@@ -10,7 +10,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict
 
 from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_CHEAP_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
@@ -20,6 +20,10 @@ from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
 
 from ..i18n import magnetism_landing_copy
+from ..middleware.scanner_api_auth import (
+    scanner_api_auth_error as _scanner_api_auth_error,
+    scanner_api_error_response as _scanner_api_error,
+)
 from ..storage import (
     get_magnetism_scan,
     get_magnetism_scan_by_token,
@@ -40,11 +44,11 @@ _Lang = Literal["es", "en"]
 
 
 class ScannerCreateRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     url: str | None = None
     audit_run_id: int | None = None
     lang: _Lang = "es"
-    mode: str = Field(default="advanced")
-    include_audit: bool = True
 
 
 def _scanner_openapi_spec() -> dict:
@@ -53,7 +57,27 @@ def _scanner_openapi_spec() -> dict:
         "type": "object",
         "additionalProperties": False,
         "properties": {
-            "detail": {"type": "string"},
+            "error": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "code": {"type": "string"},
+                    "message": {"type": "string"},
+                    "status": {"$ref": "#/components/schemas/ScannerStatus"},
+                },
+                "required": ["code", "message"],
+            },
+        },
+        "required": ["error"],
+    }
+    validation_error_schema = {
+        "type": "object",
+        "additionalProperties": True,
+        "properties": {
+            "detail": {
+                "type": "array",
+                "items": {"type": "object", "additionalProperties": True},
+            },
         },
         "required": ["detail"],
     }
@@ -127,8 +151,6 @@ def _scanner_openapi_spec() -> dict:
                                         "url": {"type": "string"},
                                         "audit_run_id": {"type": "integer"},
                                         "lang": {"type": "string", "enum": ["es", "en"]},
-                                        "mode": {"type": "string"},
-                                        "include_audit": {"type": "boolean"},
                                     },
                                     "oneOf": [
                                         {"required": ["url"]},
@@ -141,8 +163,6 @@ def _scanner_openapi_spec() -> dict:
                                         "value": {
                                             "url": "https://example.com",
                                             "lang": "es",
-                                            "mode": "advanced",
-                                            "include_audit": True,
                                         },
                                     },
                                     "from_audit": {
@@ -150,7 +170,6 @@ def _scanner_openapi_spec() -> dict:
                                         "value": {
                                             "audit_run_id": 165,
                                             "lang": "es",
-                                            "include_audit": True,
                                         },
                                     },
                                 },
@@ -163,8 +182,12 @@ def _scanner_openapi_spec() -> dict:
                             "content": {"application/json": {"schema": scan_status_schema}},
                         },
                         "400": {"description": "Invalid request", "content": {"application/json": {"schema": error_schema}}},
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Referenced Brand Audit not found", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
                     },
+                    "security": [{"ScannerApiKey": []}],
                 }
             },
             "/api/v1/scanner/{scan_id}": {
@@ -177,8 +200,12 @@ def _scanner_openapi_spec() -> dict:
                     ],
                     "responses": {
                         "200": {"description": "Scanner status", "content": {"application/json": {"schema": scan_status_schema}}},
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
                     },
+                    "security": [{"ScannerApiKey": []}],
                 }
             },
             "/api/v1/scanner/{scan_id}/result": {
@@ -201,9 +228,13 @@ def _scanner_openapi_spec() -> dict:
                                 }
                             },
                         },
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
-                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
                     },
+                    "security": [{"ScannerApiKey": []}],
                 }
             },
             "/api/v1/scanner/{scan_id}/evidence": {
@@ -218,9 +249,13 @@ def _scanner_openapi_spec() -> dict:
                             "description": "Evidence payload",
                             "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
                         },
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
-                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
                     },
+                    "security": [{"ScannerApiKey": []}],
                 }
             },
             "/api/v1/scanner/{scan_id}/methodology": {
@@ -235,9 +270,13 @@ def _scanner_openapi_spec() -> dict:
                             "description": "Methodology payload",
                             "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
                         },
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
-                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
                     },
+                    "security": [{"ScannerApiKey": []}],
                 }
             },
             "/api/v1/scanner/{scan_id}/audit": {
@@ -252,9 +291,13 @@ def _scanner_openapi_spec() -> dict:
                             "description": "Audit snapshot or missing-source indicator",
                             "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
                         },
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
-                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": scan_status_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
                     },
+                    "security": [{"ScannerApiKey": []}],
                 }
             },
         },
@@ -267,13 +310,20 @@ def _scanner_openapi_spec() -> dict:
                         "url": {"type": "string"},
                         "audit_run_id": {"type": "integer"},
                         "lang": {"type": "string", "enum": ["es", "en"]},
-                        "mode": {"type": "string"},
-                        "include_audit": {"type": "boolean"},
                     },
                     "oneOf": [{"required": ["url"]}, {"required": ["audit_run_id"]}],
                 },
                 "ScannerStatus": scan_status_schema,
                 "Error": error_schema,
+                "ValidationError": validation_error_schema,
+            },
+            "securitySchemes": {
+                "ScannerApiKey": {
+                    "type": "apiKey",
+                    "in": "header",
+                    "name": "Authorization",
+                    "description": "Use `Authorization: Bearer <BRAND3_SCANNER_API_TOKEN>`.",
+                },
             }
         },
     }
@@ -932,15 +982,37 @@ def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
     }
 
 
-@router.post("/api/v1/scanner", status_code=202)
-async def scanner_api_create(payload: ScannerCreateRequest) -> dict:
+def _scan_not_found(scan_id: int) -> JSONResponse:
+    return _scanner_api_error(
+        404,
+        code="scan_not_found",
+        message=f"Magnetism scan #{scan_id} not found.",
+    )
+
+
+def _scan_not_ready(row: dict, *, lang: _Lang = "es") -> JSONResponse:
+    return _scanner_api_error(
+        409,
+        code="scan_not_ready",
+        message="Scanner result is not ready.",
+        status=_api_scan_status(row, lang=lang),
+    )
+
+
+@router.post("/api/v1/scanner", status_code=202, response_model=None)
+async def scanner_api_create(request: Request, payload: ScannerCreateRequest) -> dict | JSONResponse:
     """Queue a complete Brand3 Scanner run from URL or an existing Brand Audit run."""
-    if not payload.include_audit:
-        raise HTTPException(status_code=400, detail="include_audit=false is not supported for Brand3 Scanner API.")
+    auth_error = _scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
     url_val = (payload.url or "").strip()
     audit_run_id = payload.audit_run_id
-    if bool(url_val) == bool(audit_run_id):
-        raise HTTPException(status_code=400, detail="Provide exactly one of url or audit_run_id.")
+    if bool(url_val) == (audit_run_id is not None):
+        return _scanner_api_error(
+            400,
+            code="invalid_scanner_create_request",
+            message="Provide exactly one of url or audit_run_id.",
+        )
 
     token = secrets.token_urlsafe(12)
     if audit_run_id:
@@ -950,7 +1022,11 @@ async def scanner_api_create(payload: ScannerCreateRequest) -> dict:
         finally:
             store.close()
         if snapshot is None:
-            raise HTTPException(status_code=404, detail=f"Brand Audit run #{audit_run_id} not found.")
+            return _scanner_api_error(
+                404,
+                code="audit_run_not_found",
+                message=f"Brand Audit run #{audit_run_id} not found.",
+            )
         run = snapshot.get("run") or {}
         scan_id = insert_magnetism_job(
             token=token,
@@ -963,7 +1039,11 @@ async def scanner_api_create(payload: ScannerCreateRequest) -> dict:
     else:
         valid, result = validate_url(url_val)
         if not valid:
-            raise HTTPException(status_code=400, detail=f"URL rejected: {result}")
+            return _scanner_api_error(
+                400,
+                code="url_rejected",
+                message=f"URL rejected: {result}",
+            )
         scan_id = insert_magnetism_job(
             token=token,
             brand_name=slug_from_url(result),
@@ -977,21 +1057,27 @@ async def scanner_api_create(payload: ScannerCreateRequest) -> dict:
     return _api_scan_status(row, lang=payload.lang)
 
 
-@router.get("/api/v1/scanner/{scan_id}")
-async def scanner_api_status(scan_id: int, lang: _Lang = Query("es")) -> dict:
+@router.get("/api/v1/scanner/{scan_id}", response_model=None)
+async def scanner_api_status(request: Request, scan_id: int, lang: _Lang = Query("es")) -> dict | JSONResponse:
+    auth_error = _scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
     row = get_magnetism_scan(scan_id)
     if row is None:
-        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+        return _scan_not_found(scan_id)
     return _api_scan_status(row, lang=lang)
 
 
-@router.get("/api/v1/scanner/{scan_id}/result")
-async def scanner_api_result(scan_id: int, lang: _Lang = Query("es")) -> dict:
+@router.get("/api/v1/scanner/{scan_id}/result", response_model=None)
+async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query("es")) -> dict | JSONResponse:
+    auth_error = _scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
     row = get_magnetism_scan(scan_id)
     if row is None:
-        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+        return _scan_not_found(scan_id)
     if row.get("status") != "ready":
-        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang=lang))
+        return _scan_not_ready(row, lang=lang)
     model = _api_magnetism_scan_model(row)
     payload = model["payload"]
     metadata = _scanner_result_metadata(payload)
@@ -1020,13 +1106,16 @@ async def scanner_api_result(scan_id: int, lang: _Lang = Query("es")) -> dict:
     }
 
 
-@router.get("/api/v1/scanner/{scan_id}/evidence")
-async def scanner_api_evidence(scan_id: int) -> dict:
+@router.get("/api/v1/scanner/{scan_id}/evidence", response_model=None)
+async def scanner_api_evidence(request: Request, scan_id: int) -> dict | JSONResponse:
+    auth_error = _scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
     row = get_magnetism_scan(scan_id)
     if row is None:
-        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+        return _scan_not_found(scan_id)
     if row.get("status") != "ready":
-        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang="es"))
+        return _scan_not_ready(row)
     model = _api_magnetism_scan_model(row)
     return {
         "id": model["id"],
@@ -1035,13 +1124,16 @@ async def scanner_api_evidence(scan_id: int) -> dict:
     }
 
 
-@router.get("/api/v1/scanner/{scan_id}/methodology")
-async def scanner_api_methodology(scan_id: int) -> dict:
+@router.get("/api/v1/scanner/{scan_id}/methodology", response_model=None)
+async def scanner_api_methodology(request: Request, scan_id: int) -> dict | JSONResponse:
+    auth_error = _scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
     row = get_magnetism_scan(scan_id)
     if row is None:
-        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+        return _scan_not_found(scan_id)
     if row.get("status") != "ready":
-        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang="es"))
+        return _scan_not_ready(row)
     model = _api_magnetism_scan_model(row)
     return {
         "id": model["id"],
@@ -1050,13 +1142,16 @@ async def scanner_api_methodology(scan_id: int) -> dict:
     }
 
 
-@router.get("/api/v1/scanner/{scan_id}/audit")
-async def scanner_api_audit(scan_id: int) -> dict:
+@router.get("/api/v1/scanner/{scan_id}/audit", response_model=None)
+async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONResponse:
+    auth_error = _scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
     row = get_magnetism_scan(scan_id)
     if row is None:
-        raise HTTPException(status_code=404, detail=f"Magnetism scan #{scan_id} not found.")
+        return _scan_not_found(scan_id)
     if row.get("status") != "ready":
-        raise HTTPException(status_code=409, detail=_api_scan_status(row, lang="es"))
+        return _scan_not_ready(row)
     model = _api_magnetism_scan_model(row)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
@@ -1067,7 +1162,11 @@ async def scanner_api_audit(scan_id: int) -> dict:
     finally:
         store.close()
     if snapshot is None:
-        raise HTTPException(status_code=404, detail=f"Brand Audit run #{source_run_id} not found.")
+        return _scanner_api_error(
+            404,
+            code="audit_run_not_found",
+            message=f"Brand Audit run #{source_run_id} not found.",
+        )
     run = snapshot.get("run") or {}
     return {
         "id": scan_id,

@@ -110,14 +110,14 @@
       Esquema dedicado para agentes y clientes internos. El contrato compacto vive en <code>/scanner-api/openapi.json</code>.
     </p>
     <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0;">
-      Usa este spec si quieres integrar el scanner como herramienta sin inferir formatos ni rutas.
+      Las rutas <code>/api/v1/scanner</code> requieren <code>Authorization: Bearer &lt;token&gt;</code>; no infieras formatos ni rutas fuera del spec.
     </p>
     {% else %}
     <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0 0 10px;">
       Dedicated schema for agents and internal clients. The compact contract lives at <code>/scanner-api/openapi.json</code>.
     </p>
     <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:0;">
-      Use this spec if you want to integrate the scanner as a tool without inferring formats or routes.
+      <code>/api/v1/scanner</code> routes require <code>Authorization: Bearer &lt;token&gt;</code>; do not infer formats or routes outside the spec.
     </p>
     {% endif %}
   </div>
@@ -136,9 +136,7 @@
       <pre style="white-space:pre-wrap; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:12px; line-height:1.45; margin:10px 0 0;">POST /api/v1/scanner
 {
   "url": "https://example.com",
-  "lang": "es",
-  "mode": "advanced",
-  "include_audit": true
+  "lang": "es"
 }</pre>
     </article>
     <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
@@ -146,8 +144,7 @@
       <pre style="white-space:pre-wrap; overflow-wrap:anywhere; font-family:var(--font-mono); font-size:12px; line-height:1.45; margin:10px 0 0;">POST /api/v1/scanner
 {
   "audit_run_id": 165,
-  "lang": "es",
-  "include_audit": true
+  "lang": "es"
 }</pre>
     </article>
   </div>

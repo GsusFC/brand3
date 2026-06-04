@@ -25,6 +25,7 @@ def _install_env(db_path: Path) -> None:
     os.environ["BRAND3_DB_PATH"] = str(db_path)
     os.environ["BRAND3_COOKIE_SECRET"] = "t" * 40
     os.environ["BRAND3_TEAM_TOKEN"] = "team"
+    os.environ["BRAND3_SCANNER_API_TOKEN"] = "scanner-token-for-tests-123456"
     os.environ["BRAND3_MAX_CONCURRENT_ANALYSES"] = "1"
     os.environ["BRAND3_LLM_API_KEY"] = ""
     os.environ["GEMINI_API_KEY"] = ""
@@ -84,6 +85,9 @@ class MagnetismScannerTests(unittest.TestCase):
         token = create_serializer("t" * 40).dumps({"unlocked_at": 1})
         self.client.cookies.set(COOKIE_NAME, token)
 
+    def _scanner_api_headers(self) -> dict[str, str]:
+        return {"Authorization": "Bearer scanner-token-for-tests-123456"}
+
     def tearDown(self):
         from web.workers.queue import set_run_magnetism_override
 
@@ -95,6 +99,7 @@ class MagnetismScannerTests(unittest.TestCase):
             "BRAND3_DB_PATH",
             "BRAND3_COOKIE_SECRET",
             "BRAND3_TEAM_TOKEN",
+            "BRAND3_SCANNER_API_TOKEN",
             "BRAND3_MAX_CONCURRENT_ANALYSES",
             "BRAND3_LLM_API_KEY",
             "GEMINI_API_KEY",
@@ -704,7 +709,11 @@ class MagnetismScannerTests(unittest.TestCase):
         payload["source_run_id"] = run_id
         set_run_magnetism_override(lambda job, progress_cb=None: payload)
 
-        queued = self.client.post("/api/v1/scanner", json={"audit_run_id": run_id})
+        queued = self.client.post(
+            "/api/v1/scanner",
+            json={"audit_run_id": run_id},
+            headers=self._scanner_api_headers(),
+        )
 
         self.assertEqual(queued.status_code, 202)
         queued_payload = queued.json()
@@ -722,11 +731,11 @@ class MagnetismScannerTests(unittest.TestCase):
             source_run_id=run_id,
         )
 
-        status = self.client.get(f"/api/v1/scanner/{scan_id}")
-        result = self.client.get(f"/api/v1/scanner/{scan_id}/result")
-        evidence = self.client.get(f"/api/v1/scanner/{scan_id}/evidence")
-        methodology = self.client.get(f"/api/v1/scanner/{scan_id}/methodology")
-        audit = self.client.get(f"/api/v1/scanner/{scan_id}/audit")
+        status = self.client.get(f"/api/v1/scanner/{scan_id}", headers=self._scanner_api_headers())
+        result = self.client.get(f"/api/v1/scanner/{scan_id}/result", headers=self._scanner_api_headers())
+        evidence = self.client.get(f"/api/v1/scanner/{scan_id}/evidence", headers=self._scanner_api_headers())
+        methodology = self.client.get(f"/api/v1/scanner/{scan_id}/methodology", headers=self._scanner_api_headers())
+        audit = self.client.get(f"/api/v1/scanner/{scan_id}/audit", headers=self._scanner_api_headers())
 
         self.assertEqual(status.status_code, 200)
         self.assertTrue(status.json()["result_available"])
@@ -741,6 +750,97 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(audit.status_code, 200)
         self.assertTrue(audit.json()["available"])
         self.assertIn("API Linked has an attached audit snapshot.", audit.text)
+
+    def test_scanner_api_requires_token(self):
+        response = self.client.post("/api/v1/scanner", json={"url": "https://example.com"})
+        invalid_body = self.client.post(
+            "/api/v1/scanner",
+            json={"url": "https://example.com", "mode": "advanced"},
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["error"]["code"], "scanner_api_unauthorized")
+        self.assertEqual(invalid_body.status_code, 401)
+        self.assertEqual(invalid_body.json()["error"]["code"], "scanner_api_unauthorized")
+
+    def test_scanner_api_can_queue_from_url(self):
+        with unittest.mock.patch(
+            "web.workers.url_validator.socket.getaddrinfo",
+            side_effect=lambda _h, _p: [(2, 1, 6, "", ("1.1.1.1", 0))],
+        ):
+            response = self.client.post(
+                "/api/v1/scanner",
+                json={"url": "https://example.com", "lang": "en"},
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 202)
+        payload = response.json()
+        self.assertEqual(payload["status"], "queued")
+        self.assertEqual(payload["url"], "https://example.com")
+        self.assertIsNone(payload["source_run_id"])
+        self.assertIn("/api/v1/scanner/", payload["status_url"])
+
+    def test_scanner_api_rejects_invalid_create_requests(self):
+        headers = self._scanner_api_headers()
+
+        missing = self.client.post("/api/v1/scanner", json={}, headers=headers)
+        both = self.client.post(
+            "/api/v1/scanner",
+            json={"url": "https://example.com", "audit_run_id": 123},
+            headers=headers,
+        )
+        bad_url = self.client.post(
+            "/api/v1/scanner",
+            json={"url": "not-a-url"},
+            headers=headers,
+        )
+        missing_audit = self.client.post(
+            "/api/v1/scanner",
+            json={"audit_run_id": 999999},
+            headers=headers,
+        )
+        unknown_field = self.client.post(
+            "/api/v1/scanner",
+            json={"url": "https://example.com", "mode": "advanced"},
+            headers=headers,
+        )
+
+        self.assertEqual(missing.status_code, 400)
+        self.assertEqual(missing.json()["error"]["code"], "invalid_scanner_create_request")
+        self.assertEqual(both.status_code, 400)
+        self.assertEqual(both.json()["error"]["code"], "invalid_scanner_create_request")
+        self.assertEqual(bad_url.status_code, 400)
+        self.assertEqual(bad_url.json()["error"]["code"], "url_rejected")
+        self.assertEqual(missing_audit.status_code, 404)
+        self.assertEqual(missing_audit.json()["error"]["code"], "audit_run_not_found")
+        self.assertEqual(unknown_field.status_code, 422)
+
+    def test_scanner_api_not_ready_sections_return_stable_409(self):
+        from web.storage import insert_magnetism_job
+
+        scan_id = insert_magnetism_job(
+            token="queued-scan-token",
+            brand_name="Queued API",
+            url="https://queued.test",
+            input_type="url",
+            input_value="https://queued.test",
+        )
+        headers = self._scanner_api_headers()
+
+        for suffix in ("result", "evidence", "methodology", "audit"):
+            response = self.client.get(f"/api/v1/scanner/{scan_id}/{suffix}", headers=headers)
+            payload = response.json()
+            self.assertEqual(response.status_code, 409)
+            self.assertEqual(payload["error"]["code"], "scan_not_ready")
+            self.assertEqual(payload["error"]["status"]["id"], scan_id)
+            self.assertFalse(payload["error"]["status"]["result_available"])
+
+    def test_scanner_api_missing_scan_returns_stable_404(self):
+        response = self.client.get("/api/v1/scanner/999999/result", headers=self._scanner_api_headers())
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json()["error"]["code"], "scan_not_found")
 
     def test_scan_detail_shows_tldr_strategy_metadata(self):
         from web.storage import insert_magnetism_scan

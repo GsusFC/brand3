@@ -14,6 +14,7 @@ from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .logging_setup import access_log_middleware, configure_logging
 from .middleware.rate_limit import rate_limit_middleware
+from .middleware.scanner_api_auth import scanner_api_auth_middleware
 from .routes import (
     analyze, brand, brand_audit, health, index, magnetism_scanner, report, reports_list, status,
     takedown, team, visual_signature,
@@ -55,6 +56,7 @@ app = FastAPI(
 )
 
 app.middleware("http")(rate_limit_middleware)
+app.middleware("http")(scanner_api_auth_middleware)
 app.middleware("http")(access_log_middleware)
 app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 

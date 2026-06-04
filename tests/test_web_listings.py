@@ -214,6 +214,8 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(row["coherence_score"], 74)
         self.assertEqual(row["quadrant"], "Canonical quadrant")
         self.assertEqual(row["source_run_id"], 160)
+        self.assertEqual(row["scan_mode"]["mode"], "from_audit_run")
+        self.assertTrue(row["scan_mode"]["comparable"])
 
         r = self.client.get("/magnetism-scanner")
         self.assertEqual(r.status_code, 200)

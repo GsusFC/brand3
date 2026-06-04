@@ -747,11 +747,19 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(status.status_code, 200)
         self.assertTrue(status.json()["result_available"])
         self.assertEqual(status.json()["scanner_readiness"]["status"], "publishable")
+        self.assertEqual(status.json()["scan_mode"]["mode"], "from_audit_run")
+        self.assertTrue(status.json()["scan_mode"]["comparable"])
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json()["audit"]["source_run_id"], run_id)
+        self.assertEqual(result.json()["scan_mode"]["mode"], "from_audit_run")
+        self.assertTrue(result.json()["scan_mode"]["comparable"])
         self.assertEqual(
             result.json()["result_metadata"]["scanner_readiness"]["status"],
             "publishable",
+        )
+        self.assertEqual(
+            result.json()["result_metadata"]["scan_mode"]["mode"],
+            "from_audit_run",
         )
         self.assertEqual(
             result.json()["result_metadata"]["publication_decision"]["status"],
@@ -806,6 +814,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(payload["status"], "queued")
         self.assertEqual(payload["url"], "https://example.com")
         self.assertIsNone(payload["source_run_id"])
+        self.assertEqual(payload["scan_mode"]["mode"], "canonical_url")
+        self.assertTrue(payload["scan_mode"]["comparable"])
         self.assertIn("/api/v1/scanner/", payload["status_url"])
 
     def test_scanner_api_rejects_invalid_create_requests(self):
@@ -1771,6 +1781,9 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(stored["publication_decision"]["status"], "debug_only")
         self.assertFalse(stored["publication_decision"]["publishable"])
         self.assertTrue(stored["publication_decision"]["ui_readable"])
+        self.assertEqual(stored["scan_mode"]["mode"], "legacy_manual")
+        self.assertFalse(stored["scan_mode"]["comparable"])
+        self.assertIn("manual_input_debug_path", stored["scan_mode"]["reason_codes"])
 
     def test_research_pack_tldr_flag_on_uses_analyst_pass_and_persists_payload(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan

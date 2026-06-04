@@ -22,6 +22,7 @@ def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():
         },
         phase="ready",
         readiness={"status": "publishable", "publishable": True, "reason_codes": []},
+        scan_mode={"mode": "from_audit_run", "comparable": True, "reason_codes": []},
         lang="en",
     )
 
@@ -33,6 +34,8 @@ def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():
     assert payload["audit_url"] == "/api/v1/scanner/42/audit"
     assert payload["ui_url"] == "/magnetism-scanner/scan/42?lang=en"
     assert payload["scanner_readiness"]["status"] == "publishable"
+    assert payload["scan_mode"]["mode"] == "from_audit_run"
+    assert payload["scan_mode"]["comparable"] is True
 
 
 def test_scanner_status_payload_hides_ui_url_until_ready():
@@ -40,11 +43,13 @@ def test_scanner_status_payload_hides_ui_url_until_ready():
         {"id": 42, "status": "running"},
         phase="extracting",
         readiness={"status": "degraded", "publishable": False, "reason_codes": ["pending"]},
+        scan_mode={"mode": "canonical_url", "comparable": True, "reason_codes": []},
     )
 
     assert payload["phase"] == "extracting"
     assert payload["result_available"] is False
     assert payload["ui_url"] is None
+    assert payload["scan_mode"]["mode"] == "canonical_url"
 
 
 def test_scanner_result_metadata_reports_current_pipeline_inputs():

@@ -63,6 +63,7 @@ def scanner_openapi_spec() -> dict:
             "completed_at": {"type": ["string", "null"], "format": "date-time"},
             "error_message": {"type": ["string", "null"]},
             "scanner_readiness": {"$ref": "#/components/schemas/ScannerReadiness"},
+            "scan_mode": {"$ref": "#/components/schemas/ScanModePolicy"},
             "result_available": {"type": "boolean"},
             "status_url": {"type": "string"},
             "result_url": {"type": "string"},
@@ -83,6 +84,7 @@ def scanner_openapi_spec() -> dict:
             "completed_at",
             "error_message",
             "scanner_readiness",
+            "scan_mode",
             "result_available",
             "status_url",
             "result_url",
@@ -104,6 +106,19 @@ def scanner_openapi_spec() -> dict:
             "reason_codes": {"type": "array", "items": {"type": "string"}},
         },
         "required": ["status", "publishable", "reason_codes"],
+    }
+    scan_mode_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "properties": {
+            "mode": {
+                "type": "string",
+                "enum": ["canonical_url", "from_audit_run", "legacy_manual", "unknown"],
+            },
+            "comparable": {"type": "boolean"},
+            "reason_codes": {"type": "array", "items": {"type": "string"}},
+        },
+        "required": ["mode", "comparable", "reason_codes"],
     }
     return {
         "openapi": "3.1.0",
@@ -297,6 +312,7 @@ def scanner_openapi_spec() -> dict:
                 },
                 "ScannerStatus": scan_status_schema,
                 "ScannerReadiness": scanner_readiness_schema,
+                "ScanModePolicy": scan_mode_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,
             },

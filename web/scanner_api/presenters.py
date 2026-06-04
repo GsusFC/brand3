@@ -17,6 +17,7 @@ def scanner_status_payload(
     *,
     phase: str,
     readiness: dict[str, Any],
+    scan_mode: dict[str, Any] | None = None,
     lang: Lang = "es",
 ) -> dict[str, Any]:
     scan_id = int(row.get("id") or 0)
@@ -33,6 +34,7 @@ def scanner_status_payload(
         "completed_at": row.get("completed_at"),
         "error_message": row.get("error_message"),
         "scanner_readiness": readiness,
+        "scan_mode": scan_mode or {},
         "result_available": status == "ready",
         "status_url": f"/api/v1/scanner/{scan_id}",
         "result_url": f"/api/v1/scanner/{scan_id}/result",

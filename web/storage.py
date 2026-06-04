@@ -14,6 +14,7 @@ from pathlib import Path
 
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.readiness import assess_scanner_readiness
+from src.features.magnetism.scan_mode import scan_mode_from_payload
 from src.quality.publication_readiness import publication_decision_from_scanner_readiness
 from src.storage.sqlite_store import SQLiteStore
 
@@ -138,6 +139,10 @@ def _normalize_magnetism_listing_row(row: dict) -> dict:
         return row
 
     normalized = dict(row)
+    normalized["scan_mode"] = scan_mode_from_payload(
+        payload,
+        source_run_id=normalized.get("source_run_id"),
+    ).to_payload()
     for key in (
         "brand_name",
         "url",
@@ -296,6 +301,12 @@ def _magnetism_payload_insert_state(
 
     publication = publication_decision_from_scanner_readiness(readiness)
     payload["publication_decision"] = publication.to_payload()
+    input_type = _magnetism_payload_input_type(payload, source_run_id=source_run_id)
+    payload["scan_mode"] = scan_mode_from_payload(
+        payload,
+        input_type=input_type,
+        source_run_id=source_run_id,
+    ).to_payload()
     if publication.status == "failed":
         reason_codes = list(publication.reason_codes)
         reason = str(reason_codes[0]) if reason_codes else "scanner_readiness_failed"

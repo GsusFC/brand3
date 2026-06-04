@@ -20,13 +20,17 @@ def test_research_pack_rollout_batch_summarizes_cohort_metrics() -> None:
         "review_required": 1,
     }
     assert summary["critical_loss_counts"] == {"entity_type": 1, "offer": 1}
-    company_cohort = next(row for row in summary["cohort_metrics"] if row["cohort"] == "company:10-24")
-    assert company_cohort["run_count"] == 2
-    assert company_cohort["promotable_count"] == 1
-    assert company_cohort["blocked_count"] == 1
-    assert company_cohort["promotion_rate"] == 0.5
+    clean_cohort = next(row for row in summary["cohort_metrics"] if row["cohort"] == "company:10-24:clean")
+    blocked_cohort = next(row for row in summary["cohort_metrics"] if row["cohort"] == "company:10-24:critical-loss")
+    assert clean_cohort["run_count"] == 1
+    assert clean_cohort["promotable_count"] == 1
+    assert clean_cohort["promotion_rate"] == 1.0
+    assert blocked_cohort["run_count"] == 1
+    assert blocked_cohort["blocked_count"] == 1
+    assert blocked_cohort["promotion_rate"] == 0.0
     assert summary["rollout_readiness"]["status"] == "not_ready"
-    assert "promotion_rate_below_threshold" in summary["rollout_readiness"]["reason_codes"]
+    assert "promotion_rate_below_threshold" not in summary["rollout_readiness"]["reason_codes"]
+    assert "blocked_runs_present" in summary["rollout_readiness"]["reason_codes"]
     assert "critical_losses_present" in summary["rollout_readiness"]["reason_codes"]
 
 
@@ -42,7 +46,7 @@ def test_research_pack_rollout_batch_renders_markdown_tables() -> None:
 
     assert "# Research Pack Rollout" in markdown
     assert "Pipe \\| Brand" in markdown
-    assert "company:10-24" in markdown
+    assert "company:10-24:clean" in markdown
     assert "Rollout readiness" in markdown
     assert "## Cohorts" in markdown
     assert "## Runs" in markdown
@@ -73,7 +77,9 @@ def _report(
         "status": "ok",
         "brand_name": brand,
         "url": f"https://{brand.lower().replace(' ', '')}.example",
-        "cohort": f"{entity_type}:10-24",
+        "base_cohort": f"{entity_type}:10-24",
+        "segment": "critical-loss" if critical_losses else "clean",
+        "cohort": f"{entity_type}:10-24:{'critical-loss' if critical_losses else 'clean'}",
         "graph_summary": {"source_count": 12, "claim_count": 30},
         "comparison": {"summary": summary},
         "promotion_report": {"decisions": [{"status": promotion_status}]},

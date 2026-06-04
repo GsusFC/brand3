@@ -71,7 +71,9 @@ def build_run_rollout_report(store: SQLiteStore, run_id: int) -> dict[str, Any]:
         "status": "ok",
         "brand_name": str(run.get("brand_name") or ""),
         "url": str(run.get("url") or ""),
-        "cohort": _rollout_cohort(comparison),
+        "base_cohort": _rollout_base_cohort(comparison),
+        "segment": _rollout_segment(summary),
+        "cohort": f"{_rollout_base_cohort(comparison)}:{_rollout_segment(summary)}",
         "graph_summary": comparison.graph_summary,
         "comparison": comparison.to_dict(),
         "promotion_report": promotion.to_dict(),
@@ -101,10 +103,14 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
             critical_loss_counts[field] = critical_loss_counts.get(field, 0) + 1
 
         cohort = str(report.get("cohort") or "unknown")
+        base_cohort = str(report.get("base_cohort") or "unknown")
+        segment = str(report.get("segment") or "unknown")
         cohort_row = cohort_rows.setdefault(
             cohort,
             {
                 "cohort": cohort,
+                "base_cohort": base_cohort,
+                "segment": segment,
                 "run_count": 0,
                 "promotable_count": 0,
                 "blocked_count": 0,
@@ -138,6 +144,8 @@ def summarize_rollout_reports(reports: list[dict[str, Any]], *, db_path: str) ->
                 "lost_count": report.get("lost_count"),
                 "changed_count": report.get("changed_count"),
                 "critical_losses": critical_losses,
+                "base_cohort": base_cohort,
+                "segment": segment,
             }
         )
 
@@ -305,7 +313,7 @@ def _critical_losses(summary: dict[str, Any]) -> list[str]:
     return losses
 
 
-def _rollout_cohort(comparison) -> str:
+def _rollout_base_cohort(comparison) -> str:
     graph_summary = comparison.graph_summary or {}
     source_count = int(graph_summary.get("source_count") or 0)
     if source_count >= 25:
@@ -316,6 +324,16 @@ def _rollout_cohort(comparison) -> str:
         source_band = "0-9"
     entity_type = comparison.legacy_entity_type or comparison.graph_entity_type or "unknown"
     return f"{entity_type}:{source_band}"
+
+
+def _rollout_segment(summary: dict[str, Any]) -> str:
+    if _critical_losses(summary):
+        return "critical-loss"
+    if int(summary.get("lost_count") or 0) > 0:
+        return "lossy"
+    if int(summary.get("changed_count") or 0) > 0:
+        return "clean-changed"
+    return "clean"
 
 
 def _latest_run_ids(store: SQLiteStore, limit: int) -> list[int]:

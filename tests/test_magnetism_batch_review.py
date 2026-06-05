@@ -11,6 +11,7 @@ from scripts.magnetism_brand_audit_batch_review import (
     _known_noise_hits,
     _proof_support_cell,
     _render_markdown,
+    _vertical_profile_impact,
     _visible_interpretation_values,
 )
 
@@ -366,6 +367,100 @@ def test_summary_counts_block_quality() -> None:
     assert summary["block_quality"]["vision"] == {"usable": 1, "missing": 1}
 
 
+def test_vertical_profile_impact_detects_home_retail_contribution() -> None:
+    impact = _vertical_profile_impact(
+        {
+            "strategic_evidence_packet": {
+                "groups": {
+                    "product_offer": [
+                        {
+                            "text": "Tienda online de muebles y decoración moderna para transformar tu hogar con estilo."
+                        }
+                    ],
+                    "values_language": [
+                        {"text": "Valoramos la creatividad y la belleza en cada pieza."}
+                    ],
+                }
+            }
+        },
+        {
+            "attributes": {"answer": ["design-led", "functional", "inspiring"]},
+            "values": {"answer": ["inspiration"]},
+        },
+        {
+            "netspace": {
+                "detected": True,
+                "evidence": "Tienda online de muebles y decoración moderna.",
+            },
+            "ambientspace": {
+                "detected": True,
+                "evidence": "Creatividad, belleza e inclusión.",
+            },
+        },
+    )
+
+    assert impact == [
+        {
+            "profile": "home_retail",
+            "matched_groups": {"product_offer": 1, "values_language": 1},
+            "matched_layers": {"netspace": 1, "ambientspace": 1},
+            "matched_terms": {
+                "attributes": ["design-led", "functional", "inspiring"],
+                "values": ["inspiration"],
+            },
+            "touched_blocks": ["value_proposition", "attributes", "values"],
+        }
+    ]
+
+
+def test_build_row_and_summary_include_vertical_profile_impact() -> None:
+    row = _build_row(
+        {"run": {"id": 11, "brand_name": "Retail Brand", "url": "https://retail.test"}},
+        {
+            "metrics": {},
+            "evidence_packet_summary": {
+                "strategic_group_counts": {"product_offer": 1, "values_language": 1},
+                "strategic_source_counts": {"owned_raw": 2},
+                "evidence_quality": {"status": "usable", "reasons": []},
+            },
+            "strategic_evidence_packet": {
+                "groups": {
+                    "product_offer": [
+                        {"text": "Tienda online de muebles y decoración moderna para transformar tu hogar."}
+                    ],
+                    "values_language": [{"text": "Valoramos la creatividad y la belleza."}],
+                }
+            },
+            "magenta_circle": {
+                "netspace": {"detected": True, "evidence": "Tienda online de muebles."},
+                "ambientspace": {"detected": True, "evidence": "Creatividad y belleza."},
+            },
+            "tldr_brand3": {
+                "value_proposition": {"answer": "Tienda online de muebles.", "confidence": "high"},
+                "attributes": {"answer": ["design-led"], "confidence": "medium"},
+                "values": {"answer": ["inspiration"], "confidence": "medium"},
+            },
+        },
+    )
+    summary = _build_summary([row])
+
+    assert row["vertical_profile_impact"][0]["profile"] == "home_retail"
+    assert row["vertical_profile_impact"][0]["touched_blocks"] == [
+        "value_proposition",
+        "attributes",
+        "values",
+    ]
+    assert summary["vertical_profile_impact"] == {
+        "home_retail": {
+            "rows": 1,
+            "rows_with_review_flags": 1,
+            "strong_value_proposition": 1,
+            "usable_attributes": 1,
+            "usable_values": 1,
+        }
+    }
+
+
 def test_proof_support_cell_uses_credibility_status_and_count_atomically() -> None:
     assert (
         _proof_support_cell(
@@ -413,6 +508,15 @@ def test_render_markdown_includes_block_quality_section() -> None:
                 "mission": {"missing": 1},
                 "vision": {"usable": 1},
             },
+            "vertical_profile_impact": {
+                "home_retail": {
+                    "rows": 1,
+                    "rows_with_review_flags": 0,
+                    "strong_value_proposition": 1,
+                    "usable_attributes": 1,
+                    "usable_values": 1,
+                }
+            },
         },
         "rows": [
             {
@@ -433,6 +537,12 @@ def test_render_markdown_includes_block_quality_section() -> None:
                 "credibility_support_status": "observed",
                 "credibility_support_count": 3,
                 "value_proposition": "A clear offer.",
+                "vertical_profile_impact": [
+                    {
+                        "profile": "home_retail",
+                        "touched_blocks": ["value_proposition", "attributes", "values"],
+                    }
+                ],
                 "value_proposition_confidence": "high",
                 "value_proposition_quality": "strong",
                 "value_proposition_quality_reasons": [],
@@ -467,6 +577,9 @@ def test_render_markdown_includes_block_quality_section() -> None:
     assert "weak (no_audience)" in markdown
     assert "third_party_heavy (third_party_heavy, missing_audience)" in markdown
     assert "VP quality" in markdown
+    assert "Vertical profile impact" in markdown
+    assert "home_retail=rows:1,strong_value_proposition:1,usable_attributes:1,usable_values:1" in markdown
+    assert "home_retail(value_proposition,attributes,values)" in markdown
     assert "## Block Quality Examples" in markdown
     assert "usable (human_review)" in markdown
 

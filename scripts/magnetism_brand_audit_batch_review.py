@@ -16,6 +16,7 @@ from typing import Any
 
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import TLDR_KEYS, MagnetismExtractor
+from src.reports.vertical_signals import VERTICAL_SIGNAL_PROFILES, VerticalSignalProfile
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -174,10 +175,32 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         for group in ("product_offer", "audience", "outcome", "mission_language", "vision_language")
     }
     flag_counts: dict[str, int] = {}
+    vertical_profile_counts: dict[str, dict[str, int]] = {}
     for row in rows:
         for flag in row.get("review_flags") or []:
             key = str(flag).split(":", 1)[0]
             flag_counts[key] = flag_counts.get(key, 0) + 1
+        for impact in row.get("vertical_profile_impact") or []:
+            profile = str(impact.get("profile") or "unknown")
+            profile_counts = vertical_profile_counts.setdefault(
+                profile,
+                {
+                    "rows": 0,
+                    "rows_with_review_flags": 0,
+                    "strong_value_proposition": 0,
+                    "usable_attributes": 0,
+                    "usable_values": 0,
+                },
+            )
+            profile_counts["rows"] += 1
+            if row.get("review_flags"):
+                profile_counts["rows_with_review_flags"] += 1
+            if row.get("value_proposition_quality") == "strong":
+                profile_counts["strong_value_proposition"] += 1
+            if row.get("attributes_quality") in {"strong", "usable"}:
+                profile_counts["usable_attributes"] += 1
+            if row.get("values_quality") in {"strong", "usable"}:
+                profile_counts["usable_values"] += 1
 
     block_quality_counts = {
         block: count_by(f"{block}_quality")
@@ -202,6 +225,7 @@ def _build_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "strategic_group_presence": dict(sorted(group_presence.items())),
         "missing_group_presence": missing_group_presence,
         "review_flag_counts": dict(sorted(flag_counts.items())),
+        "vertical_profile_impact": dict(sorted(vertical_profile_counts.items())),
     }
 
 
@@ -331,6 +355,7 @@ def _build_row(snapshot: dict[str, Any], result: dict[str, Any]) -> dict[str, An
         "credibility_support_evidence": credibility_support.get("evidence") or [],
         **block_fields,
         "block_quality": block_quality,
+        "vertical_profile_impact": _vertical_profile_impact(result, tldr, layers),
         "known_noise_hits": noise_hits,
         "evidence_leak_hits": evidence_leaks,
         "review_flags": review_flags,
@@ -525,6 +550,108 @@ def _visible_interpretation_values(
     }
 
 
+def _vertical_profile_impact(
+    result: dict[str, Any],
+    tldr: dict[str, Any],
+    layers: dict[str, Any],
+) -> list[dict[str, Any]]:
+    strategic_packet = result.get("strategic_evidence_packet")
+    if not isinstance(strategic_packet, dict):
+        strategic_packet = {}
+    impacts: list[dict[str, Any]] = []
+    for profile in VERTICAL_SIGNAL_PROFILES:
+        group_matches = _profile_group_matches(profile, strategic_packet)
+        layer_matches = _profile_layer_matches(profile, layers)
+        term_matches = _profile_term_matches(profile, tldr)
+        if not group_matches and not layer_matches and not term_matches:
+            continue
+        impacts.append(
+            {
+                "profile": profile.key,
+                "matched_groups": group_matches,
+                "matched_layers": layer_matches,
+                "matched_terms": term_matches,
+                "touched_blocks": _profile_touched_blocks(group_matches, layer_matches, term_matches),
+            }
+        )
+    return impacts
+
+
+def _profile_group_matches(
+    profile: VerticalSignalProfile,
+    strategic_packet: dict[str, Any],
+) -> dict[str, int]:
+    groups = strategic_packet.get("groups") if isinstance(strategic_packet, dict) else {}
+    if not isinstance(groups, dict):
+        return {}
+    matches: dict[str, int] = {}
+    for group, keywords in profile.group_keywords.items():
+        count = 0
+        for item in groups.get(group) or []:
+            if isinstance(item, dict) and _contains_any(str(item.get("text") or ""), keywords):
+                count += 1
+        if count:
+            matches[group] = count
+    return matches
+
+
+def _profile_layer_matches(
+    profile: VerticalSignalProfile,
+    layers: dict[str, Any],
+) -> dict[str, int]:
+    matches: dict[str, int] = {}
+    for layer_key, keywords in profile.layer_keywords.items():
+        layer = layers.get(layer_key) or {}
+        if not isinstance(layer, dict):
+            continue
+        text = " ".join(
+            str(layer.get(field) or "")
+            for field in ("finding", "findings", "evidence", "evidence_list")
+        )
+        if _contains_any(text, keywords):
+            matches[layer_key] = 1
+    return matches
+
+
+def _profile_term_matches(
+    profile: VerticalSignalProfile,
+    tldr: dict[str, Any],
+) -> dict[str, list[str]]:
+    matches: dict[str, list[str]] = {}
+    for block in ("attributes", "values"):
+        text = _block_answer(tldr.get(block) or {})
+        terms = [
+            term
+            for term in profile.term_markers.get(block, {})
+            if _contains_any(text, (term,))
+        ]
+        if terms:
+            matches[block] = terms
+    return matches
+
+
+def _profile_touched_blocks(
+    group_matches: dict[str, int],
+    layer_matches: dict[str, int],
+    term_matches: dict[str, list[str]],
+) -> list[str]:
+    blocks: list[str] = []
+    if "product_offer" in group_matches or "outcome" in group_matches or "netspace" in layer_matches:
+        blocks.append("value_proposition")
+    if "mission_language" in group_matches or "tactispace" in layer_matches:
+        blocks.append("mission")
+    if "attributes" in term_matches:
+        blocks.append("attributes")
+    if "values_language" in group_matches or "ambientspace" in layer_matches or "values" in term_matches:
+        blocks.append("values")
+    return blocks
+
+
+def _contains_any(text: str, keywords: tuple[str, ...]) -> bool:
+    low = str(text or "").lower()
+    return any(keyword.lower() in low for keyword in keywords)
+
+
 def _known_noise_hits(value: Any) -> list[str]:
     text = json.dumps(value, ensure_ascii=False)
     hits = [marker for marker in KNOWN_NOISE_MARKERS if marker.lower() in text.lower()]
@@ -561,6 +688,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         f"- Group presence: `{_compact_counts(summary.get('strategic_group_presence'))}`",
         f"- Missing key groups: `{_compact_counts(summary.get('missing_group_presence'))}`",
         f"- Review flags: `{_compact_counts(summary.get('review_flag_counts'))}`",
+        f"- Vertical profile impact: `{_compact_nested_counts(summary.get('vertical_profile_impact'))}`",
         f"- VP quality: `{_compact_counts((summary.get('block_quality') or {}).get('value_proposition'))}`",
         f"- Mission quality: `{_compact_counts((summary.get('block_quality') or {}).get('mission'))}`",
         f"- Vision quality: `{_compact_counts((summary.get('block_quality') or {}).get('vision'))}`",
@@ -568,12 +696,12 @@ def _render_markdown(payload: dict[str, Any]) -> str:
         "",
         "## Rows",
         "",
-        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | proof | page roles | missing pages | layers | blocks | review flags | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
-        "|---:|---|---:|---:|---:|---|---|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+        "| run | brand | audit | mag | coh | evidence quality | extraction diagnosis | proof | page roles | missing pages | layers | blocks | review flags | vertical profiles | VP quality | VP conf | VP gaps | Mission quality | Mission conf | Mission gaps | Vision quality | Vision conf | Vision gaps | value proposition | mission | vision |",
+        "|---:|---|---:|---:|---:|---|---|---|---|---|---|---:|---|---|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for row in rows:
         lines.append(
-            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {proof} | {page_roles} | {missing_pages} | {layers} | {blocks}/9 | {flags} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
+            "| {run_id} | {brand} | {audit_score} | {magnetism_score} | {coherence_score} | {evidence_quality} | {extraction_diagnosis} | {proof} | {page_roles} | {missing_pages} | {layers} | {blocks}/9 | {flags} | {vertical_profiles} | {vp_quality} | {vp_conf} | {vp_gaps} | {mission_quality} | {mission_conf} | {mission_gaps} | {vision_quality} | {vision_conf} | {vision_gaps} | {value} | {mission} | {vision} |".format(
                 run_id=row.get("run_id"),
                 brand=_md(row.get("brand")),
                 audit_score=_num(row.get("audit_score")),
@@ -587,6 +715,7 @@ def _render_markdown(payload: dict[str, Any]) -> str:
                 layers=_md(", ".join(row.get("detected_layers") or [])),
                 blocks=row.get("detected_block_count"),
                 flags=_md(", ".join(row.get("review_flags") or []) or "ok"),
+                vertical_profiles=_md(_vertical_profiles_cell(row)),
                 vp_quality=_md(_quality_cell(row, "value_proposition")),
                 vp_conf=_md(row.get("value_proposition_confidence")),
                 vp_gaps=_md("; ".join(row.get("value_proposition_gaps") or [])),
@@ -716,6 +845,18 @@ def _quality_cell(row: dict[str, Any], block: str) -> str:
     return quality + " (" + ", ".join(str(reason) for reason in reasons[:3]) + ")"
 
 
+def _vertical_profiles_cell(row: dict[str, Any]) -> str:
+    parts: list[str] = []
+    for impact in row.get("vertical_profile_impact") or []:
+        profile = str(impact.get("profile") or "")
+        touched = ",".join(impact.get("touched_blocks") or [])
+        if profile and touched:
+            parts.append(f"{profile}({touched})")
+        elif profile:
+            parts.append(profile)
+    return "; ".join(parts) or "none"
+
+
 def _num(value: Any) -> str:
     if value is None:
         return ""
@@ -734,6 +875,17 @@ def _compact_counts(value: Any) -> str:
     if not isinstance(value, dict) or not value:
         return ""
     return ",".join(f"{key}:{count}" for key, count in value.items() if count)
+
+
+def _compact_nested_counts(value: Any) -> str:
+    if not isinstance(value, dict) or not value:
+        return ""
+    parts: list[str] = []
+    for key, counts in value.items():
+        compact = _compact_counts(counts)
+        if compact:
+            parts.append(f"{key}={compact}")
+    return "; ".join(parts)
 
 
 def _compact_block_quality(value: Any) -> str:

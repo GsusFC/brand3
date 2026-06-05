@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.research.research_pack_facade import build_recommended_research_pack
+from src.research.research_pack_facade import RecommendedResearchPack, build_recommended_research_pack
 
 
 class _Recommendation:
@@ -70,3 +70,25 @@ def test_facade_uses_graph_when_promotion_allows_graph(monkeypatch) -> None:
     assert result.source == "evidence_graph"
     assert result.graph_summary == {"claim_count": 2, "source_count": 1}
     assert result.recommendation == {"builder": "graph", "promotion_status": "test"}
+
+
+def test_recommended_research_pack_metadata_payload_owns_source_fields() -> None:
+    graph_result = RecommendedResearchPack(
+        pack="graph-pack",
+        builder="graph",
+        graph_summary={"claim_count": 2},
+        recommendation={"builder": "graph", "promotion_status": "promotable"},
+    )
+    legacy_result = RecommendedResearchPack(pack="legacy-pack", builder="legacy")
+
+    assert graph_result.metadata_payload() == {
+        "research_pack_source": "evidence_graph",
+        "evidence_graph_summary": {"claim_count": 2},
+        "research_pack_recommendation": {
+            "builder": "graph",
+            "promotion_status": "promotable",
+        },
+    }
+    assert legacy_result.metadata_payload() == {
+        "research_pack_source": "snapshot_builder",
+    }

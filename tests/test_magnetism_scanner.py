@@ -1939,24 +1939,28 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
 
     def test_graph_pack_flag_uses_legacy_when_recommendation_blocks_graph(self):
-        class _Recommended:
-            pack = "legacy-pack"
-            graph_summary = None
-            recommendation = {
+        from src.research.research_pack_facade import RecommendedResearchPack
+
+        recommended = RecommendedResearchPack(
+            pack="legacy-pack",
+            builder="legacy",
+            recommendation={
                 "builder": "legacy",
                 "promotion_status": "blocked",
                 "reason_codes": ["legacy_fields_lost"],
-            }
+            },
+        )
 
         snapshot = {"run": {"id": 508, "brand_name": "Example", "url": "https://example.com"}}
 
         with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", True), \
-             unittest.mock.patch("src.features.magnetism.extractor.build_recommended_research_pack", return_value=_Recommended()) as build_mock:
-            pack, graph_summary, recommendation = MagnetismExtractor._build_research_pack(snapshot)
+             unittest.mock.patch("src.features.magnetism.extractor.build_recommended_research_pack", return_value=recommended) as build_mock:
+            result = MagnetismExtractor._build_research_pack(snapshot)
 
-        self.assertEqual(pack, "legacy-pack")
-        self.assertIsNone(graph_summary)
-        self.assertEqual(recommendation["builder"], "legacy")
+        self.assertEqual(result.pack, "legacy-pack")
+        self.assertIsNone(result.graph_summary)
+        self.assertEqual(result.recommendation["builder"], "legacy")
+        self.assertEqual(result.metadata_payload()["research_pack_source"], "snapshot_builder")
         build_mock.assert_called_once_with(snapshot, allow_graph=True)
 
     def test_contextdev_visual_enrichment_shadow_records_dry_run_without_mutating_research_pack(self):

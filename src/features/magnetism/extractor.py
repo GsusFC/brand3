@@ -41,7 +41,7 @@ from src.reports.vertical_signals import (
     vertical_terms_for_text,
 )
 from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
-from src.research.research_pack_facade import build_recommended_research_pack
+from src.research.research_pack_facade import RecommendedResearchPack, build_recommended_research_pack
 from src.research.research_pack_quality import evaluate_research_pack_quality, evaluate_research_pack_quality_gate
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
 
@@ -357,7 +357,8 @@ class MagnetismExtractor:
         evidence normalization, confidence, and degraded-state handling.
         """
         canonical_evidence = build_canonical_brand_evidence(snapshot)
-        research_pack, evidence_graph_summary, research_pack_recommendation = self._build_research_pack(snapshot)
+        recommended_research_pack = self._build_research_pack(snapshot)
+        research_pack = recommended_research_pack.pack
         contextdev_candidate_summary = self._contextdev_candidate_summary_from_snapshot(snapshot)
         brand_name = canonical_evidence.brand_name
         url = canonical_evidence.url
@@ -375,8 +376,7 @@ class MagnetismExtractor:
                         canonical_evidence=canonical_evidence,
                         strategic_packet=strategic_packet,
                         evidence_packet_summary=evidence_packet_summary,
-                        evidence_graph_summary=evidence_graph_summary,
-                        research_pack_recommendation=research_pack_recommendation,
+                        recommended_research_pack=recommended_research_pack,
                         research_pack=research_pack,
                         contextdev_candidate_summary=contextdev_candidate_summary,
                         enrich_layers_from_packet=True,
@@ -397,8 +397,7 @@ class MagnetismExtractor:
             canonical_evidence=canonical_evidence,
             strategic_packet=strategic_packet,
             evidence_packet_summary=evidence_packet_summary,
-            evidence_graph_summary=evidence_graph_summary,
-            research_pack_recommendation=research_pack_recommendation,
+            recommended_research_pack=recommended_research_pack,
             research_pack=research_pack,
             contextdev_candidate_summary=contextdev_candidate_summary,
             enrich_layers_from_packet=True,
@@ -411,8 +410,7 @@ class MagnetismExtractor:
         canonical_evidence: Any,
         strategic_packet: StrategicEvidencePacket,
         evidence_packet_summary: dict[str, Any],
-        evidence_graph_summary: dict[str, Any] | None,
-        research_pack_recommendation: dict[str, Any] | None,
+        recommended_research_pack: RecommendedResearchPack,
         research_pack: Any | None,
         contextdev_candidate_summary: dict[str, Any] | None,
         enrich_layers_from_packet: bool,
@@ -427,13 +425,7 @@ class MagnetismExtractor:
         result["canonical_evidence_source"] = "brand_audit_snapshot"
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
-        if research_pack_recommendation:
-            result["research_pack_recommendation"] = research_pack_recommendation
-        if evidence_graph_summary:
-            result["evidence_graph_summary"] = evidence_graph_summary
-            result["research_pack_source"] = "evidence_graph"
-        else:
-            result["research_pack_source"] = "snapshot_builder"
+        result.update(recommended_research_pack.metadata_payload())
         result["strategic_evidence_packet"] = packet_dict
         if enrich_layers_from_packet:
             self._enrich_layers_from_strategic_packet(
@@ -470,12 +462,11 @@ class MagnetismExtractor:
         return result
 
     @staticmethod
-    def _build_research_pack(snapshot: dict[str, Any]) -> tuple[Any, dict[str, Any] | None, dict[str, Any] | None]:
-        result = build_recommended_research_pack(
+    def _build_research_pack(snapshot: dict[str, Any]) -> RecommendedResearchPack:
+        return build_recommended_research_pack(
             snapshot,
             allow_graph=BRAND3_BRAND_RESEARCH_GRAPH_PACK,
         )
-        return result.pack, result.graph_summary, result.recommendation
 
     def _apply_tldr_generation_flow(
         self,

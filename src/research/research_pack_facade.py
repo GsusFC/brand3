@@ -29,6 +29,16 @@ class RecommendedResearchPack:
             return "evidence_graph"
         return "snapshot_builder"
 
+    def metadata_payload(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "research_pack_source": self.source,
+        }
+        if self.graph_summary:
+            payload["evidence_graph_summary"] = self.graph_summary
+        if self.recommendation:
+            payload["research_pack_recommendation"] = self.recommendation
+        return payload
+
 
 def build_recommended_research_pack(
     snapshot: dict[str, Any],

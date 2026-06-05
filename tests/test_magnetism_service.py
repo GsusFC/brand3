@@ -66,6 +66,40 @@ def test_run_magnetism_from_url_uses_brand_audit_snapshot(tmp_path: Path):
     assert result["tldr_brand3"]["value_proposition"]["detected"] is True
 
 
+def test_run_magnetism_from_url_maps_audit_progress_to_scanner_phases(monkeypatch) -> None:
+    phases: list[str] = []
+
+    def fake_audit_runner(url: str, *, progress_cb=None) -> dict[str, int]:
+        assert url == "https://service.test"
+        for phase in ("extracting", "scoring", "finalizing"):
+            progress_cb(phase)
+        return {"run_id": 123}
+
+    def fake_magnetism_from_run(run_id: int, *, llm=None, db_path=None):
+        assert run_id == 123
+        return {"source": "brand_audit_snapshot", "source_run_id": run_id}
+
+    monkeypatch.setattr(
+        "src.services.magnetism_service.run_magnetism_from_audit_run",
+        fake_magnetism_from_run,
+    )
+
+    result = run_magnetism_from_url(
+        "https://service.test",
+        audit_runner=fake_audit_runner,
+        progress_cb=phases.append,
+    )
+
+    assert result["source_run_id"] == 123
+    assert phases == [
+        "collecting",
+        "extracting",
+        "interpreting",
+        "interpreting",
+        "interpreting",
+    ]
+
+
 def test_run_magnetism_from_audit_snapshot_builds_default_llm_when_available(monkeypatch) -> None:
     captured = {}
 

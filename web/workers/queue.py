@@ -92,7 +92,7 @@ def _call_magnetism_engine(job: dict, progress_cb=None) -> dict:
         return run_legacy_manual_magnetism(input_value, llm=llm)
     if progress_cb is not None:
         progress_cb("collecting")
-    return run_magnetism_from_url(input_value, llm=llm)
+    return run_magnetism_from_url(input_value, llm=llm, progress_cb=progress_cb)
 
 
 def _db_path() -> Path:
@@ -277,7 +277,7 @@ class AnalysisQueue:
                 asyncio.to_thread(_call_magnetism_engine, scan, progress_cb),
                 timeout=settings.analysis_timeout_seconds,
             )
-            progress_cb("scoring")
+            progress_cb("finalizing")
         except asyncio.TimeoutError:
             _set_magnetism_status(
                 token,

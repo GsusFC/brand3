@@ -7,6 +7,7 @@ that persisted snapshot. Manual text remains a legacy direct/debug path.
 
 from __future__ import annotations
 
+import inspect
 from collections.abc import Callable
 from typing import Any
 
@@ -20,21 +21,31 @@ from src.storage.sqlite_store import SQLiteStore
 BrandAuditRunner = Callable[[str], dict[str, Any]]
 
 
+_AUDIT_TO_SCANNER_PHASE = {
+    "collecting": "collecting",
+    "extracting": "extracting",
+    "scoring": "interpreting",
+    "finalizing": "interpreting",
+}
+
+
 def run_magnetism_from_url(
     url: str,
     *,
     llm: LLMAnalyzer | None = None,
     audit_runner: BrandAuditRunner = run_brand_audit,
     db_path: str = BRAND3_DB_PATH,
+    progress_cb: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     """Run canonical Magnetism for a URL via a persisted Brand Audit snapshot."""
     llm = _effective_llm(llm)
-    audit_result = audit_runner(url)
+    audit_result = _run_audit_with_progress(url, audit_runner, progress_cb=progress_cb)
     run_id = audit_result.get("run_id") if isinstance(audit_result, dict) else None
     if not run_id:
         raise RuntimeError(
             "Brand Audit did not return a run_id for canonical Magnetism analysis."
         )
+    _emit_progress(progress_cb, "interpreting")
     return run_magnetism_from_audit_run(int(run_id), llm=llm, db_path=db_path)
 
 
@@ -76,6 +87,30 @@ def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
     if getattr(candidate, "api_key", None):
         return candidate
     return None
+
+
+def _run_audit_with_progress(
+    url: str,
+    audit_runner: BrandAuditRunner,
+    *,
+    progress_cb: Callable[[str], None] | None,
+) -> dict[str, Any]:
+    """Run Brand Audit and map its internal phases onto Scanner phases."""
+    _emit_progress(progress_cb, "collecting")
+    signature = inspect.signature(audit_runner)
+    if "progress_cb" not in signature.parameters:
+        return audit_runner(url)
+
+    def audit_progress_cb(phase: str) -> None:
+        _emit_progress(progress_cb, _AUDIT_TO_SCANNER_PHASE.get(phase, "interpreting"))
+
+    return audit_runner(url, progress_cb=audit_progress_cb)
+
+
+def _emit_progress(progress_cb: Callable[[str], None] | None, phase: str) -> None:
+    if progress_cb is None:
+        return
+    progress_cb(phase)
 
 
 def load_brand_audit_snapshot(

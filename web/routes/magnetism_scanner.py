@@ -32,6 +32,7 @@ from ..workers.queue import get_queue
 from ..workers.slug import slug_from_url
 from ..workers.url_validator import validate_url
 from ..scanner_api.models import (
+    scanner_failure_diagnostics_from_row as _scanner_failure_diagnostics,
     methodology_model as _methodology_model,
     normalized_scan_payload as _normalized_scan_payload,
     research_evidence_model as _research_evidence_model,
@@ -598,6 +599,7 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "elapsed_seconds": _elapsed(row.get("started_at")),
             "elapsed_label": _elapsed_label(_elapsed(row.get("started_at"))),
             "error_message": row.get("error_message"),
+            "failure_diagnostics": _scanner_failure_diagnostics(row),
             "phase": phase,
             "phase_label": phase_labels.get(phase, "Working" if lang == "en" else "Trabajando"),
             "phase_steps": _phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
@@ -944,4 +946,3 @@ def _evidence_reliability_model(payload: dict) -> dict:
         "pack_summary": quality.get("pack_summary") or {},
         "reason": quality.get("reason") or "",
     }
-

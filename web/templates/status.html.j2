@@ -69,6 +69,23 @@
   {% elif status == "ready" %}
   <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">{{ ready_link_label if ready_link_label else "→ open report" }}</a></p>
   {% elif status == "failed" %}
+  {% if failure_diagnostics %}
+  <div class="status-grid" style="margin-top: 12px;">
+    <div class="status-metric">
+      <span class="k">component</span>
+      <span class="v">{{ failure_diagnostics.component }}</span>
+    </div>
+    <div class="status-metric">
+      <span class="k">failure_type</span>
+      <span class="v">{{ failure_diagnostics.failure_type }}</span>
+    </div>
+    <div class="status-metric">
+      <span class="k">retryable</span>
+      <span class="v">{{ "yes" if failure_diagnostics.retryable else "no" }}</span>
+    </div>
+  </div>
+  <p class="small dim">{{ failure_diagnostics.safe_message }}</p>
+  {% endif %}
   <p><a href="{{ back_href if back_href else '/' }}">{{ back_link_label if back_link_label else "← back to form" }}</a></p>
   {% endif %}
 </section>

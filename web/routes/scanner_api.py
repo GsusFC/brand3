@@ -20,6 +20,7 @@ from ..scanner_api.models import (
     methodology_model,
     research_evidence_model,
     scanner_readiness_from_row,
+    scanner_failure_diagnostics_from_row,
     scanner_result_metadata_model,
     scanner_scan_mode_from_row,
 )
@@ -44,7 +45,15 @@ def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
     phase = _magnetism_phase(row)
     readiness = scanner_readiness_from_row(row)
     scan_mode = scanner_scan_mode_from_row(row)
-    return scanner_status_payload(row, phase=phase, readiness=readiness, scan_mode=scan_mode, lang=lang)
+    failure_diagnostics = scanner_failure_diagnostics_from_row(row)
+    return scanner_status_payload(
+        row,
+        phase=phase,
+        readiness=readiness,
+        scan_mode=scan_mode,
+        failure_diagnostics=failure_diagnostics,
+        lang=lang,
+    )
 
 
 def _magnetism_phase(row: dict) -> str:

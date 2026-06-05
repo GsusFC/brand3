@@ -187,6 +187,11 @@ class WebAppFlowTests(unittest.TestCase):
             status_props["scanner_readiness"],
             {"$ref": "#/components/schemas/ScannerReadiness"},
         )
+        self.assertEqual(
+            status_props["failure_diagnostics"],
+            {"$ref": "#/components/schemas/FailureDiagnostics"},
+        )
+        self.assertIn("FailureDiagnostics", payload["components"]["schemas"])
         error_schema = payload["components"]["schemas"]["Error"]
         self.assertIn("error", error_schema["required"])
         self.assertIn("409", payload["paths"]["/api/v1/scanner/{scan_id}/result"]["get"]["responses"])

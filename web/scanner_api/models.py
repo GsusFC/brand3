@@ -116,6 +116,80 @@ def scanner_scan_mode_from_row(row: dict[str, Any]) -> dict[str, Any]:
     return scan_mode_from_row(row).to_payload()
 
 
+def scanner_failure_diagnostics_from_row(row: dict[str, Any]) -> dict[str, Any] | None:
+    """Return safe operational diagnostics for a failed scan.
+
+    This intentionally exposes categories and routing metadata, not raw provider
+    payloads, stack traces, or secrets.
+    """
+    if str(row.get("status") or "") != "failed":
+        return None
+
+    payload: dict[str, Any] = {}
+    raw_payload = row.get("raw_payload")
+    if raw_payload:
+        try:
+            loaded = json.loads(raw_payload)
+        except Exception:
+            loaded = {}
+        if isinstance(loaded, dict):
+            payload = loaded
+
+    readiness = scanner_readiness_from_row(row)
+    reason_codes = readiness.get("reason_codes") if isinstance(readiness, dict) else []
+    reason_code = str(reason_codes[0]) if reason_codes else str(row.get("error_message") or "scanner_failed")
+    analysis_error = payload.get("analyst_tldr_analysis_error")
+    if not isinstance(analysis_error, dict):
+        analysis_error = {}
+
+    reason = str(analysis_error.get("reason") or "")
+    error_type = str(analysis_error.get("error_type") or "")
+    failure_type = _failure_type(reason, error_type, str(row.get("error_message") or ""))
+    component = "analyst_tldr" if analysis_error else "scanner"
+    return {
+        "available": True,
+        "component": component,
+        "phase": str(row.get("phase") or "failed"),
+        "reason_code": reason_code,
+        "failure_type": failure_type,
+        "retryable": failure_type in {"timeout", "provider_error", "temporary_error"},
+        "safe_message": _safe_failure_message(component, failure_type),
+        "model": str(analysis_error.get("model") or "") or None,
+        "error_type": error_type or None,
+    }
+
+
+def _failure_type(reason: str, error_type: str, error_message: str) -> str:
+    text = " ".join([reason, error_type, error_message]).lower()
+    if "timeout" in text or "timed out" in text:
+        return "timeout"
+    if "json_parse" in text:
+        return "json_parse_error"
+    if "empty" in text:
+        return "empty_response"
+    if "http" in text or "provider" in text:
+        return "provider_error"
+    if "no_llm" in text or "llm_unavailable" in text:
+        return "configuration_error"
+    return "unknown_error"
+
+
+def _safe_failure_message(component: str, failure_type: str) -> str:
+    if component == "analyst_tldr" and failure_type == "timeout":
+        return "The Analyst Pass LLM call timed out before producing a publishable TLDR."
+    if component == "analyst_tldr" and failure_type == "json_parse_error":
+        return "The Analyst Pass LLM response could not be parsed as valid JSON."
+    if component == "analyst_tldr" and failure_type == "empty_response":
+        return "The Analyst Pass LLM response was empty."
+    if component == "analyst_tldr" and failure_type == "provider_error":
+        return "The Analyst Pass LLM provider returned an error."
+    if failure_type == "configuration_error":
+        return "The scanner could not access a required LLM configuration."
+    if failure_type == "timeout":
+        return "The scanner job exceeded its execution timeout."
+    return "The scanner failed before a publishable result was produced."
+
+
 def scanner_readiness_from_row(row: dict[str, Any]) -> dict[str, Any]:
     payload: dict[str, Any] = {}
     raw_payload = row.get("raw_payload")

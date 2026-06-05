@@ -1,6 +1,6 @@
 import json
 
-from web.scanner_api.models import scanner_readiness_from_row
+from web.scanner_api.models import scanner_failure_diagnostics_from_row, scanner_readiness_from_row
 from web.scanner_api.presenters import (
     scanner_methodology_payload,
     scanner_research_evidence_payload,
@@ -59,6 +59,7 @@ def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():
     assert payload["scanner_readiness"]["status"] == "publishable"
     assert payload["scan_mode"]["mode"] == "from_audit_run"
     assert payload["scan_mode"]["comparable"] is True
+    assert payload["failure_diagnostics"] is None
 
 
 def test_scanner_status_payload_hides_ui_url_until_ready():
@@ -73,6 +74,45 @@ def test_scanner_status_payload_hides_ui_url_until_ready():
     assert payload["result_available"] is False
     assert payload["ui_url"] is None
     assert payload["scan_mode"]["mode"] == "canonical_url"
+
+
+def test_failure_diagnostics_from_failed_tldr_timeout_is_safe():
+    diagnostics = scanner_failure_diagnostics_from_row(
+        {
+            "id": 42,
+            "status": "failed",
+            "phase": "failed",
+            "error_message": "failed:canonical_tldr_degraded:llm_timeout",
+            "raw_payload": json.dumps(
+                {
+                    "scanner_readiness": {
+                        "status": "failed",
+                        "publishable": False,
+                        "reason_codes": ["canonical_tldr_degraded:llm_timeout"],
+                    },
+                    "analyst_tldr_analysis_error": {
+                        "reason": "llm_timeout",
+                        "detail": "secret-ish raw provider detail should not leak",
+                        "error_type": "timeout",
+                        "model": "gemini-test",
+                    },
+                }
+            ),
+        }
+    )
+
+    assert diagnostics == {
+        "available": True,
+        "component": "analyst_tldr",
+        "phase": "failed",
+        "reason_code": "canonical_tldr_degraded:llm_timeout",
+        "failure_type": "timeout",
+        "retryable": True,
+        "safe_message": "The Analyst Pass LLM call timed out before producing a publishable TLDR.",
+        "model": "gemini-test",
+        "error_type": "timeout",
+    }
+    assert "secret-ish" not in json.dumps(diagnostics)
 
 
 def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():

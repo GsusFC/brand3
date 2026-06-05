@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import importlib
 import json
+import sqlite3
 import tempfile
 import threading
 import time
@@ -1755,6 +1756,63 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(stored["scanner_readiness"]["status"], "failed")
         self.assertEqual(stored["publication_decision"]["status"], "failed")
         self.assertEqual(stored["publication_decision"]["source_status"], "failed")
+
+    def test_failed_scanner_status_exposes_safe_failure_diagnostics(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = {
+            "brand_name": "Timeout Brand",
+            "url": "https://timeout.test",
+            "magnetism_score": 0,
+            "coherence_score": 36,
+            "quadrant": "pending",
+            "source": "brand_audit_snapshot",
+            "source_run_id": 123,
+            "tldr_generation_mode": "legacy_fallback_llm_error",
+            "analyst_tldr_analysis_error": {
+                "reason": "llm_timeout",
+                "detail": "raw provider detail should stay internal",
+                "error_type": "timeout",
+                "model": "gemini-test",
+            },
+            "tldr_brand3": {},
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=123,
+        )
+        with sqlite3.connect(str(self.db)) as conn:
+            conn.execute(
+                "UPDATE magnetism_scans SET token = ? WHERE id = ?",
+                ("timeout-token", scan_id),
+            )
+            conn.commit()
+
+        api_response = self.client.get(
+            f"/api/v1/scanner/{scan_id}",
+            headers=self._scanner_api_headers(),
+        )
+        status_response = self.client.get("/magnetism-scanner/timeout-token/status")
+
+        self.assertEqual(api_response.status_code, 200)
+        diagnostics = api_response.json()["failure_diagnostics"]
+        self.assertEqual(diagnostics["component"], "analyst_tldr")
+        self.assertEqual(diagnostics["failure_type"], "timeout")
+        self.assertEqual(diagnostics["reason_code"], "canonical_tldr_degraded:llm_timeout")
+        self.assertTrue(diagnostics["retryable"])
+        self.assertEqual(diagnostics["model"], "gemini-test")
+        self.assertNotIn("raw provider detail", json.dumps(diagnostics))
+
+        self.assertEqual(status_response.status_code, 200)
+        self.assertIn("analyst_tldr", status_response.text)
+        self.assertIn("timeout", status_response.text)
+        self.assertIn("retryable", status_response.text)
+        self.assertNotIn("raw provider detail", status_response.text)
 
     def test_direct_manual_scan_insert_marks_payload_debug_only(self):
         from web.storage import get_magnetism_scan, insert_magnetism_scan

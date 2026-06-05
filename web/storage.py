@@ -14,7 +14,10 @@ from pathlib import Path
 
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.readiness import assess_scanner_readiness
-from src.features.magnetism.scan_mode import scan_mode_from_payload
+from src.features.magnetism.scan_mode import (
+    magnetism_input_type_from_payload,
+    scan_mode_from_payload,
+)
 from src.quality.publication_readiness import attach_scanner_publication_decision
 from src.storage.sqlite_store import SQLiteStore
 
@@ -295,11 +298,17 @@ def _magnetism_payload_insert_state(
 
     readiness = payload.get("scanner_readiness")
     if not isinstance(readiness, dict):
-        input_type = _magnetism_payload_input_type(payload, source_run_id=source_run_id)
+        input_type = magnetism_input_type_from_payload(
+            payload,
+            source_run_id=source_run_id,
+        )
         readiness = assess_scanner_readiness(input_type, payload).to_payload()
 
     publication = attach_scanner_publication_decision(payload, readiness)
-    input_type = _magnetism_payload_input_type(payload, source_run_id=source_run_id)
+    input_type = magnetism_input_type_from_payload(
+        payload,
+        source_run_id=source_run_id,
+    )
     payload["scan_mode"] = scan_mode_from_payload(
         payload,
         input_type=input_type,
@@ -311,20 +320,6 @@ def _magnetism_payload_insert_state(
         return json.dumps(payload, ensure_ascii=False), "failed", f"failed:{reason}"
 
     return json.dumps(payload, ensure_ascii=False), "ready", None
-
-
-def _magnetism_payload_input_type(payload: dict, *, source_run_id: int | None) -> str:
-    if (
-        payload.get("source") in {"legacy_direct", "direct_magnetism_legacy"}
-        or payload.get("extraction_mode") == "legacy_direct"
-        or payload.get("direct_source_provider")
-        or payload.get("url") == "manual"
-    ):
-        return "manual"
-    if source_run_id:
-        return "audit_run"
-    return "url"
-
 
 
 def insert_magnetism_job(

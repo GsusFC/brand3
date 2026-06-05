@@ -1,4 +1,8 @@
-from src.features.magnetism.scan_mode import scan_mode_from_payload, scan_mode_from_row
+from src.features.magnetism.scan_mode import (
+    magnetism_input_type_from_payload,
+    scan_mode_from_payload,
+    scan_mode_from_row,
+)
 
 
 def test_scan_mode_identifies_manual_legacy_payload_as_not_comparable() -> None:
@@ -51,3 +55,23 @@ def test_scan_mode_from_row_reuses_persisted_policy() -> None:
     assert policy.mode == "legacy_manual"
     assert policy.comparable is False
     assert policy.reason_codes == ("manual_input_debug_path",)
+
+
+def test_magnetism_input_type_resolver_reuses_manual_and_audit_rules() -> None:
+    assert (
+        magnetism_input_type_from_payload(
+            {
+                "source": "direct_magnetism_legacy",
+                "direct_source_provider": "manual_evidence",
+            }
+        )
+        == "manual"
+    )
+    assert (
+        magnetism_input_type_from_payload(
+            {"source": "brand_audit_snapshot"},
+            source_run_id=7,
+        )
+        == "audit_run"
+    )
+    assert magnetism_input_type_from_payload({"url": "https://example.com"}) == "url"

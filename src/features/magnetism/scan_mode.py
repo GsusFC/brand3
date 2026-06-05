@@ -7,6 +7,7 @@ from typing import Literal
 
 
 ScanMode = Literal["canonical_url", "from_audit_run", "legacy_manual", "unknown"]
+MagnetismInputType = Literal["manual", "audit_run", "url"]
 
 
 @dataclass(frozen=True)
@@ -41,7 +42,7 @@ def scan_mode_from_payload(
                 reason_codes=tuple(str(item) for item in payload_mode.get("reason_codes") or []),
             )
 
-    if _is_manual_payload(payload) or normalized_input_type == "manual":
+    if is_manual_magnetism_payload(payload) or normalized_input_type == "manual":
         return ScanModePolicy(
             mode="legacy_manual",
             comparable=False,
@@ -82,7 +83,19 @@ def scan_mode_from_row(row: dict) -> ScanModePolicy:
     )
 
 
-def _is_manual_payload(payload: dict) -> bool:
+def magnetism_input_type_from_payload(
+    payload: dict,
+    *,
+    source_run_id: int | None = None,
+) -> MagnetismInputType:
+    if is_manual_magnetism_payload(payload):
+        return "manual"
+    if source_run_id or payload.get("source_run_id"):
+        return "audit_run"
+    return "url"
+
+
+def is_manual_magnetism_payload(payload: dict) -> bool:
     return (
         payload.get("source") in {"legacy_direct", "direct_magnetism_legacy"}
         or payload.get("extraction_mode") == "legacy_direct"

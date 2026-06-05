@@ -1,9 +1,31 @@
+import json
+
+from web.scanner_api.models import scanner_readiness_from_row
 from web.scanner_api.presenters import (
     scanner_methodology_payload,
     scanner_research_evidence_payload,
     scanner_result_metadata,
     scanner_status_payload,
 )
+
+
+def test_scanner_readiness_from_row_uses_payload_manual_detection_without_input_type():
+    readiness = scanner_readiness_from_row(
+        {
+            "source_run_id": None,
+            "input_type": None,
+            "raw_payload": json.dumps(
+                {
+                    "source": "direct_magnetism_legacy",
+                    "direct_source_provider": "manual_evidence",
+                    "url": "manual",
+                }
+            ),
+        }
+    )
+
+    assert readiness["status"] == "debug_only"
+    assert "manual_input_debug_path" in readiness["reason_codes"]
 
 
 def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():

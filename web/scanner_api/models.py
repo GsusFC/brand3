@@ -10,7 +10,11 @@ from fastapi import HTTPException
 
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.readiness import assess_scanner_readiness
-from src.features.magnetism.scan_mode import scan_mode_from_payload, scan_mode_from_row
+from src.features.magnetism.scan_mode import (
+    magnetism_input_type_from_payload,
+    scan_mode_from_payload,
+    scan_mode_from_row,
+)
 from src.quality.publication_readiness import scanner_publication_decision_payload
 
 from .presenters import (
@@ -122,7 +126,14 @@ def scanner_readiness_from_row(row: dict[str, Any]) -> dict[str, Any]:
             loaded = {}
         if isinstance(loaded, dict):
             payload = loaded
-    input_type = str(row.get("input_type") or ("audit_run" if row.get("source_run_id") else "url"))
+    row_input_type = row.get("input_type")
+    if row_input_type:
+        input_type = str(row_input_type)
+    else:
+        input_type = magnetism_input_type_from_payload(
+            payload,
+            source_run_id=row.get("source_run_id"),
+        )
     readiness = payload.get("scanner_readiness")
     if isinstance(readiness, dict):
         return readiness
@@ -133,7 +144,7 @@ def scanner_readiness_from_payload(payload: dict[str, Any]) -> dict[str, Any]:
     readiness = payload.get("scanner_readiness")
     if isinstance(readiness, dict):
         return readiness
-    input_type = "manual" if is_manual_magnetism_payload(payload) else "url"
+    input_type = magnetism_input_type_from_payload(payload)
     return assess_scanner_readiness(input_type, payload).to_payload()
 
 
@@ -142,15 +153,6 @@ def publication_decision_from_payload(payload: dict[str, Any]) -> dict[str, Any]
     if isinstance(decision, dict):
         return decision
     return scanner_publication_decision_payload(scanner_readiness_from_payload(payload))
-
-
-def is_manual_magnetism_payload(payload: dict[str, Any]) -> bool:
-    return (
-        payload.get("source") in {"legacy_direct", "direct_magnetism_legacy"}
-        or payload.get("extraction_mode") == "legacy_direct"
-        or bool(payload.get("direct_source_provider"))
-        or payload.get("url") == "manual"
-    )
 
 
 def entity_research_packet(payload: dict[str, Any]) -> dict[str, Any]:

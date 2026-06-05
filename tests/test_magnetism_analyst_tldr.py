@@ -26,6 +26,20 @@ class FakeAnalystLLM:
         return self.response
 
 
+class FakeFailingAnalystLLM(FakeAnalystLLM):
+    def __init__(self, reason: str, error: str):
+        super().__init__({})
+        self.last_failure_reason = reason
+        self.call_failures = [
+            {
+                "reason": reason,
+                "error": error,
+                "error_type": "timeout" if reason == "llm_timeout" else "provider_error",
+                "model": "model-a",
+            }
+        ]
+
+
 def _research_pack(brand_name: str = "Base44", url: str = "https://base44.com") -> Any:
     snapshot = {
         "run": {"id": 1101, "brand_name": brand_name, "url": url},
@@ -220,6 +234,24 @@ def test_invalid_json_returns_controlled_fallback() -> None:
     assert result["analysis_error"]["reason"] == "llm_error"
     assert result["tldr_brand3"]["value_proposition"]["answer"] == "Keep me"
     assert result["tldr_brand3"]["value_proposition"]["claim_type"] == "declared"
+
+
+def test_timeout_failure_keeps_structured_analysis_error(monkeypatch) -> None:
+    monkeypatch.setenv("BRAND3_ANALYST_TLDR_TIMEOUT_SECONDS", "91")
+    llm = FakeFailingAnalystLLM("llm_timeout", "llm_call_timeout_after_91s")
+
+    result = maybe_build_analyst_tldr(
+        llm=llm,
+        brand_name="Base44",
+        url="https://base44.com",
+        research_pack=_research_pack(),
+        current_tldr={},
+    )
+
+    assert llm.captured_kwargs["timeout_seconds"] == 91
+    assert result["analysis_error"]["reason"] == "llm_timeout"
+    assert result["analysis_error"]["detail"] == "llm_call_timeout_after_91s"
+    assert result["analysis_error"]["error_type"] == "timeout"
 
 
 def test_single_item_array_response_is_accepted() -> None:

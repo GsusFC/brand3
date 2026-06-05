@@ -210,6 +210,21 @@ class LLMCacheTests(unittest.TestCase):
         self.assertTrue(body["response_format"]["json_schema"]["strict"])
         self.assertEqual(body["response_format"]["json_schema"]["schema"], schema)
 
+    def test_call_json_can_override_timeout_per_call(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", json.dumps({"score": 88})),
+                ) as llm_http:
+                    result = llm._call_json("system", "user", timeout_seconds=90)
+
+        self.assertEqual(result, {"score": 88})
+        self.assertEqual(llm_http.call_args.kwargs["timeout_seconds"], 90)
+
     def test_call_json_schema_mode_falls_back_to_json_object_when_rejected(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = str(Path(tmpdir) / "brand3.sqlite3")

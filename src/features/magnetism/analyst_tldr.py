@@ -8,6 +8,7 @@ truth is the organized evidence pack passed in by Brand Audit.
 from __future__ import annotations
 
 import json
+import os
 from dataclasses import is_dataclass
 from typing import Any
 
@@ -16,6 +17,7 @@ from src.features.magnetism.tldr_guardrails import validate_analyst_tldr
 
 
 ANALYST_TLDR_PROMPT_VERSION = "brand3-analyst-tldr-v0.2"
+ANALYST_TLDR_TIMEOUT_SECONDS = 90
 
 TLDR_KEYS = [
     "core_purpose",
@@ -173,19 +175,25 @@ def run_analyst_tldr_pass(
         max_tokens=9000,
         json_schema=analyst_tldr_response_schema(),
         schema_name="brand3_analyst_tldr",
+        timeout_seconds=_analyst_tldr_timeout_seconds(),
     )
     raw = _coerce_analyst_raw_json(raw_response)
     if not isinstance(raw, dict) or not raw:
+        failure = _latest_llm_failure(llm)
+        reason = str(failure.get("reason") or "llm_error")
+        detail = str(failure.get("error") or "The analyst pass did not return usable JSON.")
         return {
             "analysis_error": {
-                "reason": "llm_error",
-                "detail": "The analyst pass did not return usable JSON.",
+                "reason": reason,
+                "detail": detail,
+                "error_type": failure.get("error_type"),
+                "model": failure.get("model"),
             },
             "raw": raw_response if isinstance(raw_response, dict) else {},
             "validated": _fallback_payload(
                 current_tldr=current_tldr,
-                reason="llm_error",
-                detail="The analyst pass did not return usable JSON.",
+                reason=reason,
+                detail=detail,
             ),
         }
 
@@ -204,6 +212,29 @@ def _coerce_analyst_raw_json(raw: Any) -> dict[str, Any]:
         return raw
     if isinstance(raw, list) and len(raw) == 1 and isinstance(raw[0], dict):
         return raw[0]
+    return {}
+
+
+def _analyst_tldr_timeout_seconds() -> int:
+    raw = os.environ.get("BRAND3_ANALYST_TLDR_TIMEOUT_SECONDS")
+    if not raw:
+        return ANALYST_TLDR_TIMEOUT_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        return ANALYST_TLDR_TIMEOUT_SECONDS
+    return max(1, value)
+
+
+def _latest_llm_failure(llm: Any) -> dict[str, Any]:
+    failures = getattr(llm, "call_failures", None)
+    if isinstance(failures, list) and failures:
+        latest = failures[-1]
+        if isinstance(latest, dict):
+            return latest
+    reason = getattr(llm, "last_failure_reason", None)
+    if reason:
+        return {"reason": str(reason)}
     return {}
 
 

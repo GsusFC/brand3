@@ -48,7 +48,7 @@ def assess_scanner_readiness(input_type: str, payload: dict) -> ScannerReadiness
     if tldr_mode == "legacy_fallback_no_llm":
         reason_codes.append("canonical_tldr_degraded:no_llm")
     elif tldr_mode == "legacy_fallback_llm_error":
-        reason_codes.append("canonical_tldr_degraded:llm_error")
+        reason_codes.append(f"canonical_tldr_degraded:{_llm_failure_code(payload)}")
     elif tldr_mode and tldr_mode != "analyst_pass_validated":
         reason_codes.append(f"canonical_tldr_unvalidated:{tldr_mode}")
 
@@ -59,6 +59,15 @@ def assess_scanner_readiness(input_type: str, payload: dict) -> ScannerReadiness
         return ScannerReadiness("failed", tuple(reason_codes))
 
     return ScannerReadiness("publishable", ())
+
+
+def _llm_failure_code(payload: dict) -> str:
+    analysis_error = payload.get("analyst_tldr_analysis_error")
+    if isinstance(analysis_error, dict):
+        reason = str(analysis_error.get("reason") or "")
+        if reason == "llm_timeout":
+            return "llm_timeout"
+    return "llm_error"
 
 
 def _debug_reason_codes(tldr_mode: str, source: str) -> tuple[str, ...]:

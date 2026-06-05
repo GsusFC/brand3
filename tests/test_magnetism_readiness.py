@@ -30,6 +30,22 @@ def test_canonical_no_llm_fallback_is_failed() -> None:
     assert readiness.error_message == "failed:canonical_tldr_degraded:no_llm"
 
 
+def test_canonical_llm_timeout_fallback_is_failed_with_specific_reason() -> None:
+    readiness = assess_scanner_readiness(
+        "url",
+        {
+            "source": "brand_audit_snapshot",
+            "tldr_generation_mode": "legacy_fallback_llm_error",
+            "analyst_tldr_analysis_error": {"reason": "llm_timeout"},
+        },
+    )
+
+    assert readiness.status == "failed"
+    assert readiness.publishable is False
+    assert readiness.reason_codes == ("canonical_tldr_degraded:llm_timeout",)
+    assert readiness.error_message == "failed:canonical_tldr_degraded:llm_timeout"
+
+
 def test_manual_payload_is_debug_only() -> None:
     readiness = assess_scanner_readiness(
         "manual",

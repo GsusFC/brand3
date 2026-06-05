@@ -336,6 +336,7 @@ class LLMAnalyzer:
         json_schema: dict[str, Any] | None = None,
         schema_name: str | None = None,
         strict_schema: bool = True,
+        timeout_seconds: int | None = None,
     ) -> dict:
         """Make an LLM call expecting strict JSON response.
 
@@ -369,6 +370,7 @@ class LLMAnalyzer:
             ),
         }
 
+        effective_timeout = self.timeout_seconds if timeout_seconds is None else int(timeout_seconds)
         payload = json.dumps(body).encode()
         status, content = _run_llm_http_call(
             url=f"{self.base_url}/chat/completions",
@@ -377,7 +379,7 @@ class LLMAnalyzer:
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {self.api_key}",
             },
-            timeout_seconds=self.timeout_seconds,
+            timeout_seconds=effective_timeout,
         )
         if status != "ok" and json_schema is not None:
             # Provider compatibility varies; keep production safe by falling back
@@ -391,7 +393,7 @@ class LLMAnalyzer:
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {self.api_key}",
                 },
-                timeout_seconds=self.timeout_seconds,
+                timeout_seconds=effective_timeout,
             )
         if status != "ok":
             reason = "llm_timeout" if status == "timeout" else "llm_error"

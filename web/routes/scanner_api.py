@@ -75,6 +75,22 @@ def _scan_not_ready(row: dict, *, lang: _Lang = "es") -> JSONResponse:
     )
 
 
+def _scan_row_or_error(scan_id: int) -> dict | JSONResponse:
+    row = get_magnetism_scan(scan_id)
+    if row is None:
+        return _scan_not_found(scan_id)
+    return row
+
+
+def _ready_scan_row_or_error(scan_id: int, *, lang: _Lang = "es") -> dict | JSONResponse:
+    row = _scan_row_or_error(scan_id)
+    if isinstance(row, JSONResponse):
+        return row
+    if row.get("status") != "ready":
+        return _scan_not_ready(row, lang=lang)
+    return row
+
+
 @router.post("/api/v1/scanner", status_code=202, response_model=None)
 async def scanner_api_create(request: Request, payload: ScannerCreateRequest) -> dict | JSONResponse:
     """Queue a complete Brand3 Scanner run from URL or an existing Brand Audit run."""
@@ -138,9 +154,9 @@ async def scanner_api_status(request: Request, scan_id: int, lang: _Lang = Query
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = get_magnetism_scan(scan_id)
-    if row is None:
-        return _scan_not_found(scan_id)
+    row = _scan_row_or_error(scan_id)
+    if isinstance(row, JSONResponse):
+        return row
     return _api_scan_status(row, lang=lang)
 
 
@@ -149,11 +165,9 @@ async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = get_magnetism_scan(scan_id)
-    if row is None:
-        return _scan_not_found(scan_id)
-    if row.get("status") != "ready":
-        return _scan_not_ready(row, lang=lang)
+    row = _ready_scan_row_or_error(scan_id, lang=lang)
+    if isinstance(row, JSONResponse):
+        return row
     model = magnetism_scan_model_from_row(row)
     payload = model["payload"]
     metadata = scanner_result_metadata_model(payload)
@@ -188,11 +202,9 @@ async def scanner_api_evidence(request: Request, scan_id: int) -> dict | JSONRes
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = get_magnetism_scan(scan_id)
-    if row is None:
-        return _scan_not_found(scan_id)
-    if row.get("status") != "ready":
-        return _scan_not_ready(row)
+    row = _ready_scan_row_or_error(scan_id)
+    if isinstance(row, JSONResponse):
+        return row
     model = magnetism_scan_model_from_row(row)
     return {
         "id": model["id"],
@@ -206,11 +218,9 @@ async def scanner_api_methodology(request: Request, scan_id: int) -> dict | JSON
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = get_magnetism_scan(scan_id)
-    if row is None:
-        return _scan_not_found(scan_id)
-    if row.get("status") != "ready":
-        return _scan_not_ready(row)
+    row = _ready_scan_row_or_error(scan_id)
+    if isinstance(row, JSONResponse):
+        return row
     model = magnetism_scan_model_from_row(row)
     return {
         "id": model["id"],
@@ -224,11 +234,9 @@ async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONRespon
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = get_magnetism_scan(scan_id)
-    if row is None:
-        return _scan_not_found(scan_id)
-    if row.get("status") != "ready":
-        return _scan_not_ready(row)
+    row = _ready_scan_row_or_error(scan_id)
+    if isinstance(row, JSONResponse):
+        return row
     model = magnetism_scan_model_from_row(row)
     source_run_id = model.get("source_run_id")
     if not source_run_id:

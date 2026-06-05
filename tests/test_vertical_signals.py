@@ -11,9 +11,10 @@ from src.reports.vertical_signals import (
 def test_home_retail_profile_exposes_group_and_layer_keywords() -> None:
     assert "tienda online" in vertical_group_keywords("product_offer")
     assert "transformar tu hogar" in vertical_group_keywords("outcome")
-    assert "creatividad" in vertical_group_keywords("values_language")
+    assert "inspiración" in vertical_group_keywords("values_language")
     assert "muebles" in vertical_layer_keywords("netspace")
     assert "funcionales" in vertical_layer_keywords("ambientspace")
+    assert "creatividad" not in vertical_group_keywords("values_language")
 
 
 def test_home_retail_profile_maps_copy_to_attributes_and_values() -> None:
@@ -39,6 +40,11 @@ def test_home_retail_profile_maps_copy_to_attributes_and_values() -> None:
         "functional",
         "inspiring",
     )
+
+
+def test_home_retail_terms_require_profile_anchor() -> None:
+    assert vertical_terms_for_text("Developer docs with design inspiration.", "attributes") == []
+    assert vertical_terms_for_text("Creative AI platform built for campaign design.", "values") == []
 
 
 def test_product_offer_family_uses_centralized_markers() -> None:

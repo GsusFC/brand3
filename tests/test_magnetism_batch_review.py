@@ -402,8 +402,8 @@ def test_vertical_profile_impact_detects_home_retail_contribution() -> None:
     assert impact == [
         {
             "profile": "home_retail",
-            "matched_groups": {"product_offer": 1, "values_language": 1},
-            "matched_layers": {"netspace": 1, "ambientspace": 1},
+            "matched_groups": {"product_offer": 1},
+            "matched_layers": {"netspace": 1},
             "matched_terms": {
                 "attributes": ["design-led", "functional", "inspiring"],
                 "values": ["inspiration"],
@@ -411,6 +411,22 @@ def test_vertical_profile_impact_detects_home_retail_contribution() -> None:
             "touched_blocks": ["value_proposition", "attributes", "values"],
         }
     ]
+
+
+def test_vertical_profile_impact_ignores_term_only_matches_without_profile_anchor() -> None:
+    impact = _vertical_profile_impact(
+        {"strategic_evidence_packet": {"groups": {}}},
+        {
+            "attributes": {"answer": ["developer-first", "secure", "design-led"]},
+            "values": {"answer": ["inspiration"]},
+        },
+        {
+            "netspace": {"detected": True, "evidence": "Developer infrastructure."},
+            "ambientspace": {"detected": True, "evidence": "Design inspiration."},
+        },
+    )
+
+    assert impact == []
 
 
 def test_build_row_and_summary_include_vertical_profile_impact() -> None:

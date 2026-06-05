@@ -41,11 +41,6 @@ HOME_RETAIL_PROFILE = VerticalSignalProfile(
             "inspiradores",
             "inspiración",
             "inspiracion",
-            "inclusión",
-            "inclusion",
-            "diversidad",
-            "creatividad",
-            "belleza",
         ),
     },
     layer_keywords={
@@ -58,17 +53,10 @@ HOME_RETAIL_PROFILE = VerticalSignalProfile(
             "disenos exclusivos",
         ),
         "ambientspace": (
-            "diseño",
-            "diseno",
             "decoración",
             "decoracion",
             "funcionales",
             "inspiradores",
-            "creatividad",
-            "belleza",
-            "inclusión",
-            "inclusion",
-            "diversidad",
         ),
     },
     term_markers={
@@ -176,6 +164,8 @@ def vertical_terms_for_text(text: str, key: str) -> list[str]:
     low = text.lower()
     terms: list[str] = []
     for profile in VERTICAL_SIGNAL_PROFILES:
+        if not _profile_anchor_in_text(low, profile):
+            continue
         for term, markers in profile.term_markers.get(key, {}).items():
             if term not in terms and any(marker in low for marker in markers):
                 terms.append(term)
@@ -202,3 +192,10 @@ def _collect_profile_values(attribute: str, key: str) -> tuple[str, ...]:
             if value not in values:
                 values.append(value)
     return tuple(values)
+
+
+def _profile_anchor_in_text(low: str, profile: VerticalSignalProfile) -> bool:
+    anchors: list[str] = list(profile.offer_family_markers)
+    for group in ("product_offer", "outcome"):
+        anchors.extend(profile.group_keywords.get(group, ()))
+    return any(anchor in low for anchor in anchors)

@@ -84,8 +84,34 @@ def test_strategic_evidence_packet_groups_retail_home_copy_and_rejects_spanish_l
     assert "Shop now" not in offer_text
     assert "Source:" not in offer_text
     assert "transformar tu hogar" in outcome_text
-    assert "creatividad" in values_text
+    assert "inspiradores" in values_text
     assert "Política de privacidad" not in values_text
+    assert any(item["reason"] == "legal_or_footer_noise" for item in packet.rejected)
+
+
+def test_strategic_evidence_packet_rejects_spanish_security_legal_copy_as_values():
+    snapshot = {
+        "run": {"id": 903, "brand_name": "Legal Copy", "url": "https://legal.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://legal.test",
+                    "markdown_content": (
+                        "Para el tratamiento de datos de nuestros usuarios, implementamos todas las medidas "
+                        "técnicas y organizativas de seguridad establecidas en la legislación vigente."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    values_text = " ".join(item.text for item in packet.groups.get("values_language", []))
+    assert "legislación vigente" not in values_text
     assert any(item["reason"] == "legal_or_footer_noise" for item in packet.rejected)
 
 

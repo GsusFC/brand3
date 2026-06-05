@@ -98,3 +98,34 @@ Do not use vertical profiles to:
 - encode brand-specific names or slogans
 
 If a profile only works for one brand, it is not a vertical profile.
+
+## Broad Sample Review: 2026-06-05
+
+Command:
+
+```bash
+./.venv/bin/python scripts/magnetism_brand_audit_batch_review.py \
+  --limit 80 \
+  --dedupe \
+  --out-dir out/magnetism-vertical-profile-broad-sample-v4
+```
+
+Result:
+
+- reviewed rows: `24`
+- active profiles: `home_retail`
+- active profile rows: `1`
+- active profile rows with review flags: `0`
+- active profile rows with strong value proposition: `1`
+- active profile rows with usable attributes: `1`
+- active profile rows with usable values: `1`
+
+Decision:
+
+- Keep `home_retail`.
+- Do not add another vertical profile from this sample.
+- Treat term-only matches such as generic `design`, `creativity`, or `inspiration` as insufficient for profile activation unless the text also contains a vertical anchor.
+
+Reason:
+
+An earlier broad batch showed false `home_retail` activation on SaaS, AI, and developer brands due to generic creative vocabulary. The profile was tightened so vertical terms only contribute when anchored by profile-specific offer/outcome language. After tightening, only Sklum activated `home_retail`, with no review flags.

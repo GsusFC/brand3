@@ -562,7 +562,7 @@ def _vertical_profile_impact(
     for profile in VERTICAL_SIGNAL_PROFILES:
         group_matches = _profile_group_matches(profile, strategic_packet)
         layer_matches = _profile_layer_matches(profile, layers)
-        term_matches = _profile_term_matches(profile, tldr)
+        term_matches = _profile_term_matches(profile, tldr) if group_matches or layer_matches else {}
         if not group_matches and not layer_matches and not term_matches:
             continue
         impacts.append(

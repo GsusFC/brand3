@@ -710,10 +710,11 @@ def _collect_social_input(
     social_collector,
 ) -> tuple[SocialData | None, str | None]:
     if not use_social:
-        raw_input_cache["social"] = "skipped"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="social",
+            raw_cache_status="skipped",
             status="skipped",
             cache_status="skipped",
             eligible=False,
@@ -722,10 +723,11 @@ def _collect_social_input(
 
     social_data = cache_read("social", BRAND3_CACHE_TTL_HOURS, from_social_payload)
     if social_data:
-        raw_input_cache["social"] = "hit"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="social",
+            raw_cache_status="hit",
             status="hit",
             cache_status="hit",
             eligible=True,
@@ -743,7 +745,6 @@ def _collect_social_input(
             )
         return social_data, None
 
-    raw_input_cache["social"] = "miss"
     try:
         social_data, social_limitation = social_collector(
             brand_name,
@@ -752,10 +753,11 @@ def _collect_social_input(
         )
         platforms_count = len(social_data.platforms)
         if social_limitation:
-            raw_input_cache["social"] = social_limitation
-            _record_acquisition(
+            _set_acquisition_state(
+                raw_input_cache,
                 acquisition_steps,
                 source="social",
+                raw_cache_status=social_limitation,
                 status=social_limitation,
                 cache_status="miss",
                 eligible=True,
@@ -763,9 +765,11 @@ def _collect_social_input(
             )
             print(f"  Social: {social_limitation} - continuing without blocking analysis")
         else:
-            _record_acquisition(
+            _set_acquisition_state(
+                raw_input_cache,
                 acquisition_steps,
                 source="social",
+                raw_cache_status="miss",
                 status="ok",
                 cache_status="miss",
                 eligible=True,
@@ -783,10 +787,11 @@ def _collect_social_input(
             )
         return social_data, social_limitation
     except Exception as e:
-        raw_input_cache["social"] = "error"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="social",
+            raw_cache_status="error",
             status="error",
             cache_status="miss",
             eligible=False,

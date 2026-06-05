@@ -329,6 +329,48 @@ def test_attributes_can_derive_from_ambientspace_evidence_without_initial_conten
     assert any(term in content for term in ["ai-native", "practical", "editorial", "experimental"]), block["content"]
     assert block["evidence_used"]
 
+
+def test_home_retail_copy_maps_attributes_and_values_without_legal_noise() -> None:
+    result = MagnetismExtractor(llm=None).extract_from_audit_snapshot(
+        {
+            "run": {"id": 902, "brand_name": "Sklum", "url": "https://www.sklum.com"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://www.sklum.com",
+                        "markdown_content": (
+                            "Tienda online de muebles y decoración moderna para transformar tu hogar con estilo. "
+                            "Diseños exclusivos, funcionales e inspiradores para cada espacio.\n"
+                            "---\n"
+                            "## Subpage: https://www.sklum.com/es/content/66-conocenos\n"
+                            "Valoramos la creatividad y la belleza en cada pieza que creamos. "
+                            "Inclusión Valoramos la inclusión y la diversidad en nuestro equipo y en nuestros productos.\n"
+                            "---\n"
+                            "## Subpage: https://www.sklum.com/es/content/84-politica-de-privacidad\n"
+                            "Política de privacidad RGPD LSSI Protección de datos."
+                        ),
+                    },
+                }
+            ],
+            "evidence_items": [],
+        }
+    )
+
+    attributes = result["tldr_brand3"]["attributes"]
+    values = result["tldr_brand3"]["values"]
+    _assert_v03_contract("attributes", attributes)
+    _assert_v03_contract("values", values)
+    assert attributes["detected"]
+    assert values["detected"]
+    attributes_text = _content_text(attributes["content"]).lower()
+    values_text = _content_text(values["content"]).lower()
+    assert any(term in attributes_text for term in ["design-led", "functional", "inspiring"]), attributes["content"]
+    assert any(term in values_text for term in ["creativity", "beauty", "inclusivity", "inspiration"]), values["content"]
+    assert "privacy" not in values_text
+
+
 def test_iconic_action_brand_can_derive_personality_and_brand_idea() -> None:
     fixture = _load_fixture("nike_tldr_v02.json")
     result = MagnetismExtractor(llm=None).extract(

@@ -380,6 +380,77 @@ def test_value_proposition_spanish_durability_counts_as_outcome() -> None:
     )
 
 
+def test_value_proposition_multiple_same_family_retail_offers_do_not_force_review() -> None:
+    accepted = [
+        {
+            "text": "Tienda online de muebles y decoración moderna para transformar tu hogar con estilo.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Nuestra Propuesta de valor En Sklum, ofrecemos más que muebles.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        },
+        {
+            "text": "Sklum | Muebles de diseño y decoración para tu hogar - SKLUM",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+    confidence = confidence_from_spec("value_proposition", diagnostics, accepted)
+
+    assert diagnostics["product_offer_count"] == 3
+    assert diagnostics["has_multiple_offers"] is False
+    assert "multiple offer signals" not in " ".join(counter_evidence)
+    assert (
+        human_review_from_spec("value_proposition", diagnostics, confidence, counter_evidence)
+        is False
+    )
+
+
+def test_value_proposition_multiple_divergent_offer_families_force_review() -> None:
+    accepted = [
+        {
+            "text": "A platform for finance teams that streamlines payments.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Developer infrastructure for deploying apps in secure sandboxes.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "product",
+        },
+    ]
+    diagnostics = block_evidence_diagnostics(
+        "value_proposition",
+        accepted,
+        {"netspace": {"detected": True}},
+        "netspace",
+    )
+    counter_evidence = counter_evidence_from_spec("value_proposition", diagnostics)
+
+    assert diagnostics["has_multiple_offers"] is True
+    assert any("multiple offer signals" in item for item in counter_evidence)
+
+
 
 def test_interpret_tldr_block_returns_normalized_block_result() -> None:
     spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]

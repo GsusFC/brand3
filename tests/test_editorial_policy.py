@@ -119,6 +119,13 @@ class EditorialPolicyTests(unittest.TestCase):
             "unsupported_emotional_projection",
         ])
 
+    def test_editorial_discipline_warnings_do_not_match_inside_spanish_words(self):
+        warnings = editorial_discipline_warnings(
+            "Tienda online de muebles y decoración moderna para transformar tu hogar con estilo."
+        )
+
+        self.assertNotIn("false_sophistication", warnings)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -36,6 +36,59 @@ def test_strategic_evidence_packet_groups_owned_quotes_without_internal_metadata
     assert packet.to_summary()["group_counts"]["outcome"] == 1
 
 
+def test_strategic_evidence_packet_groups_retail_home_copy_and_rejects_spanish_legal():
+    snapshot = {
+        "run": {"id": 901, "brand_name": "Sklum", "url": "https://www.sklum.com"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://www.sklum.com",
+                    "markdown_content": (
+                        "View more Muebles de jardín Camas Sillas Sofás Mesas Cocinas de exterior Shop now Shop now Jardín SPECIAL PRICE.\n"
+                        "Decoración SPECIAL PRICE.\n"
+                        "Tienda online de muebles y decoración moderna para transformar tu hogar con estilo. "
+                        "Diseños exclusivos, funcionales e inspiradores para cada espacio.\n"
+                        "Recordar productos en tu carrito de compra.\n"
+                        "Source: https://www.sklum.com/products\n"
+                        "---\n"
+                        "## Subpage: https://www.sklum.com/es/content/84-politica-de-privacidad\n"
+                        "Política de privacidad RGPD LSSI Protección de datos.\n"
+                        "---\n"
+                        "## Subpage: https://www.sklum.com/es/content/66-conocenos\n"
+                        "Nuestra Misión Nuestra misión es crear y seleccionar muebles que despierten la inspiración y la autenticidad.\n"
+                        "Hoy, con más de 900 personas y operando en más de 10 países, somos mucho más que una empresa de muebles.\n"
+                        "Descubre historias únicas en cada hogar Inspírate y comparte tus propias fotos de nuestros productos en tu hogar en Instagram con el hashtag #MySklumStory.\n"
+                        "Valoramos la creatividad y la belleza en cada pieza que creamos. "
+                        "Inclusión Valoramos la inclusión y la diversidad en nuestro equipo y en nuestros productos."
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    offer_text = " ".join(item.text for item in packet.groups.get("product_offer", []))
+    outcome_text = " ".join(item.text for item in packet.groups.get("outcome", []))
+    values_text = " ".join(item.text for item in packet.groups.get("values_language", []))
+    assert "Tienda online de muebles" in offer_text
+    assert "Nuestra Misión" not in offer_text
+    assert "Inclusión Valoramos" not in offer_text
+    assert "operando en más de" not in offer_text
+    assert "hashtag" not in offer_text
+    assert "SPECIAL PRICE" not in offer_text
+    assert "carrito de compra" not in offer_text
+    assert "Shop now" not in offer_text
+    assert "Source:" not in offer_text
+    assert "transformar tu hogar" in outcome_text
+    assert "creatividad" in values_text
+    assert "Política de privacidad" not in values_text
+    assert any(item["reason"] == "legal_or_footer_noise" for item in packet.rejected)
+
+
 def test_strategic_evidence_packet_keeps_third_party_context_separate():
     snapshot = {
         "run": {"id": 78, "brand_name": "Audit Brand", "url": "https://audit.test"},

@@ -6,6 +6,7 @@ readiness, narrative generation, rendering, prompts, or storage.
 
 from __future__ import annotations
 
+import re
 from typing import Any
 
 
@@ -234,14 +235,19 @@ def signal_depth_policy(depth: str) -> dict[str, Any]:
 def editorial_discipline_warnings(text: str) -> list[str]:
     low = str(text or "").lower()
     warnings: list[str] = []
-    if any(term in low for term in _FALSE_SOPHISTICATION_TERMS):
+    if any(_contains_policy_term(low, term) for term in _FALSE_SOPHISTICATION_TERMS):
         warnings.append("false_sophistication")
-    if any(marker in low for marker in _INVENTED_INTENT_MARKERS):
+    if any(_contains_policy_term(low, marker.strip()) for marker in _INVENTED_INTENT_MARKERS):
         warnings.append("invented_intentionality")
-    if any(term in low for term in _UNSUPPORTED_EMOTIONAL_TERMS):
+    if any(_contains_policy_term(low, term) for term in _UNSUPPORTED_EMOTIONAL_TERMS):
         warnings.append("unsupported_emotional_projection")
     return warnings
 
 
 def overreach_warnings(text: str) -> list[str]:
     return editorial_discipline_warnings(text)
+
+
+def _contains_policy_term(text: str, term: str) -> bool:
+    escaped = re.escape(term.lower())
+    return re.search(rf"(?<![a-z0-9-]){escaped}(?![a-z0-9-])", text) is not None

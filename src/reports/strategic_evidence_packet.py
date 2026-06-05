@@ -74,6 +74,12 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "monitoring",
         "portfolio platform",
         "jobs and recruiting site",
+        "tienda online",
+        "muebles",
+        "decoración",
+        "decoracion",
+        "diseños exclusivos",
+        "disenos exclusivos",
     ),
     "audience": (
         "teams",
@@ -147,6 +153,11 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "asegura",
         "empowering",
         "impulsando",
+        "transformar tu hogar",
+        "transforma tu hogar",
+        "con estilo",
+        "funcionales",
+        "inspiradores",
     ),
     "mission_language": (
         "we build",
@@ -198,6 +209,14 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "seguro",
         "seguridad",
         "sostenible",
+        "inspiradores",
+        "inspiración",
+        "inspiracion",
+        "inclusión",
+        "inclusion",
+        "diversidad",
+        "creatividad",
+        "belleza",
     ),
     "personality_tone": (
         "bold",
@@ -667,11 +686,30 @@ def _groups_for(text: str, source_type: str, url: str | None = None) -> list[str
         for group, keywords in GROUP_KEYWORDS.items()
         if any(keyword in low for keyword in keywords)
     ]
+    if "product_offer" in groups and _looks_like_about_mission_or_values_line(low):
+        groups = [group for group in groups if group != "product_offer"]
     if source_type not in OWNED_SOURCE_TYPES and groups:
         groups = [group for group in groups if group in {"proof_points", "third_party_context"}]
         if "third_party_context" not in groups:
             groups.append("third_party_context")
     return list(dict.fromkeys(groups))
+
+
+def _looks_like_about_mission_or_values_line(low: str) -> bool:
+    return low.startswith(
+        (
+            "historia de la marca",
+            "nuestra misión",
+            "nuestra mision",
+            "nuestro propósito",
+            "nuestro proposito",
+            "valores y filosofía",
+            "valores y filosofia",
+            "inclusión ",
+            "inclusion ",
+            "valoramos ",
+        )
+    ) or "inclusión valoramos" in low or "inclusion valoramos" in low
 
 
 def _is_proof_page_url(url: str | None) -> bool:
@@ -746,6 +784,8 @@ def _reject_reason(text: str) -> str | None:
         return "empty_or_too_short"
     if low.startswith(("http://", "https://")):
         return "url_only"
+    if low.startswith("source:"):
+        return "source_metadata"
     if text.strip().startswith("![") or _looks_like_image_or_logo_noise(text, low):
         return "image_alt_text_noise"
     if _looks_like_legal_or_footer_noise(low):
@@ -805,10 +845,22 @@ def _reject_reason(text: str) -> str | None:
         return "navigation_or_hiring_noise"
     if any(marker in low for marker in ("/news/", "/blog/", "read more", "press release")):
         return "article_or_navigation_noise"
+    if "hashtag" in low and any(marker in low for marker in ("instagram", "comparte tus propias fotos", "inspírate", "inspirate")):
+        return "article_or_navigation_noise"
+    if "operando en más de" in low or "operando en mas de" in low:
+        return "company_profile_metadata"
+    if "cookies" in low or "cookie" in low:
+        return "legal_or_footer_noise"
+    if "carrito de compra" in low:
+        return "navigation_or_cta_noise"
+    if "special price" in low and len(low) < 80:
+        return "navigation_or_section_heading_noise"
     if "to showcase" in low and (" at " in low or "conference" in low):
         return "promotion_or_event_noise"
     if _looks_like_promotion_or_event(low) and not any(marker in low for marker in ("platform", "software", "api")):
         return "promotion_or_event_noise"
+    if _looks_like_ecommerce_grid_noise(low):
+        return "navigation_or_cta_noise"
     if "magic quadrant" in low or "named a leader" in low:
         return "analyst_report_or_award_noise"
     return None
@@ -826,15 +878,70 @@ def _looks_like_image_or_logo_noise(text: str, low: str) -> bool:
     )
 
 
+def _looks_like_ecommerce_grid_noise(low: str) -> bool:
+    ecommerce_nav_hits = sum(
+        1
+        for marker in (
+            "view more",
+            "view collection",
+            "shop now",
+            "special price",
+            "buscar producto",
+            "back in stock",
+            "new trending",
+            "código:",
+            "codigo:",
+            "finalizan en",
+            "obtén un",
+            "obten un",
+        )
+        if marker in low
+    )
+    category_hits = sum(
+        1
+        for marker in (
+            "sillas",
+            "sofás",
+            "sofas",
+            "mesas",
+            "taburetes",
+            "almacenaje",
+            "decoración",
+            "decoracion",
+            "iluminación",
+            "iluminacion",
+            "textil",
+            "electrodomésticos",
+            "electrodomesticos",
+            "jardín",
+            "jardin",
+        )
+        if marker in low
+    )
+    return ecommerce_nav_hits >= 2 or (ecommerce_nav_hits >= 1 and category_hits >= 4)
+
+
 def _looks_like_legal_or_footer_noise(low: str) -> bool:
     legal_hits = sum(
         1
         for marker in (
             "privacy policy",
+            "política de privacidad",
+            "politica de privacidad",
+            "política de cookies",
+            "politica de cookies",
             "terms of service",
             "copyright",
             "all rights reserved",
             "legal entity",
+            "aviso legal",
+            "protección de datos",
+            "proteccion de datos",
+            "información personal",
+            "informacion personal",
+            "datos personales",
+            "rgpd",
+            "lssi",
             "effective date",
             "last updated",
             "opt-out",
@@ -842,7 +949,23 @@ def _looks_like_legal_or_footer_noise(low: str) -> bool:
         if marker in low
     )
     if legal_hits >= 1 and any(
-        marker in low for marker in ("policy", "terms", "copyright", "legal", "all rights")
+        marker in low
+        for marker in (
+            "policy",
+            "política",
+            "politica",
+            "terms",
+            "copyright",
+            "legal",
+            "all rights",
+            "protección de datos",
+            "proteccion de datos",
+            "información personal",
+            "informacion personal",
+            "datos personales",
+            "rgpd",
+            "lssi",
+        )
     ):
         return True
     nav_hits = sum(

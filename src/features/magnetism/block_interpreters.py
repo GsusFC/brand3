@@ -570,6 +570,7 @@ def block_evidence_diagnostics(
     product_offer_count = sum(
         1 for item in accepted if str(item.get("group") or "") == "product_offer"
     )
+    has_multiple_offers = _has_divergent_product_offers(accepted)
     return {
         "has_explicit_evidence": any(
             source == "evidence" or source.startswith("strategic:")
@@ -585,11 +586,105 @@ def block_evidence_diagnostics(
         ),
         "candidate_count": len(accepted),
         "product_offer_count": product_offer_count,
-        "has_multiple_offers": product_offer_count > 1,
+        "has_multiple_offers": has_multiple_offers,
         "accepted_groups": sorted(groups),
         "source_roles": source_roles,
         "primary_layer_detected": bool(layers.get(primary_layer_key, {}).get("detected")),
     }
+
+
+def _has_divergent_product_offers(accepted: list[dict[str, str]]) -> bool:
+    product_offers = [
+        item for item in accepted if str(item.get("group") or "") == "product_offer"
+    ]
+    if len(product_offers) <= 1:
+        return False
+
+    families = {
+        family
+        for item in product_offers
+        if (family := _product_offer_family(str(item.get("text") or "")))
+    }
+    if len(families) > 1:
+        return True
+    if len(families) == 1:
+        return False
+    return True
+
+
+def _product_offer_family(text: str) -> str | None:
+    low = text.lower()
+    if any(
+        term in low
+        for term in (
+            "tienda online",
+            "muebles",
+            "decoración",
+            "decoracion",
+            "hogar",
+            "diseño",
+            "diseno",
+            "interiorismo",
+        )
+    ):
+        return "home_retail"
+    if any(
+        term in low
+        for term in (
+            "payments",
+            "pagos",
+            "billing",
+            "facturación",
+            "facturacion",
+            "financial services",
+            "servicios financieros",
+            "revenue",
+            "ingresos",
+            "treasury",
+        )
+    ):
+        return "financial_workflows"
+    if any(
+        term in low
+        for term in (
+            "developer",
+            "deploy",
+            "cloud",
+            "infrastructure",
+            "platform for devs",
+            "sandboxes",
+            "api",
+            "sdk",
+        )
+    ):
+        return "developer_platform"
+    if any(
+        term in low
+        for term in (
+            "human intelligence",
+            "business analyst",
+            "research people",
+            "ai agents",
+            "custom agents",
+        )
+    ):
+        return "ai_research"
+    if any(
+        term in low
+        for term in (
+            "materias primas",
+            "ingredientes",
+            "biorremediación",
+            "biorremediacion",
+            "cosmética",
+            "cosmetica",
+            "nutrición",
+            "nutricion",
+            "salud animal",
+        )
+    ):
+        return "bioingredients"
+    return None
 
 
 def evidence_from_spec(

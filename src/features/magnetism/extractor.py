@@ -399,7 +399,7 @@ class MagnetismExtractor:
             research_pack_recommendation=research_pack_recommendation,
             research_pack=research_pack,
             contextdev_candidate_summary=contextdev_candidate_summary,
-            enrich_layers_from_packet=False,
+            enrich_layers_from_packet=True,
         )
 
     def _enrich_result_from_audit_snapshot(
@@ -434,7 +434,11 @@ class MagnetismExtractor:
             result["research_pack_source"] = "snapshot_builder"
         result["strategic_evidence_packet"] = packet_dict
         if enrich_layers_from_packet:
-            self._enrich_layers_from_strategic_packet(result["magenta_circle"], packet_dict)
+            self._enrich_layers_from_strategic_packet(
+                result["magenta_circle"],
+                packet_dict,
+                replace_detected_ambientspace=True,
+            )
         brand_context_brief = build_brand_context_brief(
             brand_name=brand_name,
             url=url,
@@ -780,9 +784,9 @@ Return exactly this JSON shape:
             "aetherspace": ["mission", "purpose", "why", "founded", "exists", "values", "manifesto", "inspirar", "inspire", "regenerativo", "circular", "medio ambiente", "sostenible"],
             "gamespace": ["voice", "tone", "playful", "bold", "rebel", "sage", "creator", "trusted"],
             "envispace": ["design", "visual", "aesthetic", "palette", "typography", "minimal", "brutalist"],
-            "netspace": ["value", "api", "developer", "automation", "platform", "infrastructure", "financial services", "servicios financieros", "accept payments", "aceptar pagos", "billing", "facturación", "product development", "planning and building", "teams and agents", "integration", "sdk", "innovadores", "productos innovadores", "soluciones", "ingredientes activos", "materias primas", "servicios ambientales"],
+            "netspace": ["value", "api", "developer", "automation", "platform", "infrastructure", "financial services", "servicios financieros", "accept payments", "aceptar pagos", "billing", "facturación", "product development", "planning and building", "teams and agents", "integration", "sdk", "innovadores", "productos innovadores", "soluciones", "ingredientes activos", "materias primas", "servicios ambientales", "tienda online", "muebles", "decoración", "decoracion", "diseños exclusivos", "disenos exclusivos"],
             "tactispace": ["creamos", "we create", "we build", "we provide", "mission", "vision", "roadmap", "future", "new model", "new paradigm", "misión", "vision", "visión", "futuro", "nuevo modelo"],
-            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "custom agents", "ai agents", "prioritization", "okr planning", "growth tracking", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo"],
+            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "custom agents", "ai agents", "prioritization", "okr planning", "growth tracking", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo", "diseño", "diseno", "decoración", "decoracion", "funcionales", "inspiradores", "creatividad", "belleza", "inclusión", "inclusion", "diversidad"],
         }
 
         layers: dict[str, Any] = {}
@@ -996,6 +1000,7 @@ Return exactly this JSON shape:
         self,
         layers: dict[str, Any],
         strategic_packet: dict[str, Any],
+        replace_detected_ambientspace: bool = False,
     ) -> None:
         """Project normalized Brand Audit evidence groups onto Magenta layers.
 
@@ -1014,10 +1019,12 @@ Return exactly this JSON shape:
             "ambientspace": ["values_language"],
         }
         for layer_key, group_names in layer_group_map.items():
-            if layers.get(layer_key, {}).get("detected"):
-                continue
             item = self._first_packet_item(groups, group_names)
             if not item:
+                continue
+            if layers.get(layer_key, {}).get("detected") and not (
+                replace_detected_ambientspace and layer_key == "ambientspace"
+            ):
                 continue
             evidence = item["text"]
             confidence = self._packet_layer_confidence(layer_key, groups, item.get("group"))
@@ -2060,6 +2067,9 @@ Return exactly this JSON shape:
                 "practical",
                 "editorial",
                 "experimental",
+                "design-led",
+                "functional",
+                "inspiring",
             ],
             "values": [
                 "regenerativo",
@@ -2080,6 +2090,9 @@ Return exactly this JSON shape:
                 "transparency",
                 "customer empathy",
                 "developer empathy",
+                "creativity",
+                "beauty",
+                "inclusivity",
             ],
         }
         found: list[str] = []
@@ -2101,8 +2114,14 @@ Return exactly this JSON shape:
                 found.append("experimental")
             if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
                 found.append("innovative")
+            if any(term in low for term in ("diseño", "diseno", "design", "decoración", "decoracion")):
+                found.append("design-led")
+            if any(term in low for term in ("funcional", "funcionales", "functional")):
+                found.append("functional")
+            if any(term in low for term in ("inspirador", "inspiradores", "inspirar", "inspírate", "inspirate")):
+                found.append("inspiring")
         if key == "values":
-            if any(term in low for term in ("inspirar", "inspire", "inspiration")):
+            if any(term in low for term in ("inspirar", "inspire", "inspiration", "inspiración", "inspiracion", "inspiradores", "inspírate", "inspirate")):
                 found.append("inspiration")
             if any(term in low for term in ("todo tipo de atletas", "all types of athletes")):
                 found.append("inclusivity")
@@ -2114,6 +2133,12 @@ Return exactly this JSON shape:
                 found.append("developer empathy")
             if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
                 found.append("innovation")
+            if "creatividad" in low or "creativity" in low:
+                found.append("creativity")
+            if "belleza" in low or "beauty" in low:
+                found.append("beauty")
+            if any(term in low for term in ("inclusión", "inclusion", "diversidad", "diversity")):
+                found.append("inclusivity")
         found = list(dict.fromkeys(found))
         if len(found) >= 3:
             return found[:3]

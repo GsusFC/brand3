@@ -67,6 +67,37 @@ class _FailingStorageStore:
         raise RuntimeError("disk is read-only")
 
 
+class _RecordingStorageStore:
+    def __init__(self):
+        self.saved = []
+
+    def save_raw_input(self, run_id, source, payload):
+        self.saved.append((run_id, source, payload))
+
+
+def test_collect_web_input_records_raw_payload_ref_after_successful_storage():
+    acquisition_steps: dict[str, object] = {}
+    raw_input_cache: dict[str, str] = {}
+    store = _RecordingStorageStore()
+
+    web_data, _collector = _collect_web_input(
+        store=store,
+        run_id=123,
+        url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: None,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        web_collector_cls=_FakeWebCollector,
+    )
+
+    assert store.saved == [(123, "web", web_data)]
+    assert acquisition_steps["web"].details["raw_payload_ref"] == {
+        "store": "raw_inputs",
+        "run_id": 123,
+        "source": "web",
+    }
+
+
 def test_collect_web_input_preserves_cache_read_error_in_acquisition_details():
     acquisition_steps: dict[str, object] = {}
     raw_input_cache: dict[str, str] = {}

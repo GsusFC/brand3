@@ -180,6 +180,35 @@ def _record_storage_error(
     )
 
 
+def _merge_acquisition_details(
+    acquisition_steps: dict[str, AcquisitionResult] | None,
+    *,
+    source: str,
+    details: dict[str, object],
+) -> None:
+    if acquisition_steps is None:
+        return
+    existing = acquisition_steps.get(source)
+    merged_details = dict(existing.details) if existing else {}
+    merged_details.update(details)
+    acquisition_steps[source] = AcquisitionResult(
+        source=source,
+        status=existing.status if existing else "unknown",
+        cache_status=existing.cache_status if existing else "unknown",
+        eligible=existing.eligible if existing else True,
+        error=existing.error if existing else None,
+        details=merged_details,
+    )
+
+
+def _raw_payload_ref(run_id: int, source: str) -> dict[str, object]:
+    return {
+        "store": "raw_inputs",
+        "run_id": run_id,
+        "source": source,
+    }
+
+
 def load_cached(
     store,
     brand_name: str,
@@ -233,9 +262,9 @@ def store_safely(
     *,
     acquisition_steps: dict[str, AcquisitionResult] | None = None,
     source: str | None = None,
-) -> None:
+) -> bool:
     if not store:
-        return
+        return False
     try:
         fn()
     except Exception as e:
@@ -246,6 +275,35 @@ def store_safely(
             error=str(e),
         )
         print(f"  Storage {action}: skipped ({e})")
+        return False
+    return True
+
+
+def _save_raw_input_safely(
+    store,
+    run_id: int | None,
+    source: str,
+    payload,
+    *,
+    action: str | None = None,
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
+) -> bool:
+    if not run_id:
+        return False
+    saved = store_safely(
+        store,
+        action or f"{source} save",
+        lambda: store.save_raw_input(run_id, source, payload),
+        acquisition_steps=acquisition_steps,
+        source=source,
+    )
+    if saved:
+        _merge_acquisition_details(
+            acquisition_steps,
+            source=source,
+            details={"raw_payload_ref": _raw_payload_ref(run_id, source)},
+        )
+    return saved
 
 
 def start_analysis_run(
@@ -313,12 +371,13 @@ def _collect_context_input(
             f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
         )
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "context cache save",
-                lambda: store.save_raw_input(run_id, "context", context_data),
+                run_id,
+                "context",
+                context_data,
+                action="context cache save",
                 acquisition_steps=acquisition_steps,
-                source="context",
             )
             store_safely(
                 store,
@@ -345,12 +404,13 @@ def _collect_context_input(
         f" confidence={context_data.confidence:.2f}"
     )
     if run_id:
-        store_safely(
+        _save_raw_input_safely(
             store,
-            "context save",
-            lambda: store.save_raw_input(run_id, "context", context_data),
+            run_id,
+            "context",
+            context_data,
+            action="context save",
             acquisition_steps=acquisition_steps,
-            source="context",
         )
         store_safely(
             store,
@@ -386,12 +446,13 @@ def _collect_web_input(
         )
         print(f"  Web: cache hit ({len(web_data.markdown_content)} chars)")
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "web cache save",
-                lambda: store.save_raw_input(run_id, "web", web_data),
+                run_id,
+                "web",
+                web_data,
+                action="web cache save",
                 acquisition_steps=acquisition_steps,
-                source="web",
             )
         return web_data, web_collector
 
@@ -406,12 +467,13 @@ def _collect_web_input(
     web_data = web_collector.scrape(url)
     print(f"  Web: {len(web_data.markdown_content)} chars scraped")
     if run_id:
-        store_safely(
+        _save_raw_input_safely(
             store,
-            "web save",
-            lambda: store.save_raw_input(run_id, "web", web_data),
+            run_id,
+            "web",
+            web_data,
+            action="web save",
             acquisition_steps=acquisition_steps,
-            source="web",
         )
     return web_data, web_collector
 
@@ -444,12 +506,13 @@ def _collect_exa_input(
         )
         print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "exa cache save",
-                lambda: store.save_raw_input(run_id, "exa", exa_data),
+                run_id,
+                "exa",
+                exa_data,
+                action="exa cache save",
                 acquisition_steps=acquisition_steps,
-                source="exa",
             )
         return exa_data, exa_collector
 
@@ -502,12 +565,13 @@ def _collect_exa_input(
         )
         print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
     if run_id:
-        store_safely(
+        _save_raw_input_safely(
             store,
-            "exa save",
-            lambda: store.save_raw_input(run_id, "exa", exa_data),
+            run_id,
+            "exa",
+            exa_data,
+            action="exa save",
             acquisition_steps=acquisition_steps,
-            source="exa",
         )
     return exa_data, exa_collector
 
@@ -545,12 +609,13 @@ def _collect_parallel_shadow_input(
             eligible=True,
         )
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "parallel shadow cache save",
-                lambda: store.save_raw_input(run_id, "parallel_shadow", cached),
+                run_id,
+                "parallel_shadow",
+                cached,
+                action="parallel shadow cache save",
                 acquisition_steps=acquisition_steps,
-                source="parallel_shadow",
             )
         return ParallelShadowData.from_dict(
             {
@@ -579,12 +644,13 @@ def _collect_parallel_shadow_input(
         f" domains={summary['unique_domain_count']}"
     )
     if run_id:
-        store_safely(
+        _save_raw_input_safely(
             store,
-            "parallel shadow save",
-            lambda: store.save_raw_input(run_id, "parallel_shadow", shadow_data.to_dict()),
+            run_id,
+            "parallel_shadow",
+            shadow_data.to_dict(),
+            action="parallel shadow save",
             acquisition_steps=acquisition_steps,
-            source="parallel_shadow",
         )
     return shadow_data
 
@@ -629,12 +695,13 @@ def _collect_social_input(
         )
         print(f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)")
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "social cache save",
-                lambda: store.save_raw_input(run_id, "social", social_data),
+                run_id,
+                "social",
+                social_data,
+                action="social cache save",
                 acquisition_steps=acquisition_steps,
-                source="social",
             )
         return social_data, None
 
@@ -668,12 +735,13 @@ def _collect_social_input(
             )
             print(f"  Social: {platforms_count} platforms, {social_data.total_followers:,} total followers")
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "social save",
-                lambda: store.save_raw_input(run_id, "social", social_data),
+                run_id,
+                "social",
+                social_data,
+                action="social save",
                 acquisition_steps=acquisition_steps,
-                source="social",
             )
         return social_data, social_limitation
     except Exception as e:
@@ -689,12 +757,13 @@ def _collect_social_input(
         print(f"  Social: error - {e}")
         social_data = SocialData(brand_name=brand_name, error=str(e))
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "social error save",
-                lambda: store.save_raw_input(run_id, "social", social_data),
+                run_id,
+                "social",
+                social_data,
+                action="social error save",
                 acquisition_steps=acquisition_steps,
-                source="social",
             )
         return social_data, "error"
 
@@ -744,12 +813,13 @@ def _collect_competitor_input(
         )
         print(f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)")
         if run_id:
-            store_safely(
+            _save_raw_input_safely(
                 store,
-                "competitor cache save",
-                lambda: store.save_raw_input(run_id, "competitors", competitor_data),
+                run_id,
+                "competitors",
+                competitor_data,
+                action="competitor cache save",
                 acquisition_steps=acquisition_steps,
-                source="competitors",
             )
         return competitor_data
 
@@ -768,12 +838,13 @@ def _collect_competitor_input(
         exa_data=exa_data,
     )
     if run_id:
-        store_safely(
+        _save_raw_input_safely(
             store,
-            "competitor save",
-            lambda: store.save_raw_input(run_id, "competitors", competitor_data),
+            run_id,
+            "competitors",
+            competitor_data,
+            action="competitor save",
             acquisition_steps=acquisition_steps,
-            source="competitors",
         )
     return competitor_data
 

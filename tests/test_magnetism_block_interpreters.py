@@ -337,6 +337,75 @@ def test_value_proposition_rejects_navigation_and_portfolio_chrome_blobs() -> No
     ]
 
 
+def test_value_proposition_rejects_article_feed_cards_but_keeps_multi_offer_about_copy() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Read the report Get in your inbox May 22, 2026 IN Playtesting Notes From the Foothills of the Singularity Alex Duffy May 21, 2026 After Automation Dan Shipper May 24, 2026 IN Context Window Cheap Competence, New Frontier Plus: Why AI makes excellent doctors",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Become an Early Adopter The Only Subscription You Need to Stay at the Edge of AI Newsletter Podcast Organize your Mac Automate writing Stop email stress Write 3x faster Write with AI AI agent in Slack The Only Subscription You Need to Stay at the Edge of AI Every Studio Lessons from engineers shipping AI products.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Kieran Klaassen How We Run a 25-person Company on Four AI Agents David Cramer What I Learned Onboarding to AI Coding Katie Parrott Dispatches From the Frontiers of AI Software.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "How We Run a 25-person Company on Four AI Agents How Every uses custom agents for prioritization, meeting notes, OKR planning, and growth tracking—plus sample prompts to build your own Katie Parrott What I Learned Onboarding Our AI Project Manager Claudie saves us 15 hours a week Nityesh Agarwal Build Your Own Financial Analyst With AI.",
+            "source": "strategic:outcome",
+            "group": "outcome",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Paid subscribers Brandon Gell Claude Code for Product Managers Best practices, debugging, and how to get value from AI agents in product workflows The Folder Is the Agent.",
+            "source": "strategic:audience",
+            "group": "audience",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Open with Plus One → Share Source Code How We Run a 25-person Company on Four AI Agents How Every uses custom agents for prioritization, meeting notes, OKR planning, and growth tracking—plus sample prompts to build your own Katie Parrott April 9, 2026 · Updated May 11, 2026 Link copied.",
+            "source": "strategic:audience",
+            "group": "audience",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Every is a media and software company that publishes a daily newsletter about what comes next in technology. We also build software products, offer courses, and provide AI consulting and training services.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        },
+        {
+            "text": "Try it Cora An AI assistant for your email—for $15/month.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "Every is a media and software company that publishes a daily newsletter about what comes next in technology. We also build software products, offer courses, and provide AI consulting and training services.",
+        "Try it Cora An AI assistant for your email—for $15/month.",
+    ]
+
+
 def test_value_proposition_diagnostics_drive_confidence_and_review() -> None:
     accepted = [
         {

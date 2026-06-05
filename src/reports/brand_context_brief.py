@@ -12,6 +12,8 @@ from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import urlparse
 
+from src.reports.evidence_noise import looks_like_article_or_product_card_feed
+
 
 @dataclass(frozen=True)
 class BrandContextSignal:
@@ -415,6 +417,8 @@ def _has_operating_context(text: str) -> bool:
 
 def _is_context_noise(text: str) -> bool:
     low = text.lower()
+    if looks_like_article_or_product_card_feed(low):
+        return True
     return any(
         marker in low
         for marker in (

@@ -13,6 +13,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.reports.derivation import Evidence, collect_evidences
+from src.reports.evidence_noise import looks_like_article_or_product_card_feed
 from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
 from src.reports.vertical_signals import vertical_group_keywords
 
@@ -829,6 +830,8 @@ def _reject_reason(text: str) -> str | None:
     if nav_hits >= 3:
         return "navigation_or_hiring_noise"
     if any(marker in low for marker in ("/news/", "/blog/", "read more", "press release")):
+        return "article_or_navigation_noise"
+    if looks_like_article_or_product_card_feed(low):
         return "article_or_navigation_noise"
     if "hashtag" in low and any(marker in low for marker in ("instagram", "comparte tus propias fotos", "inspírate", "inspirate")):
         return "article_or_navigation_noise"

@@ -278,6 +278,37 @@ def test_strategic_evidence_packet_rejects_owned_raw_navigation_noise():
     assert any(item["reason"] == "navigation_or_hiring_noise" for item in packet.rejected)
 
 
+def test_strategic_evidence_packet_rejects_owned_raw_article_card_feed_but_keeps_multi_offer_copy():
+    snapshot = {
+        "run": {"id": 184, "brand_name": "Every", "url": "https://every.to"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "markdown_content": "\n".join(
+                        [
+                            "Become an Early Adopter The Only Subscription You Need to Stay at the Edge of AI Newsletter Podcast Organize your Mac Automate writing Stop email stress Write 3x faster Write with AI AI agent in Slack The Only Subscription You Need to Stay at the Edge of AI Every Studio Lessons from engineers shipping AI products.",
+                            "Kieran Klaassen How We Run a 25-person Company on Four AI Agents David Cramer What I Learned Onboarding to AI Coding Katie Parrott Dispatches From the Frontiers of AI Software.",
+                            "How We Run a 25-person Company on Four AI Agents How Every uses custom agents for prioritization, meeting notes, OKR planning, and growth tracking—plus sample prompts to build your own Katie Parrott What I Learned Onboarding Our AI Project Manager Claudie saves us 15 hours a week Nityesh Agarwal Build Your Own Financial Analyst With AI.",
+                            "Every is a media and software company that publishes a daily newsletter about what comes next in technology. We also build software products, offer courses, and provide AI consulting and training services.",
+                        ]
+                    ),
+                },
+            }
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    product_offer_texts = [item.text for item in packet.groups["product_offer"]]
+    assert product_offer_texts == [
+        "Every is a media and software company that publishes a daily newsletter about what comes next in technology. We also build software products, offer courses, and provide AI consulting and training services."
+    ]
+    assert sum(1 for item in packet.rejected if item["reason"] == "article_or_navigation_noise") == 3
+
+
 def test_strategic_evidence_packet_strips_company_profile_prefix_from_useful_offer():
     snapshot = {
         "run": {"id": 85, "brand_name": "Linear", "url": "https://linear.app"},

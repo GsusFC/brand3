@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 from src.reports.brand_context_brief import brand_context_candidates
 from src.reports.editorial_policy import overreach_warnings
+from src.reports.evidence_noise import looks_like_article_or_product_card_feed
 from src.reports.vertical_signals import (
     product_offer_family_allows_multiple_lines,
     product_offer_family_for_text,
@@ -887,6 +888,8 @@ def _is_feed_or_article_noise(text: str) -> bool:
         return True
     if re.search(r"\b(?:mon|tue|wed|thu|fri|sat|sun),\s+\d{1,2}\s+[a-z]{3}\s+\d{4}", low):
         return True
+    if looks_like_article_or_product_card_feed(low):
+        return True
     editorial_markers = (
         "imagínate",
         "imaginate",
@@ -1180,6 +1183,8 @@ def _is_bad_value_prop_candidate(text: str) -> bool:
     if low.startswith("source:"):
         return True
     if _is_truncated_evidence(low):
+        return True
+    if _is_feed_or_article_noise(text):
         return True
     if stripped.startswith("![") or "![" in stripped:
         return True

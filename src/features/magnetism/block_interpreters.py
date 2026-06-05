@@ -1191,6 +1191,10 @@ def _is_bad_value_prop_candidate(text: str) -> bool:
         return True
     if "teams changelog blog support docs" in low:
         return True
+    if _looks_like_web_chrome_or_navigation_blob(low):
+        return True
+    if _looks_like_portfolio_case_card(low):
+        return True
     if low.count("moments of activation") >= 2:
         return True
     if "schema detected:" in low:
@@ -1216,6 +1220,45 @@ def _is_bad_value_prop_candidate(text: str) -> bool:
     if low.startswith(("inclusión ", "inclusion ")) and "valoramos" in low:
         return True
     if stripped.count("**](http") or stripped.endswith("]"):
+        return True
+    return False
+
+
+def _looks_like_web_chrome_or_navigation_blob(low: str) -> bool:
+    chrome_hits = sum(
+        1
+        for marker in (
+            "sign in",
+            "subscribe",
+            "book a call",
+            "work about",
+            "services collections",
+            "home newsletter",
+            "columnists",
+            "podcast products events",
+            "guides consulting",
+            "search about us careers",
+            "get a demo",
+            "launch now",
+        )
+        if marker in low
+    )
+    if chrome_hits >= 2:
+        return True
+    if "[&>*]" in low or "*]:block" in low:
+        return True
+    return False
+
+
+def _looks_like_portfolio_case_card(low: str) -> bool:
+    if len(low) > 180 and any(marker in low for marker in ("book a call", "work about", "services collections")):
+        return True
+    if (
+        any(marker in low for marker in ("case study", "portfolio", "crafting a brand", "brand and platform redesign"))
+        and not any(marker in low for marker in ("we are", "we build", "we provide", "platform for", "service for"))
+    ):
+        return True
+    if "go sprint" in low and "go to market" in low and "what's included" in low:
         return True
     return False
 

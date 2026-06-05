@@ -297,6 +297,46 @@ def test_value_proposition_rejects_legal_and_source_metadata_candidates() -> Non
     ]
 
 
+def test_value_proposition_rejects_navigation_and_portfolio_chrome_blobs() -> None:
+    spec = TLDR_BLOCK_INTERPRETER_SPECS["value_proposition"]
+    candidates = [
+        {
+            "text": "Book a call Work About SERVICES Collections Book a call STRATEGIC DESIGN STUDIO strategy branding product design Motion",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Sign in Subscribe *]:block [&>*]:mt-2 Home Newsletter Columnists Columns Podcast Products Events Guides Consulting Search About us Careers",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+        {
+            "text": "Brand and platform redesign to early-access to most sought token launch",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "about",
+        },
+        {
+            "text": "A self-service omnichannel advertising platform for agencies that launch campaigns from one dashboard.",
+            "source": "strategic:product_offer",
+            "group": "product_offer",
+            "layer": "netspace",
+            "source_role": "homepage",
+        },
+    ]
+
+    accepted = accepted_block_evidence("value_proposition", spec, candidates)
+
+    assert [item["text"] for item in accepted] == [
+        "A self-service omnichannel advertising platform for agencies that launch campaigns from one dashboard."
+    ]
+
+
 def test_value_proposition_diagnostics_drive_confidence_and_review() -> None:
     accepted = [
         {

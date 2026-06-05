@@ -20,8 +20,8 @@ from pathlib import Path
 
 from src.features.magnetism.readiness import assess_scanner_readiness
 from src.quality.publication_readiness import (
-    publication_decision_from_report_readiness,
-    publication_decision_from_scanner_readiness,
+    attach_scanner_publication_decision,
+    is_publishable_report,
 )
 from ..config import settings
 
@@ -302,10 +302,7 @@ class AnalysisQueue:
             return
 
         readiness = assess_scanner_readiness(str(scan.get("input_type") or "url"), result)
-        result["scanner_readiness"] = readiness.to_payload()
-        result["publication_decision"] = publication_decision_from_scanner_readiness(
-            result["scanner_readiness"]
-        ).to_payload()
+        attach_scanner_publication_decision(result, readiness.to_payload())
         if readiness.status == "failed":
             _fail_magnetism_scan_with_payload(token, readiness.error_message or "failed", result)
             log.warning("magnetism blocked token=%s reason=%s", token, readiness.error_message)
@@ -347,7 +344,7 @@ def _analysis_report_readiness(result: dict, *, run_id: int | None = None) -> di
 
 
 def _is_publishable_report(readiness: dict | None) -> bool:
-    return publication_decision_from_report_readiness(readiness).publishable
+    return is_publishable_report(readiness)
 
 
 def _load_request(token: str) -> dict | None:

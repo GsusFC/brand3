@@ -15,7 +15,7 @@ from pathlib import Path
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.readiness import assess_scanner_readiness
 from src.features.magnetism.scan_mode import scan_mode_from_payload
-from src.quality.publication_readiness import publication_decision_from_scanner_readiness
+from src.quality.publication_readiness import attach_scanner_publication_decision
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -297,10 +297,8 @@ def _magnetism_payload_insert_state(
     if not isinstance(readiness, dict):
         input_type = _magnetism_payload_input_type(payload, source_run_id=source_run_id)
         readiness = assess_scanner_readiness(input_type, payload).to_payload()
-        payload["scanner_readiness"] = readiness
 
-    publication = publication_decision_from_scanner_readiness(readiness)
-    payload["publication_decision"] = publication.to_payload()
+    publication = attach_scanner_publication_decision(payload, readiness)
     input_type = _magnetism_payload_input_type(payload, source_run_id=source_run_id)
     payload["scan_mode"] = scan_mode_from_payload(
         payload,

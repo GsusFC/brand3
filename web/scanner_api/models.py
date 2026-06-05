@@ -11,7 +11,7 @@ from fastapi import HTTPException
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.readiness import assess_scanner_readiness
 from src.features.magnetism.scan_mode import scan_mode_from_payload, scan_mode_from_row
-from src.quality.publication_readiness import publication_decision_from_scanner_readiness
+from src.quality.publication_readiness import scanner_publication_decision_payload
 
 from .presenters import (
     scanner_methodology_payload,
@@ -141,9 +141,7 @@ def publication_decision_from_payload(payload: dict[str, Any]) -> dict[str, Any]
     decision = payload.get("publication_decision")
     if isinstance(decision, dict):
         return decision
-    return publication_decision_from_scanner_readiness(
-        scanner_readiness_from_payload(payload)
-    ).to_payload()
+    return scanner_publication_decision_payload(scanner_readiness_from_payload(payload))
 
 
 def is_manual_magnetism_payload(payload: dict[str, Any]) -> bool:

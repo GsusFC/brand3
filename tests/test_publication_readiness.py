@@ -1,7 +1,11 @@
 from src.quality.publication_readiness import (
     PUBLICATION_DECISION_VERSION,
+    attach_report_publication_decision,
+    attach_scanner_publication_decision,
+    is_publishable_report,
     publication_decision_from_report_readiness,
     publication_decision_from_scanner_readiness,
+    scanner_publication_decision_payload,
 )
 
 
@@ -18,6 +22,7 @@ def test_report_publishable_readiness_becomes_publishable_decision() -> None:
     assert payload["listable"] is True
     assert payload["ui_readable"] is True
     assert payload["api_readable"] is True
+    assert is_publishable_report({"report_mode": "publishable_brand_report"}) is True
 
 
 def test_missing_report_readiness_is_non_public() -> None:
@@ -28,6 +33,27 @@ def test_missing_report_readiness_is_non_public() -> None:
     assert decision.reason_codes == ("missing_report_readiness",)
     assert decision.listable is False
     assert decision.ui_readable is True
+    assert is_publishable_report(None) is False
+
+
+def test_attach_report_publication_decision_updates_audit_contract() -> None:
+    audit = {"brand_name": "Example"}
+    readiness = {
+        "version": "report_readiness_v1",
+        "report_mode": "technical_diagnostic",
+        "blockers": ["missing_identity"],
+    }
+
+    decision = attach_report_publication_decision(audit, readiness)
+
+    assert decision.publishable is False
+    assert audit["report_readiness"] == readiness
+    assert audit["publication_decision"]["version"] == PUBLICATION_DECISION_VERSION
+    assert audit["publication_decision"]["status"] == "non_public"
+    assert audit["publication_decision"]["reason_codes"] == [
+        "report_mode:technical_diagnostic",
+        "blocker:missing_identity",
+    ]
 
 
 def test_technical_report_readiness_is_non_public_with_blockers() -> None:
@@ -85,3 +111,21 @@ def test_missing_scanner_readiness_is_non_public() -> None:
     assert decision.listable is False
     assert decision.api_readable is False
     assert decision.reason_codes == ("missing_scanner_readiness",)
+
+
+def test_attach_scanner_publication_decision_updates_payload_contract() -> None:
+    payload = {"brand_name": "Example"}
+    readiness = {
+        "status": "failed",
+        "publishable": False,
+        "reason_codes": ["canonical_tldr_degraded:no_llm"],
+    }
+
+    decision = attach_scanner_publication_decision(payload, readiness)
+
+    assert decision.status == "failed"
+    assert payload["scanner_readiness"] == readiness
+    assert payload["publication_decision"] == scanner_publication_decision_payload(readiness)
+    assert payload["publication_decision"]["reason_codes"] == [
+        "canonical_tldr_degraded:no_llm",
+    ]

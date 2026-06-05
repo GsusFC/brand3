@@ -77,6 +77,22 @@ def publication_decision_from_report_readiness(readiness: dict[str, Any] | None)
     )
 
 
+def is_publishable_report(readiness: dict[str, Any] | None) -> bool:
+    return publication_decision_from_report_readiness(readiness).publishable
+
+
+def attach_report_publication_decision(
+    audit: dict[str, Any],
+    readiness: dict[str, Any] | None,
+) -> PublicationDecision:
+    """Attach the canonical report publication decision to an audit payload."""
+    if isinstance(readiness, dict):
+        audit["report_readiness"] = readiness
+    decision = publication_decision_from_report_readiness(readiness)
+    audit["publication_decision"] = decision.to_payload()
+    return decision
+
+
 def publication_decision_from_scanner_readiness(readiness: dict[str, Any] | None) -> PublicationDecision:
     """Convert Magnetism scanner readiness into a public result decision."""
     if not isinstance(readiness, dict):
@@ -124,3 +140,19 @@ def publication_decision_from_scanner_readiness(readiness: dict[str, Any] | None
         source_status=scanner_status,
         source_version=str(readiness.get("version") or ""),
     )
+
+
+def scanner_publication_decision_payload(readiness: dict[str, Any] | None) -> dict[str, Any]:
+    return publication_decision_from_scanner_readiness(readiness).to_payload()
+
+
+def attach_scanner_publication_decision(
+    payload: dict[str, Any],
+    readiness: dict[str, Any] | None,
+) -> PublicationDecision:
+    """Attach the canonical scanner readiness and publication decision to a payload."""
+    if isinstance(readiness, dict):
+        payload["scanner_readiness"] = readiness
+    decision = publication_decision_from_scanner_readiness(readiness)
+    payload["publication_decision"] = decision.to_payload()
+    return decision

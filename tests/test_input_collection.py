@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from src.collectors.exa_collector import ExaData
 from src.collectors.parallel_shadow_collector import ParallelShadowData, ParallelShadowIntent, ParallelShadowResult
+from src.collectors.web_collector import WebData
 from src.services.input_collection import (
+    _cache_reader,
     _collect_exa_input,
     _collect_parallel_shadow_input,
+    _collect_web_input,
     from_exa_payload,
 )
 
@@ -39,6 +42,80 @@ class _FakeExaCollector:
             news=[],
             diagnostics={"status": "degraded", "failed_intents": ["mentions"], "no_result_intents": []},
         )
+
+
+class _FailingCacheStore:
+    def get_latest_raw_input(self, **_kwargs):
+        raise RuntimeError("sqlite unavailable")
+
+
+class _InvalidCacheStore:
+    def get_latest_raw_input(self, **_kwargs):
+        return {"unexpected": "payload"}
+
+
+class _FakeWebCollector:
+    def __init__(self, api_key=None):
+        self.api_key = api_key
+
+    def scrape(self, url: str):
+        return WebData(url=url, markdown_content="Fresh owned homepage copy")
+
+
+def test_collect_web_input_preserves_cache_read_error_in_acquisition_details():
+    acquisition_steps: dict[str, object] = {}
+    raw_input_cache: dict[str, str] = {}
+    cache_read = _cache_reader(
+        store=_FailingCacheStore(),
+        brand_name="Brand",
+        url="https://brand.com",
+        refresh=False,
+        acquisition_steps=acquisition_steps,
+    )
+
+    web_data, _collector = _collect_web_input(
+        store=None,
+        run_id=None,
+        url="https://brand.com",
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        web_collector_cls=_FakeWebCollector,
+    )
+
+    assert web_data.markdown_content == "Fresh owned homepage copy"
+    assert raw_input_cache["web"] == "miss"
+    assert acquisition_steps["web"].status == "fetched"
+    assert acquisition_steps["web"].cache_status == "miss"
+    assert acquisition_steps["web"].details["cache_error"] == "sqlite unavailable"
+
+
+def test_collect_web_input_preserves_invalid_cache_payload_in_acquisition_details():
+    acquisition_steps: dict[str, object] = {}
+    raw_input_cache: dict[str, str] = {}
+    cache_read = _cache_reader(
+        store=_InvalidCacheStore(),
+        brand_name="Brand",
+        url="https://brand.com",
+        refresh=False,
+        acquisition_steps=acquisition_steps,
+    )
+
+    web_data, _collector = _collect_web_input(
+        store=None,
+        run_id=None,
+        url="https://brand.com",
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        web_collector_cls=_FakeWebCollector,
+    )
+
+    assert web_data.markdown_content == "Fresh owned homepage copy"
+    assert raw_input_cache["web"] == "miss"
+    assert acquisition_steps["web"].status == "fetched"
+    assert acquisition_steps["web"].cache_status == "miss"
+    assert "unexpected" in acquisition_steps["web"].details["cache_error"]
 
 
 def test_collect_exa_input_marks_partial_when_failed_intents_exist():

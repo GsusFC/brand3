@@ -143,17 +143,28 @@ def _record_acquisition(
 ) -> None:
     if acquisition_steps is None:
         return
+    existing = acquisition_steps.get(source)
+    merged_details = dict(existing.details) if existing else {}
+    merged_details.update(details or {})
     acquisition_steps[source] = AcquisitionResult(
         source=source,
         status=status,
         cache_status=cache_status,
         eligible=eligible,
         error=error,
-        details=details or {},
+        details=merged_details,
     )
 
 
-def load_cached(store, brand_name: str, url: str, source: str, ttl_hours: int, decoder):
+def load_cached(
+    store,
+    brand_name: str,
+    url: str,
+    source: str,
+    ttl_hours: int,
+    decoder,
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
+):
     if not store:
         return None
     try:
@@ -164,6 +175,14 @@ def load_cached(store, brand_name: str, url: str, source: str, ttl_hours: int, d
             max_age_hours=ttl_hours,
         )
     except Exception as e:
+        _record_acquisition(
+            acquisition_steps,
+            source=source,
+            status="cache_error",
+            cache_status="error",
+            eligible=True,
+            details={"cache_error": str(e)},
+        )
         print(f"  Cache {source}: skipped ({e})")
         return None
     if not payload:
@@ -171,6 +190,14 @@ def load_cached(store, brand_name: str, url: str, source: str, ttl_hours: int, d
     try:
         return decoder(payload)
     except Exception as e:
+        _record_acquisition(
+            acquisition_steps,
+            source=source,
+            status="cache_invalid",
+            cache_status="invalid",
+            eligible=True,
+            details={"cache_error": str(e)},
+        )
         print(f"  Cache {source}: invalid payload ({e})")
         return None
 
@@ -208,11 +235,12 @@ def _cache_reader(
     brand_name: str,
     url: str,
     refresh: bool,
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
 ):
     def cache_read(source: str, ttl_hours: int, decoder):
         if refresh:
             return None
-        return load_cached(store, brand_name, url, source, ttl_hours, decoder)
+        return load_cached(store, brand_name, url, source, ttl_hours, decoder, acquisition_steps)
 
     return cache_read
 
@@ -662,6 +690,7 @@ def collect_raw_inputs(
         brand_name=brand_name,
         url=url,
         refresh=refresh,
+        acquisition_steps=acquisition_steps,
     )
     context_data = _collect_context_input(
         store=store,

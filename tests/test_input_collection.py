@@ -62,6 +62,11 @@ class _FakeWebCollector:
         return WebData(url=url, markdown_content="Fresh owned homepage copy")
 
 
+class _FailingStorageStore:
+    def save_raw_input(self, *_args, **_kwargs):
+        raise RuntimeError("disk is read-only")
+
+
 def test_collect_web_input_preserves_cache_read_error_in_acquisition_details():
     acquisition_steps: dict[str, object] = {}
     raw_input_cache: dict[str, str] = {}
@@ -88,6 +93,29 @@ def test_collect_web_input_preserves_cache_read_error_in_acquisition_details():
     assert acquisition_steps["web"].status == "fetched"
     assert acquisition_steps["web"].cache_status == "miss"
     assert acquisition_steps["web"].details["cache_error"] == "sqlite unavailable"
+
+
+def test_collect_web_input_preserves_storage_error_in_acquisition_details():
+    acquisition_steps: dict[str, object] = {}
+    raw_input_cache: dict[str, str] = {}
+
+    web_data, _collector = _collect_web_input(
+        store=_FailingStorageStore(),
+        run_id=123,
+        url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: None,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        web_collector_cls=_FakeWebCollector,
+    )
+
+    assert web_data.markdown_content == "Fresh owned homepage copy"
+    assert raw_input_cache["web"] == "miss"
+    assert acquisition_steps["web"].status == "fetched"
+    assert acquisition_steps["web"].cache_status == "miss"
+    assert acquisition_steps["web"].details["storage_errors"] == [
+        {"action": "web save", "error": "disk is read-only"}
+    ]
 
 
 def test_collect_web_input_preserves_invalid_cache_payload_in_acquisition_details():

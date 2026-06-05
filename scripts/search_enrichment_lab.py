@@ -36,6 +36,7 @@ from src.research.brand_intelligence import (
     scope_external_observation_to_entity,
     search_source_observation,
 )
+from src.research.search_enrichment_promotion import evaluate_search_enrichment_promotion
 
 
 LAB_VERSION = "search_enrichment_lab_v0_1"
@@ -216,6 +217,12 @@ def main() -> int:
     bakeoff = evaluate_brand_source_bakeoff(bakeoff_cases)
     provider_scores = _provider_scores(bakeoff.get("provider_metrics") or {}, case_payloads)
     provider_acquisition = _provider_acquisition_rows(case_payloads)
+    promotion = evaluate_search_enrichment_promotion(
+        {
+            "case_count": len(case_payloads),
+            "provider_metrics": bakeoff.get("provider_metrics") or {},
+        }
+    ).to_dict()
     summary = {
         "version": LAB_VERSION,
         "created_at": datetime.now(timezone.utc).isoformat(),
@@ -226,6 +233,7 @@ def main() -> int:
         "cases": [_case_summary(item) for item in case_payloads],
         "provider_acquisition": provider_acquisition,
         "provider_scores": provider_scores,
+        "promotion": promotion,
         "bakeoff": bakeoff,
     }
     (output_dir / "summary.json").write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
@@ -1157,6 +1165,7 @@ def _render_summary_md(summary: dict[str, Any]) -> str:
     provider_metrics = ((summary.get("bakeoff") or {}).get("provider_metrics") or {})
     provider_scores = summary.get("provider_scores") if isinstance(summary.get("provider_scores"), dict) else {}
     provider_acquisition = summary.get("provider_acquisition") if isinstance(summary.get("provider_acquisition"), list) else []
+    promotion = summary.get("promotion") if isinstance(summary.get("promotion"), dict) else {}
     lines = [
         "# Search Enrichment Lab Summary",
         "",
@@ -1264,6 +1273,38 @@ def _render_summary_md(summary: dict[str, Any]) -> str:
                 "",
             ]
         )
+    if promotion:
+        lines.extend(
+            [
+                "## Promotion Gate",
+                "",
+                f"- status: `{promotion.get('status')}`",
+                f"- promoted_providers: `{', '.join(promotion.get('promoted_providers') or [])}`",
+                f"- shadow_only_providers: `{', '.join(promotion.get('shadow_only_providers') or [])}`",
+                f"- rejected_providers: `{', '.join(promotion.get('rejected_providers') or [])}`",
+                f"- reasons: `{', '.join(promotion.get('reasons') or [])}`",
+                "",
+                "| Provider | Decision | Eligible | Limited | Observed | Errors | Review | Channels | Confidence | Cost | Reasons |",
+                "| --- | --- | ---: | ---: | ---: | ---: | ---: | --- | ---: | ---: | --- |",
+            ]
+        )
+        for decision in promotion.get("provider_decisions") or []:
+            lines.append(
+                "| {provider} | {status} | {eligible} | {limited} | {observed} | {errors} | {review} | {channels} | {confidence} | {cost} | {reasons} |".format(
+                    provider=decision.get("provider") or "",
+                    status=decision.get("status") or "",
+                    eligible=decision.get("eligible_count") or 0,
+                    limited=decision.get("limited_count") or 0,
+                    observed=decision.get("observed_count") or 0,
+                    errors=decision.get("error_count") or 0,
+                    review=decision.get("human_review_count") or 0,
+                    channels=", ".join(decision.get("covered_channels") or []),
+                    confidence=decision.get("average_confidence") or 0,
+                    cost=decision.get("average_cost_estimate") or 0,
+                    reasons=", ".join(decision.get("reasons") or []).replace("|", "\\|"),
+                )
+            )
+        lines.append("")
     discarded = summary.get("discarded_providers") or []
     if discarded:
         lines.extend(

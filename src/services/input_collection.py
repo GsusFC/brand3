@@ -520,10 +520,11 @@ def _collect_exa_input(
     exa_collector = exa_collector_cls(api_key=EXA_API_KEY)
     exa_data = cache_read("exa", BRAND3_CACHE_TTL_HOURS, from_exa_payload)
     if exa_data:
-        raw_input_cache["exa"] = "hit"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="exa",
+            raw_cache_status="hit",
             status="hit",
             cache_status="hit",
             eligible=True,
@@ -544,10 +545,11 @@ def _collect_exa_input(
             )
         return exa_data, exa_collector
 
-    raw_input_cache["exa"] = "miss"
-    _record_acquisition(
+    _set_acquisition_state(
+        raw_input_cache,
         acquisition_steps,
         source="exa",
+        raw_cache_status="miss",
         status="fetched",
         cache_status="miss",
         eligible=True,
@@ -557,10 +559,11 @@ def _collect_exa_input(
     failed_intents = diagnostics.get("failed_intents") or []
     no_result_intents = diagnostics.get("no_result_intents") or []
     if failed_intents:
-        raw_input_cache["exa"] = "partial"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="exa",
+            raw_cache_status="partial",
             status="partial",
             cache_status="miss",
             eligible=True,
@@ -571,9 +574,11 @@ def _collect_exa_input(
             f" failed_intents={','.join(failed_intents)}"
         )
     elif no_result_intents:
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="exa",
+            raw_cache_status="miss",
             status="empty",
             cache_status="miss",
             eligible=True,
@@ -584,9 +589,11 @@ def _collect_exa_input(
             f" no_results={','.join(no_result_intents)}"
         )
     else:
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="exa",
+            raw_cache_status="miss",
             status="ok",
             cache_status="miss",
             eligible=True,
@@ -616,10 +623,11 @@ def _collect_parallel_shadow_input(
     parallel_shadow_collector_cls=ParallelShadowCollector,
 ) -> ParallelShadowData | None:
     if not _parallel_shadow_enabled():
-        raw_input_cache["parallel_shadow"] = "disabled"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="parallel_shadow",
+            raw_cache_status="disabled",
             status="disabled",
             cache_status="disabled",
             eligible=False,
@@ -628,10 +636,11 @@ def _collect_parallel_shadow_input(
 
     cached = cache_read("parallel_shadow", BRAND3_CACHE_TTL_HOURS, from_parallel_shadow_payload)
     if cached:
-        raw_input_cache["parallel_shadow"] = "hit"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="parallel_shadow",
+            raw_cache_status="hit",
             status="hit",
             cache_status="hit",
             eligible=True,
@@ -655,10 +664,11 @@ def _collect_parallel_shadow_input(
 
     collector = parallel_shadow_collector_cls()
     shadow_data = collector.collect(brand_name, effective_brand_url)
-    raw_input_cache["parallel_shadow"] = shadow_data.status
-    _record_acquisition(
+    _set_acquisition_state(
+        raw_input_cache,
         acquisition_steps,
         source="parallel_shadow",
+        raw_cache_status=shadow_data.status,
         status=shadow_data.status,
         cache_status="miss",
         eligible=shadow_data.status not in {"error", "failed"},

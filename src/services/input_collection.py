@@ -156,6 +156,30 @@ def _record_acquisition(
     )
 
 
+def _set_acquisition_state(
+    raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None,
+    *,
+    source: str,
+    raw_cache_status: str,
+    status: str,
+    cache_status: str,
+    eligible: bool,
+    error: str | None = None,
+    details: dict[str, object] | None = None,
+) -> None:
+    raw_input_cache[source] = raw_cache_status
+    _record_acquisition(
+        acquisition_steps,
+        source=source,
+        status=status,
+        cache_status=cache_status,
+        eligible=eligible,
+        error=error,
+        details=details,
+    )
+
+
 def _record_storage_error(
     acquisition_steps: dict[str, AcquisitionResult] | None,
     *,
@@ -354,10 +378,11 @@ def _collect_context_input(
 ) -> ContextData:
     context_data = cache_read("context", 24, from_context_payload)
     if context_data:
-        raw_input_cache["context"] = "hit"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="context",
+            raw_cache_status="hit",
             status="hit",
             cache_status="hit",
             eligible=True,
@@ -388,10 +413,11 @@ def _collect_context_input(
             )
         return context_data
 
-    raw_input_cache["context"] = "miss"
-    _record_acquisition(
+    _set_acquisition_state(
+        raw_input_cache,
         acquisition_steps,
         source="context",
+        raw_cache_status="miss",
         status="fetched",
         cache_status="miss",
         eligible=True,
@@ -435,10 +461,11 @@ def _collect_web_input(
     web_collector = web_collector_cls(api_key=FIRECRAWL_API_KEY)
     web_data = cache_read("web", BRAND3_CACHE_TTL_HOURS, from_web_payload)
     if web_data:
-        raw_input_cache["web"] = "hit"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="web",
+            raw_cache_status="hit",
             status="hit",
             cache_status="hit",
             eligible=True,
@@ -456,10 +483,11 @@ def _collect_web_input(
             )
         return web_data, web_collector
 
-    raw_input_cache["web"] = "miss"
-    _record_acquisition(
+    _set_acquisition_state(
+        raw_input_cache,
         acquisition_steps,
         source="web",
+        raw_cache_status="miss",
         status="fetched",
         cache_status="miss",
         eligible=True,
@@ -784,10 +812,11 @@ def _collect_competitor_input(
     acquisition_steps: dict[str, AcquisitionResult] | None,
 ) -> CompetitorData | None:
     if not use_competitors:
-        raw_input_cache["competitors"] = "skipped"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="competitors",
+            raw_cache_status="skipped",
             status="skipped",
             cache_status="skipped",
             eligible=False,
@@ -802,10 +831,11 @@ def _collect_competitor_input(
     )
     competitor_data = cache_read("competitors", BRAND3_CACHE_TTL_HOURS, from_competitor_payload)
     if competitor_data:
-        raw_input_cache["competitors"] = "hit"
-        _record_acquisition(
+        _set_acquisition_state(
+            raw_input_cache,
             acquisition_steps,
             source="competitors",
+            raw_cache_status="hit",
             status="hit",
             cache_status="hit",
             eligible=True,
@@ -823,10 +853,11 @@ def _collect_competitor_input(
             )
         return competitor_data
 
-    raw_input_cache["competitors"] = "miss"
-    _record_acquisition(
+    _set_acquisition_state(
+        raw_input_cache,
         acquisition_steps,
         source="competitors",
+        raw_cache_status="miss",
         status="fetched",
         cache_status="miss",
         eligible=True,

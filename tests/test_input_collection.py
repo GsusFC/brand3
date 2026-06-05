@@ -8,6 +8,7 @@ from src.services.input_collection import (
     _collect_exa_input,
     _collect_parallel_shadow_input,
     _collect_web_input,
+    _set_acquisition_state,
     from_exa_payload,
 )
 
@@ -29,6 +30,40 @@ def test_from_exa_payload_preserves_diagnostics():
     assert exa is not None
     assert exa.diagnostics["status"] == "degraded"
     assert exa.diagnostics["failed_intents"] == ["mentions"]
+
+
+def test_set_acquisition_state_updates_cache_and_preserves_existing_details():
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+
+    _set_acquisition_state(
+        raw_input_cache,
+        acquisition_steps,
+        source="web",
+        raw_cache_status="error",
+        status="cache_error",
+        cache_status="error",
+        eligible=True,
+        details={"cache_error": "sqlite unavailable"},
+    )
+    _set_acquisition_state(
+        raw_input_cache,
+        acquisition_steps,
+        source="web",
+        raw_cache_status="miss",
+        status="fetched",
+        cache_status="miss",
+        eligible=True,
+        details={"chars": 128},
+    )
+
+    assert raw_input_cache["web"] == "miss"
+    assert acquisition_steps["web"].status == "fetched"
+    assert acquisition_steps["web"].cache_status == "miss"
+    assert acquisition_steps["web"].details == {
+        "cache_error": "sqlite unavailable",
+        "chars": 128,
+    }
 
 
 class _FakeExaCollector:

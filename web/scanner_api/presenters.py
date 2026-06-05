@@ -45,6 +45,42 @@ def scanner_status_payload(
     }
 
 
+def scanner_result_payload(
+    row: dict[str, Any],
+    model: dict[str, Any],
+    *,
+    result_metadata: dict[str, Any],
+    lang: Lang = "es",
+) -> dict[str, Any]:
+    scan_id = int(model["id"])
+    payload = model["payload"]
+    source_run_id = model.get("source_run_id")
+    return {
+        "id": scan_id,
+        "status": row.get("status") or "ready",
+        "brand_name": model["brand_name"],
+        "url": model["url"],
+        "created_at": model["created_at"],
+        "scores": {
+            "magnetism": model["magnetism_score"],
+            "coherence": model["coherence_score"],
+            "quadrant": model["quadrant"],
+        },
+        "result_metadata": result_metadata,
+        "scan_mode": model["scan_mode"],
+        "audit": {
+            "available": bool(source_run_id),
+            "source_run_id": source_run_id,
+            "api_url": f"/api/v1/scanner/{scan_id}/audit" if source_run_id else None,
+        },
+        "tldr_brand3": payload.get("tldr_brand3") or {},
+        "tldr_strategy": payload.get("tldr_strategy") or {},
+        "evidence_api_url": f"/api/v1/scanner/{scan_id}/evidence",
+        "methodology_api_url": f"/api/v1/scanner/{scan_id}/methodology",
+        "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}",
+    }
+
+
 def scanner_result_metadata(
     payload: dict[str, Any],
     *,

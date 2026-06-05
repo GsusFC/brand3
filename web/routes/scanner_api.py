@@ -23,7 +23,7 @@ from ..scanner_api.models import (
     scanner_result_metadata_model,
     scanner_scan_mode_from_row,
 )
-from ..scanner_api.presenters import scanner_status_payload
+from ..scanner_api.presenters import scanner_result_payload, scanner_status_payload
 from ..scanner_api.schemas import ScannerCreateRequest, scanner_openapi_spec
 from ..storage import get_magnetism_scan, insert_magnetism_job
 from ..workers.queue import get_queue
@@ -169,32 +169,8 @@ async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query
     if isinstance(row, JSONResponse):
         return row
     model = magnetism_scan_model_from_row(row)
-    payload = model["payload"]
-    metadata = scanner_result_metadata_model(payload)
-    return {
-        "id": model["id"],
-        "status": row.get("status") or "ready",
-        "brand_name": model["brand_name"],
-        "url": model["url"],
-        "created_at": model["created_at"],
-        "scores": {
-            "magnetism": model["magnetism_score"],
-            "coherence": model["coherence_score"],
-            "quadrant": model["quadrant"],
-        },
-        "result_metadata": metadata,
-        "scan_mode": model["scan_mode"],
-        "audit": {
-            "available": bool(model.get("source_run_id")),
-            "source_run_id": model.get("source_run_id"),
-            "api_url": f"/api/v1/scanner/{scan_id}/audit" if model.get("source_run_id") else None,
-        },
-        "tldr_brand3": payload.get("tldr_brand3") or {},
-        "tldr_strategy": payload.get("tldr_strategy") or {},
-        "evidence_api_url": f"/api/v1/scanner/{scan_id}/evidence",
-        "methodology_api_url": f"/api/v1/scanner/{scan_id}/methodology",
-        "ui_url": _with_lang(f"/magnetism-scanner/scan/{scan_id}", lang),
-    }
+    metadata = scanner_result_metadata_model(model["payload"])
+    return scanner_result_payload(row, model, result_metadata=metadata, lang=lang)
 
 
 @router.get("/api/v1/scanner/{scan_id}/evidence", response_model=None)
@@ -266,7 +242,3 @@ async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONRespon
         },
         "audit": run.get("audit") if isinstance(run.get("audit"), dict) else {},
     }
-
-
-def _with_lang(path: str, lang: _Lang) -> str:
-    return f"{path}?lang={lang}"

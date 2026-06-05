@@ -4,6 +4,7 @@ from web.scanner_api.models import scanner_readiness_from_row
 from web.scanner_api.presenters import (
     scanner_methodology_payload,
     scanner_research_evidence_payload,
+    scanner_result_payload,
     scanner_result_metadata,
     scanner_status_payload,
 )
@@ -72,6 +73,44 @@ def test_scanner_status_payload_hides_ui_url_until_ready():
     assert payload["result_available"] is False
     assert payload["ui_url"] is None
     assert payload["scan_mode"]["mode"] == "canonical_url"
+
+
+def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():
+    payload = scanner_result_payload(
+        {"status": "ready"},
+        {
+            "id": 42,
+            "brand_name": "Example",
+            "url": "https://example.com",
+            "created_at": "June 04, 2026 at 10:00 AM UTC",
+            "magnetism_score": 74,
+            "coherence_score": 81,
+            "quadrant": "Clear",
+            "scan_mode": {"mode": "from_audit_run", "comparable": True, "reason_codes": []},
+            "source_run_id": 7,
+            "payload": {
+                "tldr_brand3": {"value_proposition": {"answer": "Example value."}},
+                "tldr_strategy": {"mode": "llm_analyst_pass"},
+            },
+        },
+        result_metadata={"result_version": "scanner_result_v1"},
+        lang="en",
+    )
+
+    assert payload["scores"] == {
+        "magnetism": 74,
+        "coherence": 81,
+        "quadrant": "Clear",
+    }
+    assert payload["audit"] == {
+        "available": True,
+        "source_run_id": 7,
+        "api_url": "/api/v1/scanner/42/audit",
+    }
+    assert payload["evidence_api_url"] == "/api/v1/scanner/42/evidence"
+    assert payload["methodology_api_url"] == "/api/v1/scanner/42/methodology"
+    assert payload["ui_url"] == "/magnetism-scanner/scan/42?lang=en"
+    assert payload["result_metadata"]["result_version"] == "scanner_result_v1"
 
 
 def test_scanner_result_metadata_reports_current_pipeline_inputs():

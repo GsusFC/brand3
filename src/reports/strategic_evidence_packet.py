@@ -14,6 +14,7 @@ from urllib.parse import urlparse
 
 from src.reports.derivation import Evidence, collect_evidences
 from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
+from src.reports.vertical_signals import vertical_group_keywords
 
 
 GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
@@ -74,13 +75,8 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "monitoring",
         "portfolio platform",
         "jobs and recruiting site",
-        "tienda online",
-        "muebles",
-        "decoración",
-        "decoracion",
-        "diseños exclusivos",
-        "disenos exclusivos",
-    ),
+    )
+    + vertical_group_keywords("product_offer"),
     "audience": (
         "teams",
         "agents",
@@ -153,12 +149,8 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "asegura",
         "empowering",
         "impulsando",
-        "transformar tu hogar",
-        "transforma tu hogar",
-        "con estilo",
-        "funcionales",
-        "inspiradores",
-    ),
+    )
+    + vertical_group_keywords("outcome"),
     "mission_language": (
         "we build",
         "we create",
@@ -209,15 +201,8 @@ GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
         "seguro",
         "seguridad",
         "sostenible",
-        "inspiradores",
-        "inspiración",
-        "inspiracion",
-        "inclusión",
-        "inclusion",
-        "diversidad",
-        "creatividad",
-        "belleza",
-    ),
+    )
+    + vertical_group_keywords("values_language"),
     "personality_tone": (
         "bold",
         "fast",

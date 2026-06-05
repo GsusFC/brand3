@@ -36,6 +36,11 @@ from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
+from src.reports.vertical_signals import (
+    vertical_layer_keywords,
+    vertical_preferred_terms,
+    vertical_terms_for_text,
+)
 from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
 from src.research.evidence_graph import build_evidence_graph_from_snapshot
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
@@ -784,9 +789,9 @@ Return exactly this JSON shape:
             "aetherspace": ["mission", "purpose", "why", "founded", "exists", "values", "manifesto", "inspirar", "inspire", "regenerativo", "circular", "medio ambiente", "sostenible"],
             "gamespace": ["voice", "tone", "playful", "bold", "rebel", "sage", "creator", "trusted"],
             "envispace": ["design", "visual", "aesthetic", "palette", "typography", "minimal", "brutalist"],
-            "netspace": ["value", "api", "developer", "automation", "platform", "infrastructure", "financial services", "servicios financieros", "accept payments", "aceptar pagos", "billing", "facturación", "product development", "planning and building", "teams and agents", "integration", "sdk", "innovadores", "productos innovadores", "soluciones", "ingredientes activos", "materias primas", "servicios ambientales", "tienda online", "muebles", "decoración", "decoracion", "diseños exclusivos", "disenos exclusivos"],
+            "netspace": ["value", "api", "developer", "automation", "platform", "infrastructure", "financial services", "servicios financieros", "accept payments", "aceptar pagos", "billing", "facturación", "product development", "planning and building", "teams and agents", "integration", "sdk", "innovadores", "productos innovadores", "soluciones", "ingredientes activos", "materias primas", "servicios ambientales", *vertical_layer_keywords("netspace")],
             "tactispace": ["creamos", "we create", "we build", "we provide", "mission", "vision", "roadmap", "future", "new model", "new paradigm", "misión", "vision", "visión", "futuro", "nuevo modelo"],
-            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "custom agents", "ai agents", "prioritization", "okr planning", "growth tracking", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo", "diseño", "diseno", "decoración", "decoracion", "funcionales", "inspiradores", "creatividad", "belleza", "inclusión", "inclusion", "diversidad"],
+            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "custom agents", "ai agents", "prioritization", "okr planning", "growth tracking", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo", *vertical_layer_keywords("ambientspace")],
         }
 
         layers: dict[str, Any] = {}
@@ -2067,9 +2072,7 @@ Return exactly this JSON shape:
                 "practical",
                 "editorial",
                 "experimental",
-                "design-led",
-                "functional",
-                "inspiring",
+                *vertical_preferred_terms("attributes"),
             ],
             "values": [
                 "regenerativo",
@@ -2090,9 +2093,7 @@ Return exactly this JSON shape:
                 "transparency",
                 "customer empathy",
                 "developer empathy",
-                "creativity",
-                "beauty",
-                "inclusivity",
+                *vertical_preferred_terms("values"),
             ],
         }
         found: list[str] = []
@@ -2114,14 +2115,9 @@ Return exactly this JSON shape:
                 found.append("experimental")
             if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
                 found.append("innovative")
-            if any(term in low for term in ("diseño", "diseno", "design", "decoración", "decoracion")):
-                found.append("design-led")
-            if any(term in low for term in ("funcional", "funcionales", "functional")):
-                found.append("functional")
-            if any(term in low for term in ("inspirador", "inspiradores", "inspirar", "inspírate", "inspirate")):
-                found.append("inspiring")
+            found.extend(vertical_terms_for_text(text, "attributes"))
         if key == "values":
-            if any(term in low for term in ("inspirar", "inspire", "inspiration", "inspiración", "inspiracion", "inspiradores", "inspírate", "inspirate")):
+            if any(term in low for term in ("inspirar", "inspire", "inspiration")):
                 found.append("inspiration")
             if any(term in low for term in ("todo tipo de atletas", "all types of athletes")):
                 found.append("inclusivity")
@@ -2133,12 +2129,7 @@ Return exactly this JSON shape:
                 found.append("developer empathy")
             if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
                 found.append("innovation")
-            if "creatividad" in low or "creativity" in low:
-                found.append("creativity")
-            if "belleza" in low or "beauty" in low:
-                found.append("beauty")
-            if any(term in low for term in ("inclusión", "inclusion", "diversidad", "diversity")):
-                found.append("inclusivity")
+            found.extend(vertical_terms_for_text(text, "values"))
         found = list(dict.fromkeys(found))
         if len(found) >= 3:
             return found[:3]

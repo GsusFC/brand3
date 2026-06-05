@@ -14,6 +14,10 @@ from urllib.parse import urlparse
 
 from src.reports.brand_context_brief import brand_context_candidates
 from src.reports.editorial_policy import overreach_warnings
+from src.reports.vertical_signals import (
+    product_offer_family_allows_multiple_lines,
+    product_offer_family_for_text,
+)
 
 
 TLDR_BLOCK_INTERPRETER_SPECS = {
@@ -603,89 +607,13 @@ def _has_divergent_product_offers(accepted: list[dict[str, str]]) -> bool:
     families = {
         family
         for item in product_offers
-        if (family := _product_offer_family(str(item.get("text") or "")))
+        if (family := product_offer_family_for_text(str(item.get("text") or "")))
     }
     if len(families) > 1:
         return True
     if len(families) == 1:
-        return False
+        return not product_offer_family_allows_multiple_lines(next(iter(families)))
     return True
-
-
-def _product_offer_family(text: str) -> str | None:
-    low = text.lower()
-    if any(
-        term in low
-        for term in (
-            "tienda online",
-            "muebles",
-            "decoración",
-            "decoracion",
-            "hogar",
-            "diseño",
-            "diseno",
-            "interiorismo",
-        )
-    ):
-        return "home_retail"
-    if any(
-        term in low
-        for term in (
-            "payments",
-            "pagos",
-            "billing",
-            "facturación",
-            "facturacion",
-            "financial services",
-            "servicios financieros",
-            "revenue",
-            "ingresos",
-            "treasury",
-        )
-    ):
-        return "financial_workflows"
-    if any(
-        term in low
-        for term in (
-            "developer",
-            "deploy",
-            "cloud",
-            "infrastructure",
-            "platform for devs",
-            "sandboxes",
-            "api",
-            "sdk",
-        )
-    ):
-        return "developer_platform"
-    if any(
-        term in low
-        for term in (
-            "human intelligence",
-            "business analyst",
-            "research people",
-            "ai agents",
-            "custom agents",
-        )
-    ):
-        return "ai_research"
-    if any(
-        term in low
-        for term in (
-            "materias primas",
-            "ingredientes",
-            "biorremediación",
-            "biorremediacion",
-            "cosmética",
-            "cosmetica",
-            "nutrición",
-            "nutricion",
-            "salud animal",
-        )
-    ):
-        return "bioingredients"
-    return None
-
 
 def evidence_from_spec(
     block: str,

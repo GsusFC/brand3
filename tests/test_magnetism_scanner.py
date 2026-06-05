@@ -1939,28 +1939,25 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["tldr_brand3"]["value_proposition"]["claim_type"], "declared")
 
     def test_graph_pack_flag_uses_legacy_when_recommendation_blocks_graph(self):
-        class _Recommendation:
-            builder = "legacy"
-
-            def to_dict(self):
-                return {
-                    "builder": "legacy",
-                    "promotion_status": "blocked",
-                    "reason_codes": ["legacy_fields_lost"],
-                }
+        class _Recommended:
+            pack = "legacy-pack"
+            graph_summary = None
+            recommendation = {
+                "builder": "legacy",
+                "promotion_status": "blocked",
+                "reason_codes": ["legacy_fields_lost"],
+            }
 
         snapshot = {"run": {"id": 508, "brand_name": "Example", "url": "https://example.com"}}
 
         with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", True), \
-             unittest.mock.patch("src.features.magnetism.extractor.recommend_research_pack_builder", return_value=_Recommendation()), \
-             unittest.mock.patch("src.features.magnetism.extractor.build_brand_research_pack_from_snapshot", return_value="legacy-pack"), \
-             unittest.mock.patch("src.features.magnetism.extractor.build_evidence_graph_from_snapshot") as graph_mock:
+             unittest.mock.patch("src.features.magnetism.extractor.build_recommended_research_pack", return_value=_Recommended()) as build_mock:
             pack, graph_summary, recommendation = MagnetismExtractor._build_research_pack(snapshot)
 
         self.assertEqual(pack, "legacy-pack")
         self.assertIsNone(graph_summary)
         self.assertEqual(recommendation["builder"], "legacy")
-        graph_mock.assert_not_called()
+        build_mock.assert_called_once_with(snapshot, allow_graph=True)
 
     def test_contextdev_visual_enrichment_shadow_records_dry_run_without_mutating_research_pack(self):
         extractor = MagnetismExtractor(llm=None)

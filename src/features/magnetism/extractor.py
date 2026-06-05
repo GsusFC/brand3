@@ -31,7 +31,6 @@ from src.features.magnetism.block_interpreters import (
 )
 from src.features.magnetism.content_distiller import ContentDistiller
 from src.features.magnetism.analyst_tldr import run_analyst_tldr_pass
-from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
 from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
@@ -42,9 +41,7 @@ from src.reports.vertical_signals import (
     vertical_terms_for_text,
 )
 from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
-from src.research.evidence_graph import build_evidence_graph_from_snapshot
-from src.research.research_pack_builder import build_brand_research_pack_from_graph
-from src.research.research_pack_promotion import recommend_research_pack_builder
+from src.research.research_pack_facade import build_recommended_research_pack
 from src.research.research_pack_quality import evaluate_research_pack_quality, evaluate_research_pack_quality_gate
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
 
@@ -474,13 +471,11 @@ class MagnetismExtractor:
 
     @staticmethod
     def _build_research_pack(snapshot: dict[str, Any]) -> tuple[Any, dict[str, Any] | None, dict[str, Any] | None]:
-        if not BRAND3_BRAND_RESEARCH_GRAPH_PACK:
-            return build_brand_research_pack_from_snapshot(snapshot), None, None
-        recommendation = recommend_research_pack_builder(snapshot)
-        if recommendation.builder != "graph":
-            return build_brand_research_pack_from_snapshot(snapshot), None, recommendation.to_dict()
-        graph = build_evidence_graph_from_snapshot(snapshot)
-        return build_brand_research_pack_from_graph(graph), graph.summary(), recommendation.to_dict()
+        result = build_recommended_research_pack(
+            snapshot,
+            allow_graph=BRAND3_BRAND_RESEARCH_GRAPH_PACK,
+        )
+        return result.pack, result.graph_summary, result.recommendation
 
     def _apply_tldr_generation_flow(
         self,

@@ -66,25 +66,18 @@ class _SnapshotStore:
         return self.snapshot
 
 
-class _PackRecommendation:
-    def __init__(self, builder: str):
-        self.builder = builder
-
-    def to_dict(self):
-        return {"builder": self.builder}
-
-
 class BrandAuditReadinessPersistenceTests(unittest.TestCase):
     def test_research_pack_for_feature_prompts_uses_legacy_when_graph_is_not_recommended(self):
         snapshot = {"run": {"id": 1, "brand_name": "Example", "url": "https://example.com"}}
 
-        with patch("src.services.brand_service.recommend_research_pack_builder", return_value=_PackRecommendation("legacy")), \
-             patch("src.services.brand_service.build_brand_research_pack_from_snapshot", return_value="legacy-pack"), \
-             patch("src.services.brand_service.build_evidence_graph_from_snapshot") as graph_mock:
+        class _Recommended:
+            pack = "legacy-pack"
+
+        with patch("src.services.brand_service.build_recommended_research_pack", return_value=_Recommended()) as build_mock:
             pack = _build_research_pack_for_feature_prompts(store=_SnapshotStore(snapshot), run_id=1)
 
         self.assertEqual(pack, "legacy-pack")
-        graph_mock.assert_not_called()
+        build_mock.assert_called_once_with(snapshot)
 
     def test_acquisition_provenance_summary_exposes_plan_trace_and_quality(self):
         context = ContextData(

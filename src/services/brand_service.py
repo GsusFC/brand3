@@ -51,12 +51,9 @@ from src.discovery.search_plan import build_discovery_search_plan
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
 from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
-from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
 from src.reports.derivation import build_report_readiness_from_snapshot
 from src.reports.entity_research_packet import build_entity_research_packet
-from src.research.evidence_graph import build_evidence_graph_from_snapshot
-from src.research.research_pack_builder import build_brand_research_pack_from_graph
-from src.research.research_pack_promotion import recommend_research_pack_builder
+from src.research.research_pack_facade import build_recommended_research_pack
 from src.niche import (
     classify_brand_niche,
     get_calibration_profile,
@@ -1311,10 +1308,7 @@ def _build_research_pack_for_feature_prompts(
         snapshot = store.get_run_snapshot(run_id)
         if not snapshot:
             return None
-        recommendation = recommend_research_pack_builder(snapshot)
-        if recommendation.builder != "graph":
-            return build_brand_research_pack_from_snapshot(snapshot)
-        return build_brand_research_pack_from_graph(build_evidence_graph_from_snapshot(snapshot))
+        return build_recommended_research_pack(snapshot).pack
     except Exception as exc:
         print(f"  Research pack prompt input: skipped ({exc})")
         return None

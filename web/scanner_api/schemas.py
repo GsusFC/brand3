@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 Lang = Literal["es", "en"]
@@ -94,7 +94,7 @@ class ScannerPublicationDecision(BaseModel):
     listable: bool | None = None
     ui_readable: bool | None = None
     api_readable: bool | None = None
-    reason_codes: list[str] = []
+    reason_codes: list[str] = Field(default_factory=list)
     source_status: str | None = None
     source_version: str | None = None
 
@@ -109,6 +109,53 @@ class ScannerResultMetadata(BaseModel):
     publication_decision: ScannerPublicationDecision
     stale_against_current_pipeline: bool
     scan_mode: ScanModePolicy | None = None
+
+
+class ScannerScores(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    magnetism: float | int
+    coherence: float | int
+    quadrant: str
+
+
+class ScannerAuditLink(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    available: bool
+    source_run_id: int | None
+    api_url: str | None
+
+
+class ScannerResultResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int
+    status: str
+    brand_name: str
+    url: str
+    created_at: str
+    scores: ScannerScores
+    result_metadata: ScannerResultMetadata
+    scan_mode: ScanModePolicy
+    audit: ScannerAuditLink
+    evidence_api_url: str
+    methodology_api_url: str
+    ui_url: str
+
+
+class ScannerMethodologyBody(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    result_metadata: ScannerResultMetadata
+
+
+class ScannerMethodologyResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int
+    brand_name: str
+    methodology: ScannerMethodologyBody
 
 
 class ScannerError(BaseModel):
@@ -141,6 +188,11 @@ def scanner_openapi_spec() -> dict:
     generated_with_schema = _component_schema(ScannerGeneratedWith)
     publication_decision_schema = _component_schema(ScannerPublicationDecision)
     result_metadata_schema = _component_schema(ScannerResultMetadata)
+    scores_schema = _component_schema(ScannerScores)
+    audit_link_schema = _component_schema(ScannerAuditLink)
+    result_response_schema = _component_schema(ScannerResultResponse)
+    methodology_body_schema = _component_schema(ScannerMethodologyBody)
+    methodology_response_schema = _component_schema(ScannerMethodologyResponse)
     scanner_error_schema = _component_schema(ScannerError)
     error_schema = _component_schema(ScannerErrorResponse)
     validation_error_schema = {
@@ -252,10 +304,7 @@ def scanner_openapi_spec() -> dict:
                             "description": "Result payload",
                             "content": {
                                 "application/json": {
-                                    "schema": {
-                                        "type": "object",
-                                        "additionalProperties": True,
-                                    }
+                                    "schema": {"$ref": "#/components/schemas/ScannerResultResponse"}
                                 }
                             },
                         },
@@ -299,7 +348,11 @@ def scanner_openapi_spec() -> dict:
                     "responses": {
                         "200": {
                             "description": "Methodology payload",
-                            "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ScannerMethodologyResponse"}
+                                }
+                            },
                         },
                         "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
@@ -345,6 +398,11 @@ def scanner_openapi_spec() -> dict:
                 "ScannerGeneratedWith": generated_with_schema,
                 "ScannerPublicationDecision": publication_decision_schema,
                 "ScannerResultMetadata": result_metadata_schema,
+                "ScannerScores": scores_schema,
+                "ScannerAuditLink": audit_link_schema,
+                "ScannerResultResponse": result_response_schema,
+                "ScannerMethodologyBody": methodology_body_schema,
+                "ScannerMethodologyResponse": methodology_response_schema,
                 "ScannerError": scanner_error_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,

@@ -8,7 +8,47 @@ from web.scanner_api.presenters import (
     scanner_result_metadata,
     scanner_status_payload,
 )
-from web.scanner_api.schemas import FailureDiagnostics, ScannerResultMetadata, ScannerStatus
+from web.scanner_api.schemas import (
+    FailureDiagnostics,
+    ScannerMethodologyResponse,
+    ScannerResultMetadata,
+    ScannerResultResponse,
+    ScannerStatus,
+)
+
+
+def _scanner_result_metadata_fixture() -> dict:
+    return {
+        "result_version": "scanner_result_v1",
+        "pipeline_version": "brand3_scanner_pipeline_2026_06_03",
+        "generated_with": {
+            "audit_snapshot": True,
+            "research_pack": True,
+            "evidence_graph": True,
+            "analyst_pass": True,
+            "research_pack_quality": True,
+            "parallel_shadow": False,
+        },
+        "scanner_readiness": {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        },
+        "publication_decision": {
+            "version": "publication_decision_v1",
+            "surface": "magnetism_scan",
+            "status": "publishable",
+            "publishable": True,
+            "listable": True,
+            "ui_readable": True,
+            "api_readable": True,
+            "reason_codes": [],
+            "source_status": "publishable",
+            "source_version": "",
+        },
+        "stale_against_current_pipeline": False,
+        "scan_mode": {"mode": "from_audit_run", "comparable": True, "reason_codes": []},
+    }
 
 
 def test_scanner_readiness_from_row_uses_payload_manual_detection_without_input_type():
@@ -120,6 +160,7 @@ def test_failure_diagnostics_from_failed_tldr_timeout_is_safe():
 
 
 def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():
+    result_metadata = _scanner_result_metadata_fixture()
     payload = scanner_result_payload(
         {"status": "ready"},
         {
@@ -137,7 +178,7 @@ def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():
                 "tldr_strategy": {"mode": "llm_analyst_pass"},
             },
         },
-        result_metadata={"result_version": "scanner_result_v1"},
+        result_metadata=result_metadata,
         lang="en",
     )
 
@@ -155,6 +196,7 @@ def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():
     assert payload["methodology_api_url"] == "/api/v1/scanner/42/methodology"
     assert payload["ui_url"] == "/magnetism-scanner/scan/42?lang=en"
     assert payload["result_metadata"]["result_version"] == "scanner_result_v1"
+    assert ScannerResultResponse.model_validate(payload).id == 42
 
 
 def test_scanner_result_metadata_reports_current_pipeline_inputs():
@@ -214,6 +256,21 @@ def test_scanner_methodology_payload_uses_defaults_for_legacy_payloads():
     assert payload["score_breakdown"] == {"offer": 0.7}
     assert payload["limitations"] == ["limited evidence"]
     assert payload["research_pack"] == {}
+
+
+def test_scanner_methodology_response_contract_accepts_stable_envelope():
+    methodology = scanner_methodology_payload(
+        {
+            "metrics": {"clarity": 70},
+            "score_breakdown": {"offer": 0.7},
+            "limitations": ["limited evidence"],
+        },
+        result_metadata=_scanner_result_metadata_fixture(),
+    )
+
+    envelope = {"id": 42, "brand_name": "Example", "methodology": methodology}
+
+    assert ScannerMethodologyResponse.model_validate(envelope).id == 42
 
 
 def test_scanner_research_evidence_payload_falls_back_to_source_map_surfaces():

@@ -1381,7 +1381,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertIsNone(limitation)
         self.assertEqual(data["screenshot_provider"], "playwright")
 
-    def test_playwright_provider_failure_is_structured_and_non_blocking(self):
+    def test_playwright_provider_failure_falls_back_to_firecrawl(self):
         with patch(
             "src.services.brand_service._take_playwright_screenshot",
             return_value={
@@ -1389,6 +1389,42 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 "error_type": "missing_dependency",
                 "screenshot_provider": "playwright",
             },
+        ), patch(
+            "src.services.brand_service._take_firecrawl_screenshot",
+            return_value={
+                "screenshot_url": "https://cdn.example.com/fallback.png",
+                "screenshot_provider": "firecrawl_screenshot",
+            },
+        ) as fallback:
+            data, limitation = _take_screenshot_with_budget(
+                "https://example.com",
+                timeout_seconds=0,
+                provider="playwright",
+            )
+        diagnostic = _screenshot_capture_diagnostic(
+            attempted=True,
+            screenshot_data=data,
+            limitation=limitation,
+        )
+
+        fallback.assert_called_once_with("https://example.com")
+        self.assertIsNone(limitation)
+        self.assertEqual(diagnostic["source"], "firecrawl_screenshot")
+        self.assertTrue(diagnostic["success"])
+        self.assertEqual(data["fallback_from_provider"], "playwright")
+        self.assertEqual(data["fallback_reason"], "missing_dependency")
+
+    def test_playwright_provider_failure_is_structured_when_fallback_fails(self):
+        with patch(
+            "src.services.brand_service._take_playwright_screenshot",
+            return_value={
+                "error": "Playwright not available",
+                "error_type": "missing_dependency",
+                "screenshot_provider": "playwright",
+            },
+        ), patch(
+            "src.services.brand_service._take_firecrawl_screenshot",
+            side_effect=RuntimeError("Firecrawl missing API key"),
         ):
             data, limitation = _take_screenshot_with_budget(
                 "https://example.com",
@@ -1405,6 +1441,9 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
         self.assertEqual(diagnostic["source"], "playwright")
         self.assertFalse(diagnostic["success"])
         self.assertEqual(diagnostic["error_type"], "missing_dependency")
+        self.assertTrue(data["fallback_attempted"])
+        self.assertEqual(data["fallback_provider"], "firecrawl_screenshot")
+        self.assertIn("Firecrawl missing API key", data["fallback_error"])
 
     def test_cost_policy_summary_exposes_skips_and_cache_savings(self):
         summary = _cost_policy_summary(

@@ -954,17 +954,47 @@ def _normalized_screenshot_provider(provider: str | None = None) -> str:
     return value if value in {"firecrawl", "playwright"} else "firecrawl"
 
 
+def _take_firecrawl_screenshot(url: str) -> dict[str, object]:
+    from src.features.visual_analyzer import VisualAnalyzer
+
+    data = VisualAnalyzer().take_screenshot(url)
+    data.setdefault("screenshot_provider", "firecrawl_screenshot")
+    return data
+
+
+def _screenshot_has_capture(data: dict[str, object] | None) -> bool:
+    return bool(isinstance(data, dict) and str(data.get("screenshot_url") or "").strip())
+
+
+def _take_playwright_screenshot_with_firecrawl_fallback(url: str) -> dict[str, object]:
+    primary = _take_playwright_screenshot(url)
+    if _screenshot_has_capture(primary):
+        return primary
+
+    fallback_reason = str(primary.get("error_type") or primary.get("error") or "missing_screenshot_url")
+    try:
+        fallback = _take_firecrawl_screenshot(url)
+    except Exception as exc:
+        primary["fallback_attempted"] = True
+        primary["fallback_provider"] = "firecrawl_screenshot"
+        primary["fallback_error"] = str(exc)
+        return primary
+
+    fallback["fallback_from_provider"] = "playwright"
+    fallback["fallback_reason"] = fallback_reason
+    if not _screenshot_has_capture(fallback) and primary.get("error"):
+        fallback.setdefault("primary_error", primary.get("error"))
+        fallback.setdefault("primary_error_type", primary.get("error_type"))
+    return fallback
+
+
 def _screenshot_capture_worker(output_queue, url: str, provider: str) -> None:
     try:
         if provider == "playwright":
-            output_queue.put(("ok", _take_playwright_screenshot(url)))
+            output_queue.put(("ok", _take_playwright_screenshot_with_firecrawl_fallback(url)))
             return
 
-        from src.features.visual_analyzer import VisualAnalyzer
-
-        data = VisualAnalyzer().take_screenshot(url)
-        data.setdefault("screenshot_provider", "firecrawl_screenshot")
-        output_queue.put(("ok", data))
+        output_queue.put(("ok", _take_firecrawl_screenshot(url)))
     except Exception as exc:
         output_queue.put(("error", str(exc)))
 
@@ -1039,14 +1069,10 @@ def _take_screenshot_with_budget(
     provider_name = _normalized_screenshot_provider(provider)
     if timeout_seconds <= 0:
         if provider_name == "playwright":
-            return _take_playwright_screenshot(url), None
+            return _take_playwright_screenshot_with_firecrawl_fallback(url), None
 
         try:
-            from src.features.visual_analyzer import VisualAnalyzer
-
-            data = VisualAnalyzer().take_screenshot(url)
-            data.setdefault("screenshot_provider", "firecrawl_screenshot")
-            return data, None
+            return _take_firecrawl_screenshot(url), None
         except Exception as exc:
             return {"error": str(exc), "screenshot_provider": "firecrawl_screenshot"}, "error"
 

@@ -180,6 +180,8 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("ScannerResultMetadata", payload["components"]["schemas"])
         self.assertIn("ScannerResultResponse", payload["components"]["schemas"])
         self.assertIn("ScannerMethodologyResponse", payload["components"]["schemas"])
+        self.assertIn("ScannerEvidenceResponse", payload["components"]["schemas"])
+        self.assertIn("ScannerAuditResponse", payload["components"]["schemas"])
         self.assertIn("ScannerApiKey", payload["components"]["securitySchemes"])
         self.assertEqual(payload["paths"]["/api/v1/scanner"]["post"]["security"], [{"ScannerApiKey": []}])
         create_props = payload["components"]["schemas"]["ScannerCreateRequest"]["properties"]
@@ -196,9 +198,13 @@ class WebAppFlowTests(unittest.TestCase):
         )
         self.assertIn("FailureDiagnostics", payload["components"]["schemas"])
         result_schema = payload["paths"]["/api/v1/scanner/{scan_id}/result"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        evidence_schema = payload["paths"]["/api/v1/scanner/{scan_id}/evidence"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         methodology_schema = payload["paths"]["/api/v1/scanner/{scan_id}/methodology"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
+        audit_schema = payload["paths"]["/api/v1/scanner/{scan_id}/audit"]["get"]["responses"]["200"]["content"]["application/json"]["schema"]
         self.assertEqual(result_schema, {"$ref": "#/components/schemas/ScannerResultResponse"})
+        self.assertEqual(evidence_schema, {"$ref": "#/components/schemas/ScannerEvidenceResponse"})
         self.assertEqual(methodology_schema, {"$ref": "#/components/schemas/ScannerMethodologyResponse"})
+        self.assertEqual(audit_schema, {"$ref": "#/components/schemas/ScannerAuditResponse"})
         metadata_props = payload["components"]["schemas"]["ScannerResultMetadata"]["properties"]
         self.assertEqual(
             metadata_props["scanner_readiness"],

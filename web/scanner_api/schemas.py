@@ -158,6 +158,35 @@ class ScannerMethodologyResponse(BaseModel):
     methodology: ScannerMethodologyBody
 
 
+class ScannerEvidenceResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int
+    brand_name: str
+    evidence: dict
+
+
+class ScannerAuditRunSummary(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int | None
+    brand_name: str | None
+    url: str | None
+    composite_score: float | int | None
+    completed_at: str | None
+
+
+class ScannerAuditResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int
+    available: bool
+    source_run_id: int | None = None
+    reason: str | None = None
+    run: ScannerAuditRunSummary | None = None
+    audit: dict | None = None
+
+
 class ScannerError(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -193,6 +222,9 @@ def scanner_openapi_spec() -> dict:
     result_response_schema = _component_schema(ScannerResultResponse)
     methodology_body_schema = _component_schema(ScannerMethodologyBody)
     methodology_response_schema = _component_schema(ScannerMethodologyResponse)
+    evidence_response_schema = _component_schema(ScannerEvidenceResponse)
+    audit_run_summary_schema = _component_schema(ScannerAuditRunSummary)
+    audit_response_schema = _component_schema(ScannerAuditResponse)
     scanner_error_schema = _component_schema(ScannerError)
     error_schema = _component_schema(ScannerErrorResponse)
     validation_error_schema = {
@@ -327,7 +359,11 @@ def scanner_openapi_spec() -> dict:
                     "responses": {
                         "200": {
                             "description": "Evidence payload",
-                            "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ScannerEvidenceResponse"}
+                                }
+                            },
                         },
                         "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
@@ -373,7 +409,11 @@ def scanner_openapi_spec() -> dict:
                     "responses": {
                         "200": {
                             "description": "Audit snapshot or missing-source indicator",
-                            "content": {"application/json": {"schema": {"type": "object", "additionalProperties": True}}},
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ScannerAuditResponse"}
+                                }
+                            },
                         },
                         "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
                         "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
@@ -403,6 +443,9 @@ def scanner_openapi_spec() -> dict:
                 "ScannerResultResponse": result_response_schema,
                 "ScannerMethodologyBody": methodology_body_schema,
                 "ScannerMethodologyResponse": methodology_response_schema,
+                "ScannerEvidenceResponse": evidence_response_schema,
+                "ScannerAuditRunSummary": audit_run_summary_schema,
+                "ScannerAuditResponse": audit_response_schema,
                 "ScannerError": scanner_error_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,

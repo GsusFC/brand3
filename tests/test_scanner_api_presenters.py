@@ -10,6 +10,8 @@ from web.scanner_api.presenters import (
 )
 from web.scanner_api.schemas import (
     FailureDiagnostics,
+    ScannerAuditResponse,
+    ScannerEvidenceResponse,
     ScannerMethodologyResponse,
     ScannerResultMetadata,
     ScannerResultResponse,
@@ -271,6 +273,39 @@ def test_scanner_methodology_response_contract_accepts_stable_envelope():
     envelope = {"id": 42, "brand_name": "Example", "methodology": methodology}
 
     assert ScannerMethodologyResponse.model_validate(envelope).id == 42
+
+
+def test_scanner_evidence_response_contract_accepts_flexible_body():
+    envelope = {
+        "id": 42,
+        "brand_name": "Example",
+        "evidence": {
+            "research_pack_source": "evidence_graph",
+            "block_evidence": [{"key": "value_proposition"}],
+        },
+    }
+
+    assert ScannerEvidenceResponse.model_validate(envelope).brand_name == "Example"
+
+
+def test_scanner_audit_response_contract_accepts_available_and_missing_shapes():
+    available = {
+        "id": 42,
+        "available": True,
+        "source_run_id": 7,
+        "run": {
+            "id": 7,
+            "brand_name": "Example",
+            "url": "https://example.com",
+            "composite_score": 74.0,
+            "completed_at": "2026-06-04T10:00:00",
+        },
+        "audit": {"summary": "Example audit."},
+    }
+    missing = {"id": 43, "available": False, "reason": "missing_source_run"}
+
+    assert ScannerAuditResponse.model_validate(available).source_run_id == 7
+    assert ScannerAuditResponse.model_validate(missing).reason == "missing_source_run"
 
 
 def test_scanner_research_evidence_payload_falls_back_to_source_map_surfaces():

@@ -177,6 +177,7 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("/api/v1/scanner/{scan_id}/result", payload["paths"])
         self.assertIn("ScannerCreateRequest", payload["components"]["schemas"])
         self.assertIn("ScannerReadiness", payload["components"]["schemas"])
+        self.assertIn("ScannerResultMetadata", payload["components"]["schemas"])
         self.assertIn("ScannerApiKey", payload["components"]["securitySchemes"])
         self.assertEqual(payload["paths"]["/api/v1/scanner"]["post"]["security"], [{"ScannerApiKey": []}])
         create_props = payload["components"]["schemas"]["ScannerCreateRequest"]["properties"]
@@ -192,6 +193,15 @@ class WebAppFlowTests(unittest.TestCase):
             [{"$ref": "#/components/schemas/FailureDiagnostics"}, {"type": "null"}],
         )
         self.assertIn("FailureDiagnostics", payload["components"]["schemas"])
+        metadata_props = payload["components"]["schemas"]["ScannerResultMetadata"]["properties"]
+        self.assertEqual(
+            metadata_props["scanner_readiness"],
+            {"$ref": "#/components/schemas/ScannerReadiness"},
+        )
+        self.assertEqual(
+            metadata_props["publication_decision"],
+            {"$ref": "#/components/schemas/ScannerPublicationDecision"},
+        )
         error_schema = payload["components"]["schemas"]["Error"]
         self.assertIn("error", error_schema["required"])
         self.assertIn("409", payload["paths"]["/api/v1/scanner/{scan_id}/result"]["get"]["responses"])

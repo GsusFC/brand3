@@ -73,6 +73,44 @@ class ScannerStatus(BaseModel):
     ui_url: str | None
 
 
+class ScannerGeneratedWith(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    audit_snapshot: bool
+    research_pack: bool
+    evidence_graph: bool
+    analyst_pass: bool
+    research_pack_quality: bool
+    parallel_shadow: bool
+
+
+class ScannerPublicationDecision(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: Literal["publishable", "non_public", "debug_only", "failed"]
+    publishable: bool
+    version: str | None = None
+    surface: str | None = None
+    listable: bool | None = None
+    ui_readable: bool | None = None
+    api_readable: bool | None = None
+    reason_codes: list[str] = []
+    source_status: str | None = None
+    source_version: str | None = None
+
+
+class ScannerResultMetadata(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    result_version: Literal["scanner_result_v1"]
+    pipeline_version: str
+    generated_with: ScannerGeneratedWith
+    scanner_readiness: ScannerReadiness
+    publication_decision: ScannerPublicationDecision
+    stale_against_current_pipeline: bool
+    scan_mode: ScanModePolicy | None = None
+
+
 class ScannerError(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -100,6 +138,9 @@ def scanner_openapi_spec() -> dict:
     failure_diagnostics_schema = _component_schema(FailureDiagnostics)
     scan_mode_schema = _component_schema(ScanModePolicy)
     scan_status_schema = _component_schema(ScannerStatus)
+    generated_with_schema = _component_schema(ScannerGeneratedWith)
+    publication_decision_schema = _component_schema(ScannerPublicationDecision)
+    result_metadata_schema = _component_schema(ScannerResultMetadata)
     scanner_error_schema = _component_schema(ScannerError)
     error_schema = _component_schema(ScannerErrorResponse)
     validation_error_schema = {
@@ -301,6 +342,9 @@ def scanner_openapi_spec() -> dict:
                 "ScannerReadiness": scanner_readiness_schema,
                 "FailureDiagnostics": failure_diagnostics_schema,
                 "ScanModePolicy": scan_mode_schema,
+                "ScannerGeneratedWith": generated_with_schema,
+                "ScannerPublicationDecision": publication_decision_schema,
+                "ScannerResultMetadata": result_metadata_schema,
                 "ScannerError": scanner_error_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,

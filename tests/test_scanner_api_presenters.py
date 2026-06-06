@@ -8,7 +8,7 @@ from web.scanner_api.presenters import (
     scanner_result_metadata,
     scanner_status_payload,
 )
-from web.scanner_api.schemas import FailureDiagnostics, ScannerStatus
+from web.scanner_api.schemas import FailureDiagnostics, ScannerResultMetadata, ScannerStatus
 
 
 def test_scanner_readiness_from_row_uses_payload_manual_detection_without_input_type():
@@ -168,7 +168,18 @@ def test_scanner_result_metadata_reports_current_pipeline_inputs():
             "tldr_generation_mode": "analyst_pass_validated",
         },
         scanner_readiness={"status": "publishable", "publishable": True, "reason_codes": []},
-        publication_decision={"status": "publishable", "publishable": True},
+        publication_decision={
+            "version": "publication_decision_v1",
+            "surface": "magnetism_scan",
+            "status": "publishable",
+            "publishable": True,
+            "listable": True,
+            "ui_readable": True,
+            "api_readable": True,
+            "reason_codes": [],
+            "source_status": "publishable",
+            "source_version": "",
+        },
     )
 
     assert metadata["result_version"] == "scanner_result_v1"
@@ -183,6 +194,7 @@ def test_scanner_result_metadata_reports_current_pipeline_inputs():
     assert metadata["stale_against_current_pipeline"] is False
     assert metadata["scanner_readiness"]["status"] == "publishable"
     assert metadata["publication_decision"]["status"] == "publishable"
+    assert ScannerResultMetadata.model_validate(metadata).result_version == "scanner_result_v1"
 
 
 def test_scanner_methodology_payload_uses_defaults_for_legacy_payloads():

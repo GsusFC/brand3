@@ -8,6 +8,7 @@ from web.scanner_api.presenters import (
     scanner_result_metadata,
     scanner_status_payload,
 )
+from web.scanner_api.schemas import FailureDiagnostics, ScannerStatus
 
 
 def test_scanner_readiness_from_row_uses_payload_manual_detection_without_input_type():
@@ -60,6 +61,7 @@ def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():
     assert payload["scan_mode"]["mode"] == "from_audit_run"
     assert payload["scan_mode"]["comparable"] is True
     assert payload["failure_diagnostics"] is None
+    assert ScannerStatus.model_validate(payload).id == 42
 
 
 def test_scanner_status_payload_hides_ui_url_until_ready():
@@ -74,6 +76,7 @@ def test_scanner_status_payload_hides_ui_url_until_ready():
     assert payload["result_available"] is False
     assert payload["ui_url"] is None
     assert payload["scan_mode"]["mode"] == "canonical_url"
+    assert ScannerStatus.model_validate(payload).status == "running"
 
 
 def test_failure_diagnostics_from_failed_tldr_timeout_is_safe():
@@ -113,6 +116,7 @@ def test_failure_diagnostics_from_failed_tldr_timeout_is_safe():
         "error_type": "timeout",
     }
     assert "secret-ish" not in json.dumps(diagnostics)
+    assert FailureDiagnostics.model_validate(diagnostics).failure_type == "timeout"
 
 
 def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():

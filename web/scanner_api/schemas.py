@@ -18,8 +18,74 @@ class ScannerCreateRequest(BaseModel):
     lang: Lang = "es"
 
 
+class ScannerReadiness(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    status: Literal["publishable", "degraded", "debug_only", "failed"]
+    publishable: bool
+    reason_codes: list[str]
+
+
+class FailureDiagnostics(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    available: bool
+    component: str
+    phase: str
+    reason_code: str
+    failure_type: str
+    retryable: bool
+    safe_message: str
+    model: str | None
+    error_type: str | None
+
+
+class ScanModePolicy(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    mode: Literal["canonical_url", "from_audit_run", "legacy_manual", "unknown"]
+    comparable: bool
+    reason_codes: list[str]
+
+
+class ScannerStatus(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    id: int
+    status: Literal["queued", "running", "ready", "failed"]
+    phase: str
+    brand_name: str | None
+    url: str | None
+    source_run_id: int | None
+    created_at: str | None
+    started_at: str | None
+    completed_at: str | None
+    error_message: str | None
+    failure_diagnostics: FailureDiagnostics | None
+    scanner_readiness: ScannerReadiness
+    scan_mode: ScanModePolicy
+    result_available: bool
+    status_url: str
+    result_url: str
+    evidence_url: str
+    methodology_url: str
+    audit_url: str
+    ui_url: str | None
+
+
+def _component_schema(model: type[BaseModel]) -> dict:
+    schema = model.model_json_schema(ref_template="#/components/schemas/{model}")
+    schema.pop("$defs", None)
+    return schema
+
+
 def scanner_openapi_spec() -> dict:
     base_url = "/"
+    scanner_create_schema = _component_schema(ScannerCreateRequest)
+    scanner_readiness_schema = _component_schema(ScannerReadiness)
+    failure_diagnostics_schema = _component_schema(FailureDiagnostics)
+    scan_mode_schema = _component_schema(ScanModePolicy)
+    scan_status_schema = _component_schema(ScannerStatus)
     error_schema = {
         "type": "object",
         "additionalProperties": False,
@@ -47,106 +113,6 @@ def scanner_openapi_spec() -> dict:
             },
         },
         "required": ["detail"],
-    }
-    scan_status_schema = {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "id": {"type": "integer"},
-            "status": {"type": "string", "enum": ["queued", "running", "ready", "failed"]},
-            "phase": {"type": "string"},
-            "brand_name": {"type": ["string", "null"]},
-            "url": {"type": ["string", "null"]},
-            "source_run_id": {"type": ["integer", "null"]},
-            "created_at": {"type": ["string", "null"], "format": "date-time"},
-            "started_at": {"type": ["string", "null"], "format": "date-time"},
-            "completed_at": {"type": ["string", "null"], "format": "date-time"},
-            "error_message": {"type": ["string", "null"]},
-            "failure_diagnostics": {"$ref": "#/components/schemas/FailureDiagnostics"},
-            "scanner_readiness": {"$ref": "#/components/schemas/ScannerReadiness"},
-            "scan_mode": {"$ref": "#/components/schemas/ScanModePolicy"},
-            "result_available": {"type": "boolean"},
-            "status_url": {"type": "string"},
-            "result_url": {"type": "string"},
-            "evidence_url": {"type": "string"},
-            "methodology_url": {"type": "string"},
-            "audit_url": {"type": "string"},
-            "ui_url": {"type": ["string", "null"]},
-        },
-        "required": [
-            "id",
-            "status",
-            "phase",
-            "brand_name",
-            "url",
-            "source_run_id",
-            "created_at",
-            "started_at",
-            "completed_at",
-            "error_message",
-            "failure_diagnostics",
-            "scanner_readiness",
-            "scan_mode",
-            "result_available",
-            "status_url",
-            "result_url",
-            "evidence_url",
-            "methodology_url",
-            "audit_url",
-            "ui_url",
-        ],
-    }
-    scanner_readiness_schema = {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "status": {
-                "type": "string",
-                "enum": ["publishable", "degraded", "debug_only", "failed"],
-            },
-            "publishable": {"type": "boolean"},
-            "reason_codes": {"type": "array", "items": {"type": "string"}},
-        },
-        "required": ["status", "publishable", "reason_codes"],
-    }
-    failure_diagnostics_schema = {
-        "type": ["object", "null"],
-        "additionalProperties": False,
-        "properties": {
-            "available": {"type": "boolean"},
-            "component": {"type": "string"},
-            "phase": {"type": "string"},
-            "reason_code": {"type": "string"},
-            "failure_type": {"type": "string"},
-            "retryable": {"type": "boolean"},
-            "safe_message": {"type": "string"},
-            "model": {"type": ["string", "null"]},
-            "error_type": {"type": ["string", "null"]},
-        },
-        "required": [
-            "available",
-            "component",
-            "phase",
-            "reason_code",
-            "failure_type",
-            "retryable",
-            "safe_message",
-            "model",
-            "error_type",
-        ],
-    }
-    scan_mode_schema = {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "mode": {
-                "type": "string",
-                "enum": ["canonical_url", "from_audit_run", "legacy_manual", "unknown"],
-            },
-            "comparable": {"type": "boolean"},
-            "reason_codes": {"type": "array", "items": {"type": "string"}},
-        },
-        "required": ["mode", "comparable", "reason_codes"],
     }
     return {
         "openapi": "3.1.0",
@@ -329,13 +295,7 @@ def scanner_openapi_spec() -> dict:
         "components": {
             "schemas": {
                 "ScannerCreateRequest": {
-                    "type": "object",
-                    "additionalProperties": False,
-                    "properties": {
-                        "url": {"type": "string"},
-                        "audit_run_id": {"type": "integer"},
-                        "lang": {"type": "string", "enum": ["es", "en"]},
-                    },
+                    **scanner_create_schema,
                     "oneOf": [{"required": ["url"]}, {"required": ["audit_run_id"]}],
                 },
                 "ScannerStatus": scan_status_schema,

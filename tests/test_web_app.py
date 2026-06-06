@@ -188,8 +188,8 @@ class WebAppFlowTests(unittest.TestCase):
             {"$ref": "#/components/schemas/ScannerReadiness"},
         )
         self.assertEqual(
-            status_props["failure_diagnostics"],
-            {"$ref": "#/components/schemas/FailureDiagnostics"},
+            status_props["failure_diagnostics"]["anyOf"],
+            [{"$ref": "#/components/schemas/FailureDiagnostics"}, {"type": "null"}],
         )
         self.assertIn("FailureDiagnostics", payload["components"]["schemas"])
         error_schema = payload["components"]["schemas"]["Error"]

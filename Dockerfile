@@ -15,6 +15,7 @@ WORKDIR /app
 
 COPY pyproject.toml ./
 RUN pip install --no-cache-dir -e . --break-system-packages
+RUN python -m playwright install --with-deps chromium
 
 COPY . .
 

@@ -1076,6 +1076,9 @@ def _take_screenshot_with_budget(
         except Exception as exc:
             return {"error": str(exc), "screenshot_provider": "firecrawl_screenshot"}, "error"
 
+    if provider_name == "playwright":
+        return _take_playwright_screenshot_with_firecrawl_fallback(url), None
+
     import sys
     method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
     ctx = mp.get_context(method)

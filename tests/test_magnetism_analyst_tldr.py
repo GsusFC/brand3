@@ -289,6 +289,43 @@ def test_single_item_array_response_is_accepted() -> None:
     assert result["tldr_brand3"]["value_proposition"]["answer"] == "AI app builder for non-technical founders."
 
 
+def test_wrapped_analyst_response_is_accepted() -> None:
+    llm = FakeAnalystLLM(
+        {
+            "output": {
+                "content": {
+                    "entity_reading": "Base44 reads as an AI app builder.",
+                    "tldr_brand3": {
+                        "value_proposition": {
+                            "answer": "AI app builder for non-technical founders.",
+                            "claim_type": "declared",
+                            "mode": "compressed",
+                            "confidence": "high",
+                            "reasoning": "The offer is literal and traceable.",
+                            "evidence_used": ["Base44 is an AI app builder for non-technical founders."],
+                            "evidence_sources": [{"source_key": "https://base44.com", "source_type": "owned_official"}],
+                            "counter_evidence": [],
+                            "human_review_recommended": False,
+                        }
+                    },
+                }
+            }
+        }
+    )
+
+    result = maybe_build_analyst_tldr(
+        llm=llm,
+        brand_name="Base44",
+        url="https://base44.com",
+        research_pack=_research_pack(),
+        current_tldr={},
+    )
+
+    assert "analysis_error" not in result
+    assert result["entity_reading"] == "Base44 reads as an AI app builder."
+    assert result["tldr_brand3"]["value_proposition"]["answer"] == "AI app builder for non-technical founders."
+
+
 def test_prompt_is_driven_by_pack_not_brand_rules() -> None:
     pack = _research_pack("Bokeroon", "https://bokeroon.com")
     prompt = build_analyst_tldr_prompt(

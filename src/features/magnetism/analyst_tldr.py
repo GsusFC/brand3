@@ -207,11 +207,30 @@ def run_analyst_tldr_pass(
 
 
 def _coerce_analyst_raw_json(raw: Any) -> dict[str, Any]:
-    """Accept provider JSON-object drift when the only item is the payload."""
-    if isinstance(raw, dict):
-        return raw
-    if isinstance(raw, list) and len(raw) == 1 and isinstance(raw[0], dict):
-        return raw[0]
+    """Accept common provider JSON-object drift around the TLDR payload."""
+    value = raw
+    for _ in range(4):
+        if isinstance(value, str):
+            try:
+                value = json.loads(value.strip())
+            except json.JSONDecodeError:
+                return {}
+            continue
+        if isinstance(value, list) and len(value) == 1:
+            value = value[0]
+            continue
+        if isinstance(value, dict):
+            if isinstance(value.get("tldr_brand3"), dict):
+                return value
+            for key in ("payload", "content", "output", "response", "result", "data", "message"):
+                nested = value.get(key)
+                if isinstance(nested, (dict, list, str)):
+                    value = nested
+                    break
+            else:
+                return value
+            continue
+        return {}
     return {}
 
 

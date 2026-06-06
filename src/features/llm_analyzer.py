@@ -171,6 +171,26 @@ def _json_response_format(
     }
 
 
+def _parse_json_content(content: str) -> Any:
+    """Parse provider JSON, tolerating prose or fences around one JSON payload."""
+    text = (content or "").strip()
+    if not text:
+        raise json.JSONDecodeError("empty json content", text, 0)
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as original_error:
+        decoder = json.JSONDecoder()
+        starts = [index for index, char in enumerate(text) if char in "[{"]
+        for index in starts:
+            try:
+                parsed, _end = decoder.raw_decode(text[index:])
+                return parsed
+            except json.JSONDecodeError:
+                continue
+        raise original_error
+
+
 class LLMAnalyzer:
     """LLM-powered brand content analyzer."""
 
@@ -419,7 +439,7 @@ class LLMAnalyzer:
             content = content.strip()
 
         try:
-            parsed = json.loads(content)
+            parsed = _parse_json_content(content)
             self._cache_save(cache_key, "json", parsed)
             self._clear_failure()
             return parsed

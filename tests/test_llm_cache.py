@@ -164,6 +164,22 @@ class LLMCacheTests(unittest.TestCase):
         self.assertEqual(failure["base_url"], "https://llm.test")
         self.assertNotIn("secret-key", json.dumps(failure))
 
+    def test_call_json_extracts_payload_from_provider_prose(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", 'Here is the JSON:\n{"score": 88}\nDone.'),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {"score": 88})
+        self.assertIsNone(llm.last_failure_reason)
+        self.assertEqual(llm.call_failures, [])
+
     def test_call_json_success_path_unchanged(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = str(Path(tmpdir) / "brand3.sqlite3")

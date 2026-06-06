@@ -167,6 +167,9 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertEqual(response_en.status_code, 200)
         self.assertIn('<html lang="en">', response_en.text)
         self.assertIn("Historic results are read as persisted", response_en.text)
+        self.assertIn('href="/scanner-api?lang=es"', response_en.text)
+        self.assertIn('href="/scanner-api?lang=en"', response_en.text)
+        self.assertNotIn("http://brand3.fly.dev/scanner-api", response_en.text)
 
         spec = self.client.get("/scanner-api/openapi.json")
         self.assertEqual(spec.status_code, 200)

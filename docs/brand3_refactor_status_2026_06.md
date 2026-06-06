@@ -104,6 +104,7 @@ Commits:
 - `e0740e7 Centralize simple acquisition state updates`
 - `8621825 Use shared acquisition state for exa shadow`
 - `fa9415b Use shared acquisition state for social`
+- `256bea0 Centralize cached acquisition handling`
 
 What changed:
 
@@ -121,10 +122,12 @@ What changed:
 
 - `_set_acquisition_state()` updates `raw_input_cache` and `AcquisitionResult` together.
 - The shared state helper now covers context, web, competitors, Exa, Parallel Shadow, and social.
+- `_use_cached_input()` now centralizes cache-hit acquisition state and optional raw input persistence for context, web, Exa, Parallel Shadow, social, and competitors.
 
 Risk reduced:
 
 - Lower chance that `raw_input_cache` says one thing while structured acquisition metadata says another.
+- Lower chance that cache-hit branches drift in raw payload references, eligibility, or cache status semantics.
 - Easier diagnosis of poor runs: cache miss, provider partial, provider empty, disabled source, storage failure, or raw payload location.
 - Better base for provider bake-offs and Exa deep-mode tests.
 
@@ -262,16 +265,16 @@ Recommended timing:
 
 ### 3. Acquisition Step Facade
 
-Priority: Medium
+Priority: Low/Medium
 
 Current issue:
 
 - `src/services/input_collection.py` is still large.
-- Cache read, provider call, raw persistence, and acquisition state are improved but still live in each collector function.
+- Cache-hit handling is now centralized, but provider calls and source-specific interpretation still live in each collector function.
 
 Recommended cut:
 
-- Introduce a small `AcquisitionStepRunner` or `ProviderAcquisitionStep` only after one more repeated pattern becomes obvious.
+- Introduce a small `AcquisitionStepRunner` or `ProviderAcquisitionStep` only if another repeated pattern becomes obvious.
 - Avoid a generic framework too early.
 
 Tests needed:
@@ -284,7 +287,7 @@ Tests needed:
 
 Recommended timing:
 
-- Later. Current helper-level refactor may be enough for now.
+- Later. Current helper-level refactor is enough for now.
 
 ### 4. EvidenceGraph Default Rollout
 

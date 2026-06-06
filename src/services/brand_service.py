@@ -102,7 +102,7 @@ _MIN_EXA_FALLBACK_MENTIONS = 3
 _MIN_EXA_FALLBACK_CHARS = 300
 _MAX_EXA_FALLBACK_ITEMS = 8
 _SOCIAL_COLLECTION_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_SOCIAL_TIMEOUT_SECONDS", "25"))
-_VISUAL_SCREENSHOT_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_VISUAL_SCREENSHOT_TIMEOUT_SECONDS", "20"))
+_VISUAL_SCREENSHOT_TIMEOUT_SECONDS = int(os.environ.get("BRAND3_VISUAL_SCREENSHOT_TIMEOUT_SECONDS", "75"))
 _OWNED_FALLBACK_PATHS = (
     "/about",
     "/products",
@@ -999,7 +999,7 @@ def _screenshot_capture_worker(output_queue, url: str, provider: str) -> None:
         output_queue.put(("error", str(exc)))
 
 
-def _take_playwright_screenshot(url: str, *, timeout_ms: int = 15000) -> dict[str, object]:
+def _take_playwright_screenshot(url: str, *, timeout_ms: int = 30000) -> dict[str, object]:
     try:
         from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
         from playwright.sync_api import sync_playwright
@@ -1030,7 +1030,7 @@ def _take_playwright_screenshot(url: str, *, timeout_ms: int = 15000) -> dict[st
                 page.wait_for_load_state("networkidle", timeout=5000)
             except Exception:
                 pass
-            page.screenshot(path=screenshot_path, full_page=True)
+            page.screenshot(path=screenshot_path, full_page=False, timeout=60000, animations="disabled")
             title = page.title()
             browser.close()
             browser = None
@@ -1185,7 +1185,7 @@ def _visual_signature_shadow_screenshot_payload(
     }
     if parsed.scheme == "file":
         payload["path"] = unquote(parsed.path)
-        payload["capture_type"] = "full_page"
+        payload["capture_type"] = "viewport"
         payload["viewport_width"] = 1440
         payload["viewport_height"] = 1200
     return payload

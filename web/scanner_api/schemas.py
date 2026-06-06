@@ -73,6 +73,20 @@ class ScannerStatus(BaseModel):
     ui_url: str | None
 
 
+class ScannerError(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    code: str
+    message: str
+    status: ScannerStatus | None = None
+
+
+class ScannerErrorResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    error: ScannerError
+
+
 def _component_schema(model: type[BaseModel]) -> dict:
     schema = model.model_json_schema(ref_template="#/components/schemas/{model}")
     schema.pop("$defs", None)
@@ -86,23 +100,8 @@ def scanner_openapi_spec() -> dict:
     failure_diagnostics_schema = _component_schema(FailureDiagnostics)
     scan_mode_schema = _component_schema(ScanModePolicy)
     scan_status_schema = _component_schema(ScannerStatus)
-    error_schema = {
-        "type": "object",
-        "additionalProperties": False,
-        "properties": {
-            "error": {
-                "type": "object",
-                "additionalProperties": False,
-                "properties": {
-                    "code": {"type": "string"},
-                    "message": {"type": "string"},
-                    "status": {"$ref": "#/components/schemas/ScannerStatus"},
-                },
-                "required": ["code", "message"],
-            },
-        },
-        "required": ["error"],
-    }
+    scanner_error_schema = _component_schema(ScannerError)
+    error_schema = _component_schema(ScannerErrorResponse)
     validation_error_schema = {
         "type": "object",
         "additionalProperties": True,
@@ -302,6 +301,7 @@ def scanner_openapi_spec() -> dict:
                 "ScannerReadiness": scanner_readiness_schema,
                 "FailureDiagnostics": failure_diagnostics_schema,
                 "ScanModePolicy": scan_mode_schema,
+                "ScannerError": scanner_error_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,
             },

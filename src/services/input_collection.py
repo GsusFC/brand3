@@ -330,6 +330,42 @@ def _save_raw_input_safely(
     return saved
 
 
+def _use_cached_input(
+    *,
+    store,
+    run_id: int | None,
+    source: str,
+    payload,
+    raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
+    details: dict[str, object] | None = None,
+    action: str | None = None,
+    message: str | None = None,
+):
+    _set_acquisition_state(
+        raw_input_cache,
+        acquisition_steps,
+        source=source,
+        raw_cache_status="hit",
+        status="hit",
+        cache_status="hit",
+        eligible=True,
+        details=details,
+    )
+    if message:
+        print(message)
+    if run_id:
+        _save_raw_input_safely(
+            store,
+            run_id,
+            source,
+            payload,
+            action=action or f"{source} cache save",
+            acquisition_steps=acquisition_steps,
+        )
+    return payload
+
+
 def start_analysis_run(
     brand_name: str,
     url: str,
@@ -378,32 +414,24 @@ def _collect_context_input(
 ) -> ContextData:
     context_data = cache_read("context", 24, from_context_payload)
     if context_data:
-        _set_acquisition_state(
-            raw_input_cache,
-            acquisition_steps,
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
             source="context",
-            raw_cache_status="hit",
-            status="hit",
-            cache_status="hit",
-            eligible=True,
+            payload=context_data,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
             details={
                 "score": context_data.context_score,
                 "confidence": context_data.confidence,
             },
-        )
-        print(
-            "  Context: cache hit"
-            f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
+            action="context cache save",
+            message=(
+                "  Context: cache hit"
+                f" (score={context_data.context_score:.0f}, confidence={context_data.confidence:.2f})"
+            ),
         )
         if run_id:
-            _save_raw_input_safely(
-                store,
-                run_id,
-                "context",
-                context_data,
-                action="context cache save",
-                acquisition_steps=acquisition_steps,
-            )
             store_safely(
                 store,
                 "context cache evidence save",
@@ -461,26 +489,17 @@ def _collect_web_input(
     web_collector = web_collector_cls(api_key=FIRECRAWL_API_KEY)
     web_data = cache_read("web", BRAND3_CACHE_TTL_HOURS, from_web_payload)
     if web_data:
-        _set_acquisition_state(
-            raw_input_cache,
-            acquisition_steps,
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
             source="web",
-            raw_cache_status="hit",
-            status="hit",
-            cache_status="hit",
-            eligible=True,
+            payload=web_data,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
             details={"chars": len(web_data.markdown_content)},
+            action="web cache save",
+            message=f"  Web: cache hit ({len(web_data.markdown_content)} chars)",
         )
-        print(f"  Web: cache hit ({len(web_data.markdown_content)} chars)")
-        if run_id:
-            _save_raw_input_safely(
-                store,
-                run_id,
-                "web",
-                web_data,
-                action="web cache save",
-                acquisition_steps=acquisition_steps,
-            )
         return web_data, web_collector
 
     _set_acquisition_state(
@@ -520,29 +539,20 @@ def _collect_exa_input(
     exa_collector = exa_collector_cls(api_key=EXA_API_KEY)
     exa_data = cache_read("exa", BRAND3_CACHE_TTL_HOURS, from_exa_payload)
     if exa_data:
-        _set_acquisition_state(
-            raw_input_cache,
-            acquisition_steps,
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
             source="exa",
-            raw_cache_status="hit",
-            status="hit",
-            cache_status="hit",
-            eligible=True,
+            payload=exa_data,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
             details={
                 "mentions": len(exa_data.mentions),
                 "news": len(exa_data.news),
             },
+            action="exa cache save",
+            message=f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)",
         )
-        print(f"  Exa: cache hit ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)")
-        if run_id:
-            _save_raw_input_safely(
-                store,
-                run_id,
-                "exa",
-                exa_data,
-                action="exa cache save",
-                acquisition_steps=acquisition_steps,
-            )
         return exa_data, exa_collector
 
     _set_acquisition_state(
@@ -636,24 +646,15 @@ def _collect_parallel_shadow_input(
 
     cached = cache_read("parallel_shadow", BRAND3_CACHE_TTL_HOURS, from_parallel_shadow_payload)
     if cached:
-        _set_acquisition_state(
-            raw_input_cache,
-            acquisition_steps,
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
             source="parallel_shadow",
-            raw_cache_status="hit",
-            status="hit",
-            cache_status="hit",
-            eligible=True,
+            payload=cached,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
+            action="parallel shadow cache save",
         )
-        if run_id:
-            _save_raw_input_safely(
-                store,
-                run_id,
-                "parallel_shadow",
-                cached,
-                action="parallel shadow cache save",
-                acquisition_steps=acquisition_steps,
-            )
         return ParallelShadowData.from_dict(
             {
                 **cached,
@@ -723,26 +724,17 @@ def _collect_social_input(
 
     social_data = cache_read("social", BRAND3_CACHE_TTL_HOURS, from_social_payload)
     if social_data:
-        _set_acquisition_state(
-            raw_input_cache,
-            acquisition_steps,
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
             source="social",
-            raw_cache_status="hit",
-            status="hit",
-            cache_status="hit",
-            eligible=True,
+            payload=social_data,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
             details={"platforms": len(social_data.platforms), "followers": social_data.total_followers},
+            action="social cache save",
+            message=f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)",
         )
-        print(f"  Social: cache hit ({len(social_data.platforms)} platforms, {social_data.total_followers:,} total followers)")
-        if run_id:
-            _save_raw_input_safely(
-                store,
-                run_id,
-                "social",
-                social_data,
-                action="social cache save",
-                acquisition_steps=acquisition_steps,
-            )
         return social_data, None
 
     try:
@@ -846,26 +838,17 @@ def _collect_competitor_input(
     )
     competitor_data = cache_read("competitors", BRAND3_CACHE_TTL_HOURS, from_competitor_payload)
     if competitor_data:
-        _set_acquisition_state(
-            raw_input_cache,
-            acquisition_steps,
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
             source="competitors",
-            raw_cache_status="hit",
-            status="hit",
-            cache_status="hit",
-            eligible=True,
+            payload=competitor_data,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
             details={"competitors": len(competitor_data.competitors)},
+            action="competitor cache save",
+            message=f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)",
         )
-        print(f"  Competitors: cache hit ({len(competitor_data.competitors)} competitors)")
-        if run_id:
-            _save_raw_input_safely(
-                store,
-                run_id,
-                "competitors",
-                competitor_data,
-                action="competitor cache save",
-                acquisition_steps=acquisition_steps,
-            )
         return competitor_data
 
     _set_acquisition_state(

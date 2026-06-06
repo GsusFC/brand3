@@ -2040,6 +2040,22 @@ def run(
         )
         features_by_dim = feature_result.features_by_dim
         screenshot_capture = feature_result.screenshot_capture
+        if run_id:
+            _store_safely(
+                store,
+                "screenshot capture raw input save",
+                lambda: store.save_raw_input(
+                    run_id,
+                    "screenshot_capture",
+                    {
+                        "version": "screenshot_capture_v1",
+                        "url": url,
+                        "content_source": content_source,
+                        "skip_visual_analysis": skip_visual_analysis,
+                        "capture": screenshot_capture,
+                    },
+                ),
+            )
         _run_visual_signature_shadow(
             enabled=enable_visual_signature_shadow_run,
             store=store,

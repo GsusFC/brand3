@@ -1835,10 +1835,24 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                                             skip_visual_analysis=False,
                                             refresh=True,
                                         )
+            store = SQLiteStore(str(db_path))
+            try:
+                snapshot = store.get_run_snapshot(result["run_id"])
+            finally:
+                store.close()
 
         self.assertEqual(captured_screenshot_urls, ["file:///tmp/brand3-shot.png"])
         self.assertTrue(result["data_sources"]["screenshot_capture"]["success"])
         self.assertEqual(result["data_sources"]["screenshot_capture"]["source"], "playwright")
+        screenshot_inputs = [
+            item["payload"]
+            for item in snapshot["raw_inputs"]
+            if item["source"] == "screenshot_capture"
+        ]
+        self.assertEqual(len(screenshot_inputs), 1)
+        self.assertEqual(screenshot_inputs[0]["version"], "screenshot_capture_v1")
+        self.assertEqual(screenshot_inputs[0]["capture"]["source"], "playwright")
+        self.assertTrue(screenshot_inputs[0]["capture"]["success"])
 
     def test_run_social_timeout_continues_and_records_limitation(self):
         with TemporaryDirectory() as tmpdir:

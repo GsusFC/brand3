@@ -19,7 +19,7 @@ Short answer: **Brand3 collects a broad set of raw signals, but the report narra
 | Exa search | `ExaCollector.collect_brand_data` | `raw_inputs.source=exa` | mentions, competitors, AI visibility results, news, summaries | external / search-derived, can include noisy or same-name results |
 | Social scrape | social collector via input pipeline | `raw_inputs.source=social` | profile URLs, platform metrics, follower/post data | external platform metadata, often sparse |
 | Competitors | `CompetitorCollector.collect` | `raw_inputs.source=competitors` | discovered competitors, scraped competitor web data, comparisons | external comparative context |
-| Screenshot capture | feature pipeline / visual analyzer | not directly in `raw_inputs`; included in result `data_sources` and visual features | screenshot URL/path, capture diagnostics | technical visual input |
+| Screenshot capture | feature pipeline / visual analyzer | `raw_inputs.source=screenshot_capture`, result `data_sources`, and visual features | screenshot URL/path, capture diagnostics | technical visual input |
 | Visual analysis | `VisualAnalyzer` via `CoherenciaExtractor` | feature `visual_consistency.raw_value` | color groups, whitespace, contrast, style, local/vision method | internal analysis; not market evidence |
 | Feature LLM analysis | `LLMAnalyzer` used by feature extractors | feature `raw_value`, LLM cache | positioning, uniqueness, sentiment, messaging consistency, tone, momentum | LLM-derived interpretation |
 | Deterministic feature heuristics | feature extractors | feature `raw_value` | web structure, search counts, social footprint, content depth, review surface | derived signal, not always narrative evidence |
@@ -30,7 +30,7 @@ Short answer: **Brand3 collects a broad set of raw signals, but the report narra
 
 Brand3 stores information in several layers:
 
-- `raw_inputs`: JSON payloads for context, web, exa, social, competitors, report narrative, and optional visual signature.
+- `raw_inputs`: JSON payloads for context, web, exa, social, competitors, screenshot capture, report narrative, and optional visual signature.
 - `features`: dimension, feature name, numeric value, raw value, confidence, and source.
 - `scores`: dimension scores plus insight/rule JSON.
 - `evidence_items`: source, URL, quote, feature name, dimension, confidence, freshness.
@@ -263,4 +263,3 @@ Then test it against Builtwith run 74 before changing prompts. The first useful 
 - No new LLM calls.
 - No new audits.
 - No new Lab layers.
-

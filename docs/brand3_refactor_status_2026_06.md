@@ -147,9 +147,49 @@ Risk reduced:
 - Faster, cheaper, less fragile deploys.
 - Avoids shipping irrelevant local artifacts into the Docker build context.
 
+### Local vs Deploy API Regression Harness
+
+Commit: `c7a944a Strengthen local deploy API comparison`
+
+What changed:
+
+- `scripts/compare_local_deploy_pipeline.py` now emits progress while running long local/deploy batches.
+- API-mode reports include contract signals for readiness, publication, scan mode, Research Pack source, TLDR generation mode, analysis errors, and `generated_with`.
+- `docs/brand3_local_vs_deploy_regression_harness.md` now treats `--mode api` as the primary refactor validation path and `--mode web` as a public smoke test.
+
+Risk reduced:
+
+- Lower chance that we confuse HTML/template drift with real Scanner/Audit contract drift.
+- Easier to detect when local and deploy use different Research Pack, Analyst Pass, readiness, or comparability contracts.
+
+Main tests:
+
+- `tests/test_local_deploy_pipeline_compare.py`
+
+### Scanner GET Routes Read-Only
+
+Commit: `5e6c967 Make scanner detail reads side effect free`
+
+What changed:
+
+- Scanner detail GET routes now only apply cached Magnetism TLDR translations.
+- Missing translations fall back to the stored payload instead of calling the LLM and updating `magnetism_scans.raw_payload` during a read.
+- Existing cached translations still render.
+
+Risk reduced:
+
+- GET requests no longer trigger external LLM cost, latency, persistence, or concurrent write races.
+- Scanner UI reads are easier to reason about and safer for public/external consumption.
+
+Main tests:
+
+- `tests/test_magnetism_scanner.py -k "translation or translate or cached_tldr or does_not_translate"`
+- `tests/test_magnetism_scanner.py`
+- `tests/test_scanner_api_presenters.py`
+
 ## Current State
 
-`main` is synchronized with `origin/main`.
+Local `main` has additional refactor commits after the previous deploy baseline. Run `git status`, tests, and the local/deploy harness before deploying.
 
 Known local noise:
 
@@ -177,7 +217,8 @@ Priority: High/Medium
 
 Current issue:
 
-- `web/routes/magnetism_scanner.py` still mixes UI routes, API behavior, translation behavior, presentation assembly, and manual methodology content.
+- `web/routes/magnetism_scanner.py` still owns UI presentation assembly and manual methodology content.
+- API behavior is now mostly separated into `web/routes/scanner_api.py` and `web/scanner_api/*`, but route-level compatibility and schema boundaries should still be watched.
 
 Recommended cut:
 
@@ -195,28 +236,29 @@ Recommended timing:
 
 - Next, if Scanner API is intended for external consumers.
 
-### 2. GET Side Effects and Translation
+### 2. Translation Finalization Job
 
-Priority: Medium/High
+Priority: Medium
 
 Current issue:
 
-- Some Scanner UI reads have historically performed translation or persistence on first read.
+- Scanner GET routes are now read-only, but there is no explicit translation job or mutation endpoint for generating missing Magnetism TLDR translations.
 
 Recommended cut:
 
-- Make GET routes read-only.
-- Move translation into explicit job/finalization phase or a separate mutation endpoint.
+- Add translation generation as a finalization step, explicit admin action, or queued job.
+- Keep GET routes read-only.
 
 Tests needed:
 
-- GET does not mutate DB;
+- job translates once;
 - fallback language works without API key;
-- translation job is idempotent.
+- translation job is idempotent;
+- provider failures are recorded without changing scan readiness.
 
 Recommended timing:
 
-- Before broader public Scanner usage.
+- Later, only if bilingual public Scanner output needs generated TLDR translations instead of fallback content.
 
 ### 3. Acquisition Step Facade
 
@@ -318,4 +360,3 @@ Use `docs/refactor_noise_policy.md` as the guiding policy:
 - if a noisy brand case exposes a common weak boundary, document it and plan a later fix;
 - if it is a punctual case, do not interrupt the active refactor;
 - only fix it inside the current refactor when it invalidates the contract being refactored.
-

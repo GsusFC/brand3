@@ -2,12 +2,12 @@
 
 ## Verdict
 
-The refactor is in a stable intermediate state. The highest-risk boundaries now have clearer contracts, but the application is not "fully refactored" in the sense of being structurally clean end to end.
+The refactor is in a stable state for the current operational goals. The highest-risk boundaries now have clearer contracts, persisted diagnostics, and regression coverage. The application is not "fully refactored" in the sense of being structurally clean end to end, but the remaining work is no longer in the critical path for publication safety or Scanner API contract stability.
 
 The work so far has focused on operational risk, not cosmetic cleanup:
 
 - avoid publishing weak or non-comparable results as valid;
-- make Scanner API payloads more consistent;
+- make Scanner API payloads and OpenAPI envelopes more consistent;
 - keep legacy/manual Scanner paths explicitly labelled;
 - make Research Pack builder selection explicit;
 - make acquisition traces auditable before adding more providers or Exa deep variants.
@@ -190,15 +190,78 @@ Main tests:
 - `tests/test_magnetism_scanner.py`
 - `tests/test_scanner_api_presenters.py`
 
+### Visual Capture Diagnostics
+
+Commits:
+
+- `79c083c Add visual screenshot provider fallback`
+- `70e3509 Install Playwright browser in deploy image`
+- `078d69f Stabilize Playwright visual capture`
+- `0afe4d5 Run Playwright capture without worker subprocess`
+- `189949e Persist screenshot capture diagnostics`
+
+What changed:
+
+- Playwright Chromium is available in deploy image for visual screenshot acquisition.
+- The screenshot capture path uses viewport capture and avoids the worker subprocess path that was unsafe from threaded Brand Audit execution.
+- Screenshot capture diagnostics are persisted as `raw_inputs.source=screenshot_capture`.
+- Capture status, provider, error, and screenshot availability are inspectable from persisted run snapshots.
+
+Risk reduced:
+
+- Lower chance that a missing screenshot silently becomes "weak visual evidence" with no trace.
+- Easier diagnosis of poor visual-consistency scores on deploy.
+- Less dependence on Firecrawl visual capture credits for the main visual gate.
+
+Main tests:
+
+- `tests/test_brand_service.py -k screenshot`
+- `tests/test_brand_service.py`
+- `tests/test_report_readiness.py`
+
+### Scanner API Contract Hardening
+
+Commits:
+
+- `6e0fe18 Type scanner status API contract`
+- `c6596a2 Type scanner API error contract`
+- `5858d16 Type scanner result metadata contract`
+- `c52668f Document scanner result response envelopes`
+- `b122322 Document scanner evidence and audit envelopes`
+
+What changed:
+
+- `web/scanner_api/schemas.py` now defines Pydantic contracts for:
+  - `ScannerStatus`;
+  - `ScannerErrorResponse`;
+  - `ScannerResultMetadata`;
+  - stable envelopes for `result`, `methodology`, `evidence`, and `audit`.
+- OpenAPI now references those schemas instead of documenting the public API as generic objects.
+- Large inner payloads remain flexible where legacy compatibility is required.
+
+Risk reduced:
+
+- Lower drift between presenters, OpenAPI documentation, and route behavior.
+- External API consumers get stable response envelopes without forcing a risky one-shot typing of all historical TLDR/evidence payloads.
+- 401, 404, and 409 API errors are validated against a public error contract.
+
+Main tests:
+
+- `tests/test_scanner_api_presenters.py`
+- `tests/test_scanner_api_routes.py`
+- `tests/test_web_app.py`
+- `tests/test_magnetism_scanner.py`
+
 ## Current State
 
-Local `main` has additional refactor commits after the previous deploy baseline. Run `git status`, tests, and the local/deploy harness before deploying.
+Local `main` is synced with `origin/main` for tracked files after the current refactor commits. Run `git status`, tests, and the local/deploy harness before any production deploy that is meant to validate runtime behavior.
 
 Known local noise:
 
 - `out/` remains untracked and intentionally outside the committed refactor work.
+- Notion/export planning artifacts under `docs/brand3_tldr_notion_database.*` and `docs/brand3_alternative_reports_from_research_pack.md` remain untracked and intentionally outside the committed refactor work.
 
-The latest deploy was used to fix stale production behavior, but the most recent refactor cuts after acquisition traceability are internal and have not required a deploy by themselves.
+The latest deploy was used to fix stale production visual-capture behavior. The most recent Scanner API contract cuts are internal contract/documentation changes and have not required a deploy by themselves.
 
 ## What This Refactor Does Not Claim
 
@@ -207,37 +270,37 @@ This refactor does not prove that:
 - Exa deep modes should be productized;
 - EvidenceGraph should be the universal default for every run;
 - Search Enrichment Lab providers improve production outputs;
-- Scanner API is fully separated from UI routes;
+- Scanner API has no remaining contract drift risk;
 - all legacy paths can be deleted.
 
 Those require separate validation.
 
 ## Remaining Refactor Opportunities
 
-### 1. Scanner API Route Separation
+### 1. Scanner API Result Payload Deep Typing
 
-Priority: High/Medium
+Priority: Low/Medium
 
 Current issue:
 
-- `web/routes/magnetism_scanner.py` still owns UI presentation assembly and manual methodology content.
-- API behavior is now mostly separated into `web/routes/scanner_api.py` and `web/scanner_api/*`, but route-level compatibility and schema boundaries should still be watched.
+- Scanner API now has typed stable envelopes, but the large inner TLDR, evidence, methodology, and audit payloads remain flexible.
+- This is intentional for legacy compatibility, but it means nested payloads are not fully self-documenting.
 
 Recommended cut:
 
-- Extract API-only handlers and response models into `web/routes/scanner_api.py` and `web/scanner_api/*` where possible.
-- Keep public URLs stable.
+- Type only nested sections that become external integration contracts.
+- Avoid a full historical payload migration unless a real consumer needs it.
 
 Tests needed:
 
-- status/result/evidence/methodology/audit API responses;
-- auth behavior;
+- representative historical scanner payloads;
 - legacy payload compatibility;
+- nested TLDR/evidence fixtures;
 - OpenAPI schema contract.
 
 Recommended timing:
 
-- Next, if Scanner API is intended for external consumers.
+- Later, only when external consumers rely on a nested section.
 
 ### 2. Translation Finalization Job
 
@@ -245,7 +308,7 @@ Priority: Medium
 
 Current issue:
 
-- Scanner GET routes are now read-only, but there is no explicit translation job or mutation endpoint for generating missing Magnetism TLDR translations.
+- Scanner GET routes are read-only, but there is no explicit translation job or mutation endpoint for generating missing Magnetism TLDR translations.
 
 Recommended cut:
 
@@ -352,8 +415,8 @@ Recommended timing:
 
 1. Stop acquisition refactor here unless a concrete bug appears.
 2. Run a small regression set on Brand Audit + Magnetism for known cases before further structural changes.
-3. Split Scanner API/UI responsibilities if external API usage matters now.
-4. Remove GET side effects for translation if still present.
+3. Avoid deeper Scanner API payload typing until a consumer needs a nested contract.
+4. Add a translation finalization job only if bilingual public Scanner output needs generated TLDR translations.
 5. Plan Search Enrichment Lab comparison separately from production pipeline refactor.
 
 ## Operational Rule

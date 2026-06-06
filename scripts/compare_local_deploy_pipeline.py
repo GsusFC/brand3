@@ -83,6 +83,7 @@ def main() -> int:
     cases: list[dict[str, Any]] = []
     for url in args.url:
         case = {"url": url, "local": None, "deploy": None, "comparison": None}
+        log_progress(f"Starting local {args.mode} comparison case: {url}")
         local = run_case(
             label="local",
             base_url=args.local_base,
@@ -94,6 +95,8 @@ def main() -> int:
             max_wait_seconds=args.max_wait_seconds,
             request_timeout=args.request_timeout,
         )
+        log_progress(case_progress_line("local", local))
+        log_progress(f"Starting deploy {args.mode} comparison case: {url}")
         deploy = run_case(
             label="deploy",
             base_url=args.deploy_base,
@@ -105,6 +108,7 @@ def main() -> int:
             max_wait_seconds=args.max_wait_seconds,
             request_timeout=args.request_timeout,
         )
+        log_progress(case_progress_line("deploy", deploy))
         case["local"] = local
         case["deploy"] = deploy
         case["comparison"] = compare_cases(local, deploy)
@@ -413,11 +417,14 @@ def normalize_payloads(
             "readiness_status": scanner_readiness.get("status"),
             "publication_status": scanner_publication.get("status"),
             "publication_publishable": scanner_publication.get("publishable"),
+            "scan_mode": scanner_scan_mode_summary(status.get("scan_mode") if isinstance(status.get("scan_mode"), dict) else {}),
             "score_magnetism": _number((result.get("scores") or {}).get("magnetism")),
             "score_coherence": _number((result.get("scores") or {}).get("coherence")),
             "quadrant": (result.get("scores") or {}).get("quadrant"),
             "pipeline_version": result_metadata.get("pipeline_version"),
             "stale_against_current_pipeline": result_metadata.get("stale_against_current_pipeline"),
+            "generated_with": result_metadata.get("generated_with") if isinstance(result_metadata.get("generated_with"), dict) else {},
+            "failure_reason_code": ((status.get("failure_diagnostics") or {}).get("reason_code") if isinstance(status.get("failure_diagnostics"), dict) else None),
             "tldr": normalize_tldr(tldr),
         },
         "audit": {
@@ -442,6 +449,9 @@ def normalize_payloads(
         },
         "methodology": {
             "result_metadata": methodology_model.get("result_metadata") if isinstance(methodology_model, dict) else {},
+            "tldr_generation_mode": methodology_model.get("tldr_generation_mode"),
+            "research_pack_source": methodology_model.get("research_pack_source"),
+            "analysis_error": methodology_model.get("analysis_error"),
             "fingerprint": fingerprint_json(methodology_model),
         },
     }
@@ -467,6 +477,9 @@ def normalize_web_pages(pages: dict[str, str]) -> dict[str, Any]:
             "quadrant": None,
             "pipeline_version": first_pipeline_version(methodology_text),
             "stale_against_current_pipeline": None,
+            "generated_with": {},
+            "scan_mode": {},
+            "failure_reason_code": None,
             "tldr": normalize_web_tldr(detail_text),
             "page_fingerprint": short_hash(sanitize_web_text(detail_text)),
         },
@@ -491,6 +504,9 @@ def normalize_web_pages(pages: dict[str, str]) -> dict[str, Any]:
         },
         "methodology": {
             "result_metadata": {},
+            "tldr_generation_mode": web_status_marker(methodology_text, ("analyst_pass_validated", "legacy", "unknown")),
+            "research_pack_source": web_status_marker(methodology_text, ("evidence_graph", "legacy_snapshot", "legacy")),
+            "analysis_error": web_status_marker(methodology_text, ("llm_timeout", "llm_error", "analysis_error")),
             "fingerprint": short_hash(sanitize_web_text(methodology_text)),
         },
     }
@@ -542,6 +558,15 @@ def compare_cases(local: dict[str, Any], deploy: dict[str, Any]) -> dict[str, An
     compare_equal(findings, left, right, "audit.publication_publishable", severity="critical")
     compare_equal(findings, left, right, "scanner.quadrant", severity="warning")
     compare_equal(findings, left, right, "scanner.pipeline_version", severity="warning")
+    compare_equal(findings, left, right, "scanner.stale_against_current_pipeline", severity="warning")
+    compare_equal(findings, left, right, "methodology.research_pack_source", severity="warning")
+    compare_equal(findings, left, right, "methodology.tldr_generation_mode", severity="warning")
+    compare_equal(findings, left, right, "scanner.scan_mode.mode", severity="warning")
+    compare_equal(findings, left, right, "scanner.scan_mode.comparable", severity="critical")
+    for generated_key in ("audit_snapshot", "research_pack", "evidence_graph", "analyst_pass", "research_pack_quality"):
+        compare_equal(findings, left, right, f"scanner.generated_with.{generated_key}", severity="warning")
+    if left["methodology"].get("analysis_error") or right["methodology"].get("analysis_error"):
+        compare_equal(findings, left, right, "methodology.analysis_error", severity="warning")
 
     for field, item in numeric_deltas.items():
         if item["local"] is None or item["deploy"] is None:
@@ -591,6 +616,7 @@ def compare_cases(local: dict[str, Any], deploy: dict[str, Any]) -> dict[str, An
         "status": status,
         "findings": findings,
         "numeric_deltas": numeric_deltas,
+        "contract_signals": contract_signals(left, right),
         "tldr_detected": {"local": local_detected, "deploy": deploy_detected},
     }
 
@@ -658,7 +684,45 @@ def compare_web_cases(left: dict[str, Any], right: dict[str, Any]) -> dict[str, 
         "status": status,
         "findings": findings,
         "numeric_deltas": numeric_deltas,
+        "contract_signals": contract_signals(left, right),
         "tldr_detected": {"local": local_detected, "deploy": deploy_detected},
+    }
+
+
+def scanner_scan_mode_summary(scan_mode: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "mode": scan_mode.get("mode") or scan_mode.get("scan_mode"),
+        "comparable": scan_mode.get("comparable"),
+        "canonical": scan_mode.get("canonical"),
+        "source": scan_mode.get("source"),
+    }
+
+
+def contract_signals(left: dict[str, Any], right: dict[str, Any]) -> dict[str, Any]:
+    fields = (
+        "scanner.readiness_status",
+        "scanner.publication_status",
+        "scanner.publication_publishable",
+        "scanner.pipeline_version",
+        "scanner.stale_against_current_pipeline",
+        "scanner.scan_mode.mode",
+        "scanner.scan_mode.comparable",
+        "scanner.generated_with.evidence_graph",
+        "scanner.generated_with.analyst_pass",
+        "scanner.generated_with.research_pack_quality",
+        "audit.report_mode",
+        "audit.publication_status",
+        "audit.publication_publishable",
+        "methodology.research_pack_source",
+        "methodology.tldr_generation_mode",
+        "methodology.analysis_error",
+    )
+    return {
+        field: {
+            "local": get_path(left, field),
+            "deploy": get_path(right, field),
+        }
+        for field in fields
     }
 
 
@@ -718,8 +782,27 @@ def render_markdown(payload: dict[str, Any]) -> str:
             lines.append(
                 f"- `{field}`: local `{item.get('local')}`, deploy `{item.get('deploy')}`, delta `{item.get('delta')}`"
             )
+        contract = comparison.get("contract_signals") or {}
+        if contract:
+            lines.extend(["", "### Contract Signals", ""])
+            for field, item in contract.items():
+                lines.append(
+                    f"- `{field}`: local `{item.get('local')}`, deploy `{item.get('deploy')}`"
+                )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+def log_progress(message: str) -> None:
+    print(f"[compare] {message}", flush=True)
+
+
+def case_progress_line(label: str, case: dict[str, Any]) -> str:
+    scan_id = case.get("scan_id")
+    elapsed = case.get("elapsed_seconds")
+    if case.get("ok"):
+        return f"{label} ready scan={scan_id} elapsed={elapsed}s"
+    return f"{label} failed scan={scan_id} elapsed={elapsed}s error={case.get('error')}"
 
 
 def post_json(url: str, payload: dict[str, Any], *, scanner_token: str, timeout: int) -> HttpResult:

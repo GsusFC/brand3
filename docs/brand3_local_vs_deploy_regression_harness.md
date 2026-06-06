@@ -18,6 +18,8 @@ El script puede trabajar en dos modos:
 - `--mode web`: usa el formulario público y compara páginas visibles. No necesita token y sirve para detectar fallos operativos en deploy.
 - `--mode auto`: usa API si encuentra `BRAND3_SCANNER_API_TOKEN`; si no, cae a modo web.
 
+Para decisiones de refactor, usar `--mode api`. El modo web es útil como smoke test de producto público, pero mezcla contenido, plantilla HTML, traducciones y heurísticas de scraping de texto visible. No debe ser la señal principal para decidir si readiness, publicación, Research Pack o TLDR se han degradado.
+
 En modo API, el script usa la API del Scanner como entrada común:
 
 1. `POST /api/v1/scanner` con la misma URL en local y deploy.
@@ -47,6 +49,16 @@ Esto cubre Brand Audit porque un scan por URL crea o adjunta un `source_run_id`,
 - número de fuentes/evidencias normalizadas
 - bloques TLDR detectados
 - cambios de detección por bloque TLDR
+- `scan_mode.mode`
+- `scan_mode.comparable`
+- `generated_with.evidence_graph`
+- `generated_with.analyst_pass`
+- `generated_with.research_pack_quality`
+- `methodology.research_pack_source`
+- `methodology.tldr_generation_mode`
+- `methodology.analysis_error`
+
+El Markdown final incluye una sección `Contract Signals` por caso. Esa sección es la lectura rápida para saber si local y deploy están usando el mismo contrato operativo, aunque los textos visibles o los scores varíen por ruido de proveedor.
 
 ## Cómo ejecutarlo
 
@@ -69,6 +81,8 @@ En otra terminal, sin token:
 Con token de Scanner API:
 
 ```bash
+export BRAND3_SCANNER_API_TOKEN=...
+
 ./.venv/bin/python scripts/compare_local_deploy_pipeline.py \
   --mode api \
   --url https://www.sklum.com \
@@ -94,7 +108,8 @@ Un `critical` significa que no deberíamos publicar o desplegar sin revisar:
 - cambia readiness;
 - cambia publicación;
 - Audit deja de ser publicable;
-- Scanner deja de ser publicable.
+- Scanner deja de ser publicable;
+- un scan deja de ser comparable.
 
 Un `warning` exige revisión humana, no bloqueo automático:
 
@@ -103,6 +118,10 @@ Un `warning` exige revisión humana, no bloqueo automático:
 - cambio de versión de pipeline;
 - caída relevante en fuentes/evidencias;
 - cambio de detección TLDR.
+- cambio de fuente Research Pack;
+- cambio de modo TLDR;
+- cambio en `generated_with`;
+- aparece o cambia `analysis_error`.
 
 ## Uso recomendado
 
@@ -110,6 +129,7 @@ Antes de desplegar cambios en adquisición, readiness, Research Pack, Analyst Pa
 
 ```bash
 ./.venv/bin/python scripts/compare_local_deploy_pipeline.py \
+  --mode api \
   --url https://www.sklum.com \
   --url https://www.langchain.com \
   --url https://www.netlify.com
@@ -128,3 +148,5 @@ Mantener un set pequeño:
 - Si deploy ya incluye el mismo commit, la comparación mide entorno/datos/proveedores, no diferencia de código.
 - Si hay variabilidad LLM, conviene comparar dos ejecuciones deploy-deploy para establecer ruido base.
 - No sustituye fixtures ni tests unitarios; es una prueba de regresión operativa.
+- El modo API requiere `BRAND3_SCANNER_API_TOKEN` válido en local y deploy.
+- El modo web no expone todas las señales de contrato; si aparece `score_magnetism: None`, no significa necesariamente que el Scanner no haya calculado magnetismo, sino que el HTML visible no permitió extraerlo de forma robusta.

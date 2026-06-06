@@ -221,6 +221,41 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Translated diagnosis.", response.text)
         self.assertNotIn("Ayuda a equipos financieros a cerrar antes.", response.text)
 
+    def test_scan_detail_does_not_translate_or_persist_on_read(self):
+        from web.storage import get_magnetism_scan, insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="We help finance teams close faster with reliable workflows.",
+            brand_name="Read Only Brand",
+        )
+        payload["tldr_brand3"]["value_proposition"]["detected"] = True
+        payload["tldr_brand3"]["value_proposition"]["content"] = "Ayuda a equipos financieros a cerrar antes."
+        raw_payload = json.dumps(payload)
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=raw_payload,
+        )
+        before = get_magnetism_scan(scan_id)
+
+        with unittest.mock.patch(
+            "web.routes.magnetism_scanner.apply_magnetism_translation",
+            wraps=importlib.import_module("web.routes.magnetism_scanner").apply_magnetism_translation,
+        ) as apply_translation:
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en")
+
+        stored = get_magnetism_scan(scan_id)
+
+        self.assertEqual(response.status_code, 200)
+        apply_translation.assert_not_called()
+        self.assertEqual(stored["raw_payload"], before["raw_payload"])
+        self.assertIn("Ayuda a equipos financieros a cerrar antes.", response.text)
+        self.assertNotIn("Helps finance teams close faster.", response.text)
+
     def test_database_helpers(self):
         from web.storage import insert_magnetism_scan, get_magnetism_scan, list_magnetism_scans
 

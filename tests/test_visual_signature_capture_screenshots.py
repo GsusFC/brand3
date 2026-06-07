@@ -369,11 +369,17 @@ def test_capture_screenshots_with_dismissal_experiment_writes_audit(tmp_path):
     assert audit["state_distribution"]["REVIEW_REQUIRED_STATE"] == 1
     assert audit["transition_reason_distribution"]["raw_capture_created"] == 2
     assert audit["mutation_summary"]["successful"] == 1
+    assert audit["clean_attempt_quality_distribution"]["clear_improvement"] == 1
+    assert audit["clean_attempt_quality_distribution"]["no_material_improvement"] == 1
+    assert audit["results"][0]["clean_attempt_quality"] == "clear_improvement"
+    assert audit["results"][1]["clean_attempt_quality"] == "no_material_improvement"
+    assert audit["materially_changed_cases"][0]["clean_attempt_quality"] == "clear_improvement"
     assert audit["affordance_category_distribution"]["consent_accept"] >= 1
     assert audit["interaction_policy_distribution"]["safe_to_dismiss"] >= 1
     assert audit["requires_human_review_candidates_encountered"] >= 1
     assert "Affordance owners" in markdown
     assert "Dismissal success rate" in markdown
+    assert "Clean attempt quality" in markdown
     assert "Affordance categories" in markdown
     assert "Success" in markdown
     assert (output_dir / "success.png").exists()

@@ -175,6 +175,13 @@ The follow-up Lab pass also emits `clean_capture_decision`:
 This gives us a machine-readable reason for keeping raw evidence instead of
 relying on manual judgment after each probe.
 
+The capture-side `dismissal_audit.json` also reports
+`clean_attempt_quality_distribution` and each result includes
+`clean_attempt_quality`. This keeps the capture audit and the Lab decision
+aligned: the audit tells us whether the mutation was a clear improvement,
+partial improvement, no material improvement, degraded, or unavailable; the Lab
+decides whether that is strong enough to replace raw evidence.
+
 ## Validation
 
 ```bash

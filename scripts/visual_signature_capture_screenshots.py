@@ -17,6 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.visual_signature.vision.composition import analyze_composition  # noqa: E402
+from src.visual_diagnosis.clean_capture import clean_attempt_quality  # noqa: E402
 from src.visual_signature.affordance_semantics import classify_affordance, classify_affordance_owner  # noqa: E402
 from src.visual_signature.vision.palette_from_screenshot import extract_palette_from_screenshot  # noqa: E402
 from src.visual_signature.vision.screenshot_quality import load_raster_image  # noqa: E402
@@ -984,7 +985,7 @@ def build_dismissal_audit(manifest: dict[str, Any]) -> dict[str, Any]:
             {
                 "brand_name": row.get("brand_name"),
                 "website_url": row.get("website_url"),
-                "clean_attempt_quality": _clean_attempt_quality(row),
+                "clean_attempt_quality": clean_attempt_quality(row),
                 "before": row.get("raw_viewport_metrics"),
                 "after": row.get("clean_attempt_metrics"),
                 "before_obstruction": row.get("before_obstruction"),
@@ -1022,7 +1023,7 @@ def build_dismissal_audit(manifest: dict[str, Any]) -> dict[str, Any]:
                 "affordance_owner_distribution": _target_distribution(row, key="affordance_owner"),
                 "capture_variant": row.get("capture_variant"),
                 "clean_attempt_capture_variant": row.get("clean_attempt_capture_variant"),
-                "clean_attempt_quality": _clean_attempt_quality(row),
+                "clean_attempt_quality": clean_attempt_quality(row),
                 "raw_screenshot_path": row.get("raw_screenshot_path"),
                 "clean_attempt_screenshot_path": row.get("clean_attempt_screenshot_path"),
                 "perceptual_state": row.get("perceptual_state"),
@@ -1136,32 +1137,9 @@ def _material_viewport_change(before: dict[str, Any] | None, after: dict[str, An
 def _clean_attempt_quality_distribution(rows: list[dict[str, Any]]) -> dict[str, int]:
     counts: dict[str, int] = {}
     for row in rows:
-        quality = _clean_attempt_quality(row)
+        quality = clean_attempt_quality(row)
         counts[quality] = counts.get(quality, 0) + 1
     return dict(sorted(counts.items()))
-
-
-def _clean_attempt_quality(row: dict[str, Any]) -> str:
-    if row.get("dismissal_successful") is True:
-        return "clear_improvement"
-    if not row.get("clean_attempt_screenshot_path"):
-        return "not_available"
-    before = row.get("before_obstruction") if isinstance(row.get("before_obstruction"), dict) else {}
-    after = row.get("after_obstruction") if isinstance(row.get("after_obstruction"), dict) else {}
-    severity_delta = _severity_rank(str((before or {}).get("severity") or "none")) - _severity_rank(str((after or {}).get("severity") or "none"))
-    coverage_delta = (_float_or_none((before or {}).get("coverage_ratio")) or 0.0) - (_float_or_none((after or {}).get("coverage_ratio")) or 0.0)
-    if severity_delta < 0 or coverage_delta < -0.05:
-        return "degraded"
-    if severity_delta > 0 or coverage_delta >= 0.12:
-        return "clear_improvement"
-    raw_metrics = row.get("raw_viewport_metrics") if isinstance(row.get("raw_viewport_metrics"), dict) else {}
-    clean_metrics = row.get("clean_attempt_metrics") if isinstance(row.get("clean_attempt_metrics"), dict) else {}
-    whitespace_delta = (_float_or_none(clean_metrics.get("viewport_whitespace_ratio")) or 0.0) - (_float_or_none(raw_metrics.get("viewport_whitespace_ratio")) or 0.0)
-    if whitespace_delta >= 0.08:
-        return "partial_improvement"
-    if whitespace_delta <= -0.08 and raw_metrics.get("viewport_visual_density") != clean_metrics.get("viewport_visual_density"):
-        return "degraded"
-    return "no_material_improvement"
 
 
 def _dismissal_audit_markdown(audit: dict[str, Any]) -> str:

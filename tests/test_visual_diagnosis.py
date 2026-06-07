@@ -11,7 +11,9 @@ from scripts.visual_diagnosis_lab import (
     run_lab,
 )
 from src.visual_diagnosis import (
+    build_clean_capture_decision,
     build_visual_diagnosis,
+    clean_attempt_quality,
     computed_style_snapshot_to_visual_signature,
     enrich_visual_signature_with_local_screenshot,
 )
@@ -1022,6 +1024,25 @@ def test_visual_diagnosis_lab_records_clear_clean_capture_decision(tmp_path):
     assert decision["improvement_state"] == "clear_improvement"
     assert decision["obstruction_delta"]["severity_delta"] == 4
     assert comparison["rows"][0]["clean_capture_decision"]["decision"] == "use_clean_attempt"
+
+
+def test_shared_clean_capture_contract_reports_quality():
+    payload = {
+        "raw_screenshot_path": "/tmp/raw.png",
+        "clean_attempt_screenshot_path": "/tmp/clean.png",
+        "dismissal_attempted": True,
+        "dismissal_successful": False,
+        "before_obstruction": {"present": True, "type": "cookie_modal", "severity": "blocking", "coverage_ratio": 0.92},
+        "after_obstruction": {"present": True, "type": "cookie_modal", "severity": "blocking", "coverage_ratio": 0.84},
+        "raw_viewport_metrics": {"viewport_whitespace_ratio": 0.18, "viewport_visual_density": "dense"},
+        "clean_attempt_metrics": {"viewport_whitespace_ratio": 0.27, "viewport_visual_density": "dense"},
+    }
+
+    decision = build_clean_capture_decision(payload)
+
+    assert decision["decision"] == "keep_raw_with_clean_supplement"
+    assert decision["clean_attempt_quality"] == "partial_improvement"
+    assert clean_attempt_quality(payload) == "partial_improvement"
 
 
 def test_visual_diagnosis_lab_keeps_raw_for_partial_clean_capture(tmp_path):

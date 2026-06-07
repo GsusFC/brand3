@@ -350,6 +350,8 @@ Decision policy:
 
 The raw screenshot remains the default evidence. A clean attempt is used for
 diagnosis only when `clean_capture_decision.use_clean_for_diagnosis` is `true`.
+The decision contract lives in `src/visual_diagnosis/clean_capture.py` and is
+shared by the Lab and the capture-side dismissal audit to avoid policy drift.
 
 Validated:
 

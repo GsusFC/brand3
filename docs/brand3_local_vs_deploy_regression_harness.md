@@ -60,6 +60,15 @@ Esto cubre Brand Audit porque un scan por URL crea o adjunta un `source_run_id`,
 
 El Markdown final incluye una sección `Contract Signals` por caso. Esa sección es la lectura rápida para saber si local y deploy están usando el mismo contrato operativo, aunque los textos visibles o los scores varíen por ruido de proveedor.
 
+El Markdown tambien puede incluir `Score Diagnostics`. Esa seccion muestra, cuando la API lo expone, los breakdowns internos usados para `scanner.score_coherence` y `scanner.score_magnetism`. Es la primera lectura para distinguir:
+
+- variacion de completitud TLDR;
+- variacion de alineacion semantica;
+- variacion por contradicciones detectadas;
+- variacion real de magnetismo frente a variacion de coherencia.
+
+Si solo cambia `scanner.score_coherence` pero los contratos coinciden, revisar primero `scanner.score_coherence_breakdown` antes de tratarlo como regresion de pipeline.
+
 ## Cómo ejecutarlo
 
 Arranca local:

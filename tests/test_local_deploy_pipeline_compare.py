@@ -65,6 +65,17 @@ def _payload(
             "research_pack_source": research_pack_source,
             "tldr_generation_mode": tldr_generation_mode,
             "analysis_error": analysis_error,
+            "score_breakdown": {
+                "coherence": {
+                    "visual_identity": coherence,
+                    "tactical_alignment": 80,
+                    "message_consistency": 92,
+                },
+                "magnetism": {
+                    "emotional_appeal": magnetism,
+                    "functional_differentiation": 70,
+                },
+            },
         }
     }
     audit = {
@@ -196,3 +207,6 @@ def test_render_markdown_includes_contract_signals():
 
     assert "### Contract Signals" in markdown
     assert "`scanner.generated_with.evidence_graph`" in markdown
+    assert "### Score Diagnostics" in markdown
+    assert "`scanner.score_coherence_breakdown`" in markdown
+    assert '"message_consistency":92' in markdown

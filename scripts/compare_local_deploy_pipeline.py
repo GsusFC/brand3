@@ -406,6 +406,17 @@ def normalize_payloads(
 
     evidence_model = evidence.get("evidence") if isinstance(evidence.get("evidence"), dict) else {}
     methodology_model = methodology.get("methodology") if isinstance(methodology.get("methodology"), dict) else {}
+    score_breakdown = methodology_model.get("score_breakdown") if isinstance(methodology_model.get("score_breakdown"), dict) else {}
+    coherence_breakdown = (
+        score_breakdown.get("coherence")
+        if isinstance(score_breakdown.get("coherence"), dict)
+        else {}
+    )
+    magnetism_breakdown = (
+        score_breakdown.get("magnetism")
+        if isinstance(score_breakdown.get("magnetism"), dict)
+        else {}
+    )
     tldr = result.get("tldr_brand3") if isinstance(result.get("tldr_brand3"), dict) else {}
 
     return {
@@ -420,6 +431,9 @@ def normalize_payloads(
             "scan_mode": scanner_scan_mode_summary(status.get("scan_mode") if isinstance(status.get("scan_mode"), dict) else {}),
             "score_magnetism": _number((result.get("scores") or {}).get("magnetism")),
             "score_coherence": _number((result.get("scores") or {}).get("coherence")),
+            "score_breakdown": score_breakdown,
+            "score_magnetism_breakdown": magnetism_breakdown,
+            "score_coherence_breakdown": coherence_breakdown,
             "quadrant": (result.get("scores") or {}).get("quadrant"),
             "pipeline_version": result_metadata.get("pipeline_version"),
             "stale_against_current_pipeline": result_metadata.get("stale_against_current_pipeline"),
@@ -782,6 +796,10 @@ def render_markdown(payload: dict[str, Any]) -> str:
             lines.append(
                 f"- `{field}`: local `{item.get('local')}`, deploy `{item.get('deploy')}`, delta `{item.get('delta')}`"
             )
+        score_diagnostics = score_diagnostics_lines(case)
+        if score_diagnostics:
+            lines.extend(["", "### Score Diagnostics", ""])
+            lines.extend(score_diagnostics)
         contract = comparison.get("contract_signals") or {}
         if contract:
             lines.extend(["", "### Contract Signals", ""])
@@ -791,6 +809,22 @@ def render_markdown(payload: dict[str, Any]) -> str:
                 )
         lines.append("")
     return "\n".join(lines).rstrip() + "\n"
+
+
+def score_diagnostics_lines(case: dict[str, Any]) -> list[str]:
+    local_scanner = (((case.get("local") or {}).get("normalized") or {}).get("scanner") or {})
+    deploy_scanner = (((case.get("deploy") or {}).get("normalized") or {}).get("scanner") or {})
+    rows: list[str] = []
+    for label, key in (
+        ("scanner.score_coherence_breakdown", "score_coherence_breakdown"),
+        ("scanner.score_magnetism_breakdown", "score_magnetism_breakdown"),
+    ):
+        local_value = local_scanner.get(key)
+        deploy_value = deploy_scanner.get(key)
+        if not local_value and not deploy_value:
+            continue
+        rows.append(f"- `{label}`: local `{compact_json(local_value)}`, deploy `{compact_json(deploy_value)}`")
+    return rows
 
 
 def log_progress(message: str) -> None:
@@ -1003,6 +1037,12 @@ def delta(local: Any, deploy: Any) -> dict[str, Any]:
         "deploy": right,
         "delta": None if left is None or right is None else round(float(left) - float(right), 4),
     }
+
+
+def compact_json(value: Any) -> str:
+    if value in (None, "", [], {}):
+        return ""
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
 def detected_tldr_count(tldr: dict[str, Any]) -> int:

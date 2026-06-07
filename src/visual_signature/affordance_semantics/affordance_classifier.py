@@ -319,6 +319,9 @@ CLOSE_TOKENS = {
     "close banner",
     "close popup",
     "close window",
+    "cerrar",
+    "cerrar ventana",
+    "cerrar modal",
 }
 
 DISMISS_TOKENS = {
@@ -338,6 +341,14 @@ CONSENT_ACCEPT_TOKENS = {
     "ok",
     "got it",
     "continue",
+    "aceptar todas",
+    "aceptar todo",
+    "aceptar",
+    "permitir todas",
+    "de acuerdo",
+    "vale",
+    "entendido",
+    "continuar",
 }
 
 CONSENT_REJECT_TOKENS = {
@@ -346,6 +357,10 @@ CONSENT_REJECT_TOKENS = {
     "decline",
     "no thanks",
     "not now",
+    "rechazar todas",
+    "rechazar todo",
+    "rechazar",
+    "denegar",
 }
 
 LOGIN_TOKENS = {

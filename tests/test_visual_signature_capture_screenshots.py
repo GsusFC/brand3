@@ -721,6 +721,78 @@ def test_cookie_modal_i_agree_is_safe_candidate():
     assert discovery["candidate_click_targets"][0]["interaction_policy"] == "safe_to_dismiss"
 
 
+def test_cookie_modal_spanish_accept_is_safe_candidate():
+    capturer = _load_capturer()
+    page = _FakePage(["Aceptar todas las cookies", "Configurar preferencias"])
+    obstruction = {"present": True, "type": "cookie_banner", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+    dismissal = capturer._attempt_obstruction_dismissal(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["candidate_click_targets"][0]["method"] == "accept_all"
+    assert discovery["candidate_click_targets"][0]["affordance_category"] == "consent_accept"
+    assert discovery["candidate_click_targets"][0]["interaction_policy"] == "safe_to_dismiss"
+    assert dismissal["attempted"] is True
+    assert dismissal["clicked_text"] == "Aceptar todas las cookies"
+
+
+def test_cookie_modal_spanish_reject_is_safe_candidate():
+    capturer = _load_capturer()
+    page = _FakePage(["Rechazar todas", "Configurar"])
+    obstruction = {"present": True, "type": "cookie_modal", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["candidate_click_targets"][0]["method"] == "reject_all"
+    assert discovery["candidate_click_targets"][0]["affordance_category"] == "consent_reject"
+    assert discovery["candidate_click_targets"][0]["interaction_policy"] == "safe_to_dismiss"
+    assert any(item["reason"] == "manage_choices_not_safe" for item in discovery["rejected_click_targets"])
+
+
+def test_newsletter_typed_obstruction_with_cookie_signals_uses_consent_context():
+    capturer = _load_capturer()
+    page = _FakePage(["Aceptar", "Rechazar", "Personalizar"])
+    obstruction = {
+        "present": True,
+        "type": "newsletter_modal",
+        "confidence": 0.9,
+        "signals": ["dom_keyword:cookie", "dom_overlay_term:dialog"],
+        "page_level_signals": ["dom_keyword:cookies"],
+    }
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+    dismissal = capturer._attempt_obstruction_dismissal(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["candidate_click_targets"][0]["label"] == "Aceptar"
+    assert discovery["candidate_click_targets"][0]["method"] == "accept"
+    assert discovery["candidate_click_targets"][0]["affordance_category"] == "consent_accept"
+    assert discovery["candidate_click_targets"][0]["interaction_policy"] == "safe_to_dismiss"
+    assert any(item["normalized_label"] == "personalizar" and item["reason"] == "manage_choices_not_safe" for item in discovery["rejected_click_targets"])
+    assert dismissal["attempted"] is True
+
+
+def test_cookie_modal_long_banner_text_is_not_clicked_even_with_accept_phrase():
+    capturer = _load_capturer()
+    page = _FakePage(
+        [
+            "Usamos cookies propias y de terceros para analizar el trafico y personalizar contenido. Aceptar todas las cookies",
+        ]
+    )
+    obstruction = {"present": True, "type": "cookie_banner", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+    dismissal = capturer._attempt_obstruction_dismissal(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["selected_candidate"] is None
+    assert discovery["block_reason"] == "no_safe_cookie_button_found"
+    assert discovery["rejected_click_targets"][0]["reason"] in {"not_safe_cookie_action", "manage_choices_not_safe"}
+    assert dismissal["attempted"] is False
+
+
 def test_cookie_modal_manage_choices_is_not_clicked():
     capturer = _load_capturer()
     page = _FakePage(["Manage choices"])

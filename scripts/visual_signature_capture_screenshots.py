@@ -32,14 +32,30 @@ COOKIE_DISMISS_PHRASES = (
     ("accept all", "accept_all"),
     ("allow all", "allow_all"),
     ("reject all", "reject_all"),
+    ("decline all", "decline_all"),
     ("i agree", "agree"),
     ("agree", "agree"),
     ("accept", "accept"),
+    ("reject", "reject"),
+    ("decline", "decline"),
     ("continue", "continue"),
     ("close", "close"),
     ("dismiss", "dismiss"),
     ("got it", "got_it"),
     ("ok", "ok"),
+    ("aceptar todas", "accept_all"),
+    ("aceptar todo", "accept_all"),
+    ("aceptar", "accept"),
+    ("permitir todas", "allow_all"),
+    ("rechazar todas", "reject_all"),
+    ("rechazar todo", "reject_all"),
+    ("rechazar", "reject"),
+    ("denegar", "decline"),
+    ("de acuerdo", "agree"),
+    ("continuar", "continue"),
+    ("cerrar", "close"),
+    ("entendido", "got_it"),
+    ("vale", "ok"),
     ("x", "close"),
     ("×", "close"),
     ("✕", "close"),
@@ -60,6 +76,12 @@ COMMON_DISMISS_IGNORED_TERMS = (
     "preferences",
     "settings",
     "customize",
+    "configurar",
+    "configuración",
+    "configuracion",
+    "preferencias",
+    "ajustes",
+    "personalizar",
     "subscribe",
     "sign up",
     "signup",
@@ -449,6 +471,7 @@ def _prepare_perceptual_state_machine(
 
 def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -> dict[str, Any]:
     obstruction_type = str((obstruction or {}).get("type") or "none")
+    dismissal_context_type = _dismissal_context_type(obstruction)
     eligibility = _dismissal_eligibility(obstruction)
     candidate_click_targets: list[dict[str, Any]] = []
     rejected_click_targets: list[dict[str, Any]] = []
@@ -468,7 +491,7 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
             "selected_candidate": None,
         }
 
-    patterns = _dismissal_patterns_for_type(obstruction_type)
+    patterns = _dismissal_patterns_for_type(dismissal_context_type)
     for idx in range(count):
         element = handles.nth(idx)
         try:
@@ -481,8 +504,8 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
         normalized = _normalize_label(label)
         if not normalized:
             continue
-        affordance_evidence = _affordance_evidence_for_element(element, label, obstruction_type)
-        localization_evidence = _affordance_localization_evidence_for_element(element, label, obstruction)
+        affordance_evidence = _affordance_evidence_for_element(element, label, dismissal_context_type)
+        localization_evidence = _affordance_localization_evidence_for_element(element, label, obstruction, dismissal_context_type=dismissal_context_type)
         affordance = classify_affordance(
             affordance_evidence,
             affordance_id=_affordance_id(obstruction_type, normalized, idx),
@@ -493,14 +516,18 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
             affordance_category=affordance.category,
             interaction_policy=affordance.policy,
         )
-        reason = _rejection_reason(normalized, obstruction_type)
+        reason = _rejection_reason(normalized, dismissal_context_type)
         match = _match_dismissal_pattern(normalized, patterns)
+        is_safe_candidate = match is not None and _is_safe_dismissal_candidate_fields(
+            affordance_policy=affordance.policy,
+            affordance_owner=localization.owner,
+        )
         record = {
             "label": label,
             "normalized_label": normalized,
             "method": match["method"] if match else None,
             "selector": DISMISSAL_TARGET_SELECTOR,
-            "reason": None if match else (reason or "not_exact_match"),
+            "reason": None if is_safe_candidate else (reason or ("unsafe_dismissal_candidate" if match else "not_exact_match")),
             "affordance_category": affordance.category,
             "interaction_policy": affordance.policy,
             "affordance_confidence": affordance.confidence,
@@ -510,7 +537,7 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
             "owner_evidence": localization.owner_evidence,
             "owner_limitations": localization.owner_limitations,
         }
-        if match:
+        if is_safe_candidate:
             candidate_click_targets.append(record)
             if selected_candidate is None:
                 selected_candidate = {
@@ -533,7 +560,7 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
     if eligibility != "eligible":
         block_reason = _dismissal_skip_note(obstruction)
     elif selected_candidate is None:
-        block_reason = "no_safe_cookie_button_found" if obstruction_type in {"cookie_banner", "cookie_modal"} else "no_safe_close_button_found"
+        block_reason = "no_safe_cookie_button_found" if dismissal_context_type in {"cookie_banner", "cookie_modal"} else "no_safe_close_button_found"
     return {
         "eligible": eligibility == "eligible",
         "dismissal_eligibility": eligibility,
@@ -542,6 +569,19 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
         "rejected_click_targets": rejected_click_targets,
         "selected_candidate": selected_candidate,
     }
+
+
+def _is_safe_dismissal_candidate_fields(*, affordance_policy: str, affordance_owner: str) -> bool:
+    if affordance_policy != "safe_to_dismiss":
+        return False
+    if affordance_owner in {
+        "unrelated_chat_widget",
+        "unrelated_cart_drawer",
+        "header_navigation",
+        "social_link",
+    }:
+        return False
+    return True
 
 
 def _should_attempt_obstruction_dismissal(obstruction: dict[str, Any] | None) -> bool:
@@ -578,7 +618,30 @@ def _dismissal_patterns_for_type(obstruction_type: str) -> tuple[tuple[str, str]
     return ()
 
 
+def _dismissal_context_type(obstruction: dict[str, Any] | None) -> str:
+    obstruction_type = str((obstruction or {}).get("type") or "none")
+    if obstruction_type in {"cookie_banner", "cookie_modal"}:
+        return obstruction_type
+    if obstruction_type in {"newsletter_modal", "promo_modal"} and _has_cookie_consent_signal(obstruction):
+        return "cookie_modal"
+    return obstruction_type
+
+
+def _has_cookie_consent_signal(obstruction: dict[str, Any] | None) -> bool:
+    if not isinstance(obstruction, dict):
+        return False
+    values: list[str] = []
+    for key in ("signals", "page_level_signals", "overlay_level_signals", "visual_signals", "limitations"):
+        raw_values = obstruction.get(key) or []
+        if isinstance(raw_values, list):
+            values.extend(str(value) for value in raw_values if value is not None)
+    joined = _normalize_label(" ".join(values)).replace("_", " ")
+    return any(token in joined for token in ("cookie", "cookies", "consent", "privacy", "gdpr", "cmp"))
+
+
 def _match_dismissal_pattern(normalized: str, patterns: tuple[tuple[str, str], ...]) -> dict[str, str] | None:
+    if not _is_concise_dismissal_label(normalized):
+        return None
     for phrase, method in patterns:
         if _contains_phrase(normalized, phrase):
             return {"phrase": phrase, "method": method}
@@ -586,7 +649,22 @@ def _match_dismissal_pattern(normalized: str, patterns: tuple[tuple[str, str], .
 
 
 def _contains_phrase(text: str, phrase: str) -> bool:
-    return text == phrase
+    normalized_text = _normalize_label(text)
+    normalized_phrase = _normalize_label(phrase)
+    if not normalized_text or not normalized_phrase:
+        return False
+    if normalized_text == normalized_phrase:
+        return True
+    return (
+        normalized_text.startswith(f"{normalized_phrase} ")
+        or normalized_text.endswith(f" {normalized_phrase}")
+        or f" {normalized_phrase} " in f" {normalized_text} "
+    )
+
+
+def _is_concise_dismissal_label(normalized: str) -> bool:
+    words = [item for item in normalized.split() if item]
+    return 0 < len(words) <= 6 and len(normalized) <= 80
 
 
 def _rejection_reason(normalized: str, obstruction_type: str) -> str | None:
@@ -641,8 +719,14 @@ def _affordance_evidence_for_element(element: Any, label: str, obstruction_type:
     }
 
 
-def _affordance_localization_evidence_for_element(element: Any, label: str, obstruction: dict[str, Any] | None) -> dict[str, Any]:
-    obstruction_type = str((obstruction or {}).get("type") or "none")
+def _affordance_localization_evidence_for_element(
+    element: Any,
+    label: str,
+    obstruction: dict[str, Any] | None,
+    *,
+    dismissal_context_type: str | None = None,
+) -> dict[str, Any]:
+    obstruction_type = dismissal_context_type or str((obstruction or {}).get("type") or "none")
     base = _affordance_evidence_for_element(element, label, obstruction_type)
     localization = _element_localization_snapshot(element)
     localization["obstruction_context"] = _localization_context_terms(obstruction)

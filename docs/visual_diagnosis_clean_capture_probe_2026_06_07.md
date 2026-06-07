@@ -126,6 +126,44 @@ heuristics:
    is used downstream.
 4. Keep raw evidence preserved as the primary artifact.
 
+## Safe Dismissal Follow-Up
+
+After the first clean-capture probe, candidate detection was tightened in the
+lab-only capture script:
+
+- Spanish cookie consent labels are now recognized: `Aceptar`, `Aceptar todas`,
+  `Rechazar`, `Rechazar todas`, `Denegar`, `Continuar`, `Cerrar`.
+- Dismissal phrase matching now allows short labels such as `Aceptar todas las
+  cookies`, but rejects long banner-region text as a click target.
+- Candidate selection requires the deterministic affordance policy to resolve
+  as `safe_to_dismiss`.
+- If a visually detected `newsletter_modal` or `promo_modal` carries cookie /
+  consent / privacy signals, button semantics are evaluated with cookie-consent
+  context.
+
+Follow-up command:
+
+```bash
+./.venv/bin/python scripts/visual_signature_capture_screenshots.py \
+  --input /tmp/brand3_visual_diagnosis_safe_dismissal_probe_input.json \
+  --output-dir /tmp/brand3_visual_diagnosis_safe_dismissal_probe_after/screenshots \
+  --manifest /tmp/brand3_visual_diagnosis_safe_dismissal_probe_after/capture_manifest.json \
+  --capture-type viewport \
+  --attempt-dismiss-obstructions
+```
+
+Follow-up result:
+
+| Brand | Candidate detection | Attempted | Successful | Note |
+| --- | --- | ---: | ---: | --- |
+| OpenAI | none | no | no | no safe cookie button found |
+| Allbirds | `Close` as active obstruction | yes | no | raw evidence preserved |
+| Le Labo | `Aceptar` and `Rechazar` as active cookie consent controls | yes | no | `Personalizar` rejected as preferences |
+
+This is an improvement in safe affordance discovery, not yet a clean-capture
+success. The conservative rule remains: failed clean attempts do not replace
+raw screenshots in Visual Diagnosis.
+
 ## Validation
 
 ```bash
@@ -135,3 +173,13 @@ heuristics:
 Result:
 
 - `32 passed`
+
+Follow-up validation:
+
+```bash
+./.venv/bin/python -m pytest tests/test_visual_signature_capture_screenshots.py tests/test_visual_diagnosis.py tests/test_visual_diagnosis_style_capture.py -q
+```
+
+Result:
+
+- `55 passed`

@@ -286,9 +286,20 @@ Known local noise:
 - `out/` remains untracked and intentionally outside the committed refactor work.
 - Notion/export planning artifacts under `docs/brand3_tldr_notion_database.*` and `docs/brand3_alternative_reports_from_research_pack.md` remain untracked and intentionally outside the committed refactor work.
 
-The latest deployed image is `brand3:deployment-01KTFEPGJS6AQ1K9AXD6KF0NWQ`, with Fly machine `286e275b3dd578` on version `86`, started and passing health checks. The deploy command reported a Fly API `401 Unauthorized` while clearing the lease / setting final release status, but the new image became active and `/_health` returned `{"status":"ok","queue_size":0,"running":0,"db":"ok"}`.
+The latest deployed image observed after the SKLUM regression run is `brand3:deployment-01KTG5MQBT211HGGESSBXSWAMK`, with Fly machine `286e275b3dd578` on version `87`, started and passing health checks.
 
 The latest production deploy was used to ship the Scanner API contract documentation plus the relative language-toggle fix. It was not used to change scoring behavior.
+
+Latest local/deploy API regression:
+
+- Date: 2026-06-07.
+- Case: `https://www.sklum.com`.
+- Local scan: `97`.
+- Deploy scan: `83`.
+- Report: `scratch/local_vs_deploy_pipeline_compare/comparison-20260607-044310.md`.
+- Result: 0 critical findings, 0 warnings, status `no_material_diff`.
+- Contract signals matched for readiness, publication decision, scan mode, EvidenceGraph, Analyst Pass, Research Pack Quality, Research Pack source, TLDR generation mode, and `analysis_error`.
+- Numeric deltas were below thresholds: scanner magnetism local `74.0` vs deploy `77.0`; audit composite local `71.0` vs deploy `73.4`.
 
 ## What This Refactor Does Not Claim
 

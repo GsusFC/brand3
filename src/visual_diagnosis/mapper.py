@@ -239,6 +239,7 @@ def _antipatterns(
     typography = payload.get("typography") or {}
     semantics = payload.get("semantics") or {}
     data = semantics.get("data") if isinstance(semantics, dict) else {}
+    source = str(payload.get("source") or "")
     result = []
     card_count = _component_count(components, "card")
     cta_count = _component_count(components, "cta") + _component_count(components, "button")
@@ -250,7 +251,7 @@ def _antipatterns(
         result.append("generic_ai_aesthetic")
     if _as_float((coherence_breakdown or {}).get("visual_identity"), default=100.0) < 70:
         result.append("visual_promise_mismatch")
-    if cta_count == 0:
+    if cta_count == 0 and source != "screenshot_vision_lab":
         result.append("weak_cta_weight")
     if typography.get("heading_scale") == "flat":
         result.append("flat_typographic_hierarchy")
@@ -443,6 +444,8 @@ def _evidence_refs(
         source = str(payload.get("source") or "")
         if source == "contextdev_candidate_summary":
             refs.append("raw_inputs:contextdev_candidate_summary")
+        elif source == "screenshot_vision_lab":
+            refs.append("raw_inputs:screenshot_vision_lab")
         else:
             refs.append("raw_inputs:visual_signature")
     if coherence_breakdown:

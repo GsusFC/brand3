@@ -130,6 +130,14 @@ def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | N
             contextdev_summary,
             website_url=str(row["website_url"]),
         )
+    if row.get("derive_visual_signature_from_screenshot") is True:
+        screenshot_capture = _screenshot_capture_for_row(row)
+        if screenshot_capture:
+            return screenshot_capture_to_visual_signature(
+                screenshot_capture,
+                brand_name=str(row["brand_name"]),
+                website_url=str(row["website_url"]),
+            )
     return None
 
 
@@ -152,6 +160,51 @@ def _screenshot_capture_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
     if capture.get("success") is True and not normalized["quality"]:
         normalized["quality"] = "usable"
     return {key: value for key, value in normalized.items() if value is not None}
+
+
+def screenshot_capture_to_visual_signature(
+    screenshot_capture: dict[str, Any],
+    *,
+    brand_name: str,
+    website_url: str,
+) -> dict[str, Any]:
+    """Build lab-only visual evidence from an existing local screenshot."""
+    base_payload: dict[str, Any] = {
+        "brand_name": brand_name,
+        "website_url": website_url,
+        "interpretation_status": "interpretable",
+        "source": "screenshot_vision_lab",
+        "assets": {"screenshot_available": True},
+        "layout": {},
+        "logo": {},
+        "components": {"primary_ctas": [], "components": []},
+        "colors": {},
+        "typography": {},
+        "consistency": {},
+        "extraction_confidence": {
+            "score": 0.1,
+            "level": "low",
+            "limitations": ["screenshot_vision_only"],
+        },
+    }
+    try:
+        from src.visual_signature.vision import enrich_visual_signature_with_vision
+
+        enriched = enrich_visual_signature_with_vision(
+            visual_signature_payload=base_payload,
+            screenshot_payload=screenshot_capture,
+        )
+    except Exception as exc:
+        return {
+            **base_payload,
+            "interpretation_status": "not_interpretable",
+            "extraction_confidence": {
+                "score": 0.0,
+                "level": "low",
+                "limitations": [f"screenshot_vision_failed: {exc}"],
+            },
+        }
+    return _promote_vision_evidence(enriched)
 
 
 def contextdev_candidate_summary_to_visual_signature(
@@ -233,6 +286,58 @@ def contextdev_candidate_summary_to_visual_signature(
             "candidate_ids": [str(item.get("candidate_id") or "") for item in candidates if item.get("candidate_id")],
         },
     }
+
+
+def _promote_vision_evidence(payload: dict[str, Any]) -> dict[str, Any]:
+    vision = payload.get("vision") if isinstance(payload.get("vision"), dict) else {}
+    screenshot = vision.get("screenshot") if isinstance(vision.get("screenshot"), dict) else {}
+    viewport_palette = vision.get("viewport_palette") if isinstance(vision.get("viewport_palette"), dict) else {}
+    viewport_composition = (
+        vision.get("viewport_composition") if isinstance(vision.get("viewport_composition"), dict) else {}
+    )
+    viewport_confidence = (
+        vision.get("viewport_confidence") if isinstance(vision.get("viewport_confidence"), dict) else {}
+    )
+    if not screenshot.get("available"):
+        payload["interpretation_status"] = "not_interpretable"
+        payload["extraction_confidence"] = {
+            "score": 0.0,
+            "level": "low",
+            "limitations": ["screenshot_vision_unavailable"],
+        }
+        return payload
+
+    dominant_colors = [
+        str(item.get("hex"))
+        for item in viewport_palette.get("dominant_colors") or []
+        if isinstance(item, dict) and item.get("hex")
+    ]
+    density = str(viewport_composition.get("visual_density") or "unknown")
+    confidence_score = _bounded_float(viewport_confidence.get("score"), default=0.45)
+    payload["assets"] = {
+        **(payload.get("assets") if isinstance(payload.get("assets"), dict) else {}),
+        "screenshot_available": True,
+        "image_count": 1,
+    }
+    payload["colors"] = {
+        "dominant_colors": dominant_colors[:6],
+        "accent_candidates": dominant_colors[6:8],
+    }
+    payload["layout"] = {
+        "has_navigation": False,
+        "has_hero": False,
+        "visual_density": density,
+        "layout_patterns": ["screenshot_vision"],
+    }
+    payload["consistency"] = {
+        "overall_consistency": round(max(0.1, min(0.85, confidence_score)), 3),
+    }
+    payload["extraction_confidence"] = {
+        "score": round(max(0.1, min(0.75, confidence_score)), 3),
+        "level": "medium" if confidence_score >= 0.55 else "low",
+        "limitations": ["screenshot_vision_only"],
+    }
+    return payload
 
 
 def _coherence_breakdown_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -377,6 +482,14 @@ def _domain(value: str) -> str:
     parsed = urlparse(value if "://" in value else f"https://{value}")
     host = (parsed.netloc or parsed.path or "").lower().strip()
     return host[4:] if host.startswith("www.") else host
+
+
+def _bounded_float(value: Any, *, default: float) -> float:
+    try:
+        parsed = float(value)
+    except (TypeError, ValueError):
+        return default
+    return max(0.0, min(1.0, parsed))
 
 
 def _dedupe(items: list[str]) -> list[str]:

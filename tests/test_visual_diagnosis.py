@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import struct
+import zlib
+from pathlib import Path
 
 from scripts.visual_diagnosis_lab import (
     contextdev_candidate_summary_to_visual_signature,
@@ -53,6 +56,45 @@ def _visual_signature_payload() -> dict:
             "viewport_obstruction": {"present": False, "type": "none"},
         },
     }
+
+
+def _write_png(path: Path, width: int, height: int, pixels: list[tuple[int, int, int]]) -> None:
+    def chunk(kind: bytes, data: bytes) -> bytes:
+        payload = kind + data
+        return struct.pack(">I", len(data)) + payload + struct.pack(">I", zlib.crc32(payload) & 0xFFFFFFFF)
+
+    rows = []
+    for y in range(height):
+        row = bytearray([0])
+        for x in range(width):
+            row.extend(pixels[y * width + x])
+        rows.append(bytes(row))
+    path.write_bytes(
+        b"".join(
+            [
+                b"\x89PNG\r\n\x1a\n",
+                chunk(b"IHDR", struct.pack(">IIBBBBB", width, height, 8, 2, 0, 0, 0)),
+                chunk(b"IDAT", zlib.compress(b"".join(rows))),
+                chunk(b"IEND", b""),
+            ]
+        )
+    )
+
+
+def _dense_pixels(width: int, height: int) -> list[tuple[int, int, int]]:
+    colors = [
+        (20, 20, 20),
+        (240, 240, 240),
+        (80, 120, 200),
+        (200, 90, 60),
+        (40, 160, 120),
+        (120, 80, 180),
+        (230, 180, 70),
+        (90, 90, 90),
+        (10, 70, 120),
+        (180, 40, 120),
+    ]
+    return [colors[(x // 4 + y // 4) % len(colors)] for y in range(height) for x in range(width)]
 
 
 def test_visual_diagnosis_marks_missing_capture_as_not_evaluable():
@@ -450,3 +492,40 @@ def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path)
 
     assert capture["available"] is True
     assert capture["quality"] == "good"
+
+
+def test_visual_diagnosis_lab_can_derive_visual_evidence_from_local_screenshot(tmp_path):
+    screenshot = tmp_path / "shot.png"
+    _write_png(screenshot, 80, 60, _dense_pixels(80, 60))
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Screenshot Only",
+                        "website_url": "https://screenshot-only.example",
+                        "category_hint": "ecommerce retail",
+                        "derive_visual_signature_from_screenshot": True,
+                        "coherence_breakdown": {"visual_identity": 78},
+                        "screenshot_capture": {
+                            "screenshot_url": f"file://{screenshot}",
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    diagnosis = result["summary"]["results"][0]["diagnosis"]
+
+    assert diagnosis["status"] in {"usable", "limited"}
+    assert diagnosis["diagnosis"]["reference_profile"] == "ecommerce_mass_market"
+    assert diagnosis["diagnosis"]["identity_read"] == "commerce_clear"
+    assert "weak_cta_weight" not in diagnosis["signals"]["antipatterns"]
+    assert "raw_inputs:screenshot_vision_lab" in diagnosis["evidence_refs"]
+    assert "raw_inputs:visual_signature" not in diagnosis["evidence_refs"]

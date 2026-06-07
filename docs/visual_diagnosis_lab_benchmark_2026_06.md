@@ -180,6 +180,14 @@ It can also consume browser computed-style snapshots through:
 - inline `computed_style_snapshot`;
 - `computed_style_snapshot_path`.
 
+Snapshots can be generated from a local browser pass with:
+
+```bash
+./.venv/bin/python scripts/visual_diagnosis_capture_computed_styles.py \
+  --manifest examples/visual_diagnosis_lab/calibration_manifest.json \
+  --output-root /tmp/brand3_visual_diagnosis_computed_styles
+```
+
 This is the first Context.dev replacement primitive: the lab can read local
 browser-observed typography, colors, layout hints and component signals without
 calling Context.dev, a live provider, or an LLM. The output remains `limited`

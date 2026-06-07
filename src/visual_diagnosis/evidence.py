@@ -99,6 +99,14 @@ def screenshot_capture_to_visual_signature(
     return _enrich_with_local_screenshot(base_payload, screenshot_capture)
 
 
+def enrich_visual_signature_with_local_screenshot(
+    payload: dict[str, Any],
+    screenshot_capture: dict[str, Any],
+) -> dict[str, Any]:
+    """Add local screenshot-derived evidence to a lab visual payload."""
+    return _enrich_with_local_screenshot(payload, screenshot_capture)
+
+
 def _visual_signature_from_web_payload(
     *,
     brand_name: str,

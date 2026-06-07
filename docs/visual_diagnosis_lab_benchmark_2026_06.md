@@ -194,6 +194,12 @@ calling Context.dev, a live provider, or an LLM. The output remains `limited`
 when no screenshot exists because computed styles explain the rendered system
 but do not prove visual composition by themselves.
 
+When a manifest row also includes `screenshot_capture` and sets
+`derive_visual_signature_from_screenshot: true`, the lab enriches computed-style
+evidence with local screenshot vision. This keeps the evidence boundary explicit:
+computed styles explain CSS/DOM presentation, while screenshots contribute
+viewport quality, palette/composition and obstruction evidence.
+
 It can extract coherence evidence from known local shapes:
 
 - Scanner methodology payloads: `methodology.score_breakdown.coherence.visual_identity`;

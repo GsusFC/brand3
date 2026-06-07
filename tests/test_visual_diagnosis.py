@@ -10,7 +10,11 @@ from scripts.visual_diagnosis_lab import (
     extract_coherence_breakdown,
     run_lab,
 )
-from src.visual_diagnosis import build_visual_diagnosis, computed_style_snapshot_to_visual_signature
+from src.visual_diagnosis import (
+    build_visual_diagnosis,
+    computed_style_snapshot_to_visual_signature,
+    enrich_visual_signature_with_local_screenshot,
+)
 from src.visual_diagnosis.evidence import build_visual_evidence_from_local_inputs
 
 
@@ -500,6 +504,31 @@ def test_computed_style_snapshot_maps_local_browser_styles_to_visual_signature()
     assert "#4b8cff" in result["colors"]["accent_candidates"]
 
 
+def test_computed_style_snapshot_can_be_enriched_with_local_screenshot(tmp_path):
+    screenshot = tmp_path / "shot.png"
+    _write_png(screenshot, 80, 60, _dense_pixels(80, 60))
+    payload = computed_style_snapshot_to_visual_signature(
+        _computed_style_snapshot(),
+        brand_name="Developer Example",
+        website_url="https://developer.example",
+    )
+
+    result = enrich_visual_signature_with_local_screenshot(
+        payload,
+        {
+            "screenshot_url": f"file://{screenshot}",
+            "capture_type": "viewport",
+            "quality": "usable",
+        },
+    )
+
+    assert result["source"] == "computed_style_visual_lab"
+    assert result["assets"]["screenshot_available"] is True
+    assert result["vision"]["screenshot"]["available"] is True
+    assert "computed_style_snapshot_only" in result["extraction_confidence"]["limitations"]
+    assert "screenshot_vision_only" in result["extraction_confidence"]["limitations"]
+
+
 def test_visual_evidence_builds_from_local_web_payload_without_provider_call():
     evidence = build_visual_evidence_from_local_inputs(
         brand_name="Example",
@@ -638,6 +667,45 @@ def test_visual_diagnosis_lab_accepts_computed_style_snapshot_path(tmp_path):
     assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
     assert "raw_inputs:computed_style_visual_evidence" in diagnosis["evidence_refs"]
     assert "computed_style_snapshot_only" in diagnosis["limitations"]
+
+
+def test_visual_diagnosis_lab_enriches_computed_style_snapshot_with_screenshot_when_enabled(tmp_path):
+    screenshot = tmp_path / "shot.png"
+    _write_png(screenshot, 80, 60, _dense_pixels(80, 60))
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Developer Example",
+                        "website_url": "https://developer.example",
+                        "category_hint": "developer infrastructure",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "derive_visual_signature_from_screenshot": True,
+                        "coherence_breakdown": {"visual_identity": 87},
+                        "screenshot_capture": {
+                            "screenshot_url": f"file://{screenshot}",
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    diagnosis = result["summary"]["results"][0]["diagnosis"]
+
+    assert diagnosis["capture"]["available"] is True
+    assert diagnosis["capture"]["quality"] == "good"
+    assert "raw_inputs:screenshot_capture" in diagnosis["evidence_refs"]
+    assert "raw_inputs:computed_style_visual_evidence" in diagnosis["evidence_refs"]
+    assert "screenshot_vision_only" in diagnosis["limitations"]
 
 
 def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path):

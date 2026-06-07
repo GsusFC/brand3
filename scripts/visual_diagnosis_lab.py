@@ -14,6 +14,7 @@ from src.visual_diagnosis import build_visual_diagnosis
 from src.visual_diagnosis.computed_style import computed_style_snapshot_to_visual_signature
 from src.visual_diagnosis.evidence import (
     build_visual_evidence_from_local_inputs,
+    enrich_visual_signature_with_local_screenshot,
     screenshot_capture_to_visual_signature,
 )
 
@@ -137,11 +138,16 @@ def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | N
         )
     computed_style_snapshot = _row_payload(row, "computed_style_snapshot")
     if computed_style_snapshot:
-        return computed_style_snapshot_to_visual_signature(
+        payload = computed_style_snapshot_to_visual_signature(
             computed_style_snapshot,
             brand_name=str(row["brand_name"]),
             website_url=str(row["website_url"]),
         )
+        if row.get("derive_visual_signature_from_screenshot") is True:
+            screenshot_capture = _screenshot_capture_for_row(row)
+            if screenshot_capture:
+                payload = enrich_visual_signature_with_local_screenshot(payload, screenshot_capture)
+        return payload
     web_payload = _row_payload(row, "web_payload")
     if web_payload:
         evidence = build_visual_evidence_from_local_inputs(

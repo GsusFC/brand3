@@ -252,6 +252,31 @@ Main tests:
 - `tests/test_web_app.py`
 - `tests/test_magnetism_scanner.py`
 
+### Relative Language Toggle URLs
+
+Commit: `9d3219b Use relative language toggle URLs`
+
+What changed:
+
+- `web/templates/base.html.j2` now builds the language toggle from `request.url.path` instead of `request.url.include_query_params(...)`.
+- The toggle emits relative links such as `/scanner-api?lang=es` and `/scanner-api?lang=en`.
+- `tests/test_web_app.py` covers the `/scanner-api?lang=en` case and asserts that the rendered page does not leak `http://brand3.fly.dev/scanner-api`.
+
+Risk reduced:
+
+- Production pages no longer depend on absolute URL generation for the language switch.
+- This avoids scheme/host drift when the app is behind Fly/proxy headers.
+- The fix is intentionally UI-only and does not change Scanner API payloads, scoring, readiness, or persisted scan data.
+
+Main tests:
+
+- `tests/test_web_app.py`
+- `tests/test_reports_renderer.py`
+- `tests/test_web_listings.py`
+- `tests/test_scanner_api_presenters.py`
+- `tests/test_scanner_api_routes.py`
+- `tests/test_magnetism_scanner.py`
+
 ## Current State
 
 Local `main` is synced with `origin/main` for tracked files after the current refactor commits. Run `git status`, tests, and the local/deploy harness before any production deploy that is meant to validate runtime behavior.
@@ -261,7 +286,9 @@ Known local noise:
 - `out/` remains untracked and intentionally outside the committed refactor work.
 - Notion/export planning artifacts under `docs/brand3_tldr_notion_database.*` and `docs/brand3_alternative_reports_from_research_pack.md` remain untracked and intentionally outside the committed refactor work.
 
-The latest deploy was used to fix stale production visual-capture behavior. The most recent Scanner API contract cuts are internal contract/documentation changes and have not required a deploy by themselves.
+The latest deployed image is `brand3:deployment-01KTFEPGJS6AQ1K9AXD6KF0NWQ`, with Fly machine `286e275b3dd578` on version `86`, started and passing health checks. The deploy command reported a Fly API `401 Unauthorized` while clearing the lease / setting final release status, but the new image became active and `/_health` returned `{"status":"ok","queue_size":0,"running":0,"db":"ok"}`.
+
+The latest production deploy was used to ship the Scanner API contract documentation plus the relative language-toggle fix. It was not used to change scoring behavior.
 
 ## What This Refactor Does Not Claim
 

@@ -313,6 +313,17 @@ Follow-up local/deploy API regression set:
 - All three cases matched the operational contract signals: readiness, publication decision, scan mode, EvidenceGraph, Analyst Pass, Research Pack Quality, Research Pack source, TLDR generation mode, and `analysis_error`.
 - Interpretation: the batch does not show refactor regression. The two warnings are score variability in `scanner.score_coherence`, not contract drift or publication/readiness failure.
 
+Score diagnostics rerun:
+
+- Date: 2026-06-07.
+- Cases: `https://www.langchain.com`, `https://www.netlify.com`.
+- Report: `scratch/local_vs_deploy_pipeline_compare/comparison-20260607-053832.md`.
+- Result: 0 critical findings, 1 warning.
+- LangChain no longer reproduced the coherence warning: local scan `101`, deploy scan `87`, scanner coherence `96.0` both sides.
+- Netlify still showed coherence delta: local scan `102`, deploy scan `88`, scanner coherence local `78.0` vs deploy `72.0`.
+- Netlify diagnosis: `message_consistency` stayed `92` both sides and `tactical_alignment` stayed `67` both sides; only `visual_identity` changed, local `82` vs deploy `68`.
+- Interpretation: the remaining Netlify warning is visual/semantic alignment variability inside Magnetism coherence, not TLDR completeness, contradiction detection, readiness, publication, EvidenceGraph, Analyst Pass, or Research Pack contract drift.
+
 ## What This Refactor Does Not Claim
 
 This refactor does not prove that:

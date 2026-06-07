@@ -70,7 +70,7 @@ def build_visual_diagnosis(
             signals=VisualDiagnosisSignals(
                 positive=["screenshot evidence available"] if capture.available else [],
                 negative=["visual analysis evidence is unavailable or not interpretable"],
-                antipatterns=["capture_not_evaluable"],
+                antipatterns=["visual_analysis_not_interpretable"],
             ),
             evidence_refs=evidence_refs,
             confidence="low",
@@ -440,7 +440,11 @@ def _evidence_refs(
     if screenshot_capture:
         refs.append("raw_inputs:screenshot_capture")
     if payload:
-        refs.append("raw_inputs:visual_signature")
+        source = str(payload.get("source") or "")
+        if source == "contextdev_candidate_summary":
+            refs.append("raw_inputs:contextdev_candidate_summary")
+        else:
+            refs.append("raw_inputs:visual_signature")
     if coherence_breakdown:
         refs.append("magnetism:coherence_breakdown")
     return refs

@@ -30,13 +30,13 @@ Command:
 
 Latest run inspected:
 
-- `/tmp/brand3_visual_diagnosis_lab/20260607T070239Z`
+- `/tmp/brand3_visual_diagnosis_lab/20260607T073853Z`
 
 ## Result Summary
 
 | Brand | Status | Profile | Identity read | Visual identity | Brand fit | Confidence | Anti-patterns |
 | --- | --- | --- | --- | ---: | --- | --- | --- |
-| Hermes | unavailable | unknown | not_evaluable | - | unknown | low | capture_not_evaluable |
+| Hermes | unavailable | unknown | not_evaluable | - | unknown | low | visual_analysis_not_interpretable |
 | Linear | usable | developer_first | functionally_clear | 82 | medium | high | - |
 | OpenAI | limited | ai_native | coherent_but_generic | 80 | medium | high | card_heavy_composition, flat_typographic_hierarchy |
 | The Verge | usable | editorial_media | editorially_coherent | 90 | high | high | card_heavy_composition, flat_typographic_hierarchy |
@@ -59,7 +59,7 @@ This is correct for:
 - Joe's Plumbing NYC;
 - A24.
 
-Hermes now has a local screenshot reference, but the Visual Signature payload is still `not_interpretable`. The prototype correctly refuses to diagnose from screenshot presence alone because the deterministic mapper does not read pixels directly.
+Hermes now has a local screenshot reference, but the Visual Signature payload is still `not_interpretable`. The prototype correctly refuses to diagnose from screenshot presence alone because the deterministic mapper does not read pixels directly. It now labels this boundary as `visual_analysis_not_interpretable`, not as a capture failure.
 
 Joe's Plumbing NYC and A24 still lack usable screenshot-backed visual analysis in this benchmark. The output `not_evaluable` is safer than calling them weak.
 
@@ -78,6 +78,28 @@ The benchmark exposed and fixed a useful issue: Visual Signature calibration pay
 The lab summary now shows `visual_identity` and Brand3 `brand_fit` side by side.
 
 This immediately exposes useful robustness questions. A24 has a placeholder/local `visual_identity` value in the manifest, but `VisualDiagnosis` returns `not_evaluable` because the visual evidence is unavailable. That is the correct tension to surface before any scoring integration.
+
+### Real DB Smoke Test
+
+A local DB smoke test used four recent Brand3 runs from `data/brand3.sqlite3`:
+
+- LangChain: screenshot capture + Context.dev visual candidates + Magnetism payload.
+- Netlify: screenshot capture + Magnetism payload.
+- ElevenLabs: screenshot capture + Magnetism payload.
+- Sklum: screenshot capture + Magnetism payload.
+
+Latest run inspected:
+
+- `/tmp/brand3_visual_diagnosis_real_runs/20260607T073838Z`
+
+| Brand | Status | Profile | Identity read | Visual identity | Brand fit | Confidence | Anti-patterns |
+| --- | --- | --- | --- | ---: | --- | --- | --- |
+| www.langchain.com | limited | developer_first | functionally_clear | 95 | high | high | card_heavy_composition |
+| www.netlify.com | unavailable | unknown | not_evaluable | 85 | unknown | low | visual_analysis_not_interpretable |
+| elevenlabs.io | unavailable | unknown | not_evaluable | 52 | unknown | low | visual_analysis_not_interpretable |
+| www.sklum.com | unavailable | unknown | not_evaluable | 95 | unknown | low | visual_analysis_not_interpretable |
+
+This is the strongest result from the real-data pass: current Scanner/Audit screenshots prove capture availability, but they do not automatically provide interpretable visual diagnosis. LangChain becomes diagnosable only because it also has Context.dev visual candidates. Netlify, ElevenLabs and Sklum correctly remain non-evaluable from a visual-diagnosis perspective despite having Magnetism scores.
 
 ### Category Token Matching
 
@@ -128,14 +150,19 @@ Priority cases to fix next:
 
 This benchmark does not include human review notes. Without human comparison, we can validate contract behavior but not claim improved design judgment.
 
-### No Magnetism Comparison Yet
+### Magnetism Comparison
 
-The original benchmark used placeholder/local `visual_identity` values in the manifest.
+The original benchmark used placeholder/local `visual_identity` values in the manifest. The current lab also supports real Magnetism payloads and Context.dev visual candidate summaries for local DB smoke tests.
 
 The lab runner now supports real Magnetism payloads through:
 
 - inline `magnetism_payload`;
 - `magnetism_payload_path`.
+
+It also supports Context.dev visual evidence through:
+
+- inline `contextdev_candidate_summary`;
+- `contextdev_candidate_summary_path`.
 
 It can extract coherence evidence from known local shapes:
 
@@ -143,7 +170,7 @@ It can extract coherence evidence from known local shapes:
 - normalized local/deploy comparison payloads: `scanner.score_coherence_breakdown.visual_identity`;
 - batch rows with `coherence_score`, as a fallback labelled `coherence_score_fallback`.
 
-The next useful comparison should use current local Scanner/Audit outputs, not historical batch fallbacks.
+The current local DB smoke test confirms that Scanner/Audit outputs are useful, but screenshot capture and Magnetism scores are insufficient on their own. Visual Diagnosis needs interpretable visual evidence from Visual Signature, Context.dev-style candidates, or a future vision pass.
 
 ## Decision
 
@@ -176,6 +203,7 @@ Supported lab manifest fields:
 - `screenshot_capture` or `screenshot_capture_path`
 - `coherence_breakdown` or `coherence_breakdown_path`
 - `magnetism_payload` or `magnetism_payload_path`
+- `contextdev_candidate_summary` or `contextdev_candidate_summary_path`
 
 Validated:
 
@@ -185,7 +213,7 @@ Validated:
 
 Result:
 
-- `10 passed`
+- `14 passed`
 
 Broader related subset:
 
@@ -201,9 +229,9 @@ Broader related subset:
   tests/test_web_visual_signature_routes.py -q
 ```
 
-Prior result after the first prototype:
+Current result:
 
-- `70 passed, 5 subtests passed`
+- `79 passed, 5 subtests passed`
 
 ## Bottom Line
 

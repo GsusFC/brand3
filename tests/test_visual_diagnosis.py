@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import json
 
-from scripts.visual_diagnosis_lab import extract_coherence_breakdown, run_lab
+from scripts.visual_diagnosis_lab import (
+    contextdev_candidate_summary_to_visual_signature,
+    extract_coherence_breakdown,
+    run_lab,
+)
 from src.visual_diagnosis import build_visual_diagnosis
 
 
@@ -201,6 +205,7 @@ def test_visual_diagnosis_requires_interpretable_visual_analysis_even_with_scree
     result = diagnosis.to_dict()
     assert result["status"] == "unavailable"
     assert result["diagnosis"]["identity_read"] == "not_evaluable"
+    assert result["signals"]["antipatterns"] == ["visual_analysis_not_interpretable"]
     assert "visual_analysis_not_interpretable" in result["limitations"]
 
 
@@ -292,3 +297,156 @@ def test_visual_diagnosis_lab_summary_renders_magnetism_comparison(tmp_path):
     assert result["summary"]["results"][0]["magnetism"]["visual_identity"] == 61
     assert "| Example | usable | template_saas | weak_or_inconsistent | 61 | low | high |" in summary_md
     assert "visual_promise_mismatch" in summary_md
+
+
+def test_contextdev_candidate_summary_maps_visual_candidates_for_matching_domain():
+    payload = {
+        "candidates": [
+            {
+                "candidate_id": "ctx_colors",
+                "candidate_type": "visual_colors",
+                "supports_channel": "visual_identity",
+                "source_url": "https://example.com",
+                "text": json.dumps(
+                    {
+                        "background": "#ffffff",
+                        "text": "#111111",
+                        "accent": "#ff537a",
+                    }
+                ),
+            },
+            {
+                "candidate_id": "ctx_type",
+                "candidate_type": "visual_typography",
+                "supports_channel": "visual_identity",
+                "source_url": "https://example.com",
+                "text": json.dumps(
+                    {
+                        "headings": {
+                            "h1": {"fontFamily": "Jokker Bold", "fontSize": "58px"},
+                            "h2": {"fontFamily": "Jokker Bold", "fontSize": "34px"},
+                        },
+                        "p": {"fontFamily": "Inter"},
+                    }
+                ),
+            },
+            {
+                "candidate_id": "ctx_other",
+                "candidate_type": "visual_colors",
+                "supports_channel": "visual_identity",
+                "source_url": "https://other.example",
+                "text": json.dumps({"background": "#000000"}),
+            },
+        ]
+    }
+
+    result = contextdev_candidate_summary_to_visual_signature(
+        payload,
+        website_url="https://www.example.com",
+    )
+
+    assert result["source"] == "contextdev_candidate_summary"
+    assert result["interpretation_status"] == "interpretable"
+    assert result["colors"]["dominant_colors"] == ["#ffffff", "#111111"]
+    assert result["colors"]["accent_candidates"] == ["#ff537a"]
+    assert result["typography"]["heading_font"] == "Jokker Bold"
+    assert result["contextdev"]["candidate_ids"] == ["ctx_colors", "ctx_type"]
+
+
+def test_visual_diagnosis_lab_accepts_contextdev_candidate_summary(tmp_path):
+    contextdev_path = tmp_path / "contextdev.json"
+    contextdev_path.write_text(
+        json.dumps(
+            {
+                "candidates": [
+                    {
+                        "candidate_id": "ctx_colors",
+                        "candidate_type": "visual_colors",
+                        "supports_channel": "visual_identity",
+                        "source_url": "https://developer.example",
+                        "text": json.dumps(
+                            {
+                                "background": "#050505",
+                                "text": "#ffffff",
+                                "accent": "#4b8cff",
+                            }
+                        ),
+                    },
+                    {
+                        "candidate_id": "ctx_components",
+                        "candidate_type": "visual_components",
+                        "supports_channel": "visual_identity",
+                        "source_url": "https://developer.example",
+                        "text": "button and card components use substantial call-to-action controls",
+                    },
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Developer Example",
+                        "website_url": "https://developer.example",
+                        "category_hint": "developer infrastructure",
+                        "contextdev_candidate_summary_path": str(contextdev_path),
+                        "coherence_breakdown": {"visual_identity": 88},
+                        "screenshot_capture": {
+                            "screenshot_url": "file:///tmp/developer-example.png",
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    diagnosis = result["summary"]["results"][0]["diagnosis"]
+
+    assert diagnosis["diagnosis"]["reference_profile"] == "developer_first"
+    assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
+    assert "raw_inputs:contextdev_candidate_summary" in diagnosis["evidence_refs"]
+    assert "raw_inputs:visual_signature" not in diagnosis["evidence_refs"]
+
+
+def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path):
+    visual_path = tmp_path / "visual.json"
+    visual_path.write_text(json.dumps(_visual_signature_payload()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "DB Capture",
+                        "website_url": "https://db-capture.example",
+                        "visual_signature_path": str(visual_path),
+                        "coherence_breakdown": {"visual_identity": 80},
+                        "screenshot_capture": {
+                            "version": "screenshot_capture_v1",
+                            "capture": {
+                                "success": True,
+                                "status": "captured",
+                                "source": "playwright",
+                                "screenshot_url": "file:///tmp/db-capture.png",
+                            },
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    capture = result["summary"]["results"][0]["diagnosis"]["capture"]
+
+    assert capture["available"] is True
+    assert capture["quality"] == "good"

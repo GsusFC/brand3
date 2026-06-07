@@ -10,7 +10,7 @@ from scripts.visual_diagnosis_lab import (
     extract_coherence_breakdown,
     run_lab,
 )
-from src.visual_diagnosis import build_visual_diagnosis
+from src.visual_diagnosis import build_visual_diagnosis, computed_style_snapshot_to_visual_signature
 from src.visual_diagnosis.evidence import build_visual_evidence_from_local_inputs
 
 
@@ -93,6 +93,52 @@ def _web_payload() -> dict:
         "links": ["https://example.com/start"],
         "tech_stack": [],
         "error": "",
+    }
+
+
+def _computed_style_snapshot() -> dict:
+    return {
+        "schema_version": "computed-style-snapshot-v1",
+        "url": "https://developer.example",
+        "colors": ["#050505", "#ffffff", "#4b8cff"],
+        "elements": [
+            {
+                "tag": "body",
+                "selector": "body",
+                "styles": {
+                    "fontFamily": "Inter, sans-serif",
+                    "backgroundColor": "#050505",
+                    "color": "#ffffff",
+                },
+            },
+            {
+                "tag": "nav",
+                "selector": "nav",
+                "role": "navigation",
+                "styles": {"display": "flex"},
+            },
+            {
+                "tag": "h1",
+                "selector": "h1",
+                "text": "Ship agents faster",
+                "className": "hero-title",
+                "styles": {"fontFamily": "Inter Display", "fontSize": "64px", "color": "#ffffff"},
+            },
+            {
+                "tag": "h2",
+                "selector": "h2",
+                "styles": {"fontFamily": "Inter Display", "fontSize": "36px"},
+            },
+            {
+                "tag": "a",
+                "selector": "a.button.primary",
+                "className": "button primary cta",
+                "text": "Get started",
+                "styles": {"backgroundColor": "#4b8cff", "color": "#ffffff"},
+            },
+            {"tag": "article", "className": "card", "styles": {"display": "grid"}},
+            {"tag": "article", "className": "card", "styles": {"display": "grid"}},
+        ],
     }
 
 
@@ -433,6 +479,27 @@ def test_contextdev_candidate_summary_maps_visual_candidates_for_matching_domain
     assert result["contextdev"]["candidate_ids"] == ["ctx_colors", "ctx_type"]
 
 
+def test_computed_style_snapshot_maps_local_browser_styles_to_visual_signature():
+    result = computed_style_snapshot_to_visual_signature(
+        _computed_style_snapshot(),
+        brand_name="Developer Example",
+        website_url="https://developer.example",
+    )
+
+    assert result["source"] == "computed_style_visual_lab"
+    assert result["interpretation_status"] == "interpretable"
+    assert result["layout"]["has_navigation"] is True
+    assert result["layout"]["has_hero"] is True
+    assert result["typography"]["heading_scale"] == "strong"
+    assert result["components"]["primary_ctas"] == ["Get started"]
+    assert result["components"]["components"] == [
+        {"type": "cta", "count": 1},
+        {"type": "card", "count": 2},
+        {"type": "navigation", "count": 1},
+    ]
+    assert "#4b8cff" in result["colors"]["accent_candidates"]
+
+
 def test_visual_evidence_builds_from_local_web_payload_without_provider_call():
     evidence = build_visual_evidence_from_local_inputs(
         brand_name="Example",
@@ -540,6 +607,37 @@ def test_visual_diagnosis_lab_accepts_web_payload_path(tmp_path):
     assert diagnosis["diagnosis"]["reference_profile"] == "developer_first"
     assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
     assert "raw_inputs:web_visual_evidence" in diagnosis["evidence_refs"]
+
+
+def test_visual_diagnosis_lab_accepts_computed_style_snapshot_path(tmp_path):
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Developer Example",
+                        "website_url": "https://developer.example",
+                        "category_hint": "developer infrastructure",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "coherence_breakdown": {"visual_identity": 87},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    diagnosis = result["summary"]["results"][0]["diagnosis"]
+
+    assert diagnosis["status"] == "limited"
+    assert diagnosis["diagnosis"]["reference_profile"] == "developer_first"
+    assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
+    assert "raw_inputs:computed_style_visual_evidence" in diagnosis["evidence_refs"]
+    assert "computed_style_snapshot_only" in diagnosis["limitations"]
 
 
 def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path):

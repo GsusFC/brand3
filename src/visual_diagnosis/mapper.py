@@ -32,9 +32,11 @@ def build_visual_diagnosis(
     evidence_refs = _evidence_refs(screenshot_capture, payload, coherence_breakdown)
     source = str(payload.get("source") or "")
     has_visual_analysis_evidence = _has_visual_analysis_evidence(payload)
-    can_diagnose_without_capture = (
-        source in {"dom_css_visual_lab", "contextdev_candidate_summary"} and has_visual_analysis_evidence
-    )
+    can_diagnose_without_capture = source in {
+        "dom_css_visual_lab",
+        "contextdev_candidate_summary",
+        "computed_style_visual_lab",
+    } and has_visual_analysis_evidence
 
     if (not capture.available or capture.quality in {"missing", "poor"}) and not can_diagnose_without_capture:
         limitations = _dedupe([*capture.limitations, "visual_evidence_not_evaluable"])
@@ -239,7 +241,7 @@ def _antipatterns(
 ) -> list[str]:
     if capture.quality in {"missing", "poor"}:
         source = str(payload.get("source") or "")
-        if source in {"dom_css_visual_lab", "contextdev_candidate_summary"}:
+        if source in {"dom_css_visual_lab", "contextdev_candidate_summary", "computed_style_visual_lab"}:
             return []
         return ["capture_not_evaluable"]
     components = payload.get("components") or {}
@@ -458,6 +460,8 @@ def _evidence_refs(
             refs.append("raw_inputs:screenshot_vision_lab")
         elif source == "dom_css_visual_lab":
             refs.append("raw_inputs:web_visual_evidence")
+        elif source == "computed_style_visual_lab":
+            refs.append("raw_inputs:computed_style_visual_evidence")
         else:
             refs.append("raw_inputs:visual_signature")
     if coherence_breakdown:

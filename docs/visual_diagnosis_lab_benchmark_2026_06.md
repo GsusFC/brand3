@@ -175,6 +175,17 @@ It can derive DOM/CSS visual evidence from existing local web inputs through:
 - inline `web_payload`;
 - `web_payload_path`.
 
+It can also consume browser computed-style snapshots through:
+
+- inline `computed_style_snapshot`;
+- `computed_style_snapshot_path`.
+
+This is the first Context.dev replacement primitive: the lab can read local
+browser-observed typography, colors, layout hints and component signals without
+calling Context.dev, a live provider, or an LLM. The output remains `limited`
+when no screenshot exists because computed styles explain the rendered system
+but do not prove visual composition by themselves.
+
 It can extract coherence evidence from known local shapes:
 
 - Scanner methodology payloads: `methodology.score_breakdown.coherence.visual_identity`;
@@ -212,6 +223,7 @@ Supported lab manifest fields:
 - `category_hint`
 - `visual_signature` or `visual_signature_path`
 - `web_payload` or `web_payload_path`
+- `computed_style_snapshot` or `computed_style_snapshot_path`
 - `screenshot_capture` or `screenshot_capture_path`
 - `coherence_breakdown` or `coherence_breakdown_path`
 - `magnetism_payload` or `magnetism_payload_path`

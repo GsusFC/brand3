@@ -11,6 +11,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.visual_diagnosis import build_visual_diagnosis
+from src.visual_diagnosis.computed_style import computed_style_snapshot_to_visual_signature
 from src.visual_diagnosis.evidence import (
     build_visual_evidence_from_local_inputs,
     screenshot_capture_to_visual_signature,
@@ -132,6 +133,13 @@ def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | N
     if contextdev_summary:
         return contextdev_candidate_summary_to_visual_signature(
             contextdev_summary,
+            website_url=str(row["website_url"]),
+        )
+    computed_style_snapshot = _row_payload(row, "computed_style_snapshot")
+    if computed_style_snapshot:
+        return computed_style_snapshot_to_visual_signature(
+            computed_style_snapshot,
+            brand_name=str(row["brand_name"]),
             website_url=str(row["website_url"]),
         )
     web_payload = _row_payload(row, "web_payload")

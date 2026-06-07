@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "partially_useful",
+  "profile_fit": "yes",
+  "identity_read_fit": "partial",
+  "notes": "The template SaaS read is plausible, but the current viewport has a campaign-specific hero and a cookie overlay. The output should be treated as partly valid, not as definitive proof of weak distinctiveness.",
+  "disagreements": [
+    "polished_but_undifferentiated may overstate the weakness when the screenshot has a distinctive campaign treatment."
+  ],
+  "recommended_changes": [
+    "Compare Notion against more template-like SaaS references before tuning this heuristic.",
+    "Track cookie overlay as capture-state evidence."
+  ]
+}

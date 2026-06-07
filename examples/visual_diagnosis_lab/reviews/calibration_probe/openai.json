@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "capture_blocked",
+  "profile_fit": "unknown",
+  "identity_read_fit": "no",
+  "notes": "The screenshot is a Cloudflare verification page, not the OpenAI homepage. Any visual diagnosis for this row must be treated as acquisition-contaminated.",
+  "disagreements": [
+    "Brand visual quality cannot be judged from a bot-check screen."
+  ],
+  "recommended_changes": [
+    "Add page-state obstruction as a first-class calibration field.",
+    "Exclude blocked screenshots from visual taste evaluation."
+  ]
+}

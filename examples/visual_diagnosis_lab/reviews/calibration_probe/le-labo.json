@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "diagnosis_too_generic",
+  "profile_fit": "yes",
+  "identity_read_fit": "partial",
+  "notes": "The screenshot has a clear premium fragrance atmosphere, but it is gated by location selection and cookies. coherent_but_generic misses the distinct atmospheric direction visible behind the overlays.",
+  "disagreements": [
+    "A location gate should reduce evaluability, not flatten a luxury brand into generic."
+  ],
+  "recommended_changes": [
+    "Add page-state obstruction metadata before judging luxury references.",
+    "Require clean screenshot evidence for premium_luxury calibration."
+  ]
+}

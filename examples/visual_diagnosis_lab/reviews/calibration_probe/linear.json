@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "diagnosis_too_harsh",
+  "profile_fit": "yes",
+  "identity_read_fit": "partial",
+  "notes": "The screenshot shows a recognizable product-led SaaS system with strong product context. Calling it polished_but_undifferentiated may be directionally useful as a caution, but it overstates genericness.",
+  "disagreements": [
+    "low_distinctiveness_hero should be human-reviewed before becoming a negative signal for Linear."
+  ],
+  "recommended_changes": [
+    "Calibrate low_distinctiveness_hero against human-reviewed SaaS references.",
+    "Separate common SaaS layout from weak visual identity."
+  ]
+}

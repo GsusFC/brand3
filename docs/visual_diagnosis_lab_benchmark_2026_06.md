@@ -168,6 +168,10 @@ First six-brand review probe:
 
 - `docs/visual_diagnosis_human_review_probe_2026_06_07.md`
 
+Second eight-brand calibration probe:
+
+- `docs/visual_diagnosis_calibration_probe_2026_06_07.md`
+
 Allowed review fields are `reviewer`, `reviewed_at`, `verdict`, `profile_fit`,
 `identity_read_fit`, `notes`, `disagreements` and `recommended_changes`.
 Unknown fields are ignored so review payloads do not become an accidental

@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "useful_but_obstructed",
+  "profile_fit": "yes",
+  "identity_read_fit": "partial",
+  "notes": "The ecommerce read is plausible, but the shipping selector and cookie banner obscure the viewport. Product imagery is present behind the overlays.",
+  "disagreements": [
+    "The capture is too obstructed to use as a clean visual quality reference."
+  ],
+  "recommended_changes": [
+    "Classify location gates and cookie banners as capture-state issues.",
+    "Do not tune ecommerce composition thresholds from this obstructed screenshot alone."
+  ]
+}

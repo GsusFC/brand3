@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "directionally_useful_but_obstructed",
+  "profile_fit": "yes",
+  "identity_read_fit": "yes",
+  "notes": "The emotional wellness read is useful and the brand system is recognizable. The cookie dialog blocks part of the visual experience and should be tracked separately.",
+  "disagreements": [
+    "card_heavy_composition should not dominate the read when the brand color, illustration style and offer are clear."
+  ],
+  "recommended_changes": [
+    "Separate page-state obstruction from visual identity.",
+    "Review card-heavy severity for wellness and consumer app pages."
+  ]
+}

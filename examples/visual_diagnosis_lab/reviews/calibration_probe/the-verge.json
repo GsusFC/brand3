@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "useful_but_obstructed",
+  "profile_fit": "yes",
+  "identity_read_fit": "yes",
+  "notes": "The editorial read is correct, but the privacy notice occupies a large portion of the viewport. The capture state should be separated from enduring editorial identity.",
+  "disagreements": [
+    "Privacy banners should not be mixed with core composition anti-patterns."
+  ],
+  "recommended_changes": [
+    "Track cookie/privacy overlays as page-state evidence.",
+    "Keep editorially_coherent as a useful read for this row."
+  ]
+}

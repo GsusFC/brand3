@@ -148,9 +148,21 @@ Priority cases to fix next:
 - one local service brand with a valid live domain.
 - Hermes, but only after regenerating interpretable Visual Signature evidence from the existing viewport screenshot.
 
-### No Human Judgment Yet
+### Human Review Notes
 
-This benchmark does not include human review notes. Without human comparison, we can validate contract behavior but not claim improved design judgment.
+The lab can now carry human review notes through the run outputs. This is
+deliberately non-scoring metadata: human review helps benchmark judgment quality,
+but it does not alter `VisualDiagnosis`.
+
+Manifest rows can include:
+
+- inline `human_review`;
+- `human_review_path`.
+
+Allowed review fields are `reviewer`, `reviewed_at`, `verdict`, `profile_fit`,
+`identity_read_fit`, `notes`, `disagreements` and `recommended_changes`.
+Unknown fields are ignored so review payloads do not become an accidental
+execution contract.
 
 ### Magnetism Comparison
 
@@ -168,7 +180,8 @@ The lab now writes two run-level outputs:
 
 `comparison.json` uses `visual-diagnosis-comparison-v1` and includes source
 comparison rows per brand, available source types, fusion notes, anti-patterns,
-limitations, evidence refs and `signal_provenance`.
+limitations, evidence refs, `signal_provenance` and optional `human_review`
+notes.
 
 `signal_provenance` attributes anti-patterns, positives, negatives and
 limitations to sources such as `computed_style`, `web_payload`,
@@ -265,6 +278,7 @@ Supported lab manifest fields:
 - `coherence_breakdown` or `coherence_breakdown_path`
 - `magnetism_payload` or `magnetism_payload_path`
 - `external_candidate_summary_legacy` or `external_candidate_summary_legacy_path`
+- `human_review` or `human_review_path`
 - deprecated legacy alias: `contextdev_candidate_summary` or `contextdev_candidate_summary_path`
 - `derive_visual_signature_from_screenshot`
 
@@ -294,13 +308,15 @@ Broader related subset:
 
 Current result:
 
-- `68 passed, 5 subtests passed` for the current visual diagnosis/provenance subset.
+- `70 passed, 5 subtests passed` for the current visual diagnosis/provenance subset.
 
 ## Bottom Line
 
 The prototype is already useful as a guardrail: it prevents Brand3 from confusing unavailable visual evidence with weak visual identity.
 
-The next improvement is not more taste vocabulary. It is better visual evidence coverage and a real comparison against Magnetism outputs.
+The next improvement is not more taste vocabulary. It is better visual evidence
+coverage and real human review notes on the comparison rows, so we can separate
+diagnosis quality from source coverage.
 
 The six-brand provenance probe confirms this: A24 and Hermes can be directionally
 classified from computed styles, but they stay `limited` until screenshot vision

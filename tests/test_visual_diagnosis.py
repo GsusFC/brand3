@@ -771,6 +771,14 @@ def test_visual_diagnosis_lab_writes_comparison_json_for_graphs(tmp_path):
                         "category_hint": "developer infrastructure",
                         "computed_style_snapshot_path": str(snapshot_path),
                         "coherence_breakdown": {"visual_identity": 87},
+                        "human_review": {
+                            "reviewer": "gsus",
+                            "verdict": "directionally_useful",
+                            "profile_fit": "yes",
+                            "identity_read_fit": "yes",
+                            "notes": "Useful for graphing.",
+                            "ignored_field": "nope",
+                        },
                     }
                 ]
             }
@@ -787,7 +795,56 @@ def test_visual_diagnosis_lab_writes_comparison_json_for_graphs(tmp_path):
     assert comparison["rows"][0]["brand_name"] == "Graph Example"
     assert comparison["rows"][0]["available_source_types"] == ["computed_style"]
     assert comparison["rows"][0]["source_comparison"][0]["source_type"] == "computed_style"
+    assert comparison["rows"][0]["human_review"] == {
+        "reviewer": "gsus",
+        "verdict": "directionally_useful",
+        "profile_fit": "yes",
+        "identity_read_fit": "yes",
+        "notes": "Useful for graphing.",
+    }
+    assert result["summary"]["results"][0]["human_review"]["verdict"] == "directionally_useful"
     assert result["summary"]["results"][0]["source_comparison"][0]["source_type"] == "computed_style"
+
+
+def test_visual_diagnosis_lab_accepts_human_review_path(tmp_path):
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    review_path = tmp_path / "review.json"
+    review_path.write_text(
+        json.dumps(
+            {
+                "reviewer": "design-review",
+                "verdict": "needs_screenshot",
+                "disagreements": ["Cannot validate composition from CSS only."],
+                "recommended_changes": ["Add screenshot capture."],
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Review Path",
+                        "website_url": "https://developer.example",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "human_review_path": str(review_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    comparison = json.loads(next((tmp_path / "out").glob("*/comparison.json")).read_text(encoding="utf-8"))
+
+    assert result["summary"]["results"][0]["human_review"]["verdict"] == "needs_screenshot"
+    assert comparison["rows"][0]["human_review"]["disagreements"] == [
+        "Cannot validate composition from CSS only."
+    ]
 
 
 def test_visual_diagnosis_lab_comparison_json_includes_signal_provenance(tmp_path):

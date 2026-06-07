@@ -162,10 +162,15 @@ why provenance matters: `visual_promise_mismatch` is not a visual heuristic, it
 comes from Magnetism; `viewport_obstruction_modal` is not a CSS/computed-style
 finding, it comes from screenshot vision.
 
-Recommended next step:
+Follow-up now implemented:
 
-1. Add human review notes to `comparison.json`.
-2. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
+1. `comparison.json` and `summary.json` can carry non-scoring `human_review`
+   notes from manifest rows.
+2. Only consider promotion if anti-pattern changes become explainable instead
+   of source-order dependent.
+
+The review notes are metadata only. They are intended for lab calibration and
+charting, not for changing the diagnosis outcome.
 
 ## Visual-Heavy Follow-up
 

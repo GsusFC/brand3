@@ -81,6 +81,7 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
             "brand_name": row["brand_name"],
             "website_url": row["website_url"],
             "category_hint": row.get("category_hint") or "",
+            "human_review": _human_review_for_row(row),
             "magnetism": {
                 "coherence_breakdown": coherence_breakdown or {},
                 "visual_identity": (coherence_breakdown or {}).get("visual_identity"),
@@ -148,6 +149,7 @@ def _comparison_json(summary: dict[str, Any]) -> dict[str, Any]:
                 "identity_read": read["identity_read"],
                 "brand_fit": read["brand_fit"],
                 "confidence": diagnosis["confidence"],
+                "human_review": row.get("human_review") or {},
                 "antipatterns": diagnosis["signals"]["antipatterns"],
                 "limitations": diagnosis["limitations"],
                 "evidence_refs": diagnosis["evidence_refs"],
@@ -180,6 +182,23 @@ def _row_payload(row: dict[str, Any], key: str) -> dict[str, Any] | None:
     if isinstance(inline, dict):
         return inline
     return _load_optional_json(row.get(f"{key}_path"))
+
+
+def _human_review_for_row(row: dict[str, Any]) -> dict[str, Any]:
+    payload = _row_payload(row, "human_review")
+    if not payload:
+        return {}
+    allowed = {
+        "reviewer",
+        "reviewed_at",
+        "verdict",
+        "profile_fit",
+        "identity_read_fit",
+        "notes",
+        "disagreements",
+        "recommended_changes",
+    }
+    return {key: value for key, value in payload.items() if key in allowed and value not in (None, "")}
 
 
 def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | None:

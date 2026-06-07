@@ -5,9 +5,12 @@
       "website_url": "https://www.hermes.com",
       "category_hint": "premium luxury fashion",
       "visual_signature_path": "examples/visual_signature/calibration_outputs/hermes.json",
-      "coherence_breakdown": {
-        "visual_identity": 0
-      }
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/hermes.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "coherence_breakdown": {}
     },
     {
       "brand_name": "Linear",
@@ -70,15 +73,18 @@
       "website_url": "https://www.joesplumbingnyc.com",
       "category_hint": "local service",
       "visual_signature_path": "examples/visual_signature/calibration_outputs/joe-s-plumbing-nyc.json",
-      "coherence_breakdown": {
-        "visual_identity": 0
-      }
+      "coherence_breakdown": {}
     },
     {
       "brand_name": "Stripe Docs",
       "website_url": "https://docs.stripe.com",
       "category_hint": "developer documentation",
       "visual_signature_path": "examples/visual_signature/calibration_outputs/stripe-docs.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/stripe-docs.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
       "coherence_breakdown": {
         "visual_identity": 78
       }
@@ -102,6 +108,11 @@
       "website_url": "https://www.notion.com",
       "category_hint": "template saas productivity",
       "visual_signature_path": "examples/visual_signature/calibration_outputs/notion.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/notion.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
       "coherence_breakdown": {
         "visual_identity": 82
       }

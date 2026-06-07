@@ -53,6 +53,29 @@ def build_visual_diagnosis(
             confidence="low",
             limitations=limitations,
         )
+    if not _has_visual_analysis_evidence(payload):
+        limitations = _dedupe([*capture.limitations, "visual_analysis_not_interpretable"])
+        return VisualDiagnosis(
+            status="unavailable",
+            capture=capture,
+            diagnosis=VisualDiagnosisRead(
+                identity_read="not_evaluable",
+                reference_profile="unknown",
+                profile_confidence="low",
+                distinctiveness="unknown",
+                polish="unknown",
+                brand_fit="unknown",
+                template_likeness="unknown",
+            ),
+            signals=VisualDiagnosisSignals(
+                positive=["screenshot evidence available"] if capture.available else [],
+                negative=["visual analysis evidence is unavailable or not interpretable"],
+                antipatterns=["capture_not_evaluable"],
+            ),
+            evidence_refs=evidence_refs,
+            confidence="low",
+            limitations=limitations,
+        )
 
     profile, profile_confidence = _reference_profile(payload, category_hint)
     antipatterns = _antipatterns(payload, coherence_breakdown, capture, profile)
@@ -184,6 +207,22 @@ def _reference_profile(payload: dict[str, Any], category_hint: str | None) -> tu
     if layout.get("visual_density") == "dense":
         return "editorial_media", "low"
     return "unknown", "low"
+
+
+def _has_visual_analysis_evidence(payload: dict[str, Any]) -> bool:
+    if not payload:
+        return False
+    if str(payload.get("interpretation_status") or "") == "not_interpretable":
+        return False
+    extraction = payload.get("extraction_confidence") or {}
+    if _as_float(extraction.get("score")) > 0:
+        return True
+    vision = payload.get("vision") if isinstance(payload.get("vision"), dict) else {}
+    if isinstance(vision, dict) and (
+        vision.get("screenshot_palette") or vision.get("composition") or vision.get("viewport_composition")
+    ):
+        return True
+    return False
 
 
 def _antipatterns(

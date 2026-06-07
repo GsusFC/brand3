@@ -30,7 +30,7 @@ Command:
 
 Latest run inspected:
 
-- `/tmp/brand3_visual_diagnosis_lab/20260607T064120Z`
+- `/tmp/brand3_visual_diagnosis_lab/20260607T065417Z`
 
 ## Result Summary
 
@@ -42,9 +42,9 @@ Latest run inspected:
 | The Verge | usable | editorial_media | editorially_coherent | high | card_heavy_composition, flat_typographic_hierarchy |
 | Allbirds | usable | ecommerce_mass_market | commerce_clear | high | card_heavy_composition |
 | Joe's Plumbing NYC | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
-| Stripe Docs | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
+| Stripe Docs | usable | developer_first | functionally_clear | high | flat_typographic_hierarchy |
 | Headspace | usable | wellness_lifestyle | emotionally_coherent | high | card_heavy_composition, flat_typographic_hierarchy |
-| Notion | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
+| Notion | usable | template_saas | polished_but_undifferentiated | high | template_saas_layout, card_heavy_composition, flat_typographic_hierarchy, low_distinctiveness_hero |
 | A24 | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
 
 ## What Worked
@@ -57,11 +57,11 @@ This is correct for:
 
 - Hermes;
 - Joe's Plumbing NYC;
-- Stripe Docs;
-- Notion;
 - A24.
 
-Some of those brands have Visual Signature extraction payloads, but the benchmark lacks usable screenshot evidence. The output `not_evaluable` is safer than calling them weak.
+Hermes now has a local screenshot reference, but the Visual Signature payload is still `not_interpretable`. The prototype correctly refuses to diagnose from screenshot presence alone because the deterministic mapper does not read pixels directly.
+
+Joe's Plumbing NYC and A24 still lack usable screenshot-backed visual analysis in this benchmark. The output `not_evaluable` is safer than calling them weak.
 
 ### Source Reconciliation
 
@@ -88,6 +88,8 @@ For the evaluable cases, profile assignment is directionally sensible:
 - The Verge -> `editorial_media`
 - Allbirds -> `ecommerce_mass_market`
 - Headspace -> `wellness_lifestyle`
+- Stripe Docs -> `developer_first`
+- Notion -> `template_saas`
 
 This is enough for lab exploration.
 
@@ -106,17 +108,15 @@ They are useful as early warning labels, but they need refinement before any rep
 
 ### Missing Screenshot Coverage
 
-Half of the benchmark could not be visually diagnosed because screenshot evidence was unavailable.
+Three benchmark cases could not be visually diagnosed.
 
-This is not a failure of the diagnosis contract. It shows that any future visual diagnosis depends first on reliable screenshot capture.
+This is not a failure of the diagnosis contract. It shows that any future visual diagnosis depends first on reliable screenshot capture and interpretable visual analysis.
 
-Priority cases to capture next:
+Priority cases to fix next:
 
-- Hermes;
-- Stripe Docs;
-- Notion;
 - A24;
 - one local service brand with a valid live domain.
+- Hermes, but only after regenerating interpretable Visual Signature evidence from the existing viewport screenshot.
 
 ### No Human Judgment Yet
 
@@ -132,7 +132,7 @@ Continue the lab, but keep it blocked from scoring and public reports.
 
 Recommended next step:
 
-1. Generate or attach reliable screenshots for the currently non-evaluable cases.
+1. Generate or attach reliable screenshots and interpretable visual evidence for the currently non-evaluable cases.
 2. Run the same manifest again.
 3. Add a short human note per brand.
 4. Compare against real Magnetism `visual_identity` breakdowns.
@@ -156,7 +156,7 @@ Validated:
 
 Result:
 
-- `6 passed`
+- `7 passed`
 
 Broader related subset:
 

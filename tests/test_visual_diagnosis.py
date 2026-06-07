@@ -176,3 +176,28 @@ def test_visual_diagnosis_suppresses_stale_screenshot_limitation_when_capture_ex
     result = diagnosis.to_dict()
     assert result["capture"]["quality"] == "good"
     assert "screenshot_not_available" not in result["limitations"]
+
+
+def test_visual_diagnosis_requires_interpretable_visual_analysis_even_with_screenshot():
+    payload = _visual_signature_payload()
+    payload["interpretation_status"] = "not_interpretable"
+    payload["extraction_confidence"]["score"] = 0.0
+    payload["vision"] = {}
+
+    diagnosis = build_visual_diagnosis(
+        brand_name="Blocked",
+        website_url="https://blocked.example",
+        screenshot_capture={
+            "screenshot_url": "file:///tmp/blocked.png",
+            "capture_type": "viewport",
+            "quality": "usable",
+        },
+        visual_signature_payload=payload,
+        coherence_breakdown={},
+        category_hint="premium luxury",
+    )
+
+    result = diagnosis.to_dict()
+    assert result["status"] == "unavailable"
+    assert result["diagnosis"]["identity_read"] == "not_evaluable"
+    assert "visual_analysis_not_interpretable" in result["limitations"]

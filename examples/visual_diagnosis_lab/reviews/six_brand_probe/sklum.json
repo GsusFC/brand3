@@ -1,0 +1,13 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "directionally_useful",
+  "profile_fit": "yes",
+  "identity_read_fit": "yes",
+  "notes": "The diagnosis usefully reads a commerce surface and the detected composition anti-patterns are plausible for a furniture ecommerce page. This is a good candidate for comparing local output against deploy output.",
+  "disagreements": [],
+  "recommended_changes": [
+    "Use this row as a regression case for ecommerce evidence coverage.",
+    "Keep card-heavy and flat hierarchy separate from readiness/publication decisions."
+  ]
+}

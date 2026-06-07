@@ -164,6 +164,10 @@ Example files:
 - `examples/visual_diagnosis_lab/human_review_manifest.example.json`
 - `examples/visual_diagnosis_lab/reviews/example-review.json`
 
+First six-brand review probe:
+
+- `docs/visual_diagnosis_human_review_probe_2026_06_07.md`
+
 Allowed review fields are `reviewer`, `reviewed_at`, `verdict`, `profile_fit`,
 `identity_read_fit`, `notes`, `disagreements` and `recommended_changes`.
 Unknown fields are ignored so review payloads do not become an accidental

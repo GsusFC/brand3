@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "insufficient_visual_evidence",
+  "profile_fit": "partial",
+  "identity_read_fit": "partial",
+  "notes": "The premium luxury read is plausible, but the run only has computed styles. Luxury diagnosis depends heavily on image treatment, rhythm, restraint and composition, so this needs screenshot or multimodal evidence.",
+  "disagreements": [
+    "A visually distinctive read should not be considered validated without screenshot evidence."
+  ],
+  "recommended_changes": [
+    "Add screenshot capture for Hermes before comparing luxury profile quality.",
+    "Keep this row as evidence of why computed-style-only confidence must remain capped."
+  ]
+}

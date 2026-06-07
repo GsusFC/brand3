@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "useful_but_obstructed",
+  "profile_fit": "yes",
+  "identity_read_fit": "yes",
+  "notes": "The diagnosis correctly reads a functional developer brand, but the viewport obstruction is an acquisition/session condition that should be separated from core visual identity quality.",
+  "disagreements": [
+    "Viewport obstruction should not be aggregated with enduring brand anti-patterns."
+  ],
+  "recommended_changes": [
+    "Chart viewport obstruction as capture quality or page-state evidence.",
+    "Keep the modal signal, but do not let it dominate identity scoring."
+  ]
+}

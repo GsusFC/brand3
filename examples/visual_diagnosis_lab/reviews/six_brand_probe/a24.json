@@ -1,0 +1,15 @@
+{
+  "reviewer": "brand3-lab",
+  "reviewed_at": "2026-06-07",
+  "verdict": "insufficient_visual_evidence",
+  "profile_fit": "partial",
+  "identity_read_fit": "partial",
+  "notes": "The editorial direction is plausible from computed styles, but there is no screenshot vision or Magnetism evidence in this run. Treat the result as a hypothesis, not a diagnosis.",
+  "disagreements": [
+    "Computed styles alone cannot validate editorial composition or media treatment."
+  ],
+  "recommended_changes": [
+    "Add screenshot capture before using A24 as a taste benchmark.",
+    "Do not tune editorial heuristics from this row alone."
+  ]
+}

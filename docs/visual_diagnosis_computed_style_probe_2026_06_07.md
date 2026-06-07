@@ -164,9 +164,43 @@ finding, it comes from screenshot vision.
 
 Recommended next step:
 
-1. Re-run the same four brands plus two visual-heavy brands.
-2. Add human review notes to `comparison.json`.
-3. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
+1. Add human review notes to `comparison.json`.
+2. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
+
+## Visual-Heavy Follow-up
+
+The probe was extended with two visual-heavy brands:
+
+- `A24` - `https://www.a24films.com` - `editorial_media`
+- `Hermes` - `https://www.hermes.com/us/en/` - `premium_luxury`
+
+Computed-style capture:
+
+- `/tmp/brand3_visual_diagnosis_visual_heavy_probe/computed_styles/20260607T114626Z/capture_manifest.json`
+
+Six-brand lab run:
+
+- `/tmp/brand3_visual_diagnosis_visual_heavy_probe/lab_six_brand_provenance_v2/20260607T114816Z`
+
+Chart-ready output:
+
+- `/tmp/brand3_visual_diagnosis_visual_heavy_probe/lab_six_brand_provenance_v2/20260607T114816Z/comparison.json`
+
+Result:
+
+| Brand | Profile | Identity read | Confidence | Key provenance |
+| --- | --- | --- | --- | --- |
+| `www.netlify.com` | `developer_first` | `functionally_clear` | `high` | `card_heavy_composition` from `web_payload`, observed, medium |
+| `www.langchain.com` | `developer_first` | `functionally_clear` | `high` | `viewport_obstruction_modal` from `screenshot_vision`, observed, high |
+| `elevenlabs.io` | `ai_native` | `weak_or_inconsistent` | `high` | `visual_promise_mismatch` from `magnetism`, observed, high |
+| `www.sklum.com` | `ecommerce_mass_market` | `commerce_clear` | `high` | `flat_typographic_hierarchy` from `computed_style` and `web_payload`, observed, high |
+| `A24` | `editorial_media` | `editorially_coherent` | `medium` | `flat_typographic_hierarchy` from `computed_style`, observed, medium; missing screenshot and Magnetism evidence are explicit limitations |
+| `Hermes` | `premium_luxury` | `visually_distinctive` | `medium` | no anti-patterns; missing screenshot and Magnetism evidence are explicit limitations |
+
+This confirms the current boundary: computed styles can support a directional
+profile/read for visual-heavy brands, but without screenshot vision and Magnetism
+coherence the result must remain `limited`. That is the correct behavior for
+Lab.
 
 ## Verification
 
@@ -180,3 +214,4 @@ Recommended next step:
 Result:
 
 - `68 passed, 5 subtests passed`
+- `29 passed` for the focused Visual Diagnosis Lab tests after the visual-heavy probe

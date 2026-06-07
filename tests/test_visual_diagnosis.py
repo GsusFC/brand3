@@ -829,6 +829,36 @@ def test_visual_diagnosis_lab_comparison_json_includes_signal_provenance(tmp_pat
     assert provenance["weak_cta_weight"]["evidence_level"] == "inferred"
 
 
+def test_visual_diagnosis_lab_attributes_missing_evidence_to_expected_source(tmp_path):
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Computed Only",
+                        "website_url": "https://developer.example",
+                        "category_hint": "developer infrastructure",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    provenance = {
+        (item["kind"], item["signal"]): item
+        for item in result["summary"]["results"][0]["signal_provenance"]
+    }
+
+    assert provenance[("limitation", "screenshot_missing")]["sources"] == ["screenshot_vision"]
+    assert provenance[("limitation", "coherence_breakdown_missing")]["sources"] == ["magnetism"]
+
+
 def test_visual_diagnosis_lab_marks_obstruction_provenance_as_screenshot_vision(tmp_path):
     screenshot = tmp_path / "shot.png"
     _write_png(screenshot, 80, 60, _dense_pixels(80, 60))

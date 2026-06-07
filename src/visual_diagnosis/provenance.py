@@ -76,6 +76,24 @@ def _provenance_for_signal(
             evidence_level="observed",
             notes=["derived from Magnetism visual_identity threshold"],
         )
+    if signal == "screenshot_missing":
+        return VisualSignalProvenance(
+            signal=signal,
+            kind=kind,
+            sources=["screenshot_vision"],
+            confidence="high",
+            evidence_level="weak_evidence",
+            notes=["missing screenshot or vision evidence"],
+        )
+    if signal == "coherence_breakdown_missing":
+        return VisualSignalProvenance(
+            signal=signal,
+            kind=kind,
+            sources=["magnetism"],
+            confidence="high",
+            evidence_level="weak_evidence",
+            notes=["missing Magnetism coherence evidence"],
+        )
     if signal in {"card_heavy_composition", "flat_typographic_hierarchy", "template_saas_layout"}:
         sources = matched_sources or _intersection(available_source_types, ["computed_style", "web_payload", "visual_signature"])
         return VisualSignalProvenance(

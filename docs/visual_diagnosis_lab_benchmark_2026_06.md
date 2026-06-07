@@ -301,3 +301,7 @@ Current result:
 The prototype is already useful as a guardrail: it prevents Brand3 from confusing unavailable visual evidence with weak visual identity.
 
 The next improvement is not more taste vocabulary. It is better visual evidence coverage and a real comparison against Magnetism outputs.
+
+The six-brand provenance probe confirms this: A24 and Hermes can be directionally
+classified from computed styles, but they stay `limited` until screenshot vision
+and Magnetism evidence are present.

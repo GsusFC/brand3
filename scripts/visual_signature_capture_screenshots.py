@@ -901,6 +901,122 @@ def _element_label(element: Any) -> str:
     return ""
 
 
+def _visible_obstruction_dom_snapshot(page: Any) -> str:
+    if not hasattr(page, "evaluate"):
+        try:
+            return page.content()
+        except Exception:
+            return ""
+    try:
+        rows = page.evaluate(
+            """
+            () => {
+              const selectors = [
+                '[role="dialog"]',
+                '[role="alertdialog"]',
+                '[aria-modal="true"]',
+                '[aria-label*="cookie" i]',
+                '[aria-label*="consent" i]',
+                '[aria-label*="privacy" i]',
+                '[class*="cookie" i]',
+                '[id*="cookie" i]',
+                '[class*="consent" i]',
+                '[id*="consent" i]',
+                '[class*="modal" i]',
+                '[id*="modal" i]',
+                '[class*="popup" i]',
+                '[id*="popup" i]',
+                '[class*="newsletter" i]',
+                '[id*="newsletter" i]',
+                '[class*="banner" i]',
+                '[id*="banner" i]'
+              ].join(',');
+              const nodes = Array.from(document.querySelectorAll(selectors));
+              const candidates = [];
+              const seen = new Set();
+              for (const node of nodes) {
+                if (!node || seen.has(node)) continue;
+                seen.add(node);
+                const rect = node.getBoundingClientRect ? node.getBoundingClientRect() : null;
+                const style = window.getComputedStyle ? window.getComputedStyle(node) : null;
+                if (!rect || !style) continue;
+                const visible = rect.width > 0 && rect.height > 0
+                  && rect.bottom > 0 && rect.right > 0
+                  && rect.top < (window.innerHeight || 0)
+                  && rect.left < (window.innerWidth || 0)
+                  && style.display !== 'none'
+                  && style.visibility !== 'hidden'
+                  && Number(style.opacity || '1') > 0.02;
+                if (!visible) continue;
+                const position = style.position || '';
+                const zIndex = style.zIndex || '';
+                const role = node.getAttribute ? (node.getAttribute('role') || '') : '';
+                const ariaModal = node.getAttribute ? (node.getAttribute('aria-modal') || '') : '';
+                const ariaLabel = node.getAttribute ? (node.getAttribute('aria-label') || '') : '';
+                const className = typeof node.className === 'string' ? node.className : '';
+                const id = node.id || '';
+                const text = (node.textContent || '').trim().replace(/\\s+/g, ' ').slice(0, 600);
+                const overlayish = ['fixed', 'sticky'].includes(position)
+                  || role === 'dialog'
+                  || role === 'alertdialog'
+                  || ariaModal === 'true'
+                  || /cookie|consent|privacy|modal|popup|newsletter|banner/i.test(`${id} ${className} ${ariaLabel} ${text}`)
+                  || Number.parseInt(zIndex || '0', 10) >= 100;
+                if (!overlayish) continue;
+                candidates.push({
+                  tag: node.tagName ? node.tagName.toLowerCase() : '',
+                  id,
+                  className,
+                  role,
+                  ariaModal,
+                  ariaLabel,
+                  position,
+                  zIndex,
+                  width: Math.round(rect.width || 0),
+                  height: Math.round(rect.height || 0),
+                  top: Math.round(rect.top || 0),
+                  left: Math.round(rect.left || 0),
+                  text
+                });
+              }
+              return candidates.slice(0, 24);
+            }
+            """
+        )
+    except Exception:
+        try:
+            return page.content()
+        except Exception:
+            return ""
+    if not isinstance(rows, list):
+        return ""
+    parts: list[str] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        attrs = " ".join(
+            f"{key}={value}"
+            for key, value in {
+                "tag": row.get("tag"),
+                "id": row.get("id"),
+                "class": row.get("className"),
+                "role": row.get("role"),
+                "aria-modal": row.get("ariaModal"),
+                "aria-label": row.get("ariaLabel"),
+                "position": row.get("position"),
+                "z-index": row.get("zIndex"),
+                "width": row.get("width"),
+                "height": row.get("height"),
+                "top": row.get("top"),
+                "left": row.get("left"),
+            }.items()
+            if value not in (None, "")
+        )
+        text = str(row.get("text") or "")
+        parts.append(f"<visible-overlay {attrs}>{text}</visible-overlay>")
+    return "\n".join(parts)
+
+
 def _normalize_label(value: str) -> str:
     return " ".join(str(value or "").lower().replace("\n", " ").split())
 
@@ -1295,7 +1411,7 @@ def _capture_with_playwright(
             pass
 
         raw_path = Path(screenshot_path)
-        raw_dom_html = page.content()
+        raw_dom_html = _visible_obstruction_dom_snapshot(page)
         page.screenshot(path=str(raw_path), full_page=normalized_capture_type != "viewport")
         raw_snapshot = _snapshot_for_path(raw_path, dom_html=raw_dom_html)
         width = page.viewport_size["width"] if page.viewport_size else viewport_width
@@ -1383,7 +1499,7 @@ def _capture_with_playwright(
                         page.wait_for_load_state("networkidle", timeout=5000)
                     except Exception:
                         pass
-                    clean_dom_html = page.content()
+                    clean_dom_html = _visible_obstruction_dom_snapshot(page)
                     page.screenshot(path=str(clean_path), full_page=False)
                     clean_snapshot = _snapshot_for_path(clean_path, dom_html=clean_dom_html)
                     result["clean_attempt_screenshot_path"] = str(clean_path)

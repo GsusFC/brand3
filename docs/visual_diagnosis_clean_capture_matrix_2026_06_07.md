@@ -110,3 +110,48 @@ The next useful investigation is capture mechanics:
    different selector path.
 4. Keep raw evidence primary until at least one matrix produces stable
    `clear_improvement` or defensible `partial_improvement` cases.
+
+## Follow-up: Visible Overlay DOM Snapshot
+
+After verifying that consent clicks were firing but the post-click detector still
+reported blocked states, the capture path was changed to pass only visible
+overlay-like DOM snippets into obstruction analysis instead of the full page
+HTML. This avoids treating hidden CMP remnants, footer privacy links, or global
+site markup as active first-viewport obstruction evidence.
+
+Focused probe:
+
+- Inputs: Le Labo, Netlify, ElevenLabs.
+- Captures: 3/3 OK.
+- Attempted dismissals: 3/3.
+- `clear_improvement`: 2/3.
+- `no_material_improvement`: 1/3.
+- Netlify and ElevenLabs became clean after rejecting cookies.
+- Le Labo remained obstructed because a visible newsletter/promo layer remained
+  after accepting cookies.
+
+Matrix rerun:
+
+- Captures: 8/8 OK.
+- Attempted dismissals: 4.
+- Successful dismissals: 2.
+- `clean_attempt_quality_distribution`: `{"clear_improvement": 2, "no_material_improvement": 2}`.
+- Clear improvements: ElevenLabs, Netlify.
+- No material improvement: Allbirds, Le Labo.
+- No attempted mutation: OpenAI, Notion, Linear, Sklum.
+
+Interpretation:
+
+- The previous 0/5 result was partly caused by false positives from non-visible
+  DOM.
+- The safe mutation policy is still conservative: visible promo/newsletter
+  layers are not treated as solved cookie banners.
+- This is a Lab-only capture robustness improvement, not a reason to connect
+  Visual Diagnosis to Brand Audit scoring.
+
+Known limitation:
+
+- The current click-target discovery can still enumerate some controls outside
+  the first viewport in long pages. The ownership and interaction policy blocks
+  unsafe clicks, but this should be tightened later so candidate discovery uses
+  the same first-viewport discipline as obstruction analysis.

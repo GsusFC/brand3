@@ -695,6 +695,56 @@ class _FakePage:
         return _FakeLocator(self.elements)
 
 
+class _FakeSnapshotPage:
+    def __init__(self, rows=None, *, error: Exception | None = None):
+        self.rows = rows
+        self.error = error
+
+    def evaluate(self, script: str):
+        if self.error:
+            raise self.error
+        return self.rows
+
+    def content(self):
+        return "<html>fallback cookie modal</html>"
+
+
+def test_visible_obstruction_dom_snapshot_serializes_visible_overlay_rows():
+    capturer = _load_capturer()
+    page = _FakeSnapshotPage(
+        [
+            {
+                "tag": "div",
+                "id": "cookie-banner",
+                "className": "fixed bottom-0",
+                "role": "dialog",
+                "ariaModal": "true",
+                "ariaLabel": "Cookie banner",
+                "position": "fixed",
+                "zIndex": "1000",
+                "width": 320,
+                "height": 160,
+                "top": 720,
+                "left": 32,
+                "text": "Accept All Reject All Cookies Settings",
+            }
+        ]
+    )
+
+    snapshot = capturer._visible_obstruction_dom_snapshot(page)
+
+    assert "visible-overlay" in snapshot
+    assert "cookie-banner" in snapshot
+    assert "Accept All Reject All" in snapshot
+
+
+def test_visible_obstruction_dom_snapshot_falls_back_to_page_content():
+    capturer = _load_capturer()
+    page = _FakeSnapshotPage(error=RuntimeError("js unavailable"))
+
+    assert capturer._visible_obstruction_dom_snapshot(page) == "<html>fallback cookie modal</html>"
+
+
 def test_cookie_modal_accept_all_is_safe_candidate():
     capturer = _load_capturer()
     page = _FakePage(["Accept all", "Manage choices"])

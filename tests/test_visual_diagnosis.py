@@ -790,6 +790,86 @@ def test_visual_diagnosis_lab_writes_comparison_json_for_graphs(tmp_path):
     assert result["summary"]["results"][0]["source_comparison"][0]["source_type"] == "computed_style"
 
 
+def test_visual_diagnosis_lab_comparison_json_includes_signal_provenance(tmp_path):
+    snapshot = _computed_style_snapshot()
+    snapshot["elements"] = [
+        item for item in snapshot["elements"] if "cta" not in str(item.get("className") or "").lower()
+    ]
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(snapshot), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Weak CTA",
+                        "website_url": "https://developer.example",
+                        "category_hint": "ai native",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "coherence_breakdown": {"visual_identity": 52},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    run_lab(manifest_path, output_root=tmp_path / "out")
+    comparison = json.loads(next((tmp_path / "out").glob("*/comparison.json")).read_text(encoding="utf-8"))
+    provenance = {
+        item["signal"]: item
+        for item in comparison["rows"][0]["signal_provenance"]
+        if item["kind"] == "antipattern"
+    }
+
+    assert provenance["visual_promise_mismatch"]["sources"] == ["magnetism"]
+    assert provenance["visual_promise_mismatch"]["evidence_level"] == "observed"
+    assert provenance["weak_cta_weight"]["sources"] == ["computed_style"]
+    assert provenance["weak_cta_weight"]["evidence_level"] == "inferred"
+
+
+def test_visual_diagnosis_lab_marks_obstruction_provenance_as_screenshot_vision(tmp_path):
+    screenshot = tmp_path / "shot.png"
+    _write_png(screenshot, 80, 60, _dense_pixels(80, 60))
+    payload = _visual_signature_payload()
+    payload["vision"]["viewport_obstruction"] = {"present": True, "type": "modal"}
+    visual_path = tmp_path / "visual.json"
+    visual_path.write_text(json.dumps(payload), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Obstructed",
+                        "website_url": "https://obstructed.example",
+                        "visual_signature_path": str(visual_path),
+                        "coherence_breakdown": {"visual_identity": 80},
+                        "screenshot_capture": {
+                            "screenshot_url": f"file://{screenshot}",
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    provenance = {
+        item["signal"]: item
+        for item in result["summary"]["results"][0]["signal_provenance"]
+        if item["kind"] == "antipattern"
+    }
+
+    assert provenance["viewport_obstruction_modal"]["sources"] == ["screenshot_vision"]
+    assert provenance["viewport_obstruction_modal"]["evidence_level"] == "observed"
+    assert provenance["viewport_obstruction_modal"]["confidence"] == "high"
+
+
 def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path):
     visual_path = tmp_path / "visual.json"
     visual_path.write_text(json.dumps(_visual_signature_payload()), encoding="utf-8")

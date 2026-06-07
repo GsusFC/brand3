@@ -168,7 +168,13 @@ The lab now writes two run-level outputs:
 
 `comparison.json` uses `visual-diagnosis-comparison-v1` and includes source
 comparison rows per brand, available source types, fusion notes, anti-patterns,
-limitations and evidence refs.
+limitations, evidence refs and `signal_provenance`.
+
+`signal_provenance` attributes anti-patterns, positives, negatives and
+limitations to sources such as `computed_style`, `web_payload`,
+`screenshot_vision` and `magnetism`. Historical
+`external_candidate_summary_legacy` evidence is always low-confidence by
+policy.
 
 It can read historical external visual candidate evidence through:
 
@@ -270,7 +276,7 @@ Validated:
 
 Result:
 
-- `26 passed`
+- `28 passed`
 
 Broader related subset:
 
@@ -288,7 +294,7 @@ Broader related subset:
 
 Current result:
 
-- `83 passed, 5 subtests passed`
+- `68 passed, 5 subtests passed` for the current visual diagnosis/provenance subset.
 
 ## Bottom Line
 

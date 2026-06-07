@@ -22,6 +22,7 @@ from src.visual_diagnosis.evidence import (
     enrich_visual_signature_with_local_screenshot,
     screenshot_capture_to_visual_signature,
 )
+from src.visual_diagnosis.provenance import build_signal_provenance
 
 
 DEFAULT_OUTPUT_ROOT = Path("out") / "visual_diagnosis_lab"
@@ -65,6 +66,17 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
             coherence_breakdown=coherence_breakdown,
             category_hint=str(row.get("category_hint") or ""),
         )
+        diagnosis_payload = diagnosis.to_dict()
+        source_comparison = _source_comparison_for_row(
+            row,
+            bundle=bundle,
+            coherence_breakdown=coherence_breakdown,
+        )
+        signal_provenance = build_signal_provenance(
+            diagnosis=diagnosis_payload,
+            source_comparison=source_comparison,
+            available_source_types=bundle.to_dict().get("available_source_types") or [],
+        )
         result = {
             "brand_name": row["brand_name"],
             "website_url": row["website_url"],
@@ -74,12 +86,9 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
                 "visual_identity": (coherence_breakdown or {}).get("visual_identity"),
             },
             "visual_evidence_bundle": bundle.to_dict(),
-            "source_comparison": _source_comparison_for_row(
-                row,
-                bundle=bundle,
-                coherence_breakdown=coherence_breakdown,
-            ),
-            "diagnosis": diagnosis.to_dict(),
+            "source_comparison": source_comparison,
+            "signal_provenance": signal_provenance,
+            "diagnosis": diagnosis_payload,
         }
         results.append(result)
         _write_json(output_dir / f"{_slug(str(row['brand_name']))}.json", result)
@@ -145,6 +154,7 @@ def _comparison_json(summary: dict[str, Any]) -> dict[str, Any]:
                 "available_source_types": (row.get("visual_evidence_bundle") or {}).get("available_source_types") or [],
                 "fusion_notes": (row.get("visual_evidence_bundle") or {}).get("fusion_notes") or [],
                 "source_comparison": row.get("source_comparison") or [],
+                "signal_provenance": row.get("signal_provenance") or [],
             }
         )
     return {

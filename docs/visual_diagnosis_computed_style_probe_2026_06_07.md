@@ -134,12 +134,39 @@ stable, and the source list/fusion notes are explicit enough for graphs and
 human review. It still needs source-level anti-pattern provenance before any
 promotion decision.
 
+## Provenance Follow-up
+
+The lab now emits `signal_provenance` in `summary.json` and `comparison.json`.
+This explains each signal as `observed`, `inferred`, `conflicting` or
+`weak_evidence`, with source attribution and confidence.
+
+Run inspected:
+
+- `/tmp/brand3_visual_diagnosis_db_probe/lab_provenance_check/20260607T095837Z`
+
+Anti-pattern provenance from the four-brand probe:
+
+| Brand | Signal | Sources | Evidence level | Confidence |
+| --- | --- | --- | --- | --- |
+| `www.netlify.com` | `card_heavy_composition` | `web_payload` | `observed` | `medium` |
+| `www.langchain.com` | `card_heavy_composition` | `computed_style`, `web_payload` | `observed` | `high` |
+| `www.langchain.com` | `flat_typographic_hierarchy` | `computed_style` | `observed` | `medium` |
+| `www.langchain.com` | `viewport_obstruction_modal` | `screenshot_vision` | `observed` | `high` |
+| `elevenlabs.io` | `card_heavy_composition` | `web_payload` | `observed` | `medium` |
+| `elevenlabs.io` | `visual_promise_mismatch` | `magnetism` | `observed` | `high` |
+| `www.sklum.com` | `card_heavy_composition` | `computed_style`, `web_payload` | `observed` | `high` |
+| `www.sklum.com` | `flat_typographic_hierarchy` | `computed_style`, `web_payload` | `observed` | `high` |
+
+This is the first result that is suitable for charting by source. It also shows
+why provenance matters: `visual_promise_mismatch` is not a visual heuristic, it
+comes from Magnetism; `viewport_obstruction_modal` is not a CSS/computed-style
+finding, it comes from screenshot vision.
+
 Recommended next step:
 
-1. Add source-specific anti-pattern provenance.
-2. Re-run the same four brands plus two visual-heavy brands.
-3. Add human review notes to `comparison.json`.
-4. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
+1. Re-run the same four brands plus two visual-heavy brands.
+2. Add human review notes to `comparison.json`.
+3. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
 
 ## Verification
 
@@ -152,4 +179,4 @@ Recommended next step:
 
 Result:
 
-- `66 passed, 5 subtests passed`
+- `68 passed, 5 subtests passed`

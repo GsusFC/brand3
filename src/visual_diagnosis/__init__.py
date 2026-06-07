@@ -17,11 +17,13 @@ from src.visual_diagnosis.style_capture import (
     capture_computed_style_snapshot,
     extract_computed_style_snapshot_from_page,
 )
+from src.visual_diagnosis.provenance import VisualSignalProvenance, build_signal_provenance
 
 __all__ = [
     "VisualDiagnosis",
     "VisualEvidenceBundle",
     "VisualEvidenceSource",
+    "VisualSignalProvenance",
     "VisualEvidence",
     "build_visual_diagnosis",
     "build_visual_evidence_from_local_inputs",
@@ -29,4 +31,5 @@ __all__ = [
     "computed_style_snapshot_to_visual_signature",
     "enrich_visual_signature_with_local_screenshot",
     "extract_computed_style_snapshot_from_page",
+    "build_signal_provenance",
 ]

@@ -241,14 +241,14 @@ def _antipatterns(
 ) -> list[str]:
     if capture.quality in {"missing", "poor"}:
         source = str(payload.get("source") or "")
-        if source in {
+        can_continue_without_capture = source in {
             "dom_css_visual_lab",
             "external_candidate_summary_legacy",
             "computed_style_visual_lab",
             "visual_evidence_bundle_lab",
-        }:
-            return []
-        return ["capture_not_evaluable"]
+        }
+        if not can_continue_without_capture:
+            return ["capture_not_evaluable"]
     components = payload.get("components") or {}
     layout = payload.get("layout") or {}
     colors = payload.get("colors") or {}

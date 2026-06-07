@@ -120,6 +120,8 @@ EXA_SEARCH_TYPES = {
     "exa-deep-reasoning": "deep-reasoning",
 }
 
+EXA_DEEP_VARIANTS = frozenset({"exa-deep-lite", "exa-deep", "exa-deep-reasoning"})
+
 
 @dataclass(frozen=True)
 class LabCase:
@@ -177,6 +179,7 @@ def main() -> int:
                     providers,
                     max_queries=args.max_queries,
                     query_profile=args.query_profile,
+                    escalation_mode=args.escalation_mode,
                 ),
                 indent=2,
                 ensure_ascii=False,
@@ -196,6 +199,7 @@ def main() -> int:
             timeout_seconds=args.timeout,
             max_queries=args.max_queries,
             query_profile=args.query_profile,
+            escalation_mode=args.escalation_mode,
         )
         case_payloads.append(payload)
         bakeoff_cases.append(
@@ -228,6 +232,7 @@ def main() -> int:
         "created_at": datetime.now(timezone.utc).isoformat(),
         "providers": providers,
         "query_profile": args.query_profile,
+        "escalation_mode": args.escalation_mode,
         "discarded_providers": _discarded_providers(providers),
         "case_count": len(case_payloads),
         "cases": [_case_summary(item) for item in case_payloads],
@@ -250,6 +255,7 @@ def run_case(
     timeout_seconds: int = 30,
     max_queries: int = 0,
     query_profile: str = "compact",
+    escalation_mode: str = "off",
 ) -> dict[str, Any]:
     seed = BrandSeed(case.url, kind="url", provided_name=case.brand)
     entity = resolve_brand_seed(seed)
@@ -267,33 +273,48 @@ def run_case(
     query_requests = [request for request in plan.source_requests if request.query]
     if max_queries:
         query_requests = query_requests[: max(1, max_queries)]
-    for provider in [item for item in providers if item in SEARCH_PROVIDER_KEYS]:
-        for request in query_requests:
-            query = _profiled_query(
-                request.query,
-                profile=query_profile,
-                intent=request.intent,
-                channel=request.channel,
-                case=case,
-                entity=entity,
-            )
-            channel = INTENT_CHANNEL.get(request.intent, request.channel)
-            provider_runs.append(
-                _timed_provider(
-                    provider,
-                    lambda provider=provider, query=query, channel=channel: _run_search_provider(
-                        provider,
-                        query,
-                        channel=channel,
-                        entity=entity,
-                        seed_url=case.url,
-                        brand=case.brand,
-                        max_results=max_results,
-                        timeout_seconds=timeout_seconds,
-                    ),
+    search_providers = [item for item in providers if item in SEARCH_PROVIDER_KEYS]
+    if escalation_mode == "conditional":
+        conditional_runs = _run_conditional_search_providers(
+            search_providers,
+            query_requests,
+            case=case,
+            entity=entity,
+            max_results=max_results,
+            timeout_seconds=timeout_seconds,
+            query_profile=query_profile,
+        )
+        provider_runs.extend(conditional_runs)
+        for run in conditional_runs:
+            observations.extend(run.get("observations") or [])
+    else:
+        for provider in search_providers:
+            for request in query_requests:
+                query = _profiled_query(
+                    request.query,
+                    profile=query_profile,
+                    intent=request.intent,
+                    channel=request.channel,
+                    case=case,
+                    entity=entity,
                 )
-            )
-            observations.extend(provider_runs[-1]["observations"])
+                channel = INTENT_CHANNEL.get(request.intent, request.channel)
+                provider_runs.append(
+                    _timed_provider(
+                        provider,
+                        lambda provider=provider, query=query, channel=channel: _run_search_provider(
+                            provider,
+                            query,
+                            channel=channel,
+                            entity=entity,
+                            seed_url=case.url,
+                            brand=case.brand,
+                            max_results=max_results,
+                            timeout_seconds=timeout_seconds,
+                        ),
+                    )
+                )
+                observations.extend(provider_runs[-1]["observations"])
 
     inventory = build_brand_source_inventory(plan, observations)
     source_consensus = _source_consensus(observations)
@@ -304,6 +325,7 @@ def run_case(
         "entity": entity.to_dict(),
         "plan": plan.to_dict(),
         "query_profile": query_profile,
+        "escalation_mode": escalation_mode,
         "providers": providers,
         "provider_runs": [_provider_run_to_dict(item) for item in provider_runs],
         "acquisition_steps": acquisition_steps,
@@ -343,6 +365,110 @@ def _profiled_query(
         "Prefer attributable URLs that help Brand3 evaluate entity identity, owned surfaces, external context, "
         "source quality, and ambiguity. Avoid generic results that do not reduce uncertainty."
     )
+
+
+def _run_conditional_search_providers(
+    providers: list[str],
+    query_requests,
+    *,
+    case: LabCase,
+    entity,
+    max_results: int,
+    timeout_seconds: int,
+    query_profile: str,
+) -> list[dict[str, Any]]:
+    base_providers = [provider for provider in providers if provider not in EXA_DEEP_VARIANTS]
+    escalation_providers = [provider for provider in providers if provider in EXA_DEEP_VARIANTS]
+    runs: list[dict[str, Any]] = []
+    for request in query_requests:
+        query = _profiled_query(
+            request.query,
+            profile=query_profile,
+            intent=request.intent,
+            channel=request.channel,
+            case=case,
+            entity=entity,
+        )
+        channel = INTENT_CHANNEL.get(request.intent, request.channel)
+        base_observations: list[BrandSourceObservation] = []
+        for provider in base_providers:
+            run = _timed_provider(
+                provider,
+                lambda provider=provider, query=query, channel=channel: _run_search_provider(
+                    provider,
+                    query,
+                    channel=channel,
+                    entity=entity,
+                    seed_url=case.url,
+                    brand=case.brand,
+                    max_results=max_results,
+                    timeout_seconds=timeout_seconds,
+                ),
+            )
+            runs.append(run)
+            base_observations.extend(
+                item for item in run.get("observations") or [] if isinstance(item, BrandSourceObservation)
+            )
+
+        should_escalate, reason = _should_escalate_deep_search(base_observations, entity=entity)
+        for provider in escalation_providers:
+            if not should_escalate:
+                runs.append(_skipped_provider_run(provider, query=query, reason=reason))
+                continue
+            runs.append(
+                _timed_provider(
+                    provider,
+                    lambda provider=provider, query=query, channel=channel: _run_search_provider(
+                        provider,
+                        query,
+                        channel=channel,
+                        entity=entity,
+                        seed_url=case.url,
+                        brand=case.brand,
+                        max_results=max_results,
+                        timeout_seconds=timeout_seconds,
+                    ),
+                )
+            )
+    return runs
+
+
+def _should_escalate_deep_search(
+    observations: list[BrandSourceObservation],
+    *,
+    entity,
+) -> tuple[bool, str]:
+    if not observations:
+        return True, "no_base_observations"
+    clean_observed = [
+        item
+        for item in observations
+        if item.status == "observed"
+        and item.evidence_eligibility == "eligible"
+        and not item.requires_human_review
+        and item.source_class not in {"related_unresolved", "noise", "marketplace_listing"}
+    ]
+    if not clean_observed:
+        return True, "no_clean_base_observation"
+    if getattr(entity, "resolution_status", "") != "resolved":
+        owned_clean = [item for item in clean_observed if item.source_class == "owned"]
+        if not owned_clean:
+            return True, "unresolved_entity_without_owned_base_source"
+    return False, "base_observation_sufficient"
+
+
+def _skipped_provider_run(provider: str, *, query: str, reason: str) -> dict[str, Any]:
+    return {
+        "provider": provider,
+        "status": "skipped",
+        "elapsed_ms": 0,
+        "error": "",
+        "observations": [],
+        "diagnostics": {
+            "query_intent": query,
+            "skip_reason": reason,
+        },
+    }
 
 
 def _run_search_provider(
@@ -930,6 +1056,7 @@ def _planned_run_payload(
     *,
     max_queries: int = 0,
     query_profile: str = "compact",
+    escalation_mode: str = "off",
 ) -> dict[str, Any]:
     owned_providers = [provider for provider in providers if provider in OWNED_FETCH_PROVIDER_KEYS]
     search_providers = [provider for provider in providers if provider in SEARCH_PROVIDER_KEYS]
@@ -976,6 +1103,7 @@ def _planned_run_payload(
         "mode": "plan_only",
         "providers": providers,
         "query_profile": query_profile,
+        "escalation_mode": escalation_mode,
         "discarded_providers": _discarded_providers(providers),
         "case_count": len(cases),
         "estimated_provider_call_count": sum(total_calls_by_provider.values()),
@@ -1046,12 +1174,16 @@ def _provider_run_to_acquisition_step(run: dict[str, Any]) -> LabAcquisitionStep
     observation_rows = [item for item in observation_rows if isinstance(item, dict)]
     error = str(payload.get("error") or "")
     status = str(payload.get("status") or "")
-    step_status = "error" if status == "error" or error else ("empty" if not observation_rows else "ok")
+    if status == "skipped":
+        step_status = "skipped"
+    else:
+        step_status = "error" if status == "error" or error else ("empty" if not observation_rows else "ok")
     eligible = step_status != "error" and any(
         str(item.get("evidence_eligibility") or "") in {"eligible", "limited"} for item in observation_rows
     )
     first_row = observation_rows[0] if observation_rows else {}
     diagnostics = first_row.get("diagnostics") if isinstance(first_row.get("diagnostics"), dict) else {}
+    run_diagnostics = payload.get("diagnostics") if isinstance(payload.get("diagnostics"), dict) else {}
     source_classes = sorted({str(item.get("source_class") or "unknown") for item in observation_rows if item.get("source_class")})
     channels = sorted({str(item.get("channel") or "unknown") for item in observation_rows if item.get("channel")})
     return LabAcquisitionStep(
@@ -1064,7 +1196,8 @@ def _provider_run_to_acquisition_step(run: dict[str, Any]) -> LabAcquisitionStep
             "elapsed_ms": int(payload.get("elapsed_ms") or 0),
             "observation_count": len(observation_rows),
             "provider_variant": str(diagnostics.get("provider_variant") or payload.get("provider") or "unknown"),
-            "query_intent": str(first_row.get("query_intent") or ""),
+            "query_intent": str(first_row.get("query_intent") or run_diagnostics.get("query_intent") or ""),
+            "skip_reason": str(run_diagnostics.get("skip_reason") or ""),
             "source_classes": source_classes,
             "channels": channels,
         },
@@ -1172,6 +1305,8 @@ def _render_summary_md(summary: dict[str, Any]) -> str:
         f"- version: `{summary.get('version')}`",
         f"- created_at: `{summary.get('created_at')}`",
         f"- providers: `{', '.join(summary.get('providers') or [])}`",
+        f"- query_profile: `{summary.get('query_profile') or 'compact'}`",
+        f"- escalation_mode: `{summary.get('escalation_mode') or 'off'}`",
         f"- cases: `{summary.get('case_count')}`",
         "",
         "| Case | Observations | Consensus | Single-provider | Eligible channels | Missing required |",
@@ -1436,6 +1571,12 @@ def _parse_args() -> argparse.Namespace:
         choices=("compact", "rich"),
         default="compact",
         help="Use compact generated queries or richer research prompts.",
+    )
+    parser.add_argument(
+        "--escalation-mode",
+        choices=("off", "conditional"),
+        default="off",
+        help="Use conditional deep-search escalation instead of always running every selected provider.",
     )
     parser.add_argument("--list-providers", action="store_true", help="Print active/discarded providers without network calls.")
     parser.add_argument("--plan-only", action="store_true", help="Print estimated calls/cases without network calls.")

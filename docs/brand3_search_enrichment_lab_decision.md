@@ -219,6 +219,22 @@ Para limitar gasto durante pruebas:
   --max-queries 1
 ```
 
+Para probar Exa deep modes sin ejecutarlos siempre:
+
+```bash
+./.venv/bin/python scripts/search_enrichment_lab.py \
+  --cases-file examples/benchmarks/search_enrichment_lab/lesser_known_cases.json \
+  --providers exa-fast,exa-auto,exa-deep-lite \
+  --results 1 \
+  --max-cases 2 \
+  --max-queries 1 \
+  --query-profile rich \
+  --escalation-mode conditional \
+  --timeout 45
+```
+
+En modo condicional, `exa-deep-lite` solo se ejecuta si las variantes base no devuelven una observacion limpia o si la entidad sigue sin una fuente owned clara. Si `exa-fast`/`exa-auto` ya bastan, deep-lite queda registrado como `skipped`.
+
 Para comprobar proveedores activos sin llamadas de red:
 
 ```bash

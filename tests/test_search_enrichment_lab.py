@@ -11,6 +11,7 @@ from scripts.search_enrichment_lab import (
     _provider_scores,
     _render_summary_md,
     _selected_providers,
+    _should_escalate_deep_search,
     _source_consensus,
     run_case,
 )
@@ -186,6 +187,46 @@ def test_guard_lab_entity_boundary_limits_unresolved_external_candidates() -> No
     assert guarded.diagnostics["lab_guardrail"] == "unresolved_entity_external_candidate_requires_review"
 
 
+def test_should_escalate_deep_search_when_base_has_no_clean_source() -> None:
+    entity = type("Entity", (), {"resolution_status": "resolved"})()
+    limited = BrandSourceObservation(
+        "search",
+        "observed",
+        "https://example.com/ambiguous",
+        "exa-fast",
+        confidence=0.4,
+        evidence_eligibility="limited",
+        source_class="related_unresolved",
+        relation_to_entity="unresolved",
+        requires_human_review=True,
+    )
+
+    should_escalate, reason = _should_escalate_deep_search([limited], entity=entity)
+
+    assert should_escalate is True
+    assert reason == "no_clean_base_observation"
+
+
+def test_should_skip_deep_search_when_base_source_is_clean() -> None:
+    entity = type("Entity", (), {"resolution_status": "resolved"})()
+    owned = BrandSourceObservation(
+        "search",
+        "observed",
+        "https://www.langchain.com",
+        "exa-fast",
+        confidence=0.85,
+        evidence_eligibility="eligible",
+        source_class="owned",
+        relation_to_entity="audited_surface",
+        requires_human_review=False,
+    )
+
+    should_escalate, reason = _should_escalate_deep_search([owned], entity=entity)
+
+    assert should_escalate is False
+    assert reason == "base_observation_sufficient"
+
+
 def test_source_consensus_groups_same_url_across_providers() -> None:
     consensus = _source_consensus(
         [
@@ -292,6 +333,52 @@ def test_run_case_builds_inventory_from_mocked_provider(monkeypatch) -> None:
     assert payload["acquisition_steps"][0]["cache_status"] == "n/a"
 
 
+def test_run_case_conditional_escalation_skips_deep_when_base_is_clean(monkeypatch) -> None:
+    def fake_run_search_provider(
+        provider,
+        query,
+        *,
+        channel,
+        entity,
+        seed_url,
+        brand,
+        max_results,
+        timeout_seconds,
+    ):
+        if provider == "exa-deep-lite":
+            raise AssertionError("deep-lite should be skipped when base providers return clean owned evidence")
+        return [
+            BrandSourceObservation(
+                channel=channel,
+                status="observed",
+                source_url="https://www.langchain.com",
+                provider=provider,
+                title="LangChain",
+                confidence=0.85,
+                evidence_eligibility="eligible",
+                source_class="owned",
+                relation_to_entity="audited_surface",
+                requires_human_review=False,
+            )
+        ]
+
+    monkeypatch.setattr("scripts.search_enrichment_lab._run_search_provider", fake_run_search_provider)
+
+    payload = run_case(
+        LabCase("LangChain", "https://www.langchain.com"),
+        providers=["exa-fast", "exa-deep-lite"],
+        max_results=1,
+        timeout_seconds=1,
+        max_queries=1,
+        escalation_mode="conditional",
+    )
+
+    steps = {step["provider"]: step for step in payload["acquisition_steps"]}
+    assert steps["exa-fast"]["status"] == "ok"
+    assert steps["exa-deep-lite"]["status"] == "skipped"
+    assert steps["exa-deep-lite"]["details"]["skip_reason"] == "base_observation_sufficient"
+
+
 def test_provider_run_to_acquisition_step_collapses_provider_run_state() -> None:
     step = _provider_run_to_acquisition_step(
         {
@@ -323,6 +410,8 @@ def test_render_summary_md_includes_provider_metrics_and_errors() -> None:
             "version": "search_enrichment_lab_v0_1",
             "created_at": "2026-01-01T00:00:00Z",
             "providers": ["exa"],
+            "query_profile": "rich",
+            "escalation_mode": "conditional",
             "case_count": 1,
             "cases": [
                 {
@@ -404,6 +493,8 @@ def test_render_summary_md_includes_provider_metrics_and_errors() -> None:
     )
 
     assert "## Provider Acquisition Steps" in markdown
+    assert "- query_profile: `rich`" in markdown
+    assert "- escalation_mode: `conditional`" in markdown
     assert "| langchain | exa | ok | yes | n/a | 1 | 87 |  |" in markdown
     assert "## Provider Metrics" in markdown
     assert "| exa | 1 | 1 | 0 | 0 | 0 | 0 | 123 | 0.02 | 0.01 | search | external:1 | 0.8 |" in markdown

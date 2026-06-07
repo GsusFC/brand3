@@ -301,3 +301,53 @@ Decision actual:
 - Mantener `exa-fast` y `exa-auto` como variantes principales.
 - Usar `exa-deep-lite` solo como escalado condicional cuando `fast/auto` devuelvan señales contradictorias o insuficientes.
 - No evaluar `deep` ni `deep-reasoning` en lote hasta tener un caso donde `deep-lite` ya haya demostrado mejora neta.
+
+## Escalado condicional de deep-lite
+
+Implementacion:
+
+```bash
+./.venv/bin/python scripts/search_enrichment_lab.py \
+  --cases-file examples/benchmarks/search_enrichment_lab/lesser_known_cases.json \
+  --providers exa-fast,exa-auto,exa-deep-lite \
+  --results 1 \
+  --max-cases 2 \
+  --max-queries 1 \
+  --query-profile rich \
+  --escalation-mode conditional \
+  --timeout 45
+```
+
+Regla:
+
+- `exa-fast` y `exa-auto` se ejecutan primero.
+- `exa-deep-lite` se salta si las variantes base ya devuelven una observacion limpia, elegible y sin revision humana.
+- `exa-deep-lite` se ejecuta si no hay observaciones base, si no hay observacion limpia, o si la entidad no esta resuelta y las fuentes base no aportan una fuente owned clara.
+
+Output:
+
+```text
+out/search_enrichment_lab/20260607T051121Z
+```
+
+Resultado:
+
+| Caso | `exa-fast` | `exa-auto` | `exa-deep-lite` | Lectura |
+| --- | --- | --- | --- | --- |
+| Bokeroon | owned elegible | owned elegible | skipped | Deep-lite no era necesario. |
+| Obscure Thing | related unresolved | related unresolved | related unresolved | Deep-lite se ejecuto, pero no resolvio el control negativo. |
+
+Resumen:
+
+- `exa-deep-lite` se ejecuto solo en el caso donde habia ambiguedad real.
+- En el control negativo devolvio el mismo candidato relacionado/no resuelto: `https://obscureinternational.com`.
+- No aporto una fuente elegible ni redujo revision humana.
+- Coste medio observado: `exa-fast` 0.007 USD, `exa-auto` 0.007 USD, `exa-deep-lite` 0.012 USD.
+- Latencia media observada: `exa-fast` 1683 ms, `exa-auto` 2285.5 ms, `exa-deep-lite` 6590 ms.
+- Promotion gate: `reject` para las tres variantes por muestra pequena, baja cobertura y ausencia de mejora suficiente.
+
+Decision:
+
+El modo condicional es la forma correcta de seguir investigando Exa deep modes. Mantiene control de coste y solo pregunta a `deep-lite` cuando el baseline no alcanza una decision limpia.
+
+La evidencia nueva refuerza la decision anterior: `deep-lite` no debe ser baseline, pero puede seguir como escalado experimental en casos ambiguos.

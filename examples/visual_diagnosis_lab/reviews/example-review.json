@@ -1,0 +1,15 @@
+{
+  "reviewer": "design-review",
+  "reviewed_at": "2026-06-07",
+  "verdict": "needs_more_visual_evidence",
+  "profile_fit": "unknown",
+  "identity_read_fit": "unknown",
+  "notes": "The row is intentionally unresolved until screenshot or multimodal evidence is attached.",
+  "disagreements": [
+    "Category hints are not enough to confirm visual identity."
+  ],
+  "recommended_changes": [
+    "Attach screenshot_capture or screenshot_capture_path.",
+    "Rerun the lab and compare signal_provenance before changing heuristics."
+  ]
+}

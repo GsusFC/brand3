@@ -1,0 +1,32 @@
+{
+  "brands": [
+    {
+      "brand_name": "Example Reviewed Brand",
+      "website_url": "https://example.com",
+      "category_hint": "developer_first",
+      "computed_style_snapshot_path": "/tmp/brand3_visual_diagnosis_computed_styles/example-brand.json",
+      "human_review": {
+        "reviewer": "design-review",
+        "reviewed_at": "2026-06-07",
+        "verdict": "directionally_useful",
+        "profile_fit": "partial",
+        "identity_read_fit": "partial",
+        "notes": "The diagnosis catches the broad category, but screenshot evidence is required before treating composition findings as strong.",
+        "disagreements": [
+          "Computed styles alone cannot validate actual viewport composition."
+        ],
+        "recommended_changes": [
+          "Add screenshot capture evidence.",
+          "Compare anti-pattern provenance against the human note."
+        ]
+      }
+    },
+    {
+      "brand_name": "Example Review File Brand",
+      "website_url": "https://example.org",
+      "category_hint": "premium_luxury",
+      "computed_style_snapshot_path": "/tmp/brand3_visual_diagnosis_computed_styles/example-review-file-brand.json",
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/example-review.json"
+    }
+  ]
+}

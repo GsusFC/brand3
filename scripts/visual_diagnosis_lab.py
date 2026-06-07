@@ -47,7 +47,7 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
             website_url=str(row["website_url"]),
             screenshot_capture=_row_payload(row, "screenshot_capture"),
             visual_signature_payload=_row_payload(row, "visual_signature"),
-            coherence_breakdown=_row_payload(row, "coherence_breakdown"),
+            coherence_breakdown=_coherence_breakdown_for_row(row),
             category_hint=str(row.get("category_hint") or ""),
         )
         result = {
@@ -107,6 +107,46 @@ def _row_payload(row: dict[str, Any], key: str) -> dict[str, Any] | None:
     if isinstance(inline, dict):
         return inline
     return _load_optional_json(row.get(f"{key}_path"))
+
+
+def _coherence_breakdown_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
+    explicit = _row_payload(row, "coherence_breakdown")
+    magnetism_payload = _row_payload(row, "magnetism_payload")
+    extracted = extract_coherence_breakdown(magnetism_payload or {})
+    if explicit and extracted:
+        return {**explicit, **extracted}
+    return extracted or explicit
+
+
+def extract_coherence_breakdown(payload: dict[str, Any]) -> dict[str, Any]:
+    """Extract Magnetism coherence breakdown from known local lab payload shapes."""
+    if not isinstance(payload, dict):
+        return {}
+
+    scanner = payload.get("scanner") if isinstance(payload.get("scanner"), dict) else {}
+    normalized = scanner.get("score_coherence_breakdown")
+    if isinstance(normalized, dict) and normalized:
+        return dict(normalized)
+
+    methodology = payload.get("methodology") if isinstance(payload.get("methodology"), dict) else {}
+    score_breakdown = methodology.get("score_breakdown") if isinstance(methodology.get("score_breakdown"), dict) else {}
+    coherence = score_breakdown.get("coherence")
+    if isinstance(coherence, dict) and coherence:
+        return dict(coherence)
+
+    raw_score_breakdown = payload.get("score_breakdown") if isinstance(payload.get("score_breakdown"), dict) else {}
+    raw_coherence = raw_score_breakdown.get("coherence")
+    if isinstance(raw_coherence, dict) and raw_coherence:
+        return dict(raw_coherence)
+
+    coherence_score = payload.get("coherence_score")
+    if coherence_score is not None:
+        return {"visual_identity": coherence_score, "source": "coherence_score_fallback"}
+
+    scores = payload.get("scores") if isinstance(payload.get("scores"), dict) else {}
+    if scores.get("coherence") is not None:
+        return {"visual_identity": scores.get("coherence"), "source": "scores.coherence_fallback"}
+    return {}
 
 
 def _load_json(path: Path) -> Any:

@@ -124,7 +124,20 @@ This benchmark does not include human review notes. Without human comparison, we
 
 ### No Magnetism Comparison Yet
 
-The benchmark uses placeholder/local `visual_identity` values in the manifest. The next useful comparison should use real Magnetism coherence breakdowns from local Scanner/Audit runs.
+The original benchmark used placeholder/local `visual_identity` values in the manifest.
+
+The lab runner now supports real Magnetism payloads through:
+
+- inline `magnetism_payload`;
+- `magnetism_payload_path`.
+
+It can extract coherence evidence from known local shapes:
+
+- Scanner methodology payloads: `methodology.score_breakdown.coherence.visual_identity`;
+- normalized local/deploy comparison payloads: `scanner.score_coherence_breakdown.visual_identity`;
+- batch rows with `coherence_score`, as a fallback labelled `coherence_score_fallback`.
+
+The next useful comparison should use current local Scanner/Audit outputs, not historical batch fallbacks.
 
 ## Decision
 
@@ -135,7 +148,7 @@ Recommended next step:
 1. Generate or attach reliable screenshots and interpretable visual evidence for the currently non-evaluable cases.
 2. Run the same manifest again.
 3. Add a short human note per brand.
-4. Compare against real Magnetism `visual_identity` breakdowns.
+4. Compare against real Magnetism `visual_identity` breakdowns by adding `magnetism_payload_path` per manifest row.
 5. Only then decide whether `VisualDiagnosis` becomes report explanation, Scanner diagnostics, or remains lab-only.
 
 ## Current Technical Status
@@ -148,6 +161,16 @@ Implemented:
 - `examples/visual_diagnosis_lab/calibration_manifest.json`
 - `tests/test_visual_diagnosis.py`
 
+Supported lab manifest fields:
+
+- `brand_name`
+- `website_url`
+- `category_hint`
+- `visual_signature` or `visual_signature_path`
+- `screenshot_capture` or `screenshot_capture_path`
+- `coherence_breakdown` or `coherence_breakdown_path`
+- `magnetism_payload` or `magnetism_payload_path`
+
 Validated:
 
 ```bash
@@ -156,7 +179,7 @@ Validated:
 
 Result:
 
-- `7 passed`
+- `10 passed`
 
 Broader related subset:
 

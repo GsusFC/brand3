@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 
-from scripts.visual_diagnosis_lab import run_lab
+from scripts.visual_diagnosis_lab import extract_coherence_breakdown, run_lab
 from src.visual_diagnosis import build_visual_diagnosis
 
 
@@ -201,3 +201,44 @@ def test_visual_diagnosis_requires_interpretable_visual_analysis_even_with_scree
     assert result["status"] == "unavailable"
     assert result["diagnosis"]["identity_read"] == "not_evaluable"
     assert "visual_analysis_not_interpretable" in result["limitations"]
+
+
+def test_extract_coherence_breakdown_from_scanner_methodology_payload():
+    payload = {
+        "methodology": {
+            "score_breakdown": {
+                "coherence": {
+                    "visual_identity": 72,
+                    "message_consistency": 90,
+                }
+            }
+        }
+    }
+
+    assert extract_coherence_breakdown(payload) == {
+        "visual_identity": 72,
+        "message_consistency": 90,
+    }
+
+
+def test_extract_coherence_breakdown_from_normalized_payload():
+    payload = {
+        "scanner": {
+            "score_coherence_breakdown": {
+                "visual_identity": 68,
+                "tactical_alignment": 80,
+            }
+        }
+    }
+
+    assert extract_coherence_breakdown(payload) == {
+        "visual_identity": 68,
+        "tactical_alignment": 80,
+    }
+
+
+def test_extract_coherence_breakdown_from_batch_row_fallback():
+    assert extract_coherence_breakdown({"coherence_score": 66}) == {
+        "visual_identity": 66,
+        "source": "coherence_score_fallback",
+    }

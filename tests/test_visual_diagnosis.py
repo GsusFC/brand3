@@ -138,6 +138,7 @@ def test_visual_diagnosis_lab_writes_summary(tmp_path):
                         "screenshot_capture": {
                             "screenshot_url": "file:///tmp/example.png",
                             "capture_type": "viewport",
+                            "quality": "usable",
                         },
                     }
                 ]
@@ -153,3 +154,25 @@ def test_visual_diagnosis_lab_writes_summary(tmp_path):
     assert list(output_dir.glob("*/summary.json"))
     assert list(output_dir.glob("*/summary.md"))
     assert result["summary"]["results"][0]["diagnosis"]["evidence_refs"][0] == "raw_inputs:screenshot_capture"
+
+
+def test_visual_diagnosis_suppresses_stale_screenshot_limitation_when_capture_exists():
+    payload = _visual_signature_payload()
+    payload["vision"] = {}
+    payload["extraction_confidence"]["limitations"] = ["screenshot_not_available"]
+
+    diagnosis = build_visual_diagnosis(
+        brand_name="Example",
+        website_url="https://example.com",
+        screenshot_capture={
+            "screenshot_url": "file:///tmp/example.png",
+            "capture_type": "viewport",
+            "quality": "usable",
+        },
+        visual_signature_payload=payload,
+        coherence_breakdown={"visual_identity": 82},
+    )
+
+    result = diagnosis.to_dict()
+    assert result["capture"]["quality"] == "good"
+    assert "screenshot_not_available" not in result["limitations"]

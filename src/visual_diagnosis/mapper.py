@@ -113,7 +113,11 @@ def _capture(screenshot_capture: dict[str, Any] | None, payload: dict[str, Any])
     )
     if capture_type not in {"viewport", "full_page"}:
         capture_type = "unknown"
-    screenshot_quality = str((screenshot or {}).get("quality") or "").strip().lower()
+    screenshot_quality = str(
+        (screenshot or {}).get("quality")
+        or (screenshot_capture or {}).get("quality")
+        or ""
+    ).strip().lower()
     if not available:
         quality = "missing"
     elif screenshot_quality in {"usable", "good"}:
@@ -209,9 +213,9 @@ def _antipatterns(
         result.append("visual_promise_mismatch")
     if cta_count == 0:
         result.append("weak_cta_weight")
-    if typography.get("heading_scale") in {"flat", "unknown"}:
+    if typography.get("heading_scale") == "flat":
         result.append("flat_typographic_hierarchy")
-    if _palette_has_ai_gradient_like_colors(colors):
+    if profile == "ai_native" and _palette_has_ai_gradient_like_colors(colors):
         result.append("overused_gradient_palette")
     if layout.get("has_hero") and profile in {"template_saas", "ai_native", "unknown"}:
         visual_coherence = str((data or {}).get("visual_coherence") or "").lower()
@@ -380,7 +384,11 @@ def _limitations(
     if not coherence_breakdown:
         limitations.append("coherence_breakdown_missing")
     extraction = payload.get("extraction_confidence") or {}
-    limitations.extend(str(item) for item in extraction.get("limitations") or [] if item)
+    for item in extraction.get("limitations") or []:
+        limitation = str(item)
+        if limitation == "screenshot_not_available" and capture.available:
+            continue
+        limitations.append(limitation)
     return _dedupe(limitations)
 
 

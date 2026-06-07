@@ -1,0 +1,119 @@
+{
+  "brands": [
+    {
+      "brand_name": "Hermes",
+      "website_url": "https://www.hermes.com",
+      "category_hint": "premium luxury fashion",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/hermes.json",
+      "coherence_breakdown": {
+        "visual_identity": 0
+      }
+    },
+    {
+      "brand_name": "Linear",
+      "website_url": "https://linear.app",
+      "category_hint": "developer saas infrastructure",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/linear.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/linear.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "coherence_breakdown": {
+        "visual_identity": 82
+      }
+    },
+    {
+      "brand_name": "OpenAI",
+      "website_url": "https://openai.com",
+      "category_hint": "ai native",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/openai.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/openai.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "coherence_breakdown": {
+        "visual_identity": 80
+      }
+    },
+    {
+      "brand_name": "The Verge",
+      "website_url": "https://www.theverge.com",
+      "category_hint": "editorial media",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/the-verge.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/the-verge.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "coherence_breakdown": {
+        "visual_identity": 90
+      }
+    },
+    {
+      "brand_name": "Allbirds",
+      "website_url": "https://www.allbirds.com",
+      "category_hint": "ecommerce retail",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/allbirds.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/allbirds.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "coherence_breakdown": {
+        "visual_identity": 76
+      }
+    },
+    {
+      "brand_name": "Joe's Plumbing NYC",
+      "website_url": "https://www.joesplumbingnyc.com",
+      "category_hint": "local service",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/joe-s-plumbing-nyc.json",
+      "coherence_breakdown": {
+        "visual_identity": 0
+      }
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "website_url": "https://docs.stripe.com",
+      "category_hint": "developer documentation",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/stripe-docs.json",
+      "coherence_breakdown": {
+        "visual_identity": 78
+      }
+    },
+    {
+      "brand_name": "Headspace",
+      "website_url": "https://www.headspace.com",
+      "category_hint": "wellness lifestyle",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/headspace.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/headspace.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "coherence_breakdown": {
+        "visual_identity": 84
+      }
+    },
+    {
+      "brand_name": "Notion",
+      "website_url": "https://www.notion.com",
+      "category_hint": "template saas productivity",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/notion.json",
+      "coherence_breakdown": {
+        "visual_identity": 82
+      }
+    },
+    {
+      "brand_name": "A24",
+      "website_url": "https://a24films.com",
+      "category_hint": "editorial media culture",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/a24.json",
+      "coherence_breakdown": {
+        "visual_identity": 88
+      }
+    }
+  ]
+}

@@ -498,6 +498,8 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
         try:
             if not element.is_visible():
                 continue
+            if not _element_intersects_current_viewport(element):
+                continue
         except Exception:
             continue
 
@@ -780,6 +782,8 @@ def _element_localization_snapshot(element: Any) -> dict[str, Any]:
                 bounding_box: rect ? { x, y, width, height } : null,
                 dom_ancestry: ancestry,
                 viewport_location: viewportLocation,
+                viewport_width: innerWidth,
+                viewport_height: innerHeight,
                 position: style ? (style.position || '') : '',
                 z_index: style ? (style.zIndex || '') : '',
                 aria_modal: node.getAttribute ? (node.getAttribute('aria-modal') || '') : '',
@@ -794,6 +798,24 @@ def _element_localization_snapshot(element: Any) -> dict[str, Any]:
     if isinstance(snapshot, dict):
         return snapshot
     return {}
+
+
+def _element_intersects_current_viewport(element: Any) -> bool:
+    snapshot = _element_localization_snapshot(element)
+    bounding_box = snapshot.get("bounding_box") if isinstance(snapshot, dict) else None
+    if not isinstance(bounding_box, dict):
+        return True
+    x = _float_or_none(bounding_box.get("x"))
+    y = _float_or_none(bounding_box.get("y"))
+    width = _float_or_none(bounding_box.get("width"))
+    height = _float_or_none(bounding_box.get("height"))
+    viewport_width = _float_or_none(snapshot.get("viewport_width"))
+    viewport_height = _float_or_none(snapshot.get("viewport_height"))
+    if None in (x, y, width, height) or viewport_width is None or viewport_height is None:
+        return True
+    if width <= 0 or height <= 0 or viewport_width <= 0 or viewport_height <= 0:
+        return False
+    return x + width > 0 and y + height > 0 and x < viewport_width and y < viewport_height
 
 
 def _localization_context_terms(obstruction: dict[str, Any] | None) -> list[str]:
@@ -857,6 +879,8 @@ def _find_dismissal_candidate(page: Any) -> dict[str, Any] | None:
         element = handles.nth(idx)
         try:
             if not element.is_visible():
+                continue
+            if not _element_intersects_current_viewport(element):
                 continue
             label = _element_label(element)
         except Exception:

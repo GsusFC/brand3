@@ -764,6 +764,50 @@ def test_cookie_modal_accept_all_is_safe_candidate():
     assert dismissal["clicked_text"] == "Accept all"
 
 
+def test_dismissal_discovery_ignores_safe_button_outside_current_viewport():
+    capturer = _load_capturer()
+    page = _FakePage(
+        ["Accept all"],
+        localizations={
+            "Accept all": {
+                "bounding_box": {"x": 64, "y": 1280, "width": 180, "height": 48},
+                "viewport_width": 1440,
+                "viewport_height": 900,
+            }
+        },
+    )
+    obstruction = {"present": True, "type": "cookie_modal", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+    dismissal = capturer._attempt_obstruction_dismissal(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["candidate_click_targets"] == []
+    assert discovery["rejected_click_targets"] == []
+    assert discovery["block_reason"] == "no_safe_cookie_button_found"
+    assert dismissal["attempted"] is False
+
+
+def test_dismissal_discovery_keeps_safe_button_inside_current_viewport():
+    capturer = _load_capturer()
+    page = _FakePage(
+        ["Reject All"],
+        localizations={
+            "Reject All": {
+                "bounding_box": {"x": 32, "y": 812, "width": 150, "height": 44},
+                "viewport_width": 1440,
+                "viewport_height": 900,
+            }
+        },
+    )
+    obstruction = {"present": True, "type": "cookie_modal", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+
+    assert discovery["eligible"] is True
+    assert discovery["candidate_click_targets"][0]["method"] == "reject_all"
+
+
 def test_cookie_modal_i_agree_is_safe_candidate():
     capturer = _load_capturer()
     page = _FakePage(["I agree", "Privacy settings"])

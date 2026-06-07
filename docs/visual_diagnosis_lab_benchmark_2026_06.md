@@ -30,22 +30,22 @@ Command:
 
 Latest run inspected:
 
-- `/tmp/brand3_visual_diagnosis_lab/20260607T065417Z`
+- `/tmp/brand3_visual_diagnosis_lab/20260607T070239Z`
 
 ## Result Summary
 
-| Brand | Status | Profile | Identity read | Confidence | Anti-patterns |
-| --- | --- | --- | --- | --- | --- |
-| Hermes | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
-| Linear | usable | developer_first | functionally_clear | high | - |
-| OpenAI | limited | ai_native | coherent_but_generic | high | card_heavy_composition, flat_typographic_hierarchy |
-| The Verge | usable | editorial_media | editorially_coherent | high | card_heavy_composition, flat_typographic_hierarchy |
-| Allbirds | usable | ecommerce_mass_market | commerce_clear | high | card_heavy_composition |
-| Joe's Plumbing NYC | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
-| Stripe Docs | usable | developer_first | functionally_clear | high | flat_typographic_hierarchy |
-| Headspace | usable | wellness_lifestyle | emotionally_coherent | high | card_heavy_composition, flat_typographic_hierarchy |
-| Notion | usable | template_saas | polished_but_undifferentiated | high | template_saas_layout, card_heavy_composition, flat_typographic_hierarchy, low_distinctiveness_hero |
-| A24 | unavailable | unknown | not_evaluable | low | capture_not_evaluable |
+| Brand | Status | Profile | Identity read | Visual identity | Brand fit | Confidence | Anti-patterns |
+| --- | --- | --- | --- | ---: | --- | --- | --- |
+| Hermes | unavailable | unknown | not_evaluable | - | unknown | low | capture_not_evaluable |
+| Linear | usable | developer_first | functionally_clear | 82 | medium | high | - |
+| OpenAI | limited | ai_native | coherent_but_generic | 80 | medium | high | card_heavy_composition, flat_typographic_hierarchy |
+| The Verge | usable | editorial_media | editorially_coherent | 90 | high | high | card_heavy_composition, flat_typographic_hierarchy |
+| Allbirds | usable | ecommerce_mass_market | commerce_clear | 76 | medium | high | card_heavy_composition |
+| Joe's Plumbing NYC | unavailable | unknown | not_evaluable | - | unknown | low | capture_not_evaluable |
+| Stripe Docs | usable | developer_first | functionally_clear | 78 | medium | high | flat_typographic_hierarchy |
+| Headspace | usable | wellness_lifestyle | emotionally_coherent | 84 | medium | high | card_heavy_composition, flat_typographic_hierarchy |
+| Notion | usable | template_saas | polished_but_undifferentiated | 82 | medium | high | template_saas_layout, card_heavy_composition, flat_typographic_hierarchy, low_distinctiveness_hero |
+| A24 | unavailable | unknown | not_evaluable | 88 | unknown | low | capture_not_evaluable |
 
 ## What Worked
 
@@ -72,6 +72,12 @@ The benchmark exposed and fixed a useful issue: Visual Signature calibration pay
 - if Brand3 screenshot capture exists, stale `screenshot_not_available` from Visual Signature is suppressed;
 - screenshot evidence can come from `raw_inputs:screenshot_capture`;
 - Visual Signature remains an evidence source, not the only source.
+
+### Magnetism Comparison Surface
+
+The lab summary now shows `visual_identity` and Brand3 `brand_fit` side by side.
+
+This immediately exposes useful robustness questions. A24 has a placeholder/local `visual_identity` value in the manifest, but `VisualDiagnosis` returns `not_evaluable` because the visual evidence is unavailable. That is the correct tension to surface before any scoring integration.
 
 ### Category Token Matching
 

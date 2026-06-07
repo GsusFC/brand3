@@ -42,18 +42,23 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
 
     results = []
     for row in rows:
+        coherence_breakdown = _coherence_breakdown_for_row(row)
         diagnosis = build_visual_diagnosis(
             brand_name=str(row["brand_name"]),
             website_url=str(row["website_url"]),
             screenshot_capture=_row_payload(row, "screenshot_capture"),
             visual_signature_payload=_row_payload(row, "visual_signature"),
-            coherence_breakdown=_coherence_breakdown_for_row(row),
+            coherence_breakdown=coherence_breakdown,
             category_hint=str(row.get("category_hint") or ""),
         )
         result = {
             "brand_name": row["brand_name"],
             "website_url": row["website_url"],
             "category_hint": row.get("category_hint") or "",
+            "magnetism": {
+                "coherence_breakdown": coherence_breakdown or {},
+                "visual_identity": (coherence_breakdown or {}).get("visual_identity"),
+            },
             "diagnosis": diagnosis.to_dict(),
         }
         results.append(result)
@@ -78,17 +83,21 @@ def _summary_markdown(summary: dict[str, Any]) -> str:
         f"- Generated at: {summary['generated_at']}",
         f"- Brand count: {summary['brand_count']}",
         "",
-        "| Brand | Status | Profile | Identity read | Confidence | Anti-patterns |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Brand | Status | Profile | Identity read | Visual identity | Brand fit | Confidence | Anti-patterns |",
+        "| --- | --- | --- | --- | ---: | --- | --- | --- |",
     ]
     for row in summary["results"]:
         diagnosis = row["diagnosis"]
         read = diagnosis["diagnosis"]
         signals = diagnosis["signals"]
+        magnetism = row.get("magnetism") if isinstance(row.get("magnetism"), dict) else {}
+        visual_identity = magnetism.get("visual_identity")
+        visual_identity_text = "-" if visual_identity is None else str(visual_identity)
         antipatterns = ", ".join(signals.get("antipatterns") or []) or "-"
         lines.append(
             f"| {row['brand_name']} | {diagnosis['status']} | {read['reference_profile']} | "
-            f"{read['identity_read']} | {diagnosis['confidence']} | {antipatterns} |"
+            f"{read['identity_read']} | {visual_identity_text} | {read['brand_fit']} | "
+            f"{diagnosis['confidence']} | {antipatterns} |"
         )
     return "\n".join(lines)
 

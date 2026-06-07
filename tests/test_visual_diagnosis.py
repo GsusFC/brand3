@@ -154,6 +154,7 @@ def test_visual_diagnosis_lab_writes_summary(tmp_path):
     assert list(output_dir.glob("*/summary.json"))
     assert list(output_dir.glob("*/summary.md"))
     assert result["summary"]["results"][0]["diagnosis"]["evidence_refs"][0] == "raw_inputs:screenshot_capture"
+    assert result["summary"]["results"][0]["magnetism"]["visual_identity"] == 82
 
 
 def test_visual_diagnosis_suppresses_stale_screenshot_limitation_when_capture_exists():
@@ -242,3 +243,52 @@ def test_extract_coherence_breakdown_from_batch_row_fallback():
         "visual_identity": 66,
         "source": "coherence_score_fallback",
     }
+
+
+def test_visual_diagnosis_lab_summary_renders_magnetism_comparison(tmp_path):
+    visual_path = tmp_path / "visual.json"
+    visual_path.write_text(json.dumps(_visual_signature_payload()), encoding="utf-8")
+    magnetism_path = tmp_path / "magnetism.json"
+    magnetism_path.write_text(
+        json.dumps(
+            {
+                "methodology": {
+                    "score_breakdown": {
+                        "coherence": {
+                            "visual_identity": 61,
+                            "message_consistency": 92,
+                        }
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Example",
+                        "website_url": "https://example.com",
+                        "visual_signature_path": str(visual_path),
+                        "magnetism_payload_path": str(magnetism_path),
+                        "screenshot_capture": {
+                            "screenshot_url": "file:///tmp/example.png",
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    summary_md = next((tmp_path / "out").glob("*/summary.md")).read_text(encoding="utf-8")
+
+    assert result["summary"]["results"][0]["magnetism"]["visual_identity"] == 61
+    assert "| Example | usable | template_saas | weak_or_inconsistent | 61 | low | high |" in summary_md
+    assert "visual_promise_mismatch" in summary_md

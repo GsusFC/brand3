@@ -83,7 +83,7 @@ This immediately exposes useful robustness questions. A24 has a placeholder/loca
 
 A local DB smoke test used four recent Brand3 runs from `data/brand3.sqlite3`:
 
-- LangChain: screenshot capture + Context.dev visual candidates + Magnetism payload.
+- LangChain: screenshot capture + historical external visual candidates + Magnetism payload.
 - Netlify: raw web payload + screenshot capture + local screenshot vision + Magnetism payload.
 - ElevenLabs: raw web payload + screenshot capture + local screenshot vision + Magnetism payload.
 - Sklum: raw web payload + screenshot capture + local screenshot vision + Magnetism payload.
@@ -99,7 +99,7 @@ Latest run inspected:
 | elevenlabs.io | limited | ai_native | weak_or_inconsistent | 52 | low | high | card_heavy_composition, generic_ai_aesthetic, visual_promise_mismatch, overused_gradient_palette, low_distinctiveness_hero, viewport_obstruction_modal |
 | www.sklum.com | limited | ecommerce_mass_market | commerce_clear | 95 | high | high | card_heavy_composition, flat_typographic_hierarchy, viewport_obstruction_modal |
 
-This is the strongest result from the real-data pass: current Scanner/Audit screenshots prove capture availability, but they do not automatically provide semantic visual diagnosis. LangChain is informed by Context.dev visual candidates. Netlify, ElevenLabs and Sklum become limited diagnoses when the manifest combines `web_payload_path` with local screenshot vision via `derive_visual_signature_from_screenshot: true`.
+This is the strongest result from the real-data pass: current Scanner/Audit screenshots prove capture availability, but they do not automatically provide semantic visual diagnosis. LangChain is informed by historical external visual candidates. Netlify, ElevenLabs and Sklum become limited diagnoses when the manifest combines `web_payload_path` with local screenshot vision via `derive_visual_signature_from_screenshot: true`.
 
 The ElevenLabs row is the useful negative control: Magnetism `visual_identity` is low, and Visual Diagnosis surfaces that as `weak_or_inconsistent` through `visual_promise_mismatch`. Netlify and Sklum read as functionally or commercially coherent from raw web evidence, screenshot shape, category and Magnetism fit, but they remain `limited` because this is still deterministic evidence, not a full multimodal or human design review. Viewport obstruction labels are heuristics and should be treated as diagnostic flags, not final design judgments.
 
@@ -154,17 +154,29 @@ This benchmark does not include human review notes. Without human comparison, we
 
 ### Magnetism Comparison
 
-The original benchmark used placeholder/local `visual_identity` values in the manifest. The current lab also supports real Magnetism payloads and Context.dev visual candidate summaries for local DB smoke tests.
+The original benchmark used placeholder/local `visual_identity` values in the manifest. The current lab also supports real Magnetism payloads and historical external visual candidate summaries for local DB smoke tests.
 
 The lab runner now supports real Magnetism payloads through:
 
 - inline `magnetism_payload`;
 - `magnetism_payload_path`.
 
-It also supports Context.dev visual evidence through:
+The lab now writes two run-level outputs:
 
-- inline `contextdev_candidate_summary`;
-- `contextdev_candidate_summary_path`.
+- `summary.json` and `summary.md` for review;
+- `comparison.json` for charts, source comparison and longitudinal analysis.
+
+`comparison.json` uses `visual-diagnosis-comparison-v1` and includes source
+comparison rows per brand, available source types, fusion notes, anti-patterns,
+limitations and evidence refs.
+
+It can read historical external visual candidate evidence through:
+
+- inline `external_candidate_summary_legacy`;
+- `external_candidate_summary_legacy_path`.
+
+`contextdev_candidate_summary` remains a deprecated manifest alias only for old
+local DB fixtures. It is not an active provider path.
 
 It can derive a lab-only visual payload from an existing local screenshot when a manifest row sets:
 
@@ -188,9 +200,9 @@ Snapshots can be generated from a local browser pass with:
   --output-root /tmp/brand3_visual_diagnosis_computed_styles
 ```
 
-This is the first Context.dev replacement primitive: the lab can read local
+This is the first paid-provider replacement primitive: the lab can read local
 browser-observed typography, colors, layout hints and component signals without
-calling Context.dev, a live provider, or an LLM. The output remains `limited`
+calling a visual enrichment provider or an LLM. The output remains `limited`
 when no screenshot exists because computed styles explain the rendered system
 but do not prove visual composition by themselves.
 
@@ -200,13 +212,18 @@ evidence with local screenshot vision. This keeps the evidence boundary explicit
 computed styles explain CSS/DOM presentation, while screenshots contribute
 viewport quality, palette/composition and obstruction evidence.
 
+When `web_payload`, `computed_style_snapshot` and screenshot evidence are all
+available, the lab builds a `visual-evidence-bundle-v1` and fuses the sources
+instead of letting one source silently replace another. This is still lab-only:
+the bundle is designed to expose source disagreement, not to become scoring.
+
 It can extract coherence evidence from known local shapes:
 
 - Scanner methodology payloads: `methodology.score_breakdown.coherence.visual_identity`;
 - normalized local/deploy comparison payloads: `scanner.score_coherence_breakdown.visual_identity`;
 - batch rows with `coherence_score`, as a fallback labelled `coherence_score_fallback`.
 
-The current local DB smoke test confirms that Scanner/Audit outputs are useful, but screenshot capture and Magnetism scores are insufficient on their own. Visual Diagnosis needs interpretable visual evidence from Visual Signature, raw web DOM/CSS, Context.dev-style candidates, local screenshot vision, or a future multimodal pass.
+The current local DB smoke test confirms that Scanner/Audit outputs are useful, but screenshot capture and Magnetism scores are insufficient on their own. Visual Diagnosis needs interpretable visual evidence from Visual Signature, raw web DOM/CSS, local computed styles, local screenshot vision, or a future multimodal pass.
 
 ## Decision
 
@@ -241,7 +258,8 @@ Supported lab manifest fields:
 - `screenshot_capture` or `screenshot_capture_path`
 - `coherence_breakdown` or `coherence_breakdown_path`
 - `magnetism_payload` or `magnetism_payload_path`
-- `contextdev_candidate_summary` or `contextdev_candidate_summary_path`
+- `external_candidate_summary_legacy` or `external_candidate_summary_legacy_path`
+- deprecated legacy alias: `contextdev_candidate_summary` or `contextdev_candidate_summary_path`
 - `derive_visual_signature_from_screenshot`
 
 Validated:
@@ -252,7 +270,7 @@ Validated:
 
 Result:
 
-- `18 passed`
+- `26 passed`
 
 Broader related subset:
 

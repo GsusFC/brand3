@@ -429,7 +429,7 @@ def test_visual_diagnosis_lab_summary_renders_magnetism_comparison(tmp_path):
     assert "visual_promise_mismatch" in summary_md
 
 
-def test_contextdev_candidate_summary_maps_visual_candidates_for_matching_domain():
+def test_external_candidate_summary_legacy_maps_visual_candidates_for_matching_domain():
     payload = {
         "candidates": [
             {
@@ -475,12 +475,12 @@ def test_contextdev_candidate_summary_maps_visual_candidates_for_matching_domain
         website_url="https://www.example.com",
     )
 
-    assert result["source"] == "contextdev_candidate_summary"
+    assert result["source"] == "external_candidate_summary_legacy"
     assert result["interpretation_status"] == "interpretable"
     assert result["colors"]["dominant_colors"] == ["#ffffff", "#111111"]
     assert result["colors"]["accent_candidates"] == ["#ff537a"]
     assert result["typography"]["heading_font"] == "Jokker Bold"
-    assert result["contextdev"]["candidate_ids"] == ["ctx_colors", "ctx_type"]
+    assert result["external_candidate_summary_legacy"]["candidate_ids"] == ["ctx_colors", "ctx_type"]
 
 
 def test_computed_style_snapshot_maps_local_browser_styles_to_visual_signature():
@@ -546,9 +546,9 @@ def test_visual_evidence_builds_from_local_web_payload_without_provider_call():
     assert "raw_inputs:web" in evidence.evidence_refs
 
 
-def test_visual_diagnosis_lab_accepts_contextdev_candidate_summary(tmp_path):
-    contextdev_path = tmp_path / "contextdev.json"
-    contextdev_path.write_text(
+def test_visual_diagnosis_lab_accepts_external_candidate_summary_legacy(tmp_path):
+    external_path = tmp_path / "external.json"
+    external_path.write_text(
         json.dumps(
             {
                 "candidates": [
@@ -586,7 +586,7 @@ def test_visual_diagnosis_lab_accepts_contextdev_candidate_summary(tmp_path):
                         "brand_name": "Developer Example",
                         "website_url": "https://developer.example",
                         "category_hint": "developer infrastructure",
-                        "contextdev_candidate_summary_path": str(contextdev_path),
+                        "external_candidate_summary_legacy_path": str(external_path),
                         "coherence_breakdown": {"visual_identity": 88},
                         "screenshot_capture": {
                             "screenshot_url": "file:///tmp/developer-example.png",
@@ -605,7 +605,7 @@ def test_visual_diagnosis_lab_accepts_contextdev_candidate_summary(tmp_path):
 
     assert diagnosis["diagnosis"]["reference_profile"] == "developer_first"
     assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
-    assert "raw_inputs:contextdev_candidate_summary" in diagnosis["evidence_refs"]
+    assert "raw_inputs:external_candidate_summary_legacy" in diagnosis["evidence_refs"]
     assert "raw_inputs:visual_signature" not in diagnosis["evidence_refs"]
 
 
@@ -706,6 +706,88 @@ def test_visual_diagnosis_lab_enriches_computed_style_snapshot_with_screenshot_w
     assert "raw_inputs:screenshot_capture" in diagnosis["evidence_refs"]
     assert "raw_inputs:computed_style_visual_evidence" in diagnosis["evidence_refs"]
     assert "screenshot_vision_only" in diagnosis["limitations"]
+
+
+def test_visual_diagnosis_lab_fuses_web_computed_and_screenshot_sources(tmp_path):
+    screenshot = tmp_path / "shot.png"
+    _write_png(screenshot, 80, 60, _dense_pixels(80, 60))
+    web_path = tmp_path / "web.json"
+    web_path.write_text(json.dumps(_web_payload()), encoding="utf-8")
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Bundle Example",
+                        "website_url": "https://developer.example",
+                        "category_hint": "developer infrastructure",
+                        "web_payload_path": str(web_path),
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "derive_visual_signature_from_screenshot": True,
+                        "coherence_breakdown": {"visual_identity": 87},
+                        "screenshot_capture": {
+                            "screenshot_url": f"file://{screenshot}",
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    row = result["summary"]["results"][0]
+    diagnosis = row["diagnosis"]
+    bundle = row["visual_evidence_bundle"]
+
+    assert diagnosis["diagnosis"]["reference_profile"] == "developer_first"
+    assert "raw_inputs:visual_evidence_bundle" in diagnosis["evidence_refs"]
+    assert bundle["available_source_types"] == ["computed_style", "web_payload", "screenshot_vision"]
+    assert "computed_style_and_web_payload_fused" in bundle["fusion_notes"]
+    assert "screenshot_vision_merged_into_fused_payload" in bundle["fusion_notes"]
+    assert {item["source_type"] for item in row["source_comparison"]} == {
+        "computed_style",
+        "web_payload",
+        "screenshot_vision",
+    }
+
+
+def test_visual_diagnosis_lab_writes_comparison_json_for_graphs(tmp_path):
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Graph Example",
+                        "website_url": "https://developer.example",
+                        "category_hint": "developer infrastructure",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "coherence_breakdown": {"visual_identity": 87},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    comparison_path = next((tmp_path / "out").glob("*/comparison.json"))
+    comparison = json.loads(comparison_path.read_text(encoding="utf-8"))
+
+    assert comparison["schema_version"] == "visual-diagnosis-comparison-v1"
+    assert comparison["brand_count"] == 1
+    assert comparison["rows"][0]["brand_name"] == "Graph Example"
+    assert comparison["rows"][0]["available_source_types"] == ["computed_style"]
+    assert comparison["rows"][0]["source_comparison"][0]["source_type"] == "computed_style"
+    assert result["summary"]["results"][0]["source_comparison"][0]["source_type"] == "computed_style"
 
 
 def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path):

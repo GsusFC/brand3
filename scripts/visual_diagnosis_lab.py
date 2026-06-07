@@ -11,6 +11,11 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.visual_diagnosis import build_visual_diagnosis
+from src.visual_diagnosis.bundle import (
+    VisualEvidenceBundle,
+    VisualEvidenceSource,
+    fuse_visual_signature_payloads,
+)
 from src.visual_diagnosis.computed_style import computed_style_snapshot_to_visual_signature
 from src.visual_diagnosis.evidence import (
     build_visual_evidence_from_local_inputs,
@@ -50,7 +55,8 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
     results = []
     for row in rows:
         coherence_breakdown = _coherence_breakdown_for_row(row)
-        visual_signature_payload = _visual_signature_payload_for_row(row)
+        bundle = _visual_evidence_bundle_for_row(row)
+        visual_signature_payload = bundle.fused_visual_signature_payload
         diagnosis = build_visual_diagnosis(
             brand_name=str(row["brand_name"]),
             website_url=str(row["website_url"]),
@@ -67,6 +73,12 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
                 "coherence_breakdown": coherence_breakdown or {},
                 "visual_identity": (coherence_breakdown or {}).get("visual_identity"),
             },
+            "visual_evidence_bundle": bundle.to_dict(),
+            "source_comparison": _source_comparison_for_row(
+                row,
+                bundle=bundle,
+                coherence_breakdown=coherence_breakdown,
+            ),
             "diagnosis": diagnosis.to_dict(),
         }
         results.append(result)
@@ -80,6 +92,7 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
         "results": results,
     }
     _write_json(output_dir / "summary.json", summary)
+    _write_json(output_dir / "comparison.json", _comparison_json(summary))
     (output_dir / "summary.md").write_text(_summary_markdown(summary) + "\n", encoding="utf-8")
     return {"output_dir": str(output_dir), "summary": summary}
 
@@ -110,6 +123,39 @@ def _summary_markdown(summary: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
+def _comparison_json(summary: dict[str, Any]) -> dict[str, Any]:
+    rows = []
+    for row in summary["results"]:
+        diagnosis = row["diagnosis"]
+        read = diagnosis["diagnosis"]
+        rows.append(
+            {
+                "brand_name": row["brand_name"],
+                "website_url": row["website_url"],
+                "category_hint": row.get("category_hint") or "",
+                "visual_identity": (row.get("magnetism") or {}).get("visual_identity"),
+                "status": diagnosis["status"],
+                "reference_profile": read["reference_profile"],
+                "identity_read": read["identity_read"],
+                "brand_fit": read["brand_fit"],
+                "confidence": diagnosis["confidence"],
+                "antipatterns": diagnosis["signals"]["antipatterns"],
+                "limitations": diagnosis["limitations"],
+                "evidence_refs": diagnosis["evidence_refs"],
+                "available_source_types": (row.get("visual_evidence_bundle") or {}).get("available_source_types") or [],
+                "fusion_notes": (row.get("visual_evidence_bundle") or {}).get("fusion_notes") or [],
+                "source_comparison": row.get("source_comparison") or [],
+            }
+        )
+    return {
+        "schema_version": "visual-diagnosis-comparison-v1",
+        "generated_at": summary["generated_at"],
+        "manifest_path": summary["manifest_path"],
+        "brand_count": summary["brand_count"],
+        "rows": rows,
+    }
+
+
 def _load_optional_json(value: Any) -> dict[str, Any] | None:
     if not value:
         return None
@@ -127,46 +173,155 @@ def _row_payload(row: dict[str, Any], key: str) -> dict[str, Any] | None:
 
 
 def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
+    return _visual_evidence_bundle_for_row(row).fused_visual_signature_payload
+
+
+def _visual_evidence_bundle_for_row(row: dict[str, Any]) -> VisualEvidenceBundle:
     visual_signature = _row_payload(row, "visual_signature")
+    screenshot_capture = _screenshot_capture_for_row(row)
+    derive_screenshot = row.get("derive_visual_signature_from_screenshot") is True
+    sources: list[VisualEvidenceSource] = []
+
     if visual_signature:
-        return visual_signature
-    contextdev_summary = _row_payload(row, "contextdev_candidate_summary")
-    if contextdev_summary:
-        return contextdev_candidate_summary_to_visual_signature(
-            contextdev_summary,
-            website_url=str(row["website_url"]),
+        sources.append(
+            VisualEvidenceSource(
+                source_id="visual_signature",
+                source_type="visual_signature",
+                available=True,
+                visual_signature_payload=visual_signature,
+                evidence_refs=["raw_inputs:visual_signature"],
+            )
         )
+
     computed_style_snapshot = _row_payload(row, "computed_style_snapshot")
+    computed_payload = None
     if computed_style_snapshot:
-        payload = computed_style_snapshot_to_visual_signature(
+        computed_payload = computed_style_snapshot_to_visual_signature(
             computed_style_snapshot,
             brand_name=str(row["brand_name"]),
             website_url=str(row["website_url"]),
         )
-        if row.get("derive_visual_signature_from_screenshot") is True:
-            screenshot_capture = _screenshot_capture_for_row(row)
-            if screenshot_capture:
-                payload = enrich_visual_signature_with_local_screenshot(payload, screenshot_capture)
-        return payload
+        if derive_screenshot and screenshot_capture:
+            computed_payload = enrich_visual_signature_with_local_screenshot(computed_payload, screenshot_capture)
+        sources.append(
+            VisualEvidenceSource(
+                source_id="computed_style_snapshot",
+                source_type="computed_style",
+                available=True,
+                visual_signature_payload=computed_payload,
+                evidence_refs=["raw_inputs:computed_style_visual_evidence"],
+                limitations=(computed_payload.get("extraction_confidence") or {}).get("limitations") or [],
+            )
+        )
+
     web_payload = _row_payload(row, "web_payload")
+    web_visual_payload = None
     if web_payload:
         evidence = build_visual_evidence_from_local_inputs(
             brand_name=str(row["brand_name"]),
             website_url=str(row["website_url"]),
             web_payload=web_payload,
-            screenshot_capture=_screenshot_capture_for_row(row),
-            derive_from_screenshot=row.get("derive_visual_signature_from_screenshot") is True,
+            screenshot_capture=screenshot_capture,
+            derive_from_screenshot=derive_screenshot,
         )
-        return evidence.visual_signature_payload
-    if row.get("derive_visual_signature_from_screenshot") is True:
-        screenshot_capture = _screenshot_capture_for_row(row)
-        if screenshot_capture:
-            return screenshot_capture_to_visual_signature(
-                screenshot_capture,
-                brand_name=str(row["brand_name"]),
-                website_url=str(row["website_url"]),
+        web_visual_payload = evidence.visual_signature_payload
+        sources.append(
+            VisualEvidenceSource(
+                source_id="web_payload",
+                source_type="web_payload",
+                available=web_visual_payload is not None,
+                visual_signature_payload=web_visual_payload,
+                evidence_refs=["raw_inputs:web_visual_evidence"],
+                limitations=evidence.limitations,
             )
-    return None
+        )
+
+    screenshot_payload = None
+    if derive_screenshot and screenshot_capture:
+        screenshot_payload = screenshot_capture_to_visual_signature(
+            screenshot_capture,
+            brand_name=str(row["brand_name"]),
+            website_url=str(row["website_url"]),
+        )
+        sources.append(
+            VisualEvidenceSource(
+                source_id="screenshot_capture",
+                source_type="screenshot_vision",
+                available=True,
+                visual_signature_payload=screenshot_payload,
+                evidence_refs=["raw_inputs:screenshot_capture"],
+                limitations=["screenshot_vision_only"],
+            )
+        )
+
+    external_legacy_payload = None
+    external_legacy = _row_payload(row, "external_candidate_summary_legacy") or _row_payload(
+        row, "contextdev_candidate_summary"
+    )
+    if external_legacy:
+        external_legacy_payload = external_candidate_summary_legacy_to_visual_signature(
+            external_legacy,
+            website_url=str(row["website_url"]),
+        )
+        sources.append(
+            VisualEvidenceSource(
+                source_id="external_candidate_summary_legacy",
+                source_type="external_candidate_summary_legacy",
+                available=True,
+                visual_signature_payload=external_legacy_payload,
+                evidence_refs=["raw_inputs:external_candidate_summary_legacy"],
+                limitations=(external_legacy_payload.get("extraction_confidence") or {}).get("limitations") or [],
+            )
+        )
+
+    fused, notes = fuse_visual_signature_payloads(
+        computed_payload=computed_payload,
+        web_payload=web_visual_payload,
+        screenshot_payload=screenshot_payload,
+        visual_signature_payload=visual_signature,
+        external_legacy_payload=external_legacy_payload,
+    )
+    return VisualEvidenceBundle(
+        sources=sources,
+        fused_visual_signature_payload=fused,
+        fusion_notes=notes,
+    )
+
+
+def _source_comparison_for_row(
+    row: dict[str, Any],
+    *,
+    bundle: VisualEvidenceBundle,
+    coherence_breakdown: dict[str, Any] | None,
+) -> list[dict[str, Any]]:
+    result = []
+    screenshot_capture = _screenshot_capture_for_row(row)
+    for source in bundle.sources:
+        if not source.available or not source.visual_signature_payload:
+            continue
+        diagnosis = build_visual_diagnosis(
+            brand_name=str(row["brand_name"]),
+            website_url=str(row["website_url"]),
+            screenshot_capture=screenshot_capture,
+            visual_signature_payload=source.visual_signature_payload,
+            coherence_breakdown=coherence_breakdown,
+            category_hint=str(row.get("category_hint") or ""),
+        ).to_dict()
+        read = diagnosis["diagnosis"]
+        result.append(
+            {
+                "source_id": source.source_id,
+                "source_type": source.source_type,
+                "status": diagnosis["status"],
+                "reference_profile": read["reference_profile"],
+                "identity_read": read["identity_read"],
+                "confidence": diagnosis["confidence"],
+                "antipatterns": diagnosis["signals"]["antipatterns"],
+                "limitations": diagnosis["limitations"],
+                "evidence_refs": diagnosis["evidence_refs"],
+            }
+        )
+    return result
 
 
 def _screenshot_capture_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -190,16 +345,15 @@ def _screenshot_capture_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
     return {key: value for key, value in normalized.items() if value is not None}
 
 
-def contextdev_candidate_summary_to_visual_signature(
+def external_candidate_summary_legacy_to_visual_signature(
     payload: dict[str, Any],
     *,
     website_url: str,
 ) -> dict[str, Any]:
-    """Map Context.dev visual candidates into the lab visual evidence shape.
+    """Map historical external visual candidates into lab visual evidence.
 
-    This is intentionally a lab adapter, not a production Visual Signature
-    replacement. It preserves provenance and only uses candidates for the
-    requested domain.
+    This exists only for legacy local DB data. New probes should use local
+    web payload, computed styles and screenshot evidence instead.
     """
     candidates = [
         item
@@ -211,17 +365,17 @@ def contextdev_candidate_summary_to_visual_signature(
     if not candidates:
         return {
             "interpretation_status": "not_interpretable",
-            "source": "contextdev_candidate_summary",
+            "source": "external_candidate_summary_legacy",
             "extraction_confidence": {
                 "score": 0.0,
                 "level": "low",
-                "limitations": ["contextdev_visual_candidates_missing"],
+                "limitations": ["external_legacy_visual_candidates_missing"],
             },
         }
 
-    colors = _contextdev_colors(candidates)
-    typography = _contextdev_typography(candidates)
-    components = _contextdev_components(candidates)
+    colors = _external_legacy_colors(candidates)
+    typography = _external_legacy_typography(candidates)
+    components = _external_legacy_components(candidates)
     visual_candidate_count = len(candidates)
     has_component_signal = bool(components["components"] or components["primary_ctas"])
     has_typography_signal = bool(typography)
@@ -235,10 +389,10 @@ def contextdev_candidate_summary_to_visual_signature(
 
     return {
         "interpretation_status": "interpretable",
-        "source": "contextdev_candidate_summary",
+        "source": "external_candidate_summary_legacy",
         "assets": {
             "screenshot_available": False,
-            "image_count": _contextdev_image_signal_count(candidates),
+            "image_count": _external_legacy_image_signal_count(candidates),
         },
         "layout": {
             "has_navigation": False,
@@ -254,7 +408,7 @@ def contextdev_candidate_summary_to_visual_signature(
         "extraction_confidence": {
             "score": confidence_score,
             "level": "medium" if confidence_score >= 0.6 else "low",
-            "limitations": ["contextdev_visual_summary_only"],
+            "limitations": ["external_candidate_summary_legacy_only"],
         },
         "semantics": {
             "status": "detected",
@@ -264,11 +418,20 @@ def contextdev_candidate_summary_to_visual_signature(
             },
         },
         "vision": {},
-        "contextdev": {
+        "external_candidate_summary_legacy": {
             "candidate_count": visual_candidate_count,
             "candidate_ids": [str(item.get("candidate_id") or "") for item in candidates if item.get("candidate_id")],
         },
     }
+
+
+def contextdev_candidate_summary_to_visual_signature(
+    payload: dict[str, Any],
+    *,
+    website_url: str,
+) -> dict[str, Any]:
+    """Backward-compatible alias for historical tests/manifests."""
+    return external_candidate_summary_legacy_to_visual_signature(payload, website_url=website_url)
 
 
 def _coherence_breakdown_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -332,7 +495,7 @@ def _candidate_matches_domain(candidate: dict[str, Any], website_url: str) -> bo
     return False
 
 
-def _contextdev_colors(candidates: list[dict[str, Any]]) -> dict[str, list[str]]:
+def _external_legacy_colors(candidates: list[dict[str, Any]]) -> dict[str, list[str]]:
     dominant: list[str] = []
     accents: list[str] = []
     for candidate in candidates:
@@ -353,7 +516,7 @@ def _contextdev_colors(candidates: list[dict[str, Any]]) -> dict[str, list[str]]
     }
 
 
-def _contextdev_typography(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+def _external_legacy_typography(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     for candidate in candidates:
         if candidate.get("candidate_type") != "visual_typography":
             continue
@@ -374,7 +537,7 @@ def _contextdev_typography(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     return {}
 
 
-def _contextdev_components(candidates: list[dict[str, Any]]) -> dict[str, Any]:
+def _external_legacy_components(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     text = " ".join(str(candidate.get("text") or "").lower() for candidate in candidates)
     components = []
     primary_ctas = []
@@ -389,7 +552,7 @@ def _contextdev_components(candidates: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _contextdev_image_signal_count(candidates: list[dict[str, Any]]) -> int:
+def _external_legacy_image_signal_count(candidates: list[dict[str, Any]]) -> int:
     return sum(1 for item in candidates if str(item.get("candidate_type") or "").startswith("visual_image"))
 
 

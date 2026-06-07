@@ -7,6 +7,7 @@ visual evidence into an explainable diagnosis candidate for validation.
 from src.visual_diagnosis.mapper import build_visual_diagnosis
 from src.visual_diagnosis.models import VisualDiagnosis
 from src.visual_diagnosis.computed_style import computed_style_snapshot_to_visual_signature
+from src.visual_diagnosis.bundle import VisualEvidenceBundle, VisualEvidenceSource
 from src.visual_diagnosis.evidence import (
     VisualEvidence,
     build_visual_evidence_from_local_inputs,
@@ -19,6 +20,8 @@ from src.visual_diagnosis.style_capture import (
 
 __all__ = [
     "VisualDiagnosis",
+    "VisualEvidenceBundle",
+    "VisualEvidenceSource",
     "VisualEvidence",
     "build_visual_diagnosis",
     "build_visual_evidence_from_local_inputs",

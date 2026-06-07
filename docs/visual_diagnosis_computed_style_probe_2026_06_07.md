@@ -2,7 +2,7 @@
 
 ## Verdict
 
-Computed-style snapshots are useful as a Context.dev replacement primitive, but
+Computed-style snapshots are useful as a paid-provider replacement primitive, but
 they are not enough to promote Visual Diagnosis beyond Lab.
 
 The probe shows stable top-level diagnosis across four real local DB brands, but
@@ -106,13 +106,40 @@ Keep computed-style capture in Lab.
 
 Do not promote it to Brand Audit, Scanner, public reports, or scoring yet.
 
+## Bundle Follow-up
+
+After the first probe, the lab was changed from destructive source priority to
+`visual-evidence-bundle-v1` fusion. The same four-brand manifest was rerun with
+`web_payload`, `computed_style_snapshot` and screenshot evidence available.
+
+Run inspected:
+
+- `/tmp/brand3_visual_diagnosis_db_probe/lab_bundle_check/20260607T094301Z`
+
+Generated chart-ready output:
+
+- `/tmp/brand3_visual_diagnosis_db_probe/lab_bundle_check/20260607T094301Z/comparison.json`
+
+Bundle result:
+
+| Brand | Sources | Fusion notes | Identity read | Anti-patterns |
+| --- | --- | --- | --- | --- |
+| `www.netlify.com` | `computed_style`, `web_payload`, `screenshot_vision` | `computed_style_and_web_payload_fused`, `screenshot_vision_merged_into_fused_payload` | `functionally_clear` | `card_heavy_composition` |
+| `www.langchain.com` | `computed_style`, `web_payload`, `screenshot_vision` | `computed_style_and_web_payload_fused`, `screenshot_vision_merged_into_fused_payload` | `functionally_clear` | `card_heavy_composition`, `flat_typographic_hierarchy`, `viewport_obstruction_modal` |
+| `elevenlabs.io` | `computed_style`, `web_payload`, `screenshot_vision` | `computed_style_and_web_payload_fused`, `screenshot_vision_merged_into_fused_payload` | `weak_or_inconsistent` | `card_heavy_composition`, `visual_promise_mismatch` |
+| `www.sklum.com` | `computed_style`, `web_payload`, `screenshot_vision` | `computed_style_and_web_payload_fused`, `screenshot_vision_merged_into_fused_payload` | `commerce_clear` | `card_heavy_composition`, `flat_typographic_hierarchy` |
+
+This is a better operating model than source priority: the top-level reads stay
+stable, and the source list/fusion notes are explicit enough for graphs and
+human review. It still needs source-level anti-pattern provenance before any
+promotion decision.
+
 Recommended next step:
 
-1. Change Visual Diagnosis Lab from source priority to source fusion.
-2. Preserve `web_payload`, `computed_style_snapshot`, screenshot vision and Magnetism evidence together.
-3. Add source-specific anti-pattern provenance.
-4. Re-run the same four brands plus two visual-heavy brands.
-5. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
+1. Add source-specific anti-pattern provenance.
+2. Re-run the same four brands plus two visual-heavy brands.
+3. Add human review notes to `comparison.json`.
+4. Only consider promotion if anti-pattern changes become explainable instead of source-order dependent.
 
 ## Verification
 
@@ -125,4 +152,4 @@ Recommended next step:
 
 Result:
 
-- `24 passed`
+- `66 passed, 5 subtests passed`

@@ -301,6 +301,18 @@ Latest local/deploy API regression:
 - Contract signals matched for readiness, publication decision, scan mode, EvidenceGraph, Analyst Pass, Research Pack Quality, Research Pack source, TLDR generation mode, and `analysis_error`.
 - Numeric deltas were below thresholds: scanner magnetism local `74.0` vs deploy `77.0`; audit composite local `71.0` vs deploy `73.4`.
 
+Follow-up local/deploy API regression set:
+
+- Date: 2026-06-07.
+- Cases: `https://www.langchain.com`, `https://www.netlify.com`, `https://elevenlabs.io`.
+- Report: `scratch/local_vs_deploy_pipeline_compare/comparison-20260607-050128.md`.
+- Result: 0 critical findings, 2 warnings.
+- LangChain: local scan `98`, deploy scan `84`; warning on scanner coherence only, local `88.0` vs deploy `96.0`.
+- Netlify: local scan `99`, deploy scan `85`; warning on scanner coherence only, local `78.0` vs deploy `72.0`.
+- ElevenLabs: local scan `100`, deploy scan `86`; status `no_material_diff`, scanner magnetism `80.0` local and deploy, scanner coherence `80.0` local and deploy.
+- All three cases matched the operational contract signals: readiness, publication decision, scan mode, EvidenceGraph, Analyst Pass, Research Pack Quality, Research Pack source, TLDR generation mode, and `analysis_error`.
+- Interpretation: the batch does not show refactor regression. The two warnings are score variability in `scanner.score_coherence`, not contract drift or publication/readiness failure.
+
 ## What This Refactor Does Not Claim
 
 This refactor does not prove that:

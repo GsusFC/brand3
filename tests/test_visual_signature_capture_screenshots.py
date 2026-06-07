@@ -808,6 +808,42 @@ def test_dismissal_discovery_keeps_safe_button_inside_current_viewport():
     assert discovery["candidate_click_targets"][0]["method"] == "reject_all"
 
 
+def test_dismissal_discovery_suppresses_unrelated_header_rejections():
+    capturer = _load_capturer()
+    page = _FakePage(
+        ["Pricing", "Manage choices"],
+        localizations={
+            "Pricing": {
+                "bounding_box": {"x": 820, "y": 24, "width": 84, "height": 32},
+                "viewport_width": 1440,
+                "viewport_height": 900,
+                "dom_ancestry": [{"tag": "header", "id": "site-header", "role": "navigation"}],
+                "viewport_location": "top_right",
+                "position": "sticky",
+                "z_index": "100",
+                "role_hint": "navigation",
+            },
+            "Manage choices": {
+                "bounding_box": {"x": 64, "y": 812, "width": 180, "height": 44},
+                "viewport_width": 1440,
+                "viewport_height": 900,
+                "dom_ancestry": [{"tag": "div", "id": "cookie-modal", "role": "dialog", "text": "cookie consent"}],
+                "viewport_location": "bottom_left",
+                "position": "fixed",
+                "z_index": "1000",
+                "role_hint": "dialog",
+            },
+        },
+    )
+    obstruction = {"present": True, "type": "cookie_modal", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+
+    rejected_labels = [item["label"] for item in discovery["rejected_click_targets"]]
+    assert "Pricing" not in rejected_labels
+    assert "Manage choices" in rejected_labels
+
+
 def test_cookie_modal_i_agree_is_safe_candidate():
     capturer = _load_capturer()
     page = _FakePage(["I agree", "Privacy settings"])
@@ -908,6 +944,17 @@ def test_cookie_modal_manage_choices_is_not_clicked():
     assert discovery["rejected_click_targets"][0]["interaction_policy"] == "requires_human_review"
     assert dismissal["attempted"] is False
     assert dismissal["dismissal_block_reason"] == "no_safe_cookie_button_found"
+
+
+def test_cookie_modal_signup_cta_is_subscription_rejection_not_preferences():
+    capturer = _load_capturer()
+    page = _FakePage(["Sign up"])
+    obstruction = {"present": True, "type": "cookie_modal", "confidence": 0.9, "signals": []}
+
+    discovery = capturer._discover_dismissal_targets(page, obstruction)
+
+    assert discovery["selected_candidate"] is None
+    assert discovery["rejected_click_targets"][0]["reason"] == "unsafe_subscription_action"
 
 
 def test_newsletter_modal_x_close_is_safe_candidate():

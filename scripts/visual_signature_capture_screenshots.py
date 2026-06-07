@@ -557,7 +557,12 @@ def _discover_dismissal_targets(page: Any, obstruction: dict[str, Any] | None) -
                     "owner_evidence": localization.owner_evidence,
                     "owner_limitations": localization.owner_limitations,
                 }
-        else:
+        elif _should_record_rejected_click_target(
+            record,
+            normalized_label=normalized,
+            patterns=patterns,
+            has_dismissal_match=match is not None,
+        ):
             rejected_click_targets.append(record)
 
     if eligibility != "eligible":
@@ -585,6 +590,39 @@ def _is_safe_dismissal_candidate_fields(*, affordance_policy: str, affordance_ow
     }:
         return False
     return True
+
+
+def _should_record_rejected_click_target(
+    record: dict[str, Any],
+    *,
+    normalized_label: str,
+    patterns: tuple[tuple[str, str], ...],
+    has_dismissal_match: bool,
+) -> bool:
+    owner = str(record.get("affordance_owner") or "")
+    reason = str(record.get("reason") or "")
+    category = str(record.get("affordance_category") or "")
+    known_unrelated_owner = owner in {
+        "unrelated_chat_widget",
+        "unrelated_cart_drawer",
+        "header_navigation",
+        "social_link",
+    }
+    if known_unrelated_owner and not has_dismissal_match:
+        return False
+    if has_dismissal_match:
+        return True
+    if owner == "active_obstruction":
+        return True
+    if category in {"ambiguous_action", "subscription_action"}:
+        return True
+    if reason in {
+        "manage_choices_not_safe",
+        "newsletter_call_to_action_not_safe",
+        "unsafe_subscription_action",
+    }:
+        return True
+    return any(_contains_phrase(normalized_label, phrase) for phrase, _method in patterns)
 
 
 def _should_attempt_obstruction_dismissal(obstruction: dict[str, Any] | None) -> bool:
@@ -680,10 +718,10 @@ def _rejection_reason(normalized: str, obstruction_type: str) -> str | None:
             return "manage_choices_not_safe"
         return "not_close_or_dismiss"
     if obstruction_type in {"cookie_banner", "cookie_modal"}:
-        if any(term in normalized for term in COMMON_DISMISS_IGNORED_TERMS):
-            return "manage_choices_not_safe"
         if any(term in normalized for term in ("subscribe", "sign up", "signup", "join", "register")):
             return "unsafe_subscription_action"
+        if any(term in normalized for term in COMMON_DISMISS_IGNORED_TERMS):
+            return "manage_choices_not_safe"
         return "not_safe_cookie_action"
     return "not_relevant"
 

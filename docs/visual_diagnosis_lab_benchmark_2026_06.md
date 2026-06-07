@@ -332,6 +332,25 @@ Supported lab manifest fields:
 - deprecated legacy alias: `contextdev_candidate_summary` or `contextdev_candidate_summary_path`
 - `derive_visual_signature_from_screenshot`
 
+When a `screenshot_capture` row includes both raw and clean-attempt artifacts,
+the Lab now writes a `clean_capture_decision` object into `summary.json` and
+`comparison.json`.
+
+Decision policy:
+
+- `use_clean_attempt`: only when dismissal clearly succeeds or obstruction
+  severity / coverage materially improves.
+- `keep_raw_with_clean_supplement`: clean attempt improved some metrics but not
+  enough to replace raw evidence.
+- `keep_raw_clean_degraded`: clean attempt worsened obstruction or first
+  impression metrics.
+- `keep_raw_no_material_improvement`: clean attempt did not materially improve
+  the capture.
+- `raw_only`: no clean attempt exists or no safe mutation was available.
+
+The raw screenshot remains the default evidence. A clean attempt is used for
+diagnosis only when `clean_capture_decision.use_clean_for_diagnosis` is `true`.
+
 Validated:
 
 ```bash

@@ -970,6 +970,164 @@ def test_visual_diagnosis_lab_derives_page_state_from_capture_manifest_row(tmp_p
     assert result["summary"]["results"][0]["diagnosis"]["capture"]["available"] is True
 
 
+def test_visual_diagnosis_lab_records_clear_clean_capture_decision(tmp_path):
+    raw_path = tmp_path / "raw.png"
+    clean_path = tmp_path / "clean.png"
+    raw_path.write_bytes(b"PNG")
+    clean_path.write_bytes(b"PNG")
+    capture_path = tmp_path / "capture-row.json"
+    capture_path.write_text(
+        json.dumps(
+            {
+                "brand_name": "Clean Brand",
+                "website_url": "https://clean.example",
+                "status": "ok",
+                "source": "playwright",
+                "capture_type": "viewport",
+                "raw_screenshot_path": str(raw_path),
+                "clean_attempt_screenshot_path": str(clean_path),
+                "dismissal_attempted": True,
+                "dismissal_successful": True,
+                "before_obstruction": {"present": True, "type": "cookie_modal", "severity": "blocking", "coverage_ratio": 0.92},
+                "after_obstruction": {"present": False, "type": "none", "severity": "none", "coverage_ratio": 0.0},
+                "raw_viewport_metrics": {"viewport_whitespace_ratio": 0.18, "viewport_visual_density": "dense", "viewport_composition": "dense_grid", "palette_color_count": 12},
+                "clean_attempt_metrics": {"viewport_whitespace_ratio": 0.42, "viewport_visual_density": "balanced", "viewport_composition": "balanced", "palette_color_count": 8},
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Clean Brand",
+                        "website_url": "https://clean.example",
+                        "screenshot_capture_path": str(capture_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    decision = result["summary"]["results"][0]["clean_capture_decision"]
+    comparison = json.loads(next((tmp_path / "out").glob("*/comparison.json")).read_text(encoding="utf-8"))
+
+    assert decision["decision"] == "use_clean_attempt"
+    assert decision["selected_variant"] == "clean_attempt"
+    assert decision["use_clean_for_diagnosis"] is True
+    assert decision["improvement_state"] == "clear_improvement"
+    assert decision["obstruction_delta"]["severity_delta"] == 4
+    assert comparison["rows"][0]["clean_capture_decision"]["decision"] == "use_clean_attempt"
+
+
+def test_visual_diagnosis_lab_keeps_raw_for_partial_clean_capture(tmp_path):
+    raw_path = tmp_path / "raw.png"
+    clean_path = tmp_path / "clean.png"
+    raw_path.write_bytes(b"PNG")
+    clean_path.write_bytes(b"PNG")
+    capture_path = tmp_path / "capture-row.json"
+    capture_path.write_text(
+        json.dumps(
+            {
+                "brand_name": "Partial Brand",
+                "website_url": "https://partial.example",
+                "status": "ok",
+                "source": "playwright",
+                "capture_type": "viewport",
+                "raw_screenshot_path": str(raw_path),
+                "clean_attempt_screenshot_path": str(clean_path),
+                "dismissal_attempted": True,
+                "dismissal_successful": False,
+                "before_obstruction": {"present": True, "type": "cookie_modal", "severity": "blocking", "coverage_ratio": 0.92},
+                "after_obstruction": {"present": True, "type": "cookie_modal", "severity": "blocking", "coverage_ratio": 0.86},
+                "raw_viewport_metrics": {"viewport_whitespace_ratio": 0.18, "viewport_visual_density": "dense", "viewport_composition": "dense_grid", "palette_color_count": 12},
+                "clean_attempt_metrics": {"viewport_whitespace_ratio": 0.28, "viewport_visual_density": "dense", "viewport_composition": "dense_grid", "palette_color_count": 12},
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Partial Brand",
+                        "website_url": "https://partial.example",
+                        "screenshot_capture_path": str(capture_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    decision = result["summary"]["results"][0]["clean_capture_decision"]
+
+    assert decision["decision"] == "keep_raw_with_clean_supplement"
+    assert decision["selected_variant"] == "raw_viewport"
+    assert decision["use_clean_for_diagnosis"] is False
+    assert decision["improvement_state"] == "partial_improvement"
+    assert decision["metrics_delta"]["whitespace_delta"] == 0.1
+
+
+def test_visual_diagnosis_lab_keeps_raw_when_clean_capture_degrades(tmp_path):
+    raw_path = tmp_path / "raw.png"
+    clean_path = tmp_path / "clean.png"
+    raw_path.write_bytes(b"PNG")
+    clean_path.write_bytes(b"PNG")
+    capture_path = tmp_path / "capture-row.json"
+    capture_path.write_text(
+        json.dumps(
+            {
+                "brand_name": "Degraded Brand",
+                "website_url": "https://degraded.example",
+                "status": "ok",
+                "source": "playwright",
+                "capture_type": "viewport",
+                "raw_screenshot_path": str(raw_path),
+                "clean_attempt_screenshot_path": str(clean_path),
+                "dismissal_attempted": True,
+                "dismissal_successful": False,
+                "before_obstruction": {"present": True, "type": "cookie_modal", "severity": "major", "coverage_ratio": 0.3},
+                "after_obstruction": {"present": True, "type": "cookie_modal", "severity": "blocking", "coverage_ratio": 0.92},
+                "raw_viewport_metrics": {"viewport_whitespace_ratio": 0.42, "viewport_visual_density": "balanced", "viewport_composition": "balanced", "palette_color_count": 8},
+                "clean_attempt_metrics": {"viewport_whitespace_ratio": 0.12, "viewport_visual_density": "dense", "viewport_composition": "dense_grid", "palette_color_count": 20},
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Degraded Brand",
+                        "website_url": "https://degraded.example",
+                        "screenshot_capture_path": str(capture_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    decision = result["summary"]["results"][0]["clean_capture_decision"]
+
+    assert decision["decision"] == "keep_raw_clean_degraded"
+    assert decision["selected_variant"] == "raw_viewport"
+    assert decision["use_clean_for_diagnosis"] is False
+    assert decision["improvement_state"] == "degraded"
+    assert decision["obstruction_delta"]["severity_delta"] == -1
+
+
 def test_visual_diagnosis_lab_comparison_json_includes_signal_provenance(tmp_path):
     snapshot = _computed_style_snapshot()
     snapshot["elements"] = [

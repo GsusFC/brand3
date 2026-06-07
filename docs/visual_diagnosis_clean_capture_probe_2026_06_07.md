@@ -164,6 +164,17 @@ This is an improvement in safe affordance discovery, not yet a clean-capture
 success. The conservative rule remains: failed clean attempts do not replace
 raw screenshots in Visual Diagnosis.
 
+The follow-up Lab pass also emits `clean_capture_decision`:
+
+| Brand | Clean capture decision | Improvement state | Selected variant |
+| --- | --- | --- | --- |
+| OpenAI | `raw_only` | `not_evaluated` | `raw_viewport` |
+| Allbirds | `keep_raw_no_material_improvement` | `no_material_improvement` | `raw_viewport` |
+| Le Labo | `keep_raw_no_material_improvement` | `no_material_improvement` | `raw_viewport` |
+
+This gives us a machine-readable reason for keeping raw evidence instead of
+relying on manual judgment after each probe.
+
 ## Validation
 
 ```bash

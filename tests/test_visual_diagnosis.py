@@ -908,6 +908,68 @@ def test_visual_diagnosis_lab_accepts_page_state_path(tmp_path):
     }
 
 
+def test_visual_diagnosis_lab_derives_page_state_from_capture_manifest_row(tmp_path):
+    screenshot_path = tmp_path / "blocked.png"
+    screenshot_path.write_bytes(b"PNG")
+    capture_path = tmp_path / "capture-row.json"
+    capture_path.write_text(
+        json.dumps(
+            {
+                "brand_name": "Blocked Brand",
+                "website_url": "https://blocked.example",
+                "status": "ok",
+                "source": "playwright",
+                "capture_type": "viewport",
+                "raw_screenshot_path": str(screenshot_path),
+                "clean_attempt_screenshot_path": str(tmp_path / "clean.png"),
+                "dismissal_successful": False,
+                "before_obstruction": {
+                    "present": True,
+                    "type": "cookie_modal",
+                    "severity": "blocking",
+                    "coverage_ratio": 0.92,
+                    "confidence": 0.98,
+                    "signals": ["dom_keyword:cookie", "dom_keyword:privacy"],
+                },
+                "dismissal_attempted": False,
+                "dismissal_block_reason": "no_safe_cookie_button_found",
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Blocked Brand",
+                        "website_url": "https://blocked.example",
+                        "derive_visual_signature_from_screenshot": True,
+                        "screenshot_capture_path": str(capture_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    comparison = json.loads(next((tmp_path / "out").glob("*/comparison.json")).read_text(encoding="utf-8"))
+
+    assert result["summary"]["results"][0]["page_state"] == {
+        "status": "cookie_obstructed",
+        "obstructions": ["cookie_banner", "privacy_notice", "modal"],
+        "capture_quality": "blocked",
+        "confidence": 0.98,
+        "source": "screenshot_capture",
+        "notes": "no_safe_cookie_button_found",
+    }
+    assert comparison["rows"][0]["page_state"]["status"] == "cookie_obstructed"
+    assert "raw_inputs:screenshot_capture" in result["summary"]["results"][0]["diagnosis"]["evidence_refs"]
+    assert result["summary"]["results"][0]["diagnosis"]["capture"]["available"] is True
+
+
 def test_visual_diagnosis_lab_comparison_json_includes_signal_provenance(tmp_path):
     snapshot = _computed_style_snapshot()
     snapshot["elements"] = [

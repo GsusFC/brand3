@@ -172,6 +172,10 @@ Second eight-brand calibration probe:
 
 - `docs/visual_diagnosis_calibration_probe_2026_06_07.md`
 
+Clean-capture dismissal probe:
+
+- `docs/visual_diagnosis_clean_capture_probe_2026_06_07.md`
+
 Allowed review fields are `reviewer`, `reviewed_at`, `verdict`, `profile_fit`,
 `identity_read_fit`, `notes`, `disagreements` and `recommended_changes`.
 Unknown fields are ignored so review payloads do not become an accidental

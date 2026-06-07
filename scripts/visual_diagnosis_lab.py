@@ -205,8 +205,20 @@ def _human_review_for_row(row: dict[str, Any]) -> dict[str, Any]:
 
 def _page_state_for_row(row: dict[str, Any]) -> dict[str, Any]:
     payload = _row_payload(row, "page_state")
-    if not payload:
+    if payload:
+        result = _filter_page_state_payload(payload)
+    else:
+        screenshot_payload = _row_payload(row, "screenshot_capture")
+        result = _page_state_from_screenshot_capture(screenshot_payload)
+    if not result:
         return {}
+    obstructions = result.get("obstructions")
+    if isinstance(obstructions, list):
+        result["obstructions"] = [str(item) for item in obstructions if str(item).strip()]
+    return result
+
+
+def _filter_page_state_payload(payload: dict[str, Any]) -> dict[str, Any]:
     allowed = {
         "status",
         "obstructions",
@@ -215,11 +227,85 @@ def _page_state_for_row(row: dict[str, Any]) -> dict[str, Any]:
         "source",
         "notes",
     }
-    result = {key: value for key, value in payload.items() if key in allowed and value not in (None, "")}
-    obstructions = result.get("obstructions")
-    if isinstance(obstructions, list):
-        result["obstructions"] = [str(item) for item in obstructions if str(item).strip()]
-    return result
+    return {key: value for key, value in payload.items() if key in allowed and value not in (None, "")}
+
+
+def _page_state_from_screenshot_capture(payload: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(payload, dict):
+        return {}
+    before = payload.get("before_obstruction") if isinstance(payload.get("before_obstruction"), dict) else {}
+    after = payload.get("after_obstruction") if isinstance(payload.get("after_obstruction"), dict) else {}
+    obstruction = after if after.get("present") is True else before
+    if not obstruction:
+        return {}
+    status = _page_state_status_from_obstruction(obstruction)
+    severity = str(obstruction.get("severity") or "").strip().lower()
+    dismissal_successful = payload.get("dismissal_successful") is True
+    if status == "clean":
+        capture_quality = "clean"
+    elif dismissal_successful and not after.get("present"):
+        capture_quality = "clean_attempt"
+    elif severity == "blocking":
+        capture_quality = "blocked"
+    else:
+        capture_quality = "partial"
+    notes = []
+    if payload.get("dismissal_attempted") is True:
+        notes.append("dismissal_attempted")
+    if dismissal_successful:
+        notes.append("dismissal_successful")
+    block_reason = str(payload.get("dismissal_block_reason") or "").strip()
+    if block_reason:
+        notes.append(block_reason)
+    return {
+        "status": status,
+        "obstructions": _page_state_obstructions_from_obstruction(obstruction),
+        "capture_quality": capture_quality,
+        "confidence": obstruction.get("confidence"),
+        "source": "screenshot_capture",
+        "notes": ", ".join(notes) if notes else None,
+    }
+
+
+def _page_state_status_from_obstruction(obstruction: dict[str, Any]) -> str:
+    if obstruction.get("present") is not True:
+        return "clean"
+    obstruction_type = str(obstruction.get("type") or "").strip().lower()
+    signals = " ".join(str(item).lower() for item in obstruction.get("signals") or [])
+    combined = f"{obstruction_type} {signals}"
+    if "cloudflare" in combined or "captcha" in combined or "verify human" in combined or "bot_check" in combined:
+        return "bot_check_blocked"
+    if "location" in combined:
+        return "location_gated"
+    if "cookie" in combined:
+        return "cookie_obstructed"
+    if "privacy" in combined or "consent" in combined:
+        return "privacy_obstructed"
+    if "promo" in combined or "promotion" in combined or "campaign" in combined:
+        return "campaign_overlay"
+    if "modal" in combined or "newsletter" in combined or "login_wall" in combined:
+        return "modal_obstructed"
+    return "unknown"
+
+
+def _page_state_obstructions_from_obstruction(obstruction: dict[str, Any]) -> list[str]:
+    obstruction_type = str(obstruction.get("type") or "").strip().lower()
+    signals = " ".join(str(item).lower() for item in obstruction.get("signals") or [])
+    combined = f"{obstruction_type} {signals}"
+    obstructions = []
+    if "cookie" in combined:
+        obstructions.append("cookie_banner")
+    if "privacy" in combined or "consent" in combined:
+        obstructions.append("privacy_notice")
+    if "location" in combined:
+        obstructions.append("location_gate")
+    if "cloudflare" in combined:
+        obstructions.append("cloudflare_check")
+    if "modal" in combined or "newsletter" in combined:
+        obstructions.append("modal")
+    if "promo" in combined or "promotion" in combined or "campaign" in combined:
+        obstructions.append("campaign_overlay")
+    return obstructions or [obstruction_type or "unknown"]
 
 
 def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
@@ -380,6 +466,20 @@ def _screenshot_capture_for_row(row: dict[str, Any]) -> dict[str, Any] | None:
         return None
     capture = payload.get("capture") if isinstance(payload.get("capture"), dict) else {}
     if not capture:
+        if payload.get("screenshot_url"):
+            return payload
+        screenshot_path = payload.get("raw_screenshot_path") or payload.get("screenshot_path")
+        if payload.get("dismissal_successful") is True and payload.get("clean_attempt_screenshot_path"):
+            screenshot_path = payload.get("clean_attempt_screenshot_path")
+        if screenshot_path:
+            normalized = {
+                "screenshot_url": f"file://{screenshot_path}",
+                "capture_type": payload.get("capture_type") or "viewport",
+                "quality": "usable" if payload.get("status") == "ok" else payload.get("quality"),
+                "source": payload.get("source"),
+                "status": payload.get("status"),
+            }
+            return {key: value for key, value in normalized.items() if value is not None}
         return payload
     normalized = {
         "screenshot_url": capture.get("screenshot_url"),

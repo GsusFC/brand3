@@ -84,24 +84,24 @@ This immediately exposes useful robustness questions. A24 has a placeholder/loca
 A local DB smoke test used four recent Brand3 runs from `data/brand3.sqlite3`:
 
 - LangChain: screenshot capture + Context.dev visual candidates + Magnetism payload.
-- Netlify: screenshot capture + local screenshot vision + Magnetism payload.
-- ElevenLabs: screenshot capture + local screenshot vision + Magnetism payload.
-- Sklum: screenshot capture + local screenshot vision + Magnetism payload.
+- Netlify: raw web payload + screenshot capture + local screenshot vision + Magnetism payload.
+- ElevenLabs: raw web payload + screenshot capture + local screenshot vision + Magnetism payload.
+- Sklum: raw web payload + screenshot capture + local screenshot vision + Magnetism payload.
 
 Latest run inspected:
 
-- `/tmp/brand3_visual_diagnosis_real_runs/20260607T074750Z`
+- `/tmp/brand3_visual_diagnosis_real_runs/20260607T081444Z`
 
 | Brand | Status | Profile | Identity read | Visual identity | Brand fit | Confidence | Anti-patterns |
 | --- | --- | --- | --- | ---: | --- | --- | --- |
 | www.langchain.com | limited | developer_first | functionally_clear | 95 | high | high | card_heavy_composition |
-| www.netlify.com | limited | developer_first | functionally_clear | 85 | high | high | - |
-| elevenlabs.io | limited | ai_native | weak_or_inconsistent | 52 | low | high | visual_promise_mismatch |
-| www.sklum.com | limited | ecommerce_mass_market | commerce_clear | 95 | high | high | - |
+| www.netlify.com | limited | developer_first | functionally_clear | 85 | high | high | card_heavy_composition, flat_typographic_hierarchy, viewport_obstruction_login_wall |
+| elevenlabs.io | limited | ai_native | weak_or_inconsistent | 52 | low | high | card_heavy_composition, generic_ai_aesthetic, visual_promise_mismatch, overused_gradient_palette, low_distinctiveness_hero, viewport_obstruction_modal |
+| www.sklum.com | limited | ecommerce_mass_market | commerce_clear | 95 | high | high | card_heavy_composition, flat_typographic_hierarchy, viewport_obstruction_modal |
 
-This is the strongest result from the real-data pass: current Scanner/Audit screenshots prove capture availability, but they do not automatically provide semantic visual diagnosis. LangChain is informed by Context.dev visual candidates. Netlify, ElevenLabs and Sklum become limited diagnoses only when the manifest opts into local screenshot vision via `derive_visual_signature_from_screenshot: true`.
+This is the strongest result from the real-data pass: current Scanner/Audit screenshots prove capture availability, but they do not automatically provide semantic visual diagnosis. LangChain is informed by Context.dev visual candidates. Netlify, ElevenLabs and Sklum become limited diagnoses when the manifest combines `web_payload_path` with local screenshot vision via `derive_visual_signature_from_screenshot: true`.
 
-The ElevenLabs row is the useful negative control: Magnetism `visual_identity` is low, and Visual Diagnosis surfaces that as `weak_or_inconsistent` through `visual_promise_mismatch`. Netlify and Sklum read as functionally or commercially coherent from screenshot shape plus category and Magnetism fit, but they remain `limited` because screenshot vision is not equivalent to a full Visual Signature or human design review.
+The ElevenLabs row is the useful negative control: Magnetism `visual_identity` is low, and Visual Diagnosis surfaces that as `weak_or_inconsistent` through `visual_promise_mismatch`. Netlify and Sklum read as functionally or commercially coherent from raw web evidence, screenshot shape, category and Magnetism fit, but they remain `limited` because this is still deterministic evidence, not a full multimodal or human design review. Viewport obstruction labels are heuristics and should be treated as diagnostic flags, not final design judgments.
 
 ### Category Token Matching
 
@@ -170,13 +170,18 @@ It can derive a lab-only visual payload from an existing local screenshot when a
 
 - `derive_visual_signature_from_screenshot: true`.
 
+It can derive DOM/CSS visual evidence from existing local web inputs through:
+
+- inline `web_payload`;
+- `web_payload_path`.
+
 It can extract coherence evidence from known local shapes:
 
 - Scanner methodology payloads: `methodology.score_breakdown.coherence.visual_identity`;
 - normalized local/deploy comparison payloads: `scanner.score_coherence_breakdown.visual_identity`;
 - batch rows with `coherence_score`, as a fallback labelled `coherence_score_fallback`.
 
-The current local DB smoke test confirms that Scanner/Audit outputs are useful, but screenshot capture and Magnetism scores are insufficient on their own. Visual Diagnosis needs interpretable visual evidence from Visual Signature, Context.dev-style candidates, local screenshot vision, or a future multimodal pass.
+The current local DB smoke test confirms that Scanner/Audit outputs are useful, but screenshot capture and Magnetism scores are insufficient on their own. Visual Diagnosis needs interpretable visual evidence from Visual Signature, raw web DOM/CSS, Context.dev-style candidates, local screenshot vision, or a future multimodal pass.
 
 ## Decision
 
@@ -206,6 +211,7 @@ Supported lab manifest fields:
 - `website_url`
 - `category_hint`
 - `visual_signature` or `visual_signature_path`
+- `web_payload` or `web_payload_path`
 - `screenshot_capture` or `screenshot_capture_path`
 - `coherence_breakdown` or `coherence_breakdown_path`
 - `magnetism_payload` or `magnetism_payload_path`
@@ -220,7 +226,7 @@ Validated:
 
 Result:
 
-- `15 passed`
+- `18 passed`
 
 Broader related subset:
 
@@ -238,7 +244,7 @@ Broader related subset:
 
 Current result:
 
-- `80 passed, 5 subtests passed`
+- `83 passed, 5 subtests passed`
 
 ## Bottom Line
 

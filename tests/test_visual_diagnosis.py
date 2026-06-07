@@ -11,6 +11,7 @@ from scripts.visual_diagnosis_lab import (
     run_lab,
 )
 from src.visual_diagnosis import build_visual_diagnosis
+from src.visual_diagnosis.evidence import build_visual_evidence_from_local_inputs
 
 
 def _visual_signature_payload() -> dict:
@@ -55,6 +56,43 @@ def _visual_signature_payload() -> dict:
             },
             "viewport_obstruction": {"present": False, "type": "none"},
         },
+    }
+
+
+def _web_payload() -> dict:
+    return {
+        "url": "https://example.com",
+        "canonical_url": "https://example.com",
+        "title": "Example",
+        "meta_description": "Example design system",
+        "html": """
+        <html>
+          <head>
+            <style>
+              body { font-family: Inter, sans-serif; color: #111111; background: #ffffff; }
+              h1 { font-size: 56px; color: #2255ff; }
+              .grid { display: grid; }
+            </style>
+          </head>
+          <body>
+            <header><nav><a>Product</a><a>Pricing</a></nav></header>
+            <main>
+              <section class="hero grid">
+                <h1>Build faster</h1>
+                <a class="button primary cta">Get started</a>
+              </section>
+              <article class="card">Proof</article>
+              <article class="card">Proof</article>
+              <article class="card">Proof</article>
+            </main>
+          </body>
+        </html>
+        """,
+        "markdown_content": "[Get started](https://example.com/start)",
+        "images": [],
+        "links": ["https://example.com/start"],
+        "tech_stack": [],
+        "error": "",
     }
 
 
@@ -395,6 +433,23 @@ def test_contextdev_candidate_summary_maps_visual_candidates_for_matching_domain
     assert result["contextdev"]["candidate_ids"] == ["ctx_colors", "ctx_type"]
 
 
+def test_visual_evidence_builds_from_local_web_payload_without_provider_call():
+    evidence = build_visual_evidence_from_local_inputs(
+        brand_name="Example",
+        website_url="https://example.com",
+        web_payload=_web_payload(),
+    )
+
+    payload = evidence.visual_signature_payload or {}
+    assert evidence.source_mode == "dom_css_visual_lab"
+    assert evidence.evidence_refs == ["raw_inputs:web"]
+    assert payload["source"] == "dom_css_visual_lab"
+    assert payload["interpretation_status"] == "interpretable"
+    assert payload["layout"]["has_navigation"] is True
+    assert payload["components"]["primary_ctas"] == ["Get started"]
+    assert "raw_inputs:web" in evidence.evidence_refs
+
+
 def test_visual_diagnosis_lab_accepts_contextdev_candidate_summary(tmp_path):
     contextdev_path = tmp_path / "contextdev.json"
     contextdev_path.write_text(
@@ -456,6 +511,35 @@ def test_visual_diagnosis_lab_accepts_contextdev_candidate_summary(tmp_path):
     assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
     assert "raw_inputs:contextdev_candidate_summary" in diagnosis["evidence_refs"]
     assert "raw_inputs:visual_signature" not in diagnosis["evidence_refs"]
+
+
+def test_visual_diagnosis_lab_accepts_web_payload_path(tmp_path):
+    web_path = tmp_path / "web.json"
+    web_path.write_text(json.dumps(_web_payload()), encoding="utf-8")
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Web Example",
+                        "website_url": "https://example.com",
+                        "category_hint": "developer infrastructure",
+                        "web_payload_path": str(web_path),
+                        "coherence_breakdown": {"visual_identity": 86},
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    diagnosis = result["summary"]["results"][0]["diagnosis"]
+
+    assert diagnosis["diagnosis"]["reference_profile"] == "developer_first"
+    assert diagnosis["diagnosis"]["identity_read"] == "functionally_clear"
+    assert "raw_inputs:web_visual_evidence" in diagnosis["evidence_refs"]
 
 
 def test_visual_diagnosis_lab_normalizes_db_screenshot_capture_payload(tmp_path):
@@ -529,3 +613,23 @@ def test_visual_diagnosis_lab_can_derive_visual_evidence_from_local_screenshot(t
     assert "weak_cta_weight" not in diagnosis["signals"]["antipatterns"]
     assert "raw_inputs:screenshot_vision_lab" in diagnosis["evidence_refs"]
     assert "raw_inputs:visual_signature" not in diagnosis["evidence_refs"]
+
+
+def test_visual_diagnosis_labels_viewport_obstruction_separately_from_capture_failure():
+    payload = _visual_signature_payload()
+    payload["vision"]["viewport_obstruction"] = {"present": True, "type": "cookie_banner"}
+
+    diagnosis = build_visual_diagnosis(
+        brand_name="Obstructed",
+        website_url="https://obstructed.example",
+        screenshot_capture={
+            "screenshot_url": "file:///tmp/obstructed.png",
+            "capture_type": "viewport",
+            "quality": "usable",
+        },
+        visual_signature_payload=payload,
+        coherence_breakdown={"visual_identity": 80},
+    ).to_dict()
+
+    assert "viewport_obstruction_cookie_banner" in diagnosis["signals"]["antipatterns"]
+    assert "capture_not_evaluable" not in diagnosis["signals"]["antipatterns"]

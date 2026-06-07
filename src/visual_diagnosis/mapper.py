@@ -30,8 +30,13 @@ def build_visual_diagnosis(
     payload = visual_signature_payload or {}
     capture = _capture(screenshot_capture, payload)
     evidence_refs = _evidence_refs(screenshot_capture, payload, coherence_breakdown)
+    source = str(payload.get("source") or "")
+    has_visual_analysis_evidence = _has_visual_analysis_evidence(payload)
+    can_diagnose_without_capture = (
+        source in {"dom_css_visual_lab", "contextdev_candidate_summary"} and has_visual_analysis_evidence
+    )
 
-    if not capture.available or capture.quality in {"missing", "poor"}:
+    if (not capture.available or capture.quality in {"missing", "poor"}) and not can_diagnose_without_capture:
         limitations = _dedupe([*capture.limitations, "visual_evidence_not_evaluable"])
         return VisualDiagnosis(
             status="unavailable",
@@ -53,7 +58,7 @@ def build_visual_diagnosis(
             confidence="low",
             limitations=limitations,
         )
-    if not _has_visual_analysis_evidence(payload):
+    if not has_visual_analysis_evidence:
         limitations = _dedupe([*capture.limitations, "visual_analysis_not_interpretable"])
         return VisualDiagnosis(
             status="unavailable",
@@ -93,6 +98,7 @@ def build_visual_diagnosis(
         brand_fit=brand_fit,
         capture=capture,
         antipatterns=antipatterns,
+        allow_without_capture=can_diagnose_without_capture,
     )
     confidence = _diagnosis_confidence(capture, payload, coherence_breakdown, profile_confidence)
     limitations = _limitations(capture, payload, coherence_breakdown)
@@ -232,6 +238,9 @@ def _antipatterns(
     profile: str,
 ) -> list[str]:
     if capture.quality in {"missing", "poor"}:
+        source = str(payload.get("source") or "")
+        if source in {"dom_css_visual_lab", "contextdev_candidate_summary"}:
+            return []
         return ["capture_not_evaluable"]
     components = payload.get("components") or {}
     layout = payload.get("layout") or {}
@@ -262,7 +271,7 @@ def _antipatterns(
         if not visual_coherence or visual_coherence == "not_detected":
             result.append("low_distinctiveness_hero")
     if capture.obstruction != "none":
-        result.append("capture_not_evaluable")
+        result.append(f"viewport_obstruction_{capture.obstruction}")
     return _dedupe(result)
 
 
@@ -365,8 +374,9 @@ def _identity_read(
     brand_fit: str,
     capture: VisualDiagnosisCapture,
     antipatterns: list[str],
+    allow_without_capture: bool = False,
 ) -> str:
-    if capture.quality in {"missing", "poor"}:
+    if capture.quality in {"missing", "poor"} and not allow_without_capture:
         return "not_evaluable"
     if brand_fit == "low" and "visual_promise_mismatch" in antipatterns:
         return "weak_or_inconsistent"
@@ -446,6 +456,8 @@ def _evidence_refs(
             refs.append("raw_inputs:contextdev_candidate_summary")
         elif source == "screenshot_vision_lab":
             refs.append("raw_inputs:screenshot_vision_lab")
+        elif source == "dom_css_visual_lab":
+            refs.append("raw_inputs:web_visual_evidence")
         else:
             refs.append("raw_inputs:visual_signature")
     if coherence_breakdown:

@@ -1,0 +1,59 @@
+{
+  "schema_version": "visual-interpretation-lab-evaluation-v1",
+  "evaluated_at": "2026-06-07",
+  "run_path": "/tmp/brand3_visual_interpretation_lab_gemini/20260607T202134Z",
+  "mode": "gemini",
+  "primary_model": "gemini-2.5-flash",
+  "adjudicator_model": "gemini-2.5-pro",
+  "decision": "continue_lab_only",
+  "product_integration": "do_not_integrate_yet",
+  "metrics": {
+    "total": 10,
+    "valid": 10,
+    "invalid": 0,
+    "usable": 7,
+    "limited": 0,
+    "not_evaluable": 3,
+    "provider_failures": 0,
+    "adjudicated": 7,
+    "missing_screenshot": 1,
+    "avg_latency_ms": 21924,
+    "total_latency_ms": 219244,
+    "prompt_token_count": 45207,
+    "candidates_token_count": 11318,
+    "total_token_count": 76993
+  },
+  "findings": [
+    {
+      "type": "positive",
+      "summary": "The JSON contract held across all 10 rows with no provider failures."
+    },
+    {
+      "type": "positive",
+      "summary": "The model correctly refused contaminated captures for OpenAI and Hermes even when the manifest marked them as usable."
+    },
+    {
+      "type": "positive",
+      "summary": "The model produced useful strategist-level reads for Linear, The Verge, Stripe Docs, Headspace, Notion and Le Labo."
+    },
+    {
+      "type": "risk",
+      "summary": "Seven of ten rows required Pro adjudication, so the current flow is too expensive and slow for product usage."
+    },
+    {
+      "type": "risk",
+      "summary": "Average latency was 21.9s per brand for the adjudicated run."
+    },
+    {
+      "type": "risk",
+      "summary": "The current evidence pack underreports capture contamination; the model caught it visually, but deterministic page-state metadata did not."
+    }
+  ],
+  "next_steps": [
+    "Keep Visual Interpretation Lab isolated from Brand Audit and Scanner.",
+    "Run a Flash-only benchmark before allowing Pro adjudication.",
+    "Improve capture contamination metadata before more model tuning.",
+    "Use Pro only for disputed rows selected by a stricter policy.",
+    "Compare recommendation usefulness against human review before promotion."
+  ]
+}

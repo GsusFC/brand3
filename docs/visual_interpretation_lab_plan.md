@@ -179,20 +179,96 @@ Stop or archive the Lab if:
 - outputs need too much manual cleanup;
 - cost is not viable for repeated use.
 
-## Next Implementation Step
+## Implementation Status
 
-Create a minimal runner:
+Implemented on 2026-06-07 as Lab-only code:
 
-```text
-scripts/visual_interpretation_lab.py
+- `src/visual_interpretation/models.py`
+  - `VisualEvidencePack`
+  - `VisualInterpretation`
+- `src/visual_interpretation/validation.py`
+  - deterministic validation rules
+- `src/visual_interpretation/gemini.py`
+  - native Gemini multimodal request builder
+  - default model: `gemini-2.5-flash`
+  - optional adjudicator model: `gemini-2.5-pro`
+- `scripts/visual_interpretation_lab.py`
+  - manifest runner
+  - dry-run mode by default
+  - `--execute` for real Gemini calls
+  - JSON, comparison JSON, metrics JSON and Markdown outputs
+- `examples/benchmarks/visual_interpretation_lab/cases.json`
+  - 10 real-brand benchmark fixture
+
+The implementation does not write to Brand Audit, Magnetism Scanner, scoring,
+reports or production storage.
+
+Dry-run command:
+
+```bash
+./.venv/bin/python scripts/visual_interpretation_lab.py \
+  --manifest examples/benchmarks/visual_interpretation_lab/cases.json \
+  --output-root /tmp/brand3_visual_interpretation_lab
 ```
 
-The first version should:
+Dry-run result on 2026-06-07:
 
-- read a small manifest;
-- build `VisualEvidencePack`;
-- call Gemini Flash;
-- validate `VisualInterpretation`;
-- write JSON and Markdown outputs;
-- avoid writes to Brand Audit, Scanner or production report data.
+- Total brands: 10
+- Valid outputs: 10
+- Invalid outputs: 0
+- Usable outputs: 9
+- `not_evaluable`: 1
+- Human-reviewed rows: 10
+- Missing screenshot correctly blocked: 1
 
+This only proves the contract and guardrails. It does not prove model quality.
+
+Gemini benchmark result on 2026-06-07:
+
+- Run path: `/tmp/brand3_visual_interpretation_lab_gemini/20260607T202134Z`
+- Primary model: `gemini-2.5-flash`
+- Optional adjudicator: `gemini-2.5-pro`
+- Total brands: 10
+- Valid JSON outputs: 10
+- Invalid outputs: 0
+- Usable outputs: 7
+- `not_evaluable`: 3
+- Provider failures: 0
+- Pro-adjudicated rows: 7
+- Average latency: 21924 ms
+- Total tokens: 76993
+
+Decision: continue Lab-only. Do not integrate with Brand Audit, Magnetism
+Scanner, scoring or public reports yet.
+
+The benchmark shows value because Gemini refused blocked screenshots that the
+manifest still marked as usable and produced useful strategist reads on clean
+or partly obstructed captures. It also shows non-viability for product today:
+too many rows required Pro adjudication and latency is too high.
+
+Detailed evaluation:
+
+- `examples/benchmarks/visual_interpretation_lab/evaluation.md`
+- `examples/benchmarks/visual_interpretation_lab/evaluation.json`
+
+## Next Evidence Step
+
+Run a Flash-only benchmark without Pro adjudication:
+
+```bash
+BRAND3_LLM_API_KEY=... ./.venv/bin/python scripts/visual_interpretation_lab.py \
+  --manifest examples/benchmarks/visual_interpretation_lab/cases.json \
+  --execute \
+  --model gemini-2.5-flash
+```
+
+Then compare against:
+
+- current `visual_diagnosis_lab.py` outputs;
+- human review notes;
+- false positives on blocked/missing captures;
+- recommendation usefulness;
+- cost and latency per brand.
+
+Do not connect it to product until this benchmark shows better strategist value
+than the current heuristic path.

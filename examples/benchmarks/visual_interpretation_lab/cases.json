@@ -1,0 +1,118 @@
+{
+  "brands": [
+    {
+      "brand_name": "Hermes",
+      "website_url": "https://www.hermes.com",
+      "category_hint": "premium luxury fashion",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/hermes.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/hermes.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/six_brand_probe/hermes.json"
+    },
+    {
+      "brand_name": "Linear",
+      "website_url": "https://linear.app",
+      "category_hint": "developer saas infrastructure",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/linear.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/linear.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/linear.json"
+    },
+    {
+      "brand_name": "OpenAI",
+      "website_url": "https://openai.com",
+      "category_hint": "ai native",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/openai.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/openai.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/openai.json"
+    },
+    {
+      "brand_name": "The Verge",
+      "website_url": "https://www.theverge.com",
+      "category_hint": "editorial media",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/the-verge.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/the-verge.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/the-verge.json"
+    },
+    {
+      "brand_name": "Allbirds",
+      "website_url": "https://www.allbirds.com",
+      "category_hint": "ecommerce retail",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/allbirds.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/allbirds.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/allbirds.json"
+    },
+    {
+      "brand_name": "Stripe Docs",
+      "website_url": "https://docs.stripe.com",
+      "category_hint": "developer documentation",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/stripe-docs.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/developer_first/stripe-docs.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/stripe-docs.json"
+    },
+    {
+      "brand_name": "Headspace",
+      "website_url": "https://www.headspace.com",
+      "category_hint": "wellness lifestyle",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/headspace.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/screenshots/headspace.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/headspace.json"
+    },
+    {
+      "brand_name": "Notion",
+      "website_url": "https://www.notion.com",
+      "category_hint": "template saas productivity",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/notion.json",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/template_like_saas/notion.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/notion.json"
+    },
+    {
+      "brand_name": "Le Labo",
+      "website_url": "https://www.lelabofragrances.com",
+      "category_hint": "premium luxury fragrance",
+      "screenshot_capture": {
+        "screenshot_url": "file://examples/visual_signature/calibration_corpus/screenshots/viewport/premium_luxury/le-labo.png",
+        "capture_type": "viewport",
+        "quality": "usable"
+      },
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/calibration_probe/le-labo.json"
+    },
+    {
+      "brand_name": "A24",
+      "website_url": "https://a24films.com",
+      "category_hint": "editorial media culture",
+      "visual_signature_path": "examples/visual_signature/calibration_outputs/a24.json",
+      "human_review_path": "examples/visual_diagnosis_lab/reviews/six_brand_probe/a24.json"
+    }
+  ]
+}

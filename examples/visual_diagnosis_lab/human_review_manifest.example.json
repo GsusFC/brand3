@@ -5,6 +5,16 @@
       "website_url": "https://example.com",
       "category_hint": "developer_first",
       "computed_style_snapshot_path": "/tmp/brand3_visual_diagnosis_computed_styles/example-brand.json",
+      "page_state": {
+        "status": "cookie_obstructed",
+        "obstructions": [
+          "cookie_banner"
+        ],
+        "capture_quality": "partial",
+        "confidence": "medium",
+        "source": "human_review",
+        "notes": "The viewport is useful, but the cookie banner should be separated from visual identity."
+      },
       "human_review": {
         "reviewer": "design-review",
         "reviewed_at": "2026-06-07",
@@ -26,6 +36,7 @@
       "website_url": "https://example.org",
       "category_hint": "premium_luxury",
       "computed_style_snapshot_path": "/tmp/brand3_visual_diagnosis_computed_styles/example-review-file-brand.json",
+      "page_state_path": "examples/visual_diagnosis_lab/reviews/example-page-state.json",
       "human_review_path": "examples/visual_diagnosis_lab/reviews/example-review.json"
     }
   ]

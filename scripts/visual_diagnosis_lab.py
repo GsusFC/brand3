@@ -82,6 +82,7 @@ def run_lab(manifest_path: str | Path, *, output_root: str | Path = DEFAULT_OUTP
             "website_url": row["website_url"],
             "category_hint": row.get("category_hint") or "",
             "human_review": _human_review_for_row(row),
+            "page_state": _page_state_for_row(row),
             "magnetism": {
                 "coherence_breakdown": coherence_breakdown or {},
                 "visual_identity": (coherence_breakdown or {}).get("visual_identity"),
@@ -150,6 +151,7 @@ def _comparison_json(summary: dict[str, Any]) -> dict[str, Any]:
                 "brand_fit": read["brand_fit"],
                 "confidence": diagnosis["confidence"],
                 "human_review": row.get("human_review") or {},
+                "page_state": row.get("page_state") or {},
                 "antipatterns": diagnosis["signals"]["antipatterns"],
                 "limitations": diagnosis["limitations"],
                 "evidence_refs": diagnosis["evidence_refs"],
@@ -199,6 +201,25 @@ def _human_review_for_row(row: dict[str, Any]) -> dict[str, Any]:
         "recommended_changes",
     }
     return {key: value for key, value in payload.items() if key in allowed and value not in (None, "")}
+
+
+def _page_state_for_row(row: dict[str, Any]) -> dict[str, Any]:
+    payload = _row_payload(row, "page_state")
+    if not payload:
+        return {}
+    allowed = {
+        "status",
+        "obstructions",
+        "capture_quality",
+        "confidence",
+        "source",
+        "notes",
+    }
+    result = {key: value for key, value in payload.items() if key in allowed and value not in (None, "")}
+    obstructions = result.get("obstructions")
+    if isinstance(obstructions, list):
+        result["obstructions"] = [str(item) for item in obstructions if str(item).strip()]
+    return result
 
 
 def _visual_signature_payload_for_row(row: dict[str, Any]) -> dict[str, Any] | None:

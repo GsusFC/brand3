@@ -1,0 +1,11 @@
+{
+  "status": "location_gated",
+  "obstructions": [
+    "location_gate",
+    "cookie_banner"
+  ],
+  "capture_quality": "partial",
+  "confidence": "high",
+  "source": "human_review",
+  "notes": "The screenshot contains recognizable brand atmosphere, but location and cookie gates obstruct the primary page state."
+}

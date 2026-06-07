@@ -779,6 +779,13 @@ def test_visual_diagnosis_lab_writes_comparison_json_for_graphs(tmp_path):
                             "notes": "Useful for graphing.",
                             "ignored_field": "nope",
                         },
+                        "page_state": {
+                            "status": "cookie_obstructed",
+                            "obstructions": ["cookie_banner"],
+                            "capture_quality": "partial",
+                            "confidence": "high",
+                            "ignored_field": "nope",
+                        },
                     }
                 ]
             }
@@ -802,7 +809,14 @@ def test_visual_diagnosis_lab_writes_comparison_json_for_graphs(tmp_path):
         "identity_read_fit": "yes",
         "notes": "Useful for graphing.",
     }
+    assert comparison["rows"][0]["page_state"] == {
+        "status": "cookie_obstructed",
+        "obstructions": ["cookie_banner"],
+        "capture_quality": "partial",
+        "confidence": "high",
+    }
     assert result["summary"]["results"][0]["human_review"]["verdict"] == "directionally_useful"
+    assert result["summary"]["results"][0]["page_state"]["status"] == "cookie_obstructed"
     assert result["summary"]["results"][0]["source_comparison"][0]["source_type"] == "computed_style"
 
 
@@ -845,6 +859,53 @@ def test_visual_diagnosis_lab_accepts_human_review_path(tmp_path):
     assert comparison["rows"][0]["human_review"]["disagreements"] == [
         "Cannot validate composition from CSS only."
     ]
+
+
+def test_visual_diagnosis_lab_accepts_page_state_path(tmp_path):
+    snapshot_path = tmp_path / "computed-style.json"
+    snapshot_path.write_text(json.dumps(_computed_style_snapshot()), encoding="utf-8")
+    page_state_path = tmp_path / "page-state.json"
+    page_state_path.write_text(
+        json.dumps(
+            {
+                "status": "bot_check_blocked",
+                "obstructions": ["cloudflare_check", 123, ""],
+                "capture_quality": "blocked",
+                "source": "human_review",
+                "notes": "Screenshot is not the brand homepage.",
+                "ignored_field": "nope",
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "brands": [
+                    {
+                        "brand_name": "Blocked Capture",
+                        "website_url": "https://blocked.example",
+                        "computed_style_snapshot_path": str(snapshot_path),
+                        "page_state_path": str(page_state_path),
+                    }
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_lab(manifest_path, output_root=tmp_path / "out")
+    comparison = json.loads(next((tmp_path / "out").glob("*/comparison.json")).read_text(encoding="utf-8"))
+
+    assert result["summary"]["results"][0]["page_state"]["status"] == "bot_check_blocked"
+    assert comparison["rows"][0]["page_state"] == {
+        "status": "bot_check_blocked",
+        "obstructions": ["cloudflare_check", "123"],
+        "capture_quality": "blocked",
+        "source": "human_review",
+        "notes": "Screenshot is not the brand homepage.",
+    }
 
 
 def test_visual_diagnosis_lab_comparison_json_includes_signal_provenance(tmp_path):

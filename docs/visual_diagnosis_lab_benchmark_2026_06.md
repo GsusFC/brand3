@@ -177,6 +177,38 @@ Allowed review fields are `reviewer`, `reviewed_at`, `verdict`, `profile_fit`,
 Unknown fields are ignored so review payloads do not become an accidental
 execution contract.
 
+### Page State Notes
+
+The lab can also carry page-state notes through `summary.json` and
+`comparison.json`. This is lab-only metadata for separating capture quality from
+visual identity.
+
+Manifest rows can include:
+
+- inline `page_state`;
+- `page_state_path`.
+
+Allowed page-state fields are `status`, `obstructions`, `capture_quality`,
+`confidence`, `source` and `notes`.
+
+Recommended `status` values:
+
+- `clean`
+- `cookie_obstructed`
+- `privacy_obstructed`
+- `location_gated`
+- `bot_check_blocked`
+- `modal_obstructed`
+- `campaign_overlay`
+- `unknown`
+
+Recommended obstruction values include `cookie_banner`, `privacy_notice`,
+`location_gate`, `cloudflare_check`, `modal`, `announcement_bar` and
+`campaign_overlay`.
+
+The page-state contract exists because the first reviewed probes showed that
+several rows were not bad visual systems; they were contaminated captures.
+
 ### Magnetism Comparison
 
 The original benchmark used placeholder/local `visual_identity` values in the manifest. The current lab also supports real Magnetism payloads and historical external visual candidate summaries for local DB smoke tests.
@@ -292,6 +324,7 @@ Supported lab manifest fields:
 - `magnetism_payload` or `magnetism_payload_path`
 - `external_candidate_summary_legacy` or `external_candidate_summary_legacy_path`
 - `human_review` or `human_review_path`
+- `page_state` or `page_state_path`
 - deprecated legacy alias: `contextdev_candidate_summary` or `contextdev_candidate_summary_path`
 - `derive_visual_signature_from_screenshot`
 

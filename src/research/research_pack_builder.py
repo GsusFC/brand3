@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Iterable
 from urllib.parse import urlparse
-import unicodedata
 
 from src.reports.brand_research_pack import (
     BrandResearchPack,
@@ -201,12 +200,16 @@ def _offer_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGraph | None 
         for claim in claim_list
         if claim.claim_type in claim_types
         and claim.text
+        and not _looks_like_url_only(claim.text)
+        and _eligible_for_offer_candidate(claim)
         and _looks_like_offer(claim.text)
         and not _looks_like_extraction_artifact(claim.text)
         and not _looks_like_product_summary_noise(claim.text)
     ]
     if graph and _is_company_brand_graph(graph):
-        candidates = _company_level_offer_candidates(candidates, graph) or candidates
+        candidates = _company_level_offer_candidates(candidates, graph)
+    if not candidates:
+        candidates = _owned_proof_offer_candidates(claim_list, graph=graph)
     if candidates:
         return _compact_offer_text(max(candidates, key=lambda claim: _offer_score(claim, graph=graph)).text)
     fallback = _first_clean_claim_text(claim_list, ("product_offer", "hero_claim", "outcome", "audience"))
@@ -214,6 +217,8 @@ def _offer_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGraph | None 
 
 
 def _looks_like_offer(text: str) -> bool:
+    if _looks_like_url_only(text):
+        return False
     low = text.lower()
     return any(
         marker in low
@@ -232,8 +237,21 @@ def _looks_like_offer(text: str) -> bool:
             "service",
             "api",
             "solution",
+            "recommendation",
+            "recommendations",
+            "plan",
+            "integration",
+            "integrates",
+            "dashboard",
+            "shopping list",
         )
     )
+
+
+def _eligible_for_offer_candidate(claim: EvidenceClaim) -> bool:
+    if claim.claim_type != "feature_evidence":
+        return True
+    return bool(claim.source_url) and claim.source_type.startswith("owned_")
 
 
 def _offer_score(claim: EvidenceClaim, *, graph: EvidenceGraph | None = None) -> int:
@@ -245,6 +263,7 @@ def _offer_score(claim: EvidenceClaim, *, graph: EvidenceGraph | None = None) ->
         "audience": 20,
         "outcome": 10,
         "feature_evidence": 12,
+        "proof": 14,
     }.get(claim.claim_type, 0)
     score += sum(
         weight
@@ -262,6 +281,13 @@ def _offer_score(claim: EvidenceClaim, *, graph: EvidenceGraph | None = None) ->
             ("tool", 10),
             ("service", 8),
             ("solution", 8),
+            ("recommendation", 14),
+            ("recommendations", 14),
+            ("plan", 12),
+            ("integration", 12),
+            ("integrates", 12),
+            ("dashboard", 10),
+            ("shopping list", 10),
         )
         if marker in low
     )
@@ -345,6 +371,29 @@ def _company_level_offer_candidates(
     return []
 
 
+def _owned_proof_offer_candidates(
+    claims: Iterable[EvidenceClaim],
+    *,
+    graph: EvidenceGraph | None = None,
+) -> list[EvidenceClaim]:
+    candidates = [
+        claim
+        for claim in claims
+        if claim.claim_type == "proof"
+        and claim.text
+        and claim.source_type in {"owned_home", "owned_about", "owned_product", "owned_proof"}
+        and claim.surface_role
+        in {"audited_surface", "owned_surface", "parent_home", "product_surface", "product_system"}
+        and {"value_proposition", "magnetism"}.intersection(set(claim.supports_blocks or []))
+        and _looks_like_offer(claim.text)
+        and not _looks_like_extraction_artifact(claim.text)
+        and not _looks_like_product_summary_noise(claim.text)
+    ]
+    if graph and _is_company_brand_graph(graph):
+        return _company_level_offer_candidates(candidates, graph) or candidates
+    return candidates
+
+
 def _company_summary_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGraph) -> str:
     claim_list = list(claims)
     preferred = [
@@ -363,17 +412,27 @@ def _company_summary_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGra
 
 
 def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
-    for claim in claims:
+    claim_list = list(claims)
+    for claim in claim_list:
         if (
             claim.claim_type in {"product_offer", "feature_evidence", "outcome", "audience", "hero_claim"}
             and claim.text
+            and not _looks_like_url_only(claim.text)
             and _is_product_scoped_claim(claim)
             and not _looks_like_extraction_artifact(claim.text)
             and not _looks_like_product_summary_noise(claim.text)
             and not _looks_like_audience_noise(claim.text)
         ):
             return claim.text
+    owned_proof = _owned_proof_offer_candidates(claim_list)
+    if owned_proof:
+        return max(owned_proof, key=lambda claim: _offer_score(claim)).text
     return ""
+
+
+def _looks_like_url_only(text: str) -> bool:
+    cleaned = " ".join(str(text or "").split()).strip()
+    return cleaned.startswith(("http://", "https://")) and " " not in cleaned
 
 
 def _audience_text(claims: Iterable[EvidenceClaim], fallback_texts: Iterable[str]) -> str:
@@ -566,23 +625,93 @@ def _compact_offer_text(text: str) -> str:
                 "framework",
                 "assistant",
                 "browser",
+                "recommendation",
+                "recommendations",
+                "plan",
+                "integration",
+                "integrates",
+                "shopping list",
+                "evidence-backed",
+                "peer-reviewed",
+                "built on",
+                "nutrition",
+                "goals",
+                "microbiome",
             )
         )
     ]
-    selected = priority[:3] or sentences[:3]
-    compact = ". ".join(selected).strip()
+    selected = sorted(priority, key=_offer_sentence_score, reverse=True) or sentences
+    compact = _join_offer_sentences(selected, max_chars=420)
     compact = compact.replace("Get a demo ", "").strip()
     compact = _strip_offer_cta_tail(compact)
     if " Observability Evaluation " in compact:
         compact = compact.split(" Observability Evaluation ", 1)[0].strip()
     if compact and not compact.endswith("."):
         compact += "."
-    return compact[:420].rstrip()
+    return compact
+
+
+def _join_offer_sentences(sentences: list[str], *, max_chars: int) -> str:
+    selected: list[str] = []
+    for sentence in sentences:
+        sentence = _clean_offer_sentence(sentence)
+        if not sentence:
+            continue
+        candidate = ". ".join(selected + [sentence]).strip()
+        if candidate and not candidate.endswith("."):
+            candidate += "."
+        if len(candidate) <= max_chars:
+            selected.append(sentence)
+        if len(selected) >= 3:
+            break
+    if selected:
+        return ". ".join(selected).strip()
+    first = sentences[0].strip() if sentences else ""
+    return first[:max_chars].rsplit(" ", 1)[0].strip(" .,:;")
+
+
+def _clean_offer_sentence(sentence: str) -> str:
+    cleaned = " ".join(str(sentence or "").split()).strip(" .,:;")
+    if " # " in cleaned:
+        cleaned = cleaned.rsplit(" # ", 1)[-1].strip(" .,:;")
+    return cleaned
+
+
+def _offer_sentence_score(sentence: str) -> int:
+    low = str(sentence or "").lower()
+    score = 0
+    for marker, weight in (
+        ("your nutrition", 45),
+        ("weekly nutrition plan", 35),
+        ("help you reach your goals", 34),
+        ("shopping list", 28),
+        ("recommendation", 24),
+        ("recommendations", 24),
+        ("integration", 20),
+        ("integrates", 20),
+        ("nutrition", 18),
+        ("plan", 18),
+        ("dashboard", 14),
+        ("evidence-backed", 14),
+        ("peer-reviewed", 14),
+        ("goals", 12),
+        ("built on", 12),
+        ("microbiome", 10),
+        ("platform", 10),
+        ("assistant", 10),
+    ):
+        if marker in low:
+            score += weight
+    if len(sentence) < 80:
+        score -= 8
+    if len(sentence) > 260:
+        score -= 6
+    return score
 
 
 def _strip_offer_cta_tail(text: str) -> str:
     cleaned = " ".join(str(text or "").split()).strip()
-    normalized = unicodedata.normalize("NFKD", cleaned).encode("ascii", "ignore").decode("ascii").lower()
+    searchable = cleaned.lower()
     for marker in (
         " unete a ",
         " quieres unirte",
@@ -593,7 +722,7 @@ def _strip_offer_cta_tail(text: str) -> str:
         " book a demo",
         " contact us",
     ):
-        idx = normalized.find(marker)
+        idx = searchable.find(marker)
         if idx > 40:
             cleaned = cleaned[:idx].strip(" .,:;")
             break

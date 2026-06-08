@@ -1,0 +1,684 @@
+{
+  "schema_version": "brand3_tldr_notion_database_v0_1",
+  "created_at": "2026-06-06",
+  "purpose": "Initial local database of Brand3/FLOC TLDR and brand-platform documents discovered in the connected Notion workspace.",
+  "source_policy": {
+    "notion_write_performed": false,
+    "classification": "local research index",
+    "privacy_note": "Contains strategic client work references. Do not publish or feed into production prompts without explicit review.",
+    "ingestion_note": "This is a human-reviewed index from Notion search/fetch results, not an automated production ingestion pipeline."
+  },
+  "block_taxonomies_observed": [
+    {
+      "taxonomy": "brand3_tldr_9_blocks",
+      "blocks": [
+        "core_purpose",
+        "brand_idea",
+        "magnetism",
+        "value_proposition",
+        "personality",
+        "attributes",
+        "values",
+        "mission",
+        "vision"
+      ]
+    },
+    {
+      "taxonomy": "brand_platform_11_components",
+      "blocks": [
+        "brand_story",
+        "brand_purpose",
+        "mission",
+        "vision",
+        "brand_idea",
+        "value_proposition",
+        "brand_attributes",
+        "brand_values",
+        "target_audience",
+        "brand_personality",
+        "brand_magnetism"
+      ]
+    }
+  ],
+  "records": [
+    {
+      "id": "notion_clcripto_tldr",
+      "brand": "CLCripto",
+      "document_title": "TL;DR",
+      "notion_page_id": "94c14f9a-b933-4029-af30-ee98da5b5607",
+      "notion_url": "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607",
+      "observed_timestamp": "2023-10-13T10:28:00.000Z",
+      "workspace_location": "FLOC*Ops / Projects Database / CLCripto - Brand Strategy + Naming Lite",
+      "source_family": "client_brand3_tldr",
+      "status": "client_deliverable",
+      "version": "not_specified",
+      "author_or_method": "FLOC* Brand Strategy",
+      "language": "es",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "early_tldr_9_blocks",
+      "extracted_blocks": {
+        "mission": "Explorar el espacio cripto con seguridad, eficiencia y anonimato.",
+        "vision": "Liderar la fiscalidad cripto superando cada horizonte financiero.",
+        "attributes": [
+          "Especializacion Legal",
+          "Operatividad 100% Online",
+          "Conocimiento Profundo"
+        ],
+        "values": [
+          "Innovacion Adaptativa",
+          "Integridad Transparente",
+          "Confianza Genuina"
+        ],
+        "personality": "El Capitan de la Sabiduria.",
+        "value_proposition": "Elevamos tu Capital Cripto, protegiendo tu patrimonio y potenciando tu vision.",
+        "brand_idea": "La Travesia del Cosmos - El Portal Interstellar.",
+        "core_purpose": "Navegar el universo cripto con tranquilidad y proteccion. Siempre por delante en beneficio de tu tranquilidad.",
+        "magnetism": "Con la mirada en las estrellas y los pies en la tierra."
+      },
+      "notes": [
+        "Formal TL;DR page inside a client Brand Strategy + Naming Lite project.",
+        "Pre-2025 evidence that FLOC was already using the same condensed strategic block pattern."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_rosalind_tldr_brand3_landing",
+      "brand": "Rosalind",
+      "document_title": "TL;DR",
+      "notion_page_id": "cb155a45-33d1-40be-b8e3-ad7c3dca65b0",
+      "notion_url": "https://app.notion.com/p/cb155a4533d140beb8e3ad7c3dca65b0",
+      "observed_timestamp": "2023-06-15T13:57:49.237Z",
+      "workspace_location": "FLOC*Ops / Projects Database / Rosalind - Brand3 strategy + Landing + Dev / Rosalind - Brand3 + Landing",
+      "source_family": "client_brand3_tldr",
+      "status": "client_deliverable",
+      "version": "Brand3 + Landing",
+      "author_or_method": "FLOC* Brand3",
+      "language": "en",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "early_tldr_blocks_with_target_audience",
+      "extracted_blocks": {
+        "brand_story": "We envision a society where individuals from all walks of life can discover and amplify their distinct voices through fashion.",
+        "mission": "Establish ourselves as an indispensable tool in the world of fashion design. Fueling a New Generation.",
+        "vision": "To blur the lines between designer and wearer. The Spark of a Revolution.",
+        "attributes": [
+          "Dynamic Platform",
+          "Iterate, iterate, iterate",
+          "IRL first"
+        ],
+        "values": [
+          "Community Collaboration",
+          "Creative Empowerment",
+          "Conscious Stewardship"
+        ],
+        "target_audience": [
+          "Fashion Design Agencies & Fashion Brands (B2B)",
+          "Freelance Fashion Designers",
+          "Fashion Students"
+        ],
+        "personality": "The Rebel: Rosalind is disruptive, challenging the status quo and the monopoly of major fashion brands.",
+        "value_proposition": "Arming fashion designers with AI to increase agility and reduce time and costs.",
+        "brand_idea": "WIP",
+        "brand_purpose": "To empower creative people.",
+        "magnetism": "One's passion knows no boundaries. Sketching Visions, Designing Dreams, Evolving Together."
+      },
+      "notes": [
+        "Confirmed TL;DR inside a project explicitly named Brand3 strategy + Landing + Dev.",
+        "There is a near-duplicate raw TL;DR page; this record points to the cleaner Brand3 + Landing branch."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_blockdyne_master_brand3",
+      "brand": "Blockdyne",
+      "document_title": "Master Brand3",
+      "notion_page_id": "231a44dc-3505-81b3-aa8b-f69c8bf575c4",
+      "notion_url": "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4",
+      "observed_timestamp": "2025-07-16T00:00:00.000Z",
+      "workspace_location": "FLOC*Ops / Projects Database / BLOCKDYNE / Blockdyne Process",
+      "source_family": "client_master_brand3",
+      "status": "working_master_document",
+      "version": "not_specified",
+      "author_or_method": "FLOC* Brand3",
+      "language": "es",
+      "has_tldr": true,
+      "has_brand_platform": true,
+      "taxonomy": "brand3_master_platform",
+      "extracted_blocks": {
+        "vision": "Ser la infraestructura descentralizada que permite a cualquier persona -en cualquier parte del mundo- tener control sobre su dinero, su cultura y sus decisiones.",
+        "mission": "Construir, desde abajo y con etica, una red modular de herramientas fisicas y digitales que devuelvan el poder a las personas a traves de tecnologia accesible, interoperable y comunitaria.",
+        "value_proposition": "BLOCKDYNE ofrece una infraestructura viva -fisica y digital- que transforma lo cotidiano en soberania personal.",
+        "personality": "Un arquitecto rebelde: culta, empatica, obsesionada con construir sistemas utiles y transparentes.",
+        "attributes": [
+          "Modular",
+          "Etico",
+          "Interoperable",
+          "Accesible",
+          "Resiliente",
+          "Silencioso"
+        ],
+        "values": [
+          "Autonomia",
+          "Transparencia",
+          "Inclusion",
+          "Proposito",
+          "Sostenibilidad cultural y tecnologica"
+        ],
+        "core_purpose": "Devolver a las personas el control sobre su dinero, su cultura y sus decisiones, a traves de una infraestructura etica, accesible y descentralizada.",
+        "brand_idea": "Infraestructura civica descentralizada / organismo modular distribuido."
+      },
+      "notes": [
+        "Confirmed Brand3 master document rather than a page titled TL;DR.",
+        "High relevance for the corpus, but should be labelled separately from concise TLDR deliverables."
+      ],
+      "confidence": "medium_high"
+    },
+    {
+      "id": "notion_nektar_summary_brand_platform",
+      "brand": "Nektar",
+      "document_title": "Summary Brand platform",
+      "notion_page_id": "2ed8a373-d121-4614-9ec7-0a47950a3e0c",
+      "notion_url": "https://app.notion.com/p/2ed8a373d12146149ec70a47950a3e0c",
+      "observed_timestamp": "2024-03-14T10:14:41.565Z",
+      "workspace_location": "FLOC*Ops / Projects Database / NEKTAR - Brand3 Design Sprint / Nektar Brand3 Process DB",
+      "source_family": "client_brand_platform_summary",
+      "status": "done",
+      "version": "summary_brand_platform",
+      "author_or_method": "FLOC* Brand3 Design Sprint",
+      "language": "en",
+      "has_tldr": true,
+      "has_brand_platform": true,
+      "taxonomy": "brand3_summary_platform",
+      "extracted_blocks": {
+        "mission": "Attract users and developers, build a strong community and offer services such as DApps and restacking.",
+        "vision": "Validate the Ethereum network from mobile and portable devices, fully integrate into the Ethereum network and attract a global audience.",
+        "attributes": [
+          "Ease & Convenience",
+          "Technical level",
+          "Technological Development"
+        ],
+        "values": [
+          "Security",
+          "Trust",
+          "Transformation",
+          "Resilience",
+          "Practical Decentralization"
+        ],
+        "target_audience": [
+          "Stakers",
+          "Traders",
+          "Ethereum community",
+          "DeFi traders",
+          "Institutional investors",
+          "Global audiences with growth opportunities in Asia and Latin America"
+        ],
+        "personality": "Egalitarian and professional approach, with a hybrid mindset that combines Ethereum's fintech and community values.",
+        "value_proposition": "Full integration with Ethereum, facilitating validation with native nodes and a non-technical user experience.",
+        "brand_idea": "Transforming assets into a steady stream of possibilities, connecting souls in a digital hive to evolve resiliently within the Ethereum universe.",
+        "brand_purpose": "To contribute to the Ethereum Community, promote decentralisation, ensure freedom and leave a positive impact on the world.",
+        "magnetism": "Focus on liquidity, collaboration and community, with the metaphor of nectar as a living, organic liquid."
+      },
+      "notes": [
+        "Confirmed Brand3 process output inside NEKTAR Brand3 Design Sprint.",
+        "Workshop page contains earlier options and raw material; this summary is the cleaner structured source."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_esco_token_brand_platform_sgv3",
+      "brand": "ESCO-TOKEN",
+      "document_title": "Brand Platform — ESCO-TOKEN · SGV3",
+      "notion_page_id": "34aa44dc-3505-81ba-871c-d30addde4640",
+      "notion_url": "https://app.notion.com/p/34aa44dc350581ba871cd30addde4640",
+      "observed_timestamp": "2026-04-22T14:24:00.545Z",
+      "workspace_location": "FLOC*Ops / Projects Database / ESCO-TOKEN / Live Process / Analysis — Internal",
+      "source_family": "client_brand_platform",
+      "status": "active_source_of_truth_at_time_of_fetch",
+      "version": "V3 · Abril 2026",
+      "author_or_method": "FLOC*",
+      "language": "es",
+      "supersedes": [
+        "Brand Platform V1",
+        "Brand3 TLDR V2",
+        "Insight + Ruta Conceptual V1"
+      ],
+      "has_tldr": true,
+      "has_brand_platform": true,
+      "taxonomy": "brand_platform_11_components_plus_executive_tldr",
+      "extracted_blocks": {
+        "insight": "La ley dice que. Nunca dice quien. Ese hueco siempre lo firma alguien.",
+        "concept": "El Estandar. ESCO-TOKEN es la institucion privada que emite el estandar del DPP europeo antes de que nadie lo pida.",
+        "brand_idea": "El estandar del producto europeo.",
+        "core_purpose": "Que las industrias europeas tengan un estandar comun de trazabilidad, accesible a cualquier empresa.",
+        "personality": "El Gobernante (autoridad institucional) + El Sabio (claridad educativa).",
+        "attributes": [
+          "Confiable",
+          "Accesible",
+          "Institucional",
+          "Autoritativo",
+          "Aliviante"
+        ],
+        "values": [
+          "Democratizacion del compliance",
+          "Transparencia como producto",
+          "Autoridad por evidencia",
+          "Durabilidad por encima de tendencia"
+        ],
+        "mission": "Emitir Pasaportes Digitales de Producto bajo un estandar comun, europeo, accesible y verificable, para cualquier empresa que vende productos en la UE, sin necesidad de infraestructura tecnica propia.",
+        "vision": "Ser el estandar privado de referencia del Pasaporte Digital de Producto en Europa.",
+        "magnetism": "Accesibilidad como declaracion de principios, validacion institucional como iman de confianza, autoridad de emision como ventaja narrativa."
+      },
+      "notes": [
+        "Explicitly consolidates earlier TLDR and brand platform documents.",
+        "Useful as strongest evidence of FLOC's mature client-side TLDR/brand-platform method before repo formalization.",
+        "Contains legal and commercial claims that should not be reused without review."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_esco_token_brand3_tldr_v2",
+      "brand": "ESCO-TOKEN",
+      "document_title": "Brand3 TLDR — ESCO-TOKEN · VCV2",
+      "notion_page_id": "349a44dc-3505-8101-b87d-e4662e8721c3",
+      "notion_url": "https://app.notion.com/p/349a44dc35058101b87de4662e8721c3",
+      "observed_timestamp": "2026-04-22T09:51:51.826Z",
+      "workspace_location": "FLOC*Ops / Projects Database / ESCO-TOKEN / Live Process / Analysis — Internal",
+      "source_family": "client_brand3_tldr",
+      "status": "archived_superseded",
+      "version": "V2 · Abril 2026",
+      "author_or_method": "FLOC* Brand3 TLDR Framework",
+      "language": "es",
+      "superseded_by": "Brand Platform — ESCO-TOKEN · V3",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "brand3_tldr_9_blocks",
+      "extracted_blocks": {
+        "core_purpose": "Convertir la obligacion regulatoria en el primer diferenciador competitivo de las empresas que llegan antes.",
+        "brand_idea": "Los productos del mundo necesitan un pasaporte. Las empresas que lo entiendan hoy no cumpliran la ley; la adelantaran.",
+        "magnetism": "Una marca que habla institucional donde el sector habla tecnico, que democratiza donde la competencia excluye, y que ya existia antes de que nadie preguntara.",
+        "value_proposition": "La infraestructura DPP mas accesible y validada del mercado: compliance sin complejidad tecnica propia.",
+        "personality": "El Gobernante: autoridad por legitimidad institucional. El Sabio: claridad donde solo hay ruido tecnico.",
+        "attributes": [
+          "Confiable",
+          "Accesible",
+          "Institucional"
+        ],
+        "values": [
+          "Democratizacion",
+          "Transparencia",
+          "Anticipacion"
+        ],
+        "mission": "Pasaportes Digitales de Producto accesibles para cualquier empresa que vende en la UE, desde 49 EUR/mes y sin infraestructura tecnica propia.",
+        "vision": "La infraestructura estandar de trazabilidad y transparencia de productos en Europa."
+      },
+      "notes": [
+        "Cleanest direct evidence of the 9-block TLDR framework existing in Notion before the repo's May 2026 TLDR formalization.",
+        "The page explicitly says it is preserved only for historical traceability and should not be used as active reference."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_esco_token_brand_platform_v1",
+      "brand": "ESCO-TOKEN",
+      "document_title": "Brand Platform — ESCO-TOKEN · FLOC* Framework VC",
+      "notion_page_id": "349a44dc-3505-815b-b4a9-ff4c850a9b4a",
+      "notion_url": "https://app.notion.com/p/349a44dc3505815bb4a9ff4c850a9b4a",
+      "observed_timestamp": "2026-04-22T09:51:42.272Z",
+      "workspace_location": "FLOC*Ops / Projects Database / ESCO-TOKEN / Live Process / Analysis — Internal",
+      "source_family": "client_brand_platform",
+      "status": "archived_superseded",
+      "version": "V1 · Abril 2026",
+      "author_or_method": "FLOC* Brand Strategy Framework",
+      "language": "es",
+      "superseded_by": "Brand Platform — ESCO-TOKEN · V3",
+      "has_tldr": true,
+      "has_brand_platform": true,
+      "taxonomy": "brand_platform_11_components_plus_tldr_estrategico",
+      "extracted_blocks": {
+        "mission": "Hacer que cualquier empresa que vende productos en la UE pueda generar, gestionar y acreditar su Pasaporte Digital de Producto de forma accesible, confiable y sin necesidad de infrastructura tecnica propia.",
+        "vision": "Ser la infraestructura estandar de trazabilidad y transparencia de productos en Europa.",
+        "brand_idea": "Estar listo antes de que sea obligatorio no es compliance. Es liderazgo.",
+        "brand_purpose": "ESCO-TOKEN existe para que las empresas lleguen al futuro regulatorio sin el peso de no haber empezado antes.",
+        "value_proposition": "Plataforma DPP validada por Gobierno de Espana, disponible desde 49 EUR/mes, para convertir la obligacion ESPR en un proceso gestionable.",
+        "personality": "El Gobernante + El Sabio.",
+        "attributes": [
+          "Confiable",
+          "Accesible",
+          "Institucional",
+          "Pionero",
+          "Preciso",
+          "Aliviante"
+        ],
+        "values": [
+          "Democratizacion del compliance",
+          "Transparencia como producto",
+          "Anticipacion como liderazgo",
+          "Durabilidad por encima de tendencia"
+        ],
+        "magnetism": "Precio como declaracion de principios, validacion gubernamental como iman de confianza, timing como ventaja narrativa."
+      },
+      "notes": [
+        "Earlier strategic platform from which V3 explicitly keeps and replaces elements.",
+        "Useful for studying evolution of TLDR and Brand Platform decisions."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_esco_token_insight_ruta_v1",
+      "brand": "ESCO-TOKEN",
+      "document_title": "Insight + Ruta Conceptual — ESCO-TOKEN · FLOC*",
+      "notion_page_id": "349a44dc-3505-8127-9bf6-ed64216ed9fd",
+      "notion_url": "https://app.notion.com/p/349a44dc350581279bf6ed64216ed9fd",
+      "observed_timestamp": "2026-04-22T09:52:03.158Z",
+      "workspace_location": "FLOC*Ops / Projects Database / ESCO-TOKEN / Live Process / Analysis — Internal",
+      "source_family": "client_concept_route_with_embedded_tldr",
+      "status": "archived_superseded",
+      "version": "V1 · Abril 2026",
+      "author_or_method": "FLOC* Strategic Layer",
+      "language": "es",
+      "superseded_by": "Brand Platform — ESCO-TOKEN · V3",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "embedded_brand3_tldr_9_blocks",
+      "extracted_blocks": {
+        "core_purpose": "Convertir la obligacion regulatoria en el primer diferenciador competitivo de las empresas que llegan antes.",
+        "brand_idea": "Los productos del mundo necesitan un pasaporte. Las empresas que lo entiendan hoy no cumpliran la ley; la adelantaran.",
+        "magnetism": "Una marca que habla institucional donde el sector habla tecnico, que democratiza donde la competencia excluye, y que ya existia antes de que nadie preguntara.",
+        "value_proposition": "La infraestructura DPP mas accesible y validada del mercado: compliance sin complejidad tecnica propia.",
+        "personality": "El Gobernante: autoridad por legitimidad institucional. El Sabio: claridad donde solo hay ruido tecnico.",
+        "attributes": [
+          "Confiable",
+          "Accesible",
+          "Institucional"
+        ],
+        "values": [
+          "Democratizacion",
+          "Transparencia",
+          "Anticipacion"
+        ],
+        "mission": "Pasaportes Digitales de Producto accesibles para cualquier empresa que vende en la UE, desde 49 EUR/mes y sin infraestructura tecnica propia.",
+        "vision": "La infraestructura estandar de trazabilidad y transparencia de productos en Europa."
+      },
+      "notes": [
+        "Embeds the Brand3 TLDR V2 table and then develops a conceptual route.",
+        "Useful for understanding how TLDR blocks were used as source material for deeper strategic work."
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "notion_sova_analysis",
+      "brand": "SOVA",
+      "document_title": "Analysis",
+      "notion_page_id": "1f8a44dc-3505-8188-94ec-f19142ae93a5",
+      "notion_url": "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5",
+      "observed_timestamp": "2025-06-02T09:32:11.105Z",
+      "workspace_location": "FLOC*Ops / Projects Database / SOVA / Project Process / Sova Process",
+      "source_family": "client_brand_strategy_summary",
+      "status": "done",
+      "version": "not_specified",
+      "author_or_method": "FLOC* client analysis",
+      "language": "en",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "early_brand_strategy_summary_with_tldr_like_blocks",
+      "extracted_blocks": {
+        "mission": "SOVA builds integrated financial solutions that abstract technical complexity, deliver exceptional user experience without compromising security, and connect users, protocols, and services into a smart financial network.",
+        "vision": "SOVA is a Bitcoin-native wealth management network that empowers users to invest, borrow, save, and earn while remaining in full control of their BTC.",
+        "core_purpose": "SOVA exists to make Bitcoin a practical tool for building personal wealth securely, independently, and without compromise.",
+        "personality": "Fusion of Sage and Ruler archetypes, with Explorer as tertiary.",
+        "attributes": [
+          "Established",
+          "Quietly Powerful",
+          "Sovereign",
+          "Innovative",
+          "Timelessly Intentional"
+        ],
+        "values": [
+          "Financial Clarity",
+          "Responsible Innovation",
+          "Wealth with Purpose"
+        ],
+        "brand_idea": "The Sovereign Control / SOVA lets capital cross into the Bitcoin economy and lets Bitcoin cross back into everyday life.",
+        "magnetism": "Simple Rails. Sovereign Control.",
+        "value_proposition": "SOVA gives your Bitcoin more utility without asking you to give up control."
+      },
+      "notes": [
+        "Pre-Brand3-repo example of the same strategic vocabulary in client work.",
+        "Long page with competitor analysis, concepts, emotional anchors, and manifesto-like material."
+      ],
+      "confidence": "medium_high"
+    },
+    {
+      "id": "notion_sova_prueba_llm_estrategia",
+      "brand": "SOVA",
+      "document_title": "Prueba LLM Estrategia",
+      "notion_page_id": "200a44dc-3505-8079-996c-f0643ff113e7",
+      "notion_url": "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7",
+      "observed_timestamp": "2025-05-28T17:49:23.647Z",
+      "workspace_location": "FLOC*Ops / Opportunities / #OP - Sova - Starter Pack + Copy + Brand Voice",
+      "source_family": "client_llm_strategy_test",
+      "status": "working_experiment",
+      "version": "not_specified",
+      "author_or_method": "LLM strategy test",
+      "language": "en",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "early_brand3_tldr_like_blocks",
+      "extracted_blocks": {
+        "mission": "To simplify access to sovereign Bitcoin finance, building elegant tools that let anyone borrow, save, and earn on BTC.",
+        "vision": "To become the global hub of decentralized Bitcoin wealth management.",
+        "core_purpose": "SOVA exists to unlock Bitcoin's power for a freer, more resilient financial life.",
+        "brand_idea": "The Sovereign Bridge.",
+        "value_proposition": "A Bitcoin-native wealth network that turns BTC into a complete financial toolkit while users remain in control of their keys.",
+        "magnetism": "Simple rails. Sovereign control.",
+        "personality": "Earnest, sovereign, quietly confident; Explorer and Sage.",
+        "attributes": [
+          "Sovereign",
+          "Earnest",
+          "Familiar",
+          "Enduring",
+          "Transparent",
+          "Secure",
+          "Disciplined",
+          "Connective",
+          "Future-oriented",
+          "Simple"
+        ],
+        "values": [
+          "Sovereign Responsibility",
+          "Earnest Transparency",
+          "Familiar Reliability",
+          "Informed Courage",
+          "Composable Soundness",
+          "Freedom through Discipline"
+        ]
+      },
+      "notes": [
+        "Explicitly labelled as LLM strategy test.",
+        "Useful to separate client deliverable method from model-assisted draft behavior."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "notion_meta4_english",
+      "brand": "Meta4",
+      "document_title": "English",
+      "notion_page_id": "200a44dc-3505-8016-ac4c-d496d9917ffb",
+      "notion_url": "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb",
+      "observed_timestamp": "2025-05-27T08:05:13.715Z",
+      "workspace_location": "FLOC*Ops / Opportunities / #OP - Meta4 - Starter Pack / Prueba LLM Estrategia",
+      "source_family": "client_llm_strategy_test",
+      "status": "working_experiment",
+      "version": "not_specified",
+      "author_or_method": "LLM strategy test",
+      "language": "en",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "early_brand3_tldr_like_blocks",
+      "extracted_blocks": {
+        "mission": "To drive access to visionary digital assets through investment vehicles that blend cultural depth, financial precision, and an experimental approach.",
+        "vision": "To become the most influential investment fund in the crypto-cultural space.",
+        "attributes": [
+          "Futuristic",
+          "Curatorial",
+          "Experimental",
+          "Transparent",
+          "Elegant",
+          "Cultural",
+          "Connective",
+          "Authentic"
+        ],
+        "values": [
+          "Elegant Transparency",
+          "Artistic Conviction",
+          "Informed Exploration",
+          "Freedom with Responsibility",
+          "Intellectual Integrity",
+          "Active Curation",
+          "Technological Humanism"
+        ],
+        "personality": "Sophisticated, visionary, slightly enigmatic; Explorer and Sage.",
+        "value_proposition": "A culturally-informed fund connecting institutional capital with emerging opportunities in crypto.",
+        "brand_idea": "The Gallery of the Crypto Future.",
+        "core_purpose": "To explore, select, and amplify the ideas shaping humanity's future through investment in digital assets.",
+        "magnetism": "People are drawn to Meta4 when they seek more than financial return: vision, symbolic belonging, and intellectual depth."
+      },
+      "notes": [
+        "Early 2025 source with the same core block vocabulary before the Brand3 technical repo formalized TLDR.",
+        "No explicit Brand3 TLDR title, but block structure is highly relevant."
+      ],
+      "confidence": "medium"
+    },
+    {
+      "id": "notion_eaship_brand3_magnetism_scan",
+      "brand": "Eaship",
+      "document_title": "Eaship",
+      "notion_page_id": "35ea44dc-3505-810b-9a10-ca1d15f43506",
+      "notion_url": "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506",
+      "observed_timestamp": "2026-06-05T07:45:02.411Z",
+      "workspace_location": "FLOC*Brain / Sergio*Brain / FLOC*Sign-FLOC*Drop / Brand Scanner Targets V0",
+      "source_family": "brand3_magnetism_scan_target",
+      "status": "scan_record",
+      "version": "scan_id_37",
+      "author_or_method": "Brand3 Magnetism Scan",
+      "language": "es",
+      "has_tldr": true,
+      "has_brand_platform": false,
+      "taxonomy": "generated_brand3_scan_tldr_blocks",
+      "score_summary": {
+        "magnetism": 68,
+        "coherence": 70
+      },
+      "extracted_blocks": {
+        "core_purpose": "Acelerar la digitalizacion del transporte en fabricantes industriales.",
+        "magnetism": "Planifica mejor, reduce costes y asegura entregas.",
+        "value_proposition": "Gestion documental de transportistas con notificaciones automaticas de vencimiento para trabajar de forma eficaz.",
+        "personality": "Automatiza contrataciones, monitoriza operaciones y reduce costes con procesos simples y plataforma intuitiva.",
+        "brand_idea": "No detectado.",
+        "attributes": [
+          "Developer-first",
+          "Transparente",
+          "Action-oriented"
+        ],
+        "values": [
+          "Transparency"
+        ],
+        "mission": "Automatizacion en cada proceso de la contratacion y asignacion inmediata de matriculas al pedido.",
+        "vision": "No detectado."
+      },
+      "notes": [
+        "Not a FLOC-built brand platform; it is a saved scanner target/output.",
+        "Keep in database but separate from client strategy deliverables."
+      ],
+      "confidence": "high_as_scan_record_low_as_floc_built_brand"
+    }
+  ],
+  "containers_and_reference_pages": [
+    {
+      "id": "notion_esco_analysis_internal",
+      "title": "Analysis — Internal",
+      "notion_page_id": "342a44dc-3505-811b-9bc7-e374ad74fcb5",
+      "notion_url": "https://app.notion.com/p/342a44dc3505811b9bc7e374ad74fcb5",
+      "role": "container_and_inline_summary",
+      "notes": "Links ESCO-TOKEN source-of-truth and archived versions; also repeats the 9 TLDR blocks inline."
+    },
+    {
+      "id": "notion_esco_archive_v1_v2",
+      "title": "Archive · Versiones anteriores (V1 / V2)",
+      "notion_page_id": "34aa44dc-3505-817d-8b22-ff355c08aa9d",
+      "notion_url": "https://app.notion.com/p/34aa44dc3505817d8b22ff355c08aa9d",
+      "role": "archive_container",
+      "notes": "Explains why ESCO V1, TLDR V2, and Insight V1 were superseded."
+    },
+    {
+      "id": "notion_rosalind_brand3_raw",
+      "title": "Rosalind — Brand3 (en bruto)",
+      "notion_page_id": "0812e8c3-667f-4d2b-b99a-1fee202de299",
+      "notion_url": "https://app.notion.com/p/0812e8c3667f4d2bb99a1fee202de299",
+      "role": "raw_container",
+      "notes": "Contains individual Brand3 block pages and a raw TL;DR page that near-duplicates the Brand3 + Landing TL;DR."
+    },
+    {
+      "id": "notion_rosalind_brand3_landing_container",
+      "title": "Rosalind — Brand3 + Landing",
+      "notion_page_id": "8cf3eba1-8e3c-4cbc-84a2-a743d7d918b2",
+      "notion_url": "https://app.notion.com/p/8cf3eba18e3c4cbc84a2a743d7d918b2",
+      "role": "deliverable_container",
+      "notes": "Contains the confirmed Rosalind TL;DR record included in this database."
+    },
+    {
+      "id": "notion_nektar_brand3_design_sprint",
+      "title": "NEKTAR — Brand3 Design Sprint",
+      "notion_page_id": "bda17fba-b304-436d-9710-8c9ad3750004",
+      "notion_url": "https://app.notion.com/p/bda17fbab304436d97108c9ad3750004",
+      "role": "project_container",
+      "notes": "Project container with Brand3 service tag and Nektar process databases. Summary Brand platform has been promoted to a confirmed record."
+    },
+    {
+      "id": "notion_nektar_brand3_workshop",
+      "title": "Brand3 Workshop",
+      "notion_page_id": "b996841b-c48d-4f8c-85e8-06f40ae60c86",
+      "notion_url": "https://app.notion.com/p/b996841bc48d4f8c85e806f40ae60c86",
+      "role": "raw_workshop_source",
+      "notes": "Contains raw Brand3 workshop output and alternative option drafts for Nektar. Useful for lineage, but the Summary Brand platform page is cleaner as the corpus record."
+    },
+    {
+      "id": "notion_nektar_presentation_day",
+      "title": "Presentation Day - TLDR + Visual Identity",
+      "notion_page_id": "e861e94d-c775-4b4e-8818-94a0175cc313",
+      "notion_url": "https://app.notion.com/p/e861e94dc7754b4e881894a0175cc313",
+      "role": "presentation_reference",
+      "notes": "Links Figma prototype and presentation video. It confirms delivery context but does not contain structured TLDR text in Notion."
+    },
+    {
+      "id": "notion_brand3_internal_product_page",
+      "title": "BRAND3",
+      "notion_page_id": "2ee39e33-485f-468f-b3e5-943e8c88cc17",
+      "notion_url": "https://app.notion.com/p/2ee39e33485f468fb3e5943e8c88cc17",
+      "role": "internal_methodology_reference",
+      "notes": "Internal product/methodology page, not a client TLDR. Useful for method history, not for client corpus."
+    }
+  ],
+  "search_queries_used": [
+    "Brand3 TLDR FLOC marca cliente framework",
+    "TL;DR EJECUTIVO FLOC Brand",
+    "Core Purpose Brand Idea Magnetism Value Proposition",
+    "Brand Platform FLOC Mission Vision Brand Magnetism",
+    "TLDR Brand3 (Bloques Estrategicos)",
+    "Brand3 Magnetism Scan",
+    "Core Purpose (Essence) Magnetism (Emotions)",
+    "Brand3 TLDR Bloques Estrategicos",
+    "Brand3",
+    "Brand Strategy",
+    "Mission Vision Brand Idea Value Proposition",
+    "Magnetism Core Purpose Attributes Values",
+    "Rosalind TL;DR Mission Vision Value Proposition Brand3",
+    "NEKTAR TL;DR Mission Vision Value Proposition Brand3"
+  ],
+  "open_questions": [
+    "Whether there are additional Notion pages under Projects Database that do not contain searchable TLDR labels but contain the same block structure.",
+    "Whether this local database should be promoted into a real Notion database after review.",
+    "Whether client-sensitive records should be redacted or abstracted before being used as Brand3 training/evaluation examples."
+  ]
+}

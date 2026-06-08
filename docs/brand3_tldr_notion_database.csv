@@ -1,0 +1,13 @@
+id,brand,document_title,source_family,status,version,notion_url,has_tldr,has_brand_platform,confidence
+notion_clcripto_tldr,CLCripto,TL;DR,client_brand3_tldr,client_deliverable,not_specified,https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607,true,false,high
+notion_rosalind_tldr_brand3_landing,Rosalind,TL;DR,client_brand3_tldr,client_deliverable,Brand3 + Landing,https://app.notion.com/p/cb155a4533d140beb8e3ad7c3dca65b0,true,false,high
+notion_blockdyne_master_brand3,Blockdyne,Master Brand3,client_master_brand3,working_master_document,not_specified,https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4,true,true,medium_high
+notion_nektar_summary_brand_platform,Nektar,Summary Brand platform,client_brand_platform_summary,done,summary_brand_platform,https://app.notion.com/p/2ed8a373d12146149ec70a47950a3e0c,true,true,high
+notion_esco_token_brand_platform_sgv3,ESCO-TOKEN,Brand Platform - ESCO-TOKEN - SGV3,client_brand_platform,active_source_of_truth_at_time_of_fetch,V3 Abril 2026,https://app.notion.com/p/34aa44dc350581ba871cd30addde4640,true,true,high
+notion_esco_token_brand3_tldr_v2,ESCO-TOKEN,Brand3 TLDR - ESCO-TOKEN - VCV2,client_brand3_tldr,archived_superseded,V2 Abril 2026,https://app.notion.com/p/349a44dc35058101b87de4662e8721c3,true,false,high
+notion_esco_token_brand_platform_v1,ESCO-TOKEN,Brand Platform - ESCO-TOKEN - FLOC Framework VC,client_brand_platform,archived_superseded,V1 Abril 2026,https://app.notion.com/p/349a44dc3505815bb4a9ff4c850a9b4a,true,true,high
+notion_esco_token_insight_ruta_v1,ESCO-TOKEN,Insight + Ruta Conceptual - ESCO-TOKEN - FLOC,client_concept_route_with_embedded_tldr,archived_superseded,V1 Abril 2026,https://app.notion.com/p/349a44dc350581279bf6ed64216ed9fd,true,false,high
+notion_sova_analysis,SOVA,Analysis,client_brand_strategy_summary,done,not_specified,https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5,true,false,medium_high
+notion_sova_prueba_llm_estrategia,SOVA,Prueba LLM Estrategia,client_llm_strategy_test,working_experiment,not_specified,https://app.notion.com/p/200a44dc35058079996cf0643ff113e7,true,false,medium
+notion_meta4_english,Meta4,English,client_llm_strategy_test,working_experiment,not_specified,https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb,true,false,medium
+notion_eaship_brand3_magnetism_scan,Eaship,Eaship,brand3_magnetism_scan_target,scan_record,scan_id_37,https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506,true,false,high_as_scan_record_low_as_floc_built_brand

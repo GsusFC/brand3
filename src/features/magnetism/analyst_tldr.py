@@ -18,6 +18,8 @@ from src.features.magnetism.tldr_guardrails import validate_analyst_tldr
 
 ANALYST_TLDR_PROMPT_VERSION = "brand3-analyst-tldr-v0.2"
 ANALYST_TLDR_TIMEOUT_SECONDS = 90
+SYSTEM_READING_PROMPT_VERSION = "brand3-system-reading-v0.1"
+SYSTEM_READING_TIMEOUT_SECONDS = 60
 
 TLDR_KEYS = [
     "core_purpose",
@@ -61,6 +63,10 @@ Rules:
   stronger claims than the evidence supports.
 - Prefer absent/not_detected over an elegant but unsupported interpretation.
 - Evidence gaps and confidence notes are negative evidence, not background noise.
+- Magnetism is earned, not just expressed. Strong, memorable language is not
+  enough when the brand's promise creates a duty of proof.
+- Coherence includes evidence-duty: does the brand provide the type of proof its
+  own promise requires?
 """
 
 ANALYST_TLDR_SOURCE_RULES = [
@@ -89,6 +95,10 @@ ANALYST_TLDR_NEGATIVE_EXAMPLES = [
     {
         "bad_move": "Turning a single decorative metaphor into the whole brand idea.",
         "correct_move": "Require repeated conceptual evidence across offer, expression, product behavior, or language.",
+    },
+    {
+        "bad_move": "Awarding high magnetism because a risky promise sounds clear, memorable, or ambitious.",
+        "correct_move": "Separate expressive magnetism from earned magnetism. If the brand promises health, nutrition, performance, money, legality, security, AI decision-making, scientific precision, professional authority, or risk reduction, check whether the Research Pack contains the proof that such a promise requires.",
     },
 ]
 
@@ -139,6 +149,124 @@ def maybe_build_analyst_tldr(
             detail="The analyst pass returned no usable TLDR blocks.",
         )
     return validated
+
+
+def maybe_build_system_reading(
+    *,
+    llm: Any,
+    brand_name: str,
+    url: str,
+    tldr: dict[str, Any],
+    layers: dict[str, Any],
+    metrics: dict[str, Any],
+    evidence_packet_summary: dict[str, Any] | None = None,
+) -> dict[str, Any] | None:
+    """Run the LLM system-reading pass and return normalized output.
+
+    The extractor treats missing/invalid responses as a non-fatal condition and
+    falls back to deterministic heuristics.
+    """
+    if llm is None or not getattr(llm, "api_key", None):
+        return None
+
+    result = run_system_reading_pass(
+        llm=llm,
+        brand_name=brand_name,
+        url=url,
+        tldr=tldr,
+        layers=layers,
+        metrics=metrics,
+        evidence_packet_summary=evidence_packet_summary,
+    )
+    if result.get("analysis_error"):
+        return None
+    validated = result.get("validated")
+    if not isinstance(validated, dict) or not validated.get("strategic_tensions"):
+        return None
+    return validated
+
+
+def run_system_reading_pass(
+    *,
+    llm: Any,
+    brand_name: str,
+    url: str,
+    tldr: dict[str, Any],
+    layers: dict[str, Any],
+    metrics: dict[str, Any],
+    evidence_packet_summary: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Call the LLM once and return raw + validated system reading payload."""
+    if llm is None or not getattr(llm, "api_key", None):
+        return {
+            "analysis_error": {
+                "reason": "llm_unavailable",
+                "detail": "No LLM API key is available for system reading.",
+            },
+        }
+
+    prompt = build_system_reading_prompt(
+        brand_name=brand_name,
+        url=url,
+        tldr=tldr,
+        layers=layers,
+        metrics=metrics,
+        evidence_packet_summary=evidence_packet_summary,
+    )
+    raw_response = None
+    try:
+        try:
+            raw_response = llm._call_json(
+                _system_reading_system_prompt(),
+                prompt,
+                max_tokens=3000,
+                json_schema=system_reading_response_schema(),
+                schema_name="brand3_system_reading",
+                timeout_seconds=_system_reading_timeout_seconds(),
+            )
+        except TypeError:
+            raw_response = llm._call_json(
+                _system_reading_system_prompt(),
+                prompt,
+                max_tokens=3000,
+            )
+    except Exception:
+        raw_response = None
+    if raw_response is None:
+        try:
+            raw_response = llm._call_json(
+                _system_reading_system_prompt(),
+                prompt,
+            )
+        except Exception:
+            raw_response = None
+    if raw_response is None:
+        return {
+            "analysis_error": {
+                "reason": "llm_error",
+                "detail": "Unable to call the LLM system reading endpoint.",
+            },
+        }
+    raw = _coerce_system_reading_raw_json(raw_response)
+    if not isinstance(raw, dict) or not raw:
+        failure = _latest_llm_failure(llm)
+        reason = str(failure.get("reason") or "llm_error")
+        detail = str(failure.get("error") or "The system reading pass did not return usable JSON.")
+        return {
+            "analysis_error": {
+                "reason": reason,
+                "detail": detail,
+                "error_type": failure.get("error_type"),
+                "model": failure.get("model"),
+            },
+            "raw": raw_response if isinstance(raw_response, dict) else {},
+        }
+
+    validated = normalize_system_reading(raw)
+    return {
+        "raw": raw,
+        "validated": validated,
+    }
 
 
 def run_analyst_tldr_pass(
@@ -234,6 +362,150 @@ def _coerce_analyst_raw_json(raw: Any) -> dict[str, Any]:
     return {}
 
 
+def _system_reading_system_prompt() -> str:
+    return """You are Brand3's Strategic Interpretation specialist.
+
+Only reason from the provided evidence and numeric context. Do not invent details.
+Do not use strategy recommendations, competitor speculation, or generic marketing advice.
+Return strict JSON only.
+"""
+
+
+def system_reading_response_schema() -> dict[str, Any]:
+    return {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "prompt_version",
+            "derived_from",
+            "strategic_tensions",
+            "validation_questions",
+            "credibility_support",
+        ],
+        "properties": {
+            "prompt_version": {"type": "string"},
+            "derived_from": {"type": "string"},
+            "strategic_tensions": {
+                "type": "array",
+                "maxItems": 5,
+                "items": {"type": "string"},
+            },
+            "validation_questions": {
+                "type": "array",
+                "maxItems": 5,
+                "items": {"type": "string"},
+            },
+            "credibility_support": {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["status", "count", "evidence", "reading"],
+                "properties": {
+                    "status": {"type": "string", "enum": ["observed", "not_detected", "partial"]},
+                    "count": {"type": "integer", "minimum": 0},
+                    "evidence": {"type": "array", "items": {"type": "object"}, "maxItems": 5},
+                    "reading": {"type": "string"},
+                },
+            },
+        },
+    }
+
+
+def build_system_reading_prompt(
+    *,
+    brand_name: str,
+    url: str,
+    tldr: dict[str, Any],
+    layers: dict[str, Any],
+    metrics: dict[str, Any],
+    evidence_packet_summary: dict[str, Any] | None = None,
+) -> str:
+    proof_support = {
+        "status": "not_detected",
+        "count": 0,
+        "reading": "No proof support context was supplied.",
+    }
+    if isinstance(evidence_packet_summary, dict):
+        raw_support = evidence_packet_summary.get("proof_support")
+        if isinstance(raw_support, dict):
+            proof_support = raw_support
+
+    payload = {
+        "prompt_version": SYSTEM_READING_PROMPT_VERSION,
+        "task": "Generate a compact strategic reading for end-user explanation.",
+        "brand": {
+            "name": brand_name,
+            "url": url,
+        },
+        "scoring": {
+            "magnetism_score": int(metrics.get("magnetism_score") or 0),
+            "coherence_score": int(metrics.get("coherence_score") or 0),
+            "quadrant": metrics.get("quadrant"),
+            "magnetism_breakdown": metrics.get("magnetism_breakdown"),
+            "coherence_breakdown": metrics.get("coherence_breakdown"),
+        },
+        "detected_signals": {
+            "tl_dr": {key: bool(block.get("detected") or block.get("answer") or block.get("content")) for key, block in (tldr or {}).items() if isinstance(block, dict) and key in TLDR_KEYS},
+            "weak_layers": [
+                key for key, layer in (layers or {}).items()
+                if isinstance(layer, dict) and not layer.get("detected")
+            ],
+            "evidence_basis": _compact_evidence_basis(evidence_packet_summary),
+        },
+        "proof_context": {
+            "status": proof_support.get("status"),
+            "count": proof_support.get("count"),
+            "reading": proof_support.get("reading"),
+        },
+        "required_output": {
+            "strategic_tensions": ["up to 3 short, observable tensions"],
+            "validation_questions": ["up to 3 short, actionable questions"],
+            "credibility_support": {
+                "status": "observed | partial | not_detected",
+                "count": "integer",
+                "evidence": [
+                    {
+                        "url": "optional",
+                        "title": "optional",
+                        "label": "optional",
+                        "source_type": "optional",
+                    }
+                ],
+                "reading": "short conclusion paragraph",
+            },
+            "derived_from": "short sentence on source basis",
+            "prompt_version": SYSTEM_READING_PROMPT_VERSION,
+        },
+    }
+    return json.dumps(payload, ensure_ascii=False, indent=2)
+
+
+def normalize_system_reading(raw: dict[str, Any]) -> dict[str, Any]:
+    tensions = _clean_list(raw.get("strategic_tensions"))
+    questions = _clean_list(raw.get("validation_questions"))
+    proof_support = raw.get("credibility_support")
+    if not isinstance(proof_support, dict):
+        proof_support = {}
+    status = _normalize_choice(
+        proof_support.get("status"),
+        {"observed", "partial", "not_detected"},
+        fallback="not_detected",
+    )
+    evidence = proof_support.get("evidence") if isinstance(proof_support.get("evidence"), list) else []
+    return {
+        "prompt_version": SYSTEM_READING_PROMPT_VERSION,
+        "derived_from": _clean_text(raw.get("derived_from")) or "TLDR Brand3 blocks and Magenta signal coverage",
+        "strategic_tensions": tensions[:3],
+        "validation_questions": questions[:3],
+        "credibility_support": {
+            "status": status,
+            "count": _bounded_int(proof_support.get("count"), maximum=100),
+            "evidence": evidence[:5] if isinstance(evidence, list) else [],
+            "reading": _clean_text(proof_support.get("reading")) or "No usable proof support was available.",
+        },
+        "interpretation_mode": "llm_system_reading",
+    }
+
+
 def _analyst_tldr_timeout_seconds() -> int:
     raw = os.environ.get("BRAND3_ANALYST_TLDR_TIMEOUT_SECONDS")
     if not raw:
@@ -243,6 +515,44 @@ def _analyst_tldr_timeout_seconds() -> int:
     except ValueError:
         return ANALYST_TLDR_TIMEOUT_SECONDS
     return max(1, value)
+
+
+def _system_reading_timeout_seconds() -> int:
+    raw = os.environ.get("BRAND3_SYSTEM_READING_TIMEOUT_SECONDS")
+    if not raw:
+        return SYSTEM_READING_TIMEOUT_SECONDS
+    try:
+        value = int(raw)
+    except ValueError:
+        return SYSTEM_READING_TIMEOUT_SECONDS
+    return max(1, value)
+
+
+def _coerce_system_reading_raw_json(raw: Any) -> dict[str, Any]:
+    value = raw
+    for _ in range(4):
+        if isinstance(value, str):
+            try:
+                value = json.loads(value.strip())
+            except json.JSONDecodeError:
+                return {}
+            continue
+        if isinstance(value, list) and len(value) == 1:
+            value = value[0]
+            continue
+        if isinstance(value, dict):
+            if isinstance(value.get("strategic_tensions"), list):
+                return value
+            for key in ("payload", "content", "output", "response", "result", "message", "data"):
+                nested = value.get(key)
+                if isinstance(nested, (dict, list, str)):
+                    value = nested
+                    break
+            else:
+                return value
+            continue
+        break
+    return {} if not isinstance(value, dict) else value
 
 
 def _latest_llm_failure(llm: Any) -> dict[str, Any]:
@@ -282,6 +592,15 @@ def build_analyst_tldr_prompt(
             "verdict_vs_current": "better | similar | worse | unknown",
             "main_gain": "what improved versus the current TLDR",
             "main_risk": "main methodological risk or ambiguity",
+            "scoring_context": {
+                "expressive_magnetism_score": "0-100 score for clarity, memorability, tension and emotional pull",
+                "earned_magnetism_score": "0-100 score after checking whether the promise is credible in its category",
+                "promise_requires_evidence": "boolean",
+                "evidence_duty_status": "not_required | satisfied | partial | weak",
+                "coherence_evidence_duty_penalty": "0-25 suggested coherence penalty when required proof is partial or weak",
+                "reasoning": "short explanation of the evidence-duty judgement",
+                "evidence_gaps": ["missing proof, authority, methodology, validation, integration or trust signal"],
+            },
             "tldr_brand3": {
                 key: {
                     "block": key,
@@ -381,6 +700,31 @@ def analyst_tldr_response_schema() -> dict[str, Any]:
             "human_review_recommended": {"type": "boolean"},
         },
     }
+    scoring_context_schema = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": [
+            "expressive_magnetism_score",
+            "earned_magnetism_score",
+            "promise_requires_evidence",
+            "evidence_duty_status",
+            "coherence_evidence_duty_penalty",
+            "reasoning",
+            "evidence_gaps",
+        ],
+        "properties": {
+            "expressive_magnetism_score": {"type": "integer", "minimum": 0, "maximum": 100},
+            "earned_magnetism_score": {"type": "integer", "minimum": 0, "maximum": 100},
+            "promise_requires_evidence": {"type": "boolean"},
+            "evidence_duty_status": {
+                "type": "string",
+                "enum": ["not_required", "satisfied", "partial", "weak"],
+            },
+            "coherence_evidence_duty_penalty": {"type": "integer", "minimum": 0, "maximum": 25},
+            "reasoning": {"type": "string"},
+            "evidence_gaps": {"type": "array", "items": {"type": "string"}},
+        },
+    }
     return {
         "type": "object",
         "additionalProperties": False,
@@ -389,6 +733,7 @@ def analyst_tldr_response_schema() -> dict[str, Any]:
             "verdict_vs_current",
             "main_gain",
             "main_risk",
+            "scoring_context",
             "tldr_brand3",
         ],
         "properties": {
@@ -396,6 +741,7 @@ def analyst_tldr_response_schema() -> dict[str, Any]:
             "verdict_vs_current": {"type": "string", "enum": ["better", "similar", "worse", "unknown"]},
             "main_gain": {"type": "string"},
             "main_risk": {"type": "string"},
+            "scoring_context": scoring_context_schema,
             "tldr_brand3": {
                 "type": "object",
                 "additionalProperties": False,
@@ -429,12 +775,71 @@ def normalize_analyst_response(
         "verdict_vs_current": _clean_text(raw.get("verdict_vs_current")) or "unknown",
         "main_gain": _clean_text(raw.get("main_gain")),
         "main_risk": _clean_text(raw.get("main_risk")),
+        "scoring_context": _normalize_scoring_context(raw.get("scoring_context")),
         "validation_notes": _unique_texts(validation_notes),
         "tldr_brand3": normalized_blocks,
     }
     if current_tldr:
         normalized["current_tldr"] = _compact_current_tldr(current_tldr)
     return normalized
+
+
+def _compact_evidence_basis(evidence_packet_summary: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(evidence_packet_summary, dict):
+        return {}
+    proof_support = evidence_packet_summary.get("proof_support")
+    evidence_payload: dict[str, Any] = {}
+    if isinstance(proof_support, dict):
+        proof_count_raw = proof_support.get("count")
+        proof_count = (
+            proof_count_raw
+            if isinstance(proof_count_raw, int)
+            else _safe_len(proof_support.get("evidence"))
+        )
+        evidence_payload = {
+            "source": _clean_text(evidence_packet_summary.get("source")),
+            "source_label": _clean_text(evidence_packet_summary.get("source_label")),
+            "evidence_basis": _clean_text(evidence_packet_summary.get("evidence_basis")),
+            "detected_signal_count": _to_non_negative_int(evidence_packet_summary.get("detected_signal_count")),
+            "evidence_item_count": _to_non_negative_int(evidence_packet_summary.get("evidence_item_count")),
+            "proof_support_status": _normalize_choice(
+                proof_support.get("status") if isinstance(proof_support, dict) else None,
+                {"observed", "partial", "not_detected"},
+                fallback="not_detected",
+            ),
+            "proof_support_count": proof_count,
+            "proof_support_reading": _clean_text(proof_support.get("reading")),
+            "sources": _compact_list(evidence_packet_summary.get("sources"), limit=20, text_limit=180),
+            "evidence_counts": evidence_packet_summary.get("evidence_counts"),
+        }
+    return evidence_payload
+
+
+def _normalize_scoring_context(value: Any) -> dict[str, Any]:
+    raw = value if isinstance(value, dict) else {}
+    expressive = _bounded_int(raw.get("expressive_magnetism_score"))
+    earned = _bounded_int(raw.get("earned_magnetism_score"))
+    status = _normalize_choice(
+        raw.get("evidence_duty_status"),
+        {"not_required", "satisfied", "partial", "weak"},
+        fallback="not_required",
+    )
+    requires_evidence = bool(raw.get("promise_requires_evidence")) or status in {"partial", "weak"}
+    penalty = _bounded_int(raw.get("coherence_evidence_duty_penalty"), maximum=25)
+    if not requires_evidence:
+        status = "not_required"
+        penalty = 0
+    if earned is None:
+        earned = expressive
+    return {
+        "expressive_magnetism_score": expressive,
+        "earned_magnetism_score": earned,
+        "promise_requires_evidence": requires_evidence,
+        "evidence_duty_status": status,
+        "coherence_evidence_duty_penalty": penalty or 0,
+        "reasoning": _clean_text(raw.get("reasoning")),
+        "evidence_gaps": _clean_list(raw.get("evidence_gaps")),
+    }
 
 
 def _normalize_block(
@@ -741,9 +1146,25 @@ def _safe_len(value: Any) -> int:
     return len(value) if isinstance(value, list | dict) else 0
 
 
+def _to_non_negative_int(value: Any) -> int:
+    try:
+        number = int(round(float(value)))
+    except (TypeError, ValueError):
+        return 0
+    return max(0, number)
+
+
 def _normalize_choice(value: Any, allowed: set[str], fallback: str) -> str:
     normalized = _clean_text(value).lower()
     return normalized if normalized in allowed else fallback
+
+
+def _bounded_int(value: Any, *, maximum: int = 100) -> int | None:
+    try:
+        number = int(round(float(value)))
+    except (TypeError, ValueError):
+        return None
+    return max(0, min(maximum, number))
 
 
 def _clean_list(value: Any) -> list[str]:

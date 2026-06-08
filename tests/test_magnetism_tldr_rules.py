@@ -50,6 +50,29 @@ def _assert_v03_contract(block_name: str, block: dict[str, Any]) -> None:
     assert isinstance(block["counter_evidence"], list)
 
 
+def _layer(detected: bool) -> dict[str, Any]:
+    return {
+        "status": "detected" if detected else "not_detected",
+        "detected": detected,
+        "finding": "signal" if detected else None,
+        "evidence": "evidence" if detected else None,
+        "confidence": "medium" if detected else "insufficient",
+    }
+
+
+def _block(content: str | None, *, detected: bool = True) -> dict[str, Any]:
+    return {
+        "content": content,
+        "answer": content,
+        "detected": detected and bool(content),
+        "claim_type": "inferred" if detected and content else "absent",
+        "mode": "interpreted_from_discourse" if detected and content else "not_detected",
+        "confidence": "medium" if detected and content else "low",
+        "evidence_used": ["evidence"] if detected and content else [],
+        "counter_evidence": [],
+    }
+
+
 def test_mediterranean_algae_fixture_matches_tldr_v02_contract() -> None:
     fixture = _load_fixture("mediterranean_algae_tldr_v02.json")
     result = MagnetismExtractor(llm=None).extract(
@@ -73,6 +96,52 @@ def test_mediterranean_algae_fixture_matches_tldr_v02_contract() -> None:
             block_name,
             block["content"],
         )
+
+
+def test_earned_magnetism_context_can_lower_expressive_score_without_category_rails() -> None:
+    extractor = MagnetismExtractor(llm=None)
+    layers = {
+        "mindspace": _layer(True),
+        "aetherspace": _layer(True),
+        "gamespace": _layer(True),
+        "envispace": _layer(True),
+        "netspace": _layer(True),
+        "tactispace": _layer(False),
+        "ambientspace": _layer(True),
+    }
+    tldr = {
+        "core_purpose": _block(None, detected=False),
+        "magnetism": _block("Train, fuel, and perform like a pro."),
+        "value_proposition": _block("AI sports nutritionist with real-time alerts and supplement plans."),
+        "personality": _block("Direct, performance-oriented, and expert."),
+        "brand_idea": _block("AI sports nutrition copilot."),
+        "attributes": _block("Personalized, integrated, performance-driven"),
+        "values": _block("Trust and expertise"),
+        "mission": _block(None, detected=False),
+        "vision": _block(None, detected=False),
+    }
+
+    expressive = extractor._derive_metrics(layers, tldr)
+    earned = extractor._derive_metrics(
+        layers,
+        tldr,
+        scoring_context={
+            "earned_magnetism_score": 64,
+            "promise_requires_evidence": True,
+            "evidence_duty_status": "weak",
+            "coherence_evidence_duty_penalty": 12,
+            "reasoning": "The promise requires science and authority proof.",
+            "evidence_gaps": ["scientific validation"],
+        },
+    )
+
+    assert expressive["magnetism_score"] >= 70
+    assert earned["magnetism_score"] == 64
+    assert earned["coherence_score"] < expressive["coherence_score"]
+    assert earned["magnetism_tier"] == "Forgettable"
+    assert earned["quadrant"] != "Señal fuerte · validar antes de escalar"
+    assert earned["magnetism_scoring_context"]["evidence_duty_status"] == "weak"
+    assert earned["coherence_breakdown"]["evidence_duty_penalty"] == 12
 
 
 def test_personality_can_be_interpreted_from_discourse_without_literal_personality_phrase() -> None:

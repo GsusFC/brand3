@@ -1973,6 +1973,72 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("research_pack_quality", payload)
         self.assertIn("analyst_tldr_validated", payload)
 
+    def test_analyst_scoring_context_updates_visible_scores_from_audit_snapshot(self):
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "entity_reading": "NutriPilotAI makes a high-trust sports nutrition promise.",
+            "verdict_vs_current": "better",
+            "main_gain": "The promise is clear and memorable.",
+            "main_risk": "The evidence pack lacks scientific validation for the nutrition and AI claims.",
+            "tldr_brand3": {
+                "magnetism": {
+                    "answer": "Train, fuel, and perform like a pro.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "medium",
+                    "reasoning": "The owned surface presents the performance promise directly.",
+                    "evidence_used": ["Train, fuel, and perform like a pro."],
+                    "evidence_sources": [{"source_key": "https://nutripilotai.es", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                }
+            },
+            "scoring_context": {
+                "expressive_magnetism_score": 80,
+                "earned_magnetism_score": 50,
+                "promise_requires_evidence": True,
+                "evidence_duty_status": "weak",
+                "coherence_evidence_duty_penalty": 11,
+                "reasoning": "Sports nutrition and AI guidance require scientific and methodological proof.",
+                "evidence_gaps": ["scientific validation", "AI methodology"],
+            },
+        }
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        snapshot = {
+            "run": {"id": 509, "brand_name": "NutriPilotAI", "url": "https://nutripilotai.es"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://nutripilotai.es",
+                        "markdown_content": (
+                            "Train, fuel, and perform like a pro. "
+                            "NutriPilotAI is your AI sports nutritionist for personalized supplement plans."
+                        ),
+                    },
+                }
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False), \
+             unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
+        scoring = result["metrics"]["magnetism_scoring_context"]
+        self.assertEqual(scoring["evidence_duty_status"], "weak")
+        self.assertEqual(
+            result["analyst_tldr_validated"]["scoring_context"]["earned_magnetism_score"],
+            50,
+        )
+        self.assertEqual(result["magnetism_score"], result["metrics"]["magnetism_score"])
+        self.assertEqual(result["score_breakdown"]["magnetism"]["earned_magnetism"], scoring["earned_magnetism_score"])
+        self.assertEqual(result["score_breakdown"]["magnetism"]["evidence_duty_status"], "weak")
+        self.assertEqual(result["metrics"]["coherence_breakdown"]["evidence_duty_penalty"], 11)
+
     def test_graph_pack_flag_uses_evidence_graph_research_pack(self):
         fake_llm = FakeLLMAnalyzer()
         fake_llm.mock_response = {

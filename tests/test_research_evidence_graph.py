@@ -533,6 +533,53 @@ def test_graph_pack_matches_legacy_pack_for_base44_offer_and_context() -> None:
     assert graph_pack["source_map"]
 
 
+def test_graph_pack_can_derive_offer_from_owned_proof_claim() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=1011,
+            brand_name="Microflora",
+            input_url="https://microflora.bio",
+            resolved_entity="Microflora",
+            entity_type="company",
+        ),
+        sources={
+            "home": ResearchSource(
+                source_id="home",
+                url="https://microflora.bio",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                label="home",
+            )
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="proof_offer",
+                text=(
+                    "Microflora gives athletes a weekly nutrition plan built on "
+                    "peer-reviewed evidence, with Strava and Garmin integration "
+                    "and shopping lists generated from human study data."
+                ),
+                claim_type="proof",
+                source_id="home",
+                source_url="https://microflora.bio",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                confidence="high",
+                supports_blocks=["value_proposition", "magnetism"],
+            )
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert "weekly nutrition plan" in pack["offer"]
+    assert "Garmin integration" in pack["product_summary"]
+    assert "No product offer evidence group found." not in pack["confidence_notes"]
+
+
 def test_evidence_graph_recovers_low_signal_owned_product_claims() -> None:
     graph = build_evidence_graph_from_snapshot(_sigmaos_like_snapshot())
     pack = build_brand_research_pack_from_graph(graph).to_dict()
@@ -778,6 +825,60 @@ def test_graph_pack_strips_cta_tail_from_offer() -> None:
     assert pack["offer"].endswith("espacios publicitarios")
     assert "Unete a" not in pack["offer"]
     assert "Quieres unirte" not in pack["offer"]
+
+
+def test_graph_pack_keeps_owned_scientific_offer_complete_before_cta() -> None:
+    graph = EvidenceGraph(
+        version="brand_research_evidence_graph_v0_1",
+        run=BrandResearchRun(
+            run_id=1012,
+            brand_name="Microflora",
+            input_url="https://microflora.bio",
+            resolved_entity="Microflora",
+            entity_type="company",
+        ),
+        sources={
+            "home": ResearchSource(
+                source_id="home",
+                url="https://microflora.bio",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+            )
+        },
+        claims=[
+            EvidenceClaim(
+                claim_id="owned-proof-offer",
+                text=(
+                    "Microflora.bio | Nutrition Performance Intelligence "
+                    "Microflora.bio | Nutrition Performance Intelligence "
+                    "# Your nutrition,built around your goals. "
+                    "We have the world's largest interconnected graph of food-microbiome-physiology relationships. "
+                    "We compiled it from hundreds of thousands of peer-reviewed research articles. "
+                    "And we did it so we can help you reach your goals with nutrition uniquely tuned for you. "
+                    "Every recommendation is backed by peer-reviewed evidence with exact quotes, DOI citations, "
+                    "study quality scores and more. Start Free Trial See How It Works"
+                ),
+                claim_type="proof",
+                source_id="home",
+                source_url="https://microflora.bio",
+                source_type="owned_home",
+                surface_role="audited_surface",
+                entity_scope="audited_surface",
+                confidence="high",
+                supports_blocks=["value_proposition", "magnetism"],
+            )
+        ],
+    )
+
+    pack = build_brand_research_pack_from_graph(graph).to_dict()
+
+    assert pack["offer"].startswith("Your nutrition,built around your goals.")
+    assert "peer-reviewed evidence" in pack["offer"]
+    assert pack["offer"].endswith("more.")
+    assert "Start Free Trial" not in pack["offer"]
+    assert "Microflora.bio |" not in pack["offer"]
+    assert "mor." not in pack["offer"]
 
 
 def test_company_brand_pack_prefers_parent_offer_over_single_product_copy() -> None:

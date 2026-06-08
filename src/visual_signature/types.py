@@ -9,6 +9,7 @@ from typing import Any, Literal, Protocol
 VisualSignatureAdapterName = Literal[
     "existing_web_data",
     "firecrawl",
+    "hyperbrowser",
     "playwright",
     "browserbase",
     "vision",

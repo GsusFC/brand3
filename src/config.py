@@ -16,6 +16,11 @@ if env_file.exists():
 # API Keys
 FIRECRAWL_API_KEY = os.environ.get("FIRECRAWL_API_KEY", "")
 EXA_API_KEY = os.environ.get("EXA_API_KEY", "")
+HYPERBROWSER_API_KEY = os.environ.get("HYPERBROWSER_API_KEY", "")
+HYPERBROWSER_API_URL = os.environ.get(
+    "HYPERBROWSER_API_URL",
+    "https://api.hyperbrowser.ai/api/web/fetch",
+)
 
 # Single LLM provider. Defaults to Google AI Studio (OpenAI-compatible),
 # but any OpenAI-compatible endpoint works by overriding BRAND3_LLM_BASE_URL

@@ -30,7 +30,10 @@ from src.features.magnetism.block_interpreters import (
     strategic_packet_candidates,
 )
 from src.features.magnetism.content_distiller import ContentDistiller
-from src.features.magnetism.analyst_tldr import run_analyst_tldr_pass
+from src.features.magnetism.analyst_tldr import (
+    maybe_build_system_reading,
+    run_analyst_tldr_pass,
+)
 from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
@@ -451,14 +454,25 @@ class MagnetismExtractor:
             contextdev_candidate_summary=contextdev_candidate_summary,
         )
         result.setdefault("tldr_generation_mode", "legacy_code")
-        result["metrics"] = self._derive_metrics(result["magenta_circle"], result["tldr_brand3"])
-        result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
-        result["system_reading"] = self._derive_system_reading(
-            result["tldr_brand3"],
+        result["metrics"] = self._derive_metrics(
             result["magenta_circle"],
-            result["metrics"],
-            evidence_packet_summary,
+            result["tldr_brand3"],
+            scoring_context=(
+                result.get("analyst_tldr_validated", {}).get("scoring_context")
+                if isinstance(result.get("analyst_tldr_validated"), dict)
+                else None
+            ),
         )
+        result["diagnosis"] = self._derive_diagnosis(result["magenta_circle"], result["metrics"])
+        result["system_reading"] = self._build_system_reading(
+            tldr=result["tldr_brand3"],
+            layers=result["magenta_circle"],
+            metrics=result["metrics"],
+            url=url,
+            brand_name=brand_name,
+            evidence_packet_summary=evidence_packet_summary,
+        )
+        self._add_legacy_fields(result)
         return result
 
     @staticmethod
@@ -867,17 +881,37 @@ Return exactly this JSON shape:
         ):
             if key in raw:
                 normalized[key] = raw[key]
-        normalized["metrics"] = self._derive_metrics(normalized["magenta_circle"], normalized["tldr_brand3"])
+        normalized["metrics"] = self._derive_metrics(
+            normalized["magenta_circle"],
+            normalized["tldr_brand3"],
+            scoring_context=(
+                normalized.get("analyst_tldr_validated", {}).get("scoring_context")
+                if isinstance(normalized.get("analyst_tldr_validated"), dict)
+                else None
+            ),
+        )
         normalized["diagnosis"] = self._derive_diagnosis(normalized["magenta_circle"], normalized["metrics"])
         if isinstance(raw.get("content_distillation_summary"), dict):
             normalized["content_distillation_summary"] = raw["content_distillation_summary"]
         normalized["evidence_packet_summary"] = self._derive_evidence_packet_summary(normalized)
-        normalized["system_reading"] = self._derive_system_reading(
-            normalized["tldr_brand3"],
-            normalized["magenta_circle"],
-            normalized["metrics"],
-            normalized["evidence_packet_summary"],
-        )
+        if "system_reading" in raw and isinstance(raw["system_reading"], dict):
+            normalized["system_reading"] = raw["system_reading"]
+        elif normalized.get("fallback_used"):
+            normalized["system_reading"] = self._build_system_reading(
+                tldr=normalized["tldr_brand3"],
+                layers=normalized["magenta_circle"],
+                metrics=normalized["metrics"],
+                url=normalized["url"],
+                brand_name=normalized["brand_name"],
+                evidence_packet_summary=normalized.get("evidence_packet_summary"),
+            )
+        else:
+            normalized["system_reading"] = self._derive_system_reading(
+                tldr=normalized["tldr_brand3"],
+                layers=normalized["magenta_circle"],
+                metrics=normalized["metrics"],
+                evidence_packet_summary=normalized.get("evidence_packet_summary"),
+            )
 
         self._add_legacy_fields(normalized)
         return normalized
@@ -913,17 +947,47 @@ Return exactly this JSON shape:
             payload["content_distillation_summary"] = None
         if "system_reading" not in payload:
             payload = dict(payload)
-            payload["system_reading"] = self._derive_system_reading(
-                payload["tldr_brand3"],
-                layers,
-                payload.get("metrics") or {},
-                (
+            payload["system_reading"] = self._build_system_reading(
+                tldr=payload["tldr_brand3"],
+                layers=payload.get("magenta_circle") or {},
+                metrics=payload.get("metrics") or {},
+                url=payload.get("url", ""),
+                brand_name=payload.get("brand_name", "Unknown Brand"),
+                evidence_packet_summary=(
                     payload.get("evidence_packet_summary")
                     if isinstance(payload.get("evidence_packet_summary"), dict)
                     else None
                 ),
             )
         return payload
+
+    def _build_system_reading(
+        self,
+        *,
+        tldr: dict[str, Any],
+        layers: dict[str, Any],
+        metrics: dict[str, Any],
+        url: str,
+        brand_name: str,
+        evidence_packet_summary: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
+        llm_reading = maybe_build_system_reading(
+            llm=self.llm,
+            brand_name=brand_name,
+            url=url,
+            tldr=tldr,
+            layers=layers,
+            metrics=metrics,
+            evidence_packet_summary=evidence_packet_summary if isinstance(evidence_packet_summary, dict) else None,
+        )
+        if isinstance(llm_reading, dict):
+            return llm_reading
+        return self._derive_system_reading(
+            tldr=tldr,
+            layers=layers,
+            metrics=metrics,
+            evidence_packet_summary=evidence_packet_summary,
+        )
 
     @staticmethod
     def _has_tldr_v03_contract(block: dict[str, Any]) -> bool:
@@ -1319,7 +1383,13 @@ Return exactly this JSON shape:
             return confidence == "low" or len(evidence_used) < 2
         return False
 
-    def _derive_metrics(self, layers: dict[str, Any], tldr: dict[str, Any]) -> dict[str, Any]:
+    def _derive_metrics(
+        self,
+        layers: dict[str, Any],
+        tldr: dict[str, Any],
+        *,
+        scoring_context: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         magnetism_text = tldr["magnetism"].get("content") or ""
         magnetism_breakdown = self._magnetism_phrase_breakdown(str(magnetism_text))
         phrase_score = self._weighted_score(
@@ -1341,7 +1411,12 @@ Return exactly this JSON shape:
             sum(100 if internal_detected[layer] else 0 for layer in internal_layers)
             / len(internal_layers)
         )
-        magnetism_score = round((phrase_score * 0.55) + (internal_score * 0.45))
+        expressive_magnetism_score = round((phrase_score * 0.55) + (internal_score * 0.45))
+        earned_magnetism = self._earned_magnetism_adjustment(
+            expressive_magnetism_score,
+            scoring_context,
+        )
+        magnetism_score = earned_magnetism["score"]
 
         completeness = round(
             sum(1 for block in tldr.values() if block.get("detected")) / len(TLDR_KEYS) * 100
@@ -1353,18 +1428,30 @@ Return exactly this JSON shape:
             + (semantic_alignment * 0.40)
             + (absence_of_contradiction * 0.20)
         )
+        evidence_duty_penalty = int(earned_magnetism.get("coherence_penalty") or 0)
+        coherence_score = self._clamp(coherence_score - evidence_duty_penalty)
 
         quadrant = self._quadrant(magnetism_score, coherence_score)
         return {
             "magnetism_score": self._clamp(magnetism_score),
             "magnetism_tier": self._magnetism_tier(magnetism_score),
             "magnetism_breakdown": magnetism_breakdown,
+            "magnetism_scoring_context": {
+                "expressive_magnetism_score": self._clamp(expressive_magnetism_score),
+                "earned_magnetism_score": self._clamp(magnetism_score),
+                "promise_requires_evidence": earned_magnetism["promise_requires_evidence"],
+                "evidence_duty_status": earned_magnetism["evidence_duty_status"],
+                "reasoning": earned_magnetism["reasoning"],
+                "evidence_gaps": earned_magnetism["evidence_gaps"],
+                "source": earned_magnetism["source"],
+            },
             "coherence_score": self._clamp(coherence_score),
             "coherence_tier": self._coherence_tier(coherence_score),
             "coherence_breakdown": {
                 "completeness": self._clamp(completeness),
                 "semantic_alignment": self._clamp(semantic_alignment),
                 "absence_of_contradiction": self._clamp(absence_of_contradiction),
+                "evidence_duty_penalty": evidence_duty_penalty,
             },
             "quadrant": quadrant,
         }
@@ -1388,6 +1475,54 @@ Return exactly this JSON shape:
                 "Si el score baja, puede deberse a cobertura insuficiente de evidencia publica, no necesariamente a debilidad estrategica de la marca."
             )
         return {"headline": headline, "key_observations": observations}
+
+    @staticmethod
+    def _earned_magnetism_adjustment(
+        expressive_score: int,
+        scoring_context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        if not isinstance(scoring_context, dict) or not scoring_context:
+            return {
+                "score": MagnetismExtractor._clamp(expressive_score),
+                "coherence_penalty": 0,
+                "promise_requires_evidence": False,
+                "evidence_duty_status": "not_evaluated",
+                "reasoning": "",
+                "evidence_gaps": [],
+                "source": "code_expressive_score",
+            }
+
+        status = str(scoring_context.get("evidence_duty_status") or "not_required").strip().lower()
+        if status not in {"not_required", "satisfied", "partial", "weak"}:
+            status = "not_required"
+        requires_evidence = bool(scoring_context.get("promise_requires_evidence")) or status in {"partial", "weak"}
+        earned = MagnetismExtractor._int_between(scoring_context.get("earned_magnetism_score"), 0, 100)
+        if earned is None:
+            earned = expressive_score
+        penalty = MagnetismExtractor._int_between(scoring_context.get("coherence_evidence_duty_penalty"), 0, 25) or 0
+
+        if not requires_evidence or status in {"not_required", "satisfied"}:
+            score = expressive_score
+            penalty = 0
+        else:
+            # The LLM decides whether the promise creates a duty of proof and
+            # how well that duty is met. Code only enforces the consequence:
+            # strong promises with partial/weak proof cannot keep a purely
+            # expressive magnetism score.
+            score = min(expressive_score, earned)
+
+        gaps = scoring_context.get("evidence_gaps")
+        if not isinstance(gaps, list):
+            gaps = []
+        return {
+            "score": MagnetismExtractor._clamp(score),
+            "coherence_penalty": penalty,
+            "promise_requires_evidence": bool(requires_evidence),
+            "evidence_duty_status": status,
+            "reasoning": str(scoring_context.get("reasoning") or ""),
+            "evidence_gaps": [str(item) for item in gaps if str(item).strip()][:5],
+            "source": "analyst_scoring_context",
+        }
 
     def _derive_evidence_packet_summary(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Summarize the shared evidence basis without embedding a second report."""
@@ -1610,6 +1745,9 @@ Return exactly this JSON shape:
                 "emotional_appeal": metrics["magnetism_breakdown"]["memorability"],
                 "functional_differentiation": metrics["magnetism_breakdown"]["specificity"],
                 "narrative_gravitas": metrics["magnetism_breakdown"]["originality"],
+                "expressive_magnetism": metrics.get("magnetism_scoring_context", {}).get("expressive_magnetism_score"),
+                "earned_magnetism": metrics.get("magnetism_scoring_context", {}).get("earned_magnetism_score"),
+                "evidence_duty_status": metrics.get("magnetism_scoring_context", {}).get("evidence_duty_status"),
                 "assessment": "Derived from detected internal layers and the literal magnetism phrase.",
             },
             "coherence": {
@@ -2219,11 +2357,19 @@ Return exactly this JSON shape:
         return round(sum(scores[key] * weight for key, weight in weights.items()))
 
     @staticmethod
+    def _int_between(value: Any, minimum: int, maximum: int) -> int | None:
+        try:
+            number = int(round(float(value)))
+        except (TypeError, ValueError):
+            return None
+        return max(minimum, min(maximum, number))
+
+    @staticmethod
     def _quadrant(magnetism_score: int, coherence_score: int) -> str:
         high_magnetism = magnetism_score >= 70
         high_coherence = coherence_score >= 70
         if high_magnetism and high_coherence:
-            return "Premium brand · no necesita ayuda"
+            return "Señal fuerte · validar antes de escalar"
         if high_magnetism and not high_coherence:
             return "Eslogan sin estructura · peligrosa"
         if not high_magnetism and high_coherence:

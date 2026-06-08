@@ -42,6 +42,9 @@ Visual Signature path:
 - [developer_navigation.md](developer_navigation.md)
 - [../deprecated_surfaces.md](../deprecated_surfaces.md)
 - [../tldr_brand3_research_pack_analyst_pass_decision.md](../tldr_brand3_research_pack_analyst_pass_decision.md)
+- [../methodology/floc_tldr_knowledge_base.md](../methodology/floc_tldr_knowledge_base.md)
+- [../methodology/tldr_brand3_block_rules.md](../methodology/tldr_brand3_block_rules.md)
+- [../methodology/tldr_brand3_block_interpreter_specs.md](../methodology/tldr_brand3_block_interpreter_specs.md)
 
 ## Important Files And Folders
 

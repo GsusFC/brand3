@@ -136,8 +136,10 @@ def test_analyst_pass_normalizes_base44_and_captures_prompt() -> None:
         "verdict_vs_current",
         "main_gain",
         "main_risk",
+        "scoring_context",
         "tldr_brand3",
     ]
+    assert result["scoring_context"]["evidence_duty_status"] == "not_required"
 
 
 def test_block_without_evidence_used_remains_visible_and_flagged() -> None:
@@ -169,6 +171,35 @@ def test_block_without_evidence_used_remains_visible_and_flagged() -> None:
     assert block["claim_type"] == "absent"
     assert block["mode"] == "not_detected"
     assert block["human_review_recommended"] is False
+
+
+def test_analyst_scoring_context_preserves_earned_magnetism_judgement() -> None:
+    raw = {
+        "entity_reading": "Nutripilot is an AI sports nutrition product.",
+        "verdict_vs_current": "better",
+        "main_gain": "Separates hook clarity from proof.",
+        "main_risk": "Science proof is thin.",
+        "scoring_context": {
+            "expressive_magnetism_score": 82,
+            "earned_magnetism_score": 64,
+            "promise_requires_evidence": True,
+            "evidence_duty_status": "weak",
+            "coherence_evidence_duty_penalty": 12,
+            "reasoning": "Sports nutrition and AI decision claims require scientific and authority evidence.",
+            "evidence_gaps": ["methodology", "scientific validation", "verified integrations"],
+        },
+        "tldr_brand3": {},
+    }
+
+    result = normalize_analyst_response(raw, current_tldr={}, research_pack=_research_pack())
+
+    scoring = result["scoring_context"]
+    assert scoring["expressive_magnetism_score"] == 82
+    assert scoring["earned_magnetism_score"] == 64
+    assert scoring["promise_requires_evidence"] is True
+    assert scoring["evidence_duty_status"] == "weak"
+    assert scoring["coherence_evidence_duty_penalty"] == 12
+    assert "scientific validation" in scoring["evidence_gaps"]
 
 
 def test_partial_response_fills_missing_blocks_as_not_detected() -> None:
@@ -346,6 +377,16 @@ def test_prompt_is_driven_by_pack_not_brand_rules() -> None:
 def test_analyst_tldr_response_schema_requires_all_blocks() -> None:
     schema = analyst_tldr_response_schema()
 
+    assert "scoring_context" in schema["required"]
+    assert schema["properties"]["scoring_context"]["required"] == [
+        "expressive_magnetism_score",
+        "earned_magnetism_score",
+        "promise_requires_evidence",
+        "evidence_duty_status",
+        "coherence_evidence_duty_penalty",
+        "reasoning",
+        "evidence_gaps",
+    ]
     assert schema["properties"]["tldr_brand3"]["required"] == [
         "core_purpose",
         "magnetism",

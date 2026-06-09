@@ -50,6 +50,12 @@ The preview is available as an experimental scanner route:
 
 - `/magnetism-scanner/scan/{scan_id}/client-tldr-v2`
 
+You can also reach it from the scanner UI:
+
+- open a scan detail page
+- use the `TLDR v2 Preview` link in the scanner navigation
+- the link keeps the current `lang` query when present
+
 It is not the default client-facing TLDR yet.
 
 ## Limitations
@@ -58,4 +64,3 @@ It is not the default client-facing TLDR yet.
 - It does not change scoring formulas.
 - It does not mutate computed scores.
 - It does not connect perceptual corpus data to scoring.
-

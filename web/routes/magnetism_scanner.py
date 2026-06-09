@@ -12,7 +12,10 @@ from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import MagnetismExtractor
+from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
 from src.features.magnetism.translation import apply_magnetism_translation
+from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
+from src.scoring.provenance import build_score_provenance_report
 from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
 
@@ -101,6 +104,26 @@ _MAGNETISM_UI = {
         "executive_summary": "Executive summary",
         "primary_risk": "Primary risk",
         "primary_opportunity": "Primary opportunity",
+        "internal_audit": "Internal score audit",
+        "internal_audit_tag": "score provenance and TLDR v2",
+        "audit_status": "Audit status",
+        "score_integrity": "Score integrity",
+        "score_summary": "Score summary",
+        "computed_score": "Computed score",
+        "reviewed_score": "Reviewed score",
+        "display_score": "Display score",
+        "display_score_source": "Display source",
+        "display_score_status": "Display status",
+        "dimension_breakdown": "Dimension breakdown",
+        "confidence_summary": "Confidence summary",
+        "fallback_flags": "Fallback flags",
+        "rules_caps": "Rules / caps",
+        "warnings": "Warnings",
+        "recommended_action": "Recommended action",
+        "tldr_v2_internal_summary": "TLDR v2 internal summary",
+        "fingerprint_details": "Fingerprint details",
+        "raw_feature_provenance": "Raw feature provenance",
+        "reviewed_score_block": "Reviewed score block",
         "dimension_audit": "Dimension audit",
         "findings": "Findings",
         "recommendation": "Recommendation",
@@ -124,6 +147,23 @@ _MAGNETISM_UI = {
         "no_detected": "(not detected)",
         "system_reading": "TLDR System Reading",
         "system_reading_tag": "tensions and validation questions inside TLDR Brand3",
+        "client_tldr_v2": "Client TLDR v2",
+        "client_tldr_v2_tag": "score-aware client preview",
+        "score_reading": "Score reading",
+        "score_status": "Score status",
+        "score_note": "Score note",
+        "evidence_refs": "Evidence refs",
+        "tldr_block_names": {
+            "core_purpose": "CORE PURPOSE",
+            "magnetism": "MAGNETISM",
+            "value_proposition": "VALUE PROPOSITION",
+            "personality": "PERSONALITY",
+            "brand_idea": "BRAND IDEA",
+            "attributes": "ATTRIBUTES",
+            "values": "VALUES",
+            "mission": "MISSION",
+            "vision": "VISION",
+        },
         "credibility_support": "Credibility support",
         "strategic_tensions": "Strategic tensions",
         "validation_questions": "Validation questions",
@@ -258,6 +298,26 @@ _MAGNETISM_UI = {
         "executive_summary": "Resumen ejecutivo",
         "primary_risk": "Riesgo principal",
         "primary_opportunity": "Oportunidad principal",
+        "internal_audit": "Auditoría interna de score",
+        "internal_audit_tag": "proveniencia del score y TLDR v2",
+        "audit_status": "Estado de auditoría",
+        "score_integrity": "Integridad del score",
+        "score_summary": "Resumen de score",
+        "computed_score": "Score computado",
+        "reviewed_score": "Score revisado",
+        "display_score": "Score mostrado",
+        "display_score_source": "Fuente del display",
+        "display_score_status": "Estado del display",
+        "dimension_breakdown": "Desglose por dimensión",
+        "confidence_summary": "Resumen de confianza",
+        "fallback_flags": "Fallback flags",
+        "rules_caps": "Rules / caps",
+        "warnings": "Warnings",
+        "recommended_action": "Acción recomendada",
+        "tldr_v2_internal_summary": "Resumen interno TLDR v2",
+        "fingerprint_details": "Detalles del fingerprint",
+        "raw_feature_provenance": "Proveniencia cruda de features",
+        "reviewed_score_block": "Bloque de score revisado",
         "dimension_audit": "Auditoría por dimensión",
         "findings": "Hallazgos",
         "recommendation": "Recomendación",
@@ -281,6 +341,23 @@ _MAGNETISM_UI = {
         "no_detected": "(no detectado)",
         "system_reading": "Lectura de sistema TLDR",
         "system_reading_tag": "tensiones y preguntas de validación dentro del TLDR Brand3",
+        "client_tldr_v2": "TLDR v2 para cliente",
+        "client_tldr_v2_tag": "preview de cliente con score y evidencia",
+        "score_reading": "Lectura del score",
+        "score_status": "Estado del score",
+        "score_note": "Nota del score",
+        "evidence_refs": "Referencias de evidencia",
+        "tldr_block_names": {
+            "core_purpose": "PROPÓSITO CENTRAL",
+            "magnetism": "MAGNETISMO",
+            "value_proposition": "PROPUESTA DE VALOR",
+            "personality": "PERSONALIDAD",
+            "brand_idea": "IDEA DE MARCA",
+            "attributes": "ATRIBUTOS",
+            "values": "VALORES",
+            "mission": "MISIÓN",
+            "vision": "VISIÓN",
+        },
         "credibility_support": "Soporte de credibilidad",
         "strategic_tensions": "Tensiones estratégicas",
         "validation_questions": "Preguntas de validación",
@@ -728,6 +805,7 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["audit"] = {"available": False, "reason": "missing_source_run"}
+        model["internal_audit"] = {"available": False, "reason": "missing_source_run"}
         return templates.TemplateResponse(
             request,
             "magnetism_audit.html.j2",
@@ -738,10 +816,16 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
     try:
         snapshot = store.get_run_snapshot(int(source_run_id))
         narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
+        score_provenance = build_score_provenance_report(store, int(source_run_id))
     finally:
         store.close()
     if snapshot is None:
         model["audit"] = {
+            "available": False,
+            "reason": "missing_snapshot",
+            "source_run_id": source_run_id,
+        }
+        model["internal_audit"] = {
             "available": False,
             "reason": "missing_snapshot",
             "source_run_id": source_run_id,
@@ -758,15 +842,104 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
             narrative_payload,
             lang,
         )
+        current_tldr = {}
+        if isinstance(model.get("payload"), dict):
+            current_tldr = model["payload"].get("tldr_brand3") or {}
+        tldr_v2 = build_audit_aware_tldr_v2(
+            score_provenance=score_provenance,
+            current_tldr=current_tldr,
+        )
+        status_label = _internal_audit_status_label(tldr_v2.get("score_state") or {}, score_provenance)
         model["audit"] = {
             "available": True,
             "source_run_id": int(source_run_id),
             "context": audit_context,
         }
+        model["internal_audit"] = {
+            "available": True,
+            "source_run_id": int(source_run_id),
+            "score_provenance": score_provenance,
+            "tldr_v2": tldr_v2,
+            "score_state": tldr_v2.get("score_state") or {},
+            "reviewed_score": score_provenance.get("reviewed_score") or None,
+            "status_label": status_label,
+            "display_decision_label": _internal_audit_display_decision(tldr_v2.get("score_state") or {}),
+            "status_class": _internal_audit_status_class(status_label),
+            "summary": _internal_audit_summary_text(score_provenance, tldr_v2, lang=lang),
+        }
 
     return templates.TemplateResponse(
         request,
         "magnetism_audit.html.j2",
+        {"model": model, "ui_lang": lang},
+    )
+
+
+@router.get("/magnetism-scanner/scan/{scan_id}/client-tldr-v2")
+async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render the experimental client-facing TLDR v2 preview."""
+    model = _magnetism_scan_model(scan_id, lang=lang)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
+            status_code=404,
+        )
+    model["active_tab"] = "client_tldr_v2"
+    _attach_ui(model, lang)
+    source_run_id = model.get("source_run_id")
+    if not source_run_id:
+        model["client_tldr_v2"] = {
+            "available": False,
+            "reason": "missing_source_run",
+            "message": "This preview requires an attached Brand Audit run.",
+        }
+        return templates.TemplateResponse(
+            request,
+            "magnetism_client_tldr_v2.html.j2",
+            {"model": model, "ui_lang": lang},
+        )
+
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(int(source_run_id))
+        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
+        score_provenance = build_score_provenance_report(store, int(source_run_id))
+    finally:
+        store.close()
+
+    if snapshot is None:
+        model["client_tldr_v2"] = {
+            "available": False,
+            "reason": "missing_snapshot",
+            "message": "The attached Brand Audit snapshot is unavailable.",
+        }
+    else:
+        report_context = build_brand_dossier(
+            snapshot,
+            theme="light",
+            analyzer=_REPORT_READ_ANALYZER,
+            narrative_payload=narrative_payload,
+        )
+        current_tldr = {}
+        if isinstance(model.get("payload"), dict):
+            current_tldr = model["payload"].get("tldr_brand3") or {}
+        model["client_tldr_v2"] = {
+            "available": True,
+            **build_client_tldr_v2(
+                brand_name=str(model.get("brand_name") or "brand scan"),
+                url=str(model.get("url") or ""),
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_context,
+                lang=lang,
+            ),
+        }
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_client_tldr_v2.html.j2",
         {"model": model, "ui_lang": lang},
     )
 
@@ -880,6 +1053,122 @@ def _executive_analysis_for_language(
     if isinstance(translated, dict) and translated:
         return translated
     return original
+
+
+def _internal_audit_summary_text(
+    score_provenance: dict,
+    tldr_v2: dict,
+    *,
+    lang: _Lang,
+) -> str:
+    state = tldr_v2.get("score_state") if isinstance(tldr_v2, dict) else {}
+    if not isinstance(state, dict):
+        state = {}
+
+    computed = state.get("computed_composite_score")
+    reviewed = state.get("reviewed_composite_score")
+    display = state.get("recommended_display_score")
+    source = str(state.get("display_score_source") or "blocked")
+    integrity = str(state.get("score_integrity") or "unverifiable")
+    drift_type = str(state.get("drift_type") or "none")
+    score_values_match = state.get("score_values_match_persisted_data")
+    limited_confidence = bool(state.get("limited_confidence"))
+    fallback_flags = score_provenance.get("fallback_flags") if isinstance(score_provenance, dict) else {}
+    neutral_fallback_dimensions = []
+    if isinstance(fallback_flags, dict):
+        neutral_fallback_dimensions = list(fallback_flags.get("replay_neutral_fallback_dimensions") or [])
+
+    def _base_message() -> str:
+        if lang == "en":
+            if integrity == "valid":
+                return "Score replay is valid. Persisted, recomputed and artifact scores match."
+            if drift_type == "fingerprint_only_mismatch" and score_values_match is True:
+                return "Score values match persisted data, but the scoring fingerprint differs from the current config. Treat as legacy/config mismatch, not data tampering."
+            if drift_type == "artifact_mismatch" and score_values_match is True:
+                return "Artifact score does not match persisted scoring data. Technical review required."
+            if drift_type in {"feature_score_mismatch", "score_data_mismatch"}:
+                return "Persisted score values differ from recomputed scoring data. Do not use as definitive."
+            return "Replay could not verify this score with available persisted data."
+        if integrity == "valid":
+            return "La replay del score es válida. Los scores persistidos, recomputados y del artifact coinciden."
+        if drift_type == "fingerprint_only_mismatch" and score_values_match is True:
+            return "Los score values coinciden con los datos persistidos, pero el fingerprint de scoring difiere de la config actual. Trátalo como mismatch legacy/config, no como data tampering."
+        if drift_type == "artifact_mismatch" and score_values_match is True:
+            return "El score del artifact no coincide con los datos de scoring persistidos. Requiere revisión técnica."
+        if drift_type in {"feature_score_mismatch", "score_data_mismatch"}:
+            return "Los score values persistidos difieren de los datos recomputados. No lo uses como definitivo."
+        return "La replay no pudo verificar este score con los datos persistidos disponibles."
+
+    def _display_message() -> str:
+        if source == "reviewed":
+            if lang == "en":
+                return f"Reviewed score {display} is the internal display recommendation; computed score is {computed}."
+            return f"El score revisado {display} es la recomendación interna de display; el score computado es {computed}."
+        if lang == "en":
+            return f"Computed score {display} is the internal display recommendation."
+        return f"El score computado {display} es la recomendación interna de display."
+
+    if lang == "en":
+        summary = _base_message()
+        if source == "blocked":
+            summary += " Display is blocked for internal use."
+        else:
+            summary += f" {_display_message()}"
+        if reviewed is not None and source != "reviewed":
+            summary += f" A reviewed score of {reviewed} is also present."
+        if limited_confidence:
+            summary += " Replay integrity is unverifiable, so treat this as limited confidence."
+        if neutral_fallback_dimensions:
+            summary += f" Neutral fallback 50.0 was used for: {', '.join(neutral_fallback_dimensions)}."
+        return summary
+
+    summary = _base_message()
+    if source == "blocked":
+        summary += " El display está bloqueado para uso interno."
+    else:
+        summary += f" {_display_message()}"
+    if reviewed is not None and source != "reviewed":
+        summary += f" También existe un score revisado de {reviewed}."
+    if limited_confidence:
+        summary += " La replay integrity es unverifiable, así que debe tratarse como confianza limitada."
+    if neutral_fallback_dimensions:
+        summary += f" El fallback neutral 50.0 se usó en: {', '.join(neutral_fallback_dimensions)}."
+    return summary
+
+
+def _internal_audit_status_label(score_state: dict, provenance: dict) -> str:
+    integrity = str(score_state.get("score_integrity") or "unverifiable")
+    source = str(score_state.get("display_score_source") or "blocked")
+    if source == "blocked":
+        return "blocked"
+    if integrity == "valid":
+        return "valid"
+    if integrity == "unverifiable":
+        return "review-required"
+    if provenance.get("warnings"):
+        return "warning"
+    return "internal-only"
+
+
+def _internal_audit_status_class(status_label: str) -> str:
+    if status_label == "valid":
+        return "badge-ready"
+    if status_label == "blocked":
+        return "badge-error"
+    if status_label == "warning":
+        return "badge-missing"
+    if status_label == "review-required":
+        return "badge-missing"
+    return "badge"
+
+
+def _internal_audit_display_decision(score_state: dict) -> str:
+    source = str(score_state.get("display_score_source") or "blocked")
+    if source == "reviewed":
+        return "reviewed"
+    if source == "computed":
+        return "computed"
+    return "blocked"
 
 
 def _evidence_reliability_model(payload: dict) -> dict:

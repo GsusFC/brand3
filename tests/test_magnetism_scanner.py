@@ -677,6 +677,565 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(legacy_reliability.status_code, 200)
         self.assertIn("No se persistió diagnóstico de calidad del Research Pack", legacy_reliability.text)
 
+    def _audit_feature_fixture(self, *, omit_coherencia: bool = False) -> dict[str, dict]:
+        from src.models.brand import FeatureValue
+
+        def evidence_block(dimension: str, feature_name: str) -> dict:
+            return {
+                "evidence": [
+                    {
+                        "quote": f"{dimension} {feature_name} evidence for internal audit.",
+                        "source_url": f"https://internal-audit.test/{dimension}/{feature_name}",
+                    }
+                ]
+            }
+
+        features = {
+            "coherencia": {
+                "visual_consistency": FeatureValue(
+                    "visual_consistency",
+                    80.0,
+                    raw_value=evidence_block("coherencia", "visual_consistency"),
+                    confidence=0.9,
+                    source="web_scrape",
+                ),
+                "messaging_consistency": FeatureValue(
+                    "messaging_consistency",
+                    60.0,
+                    raw_value=evidence_block("coherencia", "messaging_consistency"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "tone_consistency": FeatureValue(
+                    "tone_consistency",
+                    70.0,
+                    raw_value=evidence_block("coherencia", "tone_consistency"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "cross_channel_coherence": FeatureValue(
+                    "cross_channel_coherence",
+                    50.0,
+                    raw_value=evidence_block("coherencia", "cross_channel_coherence"),
+                    confidence=0.7,
+                    source="web_scrape",
+                ),
+            },
+            "presencia": {
+                "web_presence": FeatureValue(
+                    "web_presence",
+                    90.0,
+                    raw_value=evidence_block("presencia", "web_presence"),
+                    confidence=0.9,
+                    source="web_scrape",
+                ),
+                "social_footprint": FeatureValue(
+                    "social_footprint",
+                    75.0,
+                    raw_value=evidence_block("presencia", "social_footprint"),
+                    confidence=0.9,
+                    source="social_media",
+                ),
+                "search_visibility": FeatureValue(
+                    "search_visibility",
+                    80.0,
+                    raw_value=evidence_block("presencia", "search_visibility"),
+                    confidence=0.8,
+                    source="exa",
+                ),
+                "directory_presence": FeatureValue(
+                    "directory_presence",
+                    30.0,
+                    raw_value=evidence_block("presencia", "directory_presence"),
+                    confidence=0.8,
+                    source="exa",
+                ),
+            },
+            "percepcion": {
+                "brand_sentiment": FeatureValue(
+                    "brand_sentiment",
+                    70.0,
+                    raw_value=evidence_block("percepcion", "brand_sentiment"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "mention_volume": FeatureValue(
+                    "mention_volume",
+                    65.0,
+                    raw_value=evidence_block("percepcion", "mention_volume"),
+                    confidence=0.9,
+                    source="exa",
+                ),
+                "sentiment_trend": FeatureValue(
+                    "sentiment_trend",
+                    55.0,
+                    raw_value=evidence_block("percepcion", "sentiment_trend"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "review_quality": FeatureValue(
+                    "review_quality",
+                    50.0,
+                    raw_value=evidence_block("percepcion", "review_quality"),
+                    confidence=0.8,
+                    source="exa",
+                ),
+            },
+            "diferenciacion": {
+                "positioning_clarity": FeatureValue(
+                    "positioning_clarity",
+                    75.0,
+                    raw_value=evidence_block("diferenciacion", "positioning_clarity"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "uniqueness": FeatureValue(
+                    "uniqueness",
+                    70.0,
+                    raw_value=evidence_block("diferenciacion", "uniqueness"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "competitor_distance": FeatureValue(
+                    "competitor_distance",
+                    70.0,
+                    raw_value=evidence_block("diferenciacion", "competitor_distance"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+                "content_authenticity": FeatureValue(
+                    "content_authenticity",
+                    85.0,
+                    raw_value=evidence_block("diferenciacion", "content_authenticity"),
+                    confidence=0.8,
+                    source="content_analysis",
+                ),
+                "brand_personality": FeatureValue(
+                    "brand_personality",
+                    80.0,
+                    raw_value=evidence_block("diferenciacion", "brand_personality"),
+                    confidence=0.8,
+                    source="content_analysis",
+                ),
+            },
+            "vitalidad": {
+                "content_recency": FeatureValue(
+                    "content_recency",
+                    90.0,
+                    raw_value=evidence_block("vitalidad", "content_recency"),
+                    confidence=0.9,
+                    source="exa",
+                ),
+                "publication_cadence": FeatureValue(
+                    "publication_cadence",
+                    80.0,
+                    raw_value=evidence_block("vitalidad", "publication_cadence"),
+                    confidence=0.9,
+                    source="exa",
+                ),
+                "momentum": FeatureValue(
+                    "momentum",
+                    60.0,
+                    raw_value=evidence_block("vitalidad", "momentum"),
+                    confidence=0.8,
+                    source="llm",
+                ),
+            },
+        }
+        if omit_coherencia:
+            features.pop("coherencia", None)
+        return features
+
+    def _seed_internal_audit_scan(
+        self,
+        *,
+        reviewed_score: float | None = None,
+        drift: bool = False,
+        fingerprint_only_drift: bool = False,
+        fallback: bool = False,
+    ) -> tuple[int, int]:
+        from pathlib import Path
+
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.models.brand import BrandScore
+        from src.scoring.engine import ScoringEngine
+        from src.scoring.replay import (
+            DIMENSIONS_PATH,
+            ENGINE_PATH,
+            _compute_scoring_state_fingerprint,
+            _default_gate_config,
+        )
+        from src.niche.profiles import get_calibration_profile
+        from web.storage import insert_magnetism_scan
+
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Internal Audit Brand", "https://internal-audit.test")
+            run_id = store.create_run(
+                brand_id,
+                "Internal Audit Brand",
+                "https://internal-audit.test",
+                use_llm=True,
+                use_social=True,
+            )
+            features_by_dim = self._audit_feature_fixture(omit_coherencia=fallback)
+            engine = ScoringEngine()
+            brand_score = engine.score_brand(
+                "https://internal-audit.test",
+                "Internal Audit Brand",
+                features_by_dim,
+                unavailable_dimensions=set(),
+            )
+            store.save_features(run_id, features_by_dim)
+            store.save_scores(
+                run_id,
+                BrandScore(
+                    url="https://internal-audit.test",
+                    brand_name="Internal Audit Brand",
+                    dimensions=brand_score.dimensions,
+                    composite_score=brand_score.composite_score,
+                ),
+            )
+            gate_config = _default_gate_config()
+            store.upsert_gate_config(gate_config)
+            fingerprint = _compute_scoring_state_fingerprint(
+                dimensions_content=DIMENSIONS_PATH.read_text(encoding="utf-8"),
+                engine_content=ENGINE_PATH.read_text(encoding="utf-8"),
+                gate_config=gate_config,
+                calibration_profile="base",
+                calibration_profile_config=get_calibration_profile("base"),
+            )
+            store.save_run_audit(
+                run_id,
+                {
+                    "gate_config": gate_config,
+                    "scoring_state_fingerprint": fingerprint,
+                },
+            )
+
+            if fingerprint_only_drift:
+                store.conn.execute(
+                    "UPDATE run_audits SET scoring_state_fingerprint = ? WHERE run_id = ?",
+                    ("legacy-stale-fingerprint", run_id),
+                )
+                store.conn.commit()
+
+            artifact = {
+                "run_id": run_id,
+                "brand_name": "Internal Audit Brand",
+                "url": "https://internal-audit.test",
+                "composite_score": brand_score.composite_score,
+                "dimensions": brand_score.breakdown,
+                "partial_dimensions": [],
+                "partial_score": False,
+            }
+            artifact_path = Path(self.db).with_name(f"internal-audit-{run_id}.json")
+            artifact_path.write_text(json.dumps(artifact, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            store.finalize_run(
+                run_id,
+                brand_score.composite_score,
+                True,
+                True,
+                str(artifact_path),
+                "Internal Audit Brand summary.",
+            )
+
+            if reviewed_score is not None:
+                store.save_reviewed_score(
+                    run_id,
+                    reviewed_composite_score=reviewed_score,
+                    reason="Human review confirmed the score should be displayed differently.",
+                    evidence_refs=["https://internal-audit.test"],
+                    reviewer="reviewer-a",
+                    affected_dimensions=["presencia", "diferenciacion"],
+                    review_status="adjusted",
+                )
+
+            if drift:
+                store.conn.execute(
+                    """
+                    UPDATE features
+                    SET value = ?
+                    WHERE run_id = ? AND dimension_name = ? AND feature_name = ?
+                    """,
+                    (5.0, run_id, "presencia", "web_presence"),
+                )
+                store.conn.commit()
+
+            snapshot = store.get_run_snapshot(run_id)
+            payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+            payload["source_run_id"] = run_id
+            scan_id = insert_magnetism_scan(
+                brand_name=payload["brand_name"],
+                url=payload["url"],
+                magnetism_score=payload["magnetism_score"],
+                coherence_score=payload["coherence_score"],
+                quadrant=payload["quadrant"],
+                raw_payload=json.dumps(payload),
+                source_run_id=run_id,
+            )
+            return scan_id, run_id
+        finally:
+            store.close()
+
+    def test_internal_audit_route_renders_for_valid_computed_score(self):
+        scan_id, _ = self._seed_internal_audit_scan()
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Internal score audit", response.text)
+        self.assertIn("Score integrity", response.text)
+        self.assertIn("valid", response.text)
+        self.assertIn("Score replay is valid. Persisted, recomputed and artifact scores match.", response.text)
+        self.assertIn("Score status", response.text)
+        self.assertIn("Display decision", response.text)
+        self.assertIn("Recommended action", response.text)
+        self.assertIn("Fingerprint status", response.text)
+        self.assertIn("Display source", response.text)
+        self.assertIn("computed", response.text)
+        self.assertIn("TLDR v2 internal summary", response.text)
+        self.assertIn("Computed score", response.text)
+
+    def test_internal_audit_route_shows_reviewed_score_when_present(self):
+        scan_id, _ = self._seed_internal_audit_scan(reviewed_score=78.0)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Reviewed score", response.text)
+        self.assertIn("78.0/100", response.text)
+        self.assertIn("reviewed", response.text)
+        self.assertIn("A reviewed score is available and is used for display.", response.text)
+
+    def test_internal_audit_route_blocks_drift_from_definitive_display(self):
+        scan_id, _ = self._seed_internal_audit_scan(drift=True)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("blocked", response.text)
+        self.assertIn("technical_review", response.text)
+        self.assertIn("Persisted score values differ from recomputed scoring data. Do not use as definitive.", response.text)
+        self.assertIn("Display is blocked for internal use.", response.text)
+
+    def test_internal_audit_route_distinguishes_fingerprint_only_mismatch(self):
+        scan_id, _ = self._seed_internal_audit_scan(fingerprint_only_drift=True)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("blocked", response.text)
+        self.assertIn("technical_review", response.text)
+        self.assertIn(
+            "Score values match persisted data, but the scoring fingerprint differs from the current config. Treat as legacy/config mismatch, not data tampering.",
+            response.text,
+        )
+
+    def test_internal_audit_route_warns_on_fallback_50(self):
+        scan_id, _ = self._seed_internal_audit_scan(fallback=True)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("neutral_fallback_dimension", response.text)
+        self.assertIn("Neutral fallback 50.0 was used for: coherencia.", response.text)
+        self.assertIn("fallback", response.text)
+
+    def test_client_tldr_v2_preview_uses_reviewed_score_without_internal_jargon(self):
+        scan_id, _ = self._seed_internal_audit_scan(reviewed_score=78.0)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Client TLDR v2", response.text)
+        self.assertIn("Reviewed score", response.text)
+        self.assertIn("78.0<span>/100</span>", response.text)
+        self.assertIn("CORE PURPOSE", response.text)
+        self.assertIn("MISSION", response.text)
+        self.assertIn("VISION", response.text)
+        self.assertIn("Credibility support", response.text)
+        self.assertIn("Strategic tensions", response.text)
+        self.assertIn("Validation questions", response.text)
+        self.assertIn("diagnosis", response.text)
+        self.assertNotIn("fingerprint", response.text.lower())
+        self.assertNotIn("replay", response.text.lower())
+        self.assertNotIn("drift", response.text.lower())
+        self.assertNotIn("provenance", response.text.lower())
+
+    def test_client_tldr_v2_preview_surfaces_fallbacks_and_preserves_nine_blocks(self):
+        scan_id, _ = self._seed_internal_audit_scan(fallback=True)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=es")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("TLDR v2 para cliente", response.text)
+        self.assertIn("Score calculado", response.text)
+        self.assertIn("PROPÓSITO CENTRAL", response.text)
+        self.assertIn("MAGNETISMO", response.text)
+        self.assertIn("PROPUESTA DE VALOR", response.text)
+        self.assertIn("MISIÓN", response.text)
+        self.assertIn("VISIÓN", response.text)
+        self.assertIn("Soporte de credibilidad", response.text)
+        self.assertIn("Tensiones estratégicas", response.text)
+        self.assertIn("Preguntas de validación", response.text)
+        self.assertIn("diagnóstico", response.text)
+        self.assertIn("señales de respaldo", response.text.lower())
+        self.assertNotIn("fingerprint", response.text.lower())
+        self.assertNotIn("replay", response.text.lower())
+        self.assertNotIn("drift", response.text.lower())
+        self.assertNotIn("provenance", response.text.lower())
+
+    def test_client_tldr_v2_helper_uses_llm_input_and_preserves_review_only_exclusion(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "score_reading": {
+                "status": "reviewed",
+                "label": "Reviewed score",
+                "note": "A human-reviewed score is available for display.",
+                "value": 78.0,
+                "confidence": "high",
+            },
+            "tldr_brand3_v2": {
+                key: {
+                    "block": key,
+                    "question": "What is the clearest visible purpose behind the brand?",
+                    "answer": f"{key} reading for clients.",
+                    "claim_type": "inferred" if key in {"mission", "vision"} else "declared",
+                    "mode": "interpreted_from_discourse" if key in {"mission", "vision"} else "literal",
+                    "confidence": "low" if key in {"mission", "vision"} else "high",
+                    "reasoning": "Grounded in the evidence set.",
+                    "evidence_refs": ["https://internal-audit.test"],
+                    "caveat": "Treat as a working read." if key in {"mission", "vision"} else "",
+                    "validation_question": "What evidence shows this today?" if key in {"mission", "vision"} else "",
+                    "human_review_recommended": key in {"mission", "vision"},
+                }
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": {
+                    "status": "partial",
+                    "reading": "The reading is useful, but some parts still rely on partial signals.",
+                    "evidence_refs": ["https://internal-audit.test"],
+                },
+                "strategic_tensions": ["The visible promise still asks for more proof."],
+                "validation_questions": ["What evidence shows this today?"],
+                "diagnosis": "The client reading combines observed evidence with a human-reviewed score.",
+                "limitations": ["Some score signals still rely on support-level evidence."],
+            },
+        }
+
+        result = build_client_tldr_v2(
+            brand_name="Internal Audit Brand",
+            url="https://internal-audit.test",
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang="en",
+            analyzer=fake_llm,
+        )
+
+        self.assertEqual(result["generation_mode"], "llm_client_v2")
+        self.assertEqual(result["score_reading"]["status"], "reviewed")
+        self.assertIn("score_state", fake_llm.captured_user)
+        self.assertIn("perceptual_hints", fake_llm.captured_user)
+        self.assertIn("https://internal-audit.test", fake_llm.captured_user)
+        self.assertNotIn("meta4_english", fake_llm.captured_user)
+        self.assertIn("mission", result["tldr_brand3_v2"])
+        self.assertEqual(result["tldr_brand3_v2"]["mission"]["validation_question"], "What evidence shows this today?")
+        self.assertEqual(result["tldr_brand3_v2"]["mission"]["caveat"], "Treat as a working read.")
+        self.assertIn("https://internal-audit.test", json.dumps(result["evidence_refs"]))
+        self.assertNotIn("fingerprint", json.dumps(result).lower())
+
+    def test_client_tldr_v2_route_can_render_llm_caveats_and_questions_without_audit_jargon(self):
+        scan_id, _ = self._seed_internal_audit_scan(reviewed_score=78.0)
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "score_reading": {
+                "status": "reviewed",
+                "label": "Reviewed score",
+                "note": "A human-reviewed score is available for display.",
+                "value": 78.0,
+                "confidence": "high",
+            },
+            "tldr_brand3_v2": {
+                key: {
+                    "block": key,
+                    "question": "What is the clearest visible purpose behind the brand?",
+                    "answer": f"{key} reading for clients.",
+                    "claim_type": "inferred" if key in {"mission", "vision"} else "declared",
+                    "mode": "interpreted_from_discourse" if key in {"mission", "vision"} else "literal",
+                    "confidence": "low" if key in {"mission", "vision"} else "high",
+                    "reasoning": "Grounded in the evidence set.",
+                    "evidence_refs": ["https://internal-audit.test"],
+                    "caveat": "Treat as a working read." if key in {"mission", "vision"} else "",
+                    "validation_question": "What evidence shows this today?" if key in {"mission", "vision"} else "",
+                    "human_review_recommended": key in {"mission", "vision"},
+                }
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": {
+                    "status": "partial",
+                    "reading": "The reading is useful, but some parts still rely on partial signals.",
+                    "evidence_refs": ["https://internal-audit.test"],
+                },
+                "strategic_tensions": ["The visible promise still asks for more proof."],
+                "validation_questions": ["What evidence shows this today?"],
+                "diagnosis": "The client reading combines observed evidence with a human-reviewed score.",
+                "limitations": ["Some score signals still rely on support-level evidence."],
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._default_analyzer",
+            return_value=fake_llm,
+        ):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Client TLDR v2", response.text)
+        self.assertIn("Reviewed score", response.text)
+        self.assertIn("78.0<span>/100</span>", response.text)
+        self.assertIn("Treat as a working read.", response.text)
+        self.assertIn("What evidence shows this today?", response.text)
+        self.assertIn("The client reading combines observed evidence with a human-reviewed score.", response.text)
+        self.assertIn("CORE PURPOSE", response.text)
+        self.assertIn("MISSION", response.text)
+        self.assertIn("VISION", response.text)
+        self.assertNotIn("fingerprint", response.text.lower())
+        self.assertNotIn("replay", response.text.lower())
+        self.assertNotIn("drift", response.text.lower())
+        self.assertNotIn("provenance", response.text.lower())
+
+    def test_legacy_tldr_route_output_remains_unchanged(self):
+        scan_id, _ = self._seed_internal_audit_scan()
+
+        detail = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en")
+
+        self.assertEqual(detail.status_code, 200)
+        self.assertIn("TLDR", detail.text)
+        self.assertNotIn("Internal score audit", detail.text)
+        self.assertNotIn("TLDR v2 internal summary", detail.text)
+        self.assertNotIn("Fingerprint details", detail.text)
+
     def test_scanner_api_can_queue_from_audit_run_and_expose_sections(self):
         from src.models.brand import BrandScore, DimensionScore
         from web.storage import insert_magnetism_scan

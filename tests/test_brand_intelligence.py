@@ -194,6 +194,42 @@ def test_provider_signal_adapters_feed_identity_resolution() -> None:
     assert {item["source"] for item in resolution.selected_candidate.evidence} == {"domain", "owned_web", "linkedin"}
 
 
+def test_conflicting_identity_signals_stay_provisional_and_preserve_evidence() -> None:
+    seed = BrandSeed("https://example.com", kind="url", provided_name="ExampleAI")
+    resolution = resolve_brand_identity_from_signals(
+        seed,
+        [
+            signal
+            for signal in [
+                domain_identity_signal("https://example.com", provided_name="ExampleAI"),
+                owned_web_identity_signal(
+                    {
+                        "title": "Another Brand | Official site",
+                        "description": "Another Brand builds AI tools for operations teams.",
+                    }
+                ),
+                search_result_identity_signal(
+                    {
+                        "title": "Other Brand - reviews and competitors",
+                        "text": "Other Brand is an AI tool used by operations teams.",
+                    }
+                ),
+            ]
+            if signal is not None
+        ],
+    )
+
+    assert resolution.status == "provisional"
+    assert resolution.selected_candidate is not None
+    assert resolution.selected_candidate.name == "Another Brand"
+    assert resolution.selected_candidate.confidence < 0.82
+    assert "verified_entity_resolution" in resolution.missing
+    assert "canonical_owned_surface" in resolution.missing
+    assert "requires_multichannel_validation" in resolution.limitations
+    assert {candidate.name for candidate in resolution.candidates} == {"Another Brand", "Other Brand"}
+    assert len(resolution.selected_candidate.evidence) == 1
+
+
 def test_identity_bakeoff_scores_known_and_unknown_cases_separately() -> None:
     cases = [
         BrandIdentityBakeoffCase(

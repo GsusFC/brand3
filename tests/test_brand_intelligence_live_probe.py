@@ -6,7 +6,11 @@ from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlparse
 from unittest.mock import patch
 
-from scripts.brand_intelligence_live_probe import _collect_contextdev_markdown, _collect_tinyfish_fetch
+from scripts.brand_intelligence_live_probe import (
+    _collect_contextdev_markdown,
+    _collect_tinyfish_fetch,
+    _web_data_payload,
+)
 
 
 class _Response:
@@ -60,6 +64,39 @@ def test_tinyfish_fetch_maps_result_to_web_data(monkeypatch) -> None:
     assert data.images == ["https://www.example.com/logo.png"]
     assert data.load_time_ms == 123
     assert data.error == ""
+
+
+def test_tinyfish_fetch_preserves_original_input_url_and_canonical_final_url(monkeypatch) -> None:
+    monkeypatch.setenv("TINYFISH_API_KEY", "test-key")
+
+    def fake_urlopen(request, timeout):
+        return _Response(
+            {
+                "results": [
+                    {
+                        "url": "https://example.com",
+                        "final_url": "https://www.example.com",
+                        "title": "Example",
+                        "description": "Example description",
+                        "text": "# Example\nUseful page copy.",
+                        "links": ["https://www.example.com/about"],
+                        "image_links": ["https://www.example.com/logo.png"],
+                        "latency_ms": 123,
+                    }
+                ],
+                "errors": [],
+            }
+        )
+
+    with patch("scripts.brand_intelligence_live_probe.urlopen", fake_urlopen):
+        data = _collect_tinyfish_fetch("https://example.com")
+
+    downstream_payload = _web_data_payload(data)
+
+    assert data.url == "https://example.com"
+    assert data.canonical_url == "https://www.example.com"
+    assert downstream_payload["url"] == "https://www.example.com"
+    assert data.canonical_url != data.url
 
 
 def test_tinyfish_fetch_returns_structured_error(monkeypatch) -> None:

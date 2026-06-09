@@ -6,11 +6,10 @@ layer over the existing features, evidence and run-level data quality.
 
 from __future__ import annotations
 
-import ast
-import json
 from typing import Any
 
 from src.dimensions import DIMENSIONS
+from .raw_evidence import parse_raw_feature_value
 
 _EVIDENCE_KEYS = (
     "evidence",
@@ -195,18 +194,7 @@ def _has_feature_evidence(record: dict[str, Any]) -> bool:
 
 
 def _parse_raw(raw_value: Any) -> Any:
-    if isinstance(raw_value, (dict, list)):
-        return raw_value
-    if not isinstance(raw_value, str) or not raw_value.strip():
-        return None
-    try:
-        return json.loads(raw_value)
-    except Exception:
-        pass
-    try:
-        return ast.literal_eval(raw_value)
-    except Exception:
-        return raw_value
+    return parse_raw_feature_value(raw_value)
 
 
 def _as_float(value: Any) -> float:

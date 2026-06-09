@@ -176,6 +176,8 @@ class ScoringEngine:
         if has_data:
             raw_score = (weighted_sum / total_weight)
         else:
+            # Keep the neutral numeric default for missing data. Readiness logic
+            # is responsible for deciding whether a 50.0 represents fallback risk.
             raw_score = 50.0  # neutral if no data
 
         # For rule checks, merge all features so cross-dimension rules work

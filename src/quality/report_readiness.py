@@ -7,12 +7,11 @@ classifies whether existing analysis material is fit for an editorial report.
 
 from __future__ import annotations
 
-import ast
 import copy
-import json
 from typing import Any
 
 from src.dimensions import DIMENSIONS
+from .raw_evidence import parse_raw_feature_value
 
 REPORT_MODE_PUBLISHABLE = "publishable_brand_report"
 REPORT_MODE_TECHNICAL = "technical_diagnostic"
@@ -221,6 +220,9 @@ def _fallback_detected_by_dimension(
         no_evidence = _dimension_evidence_count(evidence_summary, dimension_name) <= 0
         confidence = confidence_summary.get(dimension_name) or {}
         confidence_reasons = confidence.get("confidence_reason") or []
+        # A 50.0 only signals fallback when the score is paired with weak or
+        # absent support. The numeric score itself remains neutral and is not
+        # treated as evidence of average quality.
         neutral_without_support = (
             score == 50.0
             and (
@@ -353,18 +355,7 @@ def _has_entity_relevance_signal(evidence_summary: dict[str, Any]) -> bool:
 
 
 def _parse_raw(raw_value: Any) -> Any:
-    if isinstance(raw_value, (dict, list)):
-        return raw_value
-    if not isinstance(raw_value, str) or not raw_value.strip():
-        return None
-    try:
-        return json.loads(raw_value)
-    except Exception:
-        pass
-    try:
-        return ast.literal_eval(raw_value)
-    except Exception:
-        return raw_value
+    return parse_raw_feature_value(raw_value)
 
 
 def _optional_float(value: Any) -> float | None:

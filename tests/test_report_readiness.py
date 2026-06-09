@@ -198,6 +198,52 @@ class ReportReadinessTests(unittest.TestCase):
         self.assertEqual(result["report_mode"], REPORT_MODE_TECHNICAL)
         self.assertTrue(result["fallback_detected"]["coherencia"])
 
+    def test_real_evidence_with_fifty_score_is_not_treated_as_fallback(self):
+        scores = _scores(80)
+        scores["coherencia"] = 50.0
+        features = {
+            "coherencia": {
+                "visual_consistency": {"value": 72, "source": "web_scrape", "raw_value": {"evidence": ["https://example.com"]}},
+                "messaging_consistency": {"value": 68, "source": "web_scrape", "raw_value": {"quotes": ["Clear message"]}},
+                "tone_consistency": {"value": 70, "source": "llm_analysis", "raw_value": {"examples": ["Direct tone"]}},
+                "cross_channel_coherence": {"value": 66, "source": "exa", "raw_value": {"evidence_snippet": ["Cross-channel"]}},
+            },
+            "presencia": {
+                "web_presence": {"value": 88, "source": "web_scrape"},
+                "social_footprint": {"value": 74, "source": "social_media"},
+                "search_visibility": {"value": 80, "source": "exa"},
+                "directory_presence": {"value": 30, "source": "exa"},
+            },
+        }
+
+        result = evaluate_report_readiness(
+            scores=scores,
+            evidence_summary=_evidence(count=3),
+            confidence_summary=_confidence(),
+            features_by_dimension=features,
+        )
+
+        self.assertEqual(result["dimension_states"]["coherencia"], "ready")
+        self.assertFalse(result["fallback_detected"].get("coherencia"))
+        self.assertEqual(result["report_mode"], REPORT_MODE_PUBLISHABLE)
+
+    def test_fifty_score_without_evidence_is_not_publishable(self):
+        scores = _scores(80)
+        scores["coherencia"] = 50.0
+        evidence = _evidence(count=3)
+        evidence["by_dimension"]["coherencia"] = 0
+        confidence = _confidence()
+        confidence["coherencia"] = {"status": "insufficient_data", "confidence": 0.1}
+
+        result = evaluate_report_readiness(
+            scores=scores,
+            evidence_summary=evidence,
+            confidence_summary=confidence,
+        )
+
+        self.assertEqual(result["dimension_states"]["coherencia"], DIMENSION_NOT_EVALUABLE)
+        self.assertIn("core_dimensions_not_evaluable", result["blockers"])
+
     def test_readiness_output_does_not_modify_scores(self):
         scores = _scores(67)
         original = copy.deepcopy(scores)

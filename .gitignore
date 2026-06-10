@@ -71,3 +71,5 @@ graphify-out/.graphify_root
 # examples/visual_signature are source fixtures/manifests; others are generated
 # screenshots/corpora. Do not bulk-ignore or delete them until the artifact
 # policy is finalized in docs/PR review.
+
+_local_session_archive/

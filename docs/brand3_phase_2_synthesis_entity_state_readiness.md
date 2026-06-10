@@ -45,6 +45,8 @@ That means the issue is no longer speculative. Brand3 needs an offline compositi
 
 This is enough signal to move from manual fixture exploration to an offline builder prototype.
 
+The Iris and Watermelon JSON outputs under `examples/reports/narrative_harness/entity_state/` are now best treated as legacy snapshots. The current contract examples for related-surface metadata are the manual inputs in `examples/reports/narrative_harness/entity_state/inputs/`.
+
 ## 1. Stable Failure Pattern
 
 The stable pattern is not low-quality data.
@@ -243,19 +245,19 @@ The first builder should keep this conservative:
 
 It should not infer brand intent or market strategy.
 
-### `entity_aliases.observed_related_surfaces`
+### `entity_resolution.related_surfaces`
 
 Required.
 
 All three runs expose at least some related surfaces. In Iris and Watermelon this becomes central.
 
-The field name should remain cautious:
+The packet field should remain cautious:
 
 ```text
-observed_related_surfaces
+entity_resolution.related_surfaces
 ```
 
-not verified aliases.
+It may still be mirrored into `entity_aliases.observed_related_surfaces` for compatibility, but the canonical state lives in the packet field.
 
 ### `owned_claim_density`
 
@@ -477,7 +479,7 @@ It should build:
 - `status`
 - `metadata`
 - `primary_entity_signal`
-- `entity_aliases.observed_related_surfaces`
+- `entity_resolution.related_surfaces`
 - `owned_claim_density`
 - `source_ownership_summary`
 - `repeated_opener_budget`

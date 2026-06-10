@@ -219,8 +219,7 @@ The goal should focus on:
 - case-specific `global_caveat`,
 - stronger `state_first_finding_plan`,
 - better use of `primary_entity_signal`,
-- better use of `observed_related_surfaces`,
+- better use of `entity_resolution.related_surfaces`,
 - better differentiation between entity ambiguity, fallback repetition, and healthy proof-distribution cases.
 
 It should not add LLM prose generation yet.
-

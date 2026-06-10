@@ -113,6 +113,14 @@ Allowed uses:
 - context confidence,
 - related domains or surfaces if explicitly collected.
 
+If upstream metadata does not provide explicit related-surface information, the
+builder must leave related surfaces empty or marked `unknown`. The preferred
+upstream field is `entity_resolution.related_surfaces`; the builder mirrors it
+into `entity_aliases.observed_related_surfaces` only for legacy compatibility
+with older fixtures and consumers.
+The builder must not infer related surfaces from search results, name
+similarity, or unreviewed evidence URLs.
+
 Forbidden uses:
 
 - inferring strategic intent,
@@ -216,11 +224,12 @@ Purpose: record related surfaces without implying verified equivalence.
 Required fields:
 
 - `primary`
-- `observed_related_surfaces`
+- `observed_related_surfaces` (legacy compatibility alias mirrored from the packet field)
 - `needs_review`
 - `confidence`
 
-The builder may populate `observed_related_surfaces` only from explicit URLs, domains, metadata, evidence, or known diagnostics. It must not infer corporate ownership from name similarity alone.
+The builder may mirror `entity_resolution.related_surfaces` into `observed_related_surfaces` for compatibility only when explicit surfaces are present. It must not infer corporate ownership from name similarity alone.
+`entity_resolution.related_surfaces` remains the canonical input.
 
 #### `state.owned_claim_density`
 
@@ -673,9 +682,9 @@ Given diagnostics with repeated caveats but no explicit strategic claim, the bui
 
 Given LaunchDarkly-like evidence totals and warning diagnostics, the builder may show evidence-binding pressure but must not force `primary_tension` unless explicit source text exists.
 
-### Multi-surface cases activate observed related surfaces
+### Multi-surface cases activate packet-related surfaces
 
-Given Iris-like or Watermelon-like explicit related domains, the builder populates `observed_related_surfaces` and sets `needs_review: true` without claiming verified equivalence.
+Given Iris-like or Watermelon-like explicit related domains, the builder populates `entity_resolution.related_surfaces`, mirrors them into `observed_related_surfaces` for compatibility, and sets `needs_review: true` without claiming verified equivalence.
 
 ### Missing evidence URLs become coverage metrics
 

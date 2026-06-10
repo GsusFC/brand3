@@ -1,5 +1,5 @@
 {
-  "version": "observed_related_surfaces.input.v0",
+  "version": "entity_resolution.related_surfaces.input.v0",
   "status": {
     "offline_only": true,
     "manual_review": true,
@@ -16,7 +16,8 @@
     "input_contract": "docs/brand3_observed_related_surfaces_input_contract.md",
     "run_id": 77
   },
-  "observed_related_surfaces": [
+  "entity_resolution": {
+    "related_surfaces": [
     {
       "surface": "irisdesign.in",
       "relation_type": "ambiguous_name_match",
@@ -83,7 +84,8 @@
       "source": "manual_review",
       "notes": "Included as design-name collision pressure only. This does not assert relation to irisdesign.dev."
     }
-  ],
+    ]
+  },
   "excluded_surfaces": [
     {
       "surface": "several other Iris-design or Iris-AI surfaces",

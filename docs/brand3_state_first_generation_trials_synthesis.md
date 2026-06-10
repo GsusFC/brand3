@@ -14,6 +14,8 @@ State-First Narrative Generation Research
 
 They are not enough to justify production use.
 
+For related-surface provenance, the Iris and Watermelon JSON outputs under `examples/reports/narrative_harness/entity_state/` and `examples/reports/narrative_harness/state_first_generation_v0/` are legacy snapshots. The current contract examples are the manual inputs under `examples/reports/narrative_harness/entity_state/inputs/`, which now write `entity_resolution.related_surfaces`.
+
 The result is stronger than a style improvement. Across the trials, the useful change is that findings are governed by shared state before dimension prose is written:
 
 - entity state,
@@ -177,7 +179,7 @@ Why:
 
 Remaining risk:
 
-- without explicit `observed_related_surfaces`, a future generator could infer an ecosystem that is not proven.
+  - without explicit `entity_resolution.related_surfaces`, a future generator could infer an ecosystem that is not proven.
 
 ### LaunchDarkly
 
@@ -256,7 +258,7 @@ Minimum input:
 - payload-level Narrative Harness diagnostic,
 - render-aware diagnostic,
 - EntityNarrativeState v0,
-- optional reviewed `observed_related_surfaces`,
+- optional reviewed `entity_resolution.related_surfaces`,
 - optional base dossier/snapshot metadata.
 
 Minimum output:
@@ -321,4 +323,3 @@ Specify Lab-Only State-First Findings Generator v0
 ```
 
 That goal should define a deterministic input/output contract and a strictly offline workflow for producing candidate artifacts. It should not implement runtime integration.
-

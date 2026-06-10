@@ -14,7 +14,7 @@ The current architecture has a useful separation:
 - render-aware diagnostics measure visible report risk,
 - rendering hides only a narrow generic `Decision space` surface,
 - `EntityNarrativeState` compiles offline composition state from existing diagnostics,
-- `observed_related_surfaces` supplies explicit review metadata without entity inference.
+- `entity_resolution.related_surfaces` supplies explicit review metadata without entity inference, with `observed_related_surfaces` retained only as legacy compatibility.
 
 The system is not yet overgrown, but it should now enter a controlled hardening/freeze phase. The next phase should not add more conceptual layers. It should stabilize contracts, reduce duplication, and protect invariants.
 
@@ -196,7 +196,7 @@ Compiles:
 - empty contradiction candidates unless explicit future support exists,
 - suggested-only compression candidates.
 
-### Observed Related Surfaces Input Contract
+### Related Surfaces Input Contract
 
 Location:
 
@@ -209,8 +209,9 @@ Role:
 
 - explicit input contract for entity/surface ambiguity,
 - prevents unsafe inference from evidence URLs or name similarity,
-- allows manual or future discovery-derived related surfaces,
-- preserves relation type, confidence, source, evidence, and human-review flags.
+- now writes the canonical packet field `entity_resolution.related_surfaces`,
+- preserves relation type, confidence, source, evidence, and human-review flags,
+- keeps `observed_related_surfaces` only as a compatibility alias for older snapshots.
 
 Current manual inputs:
 

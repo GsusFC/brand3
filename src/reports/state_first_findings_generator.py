@@ -201,7 +201,7 @@ def _strong_pressure(
     visible_metrics: dict[str, Any],
 ) -> bool:
     aliases = _dict(state.get("entity_aliases"))
-    related = aliases.get("observed_related_surfaces")
+    related = _related_surfaces(state)
     if isinstance(related, list) and related:
         return True
     if aliases.get("needs_review") is True:
@@ -238,7 +238,7 @@ def _pressure_profile(
     state: dict[str, Any],
 ) -> dict[str, str]:
     aliases = _dict(state.get("entity_aliases"))
-    related = aliases.get("observed_related_surfaces")
+    related = _related_surfaces(state)
     related_count = len(related) if isinstance(related, list) else 0
     entity_needs_review = aliases.get("needs_review") is True
     primary_signal = _dict(state.get("primary_entity_signal"))
@@ -348,12 +348,13 @@ def _baseline_summary(
 
 def _shared_entity_state(state: dict[str, Any]) -> dict[str, Any]:
     aliases = _dict(state.get("entity_aliases"))
-    related = aliases.get("observed_related_surfaces")
+    related = _related_surfaces(state)
     return {
         "primary_entity_signal": state.get("primary_entity_signal") or "unknown",
         "entity_ambiguity_status": (
             "review_gated" if aliases.get("needs_review") is True else "not_explicit"
         ),
+        "related_surfaces": related if isinstance(related, list) else [],
         "observed_related_surfaces": related if isinstance(related, list) else [],
         "owned_claim_density": state.get("owned_claim_density") or {},
         "evidence_url_coverage": state.get("evidence_url_coverage") or {},
@@ -390,7 +391,7 @@ def _global_uncertainty_model(
     evidence_map: dict[str, Any],
 ) -> dict[str, Any]:
     aliases = _dict(state.get("entity_aliases"))
-    has_related = bool(aliases.get("observed_related_surfaces"))
+    has_related = bool(_related_surfaces(state))
     return {
         "can_state_as_observation": [
             "baseline findings and attached evidence URLs can be inspected",
@@ -610,7 +611,7 @@ def _has_meaningful_evidence_map(findings: list[dict[str, Any]]) -> bool:
 
 def _ambiguity_is_explicit_or_absent(state: dict[str, Any]) -> bool:
     aliases = _dict(state.get("entity_aliases"))
-    related = aliases.get("observed_related_surfaces")
+    related = _related_surfaces(state)
     if isinstance(related, list) and related:
         return aliases.get("needs_review") is True
     primary_tension = _dict(state.get("primary_tension"))
@@ -619,16 +620,28 @@ def _ambiguity_is_explicit_or_absent(state: dict[str, Any]) -> bool:
 
 def _related_surfaces_are_reviewed(state: dict[str, Any]) -> bool:
     aliases = _dict(state.get("entity_aliases"))
-    related = aliases.get("observed_related_surfaces")
+    related = _related_surfaces(state)
     if not isinstance(related, list) or not related:
         return True
     for surface in related:
         if not isinstance(surface, dict):
             return False
         source = str(surface.get("source") or "")
-        if source not in {"manual_review", "entity_discovery", "deterministic_domain_rule"}:
+        relation_type = str(surface.get("relation_type") or "")
+        if source:
+            if source not in {"manual_review", "entity_discovery", "deterministic_domain_rule"}:
+                return False
+            if surface.get("requires_human_review") is not True and source != "deterministic_domain_rule":
+                return False
+            continue
+        if relation_type not in {
+            "same_root_surface",
+            "ambiguous_name_match",
+            "repository",
+            "marketplace_listing",
+        }:
             return False
-        if surface.get("requires_human_review") is not True and source != "deterministic_domain_rule":
+        if surface.get("requires_human_review") is not True and relation_type != "same_root_surface":
             return False
     return True
 
@@ -756,8 +769,7 @@ def _pressure_subtype(
 
 
 def _related_surface_relation_types(state: dict[str, Any]) -> list[str]:
-    aliases = _dict(state.get("entity_aliases"))
-    related = aliases.get("observed_related_surfaces")
+    related = _related_surfaces(state)
     if not isinstance(related, list):
         return []
     return [
@@ -765,6 +777,20 @@ def _related_surface_relation_types(state: dict[str, Any]) -> list[str]:
         for surface in related
         if isinstance(surface, dict) and surface.get("relation_type")
     ]
+
+
+def _related_surfaces(state: dict[str, Any]) -> list[dict[str, Any]]:
+    packet_related = _nested_get(state, ("entity_resolution", "related_surfaces"))
+    if isinstance(packet_related, list) and packet_related:
+        return [item for item in packet_related if isinstance(item, dict)]
+    aliases = _dict(state.get("entity_aliases"))
+    legacy_related = aliases.get("observed_related_surfaces")
+    if isinstance(legacy_related, list) and legacy_related:
+        return [item for item in legacy_related if isinstance(item, dict)]
+    nested_related = _nested_get(state, ("observed_related_surfaces",))
+    if isinstance(nested_related, list) and nested_related:
+        return [item for item in nested_related if isinstance(item, dict)]
+    return []
 
 
 def _caveat_strategy(planning_profile: dict[str, str]) -> str:

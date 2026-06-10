@@ -86,9 +86,11 @@ The builder correctly avoids creating a false `primary_tension` beyond payload t
 
 Iris activates the expected owned-claim and caveat budgets, and preserves the payload tension as review-gated.
 
-However, the builder does not surface the broader Iris related-domain problem described in the Phase 2 audit. That is because those related surfaces live in the memo/audit narrative, not in the payload diagnostics or normalized snapshot metadata passed to the builder.
+However, the builder does not surface the broader Iris related-domain problem described in the Phase 2 audit unless the upstream snapshot carries explicit related-surface metadata. In the current architecture that metadata should come from `entity_resolution.related_surfaces`; `observed_related_surfaces` is only the legacy alias.
 
-This is a useful limitation. The builder is behaving conservatively, but the input contract is not yet rich enough to carry entity-discovery ambiguity into `observed_related_surfaces`.
+The live Iris fixture has been migrated to the packet field, so this limitation is now only a property of older historical outputs or alias-only inputs.
+
+This is a useful limitation. The builder is behaving conservatively, but the input contract is only rich enough when the packet or compatibility alias supplies explicit related-surface entries.
 
 ### Watermelon
 
@@ -106,7 +108,9 @@ The Phase 2 memo identifies ecosystem complexity around:
 
 The builder output leaves `observed_related_surfaces` empty because the normalized snapshot did not provide an explicit related-surface list.
 
-That is the right failure mode for v0. It avoids treating third-party evidence URLs or name-adjacent domains as entity aliases. But it also means the builder cannot yet represent the most important Watermelon composition pressure unless the upstream data contract supplies explicit related surfaces.
+That is the right failure mode for v0. It avoids treating third-party evidence URLs or name-adjacent domains as entity aliases. But it also means the builder cannot yet represent the most important Watermelon composition pressure unless the upstream data contract supplies explicit related surfaces, ideally via `entity_resolution.related_surfaces`.
+
+The live Watermelon fixture now supplies that packet field explicitly; this paragraph remains as the historical explanation for the older alias-only outputs in this review set.
 
 ## Fields That Worked
 
@@ -190,7 +194,7 @@ Every item is marked `suggested_only: true`. No rewritten prose is generated.
 
 This is the main conservative field.
 
-The builder leaves it empty across all five outputs because the current inputs do not provide explicit related-surface metadata.
+The builder leaves it empty across all five outputs when the current inputs do not provide explicit related-surface metadata.
 
 That protects the system from a dangerous mistake:
 
@@ -202,7 +206,7 @@ But it also means Iris and Watermelon lose an important part of their Phase 2 pr
 
 Conclusion:
 
-`observed_related_surfaces` is correctly conservative, but currently underpowered.
+`observed_related_surfaces` is correctly conservative, but it is now best treated as a legacy compatibility alias for `entity_resolution.related_surfaces`.
 
 ### `primary_entity_signal`
 

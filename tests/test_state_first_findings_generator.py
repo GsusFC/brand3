@@ -90,7 +90,33 @@ def _render_diagnostic(caveat_total=0, fallback_total=0):
     }
 
 
-def _entity_state(*, related=False):
+def _entity_state(*, related=False, packet_related=False):
+    related_surfaces = [
+        {
+            "surface": "docs.example.com",
+            "relation_type": "developer_surface",
+            "relationship": "explicitly_related",
+            "confidence": "medium",
+            "evidence": ["manual review"],
+            "requires_human_review": True,
+            "source": "manual_review",
+        }
+    ] if related else []
+    packet_related_surfaces = [
+        {
+            "surface": "watermelon.ai",
+            "relation_type": "ambiguous_name_match",
+            "relationship": "unresolved",
+            "confidence": "unresolved",
+            "evidence": [
+                {
+                    "text": "entity resolution packet",
+                    "url": "https://example.com/packet",
+                }
+            ],
+            "requires_human_review": True,
+        }
+    ] if packet_related else []
     return {
         "version": "entity_narrative_state.v0",
         "status": {
@@ -111,19 +137,11 @@ def _entity_state(*, related=False):
             },
             "entity_aliases": {
                 "primary": "example.com",
-                "observed_related_surfaces": [
-                    {
-                        "surface": "docs.example.com",
-                        "relation_type": "developer_surface",
-                        "evidence": ["manual review"],
-                        "confidence": "medium",
-                        "requires_human_review": True,
-                        "source": "manual_review",
-                    }
-                ]
-                if related
-                else [],
-                "needs_review": related,
+                "observed_related_surfaces": related_surfaces,
+                "needs_review": related or packet_related,
+            },
+            "entity_resolution": {
+                "related_surfaces": packet_related_surfaces,
             },
             "owned_claim_density": {"level": "inactive", "safe_attribution_total": 0},
             "evidence_url_coverage": {
@@ -230,6 +248,20 @@ class StateFirstFindingsGeneratorTests(unittest.TestCase):
         self.assertIn("review-gated", result["generated_state_first_findings"]["global_caveat"])
         self.assertIn("related_surface_review_required", result["generation_decision"]["intervention_reasons"])
         self.assertEqual(result["generation_decision"]["pressure_profile"]["related_surface_pressure"], "low")
+
+    def test_entity_resolution_related_surfaces_select_strong_mode(self):
+        result = generate_state_first_findings_candidate(
+            _payload(),
+            payload_diagnostic=_diagnostic(),
+            render_diagnostic=_render_diagnostic(),
+            entity_state=_entity_state(packet_related=True),
+        )
+
+        self.assertEqual(result["generation_decision"]["mode"], "strong")
+        self.assertTrue(result["generation_decision"]["candidate_available"])
+        self.assertIn("related_surface_review_required", result["generation_decision"]["intervention_reasons"])
+        self.assertEqual(result["shared_entity_state"]["related_surfaces"][0]["surface"], "watermelon.ai")
+        self.assertEqual(result["shared_entity_state"]["observed_related_surfaces"][0]["surface"], "watermelon.ai")
 
     def test_fallback_repetition_selects_light_mode(self):
         result = generate_state_first_findings_candidate(

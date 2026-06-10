@@ -74,6 +74,35 @@ class StateFirstProseGeneratorTests(unittest.TestCase):
             result["state_first_findings_by_dimension"]["vitalidad"]["state_first_candidate"],
         )
 
+    def test_entity_resolution_related_surfaces_are_used_when_legacy_is_empty(self):
+        artifact = copy.deepcopy(_planning("iris"))
+        artifact["shared_entity_state"]["observed_related_surfaces"] = []
+        artifact["shared_entity_state"]["entity_resolution"] = {
+            "related_surfaces": [
+                {
+                    "surface": "irisdesign.in",
+                    "relation_type": "ambiguous_name_match",
+                    "relationship": "unresolved",
+                    "confidence": "unresolved",
+                    "evidence": [
+                        {
+                            "text": "entity resolution packet",
+                            "url": "https://example.com/packet",
+                        }
+                    ],
+                    "requires_human_review": True,
+                }
+            ]
+        }
+
+        result = generate_state_first_prose_candidate(artifact)
+
+        self.assertEqual(result["generation_frame"]["pressure_subtype"], "name_collision")
+        self.assertEqual(
+            result["shared_evidence_map"]["ambiguous_name_collision_surfaces"],
+            ["https://irisdesign.in/"],
+        )
+
     def test_watermelon_generates_ecosystem_candidate(self):
         result = generate_state_first_prose_candidate(_planning("watermelon"))
 

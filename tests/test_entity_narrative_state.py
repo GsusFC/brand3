@@ -202,6 +202,34 @@ class EntityNarrativeStateTests(unittest.TestCase):
         self.assertTrue(surfaces[0]["requires_human_review"])
         self.assertTrue(aliases["needs_review"])
 
+    def test_entity_resolution_related_surfaces_are_copied_through(self):
+        result = build_entity_narrative_state(
+            _payload({"presencia": [_finding("The packet carries reviewed adjacent surfaces.")]}),
+            payload_diagnostic=_payload_diagnostic(),
+            render_diagnostic=_render_diagnostic(),
+            snapshot={
+                "brand_name": "Watermelon",
+                "url": "https://watermelon.sh",
+                "entity_resolution": {
+                    "related_surfaces": [
+                        {
+                            "surface": "watermelon.ai",
+                            "relation_type": "adjacent_domain",
+                            "evidence": ["evidence packet"],
+                            "confidence": "medium",
+                            "requires_human_review": True,
+                            "source": "entity_resolution",
+                        }
+                    ]
+                },
+            },
+        )
+
+        aliases = result["state"]["entity_aliases"]
+        self.assertEqual([item["surface"] for item in aliases["observed_related_surfaces"]], ["watermelon.ai"])
+        self.assertEqual(aliases["observed_related_surfaces"][0]["source"], "entity_resolution")
+        self.assertTrue(aliases["needs_review"])
+
     def test_arbitrary_evidence_urls_are_ignored_as_related_surfaces(self):
         result = build_entity_narrative_state(
             _payload(

@@ -4,6 +4,8 @@ Date: 2026-05-16
 
 Scope: diagnostic comparison only. No prompts, scoring, generation, persisted payload format, Visual Signature code, or `EntityNarrativeState` work were changed.
 
+Note: this memo is about the report finding `typical_decision` field and its display modes. It is not describing the TLDR block contract, which is normalized elsewhere.
+
 ## Context
 
 The separate finding rendering prototype improved visible composition by moving `typical_decision` out of the main paragraph and into a secondary `Decision space` line.
@@ -186,7 +188,7 @@ It starts to answer architectural questions that probably belong to a future Nar
 
 ## Prompt Changes vs Display Changes
 
-The current evidence suggests both layers matter:
+The current evidence suggests both layers matter for report findings:
 
 - Prompt contract contributes to repeated `typical_decision` phrasing.
 - Rendering `Finding.prose` created the flattened paragraph problem.

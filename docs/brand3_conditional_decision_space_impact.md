@@ -4,6 +4,8 @@ Date: 2026-05-16
 
 Scope: rendering prototype evaluation only. No prompts, scoring, generation, persisted payload format, Visual Signature code, Narrative Harness runtime gate, or `EntityNarrativeState` work were changed.
 
+Note: this is a report finding rendering prototype. It affects `Finding.prose` display behavior, not the TLDR block contract itself.
+
 ## Prototype Summary
 
 The report renderer now applies a deterministic display-only heuristic before rendering `typical_decision` as `Decision space`.

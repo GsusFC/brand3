@@ -509,8 +509,14 @@ def _audited_surface(artifact: dict[str, Any], payload: dict[str, Any]) -> str:
 
 
 def _related_surfaces(state: dict[str, Any]) -> list[dict[str, Any]]:
+    packet_related = _nested_get(state, ("entity_resolution", "related_surfaces"))
+    if isinstance(packet_related, list) and packet_related:
+        return [item for item in packet_related if isinstance(item, dict)]
     related = state.get("observed_related_surfaces")
-    return [item for item in related if isinstance(item, dict)] if isinstance(related, list) else []
+    if isinstance(related, list) and related:
+        return [item for item in related if isinstance(item, dict)]
+    nested_related = _nested_get(state, ("observed_related_surfaces",))
+    return [item for item in nested_related if isinstance(item, dict)] if isinstance(nested_related, list) else []
 
 
 def _surface_to_url(surface: dict[str, Any]) -> str:

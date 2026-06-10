@@ -621,6 +621,8 @@ def _observed_related_surfaces(
     primary: str,
 ) -> list[dict[str, Any]]:
     raw_surfaces = snapshot.get("observed_related_surfaces")
+    if not raw_surfaces:
+        raw_surfaces = _nested_get(snapshot, ("entity_resolution", "related_surfaces"))
     if not isinstance(raw_surfaces, list):
         return []
 

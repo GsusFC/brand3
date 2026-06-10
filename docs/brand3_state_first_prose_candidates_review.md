@@ -73,7 +73,7 @@ The strong cases separate adjacent surfaces from ownership:
 - Iris: similar names create collision pressure.
 - Watermelon: adjacent domains, GitHub and marketplace surfaces create ecosystem pressure.
 
-This is automatable only when `observed_related_surfaces` metadata is explicit and reviewed.
+This is automatable only when `entity_resolution.related_surfaces` metadata is explicit and reviewed.
 
 It must not be inferred from arbitrary evidence URLs.
 

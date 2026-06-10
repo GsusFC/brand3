@@ -4,6 +4,8 @@ Date: 2026-05-16
 
 Scope: rendering impact memo only. No prompts, scoring, generation, payload format, Visual Signature code, or `EntityNarrativeState` work were changed.
 
+Note: this memo describes the visible composition of report findings. The TLDR block contract is separate and already normalized elsewhere.
+
 ## Input Reviewed
 
 Representative payload:

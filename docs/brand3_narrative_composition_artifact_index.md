@@ -109,7 +109,7 @@ Directory:
 examples/reports/narrative_harness/entity_state/
 ```
 
-Builder-generated outputs:
+Legacy builder-generated snapshots:
 
 ```text
 builtwith_kit_com.entity_narrative_state.v0.json
@@ -118,6 +118,8 @@ launchdarkly.entity_narrative_state.v0.json
 iris.entity_narrative_state.v0.json
 watermelon.entity_narrative_state.v0.json
 ```
+
+These are historical provenance snapshots. The current contract examples for related surfaces live in the manual inputs below.
 
 Manual older fixtures:
 

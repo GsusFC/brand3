@@ -4,11 +4,15 @@ Date: 2026-05-16
 
 Scope: diagnostic memo only. No prompts, rendering, scoring, runtime, persisted payload format, or Visual Signature code were changed.
 
+Note: this memo is about report findings and `Finding.prose`, not about the TLDR block contract. The TLDR block contract now has a separate canonical shape in methodology and extractor/tests.
+
 ## Executive Diagnosis
 
 `typical_decision` should probably not continue being rendered inside every visible `finding.prose` paragraph by default.
 
 The underlying field is useful and should remain in the generated/persisted payload for now. The problem is presentation and composition: `Finding.prose` concatenates `observation + implication + typical_decision`, and the report template renders only that combined property. This collapses a structured analytical object into one repeated paragraph shape.
+
+That is intentionally separate from the TLDR contract cleanup. The TLDR block format is already normalized elsewhere; this memo is about how report findings are composed for readers.
 
 The resulting issue is not just prompt wording. It is the interaction of:
 

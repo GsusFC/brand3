@@ -4,6 +4,8 @@ Date: 2026-05-16
 
 Scope: decision memo only. No runtime, scoring, prompt, report renderer, schema, or Visual Signature changes were made.
 
+Note: references to `Finding`, `Finding.prose`, and `typical_decision` in this memo are about report findings, not the TLDR block contract.
+
 ## Recommendation
 
 Build the offline Narrative Harness first. Do not build `EntityNarrativeState` as the next implementation step.

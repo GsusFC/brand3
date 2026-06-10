@@ -6,9 +6,9 @@ Scope: input-contract memo only. No builder code, runtime integration, prompts, 
 
 ## Purpose
 
-`observed_related_surfaces` needs an explicit upstream data contract before the offline `EntityNarrativeState` builder can represent Iris- or Watermelon-style entity ambiguity.
+`entity_resolution.related_surfaces` is now the canonical upstream source for related-surface metadata. `observed_related_surfaces` remains a compatibility shape for older fixtures and docs, but new upstream producers should emit the packet field.
 
-The builder v0 correctly left `observed_related_surfaces` empty for all generated outputs because the current machine-readable inputs did not provide safe related-surface metadata. That was conservative and correct.
+The builder v0 correctly left `observed_related_surfaces` empty for all generated outputs when the current machine-readable inputs did not provide safe related-surface metadata. That was conservative and correct.
 
 The next step is not to let the builder infer related surfaces from arbitrary URLs. The next step is to expose a narrowly defined input field that separates:
 
@@ -183,6 +183,12 @@ Allowed source value:
 ### Future explicit discovery metadata
 
 Brand3 may later expose a dedicated list from discovery enrichment. If it does, that list should still use the same object shape and confidence/review rules.
+
+### Canonical packet source
+
+New upstream producers should prefer `entity_resolution.related_surfaces` in the Evidence Packet / entity-resolution layer. Consumers may keep accepting `observed_related_surfaces` as a legacy compatibility alias, but they should not treat it as the preferred source of truth.
+
+The live Iris and Watermelon fixtures under `examples/reports/narrative_harness/entity_state/inputs/` have already been migrated to the packet field. Any remaining `observed_related_surfaces` examples in this repository are historical or compatibility-only.
 
 ## Disallowed Sources
 

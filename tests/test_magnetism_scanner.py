@@ -1055,6 +1055,10 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Client TLDR v2", response.text)
+        self.assertIn(f'href="/magnetism-scanner/scan/{scan_id}?lang=en"', response.text)
+        self.assertIn(f'href="/magnetism-scanner/scan/{scan_id}/audit?lang=en"', response.text)
+        self.assertIn(f'href="/magnetism-scanner/scan/{scan_id}/research?lang=en"', response.text)
+        self.assertIn(f'href="/magnetism-scanner/scan/{scan_id}/methodology?lang=en"', response.text)
         self.assertIn("Reviewed score", response.text)
         self.assertIn("78.0<span>/100</span>", response.text)
         self.assertIn("CORE PURPOSE", response.text)

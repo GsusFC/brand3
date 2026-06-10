@@ -1,0 +1,142 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "irisdesign_dev",
+  "brand_name": "Iris",
+  "document_title": "Iris",
+  "source_ref": "https://irisdesign.dev",
+  "workspace_location": "External / Brand3 Phase 2 Findings / Iris",
+  "source_family": "external_brand_surface",
+  "status": "public_surface",
+  "language": "en",
+  "company_context": {
+    "company_name": "Iris",
+    "category": "brand intelligence platform",
+    "business_model": "service",
+    "offer_summary": "A fast brand identity platform for indie developers.",
+    "target_audience_summary": "Indie developers looking for a quick, focused brand identity process.",
+    "stage_or_context": "product launch",
+    "project_scope": "Brand3",
+    "source_confidence": "medium",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "SaaS",
+    "technology_context": [
+      "brand identity platform"
+    ],
+    "business_model_analogy": "design tooling platform",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The audited surface is irisdesign.dev.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The surface describes itself as a fast brand identity tool for indie developers.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The page presents a focused, product-first promise rather than a broad agency story.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The writing uses direct category language and a strong speed/value proposition.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is a clean example of how a single category promise can be made visible on a public surface.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The record is useful for studying owned-claim pressure, but not for collapsing nearby Iris-named surfaces into one entity story.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "reason": "The category promise becomes visible in the public page language itself.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record keeps the claim bounded by the audited surface instead of treating adjacent Iris surfaces as proof.",
+      "confidence": "high",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The speed/value promise is strong, but the public surface alone does not prove external adoption.",
+      "confidence": "low",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The strong product promise may suggest maturity, but the record alone does not prove market traction.",
+      "evidence_refs": [
+        "https://irisdesign.dev"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep similarly named Iris surfaces separate from the audited surface.",
+      "reason": "The evidence set contains multiple Iris-like domains and they are not all verified as one entity."
+    },
+    {
+      "requirement": "Do not treat the speed claim as proof of adoption.",
+      "reason": "The page is a self-described product surface, not a market validation report."
+    }
+  ],
+  "review_notes": [
+    "Selected as the culture/design-adjacent non-web3 example."
+  ],
+  "perceptual_tags": [
+    "product_surface",
+    "brand_identity",
+    "owned_claim"
+  ]
+}

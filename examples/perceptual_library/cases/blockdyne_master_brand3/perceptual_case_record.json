@@ -1,0 +1,136 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "blockdyne_master_brand3",
+  "brand_name": "Blockdyne",
+  "document_title": "Master Brand3",
+  "source_ref": "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4",
+  "workspace_location": "FLOC*Ops / Projects Database / BLOCKDYNE / Blockdyne Process",
+  "source_family": "client_master_brand3",
+  "status": "working_master_document",
+  "language": "es",
+  "company_context": {
+    "company_name": "Blockdyne",
+    "category": "civic infrastructure and modular systems",
+    "business_model": "service",
+    "offer_summary": "A brand master document that frames physical and digital infrastructure as a path to personal sovereignty.",
+    "target_audience_summary": "Project stakeholders reviewing the working master strategy and its system language.",
+    "stage_or_context": "working_master",
+    "project_scope": "Brand3",
+    "source_confidence": "medium",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "web3",
+    "technology_context": [],
+    "traditional_equivalent_category": "civic infrastructure and modular systems",
+    "business_model_analogy": "service / systems design",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [
+      "sovereignty",
+      "decentralized",
+      "physical and digital infrastructure"
+    ],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The source is a master Brand3 document inside the Blockdyne Process workspace.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The document describes a modular, ethical, interoperable network of physical and digital tools.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The page reads as an infrastructure-first strategy artifact rather than a campaign sheet.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The copy links physical and digital systems to sovereignty language in a single coherent route.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is a strong case of category-to-surface translation because the infrastructure metaphor is visible in the page language itself.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The record is better read as a working master strategy than as proof of external adoption or finished product maturity.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "reason": "The infrastructure and sovereignty language becomes legible through the master-brand surface itself.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The source makes a strong sovereignty claim, but the record alone does not prove market adoption or downstream validation.",
+      "confidence": "low",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The conceptual scope may look mature, but the record alone cannot prove external traction or product completeness.",
+      "evidence_refs": [
+        "https://app.notion.com/p/231a44dc350581b3aa8bf69c8bf575c4"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep this record labeled as a working master document rather than a final client deliverable.",
+      "reason": "The workspace metadata explicitly says it is a master Brand3 record."
+    },
+    {
+      "requirement": "Do not convert sovereignty language into proof of adoption without external corroboration.",
+      "reason": "The page is a strategy artifact, not an adoption report."
+    }
+  ],
+  "review_notes": [
+    "Selected because it shows how a master document can carry strong infrastructure language without becoming a generic market claim."
+  ],
+  "perceptual_tags": [
+    "infrastructure_first",
+    "systems_language",
+    "working_master"
+  ]
+}

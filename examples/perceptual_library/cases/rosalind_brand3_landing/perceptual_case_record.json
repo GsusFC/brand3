@@ -1,0 +1,132 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "rosalind_brand3_landing",
+  "brand_name": "Rosalind",
+  "document_title": "Rosalind - Brand3 + Landing",
+  "source_ref": "docs/brand3_tldr_notion_database.md",
+  "workspace_location": "FLOC*Ops / Projects Database / Rosalind - Brand3 strategy + Landing + Dev / Rosalind - Brand3 + Landing",
+  "source_family": "client_brand3_tldr",
+  "status": "client_deliverable",
+  "language": "mixed",
+  "company_context": {
+    "company_name": "Rosalind",
+    "category": "brand strategy and landing",
+    "business_model": "service",
+    "offer_summary": "Brand3 strategy and landing deliverable documented inside a FLOC* project container.",
+    "target_audience_summary": "Prospective client stakeholders reviewing the strategic platform and landing direction.",
+    "stage_or_context": "client deliverable",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "culture",
+    "technology_context": [],
+    "traditional_equivalent_category": "brand strategy and landing page",
+    "business_model_analogy": "creative services engagement",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Block-Structured Strategic Layout"
+    ],
+    "domain_specific_noise": [],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The project container is explicitly named Brand3 strategy + Landing + Dev.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The TL;DR page contains mission, vision, attributes, values, audience, personality, value proposition, brand idea, purpose and magnetism.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The TL;DR is compressed into a compact block sequence rather than a long narrative memo.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The surface behaves like a structured method artifact with repeated strategic slots.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is strong method evidence for block-based Brand3 writing and a disciplined TLDR structure.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The compact form makes the method legible, but it does not by itself prove the quality of the deliverable.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "reason": "The compact TLDR block structure makes category language observable on the surface without turning it into product proof.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record keeps method evidence separate from quality inference and explicitly limits what the surface can prove.",
+      "confidence": "high",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The repeated block structure may imply method maturity, but it should not be read as proof of product-market fit.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Treat this record as method evidence first and quality evidence only after source review.",
+      "reason": "The local index confirms the structure, but not the full client context or final approval state."
+    },
+    {
+      "requirement": "Do not use raw project notes as prompt input without redaction.",
+      "reason": "The source lives inside a client project container and should remain privacy-filtered."
+    }
+  ],
+  "review_notes": [
+    "Promoted from the local FLOC* TLDR index as one of the clearest Brand3 strategy + landing examples."
+  ],
+  "perceptual_tags": [
+    "block_structure",
+    "method_evidence",
+    "compact_tldr"
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "sova_analysis",
+  "brand_name": "SOVA",
+  "document_title": "Analysis",
+  "source_ref": "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5",
+  "workspace_location": "FLOC*Ops / Projects Database / SOVA / Project Process / Sova Process",
+  "source_family": "client_brand_strategy_summary",
+  "status": "done",
+  "language": "en",
+  "company_context": {
+    "company_name": "SOVA",
+    "category": "Bitcoin-native wealth management",
+    "business_model": "service",
+    "offer_summary": "Integrated financial solutions that abstract technical complexity and connect users, protocols, and services into a smart financial network.",
+    "target_audience_summary": "Users who want to invest, borrow, save, and earn on BTC while staying in control.",
+    "stage_or_context": "strategy summary",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "crypto",
+    "technology_context": [
+      "wallet",
+      "protocol"
+    ],
+    "traditional_equivalent_category": "wealth management network",
+    "business_model_analogy": "private banking / wealth advisory",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [
+      "Bitcoin-native",
+      "BTC",
+      "sovereign control",
+      "keys",
+      "decentralized finance"
+    ],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The page is a client brand strategy summary with TLDR-like blocks.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The core purpose emphasizes making Bitcoin practical for building personal wealth securely and independently.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The page frames the brand as a sovereign financial network rather than a generic fintech app.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The block sequence is organized around mission, vision, purpose, personality, and magnetism.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is a strong example of translating crypto-native language into a wealth management framing.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The record is useful for studying method shape, but it should not be read as proof of market traction.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "reason": "The crypto and wealth language is visible on the surface without collapsing into generic fintech copy.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record keeps method evidence separate from quality inference and leaves traction unproven.",
+      "confidence": "high",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The sovereign financial claim is stronger than the record's proof of external adoption.",
+      "confidence": "low",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The sovereign financial framing may imply strategic maturity, but the record alone does not prove product adoption.",
+      "evidence_refs": [
+        "https://app.notion.com/p/1f8a44dc3505818894ecf19142ae93a5"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Treat this as a strategy summary and keep market traction claims conditional.",
+      "reason": "The source is a strategy summary, not a market-performance report."
+    },
+    {
+      "requirement": "Avoid reading Bitcoin-native language as proof of external validation.",
+      "reason": "The record is rich in method language, but proof of adoption lives outside the page."
+    }
+  ],
+  "review_notes": [
+    "Selected as the strongest SOVA strategy summary for normalized corpus use."
+  ],
+  "perceptual_tags": [
+    "crypto_strategy",
+    "wealth_management",
+    "block_structure"
+  ]
+}

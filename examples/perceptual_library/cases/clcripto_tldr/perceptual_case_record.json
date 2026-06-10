@@ -1,0 +1,137 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "clcripto_tldr",
+  "brand_name": "CLCripto",
+  "document_title": "TL;DR",
+  "source_ref": "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607",
+  "workspace_location": "FLOC*Ops / Projects Database / CLCripto - Brand Strategy + Naming Lite",
+  "source_family": "client_brand3_tldr",
+  "status": "client_deliverable",
+  "language": "es",
+  "company_context": {
+    "company_name": "CLCripto",
+    "category": "crypto tax and legal services",
+    "business_model": "service",
+    "offer_summary": "A formal TL;DR page for a crypto-focused brand strategy and naming project.",
+    "target_audience_summary": "Clients and reviewers evaluating the condensed strategic block layout.",
+    "stage_or_context": "brand strategy",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "crypto",
+    "technology_context": [],
+    "traditional_equivalent_category": "tax and legal services",
+    "business_model_analogy": "regulated advisory service",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Block-Structured Strategic Condensation"
+    ],
+    "domain_specific_noise": [
+      "crypto",
+      "fiscalidad cripto",
+      "anonimato",
+      "capital cripto"
+    ],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The page is a formal TL;DR inside a client Brand Strategy + Naming Lite project.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The page includes the classic strategic block vocabulary used in the Brand3 corpus.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The Spanish copy is compressed into a compact block sequence rather than a narrative memo.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The block structure keeps mission, vision, value proposition and magnetism visibly separated.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is a canonical example of condensed TL;DR writing where category language becomes observable through the layout itself.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The page is useful as a pattern reference for early-stage strategic condensation, but it should not be mistaken for external validation.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "reason": "The block layout turns category language into an observable surface mechanism.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record is strong as a TL;DR pattern example but does not claim external market proof.",
+      "confidence": "high",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The structured block layout may suggest disciplined method use, but it does not prove commercial traction or execution quality.",
+      "evidence_refs": [
+        "https://app.notion.com/p/94c14f9ab9334029af30ee98da5b5607"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Use this record as a condensed TL;DR pattern reference, not as proof of performance.",
+      "reason": "It is a client deliverable without external corroboration in the corpus."
+    },
+    {
+      "requirement": "Preserve the Spanish source wording when citing the page to avoid flattening the local style.",
+      "reason": "The record is part of a local FLOC*Ops project and carries the original language rhythm."
+    }
+  ],
+  "review_notes": [
+    "Selected because it is the cleanest compact TL;DR case in the index."
+  ],
+  "perceptual_tags": [
+    "compact_tldr",
+    "block_structure",
+    "pattern_reference"
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "sova_prueba_llm_estrategia",
+  "brand_name": "SOVA",
+  "document_title": "Prueba LLM Estrategia",
+  "source_ref": "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7",
+  "workspace_location": "FLOC*Ops / Opportunities / #OP - Sova - Starter Pack + Copy + Brand Voice",
+  "source_family": "client_llm_strategy_test",
+  "status": "working_experiment",
+  "language": "en",
+  "company_context": {
+    "company_name": "SOVA",
+    "category": "Bitcoin-native wealth strategy",
+    "business_model": "service",
+    "offer_summary": "An exploratory brand strategy test for sovereign Bitcoin finance.",
+    "target_audience_summary": "Internal stakeholders reviewing experimental brand language.",
+    "stage_or_context": "experiment",
+    "project_scope": "Brand3",
+    "source_confidence": "medium",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "crypto",
+    "technology_context": [
+      "wallet",
+      "protocol"
+    ],
+    "traditional_equivalent_category": "wealth strategy and positioning experiment",
+    "business_model_analogy": "advisory prototype",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [
+      "bitcoin-native",
+      "BTC",
+      "sovereign control",
+      "keys"
+    ],
+    "normalization_status": "needs_human_review"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The page is explicitly labeled as an LLM strategy test.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The page includes mission, vision, purpose, value proposition, magnetism, personality, attributes, and values.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The page uses concise TL;DR-style blocks.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The language remains intentionally experimental and explicitly provisional.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This record is useful for prompt behavior and block vocabulary, but not as a stable deliverable example.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "interpretation": "The experimental framing should remain visible so the record does not read like finished strategy.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record is about method language and explicit constraints, not external proof.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The language is rich and ambitious, but the record itself does not prove traction or legitimacy.",
+      "confidence": "low",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The symbolic richness may suggest sophistication, but the evidence does not prove audience traction or investment legitimacy.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058079996cf0643ff113e7"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep this record in the experiment bucket and do not use it as proof of product maturity.",
+      "reason": "The workspace label explicitly frames it as a strategy test."
+    },
+    {
+      "requirement": "Preserve the source-family and working-experiment label when citing the record.",
+      "reason": "The record is intentionally exploratory and should not be presented as a finished deliverable."
+    },
+    {
+      "requirement": "Do not use this record as a stable narrative hint source.",
+      "reason": "The normalization status is needs_human_review."
+    }
+  ],
+  "review_notes": [
+    "Included for domain diversity, but it remains an experiment."
+  ],
+  "perceptual_tags": [
+    "llm_experiment",
+    "strategy_test",
+    "crypto"
+  ]
+}

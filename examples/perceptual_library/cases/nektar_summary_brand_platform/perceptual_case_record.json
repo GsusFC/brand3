@@ -1,0 +1,132 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "nektar_summary_brand_platform",
+  "brand_name": "Nektar",
+  "document_title": "Summary Brand platform",
+  "source_ref": "docs/brand3_tldr_notion_database.md",
+  "workspace_location": "FLOC*Ops / Projects Database / NEKTAR - Brand3 Design Sprint / Nektar Brand3 Process DB",
+  "source_family": "client_brand_platform",
+  "status": "done",
+  "language": "mixed",
+  "company_context": {
+    "company_name": "Nektar",
+    "category": "brand platform and design sprint",
+    "business_model": "service",
+    "offer_summary": "Brand3 Design Sprint output with a summary brand platform and workshop lineage.",
+    "target_audience_summary": "Project stakeholders reviewing the brand platform summary and its lineage.",
+    "stage_or_context": "design sprint",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "culture",
+    "technology_context": [],
+    "traditional_equivalent_category": "brand platform and design sprint summary",
+    "business_model_analogy": "design sprint workshop output",
+    "transferable_brand_patterns": [
+      "System Cohesion Difference",
+      "Evidence-Bound Behavior",
+      "Canonical Summary Versus Lineage Separation"
+    ],
+    "domain_specific_noise": [],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The Summary Brand platform contains mission, vision, attributes, values, audience, personality, value proposition, brand idea, purpose and magnetism.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The workshop page preserves raw alternatives and should be treated as lineage rather than canonical output.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The summary page behaves like a canonical platform artifact with a complete strategic component stack.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The workshop lineage is visibly separated from the summary record, which makes the canonical route easier to read.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This record is useful for studying how Brand3 distinguishes a final platform from upstream exploration.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "interpretation": "The separation between summary and workshop lineage is a good example of traceable method hygiene.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_system_cohesion_difference",
+      "pattern_name": "System Cohesion Difference",
+      "reason": "The summary platform reads as a coherent canonical surface while the workshop lineage stays visibly separate.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record distinguishes canonical summary evidence from lineage material so the reading stays bounded.",
+      "confidence": "high",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The presence of raw alternatives may suggest process maturity, but it does not prove that the final platform is superior.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Use the Summary Brand platform as the canonical case and keep workshop alternatives as lineage only.",
+      "reason": "The local index explicitly labels the workshop output as raw lineage."
+    },
+    {
+      "requirement": "Do not merge this record with the Nektar workshop notes when generating examples.",
+      "reason": "The workshop notes capture exploration, not the clean final corpus record."
+    }
+  ],
+  "review_notes": [
+    "Promoted from the Nektar Design Sprint because the summary record is cleaner than the raw workshop page."
+  ],
+  "perceptual_tags": [
+    "canonical_platform",
+    "lineage_separation",
+    "design_sprint"
+  ]
+}

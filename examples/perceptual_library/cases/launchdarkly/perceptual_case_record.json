@@ -1,0 +1,143 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "launchdarkly",
+  "brand_name": "LaunchDarkly",
+  "document_title": "LaunchDarkly Phase 2 Findings",
+  "source_ref": "https://launchdarkly.com",
+  "workspace_location": "External / Brand3 Phase 2 Findings / LaunchDarkly",
+  "source_family": "external_brand_surface",
+  "status": "public_surface",
+  "language": "en",
+  "company_context": {
+    "company_name": "LaunchDarkly",
+    "category": "feature management platform",
+    "business_model": "service",
+    "offer_summary": "Feature flags, release management, and AI config tooling for product and engineering teams.",
+    "target_audience_summary": "Engineering, product, and platform teams managing releases and experiments.",
+    "stage_or_context": "mature company",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "SaaS",
+    "technology_context": [
+      "feature flags",
+      "release management"
+    ],
+    "business_model_analogy": "developer tooling subscription",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The audited surface is https://launchdarkly.com.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The run collected a strong evidence base with good data quality and no dimensions without evidence.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The public surface reads as a stable B2B platform rather than a promotional microsite.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The findings emphasize evidence binding problems more than surface ambiguity.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is a strong non-web3 control case for checking whether the narrative layer overuses defensive caveats even when evidence is abundant.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The record is useful for studying evidence-binding discipline on a mature SaaS surface.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The report should stay bounded by the evidence ecosystem and not overstate conclusions.",
+      "confidence": "high",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The platform has strong surface claims, but the narrative layer still needs to avoid treating claims as proof.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ]
+    },
+    {
+      "pattern_id": "pattern_system_cohesion_difference",
+      "pattern_name": "System Cohesion Difference",
+      "reason": "The public platform and evidence signals are coherent enough to read as a mature system surface.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The mature SaaS surface may look more complete than the narrative evidence shows, so product maturity should not be inferred from surface polish alone.",
+      "evidence_refs": [
+        "https://launchdarkly.com"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep finding-level evidence binding explicit even when the overall run is high quality.",
+      "reason": "The Phase 2 findings show that strong evidence can still produce repetitive caveats."
+    },
+    {
+      "requirement": "Do not treat the public surface as proof of performance.",
+      "reason": "The record is a control case for narrative discipline, not a market validation artifact."
+    }
+  ],
+  "review_notes": [
+    "Selected as the mature SaaS control case."
+  ],
+  "perceptual_tags": [
+    "saas",
+    "control_case",
+    "evidence_binding"
+  ]
+}

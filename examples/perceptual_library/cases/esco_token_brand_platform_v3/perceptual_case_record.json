@@ -1,0 +1,139 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "esco_token_brand_platform_v3",
+  "brand_name": "ESCO-TOKEN",
+  "document_title": "Brand Platform - ESCO-TOKEN - SGV3",
+  "source_ref": "docs/brand3_tldr_notion_database.md",
+  "workspace_location": "FLOC*Ops / Projects Database / ESCO-TOKEN / Live Process / Analysis - Internal",
+  "source_family": "client_brand_platform",
+  "status": "active_source_of_truth",
+  "language": "mixed",
+  "company_context": {
+    "company_name": "ESCO-TOKEN",
+    "category": "brand platform and conceptual route",
+    "business_model": "service",
+    "offer_summary": "Brand platform record that consolidates earlier TLDR and brand platform versions.",
+    "target_audience_summary": "Internal project stakeholders and reviewers tracking the evolution of the method.",
+    "stage_or_context": "live process",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "web3",
+    "technology_context": [
+      "token"
+    ],
+    "traditional_equivalent_category": "brand platform and method evolution document",
+    "business_model_analogy": "versioned strategy platform",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [
+      "token",
+      "superseded versions",
+      "live process",
+      "analysis internal"
+    ],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The page explicitly consolidates earlier TLDR and brand platform documents.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The later Brand Platform V3 supersedes Brand3 TLDR V2.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The route shows a clear progression from compact TLDR to deeper conceptual route.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The page reads as a layered method artifact rather than a one-off client deliverable.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is the strongest method bridge between historical TLDR practice and the later brand platform format.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "high"
+    },
+    {
+      "interpretation": "The layered route can be used to study method evolution, but it should not be treated as a scorecard for brand quality.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "reason": "The record shows how compact TLDR language turns into a deeper conceptual route without collapsing into generic brand praise.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The route is useful as method lineage, but the visible surface still cannot prove the broader brand claim by itself.",
+      "confidence": "low",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The conceptual route may look more mature than the underlying evidence proves, so it should remain bounded by source context.",
+      "evidence_refs": [
+        "docs/brand3_tldr_notion_database.md"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep archived V1 and V2 material separate from the V3 source of truth when sampling the corpus.",
+      "reason": "The local index explicitly marks earlier versions as superseded."
+    },
+    {
+      "requirement": "Use this record as method evidence and lineaged source evidence, not as proof of a finished product surface.",
+      "reason": "It is a consolidation document inside an internal analysis route."
+    }
+  ],
+  "review_notes": [
+    "Selected as the strongest bridge from concise TLDR practice to the deeper brand platform route."
+  ],
+  "perceptual_tags": [
+    "method_bridge",
+    "supersession",
+    "conceptual_route"
+  ]
+}

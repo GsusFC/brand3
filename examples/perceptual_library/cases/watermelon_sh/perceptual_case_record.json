@@ -1,0 +1,143 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "watermelon_sh",
+  "brand_name": "Watermelon",
+  "document_title": "Watermelon Phase 2 Findings",
+  "source_ref": "https://watermelon.sh",
+  "workspace_location": "External / Brand3 Phase 2 Findings / Watermelon",
+  "source_family": "external_brand_surface",
+  "status": "public_surface",
+  "language": "en",
+  "company_context": {
+    "company_name": "Watermelon",
+    "category": "developer infrastructure platform",
+    "business_model": "service",
+    "offer_summary": "Design infrastructure for startups and an open-source copilot for code.",
+    "target_audience_summary": "Startup builders and developers evaluating product infrastructure tooling.",
+    "stage_or_context": "product launch",
+    "project_scope": "Brand3",
+    "source_confidence": "high",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "SaaS",
+    "technology_context": [
+      "developer tooling",
+      "open source"
+    ],
+    "business_model_analogy": "workflow automation platform",
+    "transferable_brand_patterns": [
+      "Guided Movement",
+      "Threshold Pacing",
+      "Evidence-Bound Behavior"
+    ],
+    "domain_specific_noise": [],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The audited surface is https://watermelon.sh.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The evidence set includes multiple related Watermelon surfaces and adjacent ambiguous surfaces.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The site reads as a product infrastructure surface rather than a brand story page.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The record shows a layered ecosystem pressure because several Watermelon-named surfaces appear in discovery.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is a useful product-digital case for studying how ecosystem complexity can coexist with a stable owned surface.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The public surface should not be collapsed into the adjacent Watermelon-named evidence.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_guided_movement",
+      "pattern_name": "Guided Movement",
+      "reason": "The product surface directs the reader toward operational movement and tooling behavior.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ]
+    },
+    {
+      "pattern_id": "pattern_threshold_pacing",
+      "pattern_name": "Threshold Pacing",
+      "reason": "The surface rhythm and workflow cues shape how the reader moves from attention to action.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The record should stay bounded to the audited surface and not import adjacent Watermelon evidence as proof.",
+      "confidence": "high",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The ecosystem pressure may suggest broader product reach, but the audited surface alone does not prove a unified brand system.",
+      "evidence_refs": [
+        "https://watermelon.sh"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep adjacent Watermelon-named surfaces separate unless ownership or relation is verified.",
+      "reason": "The evidence set contains multiple related and unrelated Watermelon-name surfaces."
+    },
+    {
+      "requirement": "Do not overread the ecosystem as a single coordinated brand story.",
+      "reason": "The source evidence shows composition pressure, not verified unity."
+    }
+  ],
+  "review_notes": [
+    "Selected as the product-digital ecosystem case."
+  ],
+  "perceptual_tags": [
+    "product_digital",
+    "ecosystem_pressure",
+    "workflow"
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "eaship_brand3_magnetism_scan",
+  "brand_name": "Eaship",
+  "document_title": "Eaship",
+  "source_ref": "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506",
+  "workspace_location": "FLOC*Brain / Sergio*Brain / FLOC*Sign-FLOC*Drop / Brand Scanner Targets V0",
+  "source_family": "brand3_magnetism_scan_target",
+  "status": "scan_record",
+  "language": "es",
+  "company_context": {
+    "company_name": "Eaship",
+    "category": "transport operations software",
+    "business_model": "service",
+    "offer_summary": "Brand3 magnetism scan output for a transport and logistics workflow product.",
+    "target_audience_summary": "Internal reviewers assessing the scanner target and its route quality.",
+    "stage_or_context": "product launch",
+    "project_scope": "Brand3",
+    "source_confidence": "medium",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "SaaS",
+    "technology_context": [],
+    "traditional_equivalent_category": "transport management software",
+    "business_model_analogy": "workflow automation SaaS",
+    "transferable_brand_patterns": [
+      "Guided Movement",
+      "Threshold Pacing",
+      "Evidence-Bound Behavior"
+    ],
+    "domain_specific_noise": [],
+    "normalization_status": "normalized"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The record is a stored Brand3 magnetism scan target.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The extracted copy centers on transport digitalization, contract automation, and shipment coordination.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The surface presents a clear operational workflow rather than a generic brand narrative.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The page emphasizes deadlines, notifications, and process efficiency.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This record is useful for studying how operational software language becomes a readable brand surface.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The scanner score should not be mistaken for evidence of a FLOC-built product platform.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_guided_movement",
+      "pattern_name": "Guided Movement",
+      "reason": "The copy and workflow framing direct the reader toward operational steps and process movement.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ]
+    },
+    {
+      "pattern_id": "pattern_threshold_pacing",
+      "pattern_name": "Threshold Pacing",
+      "reason": "Notifications and deadlines create a readable pacing mechanism in the operational surface.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The scan output should be read as observed signal, not as proof of a completed brand system.",
+      "confidence": "high",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The operational clarity may suggest product maturity, but the scan alone does not prove market readiness.",
+      "evidence_refs": [
+        "https://app.notion.com/p/35ea44dc3505810b9a10ca1d15f43506"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Treat the record as scanner output, not as proof of a FLOC-built brand.",
+      "reason": "The notes explicitly mark it as a Brand3 magnetism scan target."
+    },
+    {
+      "requirement": "Do not infer external traction from the scanner score alone.",
+      "reason": "The score is a product reading, not a market validation measure."
+    }
+  ],
+  "review_notes": [
+    "Selected as the non-web3 case to diversify the corpus."
+  ],
+  "perceptual_tags": [
+    "scanner_output",
+    "transport_software",
+    "workflow"
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "schema_version": "perceptual_case_record_v1",
+  "record_type": "perceptual_case_record",
+  "case_id": "meta4_english",
+  "brand_name": "Meta4",
+  "document_title": "English",
+  "source_ref": "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb",
+  "workspace_location": "FLOC*Ops / Opportunities / #OP - Meta4 - Starter Pack / Prueba LLM Estrategia",
+  "source_family": "client_llm_strategy_test",
+  "status": "working_experiment",
+  "language": "en",
+  "company_context": {
+    "company_name": "Meta4",
+    "category": "crypto-cultural investment strategy",
+    "business_model": "service",
+    "offer_summary": "An early strategy test mixing financial precision, cultural depth and experimental positioning.",
+    "target_audience_summary": "Stakeholders reviewing the exploratory brand language and market framing.",
+    "stage_or_context": "experiment",
+    "project_scope": "Brand3",
+    "source_confidence": "medium",
+    "sensitive_notes": ""
+  },
+  "domain_context": {
+    "original_domain": "crypto",
+    "technology_context": [],
+    "traditional_equivalent_category": "investment strategy and cultural fund positioning",
+    "business_model_analogy": "asset management / thesis-led advisory",
+    "transferable_brand_patterns": [
+      "Category-To-Surface Translation",
+      "Evidence-Bound Behavior",
+      "Claim / Signal Gap"
+    ],
+    "domain_specific_noise": [
+      "crypto-cultural",
+      "digital assets",
+      "investment vehicles",
+      "symbolic belonging"
+    ],
+    "normalization_status": "needs_human_review"
+  },
+  "extracted_facts": [
+    {
+      "fact": "The source is an early LLM strategy test in the Meta4 starter pack workspace.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "high"
+    },
+    {
+      "fact": "The page includes mission, vision, attributes, values, personality, value proposition, brand idea, core purpose and magnetism.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "visual_observations": [
+    {
+      "observation": "The language combines financial precision with cultural depth and an explicitly experimental frame.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "high"
+    },
+    {
+      "observation": "The surface reads as a strategy experiment rather than a validated market report.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "medium"
+    }
+  ],
+  "strategic_interpretation": [
+    {
+      "interpretation": "This is useful for studying how block-based brand strategy language was used before the technical repo formalized TL;DR structure.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "medium"
+    },
+    {
+      "interpretation": "The record is better treated as a method experiment than as proof of market position or external traction.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "high"
+    }
+  ],
+  "pattern_refs": [
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "reason": "The reading is about method language and explicit constraints, not about external proof.",
+      "confidence": "medium",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "reason": "The language is rich and ambitious, but the record itself does not prove traction or legitimacy.",
+      "confidence": "low",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ]
+    }
+  ],
+  "weak_inferences": [
+    {
+      "inference": "The symbolic richness may suggest sophistication, but the evidence does not prove audience traction or investment legitimacy.",
+      "evidence_refs": [
+        "https://app.notion.com/p/200a44dc35058016ac4cd496d9917ffb"
+      ],
+      "confidence": "low",
+      "review_required": true
+    }
+  ],
+  "human_review_requirements": [
+    {
+      "requirement": "Keep this record in the experiment bucket and do not use it as proof of product maturity.",
+      "reason": "The workspace label explicitly frames it as a strategy test."
+    },
+    {
+      "requirement": "Preserve the source-family and working-experiment label when citing the record.",
+      "reason": "The record is intentionally exploratory and should not be presented as a finished deliverable."
+    }
+  ],
+  "review_notes": [
+    "Selected because it is the clearest early LLM strategy experiment in the index."
+  ],
+  "perceptual_tags": [
+    "strategy_experiment",
+    "experiment",
+    "cultural_positioning"
+  ]
+}

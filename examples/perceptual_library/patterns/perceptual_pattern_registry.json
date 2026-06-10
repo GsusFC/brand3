@@ -1,0 +1,68 @@
+{
+  "patterns": [
+    {
+      "pattern_id": "pattern_category_surface_translation",
+      "pattern_name": "Category-To-Surface Translation",
+      "perceptual_meaning": "Category language becomes credible only when surface mechanisms make it observable.",
+      "confidence_level": "medium",
+      "typical_tensions": [
+        "category claim vs observed product surface",
+        "copy-supported clarity vs product-surface proof"
+      ]
+    },
+    {
+      "pattern_id": "pattern_evidence_bound_behavior",
+      "pattern_name": "Evidence-Bound Behavior",
+      "perceptual_meaning": "The reading stays useful by naming what the evidence can and cannot support.",
+      "confidence_level": "medium",
+      "typical_tensions": [
+        "available owned evidence vs missing external corroboration"
+      ]
+    },
+    {
+      "pattern_id": "pattern_claim_signal_gap",
+      "pattern_name": "Claim / Signal Gap",
+      "perceptual_meaning": "A strong claim should be treated as conditional when the visible proof is thin.",
+      "confidence_level": "low",
+      "typical_tensions": [
+        "declared ambition vs observable proof"
+      ]
+    },
+    {
+      "pattern_id": "pattern_guided_movement",
+      "pattern_name": "Guided Movement",
+      "perceptual_meaning": "Navigation, sequence, or interaction evidence can show how attention is directed.",
+      "confidence_level": "medium",
+      "typical_tensions": [
+        "guided action vs exposed complexity"
+      ]
+    },
+    {
+      "pattern_id": "pattern_system_cohesion_difference",
+      "pattern_name": "System Cohesion Difference",
+      "perceptual_meaning": "Repeated language and surface behavior can support a bounded cohesion reading.",
+      "confidence_level": "medium",
+      "typical_tensions": [
+        "owned-channel consistency vs broader market corroboration"
+      ]
+    },
+    {
+      "pattern_id": "pattern_concept_bearing_motion",
+      "pattern_name": "Concept-Bearing Motion",
+      "perceptual_meaning": "Motion should only be interpreted when sequence or interaction evidence is present.",
+      "confidence_level": "low",
+      "typical_tensions": [
+        "motion language vs captured motion evidence"
+      ]
+    },
+    {
+      "pattern_id": "pattern_threshold_pacing",
+      "pattern_name": "Threshold Pacing",
+      "perceptual_meaning": "Page rhythm can clarify how the brand moves users from attention to action.",
+      "confidence_level": "medium",
+      "typical_tensions": [
+        "attention capture vs action clarity"
+      ]
+    }
+  ]
+}

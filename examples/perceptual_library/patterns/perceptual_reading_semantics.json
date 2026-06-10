@@ -1,0 +1,46 @@
+{
+  "definitions": {
+    "signal_clusters": {
+      "examples": [
+        {
+          "cluster": [
+            "copy",
+            "navigation",
+            "proof modules"
+          ]
+        },
+        {
+          "cluster": [
+            "visual hierarchy",
+            "density",
+            "product objects"
+          ]
+        },
+        {
+          "cluster": [
+            "interaction",
+            "sequence",
+            "CTA behavior"
+          ]
+        }
+      ]
+    },
+    "perceptual_confidence": {
+      "levels": {
+        "high": "repeated visible mechanisms converge across surfaces",
+        "medium": "surface signals and copy align but remain partially corroborated",
+        "low": "the reading depends on sparse, owned, or copy-only evidence"
+      }
+    }
+  },
+  "overreach_examples": [
+    "Do not infer internal intent from aesthetics alone.",
+    "Do not claim user emotion without naming surface mechanisms.",
+    "Do not treat category ambition as proven market position."
+  ],
+  "generic_llm_interpretation_to_avoid": [
+    "premium and sophisticated visual identity",
+    "seamless and intuitive experience",
+    "market-leading platform"
+  ]
+}

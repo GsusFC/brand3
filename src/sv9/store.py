@@ -190,6 +190,30 @@ class Sv9Store:
         except json.JSONDecodeError:
             return None
 
+    # --- vision evidence (computed at SV9 time, cached per run) ---
+
+    def save_visual_evidence(self, run_id: int, payload: dict[str, Any]) -> None:
+        self.conn.execute(
+            """
+            INSERT OR REPLACE INTO sv9_visual_evidence (run_id, payload_json, created_at)
+            VALUES (?, ?, ?)
+            """,
+            (run_id, json.dumps(payload, ensure_ascii=False, default=str), _utcnow()),
+        )
+        self.conn.commit()
+
+    def get_visual_evidence(self, run_id: int) -> dict[str, Any] | None:
+        row = self.conn.execute(
+            "SELECT payload_json FROM sv9_visual_evidence WHERE run_id = ?",
+            (run_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        try:
+            return json.loads(row["payload_json"])
+        except json.JSONDecodeError:
+            return None
+
     # --- calibration ---
 
     def save_calibration_label(

@@ -74,3 +74,12 @@ CREATE TABLE IF NOT EXISTS sv9_detection_cache (
   payload_json TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+
+-- Vision observations per audit run, computed at SV9 time from the persisted
+-- screenshot when the audit-time visual analysis fell back to local pixel
+-- heuristics. Read-only over V5 data: features are never mutated.
+CREATE TABLE IF NOT EXISTS sv9_visual_evidence (
+  run_id INTEGER PRIMARY KEY,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);

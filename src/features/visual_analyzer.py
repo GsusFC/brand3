@@ -310,7 +310,10 @@ class VisualAnalyzer:
                     ]
                 }
             ],
-            "max_tokens": 1200,
+            # Thinking models (Gemini 2.5+) consume part of the output budget
+            # on internal reasoning before emitting content; 1200 silently
+            # truncated the JSON and forced the local fallback on every run.
+            "max_tokens": 8000,
             "temperature": 0.1,
         }).encode()
 

@@ -20,7 +20,7 @@ from src.services.magnetism_service import load_brand_audit_snapshot
 from src.sv9.aggregator import aggregate
 from src.sv9.evaluator import evaluate_snapshot_components
 from src.sv9.models import Sv9ScanResult
-from src.sv9.signals import collect_signals
+from src.sv9.signals import collect_signals, merge_signals
 
 
 def run_sv9_from_audit_run(
@@ -39,11 +39,14 @@ def run_sv9_from_audit_snapshot(
     *,
     llm: LLMAnalyzer | None = None,
     magnetism_result: dict[str, Any] | None = None,
+    extra_signals: dict[str, Any] | None = None,
 ) -> Sv9ScanResult:
     """Run SV9 over a loaded Brand Audit snapshot.
 
     Pass `magnetism_result` to reuse an already-computed Pass 1 extraction
     (e.g. a persisted Magnetism scan payload) and skip re-detection.
+    `extra_signals` ({component: [signal, ...]}) merge on top of the snapshot
+    signals — e.g. the SV9-time vision pass over the persisted screenshot.
     """
     llm = _effective_llm(llm)
     if magnetism_result is None:
@@ -59,7 +62,7 @@ def run_sv9_from_audit_snapshot(
     url = str(magnetism_result.get("source_url") or snapshot.get("url") or "")
     source_run_id = _to_int(magnetism_result.get("source_run_id") or snapshot.get("id"))
 
-    signals = collect_signals(snapshot)
+    signals = merge_signals(collect_signals(snapshot), extra_signals)
     components = evaluate_snapshot_components(
         tldr=tldr,
         signals=signals,

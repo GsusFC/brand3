@@ -157,7 +157,7 @@ def evaluate_component(
     block = block if isinstance(block, dict) else {}
 
     detected = bool(block.get("detected")) and block.get("content")
-    if not detected:
+    if not detected and not (spec.get("evaluate_on_signals") and signals):
         return ComponentResult(
             component=key,
             status=STATUS_NOT_DETECTED,
@@ -385,7 +385,7 @@ Component question: {spec['question']}
 Rubric version: {RUBRIC_VERSION}
 
 DETECTED READING (Pass 1, evidence-based):
-content: {_block_content_text(block)}
+content: {_block_content_text(block) or "(no detectado)"}
 mode: {block.get('mode')}
 confidence: {block.get('confidence')}
 rationale: {block.get('rationale')}

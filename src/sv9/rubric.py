@@ -186,6 +186,11 @@ COMPONENTS = {
         "scale": 10,
         "multiplier": 1,
         "pair": None,
+        # The low rungs (logo/color, estética, sistema) are judgeable from
+        # visual evidence alone even when no conceptual brand idea was detected
+        # in text; only the concept rungs (5+) need the detection. Without this,
+        # a missing concept erases observable visual identity.
+        "evaluate_on_signals": True,
         "question": "¿Qué idea conceptual conecta categoría, oferta, expresión y metáfora?",
         "level_zero": "Plantilla sin alterar: identidad visual nula.",
         "ladder": [

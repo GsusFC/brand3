@@ -31,6 +31,11 @@ from src.storage.sqlite_store import SQLiteStore
 from src.sv9.models import Sv9ScanResult
 from src.sv9.rubric import PRESENTATION_ORDER, RUBRIC_VERSION
 from src.sv9.service import detect_for_snapshot, run_sv9_from_audit_snapshot
+from src.sv9.signals import (
+    audit_visual_method,
+    compute_vision_observations,
+    vision_signals,
+)
 from src.sv9.store import Sv9Store
 
 
@@ -54,9 +59,34 @@ def _replay_run(
     if detection is None:
         detection = detect_for_snapshot(snapshot)
         sv9_store.save_detection(run_id, detection)
-    result = run_sv9_from_audit_snapshot(snapshot, magnetism_result=detection)
+    extra_signals = _vision_signals_for_run(sv9_store, run_id, snapshot)
+    result = run_sv9_from_audit_snapshot(
+        snapshot, magnetism_result=detection, extra_signals=extra_signals
+    )
     scan_id = sv9_store.save_scan(result)
     return result, scan_id
+
+
+def _vision_signals_for_run(
+    sv9_store: Sv9Store,
+    run_id: int,
+    snapshot: dict[str, Any],
+) -> dict[str, Any] | None:
+    """SV9-time vision pass over the persisted screenshot, cached per run.
+
+    Only computed when the audit-time visual analysis fell back to local pixel
+    heuristics; when the audit already used the vision model, its observations
+    travel through the regular signal detail.
+    """
+    payload = sv9_store.get_visual_evidence(run_id)
+    if payload is None:
+        if audit_visual_method(snapshot) == "vision":
+            return None
+        payload = compute_vision_observations(snapshot)
+        if payload is None:
+            return None
+        sv9_store.save_visual_evidence(run_id, payload)
+    return vision_signals(payload)
 
 
 def _comparison_rows(

@@ -147,6 +147,55 @@ class EvaluateComponentTests(unittest.TestCase):
         self.assertIn("(no detectado)", llm.calls[0]["user"])
 
 
+class BrandIdeaSignalEvaluationTests(unittest.TestCase):
+    def test_brand_idea_evaluates_from_visual_signals_without_detection(self):
+        llm = FakeLLM(pass_up_to=3)
+        tldr = full_tldr()
+        tldr["brand_idea"] = tldr_block("", detected=False)
+        signals = [
+            {
+                "feature": "vision_observations",
+                "legacy_dimension": "sv9_vision_pass",
+                "value": "professional-generic",
+                "confidence": "high",
+                "source": "vision_llm",
+                "detail": '{"logo_detected": true, "dominant_colors": ["#101010"]}',
+            }
+        ]
+        result = evaluate_component(
+            "brand_idea", tldr=tldr, signals=signals, brand_name="Acme", url="u", llm=llm
+        )
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertEqual(result.score, 3)
+        prompt = llm.calls[0]["user"]
+        self.assertIn("(no detectado)", prompt)
+        self.assertIn("logo_detected", prompt)
+
+    def test_brand_idea_without_detection_or_signals_stays_not_detected(self):
+        llm = FakeLLM()
+        tldr = full_tldr()
+        tldr["brand_idea"] = tldr_block("", detected=False)
+        result = evaluate_component(
+            "brand_idea", tldr=tldr, signals=[], brand_name="Acme", url="u", llm=llm
+        )
+        self.assertEqual(result.status, STATUS_NOT_DETECTED)
+        self.assertEqual(llm.calls, [])
+
+    def test_other_components_do_not_evaluate_on_signals_alone(self):
+        llm = FakeLLM()
+        tldr = full_tldr()
+        tldr["mission"] = tldr_block("", detected=False)
+        result = evaluate_component(
+            "mission",
+            tldr=tldr,
+            signals=[{"feature": "x", "legacy_dimension": "y", "value": 1, "confidence": 1, "source": "s"}],
+            brand_name="Acme",
+            url="u",
+            llm=llm,
+        )
+        self.assertEqual(result.status, STATUS_NOT_DETECTED)
+
+
 class EvaluateCoherenciaTests(unittest.TestCase):
     def test_coherencia_runs_with_holes_and_sees_both_axes(self):
         llm = FakeLLM(pass_up_to=2)

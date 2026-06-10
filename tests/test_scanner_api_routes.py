@@ -65,6 +65,7 @@ def test_ready_scan_row_or_error_returns_409_for_unready_scan(monkeypatch):
             "evidence_url": f"/api/v1/scanner/{row['id']}/evidence",
             "methodology_url": f"/api/v1/scanner/{row['id']}/methodology",
             "audit_url": f"/api/v1/scanner/{row['id']}/audit",
+            "strategic_reading_url": f"/api/v1/scanner/{row['id']}/strategic-reading",
             "ui_url": None,
         },
     )

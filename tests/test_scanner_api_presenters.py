@@ -15,7 +15,9 @@ from web.scanner_api.schemas import (
     ScannerMethodologyResponse,
     ScannerResultMetadata,
     ScannerResultResponse,
+    ScannerStrategicReadingResponse,
     ScannerStatus,
+    scanner_openapi_spec,
 )
 
 
@@ -98,6 +100,7 @@ def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():
     assert payload["evidence_url"] == "/api/v1/scanner/42/evidence"
     assert payload["methodology_url"] == "/api/v1/scanner/42/methodology"
     assert payload["audit_url"] == "/api/v1/scanner/42/audit"
+    assert payload["strategic_reading_url"] == "/api/v1/scanner/42/strategic-reading"
     assert payload["ui_url"] == "/magnetism-scanner/scan/42?lang=en"
     assert payload["scanner_readiness"]["status"] == "publishable"
     assert payload["scan_mode"]["mode"] == "from_audit_run"
@@ -196,6 +199,7 @@ def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():
     }
     assert payload["evidence_api_url"] == "/api/v1/scanner/42/evidence"
     assert payload["methodology_api_url"] == "/api/v1/scanner/42/methodology"
+    assert payload["strategic_reading_api_url"] == "/api/v1/scanner/42/strategic-reading"
     assert payload["ui_url"] == "/magnetism-scanner/scan/42?lang=en"
     assert payload["result_metadata"]["result_version"] == "scanner_result_v1"
     assert ScannerResultResponse.model_validate(payload).id == 42
@@ -306,6 +310,46 @@ def test_scanner_audit_response_contract_accepts_available_and_missing_shapes():
 
     assert ScannerAuditResponse.model_validate(available).source_run_id == 7
     assert ScannerAuditResponse.model_validate(missing).reason == "missing_source_run"
+
+
+def test_scanner_strategic_reading_response_contract_accepts_available_and_missing_shapes():
+    available = {
+        "id": 42,
+        "brand_name": "Example",
+        "url": "https://example.com",
+        "available": True,
+        "source_run_id": 7,
+        "layer": "client_strategic_reading",
+        "internal_name": "client_tldr_v2",
+        "client_strategic_reading": {
+            "generation_mode": "fallback_client_v2",
+            "score_reading": {"status": "computed"},
+            "legacy_tldr_brand3_v2": {},
+        },
+        "ui_url": "/magnetism-scanner/scan/42/client-tldr-v2?lang=en",
+    }
+    missing = {
+        "id": 43,
+        "brand_name": "Example",
+        "url": "https://example.com",
+        "available": False,
+        "source_run_id": None,
+        "reason": "missing_source_run",
+        "layer": "client_strategic_reading",
+        "internal_name": "client_tldr_v2",
+        "client_strategic_reading": None,
+        "ui_url": "/magnetism-scanner/scan/43/client-tldr-v2?lang=es",
+    }
+
+    assert ScannerStrategicReadingResponse.model_validate(available).available is True
+    assert ScannerStrategicReadingResponse.model_validate(missing).reason == "missing_source_run"
+
+
+def test_scanner_openapi_spec_exposes_strategic_reading_endpoint():
+    spec = scanner_openapi_spec()
+
+    assert "/api/v1/scanner/{scan_id}/strategic-reading" in spec["paths"]
+    assert "ScannerStrategicReadingResponse" in spec["components"]["schemas"]
 
 
 def test_scanner_research_evidence_payload_falls_back_to_source_map_surfaces():

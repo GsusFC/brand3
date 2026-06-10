@@ -69,6 +69,11 @@ The preview is available as an experimental scanner route:
 
 - `/magnetism-scanner/scan/{scan_id}/client-tldr-v2`
 
+The same layer is exposed in the public Scanner API under its product-facing
+role:
+
+- `/api/v1/scanner/{scan_id}/strategic-reading`
+
 You can also reach it from the scanner UI:
 
 - open a scan detail page

@@ -43,6 +43,7 @@ def scanner_status_payload(
         "evidence_url": f"/api/v1/scanner/{scan_id}/evidence",
         "methodology_url": f"/api/v1/scanner/{scan_id}/methodology",
         "audit_url": f"/api/v1/scanner/{scan_id}/audit",
+        "strategic_reading_url": f"/api/v1/scanner/{scan_id}/strategic-reading",
         "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}" if status == "ready" else None,
     }
 
@@ -79,6 +80,7 @@ def scanner_result_payload(
         "tldr_strategy": payload.get("tldr_strategy") or {},
         "evidence_api_url": f"/api/v1/scanner/{scan_id}/evidence",
         "methodology_api_url": f"/api/v1/scanner/{scan_id}/methodology",
+        "strategic_reading_api_url": f"/api/v1/scanner/{scan_id}/strategic-reading",
         "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}",
     }
 

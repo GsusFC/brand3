@@ -9,6 +9,9 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import JSONResponse
 
 from src.config import BRAND3_DB_PATH
+from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+from src.reports.dossier import build_brand_dossier
+from src.scoring.provenance import build_score_provenance_report
 from src.storage.sqlite_store import SQLiteStore
 
 from ..middleware.scanner_api_auth import (
@@ -34,6 +37,19 @@ from ..workers.url_validator import validate_url
 router = APIRouter()
 
 _Lang = Literal["es", "en"]
+
+
+class _ReportReadAnalyzer:
+    """Keep API strategic-reading context reads deterministic and side-effect free."""
+
+    def _call(self, *args, **kwargs) -> str:
+        return ""
+
+    def _call_json(self, *args, **kwargs) -> dict:
+        return {}
+
+
+_REPORT_READ_ANALYZER = _ReportReadAnalyzer()
 
 
 @router.get("/scanner-api/openapi.json", include_in_schema=False)
@@ -98,6 +114,15 @@ def _ready_scan_row_or_error(scan_id: int, *, lang: _Lang = "es") -> dict | JSON
     if row.get("status") != "ready":
         return _scan_not_ready(row, lang=lang)
     return row
+
+
+def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) -> dict | None:
+    if lang == "en":
+        return None
+    try:
+        return store.get_report_translation(run_id, lang)
+    except Exception:
+        return None
 
 
 @router.post("/api/v1/scanner", status_code=202, response_model=None)
@@ -250,4 +275,76 @@ async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONRespon
             "completed_at": run.get("completed_at"),
         },
         "audit": run.get("audit") if isinstance(run.get("audit"), dict) else {},
+    }
+
+
+@router.get("/api/v1/scanner/{scan_id}/strategic-reading", response_model=None)
+async def scanner_api_strategic_reading(
+    request: Request,
+    scan_id: int,
+    lang: _Lang = Query("es"),
+) -> dict | JSONResponse:
+    auth_error = scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
+    row = _ready_scan_row_or_error(scan_id, lang=lang)
+    if isinstance(row, JSONResponse):
+        return row
+    model = magnetism_scan_model_from_row(row)
+    source_run_id = model.get("source_run_id")
+    base_response = {
+        "id": scan_id,
+        "brand_name": model["brand_name"],
+        "url": model["url"],
+        "layer": "client_strategic_reading",
+        "internal_name": "client_tldr_v2",
+        "ui_url": f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang={lang}",
+    }
+    if not source_run_id:
+        return {
+            **base_response,
+            "available": False,
+            "source_run_id": None,
+            "reason": "missing_source_run",
+            "client_strategic_reading": None,
+        }
+
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(int(source_run_id))
+        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
+        score_provenance = build_score_provenance_report(store, int(source_run_id))
+    finally:
+        store.close()
+
+    if snapshot is None:
+        return {
+            **base_response,
+            "available": False,
+            "source_run_id": int(source_run_id),
+            "reason": "missing_snapshot",
+            "client_strategic_reading": None,
+        }
+
+    report_context = build_brand_dossier(
+        snapshot,
+        theme="light",
+        analyzer=_REPORT_READ_ANALYZER,
+        narrative_payload=narrative_payload,
+    )
+    payload = model["payload"] if isinstance(model.get("payload"), dict) else {}
+    current_tldr = payload.get("tldr_brand3") if isinstance(payload.get("tldr_brand3"), dict) else {}
+    return {
+        **base_response,
+        "available": True,
+        "source_run_id": int(source_run_id),
+        "reason": None,
+        "client_strategic_reading": build_client_tldr_v2(
+            brand_name=str(model.get("brand_name") or "brand scan"),
+            url=str(model.get("url") or ""),
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_context,
+            lang=lang,
+        ),
     }

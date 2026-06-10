@@ -70,6 +70,7 @@ class ScannerStatus(BaseModel):
     evidence_url: str
     methodology_url: str
     audit_url: str
+    strategic_reading_url: str
     ui_url: str | None
 
 
@@ -141,6 +142,7 @@ class ScannerResultResponse(BaseModel):
     audit: ScannerAuditLink
     evidence_api_url: str
     methodology_api_url: str
+    strategic_reading_api_url: str
     ui_url: str
 
 
@@ -187,6 +189,21 @@ class ScannerAuditResponse(BaseModel):
     audit: dict | None = None
 
 
+class ScannerStrategicReadingResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int
+    brand_name: str
+    url: str
+    available: bool
+    source_run_id: int | None = None
+    reason: str | None = None
+    layer: Literal["client_strategic_reading"]
+    internal_name: str
+    client_strategic_reading: dict | None = None
+    ui_url: str | None = None
+
+
 class ScannerError(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -225,6 +242,7 @@ def scanner_openapi_spec() -> dict:
     evidence_response_schema = _component_schema(ScannerEvidenceResponse)
     audit_run_summary_schema = _component_schema(ScannerAuditRunSummary)
     audit_response_schema = _component_schema(ScannerAuditResponse)
+    strategic_reading_response_schema = _component_schema(ScannerStrategicReadingResponse)
     scanner_error_schema = _component_schema(ScannerError)
     error_schema = _component_schema(ScannerErrorResponse)
     validation_error_schema = {
@@ -424,6 +442,32 @@ def scanner_openapi_spec() -> dict:
                     "security": [{"ScannerApiKey": []}],
                 }
             },
+            "/api/v1/scanner/{scan_id}/strategic-reading": {
+                "get": {
+                    "operationId": "getScannerStrategicReading",
+                    "summary": "Read client-safe strategic reading",
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                        {"name": "lang", "in": "query", "required": False, "schema": {"type": "string", "enum": ["es", "en"], "default": "es"}},
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Client-safe Strategic Message Layer reading or missing-source indicator",
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ScannerStrategicReadingResponse"}
+                                }
+                            },
+                        },
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
+                    },
+                    "security": [{"ScannerApiKey": []}],
+                }
+            },
         },
         "components": {
             "schemas": {
@@ -446,6 +490,7 @@ def scanner_openapi_spec() -> dict:
                 "ScannerEvidenceResponse": evidence_response_schema,
                 "ScannerAuditRunSummary": audit_run_summary_schema,
                 "ScannerAuditResponse": audit_response_schema,
+                "ScannerStrategicReadingResponse": strategic_reading_response_schema,
                 "ScannerError": scanner_error_schema,
                 "Error": error_schema,
                 "ValidationError": validation_error_schema,

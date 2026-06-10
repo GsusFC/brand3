@@ -74,6 +74,21 @@ class LLMCacheTests(unittest.TestCase):
             self.assertEqual(llm_http.call_count, 1)
             self.assertEqual(second.cache_hits, 1)
 
+    def test_call_text_uses_normalized_chat_completions_url(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="key", base_url="https://llm.test/", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", "cached prose"),
+                ) as llm_http:
+                    result = llm._call("system", "user")
+
+        self.assertEqual(result, "cached prose")
+        self.assertEqual(llm_http.call_args.kwargs["url"], "https://llm.test/chat/completions")
+
     def test_call_json_timeout_returns_empty_and_records_failure(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = str(Path(tmpdir) / "brand3.sqlite3")
@@ -115,7 +130,7 @@ class LLMCacheTests(unittest.TestCase):
         self.assertEqual(failure["base_url"], "https://llm.test")
         self.assertNotIn("secret-key", json.dumps(failure))
 
-    def test_call_json_http_error_records_provider_details(self):
+    def test_call_json_http_error_records_provider_http_error(self):
         provider_error = json.dumps({
             "error": {
                 "code": "rate_limit_exceeded",
@@ -129,16 +144,78 @@ class LLMCacheTests(unittest.TestCase):
             with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
                 with patch(
                     "src.features.llm_analyzer._run_llm_http_call",
-                    return_value=("error", f"HTTP 429: {provider_error}"),
+                    return_value=("http_error", f"HTTP 429: {provider_error}"),
                 ):
                     result = llm._call_json("system", "user")
 
         self.assertEqual(result, {})
         failure = llm.call_failures[0]
+        self.assertEqual(failure["reason"], "provider_http_error")
         self.assertEqual(failure["error_type"], "http_error")
         self.assertEqual(failure["http_status"], 429)
         self.assertEqual(failure["provider_error_code"], "rate_limit_exceeded")
         self.assertEqual(failure["provider_error_message"], "Too many requests")
+        self.assertEqual(failure["model"], "model-a")
+        self.assertEqual(failure["base_url"], "https://llm.test")
+        self.assertNotIn("secret-key", json.dumps(failure))
+
+    def test_call_json_debug_transport_captures_final_url_and_headers(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="secret-key", base_url="https://generativelanguage.googleapis.com/v1beta/openai/", model="model-a")
+            schema = {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["status", "message"],
+                "properties": {
+                    "status": {"type": "string"},
+                    "message": {"type": "string"},
+                },
+            }
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch.dict("os.environ", {"BRAND3_LLM_DEBUG_TRANSPORT": "1"}, clear=False):
+                    with patch(
+                        "src.features.llm_analyzer._run_llm_http_call",
+                        return_value=("http_error", "HTTP 404: Not Found"),
+                    ) as llm_http:
+                        result = llm._call_json(
+                            "system",
+                            "user",
+                            json_schema=schema,
+                            schema_name="brand3_smoke_test",
+                            timeout_seconds=30,
+                        )
+
+        self.assertEqual(result, {})
+        self.assertEqual(llm.last_failure_reason, "provider_http_error")
+        self.assertEqual(llm.last_request_debug["final_url_repr"], "'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions'")
+        self.assertEqual(llm.last_request_debug["method"], "POST")
+        self.assertEqual(llm.last_request_debug["headers"]["Authorization"], "Bearer [redacted]")
+        self.assertEqual(llm.last_request_debug["headers"]["Content-Type"], "application/json")
+        self.assertEqual(
+            llm.last_request_debug["body_top_level_keys"],
+            ["max_tokens", "messages", "model", "response_format", "temperature"],
+        )
+        self.assertEqual(llm_http.call_args.kwargs["url"], "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions")
+
+    def test_call_json_transport_error_records_transport_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="secret-key", base_url="https://llm.test", model="model-a")
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("error", "<urlopen error [Errno 8] nodename nor servname provided, or not known>"),
+                ):
+                    result = llm._call_json("system", "user")
+
+        self.assertEqual(result, {})
+        failure = llm.call_failures[0]
+        self.assertEqual(failure["reason"], "transport_error")
+        self.assertEqual(failure["error_type"], "transport_error")
+        self.assertEqual(llm.last_failure_reason, "transport_error")
         self.assertEqual(failure["model"], "model-a")
         self.assertEqual(failure["base_url"], "https://llm.test")
         self.assertNotIn("secret-key", json.dumps(failure))
@@ -160,6 +237,33 @@ class LLMCacheTests(unittest.TestCase):
         self.assertEqual(failure["error_type"], "json_parse_error")
         self.assertTrue(failure["json_parse_error"])
         self.assertFalse(failure["response_empty"])
+        self.assertEqual(failure["model"], "model-a")
+        self.assertEqual(failure["base_url"], "https://llm.test")
+        self.assertNotIn("secret-key", json.dumps(failure))
+
+    def test_call_json_schema_validation_error_records_schema_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(api_key="secret-key", base_url="https://llm.test", model="model-a")
+            schema = {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["score"],
+                "properties": {"score": {"type": "number"}},
+            }
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    return_value=("ok", json.dumps({"wrong": 1})),
+                ):
+                    result = llm._call_json("system", "user", json_schema=schema, schema_name="score_schema")
+
+        self.assertEqual(result, {})
+        failure = llm.call_failures[0]
+        self.assertEqual(failure["reason"], "schema_validation_error")
+        self.assertEqual(failure["error_type"], "schema_validation_error")
+        self.assertEqual(llm.last_failure_reason, "schema_validation_error")
         self.assertEqual(failure["model"], "model-a")
         self.assertEqual(failure["base_url"], "https://llm.test")
         self.assertNotIn("secret-key", json.dumps(failure))

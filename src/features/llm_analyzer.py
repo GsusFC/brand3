@@ -12,15 +12,14 @@ Provider is configured via src.config (OpenAI-compatible API).
 
 import json
 import hashlib
-import multiprocessing as mp
 import os
-import queue
 import socket
 import urllib.request
 import urllib.error
+import urllib.parse
 from typing import Any
 
-from src.config import BRAND3_DB_PATH, BRAND3_LLM_API_KEY, LLM_BASE_URL, LLM_MODEL
+from src.config import BRAND3_DB_PATH, LLM_BASE_URL, LLM_MODEL
 
 
 PROMPT_VERSION = "brand3-llm-v1"
@@ -44,20 +43,24 @@ def _looks_like_timeout(exc: BaseException) -> bool:
     return "timed out" in str(exc).lower() or "timeout" in str(exc).lower()
 
 
-def _llm_http_worker(output_queue, url: str, payload: bytes, headers: dict[str, str], timeout_seconds: int) -> None:
+def _llm_http_request_once(url: str, payload: bytes, headers: dict[str, str], timeout_seconds: int | None) -> tuple[str, str]:
     req = urllib.request.Request(url, data=payload, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
             data = json.loads(resp.read())
             msg = data["choices"][0]["message"]
             content = msg.get("content") or msg.get("reasoning") or ""
-            output_queue.put(("ok", content))
+            return "ok", content
     except urllib.error.HTTPError as exc:
         error_body = exc.read().decode("utf-8", errors="replace")[:500]
-        output_queue.put(("error", f"HTTP {exc.code}: {error_body}"))
+        return "http_error", f"HTTP {exc.code}: {error_body}"
     except Exception as exc:
         reason = "timeout" if _looks_like_timeout(exc) else "error"
-        output_queue.put((reason, str(exc)))
+        return reason, str(exc)
+
+
+def _llm_http_worker(output_queue, url: str, payload: bytes, headers: dict[str, str], timeout_seconds: int) -> None:
+    output_queue.put(_llm_http_request_once(url, payload, headers, timeout_seconds))
 
 
 def _run_llm_http_call(
@@ -68,40 +71,13 @@ def _run_llm_http_call(
     timeout_seconds: int,
 ) -> tuple[str, str]:
     if timeout_seconds <= 0:
-        req = urllib.request.Request(url, data=payload, headers=headers)
-        with urllib.request.urlopen(req, timeout=None) as resp:
-            data = json.loads(resp.read())
-            msg = data["choices"][0]["message"]
-            return "ok", msg.get("content") or msg.get("reasoning") or ""
-
-    import sys
-    method = "spawn" if sys.platform == "darwin" else ("fork" if "fork" in mp.get_all_start_methods() else "spawn")
-    ctx = mp.get_context(method)
-    output_queue = ctx.Queue(maxsize=1)
-    process = ctx.Process(
-        target=_llm_http_worker,
-        args=(output_queue, url, payload, headers, timeout_seconds),
-    )
-    process.start()
-    process.join(timeout_seconds + 2)
-    if process.is_alive():
-        process.terminate()
-        process.join(2)
-        if process.is_alive():
-            process.kill()
-            process.join(2)
-        return "timeout", f"llm_call_timeout_after_{timeout_seconds}s"
-
-    try:
-        status, content = output_queue.get_nowait()
-    except queue.Empty:
-        return "error", "llm_call_no_result"
-    return str(status), str(content or "")
+        return _llm_http_request_once(url, payload, headers, None)
+    return _llm_http_request_once(url, payload, headers, timeout_seconds)
 
 
 def llm_failure_reason(llm, default: str) -> str:
     reason = getattr(llm, "last_failure_reason", None)
-    if reason in {"llm_timeout", "llm_error"}:
+    if reason in {"llm_timeout", "llm_error", "transport_error", "schema_validation_error", "provider_http_error"}:
         return reason
     return default
 
@@ -146,11 +122,117 @@ def _llm_error_type(reason: str, error: str) -> str:
     normalized = (error or "").lower()
     if reason == "llm_timeout" or "timeout" in normalized or "timed out" in normalized:
         return "timeout"
-    if (error or "").startswith("HTTP "):
-        return "http_error"
     if "llm_call_no_result" in normalized:
-        return "no_result"
+        return "transport_error"
+    if _looks_like_transport_error(normalized):
+        return "transport_error"
+    if reason == "provider_http_error" or (error or "").startswith("HTTP "):
+        return "http_error"
     return "provider_error"
+
+
+def _transport_debug_enabled() -> bool:
+    return os.environ.get("BRAND3_LLM_DEBUG_TRANSPORT", "").strip().lower() in {"1", "true", "yes", "on"}
+
+
+def _chat_completions_url(base_url: str) -> str:
+    return f"{base_url.rstrip('/')}/chat/completions"
+
+
+def _redacted_headers(headers: dict[str, str]) -> dict[str, str]:
+    out = {}
+    for key, value in headers.items():
+        if key.lower() == "authorization":
+            out[key] = "Bearer [redacted]"
+        else:
+            out[key] = value
+    return out
+
+
+def _body_top_level_keys(payload: bytes) -> list[str]:
+    try:
+        decoded = json.loads(payload.decode("utf-8"))
+    except Exception:
+        return []
+    if isinstance(decoded, dict):
+        return sorted(decoded.keys())
+    return []
+
+
+def _looks_like_transport_error(error: str) -> bool:
+    normalized = (error or "").lower()
+    transport_markers = (
+        "urlopen error",
+        "nodename nor servname provided",
+        "name or service not known",
+        "temporary failure in name resolution",
+        "no address associated with hostname",
+        "failed to establish a new connection",
+        "connection refused",
+        "connection reset by peer",
+        "network is unreachable",
+        "getaddrinfo failed",
+        "dns",
+    )
+    return any(marker in normalized for marker in transport_markers)
+
+
+def _json_type_matches(value: Any, schema_type: str) -> bool:
+    if schema_type == "string":
+        return isinstance(value, str)
+    if schema_type == "number":
+        return isinstance(value, (int, float)) and not isinstance(value, bool)
+    if schema_type == "integer":
+        return isinstance(value, int) and not isinstance(value, bool)
+    if schema_type == "boolean":
+        return isinstance(value, bool)
+    if schema_type == "null":
+        return value is None
+    if schema_type == "array":
+        return isinstance(value, list)
+    if schema_type == "object":
+        return isinstance(value, dict)
+    return True
+
+
+def _validate_json_schema_value(value: Any, schema: dict[str, Any], path: str = "$") -> str | None:
+    expected_type = schema.get("type")
+    if expected_type and not _json_type_matches(value, expected_type):
+        return f"{path}: expected {expected_type}"
+
+    if expected_type == "object" and isinstance(value, dict):
+        required = schema.get("required") or []
+        missing = [name for name in required if name not in value]
+        if missing:
+            return f"{path}: missing required field(s): {', '.join(sorted(missing))}"
+
+        properties = schema.get("properties") or {}
+        if schema.get("additionalProperties") is False:
+            extra = [key for key in value if key not in properties]
+            if extra:
+                return f"{path}: unexpected field(s): {', '.join(sorted(extra))}"
+
+        for key, child_schema in properties.items():
+            if key in value and isinstance(child_schema, dict):
+                error = _validate_json_schema_value(value[key], child_schema, f"{path}.{key}")
+                if error:
+                    return error
+
+    if expected_type == "array" and isinstance(value, list):
+        item_schema = schema.get("items")
+        if isinstance(item_schema, dict):
+            for index, item in enumerate(value):
+                error = _validate_json_schema_value(item, item_schema, f"{path}[{index}]")
+                if error:
+                    return error
+
+    return None
+
+
+def _validate_json_schema(value: Any, schema: dict[str, Any]) -> str | None:
+    if not isinstance(schema, dict):
+        return None
+    return _validate_json_schema_value(value, schema)
 
 
 def _json_response_format(
@@ -194,16 +276,41 @@ def _parse_json_content(content: str) -> Any:
 class LLMAnalyzer:
     """LLM-powered brand content analyzer."""
 
+    @staticmethod
+    def _resolve_api_key(api_key: str | None) -> str:
+        if api_key:
+            return api_key
+        return (
+            os.environ.get("BRAND3_LLM_API_KEY")
+            or os.environ.get("GEMINI_API_KEY")
+            or os.environ.get("GOOGLE_API_KEY")
+            or os.environ.get("OPENROUTER_API_KEY", "")
+        )
+
+    @staticmethod
+    def _resolve_base_url(base_url: str | None) -> str:
+        if base_url:
+            return base_url
+        return os.environ.get("BRAND3_LLM_BASE_URL", LLM_BASE_URL)
+
+    @staticmethod
+    def _resolve_model(model: str | None) -> str:
+        if model:
+            return model
+        return os.environ.get("BRAND3_LLM_MODEL", LLM_MODEL)
+
     def __init__(self, api_key: str = None, base_url: str = None, model: str = None):
-        self.api_key = api_key or BRAND3_LLM_API_KEY
-        self.base_url = base_url or LLM_BASE_URL
-        self.model = model or LLM_MODEL
+        self.api_key = self._resolve_api_key(api_key)
+        self.base_url = self._resolve_base_url(base_url)
+        self.model = self._resolve_model(model)
         self.cache_hits = 0
         self.cache_misses = 0
         self.cache_writes = 0
         self.timeout_seconds = LLM_CALL_TIMEOUT_SECONDS
         self.last_failure_reason: str | None = None
+        self.last_raw_response: str | None = None
         self.call_failures: list[dict[str, Any]] = []
+        self.last_request_debug: dict[str, Any] | None = None
 
     def _record_failure(
         self,
@@ -321,7 +428,7 @@ class LLMAnalyzer:
         payload = json.dumps(body).encode()
 
         status, content = _run_llm_http_call(
-            url=f"{self.base_url}/chat/completions",
+            url=_chat_completions_url(self.base_url),
             payload=payload,
             headers={
                 "Content-Type": "application/json",
@@ -342,7 +449,12 @@ class LLMAnalyzer:
             self._cache_save(cache_key, "text", content)
             return content
 
-        reason = "llm_timeout" if status == "timeout" else "llm_error"
+        if status == "timeout":
+            reason = "llm_timeout"
+        elif _looks_like_transport_error(content):
+            reason = "transport_error"
+        else:
+            reason = "llm_error"
         self._record_failure(reason, content)
         print(f"  LLM call failed: {content}")
         return ""
@@ -392,32 +504,59 @@ class LLMAnalyzer:
 
         effective_timeout = self.timeout_seconds if timeout_seconds is None else int(timeout_seconds)
         payload = json.dumps(body).encode()
+        final_url = _chat_completions_url(self.base_url)
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {self.api_key}",
+        }
+        if _transport_debug_enabled():
+            self.last_request_debug = {
+                "base_url_repr": repr(self.base_url),
+                "path_repr": repr("/chat/completions"),
+                "final_url_repr": repr(final_url),
+                "parsed_url": {
+                    "scheme": urllib.parse.urlparse(final_url).scheme,
+                    "netloc": urllib.parse.urlparse(final_url).netloc,
+                    "path": urllib.parse.urlparse(final_url).path,
+                    "params": urllib.parse.urlparse(final_url).params,
+                    "query": urllib.parse.urlparse(final_url).query,
+                    "fragment": urllib.parse.urlparse(final_url).fragment,
+                },
+                "method": "POST",
+                "headers": _redacted_headers(headers),
+                "body_top_level_keys": _body_top_level_keys(payload),
+                "timeout_seconds": effective_timeout,
+            }
+            print(f"[LLMAnalyzer transport] {json.dumps(self.last_request_debug, ensure_ascii=False)}")
         status, content = _run_llm_http_call(
-            url=f"{self.base_url}/chat/completions",
+            url=final_url,
             payload=payload,
-            headers={
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}",
-            },
+            headers=headers,
             timeout_seconds=effective_timeout,
         )
         if status != "ok" and json_schema is not None:
             # Provider compatibility varies; keep production safe by falling back
             # to JSON mode while preserving schema-specific cache separation.
-            fallback_body = dict(body)
-            fallback_body["response_format"] = {"type": "json_object"}
-            status, content = _run_llm_http_call(
-                url=f"{self.base_url}/chat/completions",
-                payload=json.dumps(fallback_body).encode(),
-                headers={
-                    "Content-Type": "application/json",
-                    "Authorization": f"Bearer {self.api_key}",
-                },
-                timeout_seconds=effective_timeout,
-            )
+            if status != "transport_error":
+                fallback_body = dict(body)
+                fallback_body["response_format"] = {"type": "json_object"}
+                status, content = _run_llm_http_call(
+                    url=final_url,
+                    payload=json.dumps(fallback_body).encode(),
+                    headers=headers,
+                    timeout_seconds=effective_timeout,
+                )
         if status != "ok":
-            reason = "llm_timeout" if status == "timeout" else "llm_error"
+            if status == "timeout":
+                reason = "llm_timeout"
+            elif status == "transport_error" or _looks_like_transport_error(content):
+                reason = "transport_error"
+            elif status == "http_error" or (content or "").startswith("HTTP "):
+                reason = "provider_http_error"
+            else:
+                reason = "llm_error"
             self._record_failure(reason, content)
+            self.last_raw_response = content
             print(f"  LLM JSON call failed: {content}")
             return {}
 
@@ -428,10 +567,12 @@ class LLMAnalyzer:
                 error_type="empty_response",
                 response_empty=True,
             )
+            self.last_raw_response = ""
             return {}
 
         # Belt-and-suspenders: strip markdown fencing if the model still added it.
         content = content.strip()
+        self.last_raw_response = content
         if content.startswith("```"):
             content = content.split("\n", 1)[1]
             if content.endswith("```"):
@@ -440,6 +581,15 @@ class LLMAnalyzer:
 
         try:
             parsed = _parse_json_content(content)
+            if json_schema is not None and strict_schema:
+                schema_error = _validate_json_schema(parsed, json_schema)
+                if schema_error:
+                    self._record_failure(
+                        "schema_validation_error",
+                        schema_error,
+                        error_type="schema_validation_error",
+                    )
+                    return {}
             self._cache_save(cache_key, "json", parsed)
             self._clear_failure()
             return parsed

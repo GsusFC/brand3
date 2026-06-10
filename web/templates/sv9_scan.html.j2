@@ -1,0 +1,65 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: sv9 scan #{{ scan.id }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">brand3_score · preview interno sv9</span>
+    <span class="tag">// scan #{{ scan.id }} · {{ scan.rubric_version }} · {{ scan.evaluator_model or '—' }}</span>
+  </div>
+
+  {# --- Capa 1: los cuatro datos --- #}
+  <div style="display:flex; flex-wrap:wrap; gap:1.6em; align-items:baseline; margin:0.8em 0 1.2em;">
+    <div>
+      <div style="font-size:2.6em; line-height:1;"><strong>{{ scan.brand3_score }}</strong><span class="dim">/100</span></div>
+      <div class="dim">{{ scan.brand_name }} · {{ scan.url }}</div>
+    </div>
+    <div>
+      <div class="dim">margen inmediato</div>
+      <div><strong>+{{ scan.immediate_margin }}</strong> puntos a un peldaño</div>
+    </div>
+    {% if gap_label %}
+    <div>
+      <div class="dim">hueco más doloroso</div>
+      <div><strong>{{ gap_label }}</strong></div>
+    </div>
+    {% endif %}
+    <div>
+      {% if scan.magnetism_capped %}<span class="tag">magnetism cap</span>{% endif %}
+      {% if scan.needs_review %}<span class="tag">coherencia en revisión</span>{% endif %}
+      {% if not scan.is_complete %}<span class="tag">scan parcial</span>{% endif %}
+    </div>
+  </div>
+
+  {# --- Capa 2: canvas TLDR puntuado, Coherencia como marco --- #}
+  <div style="border:2px solid var(--accent, #e6007e); border-radius:6px; padding:0.9em; position:relative;">
+    <span class="tag" style="position:absolute; top:-0.9em; right:1em; background:var(--bg, #fff); padding:0 0.5em;">
+      coherencia {{ coherencia.score }}/10 ×2
+    </span>
+
+    {% for row in canvas %}
+    <div style="display:grid; grid-template-columns:repeat({{ row|length }}, 1fr); gap:0.7em; margin:0.7em 0;">
+      {% for box in row %}
+      <div style="border:1px solid rgba(128,128,128,0.35); border-radius:4px; padding:0.55em 0.7em; position:relative;
+                  {% if box.is_chip %}opacity:0.92; font-size:0.92em;{% endif %}
+                  {% if box.status != 'scored' %}border-style:dashed;{% endif %}">
+        <div class="section-head" style="margin-bottom:0.25em;">
+          <span class="label" style="font-size:0.82em;">{{ box.label }}</span>
+          <span class="tag">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
+        </div>
+        {% if box.content %}
+        <div style="font-size:0.9em;">{{ box.content }}</div>
+        {% else %}
+        <div class="dim" style="font-size:0.9em;">(no detectado)</div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <p class="prose dim" style="margin-top:1em;">
+    <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a> ·
+    <a href="/sv9/calibration">→ todos los scans</a>
+  </p>
+</section>
+{% endblock %}

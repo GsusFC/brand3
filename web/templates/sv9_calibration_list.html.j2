@@ -31,7 +31,7 @@
       {% for scan in scans %}
       <tr style="border-top:1px solid rgba(128,128,128,0.25);">
         <td style="padding:4px 8px;"><a href="/sv9/calibration/{{ scan.id }}">#{{ scan.id }}</a></td>
-        <td style="padding:4px 8px;">{{ scan.brand_name }}</td>
+        <td style="padding:4px 8px;"><a href="/sv9/scan/{{ scan.id }}">{{ scan.brand_name }}</a></td>
         <td style="padding:4px 8px;">{{ scan.brand3_score }}/100</td>
         <td style="padding:4px 8px;" class="dim">{{ scan.evaluator_model or '—' }}</td>
         <td style="padding:4px 8px;">

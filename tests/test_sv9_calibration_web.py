@@ -127,6 +127,21 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         response = self.client.get(f"/sv9/calibration/{self.scan_id}")
         self.assertIn("Δ2", response.text)
 
+    def test_scan_canvas_requires_team_and_renders(self):
+        response = self.client.get(f"/sv9/scan/{self.scan_id}")
+        self.assertEqual(response.status_code, 403)
+
+        self._unlock()
+        response = self.client.get(f"/sv9/scan/{self.scan_id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("brand3_score", response.text)
+        self.assertIn("margen inmediato", response.text)
+        self.assertIn("coherencia 3/10", response.text)
+        self.assertIn("core_purpose text", response.text)
+
+        response = self.client.get("/sv9/scan/99999")
+        self.assertEqual(response.status_code, 404)
+
     def test_submit_validates_scale_and_component(self):
         self._unlock()
         response = self.client.post(

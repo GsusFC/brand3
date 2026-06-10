@@ -75,6 +75,9 @@ Each finding is meant to capture:
 - supporting evidence URLs
 
 They are generated at report time, not stored as permanent per-dimension prose artifacts.
+The persisted finding payload keeps `typical_decision` for compatibility, and the
+current reader-facing composition still uses `Finding.prose` unless a rendering
+variant is introduced.
 
 ## Tensions
 

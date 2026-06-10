@@ -13,7 +13,9 @@ The goal is not to make the model sound more strategic. The goal is to make each
 
 Every block interpreter must produce:
 
+- `block`
 - `answer`
+- `detected`
 - `claim_type`: `declared | performed | inferred | absent`
 - `mode`: `literal | compressed | interpreted_from_discourse | needs_human_review | not_detected`
 - `confidence`: `high | medium | low`
@@ -21,7 +23,19 @@ Every block interpreter must produce:
 - `reasoning`
 - `evidence_used`
 - `counter_evidence`
+- `source_layers`
 - `human_review_recommended`
+
+And it must preserve the canonical TLDR block metadata:
+
+- `question`
+- `evidence_scope`
+- `source_signal`
+- `source_signal_path`
+- `source_layer`
+- `content` as a compatibility alias for `answer`
+- `evidence` as a compatibility alias for `evidence_used`
+- `rationale` as a compatibility alias for `reasoning`
 
 ## Shared Spec Shape
 

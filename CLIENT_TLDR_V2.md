@@ -6,6 +6,7 @@ Client TLDR v2 is an experimental, client-safe preview that combines:
 - score provenance from the reviewed/computed score layer
 - report context for the attached Brand Audit run
 - perceptual hints only when they are normalized and evidence-bound
+- an editorial-first LLM output contract with a small visible schema
 
 ## Purpose
 
@@ -32,6 +33,19 @@ This preview is separate from:
   - validation questions
   - diagnosis
   - limitations
+- If the LLM output is successful, the editorial reading appears above the
+  score and the 9 blocks render as strings without confidence labels.
+- If the payload falls back to the legacy block object shape, the renderer can
+  still show the older block-style copy safely.
+- The LLM output contract is editorial-first:
+  - `executive_reading`
+  - `score_note`
+  - `blocks`
+- `system_reading`
+- `caveats`
+- Successful LLM output now normalizes into string blocks. Legacy object-shaped
+  blocks are kept only for fallback compatibility during the transition.
+- The visible TLDR is not a rendered audit object.
 
 ## Evidence and perceptual inputs
 
@@ -40,9 +54,14 @@ The preview can reuse:
 - current TLDR evidence refs
 - score provenance evidence refs
 - normalized perceptual hints
+- internal evidence can remain in the payload even when it is not shown in the main body
 
 Only normalized perceptual records are used. Review-only perceptual corpus
 records are excluded.
+
+The main TLDR body is editorial. Detailed evidence is retained internally and,
+when shown at all, appears in a collapsed evidence basis section instead of the
+block copy itself.
 
 ## Usage
 
@@ -64,3 +83,5 @@ It is not the default client-facing TLDR yet.
 - It does not change scoring formulas.
 - It does not mutate computed scores.
 - It does not connect perceptual corpus data to scoring.
+- Old object-shaped blocks are fallback compatibility only and are not the
+  primary client-facing format anymore.

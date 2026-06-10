@@ -86,7 +86,9 @@ These guardrails apply to all team work:
 
 ## Local Setup
 
-Python 3.11+ is expected.
+Official repository runtime: Python 3.11+.
+Use the project virtual environment for all local work and tests.
+System Python 3.9 is not supported for this repository.
 
 ```bash
 python -m venv .venv
@@ -187,6 +189,12 @@ Render a report:
 ```
 
 ## Run Tests
+
+Run tests with the project virtual environment:
+
+```bash
+./.venv/bin/python -m pytest
+```
 
 Full suite:
 

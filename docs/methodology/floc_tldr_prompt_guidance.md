@@ -60,6 +60,29 @@ clearly. Otherwise, articulate the block from traceable evidence or mark it as
 not detected.
 ```
 
+The block output should follow the canonical TLDR contract used by the scanner:
+
+- `block`
+- `detected`
+- `question`
+- `evidence_scope`
+- `source_signal`
+- `source_signal_path`
+- `source_layer`
+- `observations`
+- `answer`
+- `claim_type`
+- `mode`
+- `confidence`
+- `reasoning`
+- `evidence_used`
+- `counter_evidence`
+- `source_layers`
+- `human_review_recommended`
+
+Use `content`, `evidence`, and `rationale` only as compatibility aliases when a
+downstream consumer still expects them.
+
 ### 3. Magnetism Is Not A Slogan
 
 Magnetism is the phrase, tension or emotional charge that concentrates
@@ -140,6 +163,10 @@ Use the Research Pack as evidence. Do not use private examples, category
 assumptions or generic consultancy language as evidence.
 
 For every block:
+- preserve the canonical block contract, including detected status, question,
+  evidence scope, source signal, source signal path, source layer, observations,
+  answer, claim type, mode, confidence, reasoning, evidence used, counter
+  evidence, source layers and human review recommendation;
 - answer the block's strategic question;
 - preserve claim type: declared, performed, inferred or absent;
 - preserve mode: literal, compressed, interpreted_from_discourse,

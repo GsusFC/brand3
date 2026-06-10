@@ -23,8 +23,12 @@ If a claim cannot be supported with traceable evidence, the block must degrade t
 Every TLDR block must expose:
 
 - `block`
+- `detected`
 - `question`
 - `evidence_scope`
+- `source_signal`
+- `source_signal_path`
+- `source_layer`
 - `observations`
 - `answer`
 - `claim_type`: `declared | performed | inferred | absent`
@@ -40,6 +44,12 @@ Compatibility aliases may remain during migration:
 - `content` mirrors `answer`
 - `evidence` mirrors `evidence_used`
 - `rationale` mirrors `reasoning`
+
+Derived metadata that must stay present on the block:
+
+- `source_layers`
+- `human_review_recommended`
+- `detected`
 
 ## v0.3 Migration Scope
 
@@ -199,42 +209,66 @@ Risks:
 
 ## 3. Shared Data Contract
 
-Every TLDR block should use this shape:
+Every TLDR block should use this shape. This is the canonical runtime contract used by the extractor and tests:
 
 ```json
 {
-  "content": "string | string[] | null",
-  "mode": "literal | compressed | interpreted_from_discourse | not_detected | needs_human_review",
+  "block": "value_proposition",
   "detected": true,
-  "confidence": "high | medium | low | insufficient",
+  "question": "What does the brand offer, to whom, and what changes for that audience?",
+  "evidence_scope": ["netspace", "tactispace", "ambientspace"],
+  "source_signal": "Exchange",
+  "source_signal_path": "Exchange → Value Proposition",
+  "source_layer": "netspace",
+  "observations": ["Uses 2 traceable evidence item(s) selected for value_proposition."],
+  "answer": "string | string[] | null",
+  "claim_type": "declared | performed | inferred | absent",
+  "mode": "literal | compressed | interpreted_from_discourse | needs_human_review | not_detected",
+  "confidence": "high | medium | low",
+  "reasoning": "short explanation of how evidence supports the formulation",
+  "evidence_used": ["literal quote or exact visual/context signal"],
+  "counter_evidence": ["short limitation or rebuttal"],
+  "source_layers": ["netspace", "tactispace", "ambientspace"],
+  "human_review_recommended": false,
+  "content": "string | string[] | null",
   "evidence": ["literal quote or exact visual/context signal"],
-  "rationale": "short explanation of how evidence supports the formulation",
-  "source_layers": ["mindspace"],
-  "human_review_recommended": false
+  "rationale": "short explanation of how evidence supports the formulation"
 }
 ```
 
 Required fields for every block:
 
-- `content`
-- `mode`
+- `block`
 - `detected`
+- `content`
+- `question`
+- `evidence_scope`
+- `source_signal`
+- `source_signal_path`
+- `source_layer`
+- `observations`
+- `answer`
+- `claim_type`
+- `mode`
 - `confidence`
-- `evidence`
+- `reasoning`
+- `evidence_used`
+- `counter_evidence`
 - `source_layers`
+- `human_review_recommended`
 
 Required when `mode=interpreted_from_discourse`:
 
-- `rationale`
+- `reasoning`
 
 Required when `mode=needs_human_review`:
 
 - `human_review_recommended=true`
-- `rationale` must explain ambiguity
+- `reasoning` must explain ambiguity
 
 Renderer rule:
 
-- show `content` first
+- show `content` first, then `answer`
 - expose `mode`, `confidence`, `evidence`, and `rationale` as inspection metadata
 - never hide the difference between literal and interpreted content
 

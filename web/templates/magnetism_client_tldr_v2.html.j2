@@ -1,7 +1,12 @@
 {% extends "base.html.j2" %}
+{% set client_tldr = model.client_tldr_v2|default({}, true) %}
+{% set score_reading = client_tldr.score_reading|default({}, true) %}
+{% set system_reading = client_tldr.system_reading|default({}, true) %}
+{% set editorial_blocks = client_tldr.blocks|default({}, true) %}
+{% set legacy_blocks = client_tldr.legacy_tldr_brand3_v2|default({}, true) %}
 {% block title %}brand3 :: {{ model.t.client_tldr_v2 }}{% endblock %}
 {% block content %}
-<section class="magnetism-hero-section">
+<section class="magnetism-hero-section" data-generation-mode="{{ client_tldr.generation_mode or '' }}" data-display-score-source="{{ client_tldr.display_score_source or '' }}">
   <div class="section-head">
     <span class="label">magnetism scanner</span>
     <span class="tag">// {{ model.t.client_tldr_v2_tag }}</span>
@@ -9,21 +14,27 @@
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
       <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      {% if client_tldr and client_tldr.available and client_tldr.executive_reading %}
+      <div style="border: 1px solid var(--border); background: var(--surface); padding: 14px 16px; margin-top: 14px;">
+        <div class="dim" style="font-family: var(--font-ui); font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .04em; margin-bottom: 8px;">Executive reading</div>
+        <p class="prose intro-copy magnetism-hero-verdict" style="margin: 0;">{{ client_tldr.executive_reading }}</p>
+      </div>
+      {% endif %}
       <p class="prose intro-copy magnetism-hero-verdict">
         {{ model.t.client_tldr_v2_tag }}
       </p>
-      {% if model.client_tldr_v2 and model.client_tldr_v2.available %}
+      {% if client_tldr and client_tldr.available %}
       <div style="display:grid; gap:8px; margin-top: 16px;">
         <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-          <span class="badge badge-ready">{{ model.client_tldr_v2.score_reading.label }}</span>
-          {% if model.client_tldr_v2.score_reading.value is not none %}
-          <span class="inline-kv"><span class="k">{{ model.t.score_status }}</span>=<span class="v">{{ model.client_tldr_v2.score_reading.value }}</span></span>
+          <span class="badge badge-ready">{{ score_reading.label or model.t.score_status }}</span>
+          {% if score_reading.value is not none %}
+          <span class="inline-kv"><span class="k">{{ model.t.score_status }}</span>=<span class="v">{{ score_reading.value }}</span></span>
           {% else %}
-          <span class="inline-kv"><span class="k">{{ model.t.score_status }}</span>=<span class="v">{{ model.client_tldr_v2.score_reading.status }}</span></span>
+          <span class="inline-kv"><span class="k">{{ model.t.score_status }}</span>=<span class="v">{{ score_reading.status or "unavailable" }}</span></span>
           {% endif %}
         </div>
         <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0;">
-          {{ model.client_tldr_v2.score_reading.note }}
+          {{ score_reading.note or "" }}
         </p>
       </div>
       {% endif %}
@@ -31,46 +42,46 @@
     <div class="magnetism-hero-metric">
       <div class="dim magnetism-hero-label">{{ model.t.score_reading }}</div>
       <div class="hl-accent magnetism-hero-score">
-        {% if model.client_tldr_v2 and model.client_tldr_v2.available and model.client_tldr_v2.score_reading.value is not none %}
-        {{ "%.1f"|format(model.client_tldr_v2.score_reading.value) }}<span>/100</span>
+        {% if client_tldr and client_tldr.available and score_reading.value is not none %}
+        {{ "%.1f"|format(score_reading.value) }}<span>/100</span>
         {% else %}
         —<span>/100</span>
         {% endif %}
       </div>
       <div class="magnetism-score-bar" aria-hidden="true">
-        {% if model.client_tldr_v2 and model.client_tldr_v2.available and model.client_tldr_v2.score_reading.value is not none %}
-        <span style="--score-width: {{ model.client_tldr_v2.score_reading.value }}%;"></span>
+        {% if client_tldr and client_tldr.available and score_reading.value is not none %}
+        <span style="--score-width: {{ score_reading.value }}%;"></span>
         {% else %}
         <span style="--score-width: 0%;"></span>
         {% endif %}
       </div>
-      {% if model.client_tldr_v2 and model.client_tldr_v2.available %}
-      <div class="dim magnetism-hero-tier">{{ model.client_tldr_v2.score_reading.label }}</div>
+      {% if client_tldr and client_tldr.available %}
+      <div class="dim magnetism-hero-tier">{{ score_reading.label or "" }}</div>
       {% endif %}
     </div>
   </div>
 
-  {% if not model.client_tldr_v2 or not model.client_tldr_v2.available %}
+  {% if not client_tldr or not client_tldr.available %}
   <div style="border: 1px solid var(--warning); background: color-mix(in srgb, var(--warning) 8%, transparent); padding: 10px 12px; margin: 12px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
-    {{ model.client_tldr_v2.message or "This preview is unavailable." }}
+    {{ client_tldr.message or "This preview is unavailable." }}
   </div>
   {% else %}
   <div style="border: 1px solid var(--border); background: var(--surface); padding: 12px 14px; margin: 12px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
-    {{ model.client_tldr_v2.system_reading.diagnosis }}
+    {{ system_reading.diagnosis or "" }}
   </div>
   {% endif %}
 </section>
 
 <hr class="rule-thin magnetism-compact-rule">
 
-{% if model.client_tldr_v2 and model.client_tldr_v2.available %}
+{% if client_tldr and client_tldr.available %}
 <section>
   <div class="section-head">
     <span class="label">TLDR Brand3 v2</span>
-    <span class="tag">// 9 blocks, client-safe preview</span>
+    <span class="tag">// editorial-first, client-safe preview</span>
   </div>
 
-  {% set blocks = [
+  {% set block_labels = [
     ("core_purpose", "CORE PURPOSE"),
     ("magnetism", "MAGNETISM"),
     ("value_proposition", "VALUE PROPOSITION"),
@@ -82,46 +93,43 @@
     ("vision", "VISION")
   ] %}
   <div class="magnetism-tldr-grid">
-    {% for key, label in blocks %}
-    {% set block = model.client_tldr_v2.tldr_brand3_v2[key] %}
+    {% for key, label in block_labels %}
+    {% set block = editorial_blocks.get(key) if editorial_blocks is mapping else none %}
+    {% if block is none and legacy_blocks is mapping %}
+      {% set block = legacy_blocks.get(key) %}
+    {% endif %}
+    {% set block_text = "" %}
+    {% set block_confidence = "" %}
+    {% set block_caveat = "" %}
+    {% set block_validation_question = "" %}
+    {% if block is string %}
+      {% set block_text = block %}
+    {% elif block is mapping %}
+      {% set block_text = block.answer|default("", true) or block.content|default("", true) or block.text|default("", true) or block.reading|default("", true) %}
+      {% set block_confidence = block.confidence|default("", true) %}
+      {% set block_caveat = block.caveat|default("", true) %}
+      {% set block_validation_question = block.validation_question|default("", true) %}
+    {% endif %}
     <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; min-height: 190px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;">
       <div>
         <div class="magnetism-card-head">
           <div class="magnetism-card-title-stack">
             <span class="hl-accent magnetism-card-title">{{ model.t.tldr_block_names[key] or label }}</span>
-            {% if block.confidence %}
-            <span class="dim magnetism-card-path">{{ block.confidence }}</span>
+            {% if block_confidence %}
+            <span class="dim magnetism-card-path">{{ block_confidence }}</span>
             {% endif %}
           </div>
         </div>
-        {% if block.answer %}
-        <p class="magnetism-card-result">{{ block.answer }}</p>
+        {% if block_text %}
+        <p class="magnetism-card-result">{{ block_text }}</p>
         {% else %}
         <p class="dim magnetism-card-result">{{ model.t.no_detected }}</p>
         {% endif %}
-        {% if block.caveat %}
-        <p class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.45; margin: 8px 0 0;">{{ block.caveat }}</p>
+        {% if block_caveat %}
+        <p class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.45; margin: 8px 0 0;">{{ block_caveat }}</p>
         {% endif %}
-        {% if block.validation_question %}
-        <p class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.45; margin: 6px 0 0;">{{ block.validation_question }}</p>
-        {% endif %}
-      </div>
-      <div style="display:grid; gap:7px;">
-        {% if block.evidence_sources %}
-        <details style="font-family: var(--font-mono); font-size: 10px; color: var(--muted);">
-          <summary style="cursor:pointer;">Evidence refs · {{ block.evidence_sources|length }}</summary>
-          <ul style="margin: 8px 0 0 16px; padding: 0; display: grid; gap: 4px;">
-            {% for source in block.evidence_sources %}
-            <li>
-              {% if source.url %}
-              <a href="{{ source.url }}" target="_blank" rel="noopener noreferrer">{{ source.label or source.url }}</a>
-              {% else %}
-              {{ source.label or source.source_key }}
-              {% endif %}
-            </li>
-            {% endfor %}
-          </ul>
-        </details>
+        {% if block_validation_question %}
+        <p class="dim" style="font-family: var(--font-mono); font-size: 10px; line-height: 1.45; margin: 6px 0 0;">{{ block_validation_question }}</p>
         {% endif %}
       </div>
     </div>
@@ -139,25 +147,18 @@
   <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; margin-top: 14px;">
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
       <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">{{ model.t.credibility_support }}</h2>
-      <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0 0 10px;">{{ model.client_tldr_v2.system_reading.credibility_support.reading }}</p>
-      {% if model.client_tldr_v2.system_reading.credibility_support.evidence_refs %}
-      <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
-        {% for ref in model.client_tldr_v2.system_reading.credibility_support.evidence_refs %}
-        <li style="margin-bottom: 8px;">
-          {% if ref.url %}
-          <a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer">{{ ref.label or ref.url }}</a>
-          {% else %}
-          {{ ref.label or ref.block }}
-          {% endif %}
-        </li>
-        {% endfor %}
-      </ul>
+      {% set credibility_support = system_reading.credibility_support|default("", true) %}
+      {% if credibility_support is mapping %}
+        {% set credibility_support_text = credibility_support.reading|default("", true) %}
+      {% else %}
+        {% set credibility_support_text = credibility_support %}
       {% endif %}
+      <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0 0 10px;">{{ credibility_support_text or "" }}</p>
     </article>
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
       <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">{{ model.t.strategic_tensions }}</h2>
       <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
-        {% for tension in model.client_tldr_v2.system_reading.strategic_tensions %}
+        {% for tension in system_reading.strategic_tensions or [] %}
         <li style="margin-bottom: 8px;">{{ tension }}</li>
         {% endfor %}
       </ul>
@@ -165,19 +166,19 @@
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
       <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--success); font-weight: 700; margin: 0 0 10px;">{{ model.t.validation_questions }}</h2>
       <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
-        {% for question in model.client_tldr_v2.system_reading.validation_questions %}
+        {% for question in system_reading.validation_questions or [] %}
         <li style="margin-bottom: 8px;">{{ question }}</li>
         {% endfor %}
       </ul>
     </article>
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
       <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">{{ model.t.diagnosis }}</h2>
-      <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0;">{{ model.client_tldr_v2.system_reading.diagnosis }}</p>
+      <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0;">{{ system_reading.diagnosis or "" }}</p>
     </article>
     <article class="lab-detail-block" style="border: 1px solid var(--border); padding: 18px; background: var(--surface);">
       <h2 style="font-family: var(--font-ui); font-size: 13px; text-transform: uppercase; color: var(--accent); font-weight: 700; margin: 0 0 10px;">{{ model.t.limitations }}</h2>
       <ul style="margin: 0; padding-left: 18px; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--text);">
-        {% for limitation in model.client_tldr_v2.system_reading.limitations %}
+        {% for limitation in system_reading.limitations or [] %}
         <li style="margin-bottom: 8px;">{{ limitation }}</li>
         {% endfor %}
       </ul>
@@ -185,17 +186,17 @@
   </div>
 </section>
 
-{% if model.client_tldr_v2.evidence_refs %}
 <hr class="rule-thin">
+{% if client_tldr.evidence_refs %}
 <section>
   <div class="section-head">
-    <span class="label">{{ model.t.evidence_refs }}</span>
-    <span class="tag">// references used in the preview</span>
+    <span class="label">{{ model.t.evidence_basis }}</span>
+    <span class="tag">// collapsed by default</span>
   </div>
   <details style="margin-top: 12px;">
-    <summary style="cursor:pointer;">{{ model.t.evidence_refs }} · {{ model.client_tldr_v2.evidence_refs|length }}</summary>
+    <summary style="cursor:pointer;">{{ model.t.evidence_basis }} · {{ client_tldr.evidence_refs|length }}</summary>
     <ul style="margin: 12px 0 0 18px; padding: 0; display: grid; gap: 6px; font-family: var(--font-mono); font-size: 11px; line-height: 1.5;">
-      {% for ref in model.client_tldr_v2.evidence_refs %}
+      {% for ref in client_tldr.evidence_refs %}
       <li>
         {% if ref.url %}
         <a href="{{ ref.url }}" target="_blank" rel="noopener noreferrer">{{ ref.label or ref.url }}</a>

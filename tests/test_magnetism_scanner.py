@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import importlib
 import json
+from copy import deepcopy
 import sqlite3
 import tempfile
 import threading
@@ -664,6 +665,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(audit_en.status_code, 200)
         self.assertIn("The proof base does not yet support the clarity of the offer.", audit_en.text)
         self.assertIn("The owned offer is coherent across the available evidence.", audit_en.text)
+        self.assertIn("Fingerprint details", audit_en.text)
+        self.assertIn("Raw feature provenance", audit_en.text)
 
         legacy_payload = dict(payload)
         legacy_payload.pop("research_pack_quality", None)
@@ -1057,6 +1060,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("CORE PURPOSE", response.text)
         self.assertIn("MISSION", response.text)
         self.assertIn("VISION", response.text)
+        self.assertIn("Evidence basis", response.text)
+        self.assertNotIn("Evidence refs", response.text)
         self.assertIn("Credibility support", response.text)
         self.assertIn("Strategic tensions", response.text)
         self.assertIn("Validation questions", response.text)
@@ -1073,7 +1078,8 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("TLDR v2 para cliente", response.text)
-        self.assertIn("Score calculado", response.text)
+        self.assertIn("Estado del score", response.text)
+        self.assertIn("67.8<span>/100</span>", response.text)
         self.assertIn("PROPÓSITO CENTRAL", response.text)
         self.assertIn("MAGNETISMO", response.text)
         self.assertIn("PROPUESTA DE VALOR", response.text)
@@ -1083,7 +1089,13 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Tensiones estratégicas", response.text)
         self.assertIn("Preguntas de validación", response.text)
         self.assertIn("diagnóstico", response.text)
-        self.assertIn("señales de respaldo", response.text.lower())
+        self.assertIn("PERSONALIDAD", response.text)
+        self.assertIn("IDEA DE MARCA", response.text)
+        self.assertIn("ATRIBUTOS", response.text)
+        self.assertIn("VALORES", response.text)
+        self.assertTrue(
+            "(not detected)" in response.text.lower() or "(no detectado)" in response.text.lower(),
+        )
         self.assertNotIn("fingerprint", response.text.lower())
         self.assertNotIn("replay", response.text.lower())
         self.assertNotIn("drift", response.text.lower())
@@ -1091,6 +1103,7 @@ class MagnetismScannerTests(unittest.TestCase):
 
     def test_client_tldr_v2_helper_uses_llm_input_and_preserves_review_only_exclusion(self):
         from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2_prompt
         from src.features.magnetism.extractor import MagnetismExtractor
         from src.reports.dossier import build_brand_dossier
         from src.scoring.provenance import build_score_provenance_report
@@ -1106,6 +1119,25 @@ class MagnetismScannerTests(unittest.TestCase):
 
         payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
         current_tldr = payload["tldr_brand3"]
+        prompt_preview = build_client_tldr_v2_prompt(
+            brand_name="Internal Audit Brand",
+            url="https://internal-audit.test",
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang="en",
+        )
+        prompt_payload = json.loads(prompt_preview)
+        self.assertIn("reasoning_contract", prompt_preview)
+        self.assertIn("executive_reading", prompt_preview)
+        self.assertIn("score_note", prompt_preview)
+        self.assertIn('"blocks"', prompt_preview)
+        self.assertIn("client-safe editorial TLDR", prompt_preview)
+        self.assertIn("Preserve the 9-block TLDR structure, but keep the copy editorial.", prompt_preview)
+        self.assertIn("corpus_guidance", prompt_preview)
+        self.assertIn("reasoning_contract", prompt_payload)
+        self.assertIn("corpus_guidance", prompt_payload["reasoning_contract"])
+        self.assertIn("pattern_meanings", prompt_payload["reasoning_contract"]["corpus_guidance"])
 
         fake_llm = FakeLLMAnalyzer()
         fake_llm.mock_response = {
@@ -1116,28 +1148,14 @@ class MagnetismScannerTests(unittest.TestCase):
                 "value": 78.0,
                 "confidence": "high",
             },
-            "tldr_brand3_v2": {
-                key: {
-                    "block": key,
-                    "question": "What is the clearest visible purpose behind the brand?",
-                    "answer": f"{key} reading for clients.",
-                    "claim_type": "inferred" if key in {"mission", "vision"} else "declared",
-                    "mode": "interpreted_from_discourse" if key in {"mission", "vision"} else "literal",
-                    "confidence": "low" if key in {"mission", "vision"} else "high",
-                    "reasoning": "Grounded in the evidence set.",
-                    "evidence_refs": ["https://internal-audit.test"],
-                    "caveat": "Treat as a working read." if key in {"mission", "vision"} else "",
-                    "validation_question": "What evidence shows this today?" if key in {"mission", "vision"} else "",
-                    "human_review_recommended": key in {"mission", "vision"},
-                }
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "score_note": "The score is usable and grounded in the current evidence set.",
+            "blocks": {
+                key: f"{key} editorial reading."
                 for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
             },
             "system_reading": {
-                "credibility_support": {
-                    "status": "partial",
-                    "reading": "The reading is useful, but some parts still rely on partial signals.",
-                    "evidence_refs": ["https://internal-audit.test"],
-                },
+                "credibility_support": "The reading is useful, but some parts still rely on partial signals.",
                 "strategic_tensions": ["The visible promise still asks for more proof."],
                 "validation_questions": ["What evidence shows this today?"],
                 "diagnosis": "The client reading combines observed evidence with a human-reviewed score.",
@@ -1161,13 +1179,805 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("perceptual_hints", fake_llm.captured_user)
         self.assertIn("https://internal-audit.test", fake_llm.captured_user)
         self.assertNotIn("meta4_english", fake_llm.captured_user)
-        self.assertIn("mission", result["tldr_brand3_v2"])
-        self.assertEqual(result["tldr_brand3_v2"]["mission"]["validation_question"], "What evidence shows this today?")
-        self.assertEqual(result["tldr_brand3_v2"]["mission"]["caveat"], "Treat as a working read.")
+        self.assertEqual(result["executive_reading"], "The brand reads like a governed context layer for AI-native teams.")
+        self.assertEqual(result["score_note"], "The score is usable and grounded in the current evidence set.")
+        self.assertEqual(result["blocks"]["mission"], "mission editorial reading.")
+        self.assertEqual(result["legacy_tldr_brand3_v2"]["mission"]["answer"], "mission editorial reading.")
+        self.assertEqual(result["legacy_tldr_brand3_v2"]["mission"]["question"], "What does the brand concretely do today?")
+        self.assertIn("evidence_refs", result)
+        self.assertEqual(
+            len(result["evidence_refs"]),
+            len({item["url"].lower() for item in result["evidence_refs"]}),
+        )
         self.assertIn("https://internal-audit.test", json.dumps(result["evidence_refs"]))
         self.assertNotIn("fingerprint", json.dumps(result).lower())
 
-    def test_client_tldr_v2_route_can_render_llm_caveats_and_questions_without_audit_jargon(self):
+    def test_client_tldr_v2_prompt_includes_compact_corpus_guidance_payload(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2_prompt
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        custom_hint = {
+            "coherencia": {
+                "surface_signals": ["Category statements should be treated as bounded signals."],
+                "signal_clusters": ["copy · proof · rhythm"],
+                "matched_patterns": [
+                    {
+                        "pattern_id": "pattern_evidence_bound_behavior",
+                        "pattern_name": "Evidence-Bound Behavior",
+                        "perceptual_meaning": "Evidence should be explicit before strategic claims are stated.",
+                    }
+                ],
+                "productive_tensions": ["Claims should be useful before they are bold."],
+                "confidence_notes": ["Sparse owned signals should reduce certainty."],
+                "overreach_boundaries": ["Do not infer external market position from homepage copy."],
+            }
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._compact_perceptual_hints_for_prompt",
+            return_value=custom_hint,
+        ):
+            prompt = build_client_tldr_v2_prompt(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+            )
+
+        payload = json.loads(prompt)
+        self.assertEqual(payload["reasoning_contract"]["corpus_guidance"]["strategic_reading_patterns"], ["Evidence-Bound Behavior"])
+        self.assertIn(
+            "Evidence should be explicit before strategic claims are stated.",
+            payload["reasoning_contract"]["corpus_guidance"]["pattern_meanings"],
+        )
+        self.assertIn("perceptual_hints", payload["reasoning_contract"])
+
+    def test_client_tldr_v2_score_reading_stable_when_guidance_is_present(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+        fake_response = {
+            "executive_reading": "The brand has grounded signals in owned channels.",
+            "score_note": "Current score evidence remains the source of truth for the score.",
+            "blocks": {
+                key: f"{key} editorial reading."
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": "Evidence quality supports a bounded reading.",
+                "strategic_tensions": ["The narrative is strong but proof remains bounded."],
+                "validation_questions": ["What evidence confirms the long-term vision claim?"],
+                "diagnosis": "The score context remains the control point for readiness signals.",
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._compact_perceptual_hints_for_prompt",
+            return_value={
+                "coherencia": {
+                    "surface_signals": ["Evidence should be explicit before making strategic claims."],
+                    "matched_patterns": [
+                        {
+                            "pattern_id": "pattern_evidence_bound_behavior",
+                            "pattern_name": "Evidence-Bound Behavior",
+                            "perceptual_meaning": "Evidence should be explicit before strategic claims are stated.",
+                        }
+                    ],
+                    "productive_tensions": ["Treat copy as hypothesis until observed."],
+                    "confidence_notes": ["Confidence is bounded by direct proof."],
+                    "overreach_boundaries": ["Do not elevate claims based on static copy alone."],
+                }
+            },
+        ):
+            with_guidance_llm = FakeLLMAnalyzer()
+            with_guidance_llm.mock_response = dict(fake_response)
+            with_corpus = build_client_tldr_v2(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=with_guidance_llm,
+            )
+
+        without_guidance_llm = FakeLLMAnalyzer()
+        without_guidance_llm.mock_response = dict(fake_response)
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._compact_perceptual_hints_for_prompt",
+            return_value={},
+        ):
+            without_corpus = build_client_tldr_v2(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=without_guidance_llm,
+            )
+
+        self.assertEqual(with_corpus["score_reading"], without_corpus["score_reading"])
+        self.assertEqual(with_corpus["recommended_display_score"], without_corpus["recommended_display_score"])
+        self.assertEqual(with_corpus["display_score_source"], without_corpus["display_score_source"])
+
+    def test_client_tldr_v2_does_not_mutate_input_tldr(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+        preserved = deepcopy(current_tldr)
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "executive_reading": "The brand has grounded signals in owned channels.",
+            "score_note": "Current score evidence remains the source of truth for the score.",
+            "blocks": {
+                key: f"{key} editorial reading."
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": "Evidence quality supports a bounded reading.",
+                "strategic_tensions": ["The narrative is strong but proof remains bounded."],
+                "validation_questions": ["What evidence confirms the long-term vision claim?"],
+                "diagnosis": "The score context remains the control point for readiness signals.",
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._compact_perceptual_hints_for_prompt",
+            return_value={},
+        ):
+            build_client_tldr_v2(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=fake_llm,
+            )
+
+        self.assertEqual(current_tldr, preserved)
+
+    def test_client_tldr_v2_prompt_warns_against_corpus_verbatim_copy(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2_prompt
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.features.magnetism import client_tldr_v2
+        from src.scoring.provenance import build_score_provenance_report
+        import inspect
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+        leaked_phrase = "[editorial guidance removed]"
+
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "executive_reading": leaked_phrase,
+            "score_note": "The score is usable and grounded in the current evidence set.",
+            "blocks": {
+                key: leaked_phrase if key == "mission" else f"{key} editorial reading."
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": leaked_phrase,
+                "strategic_tensions": [leaked_phrase],
+                "validation_questions": [leaked_phrase],
+                "diagnosis": leaked_phrase,
+                "limitations": [leaked_phrase],
+            },
+            "caveats": [leaked_phrase],
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._compact_perceptual_hints_for_prompt",
+            return_value={
+                "coherencia": {
+                    "surface_signals": [leaked_phrase],
+                    "signal_clusters": ["safety · evidence · rigor"],
+                    "matched_patterns": [
+                        {
+                            "pattern_id": "pattern_evidence_bound_behavior",
+                            "pattern_name": "Evidence-Bound Behavior",
+                            "perceptual_meaning": leaked_phrase,
+                        }
+                    ],
+                    "productive_tensions": [leaked_phrase],
+                    "confidence_notes": [leaked_phrase],
+                    "overreach_boundaries": [leaked_phrase],
+                }
+            },
+        ):
+            prompt = build_client_tldr_v2_prompt(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+            )
+            result = build_client_tldr_v2(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=fake_llm,
+            )
+
+        prompt_payload = json.loads(prompt)
+        reasoning_contract = prompt_payload["reasoning_contract"]
+        self.assertIn("perceptual_hints", reasoning_contract)
+        self.assertIn("corpus_guidance", reasoning_contract)
+        self.assertIn(
+            "Do not copy unrelated corpus language into the TLDR.",
+            reasoning_contract["perceptual_hints"],
+        )
+        self.assertTrue(
+            any(
+                "do not repeat it verbatim" in rule.lower()
+                for rule in reasoning_contract["output_discipline"]
+            )
+        )
+        self.assertIn("pattern_meanings", reasoning_contract["corpus_guidance"])
+        self.assertEqual(
+            reasoning_contract["corpus_guidance"]["strategic_reading_patterns"],
+            ["Evidence-Bound Behavior"],
+        )
+        self.assertEqual(result["generation_mode"], "llm_client_v2")
+        self.assertIn(leaked_phrase, json.dumps(result))
+        self.assertNotIn(leaked_phrase, inspect.getsource(client_tldr_v2))
+
+    def test_client_tldr_v2_works_without_corpus_guidance(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "score_note": "The score is usable and grounded in the current evidence set.",
+            "blocks": {
+                key: f"{key} editorial reading."
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": "Owned evidence is strong.",
+                "strategic_tensions": ["The future-state claim remains thinly evidenced."],
+                "validation_questions": ["What evidence shows the long-term vision?"],
+                "diagnosis": "The reading is editorial and client-safe.",
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._compact_perceptual_hints_for_prompt",
+            return_value={},
+        ):
+            result = build_client_tldr_v2(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=fake_llm,
+            )
+
+        self.assertEqual(result["generation_mode"], "llm_client_v2")
+        self.assertEqual(result["blocks"]["vision"], "vision editorial reading.")
+        self.assertEqual(result["system_reading"]["credibility_support"], "Owned evidence is strong.")
+
+    def test_client_tldr_v2_simplified_json_parses_successfully(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "score_note": "The score is usable and grounded in the current evidence set.",
+            "blocks": {
+                key: f"{key} editorial reading."
+                for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
+            },
+            "system_reading": {
+                "credibility_support": "Owned evidence is strong.",
+                "strategic_tensions": ["The future-state claim remains thinly evidenced."],
+                "validation_questions": ["What evidence shows the long-term vision?"],
+                "diagnosis": "The reading is editorial and client-safe.",
+            },
+            "caveats": ["Some claims remain provisional."],
+        }
+
+        result = build_client_tldr_v2(
+            brand_name="Internal Audit Brand",
+            url="https://internal-audit.test",
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang="en",
+            analyzer=fake_llm,
+        )
+
+        self.assertEqual(result["generation_mode"], "llm_client_v2")
+        self.assertEqual(result["executive_reading"], "The brand reads like a governed context layer for AI-native teams.")
+        self.assertEqual(result["score_reading"]["note"], "The score is usable and grounded in the current evidence set.")
+        self.assertEqual(result["blocks"]["mission"], "mission editorial reading.")
+        self.assertEqual(result["system_reading"]["credibility_support"], "Owned evidence is strong.")
+        self.assertIn("Some claims remain provisional.", result["caveats"])
+        self.assertNotIn("fingerprint", json.dumps(result).lower())
+
+    def test_client_tldr_v2_uppercase_block_keys_are_normalized(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "score_note": "The score is usable and grounded in the current evidence set.",
+            "tldr_brand3_v2": {
+                "CORE PURPOSE": {"content": "Core purpose editorial reading."},
+                "MAGNETISM": "Magnetism editorial reading.",
+                "VALUE PROPOSITION": {"text": "Value proposition editorial reading."},
+                "PERSONALITY": {"answer": "Personality editorial reading."},
+                "BRAND IDEA": "Brand idea editorial reading.",
+                "ATTRIBUTES": "Attributes editorial reading.",
+                "VALUES": "Values editorial reading.",
+                "MISSION": {"content": "Mission editorial reading."},
+                "VISION": {"answer": "Vision editorial reading."},
+            },
+            "system_reading": {
+                "credibility_support": {
+                    "status": "partial",
+                    "reading": "Owned evidence is strong.",
+                    "evidence_refs": ["https://internal-audit.test"],
+                },
+                "strategic_tensions": ["The future-state claim remains thinly evidenced."],
+                "validation_questions": ["What evidence shows the long-term vision?"],
+                "diagnosis": "The reading is editorial and client-safe.",
+            },
+        }
+
+        result = build_client_tldr_v2(
+            brand_name="Internal Audit Brand",
+            url="https://internal-audit.test",
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang="en",
+            analyzer=fake_llm,
+        )
+
+        self.assertEqual(result["generation_mode"], "llm_client_v2")
+        self.assertEqual(result["blocks"]["core_purpose"], "Core purpose editorial reading.")
+        self.assertEqual(result["blocks"]["value_proposition"], "Value proposition editorial reading.")
+        self.assertEqual(result["blocks"]["vision"], "Vision editorial reading.")
+        self.assertEqual(result["system_reading"]["credibility_support"], "Owned evidence is strong.")
+        self.assertIsInstance(result["legacy_tldr_brand3_v2"]["core_purpose"], dict)
+        self.assertEqual(result["legacy_tldr_brand3_v2"]["core_purpose"]["answer"], "Core purpose editorial reading.")
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._default_analyzer",
+            return_value=fake_llm,
+        ):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Executive reading", response.text)
+        self.assertIn("Core purpose editorial reading.", response.text)
+        self.assertIn("Value proposition editorial reading.", response.text)
+        self.assertIn("Vision editorial reading.", response.text)
+        self.assertIn("Owned evidence is strong.", response.text)
+        self.assertNotIn("{'status':", response.text)
+        self.assertNotIn("not detected", response.text.lower())
+
+    def test_client_tldr_v2_plain_text_parser_recovers_nine_blocks(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        class PlainTextLLM:
+            def __init__(self):
+                self.api_key = "fake-key"
+                self.captured_user = ""
+                self.last_raw_response = ""
+
+            def _call_json(self, system: str, user: str, max_tokens: int = 8000, **kwargs: Any):
+                self.captured_user = user
+                self.last_raw_response = """Executive reading\nThe brand reads like a trusted shared context.\n\nScore note\nThe score is grounded in the current evidence.\n\nCORE PURPOSE\nOne context to empower every person.\n\nMAGNETISM\nThe brand pulls attention through practical governed context.\n\nVALUE PROPOSITION\nIt offers a reliable way to organize shared context.\n\nPERSONALITY\nThe personality is pragmatic and measured.\n\nBRAND IDEA\nThe organizing idea is governed sharing.\n\nATTRIBUTES\nGovernance, clarity, and access control.\n\nVALUES\nClarity, parity, and governance.\n\nMISSION\nHelp teams use a trusted shared context.\n\nVISION\nExpand that context into broader operational trust.\n\nCredibility support\nOwned evidence is strong.\n\nStrategic tensions\n- The future-state claim remains thinly evidenced.\n\nValidation questions\n- What evidence shows the long-term vision?\n\nDiagnosis\nThe reading is editorial and client-safe.\n\nCaveats\n- Some claims remain provisional.\n"""
+                return {}
+
+        plain_llm = PlainTextLLM()
+        result = build_client_tldr_v2(
+            brand_name="Internal Audit Brand",
+            url="https://internal-audit.test",
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang="en",
+            analyzer=plain_llm,
+        )
+
+        self.assertEqual(result["generation_mode"], "llm_client_v2")
+        self.assertEqual(result["blocks"]["core_purpose"], "One context to empower every person.")
+        self.assertEqual(result["blocks"]["mission"], "Help teams use a trusted shared context.")
+        self.assertEqual(result["blocks"]["vision"], "Expand that context into broader operational trust.")
+        self.assertIn("The brand reads like a trusted shared context.", result["executive_reading"])
+        self.assertIn("Some claims remain provisional.", result["caveats"])
+
+    def test_client_tldr_v2_malformed_json_preserves_raw_error_safely(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        class BrokenLLM:
+            def __init__(self):
+                self.api_key = "fake-key"
+                self.last_raw_response = "{not valid json"
+
+            def _call_json(self, system: str, user: str, max_tokens: int = 8000, **kwargs: Any):
+                return {}
+
+        broken_llm = BrokenLLM()
+        result = build_client_tldr_v2(
+            brand_name="Internal Audit Brand",
+            url="https://internal-audit.test",
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang="en",
+            analyzer=broken_llm,
+        )
+
+        self.assertEqual(result["generation_mode"], "fallback_client_v2")
+        self.assertIn("analysis_error", result)
+        self.assertEqual(result["analysis_error"]["reason"], "llm_error")
+        self.assertIn("raw_response_preview", result["analysis_error"])
+        self.assertIn("{not valid json", result["analysis_error"]["raw_response_preview"])
+
+    def test_client_tldr_v2_transport_error_is_reported_separately(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+        llm = LLMAnalyzer(api_key="fake-key", base_url="https://llm.test", model="model-a")
+
+        with unittest.mock.patch(
+            "src.features.llm_analyzer._run_llm_http_call",
+            return_value=("error", "<urlopen error [Errno 8] nodename nor servname provided, or not known>"),
+        ):
+            result = build_client_tldr_v2(
+                brand_name="Internal Audit Brand",
+                url="https://internal-audit.test",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=llm,
+            )
+
+        self.assertEqual(result["generation_mode"], "fallback_client_v2")
+        self.assertEqual(result["analysis_error"]["reason"], "transport_error")
+        self.assertEqual(result["analysis_error"]["error_type"], "transport_error")
+        self.assertIn("transport error", result["analysis_error"]["detail"].lower())
+        self.assertIn("urlopen error", result["analysis_error"]["raw_response_preview"])
+
+    def test_client_tldr_v2_reasoning_contract_supports_inference_and_validation(self):
+        from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+        from src.features.magnetism.extractor import MagnetismExtractor
+        from src.reports.dossier import build_brand_dossier
+        from src.scoring.provenance import build_score_provenance_report
+
+        scan_id, run_id = self._seed_internal_audit_scan(reviewed_score=78.0)
+        store = SQLiteStore(str(self.db))
+        try:
+            snapshot = store.get_run_snapshot(run_id)
+            score_provenance = build_score_provenance_report(store, run_id)
+            report_base = build_brand_dossier(snapshot, prefer_persisted_narrative=True)
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract_from_audit_snapshot(snapshot)
+        current_tldr = payload["tldr_brand3"]
+
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "score_reading": {
+                "status": "computed",
+                "label": "Calculated score",
+                "note": "A strategic read can be produced from the current evidence set.",
+                "value": 78.0,
+                "confidence": "high",
+            },
+            "tldr_brand3_v2": {
+                "core_purpose": {
+                    "block": "core_purpose",
+                    "question": "What does the brand explicitly say it exists to do?",
+                    "answer": "The brand acts like a governed knowledge layer for AI-native teams.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "Repeated owned evidence supports this reading.",
+                    "evidence_refs": ["https://www.monora.ai"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "magnetism": {
+                    "block": "magnetism",
+                    "question": "What makes the brand pull attention?",
+                    "answer": "It frames itself as the sharing layer for governed context.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "The product language and repeated evidence point in the same direction.",
+                    "evidence_refs": ["https://www.monora.ai", "https://www.monora.ai/robots.txt"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "value_proposition": {
+                    "block": "value_proposition",
+                    "question": "What is the practical promise?",
+                    "answer": "A single governed context for people and agents.",
+                    "claim_type": "stated",
+                    "mode": "literal",
+                    "confidence": "high",
+                    "reasoning": "This is stated directly in owned evidence.",
+                    "evidence_refs": ["https://www.monora.ai"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "personality": {
+                    "block": "personality",
+                    "question": "What personality does the brand perform?",
+                    "answer": "Pragmatic and egalitarian.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "The product framing treats human and AI agents consistently.",
+                    "evidence_refs": ["https://www.monora.ai"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "brand_idea": {
+                    "block": "brand_idea",
+                    "question": "What organizing idea seems to structure the brand?",
+                    "answer": "Governed sharing is the organizing idea.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "Repeated product language supports this synthesis.",
+                    "evidence_refs": ["https://www.monora.ai"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "attributes": {
+                    "block": "attributes",
+                    "question": "What attributes does the brand repeatedly perform?",
+                    "answer": "Governance, access control, and shared context.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "These attributes recur across the owned evidence set.",
+                    "evidence_refs": ["https://www.monora.ai"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "values": {
+                    "block": "values",
+                    "question": "What values are visible in the brand behavior?",
+                    "answer": "Clarity, parity, and governance.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "The product narrative repeats these values clearly.",
+                    "evidence_refs": ["https://www.monora.ai"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "mission": {
+                    "block": "mission",
+                    "question": "What mission is supported by the evidence?",
+                    "answer": "To give teams one governed context they can trust.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "reasoning": "The owned evidence repeatedly supports this inferred mission.",
+                    "evidence_refs": ["https://www.monora.ai", "https://www.monora.ai/llms.txt"],
+                    "caveat": "",
+                    "validation_question": "",
+                    "human_review_recommended": False,
+                },
+                "vision": {
+                    "block": "vision",
+                    "question": "What longer-term vision is actually supported?",
+                    "answer": None,
+                    "claim_type": "absent",
+                    "mode": "not_detected",
+                    "confidence": "low",
+                    "reasoning": "The evidence is not enough to support a durable long-term vision claim.",
+                    "evidence_refs": [],
+                    "caveat": "The claim would benefit from stronger public validation.",
+                    "validation_question": "What evidence shows the long-term vision beyond current product copy?",
+                    "human_review_recommended": True,
+                },
+            },
+            "system_reading": {
+                "credibility_support": {
+                    "status": "partial",
+                    "reading": "Off-entity evidence is treated as a limitation, not proof.",
+                    "evidence_refs": ["https://www.monora.ai", "https://pypi.org/project/monora/"],
+                },
+                "strategic_tensions": [
+                    "The product is clear, but the long-term vision remains under-supported.",
+                ],
+                "validation_questions": [
+                    "What evidence shows the long-term vision beyond current product copy?",
+                ],
+                "diagnosis": "The brand supports a clear inferred mission, but its future-state claim remains thinly evidenced.",
+                "limitations": [
+                    "Off-entity and third-party evidence should not be treated as proof of the core claim.",
+                ],
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._default_analyzer",
+            return_value=fake_llm,
+        ):
+            result = build_client_tldr_v2(
+                brand_name="www.monora.ai",
+                url="https://www.monora.ai",
+                current_tldr=current_tldr,
+                score_provenance=score_provenance,
+                report_base=report_base,
+                lang="en",
+                analyzer=fake_llm,
+            )
+
+        self.assertEqual(result["blocks"]["mission"], "To give teams one governed context they can trust.")
+        self.assertEqual(result["legacy_tldr_brand3_v2"]["mission"]["claim_type"], "inferred")
+        self.assertIn("governed context", result["legacy_tldr_brand3_v2"]["mission"]["answer"])
+        self.assertEqual(result["legacy_tldr_brand3_v2"]["vision"]["claim_type"], "absent")
+        self.assertIn("What evidence shows the long-term vision", result["legacy_tldr_brand3_v2"]["vision"]["validation_question"])
+        self.assertIn("Off-entity evidence is treated as a limitation, not proof.", result["system_reading"]["credibility_support"])
+        self.assertIn("The claim would benefit from stronger public validation.", result["legacy_tldr_brand3_v2"]["vision"]["caveat"])
+        self.assertNotIn("irrelevant corpus", json.dumps(result).lower())
+
+    def test_client_tldr_v2_route_renders_editorial_first_blocks_and_score_secondary(self):
         scan_id, _ = self._seed_internal_audit_scan(reviewed_score=78.0)
         fake_llm = FakeLLMAnalyzer()
         fake_llm.mock_response = {
@@ -1178,28 +1988,14 @@ class MagnetismScannerTests(unittest.TestCase):
                 "value": 78.0,
                 "confidence": "high",
             },
-            "tldr_brand3_v2": {
-                key: {
-                    "block": key,
-                    "question": "What is the clearest visible purpose behind the brand?",
-                    "answer": f"{key} reading for clients.",
-                    "claim_type": "inferred" if key in {"mission", "vision"} else "declared",
-                    "mode": "interpreted_from_discourse" if key in {"mission", "vision"} else "literal",
-                    "confidence": "low" if key in {"mission", "vision"} else "high",
-                    "reasoning": "Grounded in the evidence set.",
-                    "evidence_refs": ["https://internal-audit.test"],
-                    "caveat": "Treat as a working read." if key in {"mission", "vision"} else "",
-                    "validation_question": "What evidence shows this today?" if key in {"mission", "vision"} else "",
-                    "human_review_recommended": key in {"mission", "vision"},
-                }
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "score_note": "The score is usable and grounded in the current evidence set.",
+            "blocks": {
+                key: f"{key} editorial reading for clients."
                 for key in ["core_purpose", "magnetism", "value_proposition", "personality", "brand_idea", "attributes", "values", "mission", "vision"]
             },
             "system_reading": {
-                "credibility_support": {
-                    "status": "partial",
-                    "reading": "The reading is useful, but some parts still rely on partial signals.",
-                    "evidence_refs": ["https://internal-audit.test"],
-                },
+                "credibility_support": "The reading is useful, but some parts still rely on partial signals.",
                 "strategic_tensions": ["The visible promise still asks for more proof."],
                 "validation_questions": ["What evidence shows this today?"],
                 "diagnosis": "The client reading combines observed evidence with a human-reviewed score.",
@@ -1217,12 +2013,70 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Client TLDR v2", response.text)
         self.assertIn("Reviewed score", response.text)
         self.assertIn("78.0<span>/100</span>", response.text)
-        self.assertIn("Treat as a working read.", response.text)
-        self.assertIn("What evidence shows this today?", response.text)
-        self.assertIn("The client reading combines observed evidence with a human-reviewed score.", response.text)
+        self.assertIn("Executive reading", response.text)
+        self.assertIn("The brand reads like a governed context layer for AI-native teams.", response.text)
+        self.assertTrue(response.text.index("The brand reads like a governed context layer for AI-native teams.") < response.text.index("78.0<span>/100</span>"))
         self.assertIn("CORE PURPOSE", response.text)
         self.assertIn("MISSION", response.text)
         self.assertIn("VISION", response.text)
+        self.assertIn("Evidence basis", response.text)
+        self.assertNotIn("Evidence refs", response.text)
+        self.assertNotIn("magnetism-card-path", response.text)
+        self.assertNotIn("fingerprint", response.text.lower())
+        self.assertNotIn("replay", response.text.lower())
+        self.assertNotIn("drift", response.text.lower())
+        self.assertNotIn("provenance", response.text.lower())
+
+    def test_client_tldr_v2_route_fallback_keeps_legacy_object_blocks(self):
+        scan_id, _ = self._seed_internal_audit_scan(fallback=True)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Client TLDR v2", response.text)
+        self.assertIn("Calculated score", response.text)
+        self.assertIn("CORE PURPOSE", response.text)
+        self.assertIn("MISSION", response.text)
+        self.assertIn("VISION", response.text)
+        self.assertIn("Evidence basis", response.text)
+        self.assertIn("MAGNETISM", response.text)
+        self.assertIn("VALUE PROPOSITION", response.text)
+        self.assertIn("PERSONALITY", response.text)
+        self.assertIn("BRAND IDEA", response.text)
+        self.assertIn("ATTRIBUTES", response.text)
+        self.assertIn("VALUES", response.text)
+        self.assertTrue(
+            "(not detected)" in response.text.lower() or "(no detectado)" in response.text.lower(),
+        )
+        self.assertNotIn("{'status':", response.text)
+        self.assertNotIn("fingerprint", response.text.lower())
+        self.assertNotIn("replay", response.text.lower())
+        self.assertNotIn("drift", response.text.lower())
+        self.assertNotIn("provenance", response.text.lower())
+
+    def test_client_tldr_v2_route_handles_missing_optional_fields_without_500(self):
+        scan_id, _ = self._seed_internal_audit_scan(reviewed_score=78.0)
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "blocks": {
+                "core_purpose": "Core purpose editorial reading.",
+                "mission": "Mission editorial reading.",
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._default_analyzer",
+            return_value=fake_llm,
+        ):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Executive reading", response.text)
+        self.assertIn("The brand reads like a governed context layer for AI-native teams.", response.text)
+        self.assertIn("Core purpose editorial reading.", response.text)
+        self.assertIn("Mission editorial reading.", response.text)
+        self.assertIn("Evidence basis", response.text)
         self.assertNotIn("fingerprint", response.text.lower())
         self.assertNotIn("replay", response.text.lower())
         self.assertNotIn("drift", response.text.lower())

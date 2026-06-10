@@ -8,7 +8,9 @@ legacy TLDR artifact and it does not change scoring.
 from __future__ import annotations
 
 import json
+import os
 from copy import deepcopy
+from pathlib import Path
 from typing import Any
 
 from src.features.magnetism.analyst_tldr import TLDR_KEYS
@@ -16,8 +18,9 @@ from src.features.llm_analyzer import LLMAnalyzer
 from src.reports.experimental_perceptual_narrative import build_perceptual_narrative_hints
 
 
-CLIENT_TLDR_V2_PROMPT_VERSION = "brand3-client-tldr-v2-v0.1"
+CLIENT_TLDR_V2_PROMPT_VERSION = "brand3-client-tldr-v2-v0.3"
 CLIENT_TLDR_V2_TIMEOUT_SECONDS = 45
+_CLIENT_TLDR_RUNTIME_ENV_BOOTSTRAPPED = False
 
 _SCORE_LABELS = {
     "en": {
@@ -82,12 +85,14 @@ def build_client_tldr_v2(
     analyzer: Any | None = None,
 ) -> dict[str, Any]:
     """Build an experimental client-safe TLDR v2 payload."""
+    _ensure_client_tldr_runtime_env_loaded()
     language = "en" if lang == "en" else "es"
     provenance = deepcopy(score_provenance or {})
     base = deepcopy(report_base or {})
     current_blocks = _normalize_tldr_blocks(current_tldr)
 
     llm = analyzer or _default_analyzer()
+    _log_client_tldr_v2_runtime_context(llm)
     if llm is not None and getattr(llm, "api_key", None):
         result = run_client_tldr_v2_pass(
             llm=llm,
@@ -108,6 +113,8 @@ def build_client_tldr_v2(
                 lang=language,
             )
             fallback["analysis_error"] = result["analysis_error"]
+            if result.get("raw_response_preview"):
+                fallback["analysis_error"]["raw_response_preview"] = result["raw_response_preview"]
             return fallback
         validated = result.get("validated") if isinstance(result.get("validated"), dict) else {}
         if validated:
@@ -120,6 +127,22 @@ def build_client_tldr_v2(
         score_provenance=provenance,
         report_base=base,
         lang=language,
+    )
+
+
+def _log_client_tldr_v2_runtime_context(llm: Any | None) -> None:
+    model = getattr(llm, "model", None)
+    base_url = getattr(llm, "base_url", None)
+    final_url = None
+    if isinstance(base_url, str) and base_url.strip():
+        final_url = f"{base_url.rstrip('/')}/chat/completions"
+    print(
+        "[client_tldr_v2_runtime] "
+        f"BRAND3_LLM_API_KEY_present={bool(os.getenv('BRAND3_LLM_API_KEY'))} "
+        f"GEMINI_API_KEY_present={bool(os.getenv('GEMINI_API_KEY'))} "
+        f"GOOGLE_API_KEY_present={bool(os.getenv('GOOGLE_API_KEY'))} "
+        f"model={model!r} base_url={base_url!r} final_url={final_url!r} "
+        f"analyzer={llm.__class__.__name__ if llm is not None else None}"
     )
 
 
@@ -142,6 +165,7 @@ def run_client_tldr_v2_pass(
             }
         }
 
+    perceptual_hints = _compact_perceptual_hints_for_prompt(report_base)
     prompt = build_client_tldr_v2_prompt(
         brand_name=brand_name,
         url=url,
@@ -149,6 +173,7 @@ def run_client_tldr_v2_pass(
         score_provenance=score_provenance,
         report_base=report_base,
         lang=lang,
+        perceptual_hints=perceptual_hints,
     )
     try:
         raw_response = llm._call_json(
@@ -157,6 +182,7 @@ def run_client_tldr_v2_pass(
             max_tokens=5000,
             json_schema=client_tldr_v2_response_schema(),
             schema_name="brand3_client_tldr_v2",
+            strict_schema=False,
             timeout_seconds=CLIENT_TLDR_V2_TIMEOUT_SECONDS,
         )
     except Exception as exc:
@@ -166,14 +192,31 @@ def run_client_tldr_v2_pass(
                 "detail": f"The client TLDR v2 pass failed: {exc}",
             }
         }
+    raw_response_preview = _safe_raw_response_preview(llm)
     raw = _coerce_client_tldr_v2_raw_json(raw_response)
+    if not raw and raw_response_preview:
+        raw = _parse_plain_text_client_tldr_v2(raw_response_preview)
     if not raw:
+        failure_type = None
+        failures = getattr(llm, "call_failures", None)
+        if isinstance(failures, list) and failures:
+            latest_failure = failures[-1]
+            if isinstance(latest_failure, dict):
+                failure_type = latest_failure.get("error_type")
+        failure_reason = "transport_error" if failure_type == "transport_error" else "schema_validation_error" if failure_type == "schema_validation_error" else "llm_error"
+        failure_detail = {
+            "transport_error": "The client TLDR v2 pass hit a transport error before any usable provider payload was returned.",
+            "schema_validation_error": "The client TLDR v2 pass returned JSON that did not satisfy the expected schema.",
+            "llm_error": "The client TLDR v2 pass did not return usable JSON.",
+        }[failure_reason]
         return {
             "analysis_error": {
-                "reason": "llm_error",
-                "detail": "The client TLDR v2 pass did not return usable JSON.",
+                "reason": failure_reason,
+                "detail": failure_detail,
+                "error_type": failure_type or ("transport_error" if failure_reason == "transport_error" else "schema_validation_error" if failure_reason == "schema_validation_error" else "json_parse_error"),
             },
             "raw": raw_response if isinstance(raw_response, dict) else {},
+            "raw_response_preview": raw_response_preview,
         }
     validated = normalize_client_tldr_v2_response(
         raw,
@@ -183,10 +226,12 @@ def run_client_tldr_v2_pass(
         score_provenance=score_provenance,
         report_base=report_base,
         lang=lang,
+        perceptual_guidance=perceptual_hints,
     )
     return {
         "validated": validated,
         "raw": raw,
+        "raw_response_preview": raw_response_preview or (raw_response if isinstance(raw_response, str) else None),
     }
 
 
@@ -197,162 +242,127 @@ def build_client_tldr_v2_prompt(
     current_tldr: dict[str, Any],
     score_provenance: dict[str, Any],
     report_base: dict[str, Any],
+    perceptual_hints: dict[str, Any] | None = None,
     lang: str,
 ) -> str:
     """Build the compact LLM prompt input for client TLDR v2."""
     dimensions = _compact_dimensions_for_prompt(report_base)
-    perceptual_hints = _compact_perceptual_hints_for_prompt(report_base)
+    perceptual_hints = (
+        _compact_perceptual_hints_for_prompt(report_base)
+        if perceptual_hints is None
+        else perceptual_hints
+    )
+    corpus_guidance = _compact_perceptual_guidance(perceptual_hints)
     payload = {
         "prompt_version": CLIENT_TLDR_V2_PROMPT_VERSION,
         "brand": {"name": brand_name, "url": url},
         "task": (
-            "Write a client-safe strategic TLDR preview from the provided structured evidence. "
-            "Use the score and evidence context, but do not mention internal audit jargon."
+            "Write a client-safe editorial TLDR preview, not an audit object. "
+            "Use the score and evidence context to produce concise strategic prose."
         ),
         "language": lang,
+        "reasoning_contract": {
+            "purpose": (
+                "Perform strategic synthesis from the payload before writing the 9-block TLDR."
+            ),
+            "evidence_relevance": [
+                "Evaluate each evidence item for relevance before using it.",
+                "Classify evidence as owned, direct, indirect, weak, ambiguous, or off-entity.",
+                "Off-entity evidence cannot support positive claims.",
+                "Ambiguous entity evidence becomes a limitation, not proof.",
+            ],
+            "claim_ladder": [
+                "Separate stated claims from performed claims, inferred claims, and absent claims.",
+                "If explicit evidence is absent, explain the absence briefly and move the issue to validation questions.",
+                "Use weak inference only when the evidence supports it cautiously.",
+            ],
+            "mission_vision": [
+                "Do not hardcode Mission/Vision behavior.",
+                "If no explicit mission exists, decide whether a performed or inferred mission is supported.",
+                "If supported, write it as inferred.",
+                "If not supported, say so briefly and turn the gap into validation questions.",
+                "Apply the same logic to vision and other blocks.",
+            ],
+            "perceptual_hints": [
+                "Use perceptual hints as reasoning lenses, not copy blocks.",
+                "Reject hints that do not semantically fit the scanned brand.",
+                "Do not copy unrelated corpus language into the TLDR.",
+                "Corpus guidance is for tone, framing, and block reasoning only; it is not source-level evidence.",
+                "Use the score/evidence payload as the only factual basis.",
+            ],
+            "corpus_guidance": corpus_guidance,
+            "output_discipline": [
+                "Preserve the 9-block TLDR structure, but keep the copy editorial.",
+                "Group validation questions.",
+                "Keep evidence internal; do not show raw evidence refs in the main body.",
+                "Translate score and data quality into client-safe language.",
+                "If a corpus phrase strongly matches expected output language, do not repeat it verbatim.",
+                "Every claim must be traceable to scan evidence or the scored readiness context.",
+            ],
+        },
         "score_state": _compact_score_state_for_prompt(score_provenance),
         "readiness": _compact_readiness_for_prompt(report_base),
         "dimensions": dimensions,
         "current_tldr": current_tldr,
-        "perceptual_hints": perceptual_hints,
+        "perceptual_hints": corpus_guidance,
         "required_output": {
-            "score_reading": {
-                "status": "computed | reviewed | blocked | limited_confidence | unavailable",
-                "label": "client-safe label",
-                "note": "client-safe note",
-                "value": "number or null",
-                "confidence": "high | medium | low",
-            },
-            "tldr_brand3_v2": {
-                key: {
-                    "block": key,
-                    "question": "block question",
-                    "answer": "client-safe block answer",
-                    "claim_type": "declared | performed | inferred | absent",
-                    "mode": "literal | interpreted_from_discourse | needs_human_review | not_detected",
-                    "confidence": "high | medium | low",
-                    "reasoning": "short client-safe reasoning",
-                    "evidence_refs": ["traceable urls or ids"],
-                    "caveat": "optional caveat",
-                    "validation_question": "optional question when confidence is low",
-                    "human_review_recommended": False,
-                }
+            "executive_reading": "client-safe strategic synthesis",
+            "score_note": "client-safe score/data-quality interpretation",
+            "blocks": {
+                key: "one short strategic paragraph or sentence"
                 for key in TLDR_KEYS
             },
             "system_reading": {
-                "credibility_support": {
-                    "status": "observed | partial",
-                    "reading": "client-safe credibility reading",
-                    "evidence_refs": ["traceable refs"],
-                },
+                "credibility_support": "client-safe credibility sentence",
                 "strategic_tensions": ["bounded strategic tensions"],
-                "validation_questions": ["bounded questions"],
+                "validation_questions": ["bounded validation questions"],
                 "diagnosis": "client-safe diagnosis",
-                "limitations": ["bounded limitations"],
             },
+            "caveats": ["bounded caveats"],
         },
         "rules": [
             "Keep the output client-safe and strategic.",
             "Do not mention replay, fingerprint, drift, provenance, or audit internals.",
             "Do not turn fallback values into quality judgments.",
-            "Use inferred language when evidence is thin or partial.",
-            "Turn low-confidence claims into validation questions or caveats.",
+            "Reason about ownership, directness, ambiguity, and entity fit before making claims.",
+            "Use inferred language when evidence is thin or partial, but only when the evidence supports it.",
+            "Turn weak inference into validation questions or caveats.",
             "Only use normalized perceptual hints that are evidence-bound.",
-            "Do not surface review-only perceptual records or raw technical noise.",
+            "Do not surface review-only perceptual records, raw technical noise, or unrelated corpus language.",
             "Preserve the 9 TLDR blocks.",
             "Write in the requested language.",
+            "Do not copy corpus guidance verbatim in the client output.",
         ],
     }
     return json.dumps(payload, ensure_ascii=False, indent=2)
 
 
 def client_tldr_v2_response_schema() -> dict[str, Any]:
-    block_schema = {
-        "type": "object",
-        "additionalProperties": False,
-        "required": [
-            "block",
-            "question",
-            "answer",
-            "claim_type",
-            "mode",
-            "confidence",
-            "reasoning",
-            "evidence_refs",
-            "caveat",
-            "validation_question",
-            "human_review_recommended",
-        ],
-        "properties": {
-            "block": {"type": "string", "enum": TLDR_KEYS},
-            "question": {"type": "string"},
-            "answer": {"type": ["string", "null"]},
-            "claim_type": {"type": "string", "enum": ["declared", "performed", "inferred", "absent"]},
-            "mode": {
-                "type": "string",
-                "enum": ["literal", "interpreted_from_discourse", "needs_human_review", "not_detected"],
-            },
-            "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
-            "reasoning": {"type": "string"},
-            "evidence_refs": {"type": "array", "items": {"type": "string"}},
-            "caveat": {"type": "string"},
-            "validation_question": {"type": "string"},
-            "human_review_recommended": {"type": "boolean"},
-        },
-    }
     return {
         "type": "object",
         "additionalProperties": False,
-        "required": ["score_reading", "tldr_brand3_v2", "system_reading"],
+        "required": ["executive_reading", "score_note", "blocks", "system_reading", "caveats"],
         "properties": {
-            "score_reading": {
-                "type": "object",
-                "additionalProperties": False,
-                "required": ["status", "label", "note", "value", "confidence"],
-                "properties": {
-                    "status": {
-                        "type": "string",
-                        "enum": ["computed", "reviewed", "blocked", "limited_confidence", "unavailable"],
-                    },
-                    "label": {"type": "string"},
-                    "note": {"type": "string"},
-                    "value": {"type": ["number", "null"]},
-                    "confidence": {"type": "string", "enum": ["high", "medium", "low"]},
-                },
-            },
-            "tldr_brand3_v2": {
+            "executive_reading": {"type": "string"},
+            "score_note": {"type": "string"},
+            "blocks": {
                 "type": "object",
                 "additionalProperties": False,
                 "required": TLDR_KEYS,
-                "properties": {key: block_schema for key in TLDR_KEYS},
+                "properties": {key: {"type": "string"} for key in TLDR_KEYS},
             },
             "system_reading": {
                 "type": "object",
                 "additionalProperties": False,
-                "required": [
-                    "credibility_support",
-                    "strategic_tensions",
-                    "validation_questions",
-                    "diagnosis",
-                    "limitations",
-                ],
+                "required": ["credibility_support", "strategic_tensions", "validation_questions", "diagnosis"],
                 "properties": {
-                    "credibility_support": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "required": ["status", "reading", "evidence_refs"],
-                        "properties": {
-                            "status": {"type": "string", "enum": ["observed", "partial"]},
-                            "reading": {"type": "string"},
-                            "evidence_refs": {"type": "array", "items": {"type": "string"}},
-                        },
-                    },
+                    "credibility_support": {"type": "string"},
                     "strategic_tensions": {"type": "array", "items": {"type": "string"}},
                     "validation_questions": {"type": "array", "items": {"type": "string"}},
                     "diagnosis": {"type": "string"},
-                    "limitations": {"type": "array", "items": {"type": "string"}},
                 },
             },
+            "caveats": {"type": "array", "items": {"type": "string"}},
         },
     }
 
@@ -366,31 +376,145 @@ def normalize_client_tldr_v2_response(
     score_provenance: dict[str, Any],
     report_base: dict[str, Any],
     lang: str,
+    perceptual_guidance: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    score_reading = _normalize_score_reading(raw.get("score_reading"), score_provenance, lang)
-    raw_blocks = raw.get("tldr_brand3_v2") if isinstance(raw.get("tldr_brand3_v2"), dict) else {}
-    normalized_blocks: dict[str, Any] = {}
+    if "blocks" in raw or "executive_reading" in raw or "score_note" in raw or "caveats" in raw:
+        return _normalize_client_tldr_v2_editorial_response(
+            raw,
+            brand_name=brand_name,
+            url=url,
+            current_tldr=current_tldr,
+            score_provenance=score_provenance,
+            report_base=report_base,
+            lang=lang,
+            perceptual_guidance=perceptual_guidance or {},
+        )
+    return _normalize_client_tldr_v2_legacy_response(
+        raw,
+        brand_name=brand_name,
+        url=url,
+        current_tldr=current_tldr,
+        score_provenance=score_provenance,
+        report_base=report_base,
+        lang=lang,
+        perceptual_guidance=perceptual_guidance or {},
+    )
+
+
+def _normalize_client_tldr_v2_editorial_response(
+    raw: dict[str, Any],
+    *,
+    brand_name: str,
+    url: str,
+    current_tldr: dict[str, Any],
+    score_provenance: dict[str, Any],
+    report_base: dict[str, Any],
+    lang: str,
+    perceptual_guidance: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    score_note = _clean_text(raw.get("score_note"))
+    executive_reading = _clean_text(raw.get("executive_reading"))
+    score_reading = _normalize_score_reading(
+        raw.get("score_reading"),
+        score_provenance,
+        lang,
+        score_note=score_note or executive_reading,
+    )
+    normalized_blocks: dict[str, str] = {}
+    legacy_blocks: dict[str, Any] = {}
     validation_notes: list[str] = []
     for key in TLDR_KEYS:
-        block, notes = _normalize_client_block(
+        raw_block = _resolve_client_tldr_v2_block(raw, key)
+        legacy_block, notes = _normalize_client_block(
             key,
-            raw_blocks.get(key),
+            raw_block,
             current_tldr.get(key) if isinstance(current_tldr, dict) else {},
             lang=lang,
         )
-        normalized_blocks[key] = block
+        legacy_blocks[key] = legacy_block
+        block_text = _client_tldr_v2_block_text(raw_block)
+        if not block_text:
+            block_text = _clean_text(legacy_block.get("answer") or legacy_block.get("content"))
+        normalized_blocks[key] = block_text
         validation_notes.extend(notes)
 
-    system_reading = _normalize_system_reading(raw.get("system_reading"), score_provenance, report_base, lang)
-    evidence_refs = _collect_evidence_refs(normalized_blocks, score_provenance)
-    validation_notes.extend(_validation_notes(normalized_blocks, score_provenance, system_reading))
+    caveats = _clean_list(raw.get("caveats"))
+    system_reading = _normalize_system_reading(
+        raw.get("system_reading"),
+        score_provenance,
+        report_base,
+        lang,
+        executive_reading=executive_reading,
+        caveats=caveats,
+    )
+    system_reading = _client_system_reading(system_reading)
+    if executive_reading and not system_reading.get("diagnosis"):
+        system_reading["diagnosis"] = executive_reading
+    if score_note:
+        score_reading["note"] = score_note
+    evidence_refs = _collect_evidence_refs(legacy_blocks, score_provenance)
+    validation_notes.extend(_validation_notes(legacy_blocks, score_provenance, _legacy_system_reading(system_reading)))
+    validation_notes.extend(caveats)
     return {
         "prompt_version": CLIENT_TLDR_V2_PROMPT_VERSION,
         "generation_mode": "llm_client_v2",
         "brand_name": brand_name,
         "url": url,
         "score_reading": score_reading,
-        "tldr_brand3_v2": normalized_blocks,
+        "executive_reading": executive_reading,
+        "score_note": score_note,
+        "blocks": normalized_blocks,
+        "legacy_tldr_brand3_v2": legacy_blocks,
+        "system_reading": system_reading,
+        "caveats": caveats,
+        "evidence_refs": evidence_refs,
+        "validation_notes": _unique(validation_notes),
+        "display_score_source": score_reading.get("display_source"),
+        "recommended_display_score": score_reading.get("value"),
+    }
+
+
+def _normalize_client_tldr_v2_legacy_response(
+    raw: dict[str, Any],
+    *,
+    brand_name: str,
+    url: str,
+    current_tldr: dict[str, Any],
+    score_provenance: dict[str, Any],
+    report_base: dict[str, Any],
+    lang: str,
+    perceptual_guidance: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    score_reading = _normalize_score_reading(raw.get("score_reading"), score_provenance, lang)
+    raw_blocks = raw.get("tldr_brand3_v2") if isinstance(raw.get("tldr_brand3_v2"), dict) else {}
+    normalized_blocks: dict[str, str] = {}
+    legacy_blocks: dict[str, Any] = {}
+    validation_notes: list[str] = []
+    for key in TLDR_KEYS:
+        raw_block = _resolve_client_tldr_v2_block(raw, key)
+        legacy_block, notes = _normalize_client_block(
+            key,
+            raw_block,
+            current_tldr.get(key) if isinstance(current_tldr, dict) else {},
+            lang=lang,
+        )
+        legacy_blocks[key] = legacy_block
+        block_text = _client_tldr_v2_block_text(raw_block) or _clean_text(legacy_block.get("answer") or legacy_block.get("content"))
+        normalized_blocks[key] = block_text
+        validation_notes.extend(notes)
+
+    system_reading = _normalize_system_reading(raw.get("system_reading"), score_provenance, report_base, lang)
+    system_reading = _client_system_reading(system_reading)
+    evidence_refs = _collect_evidence_refs(legacy_blocks, score_provenance)
+    validation_notes.extend(_validation_notes(legacy_blocks, score_provenance, _legacy_system_reading(system_reading)))
+    return {
+        "prompt_version": CLIENT_TLDR_V2_PROMPT_VERSION,
+        "generation_mode": "llm_client_v2",
+        "brand_name": brand_name,
+        "url": url,
+        "score_reading": score_reading,
+        "blocks": normalized_blocks,
+        "legacy_tldr_brand3_v2": legacy_blocks,
         "system_reading": system_reading,
         "evidence_refs": evidence_refs,
         "validation_notes": _unique(validation_notes),
@@ -408,8 +532,9 @@ def _normalize_client_block(
 ) -> tuple[dict[str, Any], list[str]]:
     notes: list[str] = []
     raw = raw_block if isinstance(raw_block, dict) else {}
+    raw_text = _clean_text(raw_block) if isinstance(raw_block, str) else ""
     source_answer = _clean_text(source_block.get("answer") or source_block.get("content"))
-    answer = _clean_text(raw.get("answer") or raw.get("content")) or source_answer
+    answer = _clean_text(raw.get("answer") or raw.get("content") or raw_text) or source_answer
     question = _clean_text(raw.get("question")) or _question_for_block(key, lang)
     claim_type = _normalize_choice(
         raw.get("claim_type"),
@@ -476,7 +601,59 @@ def _normalize_client_block(
     return block, notes
 
 
-def _normalize_score_reading(raw: Any, provenance: dict[str, Any], lang: str) -> dict[str, Any]:
+def _client_tldr_v2_block_aliases(key: str) -> list[str]:
+    spaced = key.replace("_", " ")
+    title = spaced.title()
+    kebab = key.replace("_", "-")
+    compact = key.replace("_", "")
+    return [
+        key,
+        key.upper(),
+        spaced,
+        spaced.upper(),
+        title,
+        title.upper(),
+        kebab,
+        kebab.upper(),
+        compact,
+        compact.upper(),
+    ]
+
+
+def _client_tldr_v2_block_text(raw_block: Any) -> str:
+    if isinstance(raw_block, str):
+        return _clean_text(raw_block)
+    if isinstance(raw_block, dict):
+        for field in ("answer", "content", "text", "reading"):
+            text = _clean_text(raw_block.get(field))
+            if text:
+                return text
+        return _clean_text(str(raw_block))
+    return ""
+
+
+def _resolve_client_tldr_v2_block(raw: dict[str, Any], key: str) -> Any:
+    if not isinstance(raw, dict):
+        return None
+    candidate_maps: list[dict[str, Any]] = []
+    for candidate in (raw.get("blocks"), raw.get("tldr_brand3_v2"), raw):
+        if isinstance(candidate, dict):
+            candidate_maps.append(candidate)
+    aliases = _client_tldr_v2_block_aliases(key)
+    for candidate_map in candidate_maps:
+        for alias in aliases:
+            if alias in candidate_map:
+                return candidate_map.get(alias)
+    return None
+
+
+def _normalize_score_reading(
+    raw: Any,
+    provenance: dict[str, Any],
+    lang: str,
+    *,
+    score_note: str | None = None,
+) -> dict[str, Any]:
     source = raw if isinstance(raw, dict) else {}
     fallback = _build_score_reading(provenance, lang)
     status = _normalize_choice(
@@ -488,7 +665,7 @@ def _normalize_score_reading(raw: Any, provenance: dict[str, Any], lang: str) ->
     if not isinstance(value, (int, float)):
         value = fallback.get("value")
     label = _clean_text(source.get("label")) or fallback["label"]
-    note = _clean_text(source.get("note")) or fallback["note"]
+    note = _clean_text(source.get("note")) or _clean_text(score_note) or fallback["note"]
     confidence = _normalize_choice(source.get("confidence"), {"high", "medium", "low"}, fallback=fallback["confidence"])
     if status == "blocked":
         value = None
@@ -508,6 +685,9 @@ def _normalize_system_reading(
     score_provenance: dict[str, Any],
     report_base: dict[str, Any],
     lang: str,
+    *,
+    executive_reading: str = "",
+    caveats: list[str] | None = None,
 ) -> dict[str, Any]:
     source = raw if isinstance(raw, dict) else {}
     fallback = _build_system_reading(
@@ -518,25 +698,75 @@ def _normalize_system_reading(
         report_base=report_base,
         lang=lang,
     )
-    credibility = source.get("credibility_support") if isinstance(source.get("credibility_support"), dict) else {}
-    credibility_status = _normalize_choice(
-        credibility.get("status"),
-        {"observed", "partial"},
-        fallback=fallback["credibility_support"]["status"],
-    )
-    credibility_reading = _clean_text(credibility.get("reading")) or fallback["credibility_support"]["reading"]
-    credibility_refs = _clean_list(credibility.get("evidence_refs")) or fallback["credibility_support"]["evidence_refs"]
+    credibility_raw = source.get("credibility_support")
+    if isinstance(credibility_raw, dict):
+        credibility_status = _normalize_choice(
+            credibility_raw.get("status"),
+            {"observed", "partial"},
+            fallback=fallback["credibility_support"]["status"],
+        )
+        credibility_reading = _clean_text(credibility_raw.get("reading")) or fallback["credibility_support"]["reading"]
+        credibility_refs = _clean_list(credibility_raw.get("evidence_refs")) or fallback["credibility_support"]["evidence_refs"]
+    else:
+        credibility_status = fallback["credibility_support"]["status"]
+        credibility_reading = _clean_text(credibility_raw) or fallback["credibility_support"]["reading"]
+        credibility_refs = fallback["credibility_support"]["evidence_refs"]
+    strategic_tensions = _clean_list(source.get("strategic_tensions")) or fallback["strategic_tensions"]
+    validation_questions = _clean_list(source.get("validation_questions")) or fallback["validation_questions"]
+    diagnosis = _clean_text(source.get("diagnosis")) or _clean_text(executive_reading) or fallback["diagnosis"]
+    limitations = _clean_list(source.get("limitations")) or _clean_list(caveats) or fallback["limitations"]
     return {
         "credibility_support": {
             "status": credibility_status,
             "reading": credibility_reading,
             "evidence_refs": credibility_refs,
         },
-        "strategic_tensions": _clean_list(source.get("strategic_tensions")) or fallback["strategic_tensions"],
-        "validation_questions": _clean_list(source.get("validation_questions")) or fallback["validation_questions"],
-        "diagnosis": _clean_text(source.get("diagnosis")) or fallback["diagnosis"],
-        "limitations": _clean_list(source.get("limitations")) or fallback["limitations"],
+        "strategic_tensions": strategic_tensions,
+        "validation_questions": validation_questions,
+        "diagnosis": diagnosis,
+        "limitations": limitations,
         "labels": fallback["labels"],
+    }
+
+
+def _client_system_reading(system_reading: dict[str, Any]) -> dict[str, Any]:
+    source = system_reading if isinstance(system_reading, dict) else {}
+    credibility = source.get("credibility_support")
+    credibility_reading = ""
+    if isinstance(credibility, dict):
+        credibility_reading = _clean_text(credibility.get("reading"))
+    else:
+        credibility_reading = _clean_text(credibility)
+    return {
+        "credibility_support": credibility_reading,
+        "strategic_tensions": _clean_list(source.get("strategic_tensions")),
+        "validation_questions": _clean_list(source.get("validation_questions")),
+        "diagnosis": _clean_text(source.get("diagnosis")),
+        "limitations": _clean_list(source.get("limitations")),
+    }
+
+
+def _legacy_system_reading(system_reading: dict[str, Any]) -> dict[str, Any]:
+    source = system_reading if isinstance(system_reading, dict) else {}
+    credibility = source.get("credibility_support")
+    if isinstance(credibility, dict):
+        credibility_status = _clean_text(credibility.get("status")) or "partial"
+        credibility_reading = _clean_text(credibility.get("reading"))
+        credibility_refs = _clean_list(credibility.get("evidence_refs"))
+    else:
+        credibility_status = "partial"
+        credibility_reading = _clean_text(credibility)
+        credibility_refs = []
+    return {
+        "credibility_support": {
+            "status": credibility_status,
+            "reading": credibility_reading,
+            "evidence_refs": credibility_refs,
+        },
+        "strategic_tensions": _clean_list(source.get("strategic_tensions")),
+        "validation_questions": _clean_list(source.get("validation_questions")),
+        "diagnosis": _clean_text(source.get("diagnosis")),
+        "limitations": _clean_list(source.get("limitations")),
     }
 
 
@@ -617,20 +847,87 @@ def _compact_perceptual_hints_for_prompt(report_base: dict[str, Any]) -> dict[st
     return output
 
 
+def _compact_perceptual_guidance(perceptual_hints: dict[str, Any] | None) -> dict[str, Any]:
+    if not isinstance(perceptual_hints, dict):
+        return {}
+
+    pattern_meanings: list[str] = []
+    tone_style_examples: list[str] = []
+    block_level_reasoning: list[str] = []
+    strategic_patterns: list[str] = []
+    reading_boundaries: list[str] = []
+
+    for dimension, hints in perceptual_hints.items():
+        if not isinstance(hints, dict):
+            continue
+        dimension_name = _clean_text(dimension)
+        if not dimension_name:
+            continue
+
+        for signal in _normalize_list_text_values(hints.get("surface_signals")):
+            if signal:
+                block_level_reasoning.append(f"{dimension_name}: {signal}")
+
+        for pattern in _normalize_list_dict_values(hints.get("matched_patterns")):
+            pattern_name = _clean_text(pattern.get("pattern_name"))
+            meaning = _clean_text(pattern.get("perceptual_meaning"))
+            if pattern_name:
+                strategic_patterns.append(pattern_name)
+            if meaning:
+                pattern_meanings.append(meaning)
+                tone_style_examples.append(meaning)
+
+        for tension in _normalize_list_text_values(hints.get("productive_tensions")):
+            if tension:
+                block_level_reasoning.append(f"{dimension_name}: {tension}")
+
+        for note in _normalize_list_text_values(hints.get("confidence_notes")):
+            if note:
+                tone_style_examples.append(note)
+
+        for boundary in _normalize_list_text_values(hints.get("overreach_boundaries")):
+            if boundary:
+                reading_boundaries.append(boundary)
+
+    return {
+        "strategic_reading_patterns": _unique(strategic_patterns)[:5],
+        "pattern_meanings": _unique(pattern_meanings)[:6],
+        "tone_style_examples": _unique(tone_style_examples)[:6],
+        "block_level_reasoning": _unique(block_level_reasoning)[:8],
+        "reading_boundaries": _unique(reading_boundaries)[:6],
+    }
+
+
 def _client_tldr_v2_system_prompt(lang: str) -> str:
     if lang == "en":
         return (
             "You are Brand3's Client TLDR v2 writer. "
-            "Write a clear strategic reading for clients using only the provided structured evidence. "
+            "Write a client-safe editorial TLDR first, not an audit object. "
+            "Use the provided evidence to synthesize a concise strategic reading. "
+            "Reason about evidence relevance, entity fit, and claim type before writing. "
+            "Classify evidence as owned, direct, indirect, weak, ambiguous, or off-entity. "
+            "Separate stated, performed, inferred, and absent claims. "
+            "If a claim is unsupported, turn it into a validation question instead of forcing a conclusion. "
+            "Do not hardcode Mission/Vision behavior. "
             "Do not mention replay, fingerprint, drift, provenance, internal audit, or technical scoring jargon. "
-            "Distinguish stated and inferred claims. Turn low-confidence material into validation questions or caveats. "
+            "Use perceptual hints only as reasoning lenses, not as copy. "
+            "Reject hints that do not fit the brand. "
+            "Keep the 9-block structure, but write the blocks as short strategic prose. "
             "Never present fallback values as quality. Return strict JSON only."
         )
     return (
         "You are the writer of Brand3 TLDR v2 para cliente. "
-        "Escribe una lectura estratégica y clara para clientes usando solo la evidencia estructurada proporcionada. "
+        "Escribe primero un TLDR editorial y seguro para clientes, no un objeto de auditoría. "
+        "Usa la evidencia proporcionada para sintetizar una lectura estratégica breve. "
+        "Primero razona sobre la relevancia de la evidencia, el ajuste de entidad y el tipo de claim antes de escribir. "
+        "Clasifica la evidencia como propia, directa, indirecta, débil, ambigua o fuera de entidad. "
+        "Separa claims declarados, performados, inferidos y ausentes. "
+        "Si un claim no está soportado, conviértelo en una pregunta de validación en lugar de forzar una conclusión. "
+        "No hardcodees el comportamiento de Mission/Vision. "
         "No menciones replay, fingerprint, drift, provenance, auditoría interna ni jerga técnica de scoring. "
-        "Distingue entre lo declarado y lo inferido. Convierte la información de baja confianza en preguntas de validación o cautelas. "
+        "Usa los perceptual hints solo como lentes de razonamiento, no como texto para copiar. "
+        "Rechaza hints que no encajen semánticamente con la marca. "
+        "Mantén la estructura de 9 bloques, pero escribe los bloques como prosa estratégica breve. "
         "Nunca presentes valores fallback como calidad. Devuelve solo JSON válido."
     )
 
@@ -648,7 +945,9 @@ def _coerce_client_tldr_v2_raw_json(raw: Any) -> dict[str, Any]:
             value = value[0]
             continue
         if isinstance(value, dict):
-            if isinstance(value.get("tldr_brand3_v2"), dict) and isinstance(value.get("system_reading"), dict):
+            if _looks_like_editorial_client_tldr_v2_payload(value) or (
+                isinstance(value.get("tldr_brand3_v2"), dict) and isinstance(value.get("system_reading"), dict)
+            ):
                 return value
             for key in ("payload", "content", "output", "response", "result", "message", "data"):
                 nested = value.get(key)
@@ -660,6 +959,136 @@ def _coerce_client_tldr_v2_raw_json(raw: Any) -> dict[str, Any]:
             continue
         break
     return {} if not isinstance(value, dict) else value
+
+
+def _looks_like_editorial_client_tldr_v2_payload(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+    if any(key in value for key in ("executive_reading", "score_note", "blocks", "caveats")):
+        return True
+    system_reading = value.get("system_reading")
+    return isinstance(system_reading, dict) and (
+        "credibility_support" in system_reading
+        or "strategic_tensions" in system_reading
+        or "validation_questions" in system_reading
+        or "diagnosis" in system_reading
+    )
+
+
+def _safe_raw_response_preview(llm: Any) -> str | None:
+    raw = getattr(llm, "last_raw_response", None)
+    if not isinstance(raw, str):
+        return None
+    text = raw.strip()
+    if not text:
+        return None
+    return text[:8000]
+
+
+def _parse_plain_text_client_tldr_v2(text: str) -> dict[str, Any]:
+    content = (text or "").strip()
+    if not content:
+        return {}
+
+    sections: dict[str, list[str]] = {}
+    current_key = "executive_reading"
+    buffer: list[str] = []
+    recognized_sections = 0
+
+    def flush() -> None:
+        if buffer:
+            sections.setdefault(current_key, []).append("\n".join(buffer).strip())
+            buffer.clear()
+
+    heading_map = {
+        "core purpose": "core_purpose",
+        "magnetism": "magnetism",
+        "value proposition": "value_proposition",
+        "personality": "personality",
+        "brand idea": "brand_idea",
+        "attributes": "attributes",
+        "values": "values",
+        "mission": "mission",
+        "vision": "vision",
+        "credibility support": "credibility_support",
+        "strategic tensions": "strategic_tensions",
+        "validation questions": "validation_questions",
+        "diagnosis": "diagnosis",
+        "caveats": "caveats",
+        "score note": "score_note",
+        "executive reading": "executive_reading",
+    }
+
+    for line in content.splitlines():
+        stripped = line.strip()
+        normalized = stripped.lower().lstrip("#").strip()
+        normalized = normalized.replace(":", "")
+        matched_key = None
+        for heading, key in heading_map.items():
+            if normalized == heading or normalized.startswith(f"{heading} ") or normalized.startswith(f"{heading}-"):
+                matched_key = key
+                break
+        if matched_key:
+            recognized_sections += 1
+            flush()
+            current_key = matched_key
+            continue
+        if not stripped and not buffer:
+            continue
+        buffer.append(line)
+    flush()
+
+    if recognized_sections == 0:
+        return {}
+
+    blocks: dict[str, str] = {}
+    for key in TLDR_KEYS:
+        blocks[key] = sections.get(key, [""])[0].strip() if sections.get(key) else ""
+
+    strategic_tensions = _split_plain_text_list(sections.get("strategic_tensions", []))
+    validation_questions = _split_plain_text_list(sections.get("validation_questions", []))
+    caveats = _split_plain_text_list(sections.get("caveats", []))
+    credibility_support = sections.get("credibility_support", [""])[0].strip() if sections.get("credibility_support") else ""
+    diagnosis = sections.get("diagnosis", [""])[0].strip() if sections.get("diagnosis") else ""
+
+    executive_reading = sections.get("executive_reading", [""])[0].strip() if sections.get("executive_reading") else ""
+    score_note = sections.get("score_note", [""])[0].strip() if sections.get("score_note") else ""
+
+    if not executive_reading:
+        executive_reading = _first_nonempty_paragraph(content)
+    if not score_note:
+        score_note = executive_reading
+
+    return {
+        "executive_reading": executive_reading,
+        "score_note": score_note,
+        "blocks": blocks,
+        "system_reading": {
+            "credibility_support": credibility_support,
+            "strategic_tensions": strategic_tensions,
+            "validation_questions": validation_questions,
+            "diagnosis": diagnosis,
+        },
+        "caveats": caveats,
+    }
+
+
+def _split_plain_text_list(values: list[str]) -> list[str]:
+    items: list[str] = []
+    for value in values:
+        for line in value.splitlines():
+            text = line.strip().lstrip("-•*").strip()
+            if text:
+                items.append(text)
+    return _unique(items)
+
+
+def _first_nonempty_paragraph(text: str) -> str:
+    for paragraph in text.split("\n\n"):
+        stripped = paragraph.strip()
+        if stripped:
+            return stripped
+    return ""
 
 
 def _fallback_payload(
@@ -688,7 +1117,7 @@ def _fallback_payload(
         "brand_name": brand_name,
         "url": url,
         "score_reading": score_reading,
-        "tldr_brand3_v2": current_tldr,
+        "legacy_tldr_brand3_v2": current_tldr,
         "system_reading": system_reading,
         "evidence_refs": evidence_refs,
         "validation_notes": validation_notes,
@@ -698,11 +1127,66 @@ def _fallback_payload(
 
 
 def _default_analyzer() -> Any | None:
+    _ensure_client_tldr_runtime_env_loaded()
     try:
         analyzer = LLMAnalyzer()
         return analyzer if getattr(analyzer, "api_key", None) else None
     except Exception:
         return None
+
+
+def _ensure_client_tldr_runtime_env_loaded() -> None:
+    global _CLIENT_TLDR_RUNTIME_ENV_BOOTSTRAPPED
+    if _CLIENT_TLDR_RUNTIME_ENV_BOOTSTRAPPED:
+        return
+
+    env_path = Path(__file__).resolve().parents[3] / ".env"
+    if not env_path.exists():
+        _CLIENT_TLDR_RUNTIME_ENV_BOOTSTRAPPED = True
+        return
+
+    try:
+        from dotenv import load_dotenv
+    except Exception:
+        load_dotenv = None
+
+    try:
+        if load_dotenv is not None:
+            load_dotenv(dotenv_path=env_path, override=False)
+            _CLIENT_TLDR_RUNTIME_ENV_BOOTSTRAPPED = True
+            return
+    except Exception:
+        # Keep fallback behavior if dotenv is not usable in this environment.
+        pass
+
+    try:
+        for line in env_path.read_text().splitlines():
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#") or "=" not in stripped:
+                continue
+            key, value = stripped.split("=", 1)
+            key = key.strip()
+            if key.startswith("export "):
+                key = key[len("export "):].strip()
+            if not key:
+                continue
+            value = _normalize_dotenv_value(value)
+            os.environ.setdefault(key.strip(), value.strip())
+    except Exception:
+        # Never fail the render path due to env-file parsing.
+        pass
+    _CLIENT_TLDR_RUNTIME_ENV_BOOTSTRAPPED = True
+
+
+def _normalize_dotenv_value(raw_value: str) -> str:
+    value = raw_value.strip()
+    if value.startswith(("'", '"')) and value.endswith(("'", '"')) and len(value) >= 2 and value[0] == value[-1]:
+        value = value[1:-1]
+    elif " #" in value:
+        value = value.split(" #", 1)[0].rstrip()
+    elif "#" in value:
+        value = value.split("#", 1)[0].rstrip()
+    return value
 
 
 def _normalize_choice(value: Any, allowed: set[str], *, fallback: str) -> str:
@@ -1224,6 +1708,20 @@ def _clean_list(value: Any) -> list[str]:
         text = _clean_text(item)
         if text and text not in output:
             output.append(text)
+    return output
+
+
+def _normalize_list_text_values(value: Any) -> list[str]:
+    return _unique(_clean_list(value))
+
+
+def _normalize_list_dict_values(value: Any) -> list[dict[str, Any]]:
+    if not isinstance(value, list):
+        return []
+    output: list[dict[str, Any]] = []
+    for item in value:
+        if isinstance(item, dict):
+            output.append(item)
     return output
 
 

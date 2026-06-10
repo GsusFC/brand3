@@ -438,9 +438,257 @@ Factorial tests a different benchmark behavior than Blinka. Blinka tests how to 
 
 ---
 
+# Case 003 — LangChain
+
+## Case Metadata
+
+- Brand: `LangChain`
+- Case ID: `strategic_message_layer_case_003_langchain`
+- Case type: strong category-defining technical brand.
+- Benchmark role: premium technical brand with high coherence and abundant evidence.
+- Primary evaluation risk: turning a strong category narrative into hype.
+
+## Input State
+
+The case should be evaluated using:
+
+- current TLDR Brand3 output,
+- scanner score state,
+- evidence state,
+- detected layer coverage,
+- source/evidence confidence,
+- Client TLDR v2 / Strategic Message Layer candidate output.
+
+Relevant scan state:
+
+- Magnetism: `77/100` — memorable.
+- Coherence: `96/100` — aligned.
+- Layer coverage: `7/7` detected.
+- Evidence state: no layers without sufficient evidence.
+
+This is neither a sparse-brand case like Blinka nor a broadly articulated but inference-sensitive brand like Factorial. LangChain is a strong technical brand with clear category authority and abundant evidence. The benchmark question is whether the Strategic Message Layer can explain why a strong brand works without over-claiming its vision.
+
+## Current TLDR Behavior
+
+The current TLDR detects a coherent category-defining technical narrative around:
+
+- agent engineering,
+- open-source frameworks,
+- platform infrastructure,
+- observability,
+- evaluation,
+- deployment,
+- reliability,
+- enterprise readiness.
+
+The scan has strong evidence coverage, so the layer should not spend most of its work explaining absence. It should explain strategic strength, category authority, and precision risk.
+
+## Strategic Problem
+
+LangChain has a strong and legible category narrative: agents are becoming a new software practice, and LangChain provides the tools to build them seriously.
+
+The strategic risk is not lack of evidence. The risk is overstatement. Because the brand already occupies a powerful category-defining territory, the Strategic Message Layer must avoid turning a credible technical position into inflated AI hype.
+
+The useful reading is:
+
+- LangChain is not just “AI tooling.”
+- LangChain is not just “helping developers build agents.”
+- LangChain is attempting to make agent development an engineering discipline with frameworks, observability, evaluation, deployment, and reliability.
+
+## Expected Strategic Message Layer Contribution
+
+The layer should explain why LangChain is strategically strong:
+
+- category ambition is clear,
+- technical utility is concrete,
+- product architecture supports the story,
+- community/open-source credibility supports adoption,
+- enterprise signals support production readiness.
+
+The layer should also preserve precision:
+
+- do not exaggerate the future vision,
+- do not claim market ownership beyond evidence,
+- do not turn technical credibility into generic “AI future” language,
+- keep the reading anchored to observed product and evidence signals.
+
+The correct tone is:
+
+```text
+LangChain has a strong category-defining narrative because it connects a broad future-facing idea — the future of agents — with concrete engineering infrastructure: frameworks, observability, evaluation, deployment, and reliability. Its strength is that it makes an emerging AI category feel buildable rather than magical.
+```
+
+## Block-Level Strategic Reading
+
+### Core Purpose
+
+LangChain has a clearly declared purpose: understand the future of agents and create tools that make them easier to build.
+
+Strategically, this positions the brand as more than a tooling provider. It presents LangChain as a company helping define a technical practice around agents. The purpose is strong because it connects category ambition with concrete utility.
+
+### Magnetism
+
+LangChain’s magnetism concentrates around the idea of building the future of agents.
+
+The phrase is broad, but it works because LangChain has enough technical authority to support it. The key strategic tension is that the brand speaks about an emerging future while grounding that future in infrastructure, frameworks, observability, evaluation, and deployment. It does not sell magic. It sells engineering discipline for making agentic systems buildable.
+
+### Value Proposition
+
+The value proposition is well defined:
+
+- agent engineering platform,
+- open-source frameworks,
+- tools to create and deploy agents,
+- observability,
+- evaluation,
+- reliability,
+- improvement loops for production agent systems.
+
+The strategic reading is that LangChain does not merely help teams “build agents.” It tries to turn agent construction into a measurable engineering discipline.
+
+### Personality
+
+The personality reads as technical, resilient, pragmatic, and problem-solving.
+
+This works well for a developer-first brand because it signals control, speed, and technical seriousness. The guardrail is that some personality signals may come from internal culture or developer-community behavior rather than from a complete external brand system. The layer should present the personality as a plausible reading grounded in visible signals, not as a fully closed brand character.
+
+### Brand Idea
+
+The strongest brand idea is:
+
+```text
+Agentic Engineering.
+```
+
+This means treating AI agents not as magic, but as software systems that require observability, evaluation, deployment, reliability, and continuous improvement.
+
+Strategically, this is the core value of the case. LangChain shifts the conversation from generic generative AI to serious infrastructure for agents in production.
+
+### Attributes
+
+Visible attributes:
+
+- reliable,
+- open-source,
+- technically rigorous,
+- enterprise-ready,
+- production-oriented,
+- developer-first.
+
+The opportunity is not to add more attributes. The opportunity is to maintain the balance between developer accessibility and enterprise robustness as the category becomes more competitive.
+
+### Values
+
+The detected values include grit, resilience, and trust.
+
+These work well as team and culture signals. The Strategic Message Layer should distinguish internal culture from external brand promise. Not every corporate value automatically becomes a customer-facing brand value.
+
+The safer interpretation is that these values support the brand’s engineering posture, but they should not be overstated as the entire public-facing values system unless supported by stronger external evidence.
+
+### Mission
+
+The operational mission is clear:
+
+- provide platforms and frameworks,
+- help developers and AI teams manage agents,
+- observe agent behavior,
+- evaluate agent quality,
+- deploy agent systems,
+- improve agents at scale.
+
+This mission is strong because it defines concrete work the brand helps users perform.
+
+### Vision
+
+The vision points toward establishing foundational tools for building the future of agents.
+
+This is credible because it aligns with product, community, category language, and public proof. The strategic challenge is maintaining that authority as the category becomes more crowded and other actors try to claim the same territory.
+
+## What Should Improve
+
+- Strong signals are explained as strategic strength, not just listed.
+- High coherence is translated into why the brand feels aligned.
+- Category authority is connected to concrete product evidence.
+- Technical ambition is kept distinct from AI hype.
+- Internal culture signals are separated from external brand values.
+- The reading explains precision risk, not absence.
+
+## Forbidden Behavior
+
+The layer must not:
+
+- exaggerate LangChain as the definitive owner of the agent future unless evidence supports that exact claim,
+- turn technical credibility into vague AI hype,
+- claim all detected culture values are external customer-facing values,
+- ignore competitive pressure in the agent tooling category,
+- overstate vision beyond observed signals,
+- flatten the case into generic “AI platform” language.
+
+## Example Acceptable Interpretation
+
+```text
+LangChain works because it connects a broad category promise — building the future of agents — with concrete engineering infrastructure. The brand’s strength is not just that it talks about agents, but that it makes agents feel observable, evaluable, deployable, and improvable as software systems.
+```
+
+## Example Unacceptable Interpretation
+
+```text
+LangChain owns the future of AI agents and will define how all companies build autonomous intelligence.
+```
+
+Reason: this overstates market ownership and future certainty. The evidence supports category authority and strong technical positioning, not total ownership of the category.
+
+## Client Value
+
+The client should understand why LangChain is already strategically strong:
+
+- it has category clarity,
+- it has product proof,
+- it has developer/community credibility,
+- it has enterprise relevance,
+- it has a coherent technical narrative.
+
+The client should also understand the strategic discipline required:
+
+- keep the story grounded in engineering,
+- avoid generic AI hype,
+- maintain authority through proof,
+- clarify which values are culture signals and which are brand promises,
+- defend the category territory as competition increases.
+
+## Case-Specific Pass / Fail
+
+### Passes if
+
+- It explains why LangChain works as a strong technical brand.
+- It connects category ambition to concrete product infrastructure.
+- It preserves technical precision.
+- It distinguishes engineering discipline from AI hype.
+- It notes the need to maintain authority as the category gets crowded.
+- It separates internal culture values from public-facing brand values.
+
+### Fails if
+
+- It treats LangChain as a generic AI platform.
+- It exaggerates the brand into unsupported category ownership.
+- It ignores the product evidence behind the narrative.
+- It turns the reading into hype language.
+- It focuses on absence when the real benchmark behavior is explaining strength.
+- It misses the distinction between community credibility and enterprise readiness.
+
+## Benchmark Decision
+
+Keep as Case 003.
+
+Reason:
+
+LangChain tests whether the Strategic Message Layer can explain a strong, coherent, category-defining technical brand without overacting. Blinka tests absence. Factorial tests strong-but-inference-sensitive generalist clarity. LangChain tests abundance of evidence, high coherence, and category authority.
+
+---
+
 ## Next Benchmark Cases Needed
 
-Add 6–10 more cases that stress different failure modes:
+Add 5–9 more cases that stress different failure modes:
 
 - strong brand with clear narrative and evidence,
 - product with strong utility but no brand system,

@@ -22,6 +22,7 @@ def _content_text(value: Any) -> str:
 def _assert_v03_contract(block_name: str, block: dict[str, Any]) -> None:
     for key in [
         "block",
+        "detected",
         "question",
         "evidence_scope",
         "source_signal",
@@ -39,6 +40,7 @@ def _assert_v03_contract(block_name: str, block: dict[str, Any]) -> None:
     ]:
         assert key in block, (block_name, key)
     assert block["block"] == block_name
+    assert isinstance(block["detected"], bool)
     assert block["claim_type"] in {"declared", "performed", "inferred", "absent"}
     assert block["confidence"] in {"high", "medium", "low"}
     assert isinstance(block["evidence_scope"], list)
@@ -48,6 +50,7 @@ def _assert_v03_contract(block_name: str, block: dict[str, Any]) -> None:
     assert isinstance(block["observations"], list)
     assert isinstance(block["evidence_used"], list)
     assert isinstance(block["counter_evidence"], list)
+    assert isinstance(block["source_layers"], list)
 
 
 def _layer(detected: bool) -> dict[str, Any]:
@@ -222,6 +225,24 @@ def test_tldr_v03_contract_is_present_for_every_block() -> None:
 
     for block_name, block in result["tldr_brand3"].items():
         _assert_v03_contract(block_name, block)
+
+
+def test_tldr_v03_blocks_preserve_compatibility_aliases() -> None:
+    result = MagnetismExtractor(llm=None).extract(
+        url=None,
+        manual_text=(
+            "Just Do It. para inspirar a todo tipo de atletas. "
+            "Creamos productos innovadores para performance deportiva. "
+            "Construimos el futuro del deporte para todo tipo de atletas."
+        ),
+        brand_name="Contract Brand",
+    )
+
+    for block_name, block in result["tldr_brand3"].items():
+        if block["detected"]:
+            assert block["content"] == block["answer"], block_name
+            assert block["evidence"] == block["evidence_used"], block_name
+            assert block["rationale"] == block["reasoning"], block_name
 
 
 def test_inferred_strategic_blocks_show_limits_and_review_when_weak() -> None:

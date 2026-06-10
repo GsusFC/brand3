@@ -194,5 +194,340 @@
     </article>
   </div>
 </section>
+
+{% if model.internal_audit and model.internal_audit.available %}
+{% set internal = model.internal_audit %}
+{% set score_state = internal.score_state or {} %}
+{% set provenance = internal.score_provenance or {} %}
+{% set reviewed_score = internal.reviewed_score or {} %}
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.internal_audit }}</span>
+    <span class="tag">// {{ model.t.internal_audit_tag }}</span>
+  </div>
+  <article class="magnetism-audit-summary">
+    <p class="magnetism-audit-summary-text">
+      {{ internal.summary }}
+    </p>
+
+    <div class="badge-line" style="margin-top: 12px;">
+      <span class="badge {{ internal.status_class or 'badge-missing' }}">Score status · {{ internal.status_label or 'review-required' }}</span>
+      <span class="badge {% if score_state.display_score_source == 'blocked' %}badge-error{% else %}badge-ready{% endif %}">Display decision · {{ internal.display_decision_label or score_state.display_score_source }}</span>
+      <span class="badge badge-ready">Recommended action · {{ score_state.recommended_action }}</span>
+      <span class="badge {% if score_state.score_integrity == 'valid' %}badge-ready{% elif score_state.score_integrity == 'unverifiable' %}badge-missing{% else %}badge-error{% endif %}">Drift type · {{ score_state.drift_type or 'none' }}</span>
+      <span class="badge {% if score_state.replay_integrity.fingerprint_status == 'match' %}badge-ready{% elif score_state.replay_integrity.fingerprint_status == 'missing' %}badge-missing{% else %}badge-error{% endif %}">Fingerprint status · {{ score_state.replay_integrity.fingerprint_status }}</span>
+      <span class="badge">internal-only</span>
+    </div>
+
+    <div class="magnetism-audit-evidence-strip">
+      <article>
+        <div class="dim magnetism-audit-mini-label">{{ model.t.score_integrity }}</div>
+        <strong>{{ score_state.score_integrity }}</strong>
+      </article>
+      <article>
+        <div class="dim magnetism-audit-mini-label">{{ model.t.display_score_source }}</div>
+        <strong>{{ score_state.display_score_source }}</strong>
+      </article>
+      <article>
+        <div class="dim magnetism-audit-mini-label">{{ model.t.display_score }}</div>
+        <strong>
+          {% if score_state.display_score_blocked %}
+          blocked
+          {% elif score_state.recommended_display_score is not none %}
+          {{ score_state.recommended_display_score }}/100
+          {% else %}
+          n/a
+          {% endif %}
+        </strong>
+      </article>
+      <article>
+        <div class="dim magnetism-audit-mini-label">{{ model.t.recommended_action }}</div>
+        <strong>{{ score_state.recommended_action }}</strong>
+      </article>
+    </div>
+
+    <div class="magnetism-audit-summary-grid">
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.computed_score }}</span>
+        <p>{% if score_state.computed_composite_score is not none %}{{ score_state.computed_composite_score }}/100{% else %}n/a{% endif %}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.reviewed_score }}</span>
+        <p>{% if score_state.reviewed_composite_score is not none %}{{ score_state.reviewed_composite_score }}/100{% else %}none{% endif %}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.display_score }}</span>
+        <p>
+          {% if score_state.display_score_blocked %}
+          blocked
+          {% elif score_state.recommended_display_score is not none %}
+          {{ score_state.recommended_display_score }}/100
+          {% else %}
+          n/a
+          {% endif %}
+        </p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.score_summary }}</span>
+        <p>{{ score_state.score_integrity }}</p>
+      </div>
+    </div>
+
+    <div class="magnetism-audit-summary-grid">
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.fallback_flags }}</span>
+        <p>
+          {% if score_state.fallback_flags.replay_neutral_fallback_dimensions %}
+          {{ score_state.fallback_flags.replay_neutral_fallback_dimensions|join(', ') }}
+          {% else %}
+          none
+          {% endif %}
+        </p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.warnings }}</span>
+        <p>{{ provenance.warnings|length }}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.rules_caps }}</span>
+        <p>{{ provenance.rules_applied|length }}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.dimension_breakdown }}</span>
+        <p>{{ provenance.dimension_breakdown|length }}</p>
+      </div>
+    </div>
+
+    {% if score_state.computed_composite_score is not none or score_state.reviewed_composite_score is not none %}
+    <div class="magnetism-audit-summary-grid">
+      {% if score_state.computed_composite_score is not none %}
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.computed_score }}</span>
+        <p>{{ score_state.computed_composite_score }}/100</p>
+      </div>
+      {% endif %}
+      {% if score_state.reviewed_composite_score is not none %}
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.reviewed_score }}</span>
+        <p>{{ score_state.reviewed_composite_score }}/100</p>
+      </div>
+      {% endif %}
+      {% if score_state.limited_confidence %}
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.score_summary }}</span>
+        <p>limited confidence</p>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% if reviewed_score %}
+    <div class="magnetism-audit-summary-grid">
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ model.t.reviewed_score_block }}</span>
+        <p>{{ reviewed_score.reviewed_composite_score }}/100 · {{ reviewed_score.review_status }}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">reason</span>
+        <p>{{ reviewed_score.reason }}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">evidence refs</span>
+        <p>{{ reviewed_score.evidence_refs|length }}</p>
+      </div>
+    </div>
+    {% endif %}
+  </article>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.dimension_breakdown }}</span>
+    <span class="tag">// {{ model.t.score_summary }}</span>
+  </div>
+  <div class="magnetism-audit-dimension-grid">
+    {% for dim_name, dim in provenance.dimension_breakdown.items() %}
+    <article class="magnetism-audit-dimension-card">
+      <div class="magnetism-audit-dimension-head">
+        <strong>{{ dim_name }}</strong>
+        <span class="badge {% if dim.replay.unavailable %}badge-missing{% else %}badge-ready{% endif %}">
+          {% if dim.score is not none %}{{ dim.score }}/100{% else %}n/a{% endif %} · {{ dim.confidence_label }}
+        </span>
+      </div>
+      <div class="magnetism-audit-dimension-body">
+        <div>
+          <span class="dim magnetism-audit-mini-label">{{ model.t.confidence_summary }}</span>
+          <p>{{ dim.confidence_status }} · {{ dim.coverage_label }}</p>
+        </div>
+        <div>
+          <span class="dim magnetism-audit-mini-label">{{ model.t.rules_caps }}</span>
+          {% if dim.rules_applied %}
+          <ul>
+            {% for rule in dim.rules_applied %}
+            <li>{{ rule }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="dim">none</p>
+          {% endif %}
+        </div>
+        <div>
+          <span class="dim magnetism-audit-mini-label">{{ model.t.score_summary }}</span>
+          <p>
+            persisted={{ dim.replay.persisted if dim.replay.persisted is not none else 'n/a' }},
+            artifact={{ dim.replay.artifact if dim.replay.artifact is not none else 'n/a' }},
+            recomputed={{ dim.replay.recomputed if dim.replay.recomputed is not none else 'n/a' }}
+          </p>
+        </div>
+        {% if dim.replay.unavailable %}
+        <div>
+          <span class="dim magnetism-audit-mini-label">{{ model.t.fallback_flags }}</span>
+          <p>unavailable=true</p>
+        </div>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.confidence_summary }}</span>
+    <span class="tag">// {{ model.t.internal_audit }}</span>
+  </div>
+  <div class="magnetism-audit-dimension-grid">
+    {% for dim_name, dim in provenance.confidence_summary.items() %}
+    <article class="magnetism-audit-dimension-card">
+      <div class="magnetism-audit-dimension-head">
+        <strong>{{ dim_name }}</strong>
+        <span class="badge {% if dim.confidence_status == 'good' %}badge-ready{% else %}badge-missing{% endif %}">
+          {{ dim.confidence_label }} · {{ dim.coverage_label }}
+        </span>
+      </div>
+      <div class="magnetism-audit-dimension-body">
+        <div>
+          <span class="dim magnetism-audit-mini-label">status</span>
+          <p>{{ dim.confidence_status }}</p>
+        </div>
+        <div>
+          <span class="dim magnetism-audit-mini-label">missing</span>
+          <p>{{ dim.missing_signals|join(', ') if dim.missing_signals else 'none' }}</p>
+        </div>
+        <div>
+          <span class="dim magnetism-audit-mini-label">next steps</span>
+          <p>{{ dim.recommended_next_steps|join(' · ') if dim.recommended_next_steps else 'none' }}</p>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.fallback_flags }}</span>
+    <span class="tag">// {{ model.t.audit_status }}</span>
+  </div>
+  <article class="magnetism-audit-summary">
+    <div class="magnetism-audit-summary-grid">
+      <div>
+        <span class="dim magnetism-audit-mini-label">replay_unavailable_dimensions</span>
+        <p>{{ provenance.fallback_flags.replay_unavailable_dimensions|join(', ') if provenance.fallback_flags.replay_unavailable_dimensions else 'none' }}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">replay_neutral_fallback_dimensions</span>
+        <p>{{ provenance.fallback_flags.replay_neutral_fallback_dimensions|join(', ') if provenance.fallback_flags.replay_neutral_fallback_dimensions else 'none' }}</p>
+      </div>
+      <div>
+        <span class="dim magnetism-audit-mini-label">readiness_fallback_dimensions</span>
+        <p>{{ provenance.fallback_flags.readiness_fallback_dimensions|join(', ') if provenance.fallback_flags.readiness_fallback_dimensions else 'none' }}</p>
+      </div>
+    </div>
+    <div class="magnetism-audit-summary-grid">
+      {% for dim_name, items in provenance.fallback_flags.missing_high_weight_features.items() %}
+      <div>
+        <span class="dim magnetism-audit-mini-label">{{ dim_name }}</span>
+        <p>{{ items|join(', ') }}</p>
+      </div>
+      {% endfor %}
+      {% if not provenance.fallback_flags.missing_high_weight_features %}
+      <div>
+        <span class="dim magnetism-audit-mini-label">missing_high_weight_features</span>
+        <p>none</p>
+      </div>
+      {% endif %}
+    </div>
+  </article>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.warnings }}</span>
+    <span class="tag">// {{ model.t.audit_status }}</span>
+  </div>
+  <article class="magnetism-audit-summary">
+    {% if provenance.warnings %}
+    <ul>
+      {% for warning in provenance.warnings %}
+      <li>
+        <strong>{{ warning.code }}</strong>
+        <span class="dim">· {{ warning.message }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p class="dim">none</p>
+    {% endif %}
+  </article>
+</section>
+
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">{{ model.t.tldr_v2_internal_summary }}</span>
+    <span class="tag">// {{ model.t.internal_audit_tag }}</span>
+  </div>
+  <article class="magnetism-audit-summary">
+    <p class="magnetism-audit-summary-text">
+      {{ internal.summary }}
+    </p>
+    <details class="magnetism-audit-evidence-details">
+      <summary class="source-link">{{ model.t.fingerprint_details }}</summary>
+      <ul>
+        <li>status: {{ score_state.score_integrity }}</li>
+        <li>fingerprint: {{ score_state.replay_integrity.fingerprint_status }}</li>
+        <li>persisted fingerprint: {{ score_state.replay_integrity.persisted_scoring_state_fingerprint or 'n/a' }}</li>
+        <li>current fingerprint: {{ score_state.replay_integrity.current_scoring_state_fingerprint or 'n/a' }}</li>
+      </ul>
+    </details>
+    <details class="magnetism-audit-evidence-details">
+      <summary class="source-link">{{ model.t.raw_feature_provenance }}</summary>
+      <ul>
+        {% for dim_name, dim in provenance.feature_provenance_summary.items() %}
+        <li>
+          <strong>{{ dim_name }}</strong>
+          <span class="dim">· {{ dim.feature_count }} features · {{ dim.evidence_count }} evidence items</span>
+          {% if dim.feature_names %}
+          <div class="dim">{{ dim.feature_names|join(', ') }}</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+  </article>
+</section>
+{% endif %}
 {% endif %}
 {% endblock %}

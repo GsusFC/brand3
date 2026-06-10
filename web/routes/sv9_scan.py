@@ -40,6 +40,15 @@ async def sv9_scan_view(request: Request, scan_id: int):
 
     by_component = {c["component"]: c for c in scan["components"]}
 
+    def _next_rung(key: str, component: dict) -> dict | None:
+        """First rung not yet earned: the diagnosis line the TLDR cannot give."""
+        spec = COMPONENTS[key]
+        score = int(component.get("score") or 0)
+        if component.get("status") == "not_evaluated" or score >= spec["scale"]:
+            return None
+        rung = spec["ladder"][score]  # ladder is 0-indexed; rung score+1
+        return {"rung": rung["rung"], "criterion": rung["criterion"]}
+
     def _box(key: str) -> dict:
         component = by_component.get(key) or {}
         spec = COMPONENTS[key]
@@ -54,6 +63,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "status": component.get("status", "not_evaluated"),
             "content": component.get("detected_content") or "",
             "is_chip": key in ("attributes", "values"),
+            "next_rung": _next_rung(key, component),
         }
 
     canvas = [[_box(key) for key in row] for row in _CANVAS_ROWS]
@@ -69,6 +79,28 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "canvas": canvas,
             "coherencia": coherencia,
             "gap_label": gap_label,
+            "magnetism_scan_id": _magnetism_scan_id(scan.get("source_run_id")),
             "ui_lang": "es",
         },
     )
+
+
+def _magnetism_scan_id(source_run_id: int | None) -> int | None:
+    """Latest scanner entry for the same audit run, to link back into the flow."""
+    if not source_run_id:
+        return None
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        row = store.conn.execute(
+            """
+            SELECT id FROM magnetism_scans
+            WHERE source_run_id = ?
+            ORDER BY id DESC LIMIT 1
+            """,
+            (source_run_id,),
+        ).fetchone()
+        return int(row["id"]) if row else None
+    except Exception:
+        return None
+    finally:
+        store.close()

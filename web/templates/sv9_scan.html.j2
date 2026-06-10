@@ -2,6 +2,16 @@
 {% block title %}brand3 :: sv9 scan #{{ scan.id }}{% endblock %}
 {% block content %}
 <section>
+  <div class="lab-review-nav" style="margin-bottom: 14px;">
+    {% if magnetism_scan_id %}
+    <a class="source-link" href="/magnetism-scanner/scan/{{ magnetism_scan_id }}">TLDR Brand3</a>
+    <a class="source-link" href="/magnetism-scanner/scan/{{ magnetism_scan_id }}/client-tldr-v2">TLDR v2 Preview</a>
+    {% endif %}
+    <a class="source-link badge-ready" href="/sv9/scan/{{ scan.id }}">SV9 Score</a>
+    <a class="source-link" href="/sv9/calibration/{{ scan.id }}">Calibración</a>
+    <a class="source-link" href="/sv9/calibration">Scans SV9</a>
+  </div>
+
   <div class="section-head">
     <span class="label">brand3_score · preview interno sv9</span>
     <span class="tag">// scan #{{ scan.id }} · {{ scan.rubric_version }} · {{ scan.evaluator_model or '—' }}</span>
@@ -51,15 +61,25 @@
         {% else %}
         <div class="dim" style="font-size:0.9em;">(no detectado)</div>
         {% endif %}
+        {% if box.next_rung %}
+        <div class="dim" style="font-size:0.82em; margin-top:0.4em; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.3em;">
+          → peldaño {{ box.next_rung.rung }}: {{ box.next_rung.criterion }}
+        </div>
+        {% endif %}
       </div>
       {% endfor %}
     </div>
     {% endfor %}
   </div>
 
+  {% if coherencia.next_rung %}
+  <p class="prose dim" style="font-size:0.88em;">
+    coherencia → peldaño {{ coherencia.next_rung.rung }}: {{ coherencia.next_rung.criterion }}
+  </p>
+  {% endif %}
+
   <p class="prose dim" style="margin-top:1em;">
-    <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a> ·
-    <a href="/sv9/calibration">→ todos los scans</a>
+    <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a>
   </p>
 </section>
 {% endblock %}

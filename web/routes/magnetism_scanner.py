@@ -19,7 +19,9 @@ from src.scoring.provenance import build_score_provenance_report
 from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
 
+from ..config import settings
 from ..i18n import magnetism_landing_copy
+from ..middleware.team_cookie import create_serializer, is_team_request
 from ..storage import (
     get_magnetism_scan,
     get_magnetism_scan_by_token,
@@ -451,6 +453,34 @@ _MAGNETISM_UI = {
 }
 
 
+def _attach_sv9_link(model: dict, request: Request) -> None:
+    """Team-only nav link to the internal SV9 scan for this run, when one exists.
+
+    Public visitors never see the link: it requires the team cookie whenever a
+    team token is configured. Read-only lookup; failures stay silent.
+    """
+    model.setdefault("sv9_scan_id", None)
+    source_run_id = model.get("source_run_id")
+    if not source_run_id:
+        return
+    if settings.team_token and not is_team_request(
+        request, create_serializer(settings.cookie_secret)
+    ):
+        return
+    try:
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(BRAND3_DB_PATH)
+        try:
+            scan = store.get_scan_for_run(int(source_run_id))
+        finally:
+            store.close()
+    except Exception:
+        return
+    if scan:
+        model["sv9_scan_id"] = scan["id"]
+
+
 def _ui(lang: _Lang) -> dict:
     labels = dict(_MAGNETISM_UI["en"])
     labels.update(_MAGNETISM_UI.get(lang, {}))
@@ -759,6 +789,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
         )
     model["active_tab"] = "tldr"
     _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
 
     return templates.TemplateResponse(
         request,
@@ -781,6 +812,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     model["active_tab"] = "research"
     model["research"] = _research_evidence_model(model["payload"])
     _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
 
     return templates.TemplateResponse(
         request,
@@ -802,6 +834,7 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
         )
     model["active_tab"] = "audit"
     _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["audit"] = {"available": False, "reason": "missing_source_run"}
@@ -888,6 +921,7 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
         )
     model["active_tab"] = "client_tldr_v2"
     _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["client_tldr_v2"] = {
@@ -958,6 +992,7 @@ async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int,
     model["active_tab"] = "evidence_reliability"
     model["quality"] = _evidence_reliability_model(model["payload"])
     _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
 
     return templates.TemplateResponse(
         request,
@@ -980,6 +1015,7 @@ async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _L
     model["active_tab"] = "methodology"
     model["methodology"] = _methodology_model(model["payload"])
     _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
 
     return templates.TemplateResponse(
         request,

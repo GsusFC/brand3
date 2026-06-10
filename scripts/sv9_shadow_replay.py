@@ -30,7 +30,7 @@ from src.config import BRAND3_DB_PATH
 from src.storage.sqlite_store import SQLiteStore
 from src.sv9.models import Sv9ScanResult
 from src.sv9.rubric import PRESENTATION_ORDER, RUBRIC_VERSION
-from src.sv9.service import run_sv9_from_audit_snapshot
+from src.sv9.service import detect_for_snapshot, run_sv9_from_audit_snapshot
 from src.sv9.store import Sv9Store
 
 
@@ -50,7 +50,11 @@ def _replay_run(
     if snapshot is None:
         print(f"  run #{run_id}: no snapshot, skipped")
         return None
-    result = run_sv9_from_audit_snapshot(snapshot)
+    detection = sv9_store.get_detection(run_id)
+    if detection is None:
+        detection = detect_for_snapshot(snapshot)
+        sv9_store.save_detection(run_id, detection)
+    result = run_sv9_from_audit_snapshot(snapshot, magnetism_result=detection)
     scan_id = sv9_store.save_scan(result)
     return result, scan_id
 

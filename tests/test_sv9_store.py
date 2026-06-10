@@ -90,6 +90,17 @@ class Sv9StoreTests(unittest.TestCase):
         self.assertEqual(labels[0]["rubric_version"], RUBRIC_VERSION)
         self.assertEqual(labels[0]["flag_evidencia"], 0)
 
+    def test_detection_cache_roundtrip_and_replace(self):
+        self.assertIsNone(self.store.get_detection(175))
+        self.store.save_detection(175, {"tldr_brand3": {"mission": {"content": "v1"}}})
+        self.assertEqual(
+            self.store.get_detection(175)["tldr_brand3"]["mission"]["content"], "v1"
+        )
+        self.store.save_detection(175, {"tldr_brand3": {"mission": {"content": "v2"}}})
+        self.assertEqual(
+            self.store.get_detection(175)["tldr_brand3"]["mission"]["content"], "v2"
+        )
+
     def test_migration_is_idempotent(self):
         again = Sv9Store(self.db_path)
         again.close()

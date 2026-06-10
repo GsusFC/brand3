@@ -29,7 +29,19 @@ class Sv9Store:
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(_MIGRATION_PATH.read_text(encoding="utf-8"))
+        self._backfill_columns()
         self.conn.commit()
+
+    def _backfill_columns(self) -> None:
+        """Add columns introduced after the table was first created.
+
+        The .sql migration is re-runnable but CREATE IF NOT EXISTS does not
+        alter existing tables (same pattern as the main SQLiteStore).
+        """
+        try:
+            self.conn.execute("ALTER TABLE sv9_scans ADD COLUMN evaluator_model TEXT")
+        except sqlite3.OperationalError:
+            pass  # column already exists
 
     def close(self) -> None:
         self.conn.close()
@@ -49,8 +61,9 @@ class Sv9Store:
             INSERT INTO sv9_scans (
                 brand_name, url, source_run_id, rubric_version, brand3_score,
                 base_average, magnetism_capped, immediate_margin,
-                most_painful_gap, needs_review, is_complete, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                most_painful_gap, needs_review, is_complete, evaluator_model,
+                created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 result.brand_name,
@@ -64,6 +77,7 @@ class Sv9Store:
                 result.most_painful_gap,
                 int(result.needs_review),
                 int(result.is_complete),
+                result.evaluator_model,
                 now,
             ),
         )
@@ -151,6 +165,30 @@ class Sv9Store:
             except json.JSONDecodeError:
                 payload[target] = []
         return payload
+
+    # --- pinned Pass 1 detection ---
+
+    def save_detection(self, run_id: int, payload: dict[str, Any]) -> None:
+        self.conn.execute(
+            """
+            INSERT OR REPLACE INTO sv9_detection_cache (run_id, payload_json, created_at)
+            VALUES (?, ?, ?)
+            """,
+            (run_id, json.dumps(payload, ensure_ascii=False, default=str), _utcnow()),
+        )
+        self.conn.commit()
+
+    def get_detection(self, run_id: int) -> dict[str, Any] | None:
+        row = self.conn.execute(
+            "SELECT payload_json FROM sv9_detection_cache WHERE run_id = ?",
+            (run_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        try:
+            return json.loads(row["payload_json"])
+        except json.JSONDecodeError:
+            return None
 
     # --- calibration ---
 

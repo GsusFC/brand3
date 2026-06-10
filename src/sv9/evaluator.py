@@ -347,10 +347,14 @@ def _signals_lines(signals: list[dict[str, Any]]) -> str:
     for signal in signals:
         value = signal.get("value")
         confidence = signal.get("confidence")
-        lines.append(
+        line = (
             f"- {signal.get('feature')} (legacy {signal.get('legacy_dimension')}): "
             f"value={value} confidence={confidence}"
         )
+        detail = signal.get("detail")
+        if detail:
+            line += f"\n  observations: {detail}"
+        lines.append(line)
     return "\n".join(lines)
 
 

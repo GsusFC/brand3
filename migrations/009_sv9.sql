@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS sv9_scans (
   most_painful_gap TEXT,
   needs_review INTEGER NOT NULL DEFAULT 0,
   is_complete INTEGER NOT NULL DEFAULT 0,
+  evaluator_model TEXT,
   created_at TEXT NOT NULL
 );
 
@@ -64,3 +65,12 @@ CREATE TABLE IF NOT EXISTS sv9_calibration_labels (
 
 CREATE INDEX IF NOT EXISTS idx_sv9_calibration_scan ON sv9_calibration_labels(scan_id);
 CREATE INDEX IF NOT EXISTS idx_sv9_calibration_component ON sv9_calibration_labels(component);
+
+-- Pinned Pass 1 detection per audit run. The TLDR extraction is not
+-- deterministic across re-runs; pinning it makes the SV9 evaluator the only
+-- moving part when re-evaluating, so rubric/model A/B comparisons stay clean.
+CREATE TABLE IF NOT EXISTS sv9_detection_cache (
+  run_id INTEGER PRIMARY KEY,
+  payload_json TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);

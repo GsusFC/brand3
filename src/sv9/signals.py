@@ -72,6 +72,7 @@ def collect_signals(snapshot: dict[str, Any]) -> dict[str, list[dict[str, Any]]]
             feature = by_key.get((dimension_name, feature_name))
             if feature is None:
                 continue
+            raw_value = feature.get("raw_value")
             rows.append(
                 {
                     "feature": feature_name,
@@ -79,6 +80,10 @@ def collect_signals(snapshot: dict[str, Any]) -> dict[str, list[dict[str, Any]]]
                     "value": feature.get("value"),
                     "confidence": feature.get("confidence"),
                     "source": feature.get("source"),
+                    # The raw extractor payload carries the actual observations
+                    # (detected palette, logo, style, quotes). A bare number is
+                    # unjudgeable evidence for ladder rungs.
+                    "detail": str(raw_value)[:600] if raw_value else None,
                 }
             )
         if rows:

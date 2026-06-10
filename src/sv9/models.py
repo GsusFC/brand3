@@ -116,6 +116,7 @@ class Sv9ScanResult:
     most_painful_gap: str | None = None
     needs_review: bool = False
     rubric_version: str = RUBRIC_VERSION
+    evaluator_model: str | None = None
 
     @property
     def is_complete(self) -> bool:
@@ -136,6 +137,7 @@ class Sv9ScanResult:
             "url": self.url,
             "source_run_id": self.source_run_id,
             "rubric_version": self.rubric_version,
+            "evaluator_model": self.evaluator_model,
             "brand3_score": self.brand3_score,
             "base_average": self.base_average,
             "magnetism_capped": self.magnetism_capped,

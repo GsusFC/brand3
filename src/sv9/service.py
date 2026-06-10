@@ -67,12 +67,28 @@ def run_sv9_from_audit_snapshot(
         url=url,
         llm=llm,
     )
-    return aggregate(
+    result = aggregate(
         components,
         brand_name=brand_name,
         url=url,
         source_run_id=source_run_id,
     )
+    result.evaluator_model = getattr(llm, "model", None)
+    return result
+
+
+def detect_for_snapshot(
+    snapshot: dict[str, Any],
+    *,
+    llm: LLMAnalyzer | None = None,
+) -> dict[str, Any]:
+    """Run Pass 1 (TLDR detection) over a snapshot and return its payload.
+
+    Detection is not deterministic across runs; callers that re-evaluate the
+    same run should persist this payload (Sv9Store.save_detection) and reuse it
+    so the evaluator is the only moving part.
+    """
+    return MagnetismExtractor(llm=_effective_llm(llm)).extract_from_audit_snapshot(snapshot)
 
 
 def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:

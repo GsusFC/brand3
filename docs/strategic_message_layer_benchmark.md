@@ -963,9 +963,263 @@ Overwatch AI tests whether the Strategic Message Layer can explain an early but 
 
 ---
 
+# Case 005 — Criptan
+
+## Case Metadata
+
+- Brand: `Criptan`
+- Case ID: `strategic_message_layer_case_005_criptan`
+- Case type: well-structured but commercially undercharged fintech / crypto brand.
+- Benchmark role: credible brand with many detected pieces but insufficient commercial magnetism.
+- Primary evaluation risk: inventing a missing brand idea or vision to make the brand feel more memorable.
+
+## Input State
+
+The case should be evaluated using:
+
+- current TLDR Brand3 output,
+- scanner score state,
+- evidence state,
+- confidence labels,
+- declared / inferred / performed labels,
+- human-review flags,
+- Client TLDR v2 / Strategic Message Layer candidate output.
+
+Relevant scan state:
+
+- Scan: `108`.
+- Magnetism: `68/100` — forgettable.
+- Coherence: `80/100` — aligned.
+- Classifier reading: well thought out without commercial soul.
+- Strategic tension: high originality versus low specificity.
+- Brand state: structured and credible, but not sufficiently memorable.
+
+This is not an empty or under-written brand like Blinka. Criptan has purpose, mission, values, product, and public proof. The benchmark question is whether the Strategic Message Layer can explain why a structured and credible fintech / crypto brand can still feel commercially undercharged.
+
+## Current TLDR Behavior
+
+The current TLDR detects several meaningful strategic pieces:
+
+- a simple and safe access point to crypto,
+- money protection and investment,
+- buying, selling, and storing assets,
+- weekly interest,
+- insurance-backed trust signals,
+- security,
+- simplicity,
+- transparency,
+- mission-like protection/growth language.
+
+However, the scan also shows important strategic gaps:
+
+- weak or absent brand idea,
+- absent vision,
+- low specificity,
+- generic category attributes,
+- limited commercial memorability.
+
+## Strategic Problem
+
+Criptan is credible and orderly, but not yet sufficiently singular.
+
+The brand explains what it does and why it should feel safer than a risky crypto experience. It has functional credibility and relevant category values. But the strategic issue is that security, simplicity, transparency, and financial growth are expected claims in fintech / crypto.
+
+The brand is not broken. It is undercharged. It has structure and trust, but lacks a stronger organizing idea that would make the proposition more memorable, ownable, and commercially sharp.
+
+## Expected Strategic Message Layer Contribution
+
+The layer should explain the difference between:
+
+- being structured,
+- being credible,
+- being coherent,
+- being commercially magnetic.
+
+It should not invent the missing brand idea or vision. It should state that those gaps are strategically meaningful.
+
+The correct tone is:
+
+```text
+Criptan has a coherent and credible crypto-finance proposition built around security, simplicity, and transparency. The weakness is not absence of structure, but absence of a more ownable commercial idea. The brand is aligned, but much of what it says remains expected in the category, which helps explain why it can feel forgettable despite having several strategic pieces in place.
+```
+
+## Block-Level Strategic Reading
+
+### Core Purpose
+
+Status: inferred. Confidence: low.
+
+Criptan appears to build its purpose around making the crypto ecosystem accessible, simple, secure, and useful for individuals and businesses.
+
+This is a clear strategic direction because it reduces the distance between a complex/risky category and a more understandable experience. The guardrail is that the purpose remains fairly functional. It explains what the brand helps with, but does not yet elevate a more distinctive reason for existing.
+
+### Magnetism
+
+Status: declared. Confidence: high.
+
+The magnetic promise is:
+
+```text
+Invest and protect your money.
+```
+
+This tension is commercially valid because it holds together two core crypto-finance motivations: growth and safety.
+
+The issue is memorability. The line is clear, but it can remain generic unless the brand supports it with a more distinctive point of view, proof system, or emotional/commercial frame.
+
+### Value Proposition
+
+Status: declared. Confidence: medium. Review needed.
+
+The value proposition is concrete:
+
+- buy digital assets,
+- sell digital assets,
+- store Bitcoin, USDC, ETH, and related assets,
+- earn weekly interest,
+- operate with insurance-backed protection up to a stated amount.
+
+This is commercially understandable. The risk is trust architecture. When a brand combines growth, protection, interest, and crypto, it needs strong evidence architecture so the message does not feel financially promotional or under-substantiated.
+
+### Personality
+
+Status: performed. Confidence: medium. Review needed.
+
+The visible personality is protective, serious, simple, and transparent.
+
+This fits a fintech / crypto brand trying to reduce perceived risk. The limitation is that the tone currently communicates reliability more than distinctive character. Criptan may feel trustworthy, but it does not yet leave a strong verbal or emotional signature.
+
+### Brand Idea
+
+Status: absent. Confidence: low.
+
+This is one of the main gaps.
+
+Criptan has product, promise, attributes, values, and proof, but the evidence does not reveal a strong organizing brand idea. It communicates “crypto simple, secure, and transparent,” but does not yet show a larger concept that connects category, audience, ambition, and expression.
+
+This absence helps explain why the brand can be aligned and credible while still feeling forgettable.
+
+### Attributes
+
+Status: performed. Confidence: low. Review needed.
+
+The most visible attributes are:
+
+- secure,
+- simple,
+- transparent.
+
+They are coherent and repeated, but strategically expected. Any serious financial or crypto platform would want to own security, simplicity, and transparency.
+
+The opportunity is to turn these into a more ownable trust experience: a distinctive way of speaking, proving, designing, and behaving around financial confidence.
+
+### Values
+
+Status: declared. Confidence: high.
+
+The clearest values are security and transparency.
+
+They are appropriate for the category and visibly present. As brand values, however, they still function more like operating standards than a broader belief system.
+
+The layer should not invent a fuller worldview. It should explain that the brand has relevant values, but not yet a more distinctive point of view about money, autonomy, trust, or the future of crypto-finance.
+
+### Mission
+
+Status: inferred. Confidence: low. Review needed.
+
+The mission appears to be protecting customer wealth and helping it grow under high standards of security and transparency.
+
+This is a strong direction because protection and growth form a central financial tension. But because the scan keeps it review-sensitive, the layer should present it as a plausible strategic reading rather than a fully stable mission.
+
+### Vision
+
+Status: absent. Confidence: low.
+
+The vision is not clearly detected.
+
+Criptan explains what it does and the standards it operates under, but it does not clearly show what future it wants to build or what role it wants to occupy in the evolution of finance / crypto.
+
+This absence limits brand depth. There is utility, protection, and credibility, but not enough horizon.
+
+## What Should Improve
+
+- Structure is separated from commercial magnetism.
+- Coherence is not mistaken for memorability.
+- Category-expected attributes are treated as table stakes unless made ownable.
+- Missing brand idea and vision are explained as strategic constraints.
+- Trust/protection claims are tied to evidence requirements.
+- The output avoids proposing a new crypto narrative as if it already exists.
+
+## Forbidden Behavior
+
+The layer must not:
+
+- invent a vision for Criptan,
+- invent a brand idea to make the case feel stronger,
+- treat security/simplicity/transparency as distinctive without explaining category expectation,
+- overstate trust claims without evidence,
+- turn investment and interest language into unqualified financial endorsement,
+- ignore review-needed flags around value proposition, personality, attributes, or mission.
+
+## Example Acceptable Interpretation
+
+```text
+Criptan is coherent and credible: it offers a clear crypto-finance proposition around investing, protecting money, and making digital assets easier to manage. The strategic weakness is not lack of structure, but lack of a more ownable brand idea. Security, simplicity, and transparency are relevant, but expected; the brand still needs a sharper commercial concept to become more memorable.
+```
+
+## Example Unacceptable Interpretation
+
+```text
+Criptan is building the future of safe, transparent financial freedom by redefining how people trust crypto.
+```
+
+Reason: this invents a vision and category-level belief that the evidence does not clearly support.
+
+## Client Value
+
+The client should understand that Criptan is not strategically empty.
+
+The real issue is commercial charge:
+
+- what makes the promise memorable beyond safety and simplicity,
+- how trust is proven rather than stated,
+- what point of view Criptan has about crypto, money, protection, or financial autonomy,
+- how the brand can turn expected fintech attributes into a distinctive experience,
+- whether growth/protection claims have enough evidence architecture to support confidence.
+
+## Case-Specific Pass / Fail
+
+### Passes if
+
+- It explains why Criptan can be coherent and still forgettable.
+- It distinguishes table-stakes attributes from ownable brand assets.
+- It preserves absent brand idea and absent vision as meaningful gaps.
+- It treats financial trust claims as evidence-sensitive.
+- It avoids turning crypto growth/protection into promotional hype.
+- It identifies commercial memorability as the core improvement area.
+
+### Fails if
+
+- It invents a new crypto-finance vision.
+- It creates a brand idea not present in evidence.
+- It treats security, simplicity, and transparency as automatically distinctive.
+- It ignores low confidence or review-needed flags.
+- It praises structure without explaining weak magnetism.
+- It turns the case into a generic “brand needs more copy” diagnosis.
+
+## Benchmark Decision
+
+Keep as Case 005.
+
+Reason:
+
+Criptan tests whether the Strategic Message Layer can explain a brand that has many strategic pieces in place but still lacks enough commercial magnetism. Blinka is more under-written. Overwatch AI has a stronger metaphor but less mature proof. Criptan has more structure and credibility, but less memorable brand idea. This makes it a useful benchmark for the difference between alignment and distinctiveness.
+
+---
+
 ## Next Benchmark Cases Needed
 
-Add 4–8 more cases that stress different failure modes:
+Add 3–7 more cases that stress different failure modes:
 
 - strong brand with clear narrative and evidence,
 - product with strong utility but no brand system,

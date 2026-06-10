@@ -10,6 +10,7 @@ from src.reports.brand_research_pack import (
     EntityResolution,
     ResearchEvidence,
     ResearchSource,
+    _looks_like_crypto_product,
 )
 from src.research.evidence_graph import EvidenceClaim, EvidenceGraph
 
@@ -59,8 +60,10 @@ def build_brand_research_pack_from_graph(graph: EvidenceGraph) -> BrandResearchP
         kind="noise",
     )
     offer = _offer_text(claims, graph=graph)
-    product_summary = _product_summary_text(claims) or offer or _first_claim_text(claims, ("hero_claim", "outcome"))
-    company_summary = _company_summary_text(claims, graph=graph) or offer
+    product_summary = _normalize_research_pack_text(
+        _product_summary_text(claims) or offer or _first_claim_text(claims, ("hero_claim", "outcome"))
+    )
+    company_summary = _normalize_research_pack_text(_company_summary_text(claims, graph=graph) or offer)
     outcome = _first_claim_text(claims, ("outcome",)) or _infer_outcome([offer, product_summary, company_summary])
     audience = _audience_text(claims, [offer, product_summary, company_summary, outcome])
     declared_mission = _first_claim_text(claims, ("mission",))
@@ -407,8 +410,8 @@ def _company_summary_text(claims: Iterable[EvidenceClaim], *, graph: EvidenceGra
         and not _looks_like_product_summary_noise(claim.text)
     ]
     if preferred:
-        return max(preferred, key=lambda claim: _offer_score(claim, graph=graph)).text
-    return _first_clean_claim_text(claim_list, ("mission", "hero_claim", "product_offer"))
+        return _normalize_research_pack_text(max(preferred, key=lambda claim: _offer_score(claim, graph=graph)).text)
+    return _normalize_research_pack_text(_first_clean_claim_text(claim_list, ("mission", "hero_claim", "product_offer")))
 
 
 def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
@@ -423,11 +426,87 @@ def _product_summary_text(claims: Iterable[EvidenceClaim]) -> str:
             and not _looks_like_product_summary_noise(claim.text)
             and not _looks_like_audience_noise(claim.text)
         ):
-            return claim.text
+            return _normalize_research_pack_text(claim.text)
     owned_proof = _owned_proof_offer_candidates(claim_list)
     if owned_proof:
-        return max(owned_proof, key=lambda claim: _offer_score(claim)).text
+        return _normalize_research_pack_text(max(owned_proof, key=lambda claim: _offer_score(claim)).text)
     return ""
+
+
+_LANGUAGE_SELECTOR_TOKENS = (
+    "english",
+    "français",
+    "deutsch",
+    "italiano",
+    "nederlands",
+    "português",
+    "español",
+    "العربية",
+    "polski",
+    "中文",
+    "română",
+    "latviešu",
+    "svenska",
+    "eesti",
+    "hrvatski",
+    "lietuviškas",
+    "dansk",
+    "suomi",
+    "slovenščina",
+    "עברית",
+    "tiếng việt",
+    "ไทย",
+    "filipino",
+)
+
+
+def _looks_like_language_selector_fragment(text: str) -> bool:
+    low = text.lower()
+    hits = sum(1 for token in _LANGUAGE_SELECTOR_TOKENS if token in low)
+    return hits >= 4
+
+
+def _strip_navigation_noise_tail(text: str) -> str:
+    lowered = text.lower()
+    nav_cut_markers = (
+        "popular cities",
+        "see more cities",
+        "select your city",
+        "join the millions of people worldwide",
+        "top worldwide experiences",
+        "we are with you",
+    )
+    for marker in nav_cut_markers:
+        idx = lowered.find(marker)
+        if idx > 90:
+            return text[:idx].strip(" .,:;|")
+    return text
+
+
+def _strip_language_selector(text: str) -> str:
+    lowered = text.lower()
+    marker = " | en "
+    idx = lowered.find(marker)
+    if idx < 0:
+        return text
+    if _looks_like_language_selector_fragment(lowered[idx + len(marker) - 1 :]):
+        return text[:idx].strip(" .,:;|")
+    return text
+
+
+def _normalize_research_pack_text(text: str) -> str:
+    cleaned = " ".join(str(text or "").split()).strip()
+    if not cleaned:
+        return ""
+    cleaned = _strip_language_selector(cleaned)
+    cleaned = _strip_navigation_noise_tail(cleaned)
+    if cleaned.startswith("# "):
+        cleaned = cleaned[2:].strip()
+    if " see experiences " in cleaned.lower() and cleaned.lower().count(" see experiences ") >= 4:
+        return _compact_offer_text(cleaned)
+    if len(cleaned) <= 420:
+        return _compact_offer_text(cleaned)
+    return _compact_offer_text(cleaned)
 
 
 def _looks_like_url_only(text: str) -> bool:
@@ -454,7 +533,11 @@ def _looks_like_product_summary_noise(text: str) -> bool:
         return True
     pricing_markers = {"free", "basic", "pro", "max", "enterprise", "plan", "plans", "pricing"}
     tokens = set(low.replace("/", " ").split())
+    if _looks_like_language_selector_fragment(low):
+        return True
     if len(tokens) <= 5 and tokens & pricing_markers:
+        return True
+    if _looks_like_language_selector_fragment(low) or " | en " in low:
         return True
     return any(
         marker in low
@@ -473,6 +556,9 @@ def _looks_like_product_summary_noise(text: str) -> bool:
             "skip to main content",
             "ask assistant",
             "api playground",
+            "select your city",
+            "popular cities",
+            "see experiences",
         )
     )
 
@@ -823,6 +909,8 @@ def _category_from_graph(
         return "llm application framework"
     if "platform" in text and ("agent" in text or "agents" in text):
         return "ai agent platform"
+    if _looks_like_crypto_product(text):
+        return "crypto product"
     if "platform" in text:
         return "platform"
     if "app builder" in text:

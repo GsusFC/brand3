@@ -1388,7 +1388,7 @@ def _infer_category(
         return "AI app builder"
     if "ai assistant" in text or "assistant" in text:
         return "AI assistant"
-    if "crypto" in text or "wallet" in text:
+    if _looks_like_crypto_product(text):
         return "crypto product"
     if "platform" in text:
         return "platform"
@@ -1399,6 +1399,28 @@ def _infer_category(
     if exa_payload.get("competitors"):
         return "market category"
     return "unknown"
+
+
+def _looks_like_crypto_product(text: str) -> bool:
+    """Require multiple crypto-native signals before assigning the category.
+
+    A single mention of "crypto" or "wallet" is too broad and tends to pull
+    generic platform/product pages into the blockchain bucket.
+    """
+
+    signals = (
+        "blockchain",
+        "web3",
+        "defi",
+        "dao",
+        "onchain",
+        "token",
+        "wallet",
+        "staking",
+        "smart contract",
+        "nft",
+    )
+    return sum(1 for signal in signals if signal in text) >= 2
 
 
 def _confidence_notes(

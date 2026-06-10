@@ -238,6 +238,7 @@ def test_brand_research_pack_builder_rejects_bokeroon_feed_and_chrome_as_noise()
 
     assert "article prediction" not in payload["offer"].lower()
     assert "feed" not in payload["product_summary"].lower()
+    assert payload["category"] == "platform"
     assert any("feed" in item["text"].lower() or "page chrome" in item["topic"].lower() for item in payload["noise_rejected"])
     assert all(item["kind"] == "noise" for item in payload["noise_rejected"])
 

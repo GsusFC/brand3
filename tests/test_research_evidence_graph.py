@@ -1,7 +1,14 @@
 from __future__ import annotations
 
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
-from src.research.evidence_graph import BrandResearchRun, EvidenceClaim, EvidenceGraph, ResearchSource, build_evidence_graph_from_snapshot
+from src.research.evidence_graph import (
+    BrandResearchRun,
+    EvidenceClaim,
+    EvidenceGraph,
+    ResearchSource,
+    _dedupe_claims,
+    build_evidence_graph_from_snapshot,
+)
 from src.research.research_pack_builder import build_brand_research_pack_from_graph
 
 
@@ -499,6 +506,7 @@ def test_graph_to_pack_keeps_rejected_noise_out_of_offer() -> None:
     payload = pack.to_dict()
 
     assert "feed" not in payload["offer"].lower()
+    assert payload["category"] == "platform"
     assert payload["noise_rejected"]
     assert all(item["kind"] == "noise" for item in payload["noise_rejected"])
 
@@ -979,3 +987,88 @@ def test_competitor_sources_remain_competitive_context_not_brand_noise() -> None
     assert "BrowserOS" in pack["competitive_context"][0]["text"]
     assert "BrowserOS" not in pack["offer"]
     assert "BrowserOS" not in " ".join(item["text"] for item in pack["noise_rejected"])
+
+
+def test_dedupe_claims_collapses_same_url_family_and_tracks_secondary_sources() -> None:
+    sources = {
+        "web-home": ResearchSource(
+            source_id="web-home",
+            url="https://brand.com",
+            source_type="owned_home",
+            origin="raw_inputs.web",
+        ),
+        "hyperbrowser-home": ResearchSource(
+            source_id="hyperbrowser-home",
+            url="https://brand.com",
+            source_type="owned_home",
+            origin="raw_inputs.hyperbrowser",
+        ),
+    }
+    claims = [
+        EvidenceClaim(
+            claim_id="c1",
+            text="An AI sports nutritionist for athletes.",
+            claim_type="product_offer",
+            source_id="web-home",
+            source_url="https://brand.com",
+            source_type="owned_home",
+            confidence="high",
+            supports_blocks=["value_proposition"],
+        ),
+        EvidenceClaim(
+            claim_id="c2",
+            text="An AI sports nutritionist for athletes.",
+            claim_type="product_offer",
+            source_id="hyperbrowser-home",
+            source_url="https://brand.com/",
+            source_type="owned_home",
+            confidence="medium",
+            supports_blocks=["brand_idea"],
+        ),
+    ]
+
+    deduped, stats = _dedupe_claims(claims, sources=sources)
+
+    assert len(deduped) == 1
+    assert stats["duplicate_claim_count"] == 1
+    assert stats["deduped_claim_count"] == 1
+    assert stats["dedupe_rate"] == 0.5
+    assert deduped[0].source_id == "web-home"
+    assert deduped[0].secondary_source_ids == ["hyperbrowser-home"]
+    assert deduped[0].secondary_source_urls == ["https://brand.com/"]
+    assert deduped[0].secondary_origins == ["raw_inputs.hyperbrowser"]
+    assert set(deduped[0].supports_blocks) == {"value_proposition", "brand_idea"}
+
+
+def test_graph_source_merge_keeps_hyperbrowser_trace_when_url_matches_web() -> None:
+    snapshot = {
+        "run": {"id": 2001, "brand_name": "Brand", "url": "https://brand.com"},
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "url": "https://brand.com",
+                    "title": "Brand",
+                    "markdown_content": "Brand builds software for operations teams.",
+                },
+            },
+            {
+                "source": "hyperbrowser",
+                "payload": {
+                    "url": "https://brand.com",
+                    "source_url": "https://brand.com",
+                    "title": "Brand",
+                    "markdown": "Brand builds software for operations teams.",
+                },
+            },
+        ],
+        "features": [],
+        "evidence_items": [],
+    }
+
+    graph = build_evidence_graph_from_snapshot(snapshot).to_dict()
+    source = next(item for item in graph["sources"].values() if item["url"] == "https://brand.com")
+
+    assert source["origin"] == "run"
+    assert any(note == "Also observed via raw_inputs.web." for note in source["notes"])
+    assert any(note == "Also observed via raw_inputs.hyperbrowser." for note in source["notes"])

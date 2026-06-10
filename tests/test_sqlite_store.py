@@ -5,7 +5,7 @@ from unittest.mock import patch
 from pathlib import Path
 
 from src.models.brand import BrandScore, DimensionScore, FeatureValue
-from src.storage.sqlite_store import SQLiteStore
+from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
 
 
 class SQLiteStoreTests(unittest.TestCase):
@@ -82,6 +82,31 @@ class SQLiteStoreTests(unittest.TestCase):
 
             store.close()
 
+    def test_get_latest_raw_input_handles_malformed_payload_json(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+
+            store.save_raw_input(run_id, "web", {"url": "https://example.com", "title": "Fresh"})
+            valid = store.get_latest_raw_input("Example", "https://example.com", "web", max_age_hours=24)
+            self.assertEqual(valid["title"], "Fresh")
+
+            store.conn.execute(
+                "UPDATE raw_inputs SET payload_json = ? WHERE run_id = ? AND source = ?",
+                ("{", run_id, "web"),
+            )
+            store.conn.commit()
+
+            malformed = store.get_latest_raw_input("Example", "https://example.com", "web", max_age_hours=24)
+            store.close()
+
+            self.assertIsInstance(malformed, _MalformedJSONPayload)
+            self.assertEqual(malformed.field, "raw_inputs.payload_json")
+            self.assertEqual(malformed.raw_json, "{")
+            self.assertIn("Expecting", malformed.error)
+
     def test_store_persists_evidence_items(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"
@@ -127,6 +152,64 @@ class SQLiteStoreTests(unittest.TestCase):
             self.assertEqual(presencia_evidence[0]["source"], "context")
             self.assertEqual(missing_evidence, [])
             self.assertEqual(snapshot["evidence_items"][0]["quote"], "sitemap.xml found with 12 URLs")
+
+    def test_get_run_snapshot_handles_malformed_snapshot_json_fields(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+            store.save_raw_input(run_id, "report_narrative", {"version": 1, "summary": "ok"})
+            store.save_run_audit(
+                run_id,
+                {
+                    "gate_config": {},
+                    "active_baseline": None,
+                    "scoring_state_fingerprint": "state-a",
+                },
+            )
+            store.update_run_classification(
+                run_id,
+                {
+                    "predicted_niche": "enterprise_ai",
+                    "predicted_subtype": "ai_governance",
+                    "confidence": 0.72,
+                    "evidence": [],
+                    "alternatives": [],
+                },
+                calibration_profile="enterprise_ai",
+                profile_source="auto",
+            )
+            store.finalize_run(run_id, 81.0, True, False, "/tmp/example.json", "summary")
+
+            baseline = store.get_run_snapshot(run_id)
+            self.assertEqual(baseline["run"]["audit"]["scoring_state_fingerprint"], "state-a")
+            self.assertEqual(baseline["raw_inputs"][0]["payload"]["version"], 1)
+
+            store.conn.execute("UPDATE run_audits SET audit_json = ? WHERE run_id = ?", ("{", run_id))
+            store.conn.execute(
+                "UPDATE runs SET niche_evidence_json = ?, niche_alternatives_json = ? WHERE id = ?",
+                ("{", "[", run_id),
+            )
+            store.conn.execute(
+                "UPDATE raw_inputs SET payload_json = ? WHERE run_id = ? AND source = ?",
+                ("{", run_id, "report_narrative"),
+            )
+            store.conn.commit()
+
+            snapshot = store.get_run_snapshot(run_id)
+            store.close()
+
+            self.assertIsNone(snapshot["run"]["audit"])
+            self.assertEqual(snapshot["run"]["audit_error"]["field"], "run_audits.audit_json")
+            self.assertEqual(snapshot["run"]["audit_error"]["raw_json"], "{")
+            self.assertEqual(snapshot["run"]["niche_evidence"], [])
+            self.assertEqual(snapshot["run"]["niche_evidence_error"]["field"], "runs.niche_evidence_json")
+            self.assertEqual(snapshot["run"]["niche_alternatives"], [])
+            self.assertEqual(snapshot["run"]["niche_alternatives_error"]["field"], "runs.niche_alternatives_json")
+            self.assertIsNone(snapshot["raw_inputs"][0]["payload"])
+            self.assertEqual(snapshot["raw_inputs"][0]["payload_error"]["field"], "raw_inputs.payload_json")
+            self.assertEqual(snapshot["raw_inputs"][0]["payload_error"]["raw_json"], "{")
 
     def test_store_allows_null_dimension_and_composite_scores(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -489,6 +572,37 @@ class SQLiteStoreTests(unittest.TestCase):
             self.assertEqual(job["run_id"], 12)
             self.assertEqual(job["result"]["composite_score"], 77.0)
             self.assertEqual(len(jobs), 1)
+
+    def test_analysis_job_readback_handles_malformed_result_json(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            job_id = store.create_analysis_job(
+                url="https://example.com",
+                brand_name="Example",
+                use_llm=True,
+                use_social=False,
+            )
+            store.start_analysis_job(job_id)
+            store.complete_analysis_job(job_id, 12, {"run_id": 12, "composite_score": 77.0})
+            baseline = store.get_analysis_job(job_id)
+            self.assertEqual(baseline["result"]["composite_score"], 77.0)
+
+            store.conn.execute(
+                "UPDATE analysis_jobs SET result_json = ? WHERE id = ?",
+                ("{", job_id),
+            )
+            store.conn.commit()
+
+            job = store.get_analysis_job(job_id)
+            jobs = store.list_analysis_jobs("Example", status="done", limit=10)
+            store.close()
+
+            self.assertIsNone(job["result"])
+            self.assertEqual(job["result_error"]["field"], "analysis_jobs.result_json")
+            self.assertEqual(job["result_error"]["raw_json"], "{")
+            self.assertIsNone(jobs[0]["result"])
+            self.assertEqual(jobs[0]["result_error"]["field"], "analysis_jobs.result_json")
 
     def test_analysis_job_cancel_and_retry_are_persisted(self):
         with tempfile.TemporaryDirectory() as tmpdir:

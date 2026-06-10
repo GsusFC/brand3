@@ -144,6 +144,9 @@ class EvidenceClaim:
     freshness_days: int | None = None
     supports_blocks: list[str] = field(default_factory=list)
     contradicts: list[str] = field(default_factory=list)
+    secondary_source_ids: list[str] = field(default_factory=list)
+    secondary_source_urls: list[str] = field(default_factory=list)
+    secondary_origins: list[str] = field(default_factory=list)
     noise_reason: str = ""
     notes: list[str] = field(default_factory=list)
 
@@ -166,6 +169,9 @@ class EvidenceClaim:
             "freshness_days": self.freshness_days,
             "supports_blocks": list(self.supports_blocks),
             "contradicts": list(self.contradicts),
+            "secondary_source_ids": list(self.secondary_source_ids),
+            "secondary_source_urls": list(self.secondary_source_urls),
+            "secondary_origins": list(self.secondary_origins),
             "noise_reason": self.noise_reason,
             "notes": list(self.notes),
         }
@@ -187,6 +193,9 @@ class EvidenceClaim:
             freshness_days=int(freshness) if freshness is not None else None,
             supports_blocks=_str_list(data.get("supports_blocks")),
             contradicts=_str_list(data.get("contradicts")),
+            secondary_source_ids=_str_list(data.get("secondary_source_ids")),
+            secondary_source_urls=_str_list(data.get("secondary_source_urls")),
+            secondary_origins=_str_list(data.get("secondary_origins")),
             noise_reason=str(data.get("noise_reason") or ""),
             notes=_str_list(data.get("notes")),
         )
@@ -243,6 +252,7 @@ class EvidenceGraph:
     gaps: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
     shadow_sources: list[dict[str, Any]] = field(default_factory=list)
+    dedupe_stats: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -253,6 +263,7 @@ class EvidenceGraph:
             "gaps": list(self.gaps),
             "warnings": list(self.warnings),
             "shadow_sources": [dict(item) for item in self.shadow_sources if isinstance(item, dict)],
+            "dedupe_stats": dict(self.dedupe_stats),
             "summary": self.summary(),
         }
 
@@ -272,6 +283,7 @@ class EvidenceGraph:
             gaps=_str_list(data.get("gaps")),
             warnings=_str_list(data.get("warnings")),
             shadow_sources=_dict_list(data.get("shadow_sources")),
+            dedupe_stats=_dict(data.get("dedupe_stats")),
         )
 
     def summary(self) -> dict[str, Any]:
@@ -288,6 +300,7 @@ class EvidenceGraph:
             "source_count": len(self.sources),
             "claim_count": len(self.claims),
             "shadow_source_count": len(self.shadow_sources),
+            "dedupe_stats": dict(self.dedupe_stats),
             "source_counts": dict(sorted(source_counts.items())),
             "claim_counts": dict(sorted(claim_counts.items())),
             "supported_block_counts": dict(sorted(block_counts.items())),
@@ -314,7 +327,10 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
     )
 
     sources = _build_sources(snapshot, entity_packet=entity_packet)
-    claims = _build_claims(snapshot, sources=sources, strategic_packet=strategic_packet)
+    claims, dedupe_stats = _dedupe_claims(
+        _build_claims(snapshot, sources=sources, strategic_packet=strategic_packet),
+        sources=sources,
+    )
     gaps = _graph_gaps(sources, claims)
     warnings = _unique(_str_list(strategic_packet.warnings) + _entity_boundary_warnings(sources))
     return EvidenceGraph(
@@ -325,6 +341,7 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
         gaps=gaps,
         warnings=warnings,
         shadow_sources=_shadow_sources_from_snapshot(snapshot),
+        dedupe_stats=dedupe_stats,
     )
 
 
@@ -353,6 +370,9 @@ def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | 
         source_id = _source_id(normalized)
         if source_id in sources:
             existing = sources[source_id]
+            merged_notes = list(existing.notes)
+            if origin and origin != existing.origin:
+                merged_notes.append(f"Also observed via {origin}.")
             sources[source_id] = ResearchSource(
                 source_id=source_id,
                 url=existing.url,
@@ -362,7 +382,7 @@ def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | 
                 entity_scope=_prefer_annotation(existing.entity_scope, entity_scope),
                 title=existing.title or title,
                 origin=existing.origin or origin,
-                notes=_unique(existing.notes + (notes or [])),
+                notes=_unique(merged_notes + (notes or [])),
             )
             return
         sources[source_id] = ResearchSource(
@@ -392,18 +412,22 @@ def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | 
     for raw_input in snapshot.get("raw_inputs") or []:
         source = str(raw_input.get("source") or "")
         payload = _dict(raw_input.get("payload"))
-        if source == "web":
+        if source in {"web", "hyperbrowser"}:
             text = str(payload.get("markdown_content") or payload.get("content") or "")
-            for url in _web_urls(payload, fallback=input_url):
+            for url in _web_urls(payload, fallback=input_url) or [str(payload.get("source_url") or payload.get("url") or input_url)]:
                 add(
                     url,
                     source_type=_classify_source_url(url, brand_domain=brand_domain, text=text),
-                    label=str(payload.get("title") or "web"),
+                    label=str(payload.get("title") or source),
                     title=str(payload.get("title") or ""),
-                    origin="raw_inputs.web",
+                    origin=f"raw_inputs.{source}",
                     surface_role=surface_role_for_url(url, entity_packet),
                     entity_scope=entity_scope_for_url(url, entity_packet),
-                    notes=["Owned web content collected by Brand Audit."],
+                    notes=[
+                        "Owned web content collected by Brand Audit."
+                        if source == "web"
+                        else "Owned web shadow content collected by Hyperbrowser."
+                    ],
                 )
         elif source == "exa":
             for collection in ("mentions", "news", "ai_visibility_results", "competitors"):
@@ -641,6 +665,118 @@ def _build_claims(snapshot: dict[str, Any], *, sources: dict[str, ResearchSource
         )
 
     return sorted(claims, key=lambda claim: (claim.claim_type, claim.source_url, claim.text))
+
+
+def _dedupe_claims(
+    claims: list[EvidenceClaim],
+    *,
+    sources: dict[str, ResearchSource],
+) -> tuple[list[EvidenceClaim], dict[str, Any]]:
+    deduped: list[EvidenceClaim] = []
+    seen: dict[tuple[str, str, str], int] = {}
+    duplicate_count = 0
+    for claim in claims:
+        key = (
+            _normalize_url(claim.source_url),
+            _claim_family(claim),
+            _claim_fingerprint(claim),
+        )
+        if not any(key):
+            deduped.append(claim)
+            continue
+        existing_index = seen.get(key)
+        if existing_index is None:
+            seen[key] = len(deduped)
+            deduped.append(claim)
+            continue
+        duplicate_count += 1
+        winner, duplicate = _preferred_claim(deduped[existing_index], claim)
+        merged = _merge_duplicate_claim(winner, duplicate, sources=sources)
+        deduped[existing_index] = merged
+    total = len(claims)
+    dedupe_rate = float(duplicate_count / total) if total else 0.0
+    return deduped, {
+        "input_claim_count": total,
+        "deduped_claim_count": len(deduped),
+        "duplicate_claim_count": duplicate_count,
+        "dedupe_rate": round(dedupe_rate, 4),
+    }
+
+
+def _claim_family(claim: EvidenceClaim) -> str:
+    return claim.claim_type or "unknown"
+
+
+def _claim_fingerprint(claim: EvidenceClaim) -> str:
+    text = " ".join((claim.text or claim.quote or "").lower().split())
+    return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16] if text else ""
+
+
+def _preferred_claim(left: EvidenceClaim, right: EvidenceClaim) -> tuple[EvidenceClaim, EvidenceClaim]:
+    return (left, right) if _claim_priority(left) <= _claim_priority(right) else (right, left)
+
+
+def _claim_priority(claim: EvidenceClaim) -> tuple[int, int, int]:
+    source_rank = {
+        "owned_home": 0,
+        "owned_about": 1,
+        "owned_product": 2,
+        "owned_pricing": 3,
+        "owned_security": 4,
+        "owned_docs": 5,
+        "owned_proof": 6,
+        "social": 7,
+        "press_founder": 8,
+        "third_party_review": 9,
+        "third_party_context": 10,
+        "competitor_context": 11,
+        "noise": 12,
+        "unknown": 13,
+    }.get(claim.source_type, 13)
+    confidence_rank = {"high": 0, "medium": 1, "low": 2}.get((claim.confidence or "").lower(), 3)
+    return (source_rank, confidence_rank, -len(claim.text or ""))
+
+
+def _merge_duplicate_claim(
+    primary: EvidenceClaim,
+    duplicate: EvidenceClaim,
+    *,
+    sources: dict[str, ResearchSource],
+) -> EvidenceClaim:
+    duplicate_source = sources.get(duplicate.source_id)
+    duplicate_origin = duplicate_source.origin if duplicate_source else ""
+    return EvidenceClaim(
+        claim_id=primary.claim_id,
+        text=primary.text,
+        claim_type=primary.claim_type,
+        quote=primary.quote,
+        source_id=primary.source_id,
+        source_url=primary.source_url,
+        source_type=primary.source_type,
+        surface_role=primary.surface_role,
+        entity_scope=primary.entity_scope,
+        confidence=primary.confidence,
+        freshness_days=primary.freshness_days,
+        supports_blocks=_unique(primary.supports_blocks + duplicate.supports_blocks),
+        contradicts=_unique(primary.contradicts + duplicate.contradicts),
+        secondary_source_ids=_unique(
+            primary.secondary_source_ids
+            + ([duplicate.source_id] if duplicate.source_id and duplicate.source_id != primary.source_id else [])
+            + duplicate.secondary_source_ids
+        ),
+        secondary_source_urls=_unique(
+            primary.secondary_source_urls
+            + ([duplicate.source_url] if duplicate.source_url and duplicate.source_url != primary.source_url else [])
+            + duplicate.secondary_source_urls
+        ),
+        secondary_origins=_unique(
+            primary.secondary_origins
+            + ([duplicate_origin] if duplicate_origin else [])
+            + duplicate.secondary_origins
+        ),
+        noise_reason=primary.noise_reason or duplicate.noise_reason,
+        notes=_unique(primary.notes + duplicate.notes + ["deduped_multi_source_evidence"]),
+    )
 
 
 def _claim_type_for_external_source(source_type: str, text: str) -> str:

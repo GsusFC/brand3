@@ -380,7 +380,7 @@ def build_strategic_evidence_packet(snapshot: dict[str, Any]) -> StrategicEviden
     evidences = collect_evidences(snapshot)
     preferred = [ev for ev in evidences if str(ev.source_type) in OWNED_SOURCE_TYPES]
     context = [ev for ev in evidences if str(ev.source_type) in CONTEXT_SOURCE_TYPES]
-    seen: set[str] = set()
+    seen: set[tuple[str, str, str]] = set()
     for ev in preferred:
         source_type = str(ev.source_type)
         packet.source_counts[source_type] = packet.source_counts.get(source_type, 0) + 1
@@ -521,18 +521,24 @@ def _looks_like_title_or_directory(low: str) -> bool:
 def _add_owned_raw_web_candidates(
     packet: StrategicEvidencePacket,
     snapshot: dict[str, Any],
-    seen: set[str],
+    seen: set[tuple[str, str, str]],
 ) -> None:
     run_url = ((snapshot.get("run") or {}).get("url") or packet.url or "")
     for raw_input in snapshot.get("raw_inputs") or []:
-        if raw_input.get("source") != "web":
+        if raw_input.get("source") not in {"web", "hyperbrowser"}:
             continue
         payload = raw_input.get("payload") or {}
-        markdown = str(payload.get("markdown_content") or payload.get("content") or "")
+        markdown = str(
+            payload.get("markdown_content")
+            or payload.get("content")
+            or payload.get("markdown")
+            or ""
+        )
         if not markdown:
             continue
         source_url = str(
             payload.get("canonical_url")
+            or payload.get("source_url")
             or payload.get("url")
             or payload.get("page_url")
             or run_url
@@ -546,7 +552,7 @@ def _add_owned_raw_web_candidates(
 
 def _add_owned_raw_page_candidates(
     packet: StrategicEvidencePacket,
-    seen: set[str],
+    seen: set[tuple[str, str, str]],
     text: str,
     source_url: str,
     entity_research_packet: dict[str, Any] | None = None,
@@ -596,7 +602,7 @@ def _embedded_web_subpage_texts(markdown: str) -> list[tuple[str, str]]:
 
 def _add_candidate_line(
     packet: StrategicEvidencePacket,
-    seen: set[str],
+    seen: set[tuple[str, str, str]],
     *,
     text: str,
     source_type: str,
@@ -611,12 +617,6 @@ def _add_candidate_line(
     if reject_reason:
         packet.rejected.append({"text": cleaned[:220], "reason": reject_reason})
         return
-    key = cleaned.lower()
-    if key in seen:
-        packet.rejected.append({"text": cleaned[:220], "reason": "duplicate"})
-        return
-    seen.add(key)
-
     groups = _groups_for(cleaned, source_type, url=url)
     if not groups:
         packet.rejected.append({"text": cleaned[:220], "reason": "low_strategic_signal"})
@@ -632,8 +632,19 @@ def _add_candidate_line(
         entity_scope=entity_scope_for_url(url or "", entity_research_packet),
     )
     for group in groups:
+        key = _candidate_dedupe_key(cleaned, url=url, group=group)
+        if key in seen:
+            packet.rejected.append({"text": cleaned[:220], "reason": "duplicate"})
+            continue
+        seen.add(key)
         if len(packet.groups.setdefault(group, [])) < 8:
             packet.groups[group].append(line)
+
+
+def _candidate_dedupe_key(text: str, *, url: str | None, group: str) -> tuple[str, str, str]:
+    normalized_url = (str(url or "").rstrip("/")).lower()
+    fingerprint = re.sub(r"\s+", " ", str(text or "").strip().lower())
+    return (normalized_url, group, fingerprint)
 
 
 def _raw_candidate_lines(text: str) -> list[str]:

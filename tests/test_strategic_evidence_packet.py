@@ -278,6 +278,37 @@ def test_strategic_evidence_packet_rejects_owned_raw_navigation_noise():
     assert any(item["reason"] == "navigation_or_hiring_noise" for item in packet.rejected)
 
 
+def test_strategic_evidence_packet_accepts_hyperbrowser_owned_raw_without_double_counting_web() -> None:
+    snapshot = {
+        "run": {"id": 5001, "brand_name": "Brand", "url": "https://brand.test"},
+        "features": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://brand.test",
+                    "markdown_content": "Our mission is to help finance teams automate treasury workflows.",
+                },
+            },
+            {
+                "source": "hyperbrowser",
+                "payload": {
+                    "source_url": "https://brand.test",
+                    "markdown": "Our mission is to help finance teams automate treasury workflows.",
+                },
+            },
+        ],
+        "evidence_items": [],
+    }
+
+    packet = build_strategic_evidence_packet(snapshot)
+
+    assert len(packet.groups["mission_language"]) == 1
+    assert packet.groups["mission_language"][0].source_type == "owned_raw"
+    assert packet.to_summary()["source_counts"]["owned_raw"] == 1
+    assert any(item["reason"] == "duplicate" for item in packet.rejected)
+
+
 def test_strategic_evidence_packet_rejects_owned_raw_article_card_feed_but_keeps_multi_offer_copy():
     snapshot = {
         "run": {"id": 184, "brand_name": "Every", "url": "https://every.to"},

@@ -17,7 +17,7 @@ from .middleware.rate_limit import rate_limit_middleware
 from .middleware.scanner_api_auth import scanner_api_auth_middleware
 from .routes import (
     analyze, brand, brand_audit, health, index, magnetism_scanner, report, reports_list, scanner_api,
-    status, takedown, team, visual_signature,
+    status, sv9_calibration, takedown, team, visual_signature,
 )
 from .storage import ensure_schema
 from .templates_env import templates
@@ -74,6 +74,7 @@ for module in (
     visual_signature,
     scanner_api,
     magnetism_scanner,
+    sv9_calibration,
 ):
     app.include_router(module.router)
 

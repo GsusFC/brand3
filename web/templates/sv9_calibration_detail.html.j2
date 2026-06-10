@@ -1,0 +1,87 @@
+{% extends "base.html.j2" %}
+{% block title %}brand3 :: sv9 calibración #{{ scan.id }}{% endblock %}
+{% block content %}
+<section>
+  <div class="section-head">
+    <span class="label">sv9_calibracion</span>
+    <span class="tag">// scan #{{ scan.id }} · {{ scan.brand_name }} · {{ scan.rubric_version }}</span>
+  </div>
+
+  <p class="prose">
+    <a href="/sv9/calibration">← scans</a> ·
+    <strong>{{ scan.brand_name }}</strong> ({{ scan.url }}) ·
+    Brand3 Score <strong>{{ scan.brand3_score }}/100</strong>
+    {% if scan.magnetism_capped %}· <span class="tag">magnetism cap</span>{% endif %}
+    {% if scan.needs_review %}· <span class="tag">coherencia en revisión</span>{% endif %}
+    · <span class="dim">modelo {{ scan.evaluator_model or '—' }}</span>
+  </p>
+
+  {% for c in components %}
+  <div id="{{ c.key }}" style="margin:1.4em 0; padding:0.8em; border:1px solid rgba(128,128,128,0.3); border-radius:4px;">
+    <div class="section-head">
+      <span class="label">{{ c.label }}</span>
+      <span class="tag">
+        // ia: {{ c.result.score }}/{{ c.scale }}{% if c.multiplier == 2 %} ×2{% endif %}
+        · {{ c.result.status }}
+      </span>
+    </div>
+
+    {% if c.result.detected_content %}
+    <p class="prose"><span class="dim">detectado:</span> {{ c.result.detected_content }}</p>
+    {% else %}
+    <p class="prose dim">(no detectado)</p>
+    {% endif %}
+    {% if c.result.error %}
+    <p class="prose dim">error técnico: {{ c.result.error }}</p>
+    {% endif %}
+
+    {% if c.ladder and c.result.rung_profile %}
+    <details style="margin:0.5em 0;">
+      <summary class="dim" style="cursor:pointer;">escalera y veredictos</summary>
+      <ul style="list-style:none; padding-left:0; font-size:0.9em;">
+        {% for rung in c.ladder %}
+        <li style="margin:0.35em 0;">
+          {% if rung.verdict and rung.verdict.passed %}
+          <span style="color:var(--accent, #e6007e);">✓</span>
+          {% else %}
+          <span class="dim">✗</span>
+          {% endif %}
+          <strong>{{ rung.rung }}</strong> · {{ rung.criterion }}
+          {% if rung.verdict and rung.verdict.evidence %}
+          <div class="dim" style="margin-left:1.6em;">evidencia: {{ rung.verdict.evidence }}</div>
+          {% endif %}
+          {% if rung.verdict and rung.verdict.reasoning %}
+          <div class="dim" style="margin-left:1.6em;">{{ rung.verdict.reasoning }}</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    </details>
+    {% endif %}
+
+    {% if c.labels %}
+    <p class="prose" style="font-size:0.9em;">
+      {% for label in c.labels %}
+      <span class="tag">{{ label.evaluador }}: {{ label.score_humano }}/{{ c.scale }} (Δ{{ label.delta }}){% if label.flag_evidencia %} ⚑ evidencia errónea{% endif %}</span>
+      {% endfor %}
+    </p>
+    {% endif %}
+
+    <form method="post" action="/sv9/calibration/{{ scan.id }}/{{ c.key }}"
+          style="display:flex; flex-wrap:wrap; gap:0.6em; align-items:center; margin-top:0.6em; font-size:0.92em;">
+      <label>score humano
+        <input type="number" name="score_humano" min="0" max="{{ c.scale }}" required style="width:4em;">
+      </label>
+      <label style="flex:1; min-width:14em;">motivo
+        <input type="text" name="motivo" placeholder="una línea" style="width:100%;">
+      </label>
+      <label><input type="checkbox" name="flag_evidencia" value="true"> evidencia errónea</label>
+      <label>evaluador
+        <input type="text" name="evaluador" value="{{ evaluador }}" required style="width:7em;">
+      </label>
+      <button type="submit">guardar</button>
+    </form>
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

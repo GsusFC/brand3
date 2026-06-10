@@ -686,9 +686,286 @@ LangChain tests whether the Strategic Message Layer can explain a strong, cohere
 
 ---
 
+# Case 004 — Overwatch AI
+
+## Case Metadata
+
+- Brand: `Overwatch AI`
+- Case ID: `strategic_message_layer_case_004_overwatch_ai`
+- Case type: early but strategically coherent vertical AI brand.
+- Benchmark role: high magnetism and coherence with limited public proof.
+- Primary evaluation risk: converting a strong early product narrative into unsupported category leadership.
+
+## Input State
+
+The case should be evaluated using:
+
+- current TLDR Brand3 output,
+- scanner score state,
+- evidence state,
+- confidence labels,
+- inferred / declared / performed labels,
+- human-review flags,
+- Client TLDR v2 / Strategic Message Layer candidate output.
+
+Relevant scan state:
+
+- Magnetism: `77/100` — memorable.
+- Coherence: `96/100` — aligned.
+- TLDR coverage: 9 strategic pieces detected.
+- Score state: retained / blocked due to limited evidence.
+- Strategic tension: high originality versus lower specificity.
+- Evidence tension: high coherence versus limited external proof.
+
+This is not a sparse-brand case like Blinka. It is also not a mature category-defining technical brand like LangChain. Overwatch AI has a coherent vertical AI story and strong tactical metaphors, but it still needs more external validation and market proof.
+
+## Current TLDR Behavior
+
+The current TLDR detects all nine Brand3 pieces, but several remain marked as inferred, low-confidence, or review-sensitive.
+
+Detected strategic material includes:
+
+- frontline operational intelligence,
+- aviation and operations-heavy industries,
+- `Wingman` as an AI assistant metaphor,
+- offline-capable / low-bandwidth deployment,
+- secure AI for critical environments,
+- faster troubleshooting and decision-making,
+- human empowerment rather than pure automation.
+
+The benchmark question is whether the Strategic Message Layer can explain strength without turning early evidence into certainty.
+
+## Strategic Problem
+
+Overwatch AI has a strong functional and metaphorical base.
+
+The brand does not simply say “AI for operations.” It frames a sharper operational tension:
+
+```text
+Decision-making is only as fast as the information behind it.
+```
+
+That is strategically useful because it makes information latency the enemy. The brand then uses `Overwatch` and `Wingman` to frame AI as tactical coverage and operational support, not abstract automation.
+
+The risk is maturity. The story is coherent, but the evidence base is still early. The layer must communicate:
+
+- the direction is strong,
+- the product promise is legible,
+- the metaphor is strategically useful,
+- the proof base is still limited,
+- category leadership is not yet validated.
+
+## Expected Strategic Message Layer Contribution
+
+The layer should explain why Overwatch AI is promising without overstating what is proven.
+
+It should clarify:
+
+- which claims are declared,
+- which claims are inferred,
+- which claims are strongly supported by owned-channel language,
+- which claims still need customer proof, cases, or independent validation,
+- where the brand has coherence,
+- where market specificity and external proof remain incomplete.
+
+The correct tone is:
+
+```text
+Overwatch AI has a coherent vertical AI narrative: it turns frontline decision latency into a clear problem and positions Wingman as a tactical assistant for critical operational environments. The strategic direction is strong, but the current evidence still needs more customer proof and market validation before the brand can claim robust category leadership.
+```
+
+## Block-Level Strategic Reading
+
+### Core Purpose
+
+Status: inferred. Confidence: low.
+
+Overwatch AI appears to build its purpose around connecting complex data ecosystems with frontline teams so they can anticipate problems, respond earlier, and make better operational decisions.
+
+Strategically, this is a strong base because it speaks less about AI as a technology and more about reducing the distance between information and action. The guardrail is that this should remain framed as inferred unless the brand states it as a closed foundational declaration.
+
+### Magnetism
+
+Status: inferred. Confidence: low.
+
+The magnetic tension is:
+
+```text
+Decision-making is only as fast as the information behind it.
+```
+
+This works because it turns information latency into the enemy. Overwatch AI is not positioned only as an AI tool, but as a response to the operational delay between signal, interpretation, and decision.
+
+The risk is proof. The phrase is strong, but it needs concrete cases to prove its real-world impact.
+
+### Value Proposition
+
+Status: declared. Confidence: medium.
+
+The value proposition is clear:
+
+- `Wingman` as a secure AI assistant,
+- natural-language access to operational intelligence,
+- support for pilots, engineers, and operations teams,
+- offline-capable deployment,
+- faster troubleshooting,
+- reduced operational disruption.
+
+This is the most solid part of the case because it connects product, audience, and benefit. The layer should explain that the promise is credible as a functional proposition, while still requiring more external proof to become a durable category position.
+
+### Personality
+
+Status: performed. Confidence: medium.
+
+The visible personality is pragmatic, secure, tactical, and mission-critical.
+
+This fits aviation and critical operations. The brand does not try to feel lifestyle-oriented or emotionally expressive. It communicates usefulness under pressure.
+
+The guardrail is that this personality is inferred from operational language — `Wingman`, `offline-capable`, `low-bandwidth`, `outpace disruptions` — rather than from a complete explicit verbal identity system.
+
+### Brand Idea
+
+Status: inferred. Confidence: medium.
+
+The strongest brand idea comes from the combination of:
+
+- `Overwatch` as tactical coverage,
+- `Wingman` as trusted operational partner.
+
+Together they suggest an always-available assistant that protects, guides, and supports frontline operators.
+
+This is a strong metaphor because it turns AI into a field partner rather than abstract automation. The opportunity is to make that idea into a full system: useful vigilance, constant support, anticipation, and better decisions in real operating conditions.
+
+### Attributes
+
+Status: declared. Confidence: high.
+
+The most supported attributes are:
+
+- secure,
+- offline-capable,
+- fast-response oriented.
+
+These are useful because they are tied to actual operating conditions. In a cloud-first AI category, offline capability and low-bandwidth use can become a meaningful differentiator.
+
+The strategic opportunity is to elevate technical attributes into brand perception: not only “works offline,” but “operational confidence when the context is not ideal.”
+
+### Values
+
+Status: declared / inferred from repeated behavior. Confidence: medium.
+
+The visible value is human empowerment over pure automation.
+
+The brand repeatedly frames AI as helping pilots, engineers, and operations teams make better decisions. This can support a responsible and credible position in a category where automation claims often become generic.
+
+The guardrail is that this should be treated as a visible value direction, not a complete values system, unless the brand formalizes it more clearly.
+
+### Mission
+
+Status: declared. Confidence: medium.
+
+The operational mission is to bring vertical AI to where operations actually happen:
+
+- mobile,
+- tablet,
+- desktop,
+- frontline environments,
+- low-bandwidth settings,
+- offline-capable contexts.
+
+This is strong because it grounds the AI promise in real work conditions. The strategic reading is that Overwatch AI competes not only on intelligence, but on availability, context, and decision support in the field.
+
+### Vision
+
+Status: declared. Confidence: low.
+
+The visible vision points toward frontline aviation teams having instant knowledge to make better decisions faster.
+
+This is coherent with the rest of the system: data, speed, frontline workforce, and decision-making.
+
+The strategic tension is scope. The brand appears aviation-specific in proof and language, while also implying broader relevance across operations-heavy industries. The layer should surface this as a validation question, not resolve it prematurely.
+
+## What Should Improve
+
+- Strong early coherence is explained without implying maturity.
+- Block status and confidence remain visible.
+- Declared claims are separated from inferred strategy.
+- Tactical metaphors are interpreted without becoming hype.
+- Missing external proof becomes a strategic caveat.
+- The output distinguishes aviation focus from broader operational-intelligence ambition.
+- Validation questions become useful for category and positioning decisions.
+
+## Forbidden Behavior
+
+The layer must not:
+
+- claim Overwatch AI already owns a broad operational-intelligence category,
+- ignore that score is retained / blocked because evidence is still limited,
+- treat early PR or funding visibility as customer validation,
+- turn `Wingman` into a fully proven brand system without evidence,
+- erase the aviation-specific focus,
+- overstate cross-industry relevance before proof exists,
+- present inferred purpose or vision as final brand truth.
+
+## Example Acceptable Interpretation
+
+```text
+Overwatch AI has a strong early strategic shape: it frames decision latency as the enemy and uses Wingman as a credible metaphor for tactical AI support in critical operations. The story is coherent, but the brand still needs external proof, customer validation, and clearer scope to support broader category leadership claims.
+```
+
+## Example Unacceptable Interpretation
+
+```text
+Overwatch AI is redefining operational intelligence across all mission-critical industries with a proven AI category leadership platform.
+```
+
+Reason: the direction may be plausible, but broad category leadership and proven cross-industry impact are not supported by the current evidence state.
+
+## Client Value
+
+The client should understand that Overwatch AI is strategically promising, not strategically finished.
+
+The core client questions are:
+
+- Is Overwatch AI primarily an aviation company expanding outward, or a broader operational-intelligence platform starting with aviation?
+- What proof validates disruption reduction in real customer environments?
+- How does the visual and verbal system reinforce high-trust, mission-critical positioning?
+- Which parts of the `Overwatch` / `Wingman` metaphor should become explicit brand architecture?
+- How can the brand make offline / low-bandwidth capability feel like operational confidence, not only a feature?
+
+## Case-Specific Pass / Fail
+
+### Passes if
+
+- It explains the brand’s strategic strength without hiding evidence limits.
+- It preserves blocked / retained score context.
+- It marks inferred purpose, personality, brand idea, values, and vision carefully.
+- It treats offline capability as a potential differentiator without overclaiming.
+- It surfaces the aviation-specific versus broader-category tension.
+- It turns missing proof into validation questions rather than generic criticism.
+
+### Fails if
+
+- It claims broad market leadership from early evidence.
+- It treats funding PR as proof of customer outcomes.
+- It removes low-confidence or human-review signals.
+- It turns tactical metaphors into hype.
+- It ignores the distinction between product infrastructure and mature brand ecosystem.
+- It resolves category scope without evidence.
+
+## Benchmark Decision
+
+Keep as Case 004.
+
+Reason:
+
+Overwatch AI tests whether the Strategic Message Layer can explain an early but coherent vertical AI brand with strong magnetism and high coherence while preserving the limits imposed by public evidence, specificity, and external proof. It is especially useful because it forces the layer to say: “the strategic direction is strong” and “the evidence is not yet enough for robust leadership claims” at the same time.
+
+---
+
 ## Next Benchmark Cases Needed
 
-Add 5–9 more cases that stress different failure modes:
+Add 4–8 more cases that stress different failure modes:
 
 - strong brand with clear narrative and evidence,
 - product with strong utility but no brand system,

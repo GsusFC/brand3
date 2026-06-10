@@ -13,11 +13,17 @@ from src.collectors.competitor_collector import (
 )
 from src.collectors.context_collector import ContextCollector, ContextData
 from src.collectors.exa_collector import ExaCollector, ExaData, ExaResult
+from src.collectors.hyperbrowser_collector import HyperbrowserCollector, HyperbrowserFetchData
 from src.collectors.parallel_shadow_collector import ParallelShadowCollector, ParallelShadowData
 from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebCollector, WebData
-from src.config import BRAND3_CACHE_TTL_HOURS, EXA_API_KEY, FIRECRAWL_API_KEY
-from src.storage.sqlite_store import SQLiteStore
+from src.config import (
+    BRAND3_CACHE_TTL_HOURS,
+    BRAND3_HYPERBROWSER_ENABLED,
+    EXA_API_KEY,
+    FIRECRAWL_API_KEY,
+)
+from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
 
 
 @dataclass
@@ -30,6 +36,7 @@ class RunStorage:
 class RawInputs:
     context_data: ContextData | None
     web_data: WebData | None
+    hyperbrowser_data: HyperbrowserFetchData | None
     effective_brand_url: str
     exa_data: ExaData | None
     parallel_shadow_data: ParallelShadowData | None
@@ -80,6 +87,12 @@ def from_exa_payload(payload: dict | None) -> ExaData | None:
         raw_responses=payload.get("raw_responses", {}),
         diagnostics=payload.get("diagnostics", {}),
     )
+
+
+def from_hyperbrowser_payload(payload: dict | None) -> HyperbrowserFetchData | None:
+    if not payload:
+        return None
+    return HyperbrowserFetchData(**payload)
 
 
 def from_parallel_shadow_payload(payload: dict | None) -> dict | None:
@@ -263,6 +276,21 @@ def load_cached(
         print(f"  Cache {source}: skipped ({e})")
         return None
     if not payload:
+        return None
+    if isinstance(payload, _MalformedJSONPayload):
+        _record_acquisition(
+            acquisition_steps,
+            source=source,
+            status="cache_invalid",
+            cache_status="invalid",
+            eligible=True,
+            details={
+                "cache_error": payload.error,
+                "payload_field": payload.field,
+                "raw_json": payload.raw_json,
+            },
+        )
+        print(f"  Cache {source}: invalid payload ({payload.error})")
         return None
     try:
         return decoder(payload)
@@ -698,6 +726,110 @@ def _parallel_shadow_enabled() -> bool:
     return os.environ.get("BRAND3_PARALLEL_SHADOW_ENABLED", "").strip().lower() in {"1", "true", "yes", "on"}
 
 
+def _hyperbrowser_enabled(run_input_sources: set[str] | None = None) -> bool:
+    if run_input_sources is not None:
+        return "hyperbrowser" in run_input_sources
+    return BRAND3_HYPERBROWSER_ENABLED
+
+
+def _collect_hyperbrowser_input(
+    *,
+    store: SQLiteStore | None,
+    run_id: int | None,
+    url: str,
+    cache_read,
+    raw_input_cache: dict[str, str],
+    acquisition_steps: dict[str, AcquisitionResult] | None = None,
+    run_input_sources: set[str] | None = None,
+    hyperbrowser_collector_cls=HyperbrowserCollector,
+) -> HyperbrowserFetchData | None:
+    if not _hyperbrowser_enabled(run_input_sources):
+        _set_acquisition_state(
+            raw_input_cache,
+            acquisition_steps,
+            source="hyperbrowser",
+            raw_cache_status="disabled",
+            status="disabled",
+            cache_status="disabled",
+            eligible=False,
+            details={
+                "provider": "hyperbrowser",
+                "channel": "web_shadow",
+                "evidence_eligibility": "ineligible",
+            },
+        )
+        return None
+
+    cached = cache_read("hyperbrowser", BRAND3_CACHE_TTL_HOURS, from_hyperbrowser_payload)
+    if cached:
+        _use_cached_input(
+            store=store,
+            run_id=run_id,
+            source="hyperbrowser",
+            payload=cached,
+            raw_input_cache=raw_input_cache,
+            acquisition_steps=acquisition_steps,
+            details={
+                "provider": "hyperbrowser",
+                "channel": "web_shadow",
+                "evidence_eligibility": "eligible",
+                "source_url": cached.final_url,
+                "content_hash": cached.metadata.get("contentHash"),
+                "confidence": cached.metadata.get("confidence"),
+                "chars": cached.text_chars,
+            },
+            action="hyperbrowser cache save",
+            message=f"  Hyperbrowser: cache hit ({cached.text_chars} chars)",
+        )
+        return cached
+
+    collector = hyperbrowser_collector_cls()
+    data = collector.fetch(
+        url,
+        include_html=True,
+        include_links=True,
+        include_branding=True,
+        include_screenshot=False,
+    )
+    status = "ok" if not data.error else "error"
+    eligible = not bool(data.error)
+    _set_acquisition_state(
+        raw_input_cache,
+        acquisition_steps,
+        source="hyperbrowser",
+        raw_cache_status="miss" if eligible else "error",
+        status=status,
+        cache_status="miss",
+        eligible=eligible,
+        error=data.error or None,
+        details={
+            "provider": "hyperbrowser",
+            "channel": "web_shadow",
+            "evidence_eligibility": "eligible" if eligible else "ineligible",
+            "source_url": data.final_url,
+            "content_hash": data.metadata.get("contentHash"),
+            "confidence": data.metadata.get("confidence"),
+            "chars": data.text_chars,
+        },
+    )
+    print(
+        "  Hyperbrowser:"
+        f" status={status}"
+        f" chars={data.text_chars}"
+        f" links={len(data.links)}"
+    )
+    if run_id:
+        _save_raw_input_safely(
+            store,
+            run_id,
+            "hyperbrowser",
+            data,
+            action="hyperbrowser save",
+            acquisition_steps=acquisition_steps,
+        )
+    return data
+
+
 def _collect_social_input(
     *,
     store: SQLiteStore | None,
@@ -893,6 +1025,8 @@ def collect_raw_inputs(
     context_collector_cls=ContextCollector,
     web_collector_cls=WebCollector,
     exa_collector_cls=ExaCollector,
+    hyperbrowser_collector_cls=HyperbrowserCollector,
+    run_input_sources: set[str] | None = None,
 ) -> RawInputs:
     raw_input_cache: dict[str, str] = {}
     acquisition_steps: dict[str, AcquisitionResult] = {}
@@ -922,6 +1056,16 @@ def collect_raw_inputs(
         raw_input_cache=raw_input_cache,
         acquisition_steps=acquisition_steps,
         web_collector_cls=web_collector_cls,
+    )
+    hyperbrowser_data = _collect_hyperbrowser_input(
+        store=store,
+        run_id=run_id,
+        url=url,
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        run_input_sources=run_input_sources,
+        hyperbrowser_collector_cls=hyperbrowser_collector_cls,
     )
     effective_brand_url = effective_brand_url_builder(url, web_data)
     exa_data, exa_collector = _collect_exa_input(
@@ -971,6 +1115,7 @@ def collect_raw_inputs(
     return RawInputs(
         context_data=context_data,
         web_data=web_data,
+        hyperbrowser_data=hyperbrowser_data,
         effective_brand_url=effective_brand_url,
         exa_data=exa_data,
         parallel_shadow_data=parallel_shadow_data,

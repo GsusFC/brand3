@@ -33,13 +33,19 @@ def run_magnetism_from_url(
     url: str,
     *,
     llm: LLMAnalyzer | None = None,
+    run_input_sources: set[str] | None = None,
     audit_runner: BrandAuditRunner = run_brand_audit,
     db_path: str = BRAND3_DB_PATH,
     progress_cb: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     """Run canonical Magnetism for a URL via a persisted Brand Audit snapshot."""
     llm = _effective_llm(llm)
-    audit_result = _run_audit_with_progress(url, audit_runner, progress_cb=progress_cb)
+    audit_result = _run_audit_with_progress(
+        url,
+        audit_runner,
+        progress_cb=progress_cb,
+        run_input_sources=run_input_sources,
+    )
     run_id = audit_result.get("run_id") if isinstance(audit_result, dict) else None
     if not run_id:
         raise RuntimeError(
@@ -94,15 +100,23 @@ def _run_audit_with_progress(
     audit_runner: BrandAuditRunner,
     *,
     progress_cb: Callable[[str], None] | None,
+    run_input_sources: set[str] | None = None,
 ) -> dict[str, Any]:
     """Run Brand Audit and map its internal phases onto Scanner phases."""
     _emit_progress(progress_cb, "collecting")
-    signature = inspect.signature(audit_runner)
-    if "progress_cb" not in signature.parameters:
-        return audit_runner(url)
 
     def audit_progress_cb(phase: str) -> None:
         _emit_progress(progress_cb, _AUDIT_TO_SCANNER_PHASE.get(phase, "interpreting"))
+
+    signature = inspect.signature(audit_runner)
+    if "progress_cb" not in signature.parameters:
+        return audit_runner(url)
+    if "run_input_sources" in signature.parameters:
+        return audit_runner(
+            url,
+            run_input_sources=run_input_sources,
+            progress_cb=audit_progress_cb,
+        )
 
     return audit_runner(url, progress_cb=audit_progress_cb)
 

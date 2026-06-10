@@ -19,8 +19,9 @@ from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from src.collectors.exa_collector import ExaCollector, ExaResult
+from src.collectors.hyperbrowser_collector import HyperbrowserCollector, HyperbrowserFetchData
 from src.collectors.web_collector import WebCollector, WebData
-from src.config import EXA_API_KEY, FIRECRAWL_API_KEY
+from src.config import BRAND3_HYPERBROWSER_ENABLED, EXA_API_KEY, FIRECRAWL_API_KEY
 from src.research.brand_intelligence import (
     BrandSeed,
     build_brand_evidence_graph,
@@ -42,6 +43,7 @@ def main() -> int:
         owned_web_provider=args.owned_web_provider,
         exa_results=args.exa_results,
         output=args.output,
+        run_input_sources=_parse_input_sources(args.run_input_sources),
     )
     inventory = payload["inventory"]
     graph = payload["evidence_graph"]
@@ -69,6 +71,7 @@ def run_probe(
     owned_web_provider: str = "firecrawl",
     exa_results: int = 3,
     output: Path | None = None,
+    run_input_sources: set[str] | None = None,
 ) -> dict[str, Any]:
     entity, plan = plan_brand_intelligence(BrandSeed(url, kind="url", provided_name=brand))
 
@@ -126,6 +129,27 @@ def run_probe(
             observations.append(observation)
             evidence_items.append(evidence_item_from_observation(observation, web_data.markdown_content))
 
+    hyperbrowser_captures: list[tuple[str, HyperbrowserFetchData]] = []
+    if _hyperbrowser_enabled(run_input_sources):
+        try:
+            hyperbrowser_data = _collect_hyperbrowser(url)
+        except Exception as exc:
+            message = f"hyperbrowser_error:{url}:{exc}"
+            print(f"Hyperbrowser capture error ({url}): {exc}")
+            probe_errors.append(message)
+        else:
+            if hyperbrowser_data is not None:
+                hyperbrowser_captures.append(("owned_web", _hyperbrowser_payload(hyperbrowser_data)))
+                observation = owned_web_source_observation(
+                    _hyperbrowser_payload(hyperbrowser_data),
+                    provider="hyperbrowser",
+                    channel="owned_web",
+                )
+                observations.append(observation)
+                evidence_items.append(
+                    evidence_item_from_observation(observation, _evidence_excerpt(str(hyperbrowser_data.markdown)))
+                )
+
     inventory = build_brand_source_inventory(plan, observations)
     graph = build_brand_evidence_graph(inventory, evidence_items)
     payload = {
@@ -140,6 +164,7 @@ def run_probe(
             "web_chars": sum(len(web_data.markdown_content) for _, web_data in web_captures),
             "web_capture_count": len(web_captures),
             "owned_web_provider": owned_web_provider,
+            "hyperbrowser_capture_count": len(hyperbrowser_captures),
         },
         "errors": probe_errors,
     }
@@ -179,6 +204,11 @@ def _parse_args() -> argparse.Namespace:
         choices=("contextdev", "firecrawl", "playwright", "tinyfish", "none"),
         default="firecrawl",
         help="Owned-web capture provider used when --use-web is enabled.",
+    )
+    parser.add_argument(
+        "--run-input-sources",
+        default="",
+        help="Comma-separated optional shadow sources (e.g. hyperbrowser).",
     )
     return parser.parse_args()
 
@@ -267,6 +297,45 @@ def _collect_contextdev_markdown(url: str) -> WebData:
         canonical_url=str(payload.get("url") or url),
         content_source="contextdev_markdown",
     )
+
+
+def _collect_hyperbrowser(url: str) -> HyperbrowserFetchData | None:
+    collector = HyperbrowserCollector()
+    if not collector.api_key:
+        return None
+    data = collector.fetch(
+        url,
+        include_html=False,
+        include_links=True,
+        include_branding=False,
+        include_screenshot=False,
+        cache_max_age_seconds=0,
+    )
+    if data.error:
+        return None
+    return data  # type: ignore[return-value]
+
+
+def _hyperbrowser_payload(data: HyperbrowserFetchData) -> dict[str, object]:
+    return {
+        "url": data.final_url,
+        "title": data.title,
+        "markdown": data.markdown,
+        "error": data.error,
+        "captured_at": "",
+    }
+
+
+def _hyperbrowser_enabled(run_input_sources: set[str] | None) -> bool:
+    if run_input_sources is not None:
+        return "hyperbrowser" in {source.lower() for source in run_input_sources}
+    return bool(BRAND3_HYPERBROWSER_ENABLED)
+
+
+def _parse_input_sources(raw: str | None) -> set[str] | None:
+    if not raw:
+        return None
+    return {item.strip().lower() for item in raw.split(",") if item.strip()}
 
 
 def _http_error_message(exc: HTTPError) -> str:

@@ -25,6 +25,7 @@ def main() -> int:
     args = _parse_args()
     cases = _load_cases(args.cases_file) if args.cases_file and args.cases_file.exists() else default_benchmark_cases()
     cases = _filter_cases_by_providers(cases, args.providers)
+    run_input_sources = _parse_input_sources(args.run_input_sources)
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -39,6 +40,7 @@ def main() -> int:
             owned_web_provider=case.owned_web_provider,
             exa_results=case.exa_results,
             output=case_output,
+            run_input_sources=run_input_sources,
         )
         payload["benchmark_case"] = case.to_dict()
         payloads.append(payload)
@@ -74,6 +76,11 @@ def _parse_args() -> argparse.Namespace:
         default="",
         help="Optional comma-separated owned-web providers to run, e.g. firecrawl,playwright or tinyfish.",
     )
+    parser.add_argument(
+        "--run-input-sources",
+        default="",
+        help="Optional comma-separated shadow sources (e.g. hyperbrowser).",
+    )
     return parser.parse_args()
 
 
@@ -93,6 +100,12 @@ def _load_cases(path: Path) -> list[BrandIntelligenceBenchmarkCase]:
             )
         )
     return cases
+
+
+def _parse_input_sources(raw: str | None) -> set[str] | None:
+    if not raw:
+        return None
+    return {item.strip().lower() for item in raw.split(",") if item.strip()}
 
 
 def _filter_cases_by_providers(

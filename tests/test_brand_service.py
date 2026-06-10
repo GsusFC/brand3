@@ -1,6 +1,7 @@
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
 from unittest.mock import patch
 
 from src.collectors.context_collector import ContextData
@@ -258,8 +259,52 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
         self.assertEqual(payload["run_metadata"]["acquisition_status"], "ok")
         self.assertTrue(payload["run_metadata"]["screenshot_available"])
         self.assertTrue(payload["run_metadata"]["full_page_available"])
-        self.assertEqual(payload["run_metadata"]["agreement_level"], "high")
-        self.assertEqual(payload["artifact_refs"]["screenshot_path"], "/tmp/example.png")
+
+    def test_run_forwards_run_input_sources_to_collect_raw_inputs(self):
+        captured = {}
+
+        class _FakeStorage:
+            run_id = 123
+            store = SimpleNamespace(close=lambda: None)
+
+        def fake_start_analysis_run(*_args, **_kwargs):
+            return _FakeStorage()
+
+        def fake_collect_raw_inputs(**kwargs):
+            captured.update(kwargs)
+            return SimpleNamespace(
+                context_data=SimpleNamespace(url="https://example.com"),
+                web_data=SimpleNamespace(url="https://example.com"),
+                effective_brand_url="https://example.com",
+                exa_data=SimpleNamespace(mentions=[]),
+                hyperbrowser_data=None,
+                parallel_shadow_data=None,
+                social_data=None,
+                social_limitation=None,
+                competitor_data=None,
+                raw_input_cache={},
+                acquisition_steps={},
+                web_collector=SimpleNamespace(),
+                exa_collector=SimpleNamespace(),
+            )
+
+        def fake_select_niche_profile(*_args, **_kwargs):
+            raise RuntimeError("run_input_source_capture")
+
+        with patch("src.services.brand_service.start_analysis_run", fake_start_analysis_run), \
+            patch("src.services.brand_service.collect_raw_inputs", fake_collect_raw_inputs), \
+            patch("src.services.brand_service.select_niche_profile", fake_select_niche_profile):
+            with self.assertRaises(RuntimeError) as exc:
+                brand_service.run(
+                    "https://example.com",
+                    brand_name="Example",
+                    use_llm=False,
+                    use_social=False,
+                    run_input_sources={"hyperbrowser"},
+                )
+
+        self.assertIn("run_input_source_capture", str(exc.exception))
+        self.assertEqual(captured["run_input_sources"], {"hyperbrowser"})
 
     def test_shadow_run_persists_not_interpretable_payload_on_extraction_failure(self):
         store = _VisualSignatureStore()

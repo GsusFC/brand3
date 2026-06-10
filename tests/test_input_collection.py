@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from src.collectors.exa_collector import ExaData
+from src.collectors.hyperbrowser_collector import HyperbrowserFetchData
 from src.collectors.parallel_shadow_collector import ParallelShadowData, ParallelShadowIntent, ParallelShadowResult
 from src.collectors.web_collector import WebData
 from src.services.input_collection import (
     _cache_reader,
     _collect_exa_input,
+    _collect_hyperbrowser_input,
     _collect_parallel_shadow_input,
     _collect_web_input,
     _set_acquisition_state,
@@ -257,6 +259,17 @@ class _FakeParallelShadowCollector:
         )
 
 
+class _FakeHyperbrowserCollector:
+    def fetch(self, url: str, **_kwargs):
+        return HyperbrowserFetchData(
+            url=url,
+            source_url=url,
+            markdown="Hyperbrowser owned page content",
+            links=["https://brand.com/about"],
+            metadata={"confidence": 0.81, "contentHash": "hb-123"},
+        )
+
+
 def test_collect_parallel_shadow_input_is_disabled_by_default(monkeypatch):
     monkeypatch.delenv("BRAND3_PARALLEL_SHADOW_ENABLED", raising=False)
     raw_input_cache: dict[str, str] = {}
@@ -324,3 +337,101 @@ def test_collect_parallel_shadow_input_reuses_cached_payload(monkeypatch):
     assert raw_input_cache["parallel_shadow"] == "hit"
     assert acquisition_steps["parallel_shadow"].status == "hit"
     assert acquisition_steps["parallel_shadow"].eligible is True
+
+
+def test_collect_hyperbrowser_input_is_disabled_by_default(monkeypatch):
+    monkeypatch.delenv("BRAND3_HYPERBROWSER_ENABLED", raising=False)
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+
+    result = _collect_hyperbrowser_input(
+        store=None,
+        run_id=None,
+        url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: None,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        hyperbrowser_collector_cls=_FakeHyperbrowserCollector,
+    )
+
+    assert result is None
+    assert raw_input_cache["hyperbrowser"] == "disabled"
+    assert acquisition_steps["hyperbrowser"].status == "disabled"
+    assert acquisition_steps["hyperbrowser"].details["channel"] == "web_shadow"
+    assert acquisition_steps["hyperbrowser"].eligible is False
+
+
+def test_collect_hyperbrowser_input_runs_when_enabled_via_run_sources():
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+
+    result = _collect_hyperbrowser_input(
+        store=None,
+        run_id=None,
+        url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: None,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        run_input_sources={"hyperbrowser"},
+        hyperbrowser_collector_cls=_FakeHyperbrowserCollector,
+    )
+
+    assert result is not None
+    assert result.text_chars > 0
+    assert raw_input_cache["hyperbrowser"] == "miss"
+    assert acquisition_steps["hyperbrowser"].status == "ok"
+    assert acquisition_steps["hyperbrowser"].details["provider"] == "hyperbrowser"
+    assert acquisition_steps["hyperbrowser"].details["source_url"] == "https://brand.com"
+
+
+def test_collect_hyperbrowser_input_records_raw_payload_ref_after_successful_storage():
+    acquisition_steps: dict[str, object] = {}
+    raw_input_cache: dict[str, str] = {}
+    store = _RecordingStorageStore()
+
+    result = _collect_hyperbrowser_input(
+        store=store,
+        run_id=123,
+        url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: None,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        run_input_sources={"hyperbrowser"},
+        hyperbrowser_collector_cls=_FakeHyperbrowserCollector,
+    )
+
+    assert result is not None
+    assert store.saved == [(123, "hyperbrowser", result)]
+    assert acquisition_steps["hyperbrowser"].details["raw_payload_ref"] == {
+        "store": "raw_inputs",
+        "run_id": 123,
+        "source": "hyperbrowser",
+    }
+
+
+def test_collect_hyperbrowser_input_reuses_cached_payload():
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+    cached = HyperbrowserFetchData(
+        url="https://brand.com",
+        source_url="https://brand.com",
+        markdown="Cached Hyperbrowser content",
+        metadata={"confidence": 0.72, "contentHash": "hb-cached"},
+    )
+
+    result = _collect_hyperbrowser_input(
+        store=None,
+        run_id=None,
+        url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: cached,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        run_input_sources={"hyperbrowser"},
+        hyperbrowser_collector_cls=_FakeHyperbrowserCollector,
+    )
+
+    assert result is not None
+    assert result.markdown == "Cached Hyperbrowser content"
+    assert raw_input_cache["hyperbrowser"] == "hit"
+    assert acquisition_steps["hyperbrowser"].status == "hit"
+    assert acquisition_steps["hyperbrowser"].details["content_hash"] == "hb-cached"

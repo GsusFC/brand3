@@ -100,6 +100,41 @@ def test_run_magnetism_from_url_maps_audit_progress_to_scanner_phases(monkeypatc
     ]
 
 
+def test_run_magnetism_from_url_forwards_run_input_sources_to_audit_runner(monkeypatch) -> None:
+    captured = {}
+
+    def fake_audit_runner(url: str, *, progress_cb=None, run_input_sources=None) -> dict[str, int]:
+        captured["url"] = url
+        captured["run_input_sources"] = run_input_sources
+        if progress_cb is not None:
+            progress_cb("extracting")
+        return {
+            "run_id": 200,
+        }
+
+    def fake_magnetism_from_run(run_id: int, *, llm=None, db_path=None):
+        assert run_id == 200
+        return {"source": "brand_audit_snapshot", "source_run_id": run_id}
+
+    monkeypatch.setattr(
+        "src.services.magnetism_service.run_magnetism_from_audit_run",
+        fake_magnetism_from_run,
+    )
+
+    phases: list[str] = []
+    result = run_magnetism_from_url(
+        "https://service.test",
+        audit_runner=fake_audit_runner,
+        run_input_sources={"hyperbrowser", "context"},
+        progress_cb=phases.append,
+    )
+
+    assert captured["url"] == "https://service.test"
+    assert captured["run_input_sources"] == {"hyperbrowser", "context"}
+    assert result["source_run_id"] == 200
+    assert "interpreting" in phases
+
+
 def test_run_magnetism_from_audit_snapshot_builds_default_llm_when_available(monkeypatch) -> None:
     captured = {}
 

@@ -21,6 +21,15 @@ HYPERBROWSER_API_URL = os.environ.get(
     "HYPERBROWSER_API_URL",
     "https://api.hyperbrowser.ai/api/web/fetch",
 )
+BRAND3_HYPERBROWSER_ENABLED = os.environ.get(
+    "BRAND3_HYPERBROWSER_ENABLED",
+    "false",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 
 # Single LLM provider. Defaults to Google AI Studio (OpenAI-compatible),
 # but any OpenAI-compatible endpoint works by overriding BRAND3_LLM_BASE_URL

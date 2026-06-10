@@ -1869,6 +1869,7 @@ def run(
     skip_visual_analysis: bool = False,
     enable_visual_signature_shadow_run: bool = False,
     refresh: bool = False,
+    run_input_sources: set[str] | None = None,
     progress_cb=None,
     cancel_check=None,
 ) -> dict:
@@ -1899,6 +1900,7 @@ def run(
             use_competitors=use_competitors,
             effective_brand_url_builder=_effective_brand_url,
             context_evidence_builder=_context_evidence_items,
+            run_input_sources=run_input_sources,
             social_collector=_collect_social_with_budget,
             context_collector_cls=ContextCollector,
             web_collector_cls=WebCollector,

@@ -16,28 +16,15 @@
     <div class="magnetism-hero-main">
       <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
       {% if client_tldr and client_tldr.available and client_tldr.executive_reading %}
-      <div style="border: 1px solid var(--border); background: var(--surface); padding: 14px 16px; margin-top: 14px;">
-        <div class="dim" style="font-family: var(--font-ui); font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .04em; margin-bottom: 8px;">Executive reading</div>
-        <p class="prose intro-copy magnetism-hero-verdict" style="margin: 0;">{{ client_tldr.executive_reading }}</p>
-      </div>
-      {% endif %}
-      <p class="prose intro-copy magnetism-hero-verdict">
-        {{ model.t.client_tldr_v2_tag }}
-      </p>
-      {% if client_tldr and client_tldr.available %}
-      <div style="display:grid; gap:8px; margin-top: 16px;">
-        <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;">
-          <span class="badge badge-ready">{{ score_reading.label or model.t.score_status }}</span>
-          {% if score_reading.value is not none %}
-          <span class="inline-kv"><span class="k">{{ model.t.score_status }}</span>=<span class="v">{{ score_reading.value }}</span></span>
-          {% else %}
-          <span class="inline-kv"><span class="k">{{ model.t.score_status }}</span>=<span class="v">{{ score_reading.status or "unavailable" }}</span></span>
+      <details style="margin-top: 14px; border: 1px solid var(--border); background: var(--surface);">
+        <summary class="dim" style="cursor: pointer; padding: 10px 16px; font-family: var(--font-ui); font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .04em; user-select: none;">Executive reading</summary>
+        <div style="padding: 0 16px 14px;">
+          <p class="prose intro-copy magnetism-hero-verdict" style="margin: 0;">{{ client_tldr.executive_reading }}</p>
+          {% if score_reading.note %}
+          <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 10px 0 0;">{{ score_reading.note }}</p>
           {% endif %}
         </div>
-        <p class="dim" style="font-family: var(--font-mono); font-size: 11px; line-height: 1.5; margin: 0;">
-          {{ score_reading.note or "" }}
-        </p>
-      </div>
+      </details>
       {% endif %}
     </div>
     <div class="magnetism-hero-metric">
@@ -65,10 +52,6 @@
   {% if not client_tldr or not client_tldr.available %}
   <div style="border: 1px solid var(--warning); background: color-mix(in srgb, var(--warning) 8%, transparent); padding: 10px 12px; margin: 12px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
     {{ client_tldr.message or "This preview is unavailable." }}
-  </div>
-  {% else %}
-  <div style="border: 1px solid var(--border); background: var(--surface); padding: 12px 14px; margin: 12px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
-    {{ system_reading.diagnosis or "" }}
   </div>
   {% endif %}
 </section>

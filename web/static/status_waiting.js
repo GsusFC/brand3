@@ -68,7 +68,8 @@
   const palette = {
     background: css.getPropertyValue("--surface").trim() || "#f5f5f5",
     ground: css.getPropertyValue("--border").trim() || "#e4e4e4",
-    dino: "#4f8f5a",
+    dino: "#050806",
+    dinoOutline: "#4f8f5a",
     hazard: css.getPropertyValue("--accent").trim() || "#ff0000",
     text: css.getPropertyValue("--text").trim() || "#161616",
   };
@@ -243,16 +244,39 @@
     frameCtx.drawImage(trexImage, sourceX, 0, trex.width, trex.height, 0, 0, trex.width, trex.height);
     const imageData = frameCtx.getImageData(0, 0, trex.width, trex.height);
     const data = imageData.data;
-    const color = { r: 79, g: 143, b: 90 };
+    const bodyColor = { r: 5, g: 8, b: 6 };
+    const outlineColor = { r: 79, g: 143, b: 90 };
+    const mask = new Uint8Array(trex.width * trex.height);
     for (let index = 0; index < data.length; index += 4) {
       const isBackground = data[index] > 225 && data[index + 1] > 225 && data[index + 2] > 225;
-      if (isBackground) {
-        data[index + 3] = 0;
-      } else {
-        data[index] = color.r;
-        data[index + 1] = color.g;
-        data[index + 2] = color.b;
-        data[index + 3] = 255;
+      if (!isBackground) {
+        mask[index / 4] = 1;
+      }
+    }
+    for (let y = 0; y < trex.height; y += 1) {
+      for (let x = 0; x < trex.width; x += 1) {
+        const maskIndex = y * trex.width + x;
+        const dataIndex = maskIndex * 4;
+        if (!mask[maskIndex]) {
+          data[dataIndex + 3] = 0;
+          continue;
+        }
+        let isEdge = false;
+        for (let oy = -1; oy <= 1 && !isEdge; oy += 1) {
+          for (let ox = -1; ox <= 1; ox += 1) {
+            const nx = x + ox;
+            const ny = y + oy;
+            if (nx < 0 || ny < 0 || nx >= trex.width || ny >= trex.height || !mask[ny * trex.width + nx]) {
+              isEdge = true;
+              break;
+            }
+          }
+        }
+        const color = isEdge ? outlineColor : bodyColor;
+        data[dataIndex] = color.r;
+        data[dataIndex + 1] = color.g;
+        data[dataIndex + 2] = color.b;
+        data[dataIndex + 3] = 255;
       }
     }
     frameCtx.putImageData(imageData, 0, 0);

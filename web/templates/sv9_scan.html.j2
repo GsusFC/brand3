@@ -59,6 +59,28 @@
     <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ scan.source_run_id }}</span></span>
     {% endif %}
   </div>
+
+  {% if technical_failures %}
+  <div style="margin-top: 18px; border: 1px solid var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); padding: 14px;">
+    <div class="magnetism-card-head" style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px;">
+      <div>
+        <div class="hl-warn" style="font-family:var(--font-mono); text-transform:uppercase; font-size:12px;">evaluación técnica fallida</div>
+        <p class="dim" style="margin: 6px 0 0; font-family:var(--font-mono); font-size:12px; line-height:1.55;">
+          El contenido fue detectado, pero {{ technical_failures|length }} componente{% if technical_failures|length != 1 %}s{% endif %} no se puntuaron por fallo del proveedor.
+          Este 0/100 no es un diagnóstico estratégico válido.
+        </p>
+        <p class="dim" style="margin: 6px 0 0; font-family:var(--font-mono); font-size:12px; line-height:1.55;">
+          error: {{ technical_failures[0].error or 'not_evaluated' }}
+        </p>
+      </div>
+      {% if scan.source_run_id %}
+      <form method="post" action="/sv9/scan/{{ scan.id }}/retry">
+        <button class="source-link" type="submit">Reintentar SV9</button>
+      </form>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
 </section>
 
 <hr class="rule-thin magnetism-compact-rule">
@@ -80,6 +102,11 @@
           <span class="hl-accent magnetism-card-title">{{ box.label }}</span>
           <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
         </div>
+        {% if box.status != 'scored' %}
+        <p class="dim" style="margin: -8px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
+          {{ box.status_label }}{% if box.error %} · {{ box.error }}{% endif %}
+        </p>
+        {% endif %}
         {% if box.content %}
         <p class="magnetism-card-result" style="margin: 0;">{{ box.content }}</p>
         {% else %}
@@ -106,6 +133,11 @@
         <span class="hl-accent magnetism-card-title">{{ coherencia.label }}</span>
         <span class="badge">{{ coherencia.score }}/{{ coherencia.scale }} ×2</span>
       </div>
+      {% if coherencia.status != 'scored' %}
+      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
+        {{ coherencia.status_label }}{% if coherencia.error %} · {{ coherencia.error }}{% endif %}
+      </p>
+      {% endif %}
       {% if coherencia.message %}
       <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ coherencia.message }}</p>
       {% endif %}

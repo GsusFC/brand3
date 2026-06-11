@@ -6,10 +6,14 @@ is validated (design doc sections 8 and 12). Read-only.
 
 from __future__ import annotations
 
+import asyncio
+
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 from src.sv9.rubric import COMPONENTS, component_max_points
+from src.sv9.service import run_sv9_from_audit_run
 from src.sv9.store import Sv9Store
 
 from ..templates_env import templates
@@ -58,6 +62,8 @@ async def sv9_scan_view(request: Request, scan_id: int):
     def _box(key: str) -> dict:
         component = by_component.get(key) or {}
         spec = COMPONENTS[key]
+        status = component.get("status", "not_evaluated")
+        error = component.get("error") or ""
         return {
             "key": key,
             "label": spec["label"],
@@ -66,7 +72,10 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "max_points": component_max_points(key),
             "score": component.get("score", 0),
             "points": component.get("points", 0),
-            "status": component.get("status", "not_evaluated"),
+            "status": status,
+            "status_label": _status_label(status),
+            "is_technical_failure": status == "not_evaluated",
+            "error": error,
             "content": component.get("detected_content") or "",
             "message": component.get("message") or "",
             "is_chip": key in ("attributes", "values"),
@@ -75,6 +84,8 @@ async def sv9_scan_view(request: Request, scan_id: int):
 
     canvas = [[_box(key) for key in row] for row in _CANVAS_ROWS]
     coherencia = _box("coherencia")
+    flat_boxes = [box for row in canvas for box in row] + [coherencia]
+    technical_failures = [box for box in flat_boxes if box["is_technical_failure"]]
     gap = scan.get("most_painful_gap")
     gap_label = COMPONENTS[gap]["label"] if gap in COMPONENTS else None
 
@@ -98,6 +109,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "scan": scan,
             "canvas": canvas,
             "coherencia": coherencia,
+            "technical_failures": technical_failures,
             "gap_label": gap_label,
             "magnetism_scan_id": magnetism_scan_id,
             "model": nav_model,
@@ -125,3 +137,43 @@ def _magnetism_scan_id(source_run_id: int | None) -> int | None:
         return None
     finally:
         store.close()
+
+
+def _status_label(status: str) -> str:
+    return {
+        "scored": "evaluado",
+        "not_detected": "no detectado",
+        "not_evaluated": "fallo técnico",
+    }.get(status, status)
+
+
+@router.post("/sv9/scan/{scan_id}/retry")
+async def sv9_scan_retry(request: Request, scan_id: int):
+    """Regenerate SV9 from the same persisted Brand Audit run.
+
+    Retries create a new scan instead of mutating the failed one, so calibration
+    keeps a trace of provider/API failures.
+    """
+    _require_team(request)
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        scan = store.get_scan(scan_id)
+    finally:
+        store.close()
+    if scan is None:
+        raise HTTPException(status_code=404, detail="scan not found")
+    source_run_id = scan.get("source_run_id")
+    if not source_run_id:
+        raise HTTPException(status_code=409, detail="scan has no source_run_id")
+
+    result = await asyncio.to_thread(
+        run_sv9_from_audit_run,
+        int(source_run_id),
+        db_path=BRAND3_DB_PATH,
+    )
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        new_scan_id = store.save_scan(result)
+    finally:
+        store.close()
+    return RedirectResponse(f"/sv9/scan/{new_scan_id}", status_code=303)

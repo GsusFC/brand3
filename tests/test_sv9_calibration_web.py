@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -62,6 +63,33 @@ class Sv9CalibrationWebTests(unittest.TestCase):
             )
         result = aggregate(
             components, brand_name="Acme", url="https://acme.test", source_run_id=1
+        )
+        store = Sv9Store(str(self.db))
+        try:
+            return store.save_scan(result)
+        finally:
+            store.close()
+
+    def _seed_failed_scan(self) -> int:
+        from src.sv9.aggregator import aggregate
+        from src.sv9.models import ComponentResult, STATUS_NOT_EVALUATED
+        from src.sv9.rubric import COMPONENTS
+        from src.sv9.store import Sv9Store
+
+        components = {}
+        for key in COMPONENTS:
+            components[key] = ComponentResult(
+                component=key,
+                status=STATUS_NOT_EVALUATED,
+                score=0,
+                detected_content=f"{key} detected text" if key != "coherencia" else None,
+                error="provider_http_error",
+            )
+        result = aggregate(
+            components,
+            brand_name="Failed Provider",
+            url="https://failed-provider.test",
+            source_run_id=42,
         )
         store = Sv9Store(str(self.db))
         try:
@@ -135,6 +163,57 @@ class Sv9CalibrationWebTests(unittest.TestCase):
 
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)
+
+    def test_scan_canvas_explains_provider_failures(self):
+        scan_id = self._seed_failed_scan()
+
+        response = self.client.get(f"/sv9/scan/{scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("evaluación técnica fallida", response.text)
+        self.assertIn("provider_http_error", response.text)
+        self.assertIn("Este 0/100 no es un diagnóstico estratégico válido.", response.text)
+        self.assertIn(f'action="/sv9/scan/{scan_id}/retry"', response.text)
+
+    def test_retry_regenerates_sv9_scan_from_source_run(self):
+        from src.sv9.aggregator import aggregate
+        from src.sv9.models import ComponentResult, RungVerdict, STATUS_SCORED
+        from src.sv9.rubric import COMPONENTS
+
+        failed_scan_id = self._seed_failed_scan()
+        components = {}
+        for key, spec in COMPONENTS.items():
+            profile = [
+                RungVerdict(rung=i, passed=i <= 2, evidence="q" if i <= 2 else "")
+                for i in range(1, spec["scale"] + 1)
+            ]
+            components[key] = ComponentResult(
+                component=key,
+                status=STATUS_SCORED,
+                score=2,
+                rung_profile=profile,
+                detected_content=f"{key} retry text",
+            )
+        retry_result = aggregate(
+            components,
+            brand_name="Failed Provider",
+            url="https://failed-provider.test",
+            source_run_id=42,
+        )
+
+        with mock.patch(
+            "web.routes.sv9_scan.run_sv9_from_audit_run",
+            return_value=retry_result,
+        ) as run_sv9:
+            response = self.client.post(
+                f"/sv9/scan/{failed_scan_id}/retry",
+                follow_redirects=False,
+            )
+
+        self.assertEqual(response.status_code, 303)
+        self.assertRegex(response.headers["location"], r"^/sv9/scan/\d+$")
+        self.assertNotEqual(response.headers["location"], f"/sv9/scan/{failed_scan_id}")
+        run_sv9.assert_called_once_with(42, db_path=str(self.db))
 
     def test_submit_validates_scale_and_component(self):
         self._unlock()

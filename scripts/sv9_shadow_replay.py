@@ -26,8 +26,10 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import BRAND3_DB_PATH
+from src.config import BRAND3_DB_PATH, LLM_MODEL
+from src.features.llm_analyzer import LLMAnalyzer
 from src.storage.sqlite_store import SQLiteStore
+from src.sv9.editorial import build_editorial
 from src.sv9.models import Sv9ScanResult
 from src.sv9.rubric import PRESENTATION_ORDER, RUBRIC_VERSION
 from src.sv9.service import detect_for_snapshot, run_sv9_from_audit_snapshot
@@ -50,6 +52,8 @@ def _replay_run(
     store: SQLiteStore,
     sv9_store: Sv9Store,
     run_id: int,
+    *,
+    editorial: bool = True,
 ) -> tuple[Sv9ScanResult, int] | None:
     snapshot = store.get_run_snapshot(run_id)
     if snapshot is None:
@@ -64,7 +68,24 @@ def _replay_run(
         snapshot, magnetism_result=detection, extra_signals=extra_signals
     )
     scan_id = sv9_store.save_scan(result)
+    if editorial:
+        _attach_editorial(sv9_store, scan_id, result)
     return result, scan_id
+
+
+def _attach_editorial(sv9_store: Sv9Store, scan_id: int, result: Sv9ScanResult) -> None:
+    """Generate founder-facing prose. Presentation only: failures leave the
+    scan scored but voiceless, never block the replay."""
+    llm = LLMAnalyzer(model=LLM_MODEL)
+    if not getattr(llm, "api_key", None):
+        return
+    payload = build_editorial(result.to_dict(), llm=llm)
+    if payload["component_messages"] or payload["executive_reading"]:
+        sv9_store.save_editorial(
+            scan_id,
+            component_messages=payload["component_messages"],
+            executive_reading=payload["executive_reading"],
+        )
 
 
 def _vision_signals_for_run(
@@ -163,6 +184,11 @@ def main() -> int:
         help="Skip runs that already have an SV9 scan for the current rubric version",
     )
     parser.add_argument("--markdown", default=None, help="Also write the comparison table to this .md file")
+    parser.add_argument(
+        "--no-editorial",
+        action="store_true",
+        help="Skip founder-facing prose generation (scores only)",
+    )
     args = parser.parse_args()
 
     store = SQLiteStore(args.db_path)
@@ -182,7 +208,7 @@ def main() -> int:
                     print(f"  run #{run_id}: already scanned (scan #{existing['id']}), skipped")
                     continue
             print(f"  run #{run_id}: evaluating...")
-            replayed = _replay_run(store, sv9_store, run_id)
+            replayed = _replay_run(store, sv9_store, run_id, editorial=not args.no_editorial)
             if replayed is None:
                 continue
             result, scan_id = replayed

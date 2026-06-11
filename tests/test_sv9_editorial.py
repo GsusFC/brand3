@@ -1,0 +1,124 @@
+import unittest
+
+from src.sv9.aggregator import aggregate
+from src.sv9.editorial import build_editorial
+from src.sv9.models import ComponentResult, RungVerdict, STATUS_NOT_DETECTED, STATUS_NOT_EVALUATED, STATUS_SCORED
+from src.sv9.rubric import COMPONENTS
+
+
+def scored(key: str, score: int) -> ComponentResult:
+    profile = [
+        RungVerdict(rung=i, passed=i <= score, evidence=f"quote {i}" if i <= score else "")
+        for i in range(1, COMPONENTS[key]["scale"] + 1)
+    ]
+    return ComponentResult(
+        component=key,
+        status=STATUS_SCORED,
+        score=score,
+        rung_profile=profile,
+        detected_content=f"{key} detected text",
+    )
+
+
+def scan_dict(**overrides: ComponentResult) -> dict:
+    components = {key: scored(key, 3) for key in COMPONENTS}
+    components.update(overrides)
+    result = aggregate(components, brand_name="Acme", url="https://acme.test", source_run_id=1)
+    return result.to_dict()
+
+
+class FakeEditorialLLM:
+    def __init__(self, *, fail_for: set[str] | None = None):
+        self.api_key = "test-key"
+        self.fail_for = fail_for or set()
+        self.calls: list[dict] = []
+
+    def _call_json(self, system, user, max_tokens=8000, *, json_schema=None, schema_name=None, timeout_seconds=None, strict_schema=True):
+        self.calls.append({"system": system, "user": user, "schema_name": schema_name})
+        if schema_name in self.fail_for:
+            return {}
+        if schema_name == "sv9_editorial_reading":
+            return {"reading": "Lectura ejecutiva de prueba."}
+        return {"message": f"Mensaje para {schema_name}."}
+
+
+class BuildEditorialTests(unittest.TestCase):
+    def test_generates_message_per_component_and_reading(self):
+        llm = FakeEditorialLLM()
+        payload = build_editorial(scan_dict(), llm=llm)
+        self.assertEqual(len(payload["component_messages"]), 10)
+        self.assertEqual(payload["executive_reading"], "Lectura ejecutiva de prueba.")
+
+    def test_prompt_carries_score_evidence_and_next_criterion(self):
+        llm = FakeEditorialLLM()
+        build_editorial(scan_dict(mission=scored("mission", 3)), llm=llm)
+        call = next(c for c in llm.calls if c["schema_name"] == "sv9_editorial_mission")
+        self.assertIn("3/5", call["user"])
+        self.assertIn("quote 1", call["user"])
+        # next criterion: mission rung 4
+        self.assertIn(COMPONENTS["mission"]["ladder"][3]["criterion"], call["user"])
+        # the verdict is a hard constraint
+        self.assertIn("definitivo", call["user"] + call["system"])
+
+    def test_not_detected_gets_message_not_evaluated_does_not(self):
+        llm = FakeEditorialLLM()
+        payload = build_editorial(
+            scan_dict(
+                vision=ComponentResult(component="vision", status=STATUS_NOT_DETECTED),
+                values=ComponentResult(component="values", status=STATUS_NOT_EVALUATED, error="boom"),
+            ),
+            llm=llm,
+        )
+        self.assertIn("vision", payload["component_messages"])
+        self.assertNotIn("values", payload["component_messages"])
+
+    def test_failed_generation_leaves_component_voiceless(self):
+        llm = FakeEditorialLLM(fail_for={"sv9_editorial_mission"})
+        payload = build_editorial(scan_dict(), llm=llm)
+        self.assertNotIn("mission", payload["component_messages"])
+        self.assertEqual(len(payload["component_messages"]), 9)
+
+    def test_no_llm_returns_empty_payload(self):
+        payload = build_editorial(scan_dict(), llm=None)
+        self.assertEqual(payload, {"component_messages": {}, "executive_reading": None})
+
+    def test_accepts_persisted_scan_shape(self):
+        # Sv9Store.get_scan returns components as a list of dicts.
+        scan = scan_dict()
+        scan["components"] = [
+            {**c, "component": key} for key, c in scan["components"].items()
+        ]
+        payload = build_editorial(scan, llm=FakeEditorialLLM())
+        self.assertEqual(len(payload["component_messages"]), 10)
+
+
+class EditorialPersistenceTests(unittest.TestCase):
+    def test_save_editorial_roundtrip(self):
+        import tempfile
+        from pathlib import Path
+
+        from src.sv9.store import Sv9Store
+
+        with tempfile.TemporaryDirectory() as tmp:
+            store = Sv9Store(str(Path(tmp) / "t.sqlite3"))
+            try:
+                components = {key: scored(key, 3) for key in COMPONENTS}
+                result = aggregate(components, brand_name="Acme", url="https://acme.test")
+                scan_id = store.save_scan(result)
+                store.save_editorial(
+                    scan_id,
+                    component_messages={"mission": "La misión es concreta."},
+                    executive_reading="Lectura ejecutiva.",
+                )
+                loaded = store.get_scan(scan_id)
+                self.assertEqual(loaded["executive_reading"], "Lectura ejecutiva.")
+                mission = next(c for c in loaded["components"] if c["component"] == "mission")
+                self.assertEqual(mission["message"], "La misión es concreta.")
+                vision = next(c for c in loaded["components"] if c["component"] == "vision")
+                self.assertIsNone(vision["message"])
+            finally:
+                store.close()
+
+
+if __name__ == "__main__":
+    unittest.main()

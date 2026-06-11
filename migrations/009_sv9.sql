@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS sv9_scans (
   needs_review INTEGER NOT NULL DEFAULT 0,
   is_complete INTEGER NOT NULL DEFAULT 0,
   evaluator_model TEXT,
+  executive_reading TEXT,
   created_at TEXT NOT NULL
 );
 

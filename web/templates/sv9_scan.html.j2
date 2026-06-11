@@ -40,6 +40,12 @@
     </div>
   </div>
 
+  {% if scan.executive_reading %}
+  <p class="prose" style="max-width:62em; margin:0 0 1.2em; line-height:1.6;">
+    {{ scan.executive_reading }}
+  </p>
+  {% endif %}
+
   {# --- Capa 2: canvas TLDR puntuado, Coherencia como marco --- #}
   <div style="border:2px solid var(--accent, #e6007e); border-radius:6px; padding:0.9em; position:relative;">
     <span class="tag" style="position:absolute; top:-0.9em; right:1em; background:var(--bg, #fff); padding:0 0.5em;">
@@ -60,6 +66,9 @@
         <div style="font-size:0.9em;">{{ box.content }}</div>
         {% else %}
         <div class="dim" style="font-size:0.9em;">(no detectado)</div>
+        {% endif %}
+        {% if box.message %}
+        <div style="font-size:0.88em; margin-top:0.5em; line-height:1.5; color:var(--accent);">{{ box.message }}</div>
         {% endif %}
         {% if box.next_rung %}
         <div class="dim" style="font-size:0.82em; margin-top:0.4em; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.3em;">

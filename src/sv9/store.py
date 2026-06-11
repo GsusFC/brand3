@@ -38,10 +38,14 @@ class Sv9Store:
         The .sql migration is re-runnable but CREATE IF NOT EXISTS does not
         alter existing tables (same pattern as the main SQLiteStore).
         """
-        try:
-            self.conn.execute("ALTER TABLE sv9_scans ADD COLUMN evaluator_model TEXT")
-        except sqlite3.OperationalError:
-            pass  # column already exists
+        for statement in (
+            "ALTER TABLE sv9_scans ADD COLUMN evaluator_model TEXT",
+            "ALTER TABLE sv9_scans ADD COLUMN executive_reading TEXT",
+        ):
+            try:
+                self.conn.execute(statement)
+            except sqlite3.OperationalError:
+                pass  # column already exists
 
     def close(self) -> None:
         self.conn.close()
@@ -165,6 +169,30 @@ class Sv9Store:
             except json.JSONDecodeError:
                 payload[target] = []
         return payload
+
+    # --- editorial layer (presentation only: never touches scores) ---
+
+    def save_editorial(
+        self,
+        scan_id: int,
+        *,
+        component_messages: dict[str, str],
+        executive_reading: str | None,
+    ) -> None:
+        for component, message in component_messages.items():
+            self.conn.execute(
+                """
+                UPDATE sv9_component_scores SET message = ?
+                WHERE scan_id = ? AND component = ?
+                """,
+                (message, scan_id, component),
+            )
+        if executive_reading is not None:
+            self.conn.execute(
+                "UPDATE sv9_scans SET executive_reading = ? WHERE id = ?",
+                (executive_reading, scan_id),
+            )
+        self.conn.commit()
 
     # --- pinned Pass 1 detection ---
 

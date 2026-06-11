@@ -62,6 +62,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "points": component.get("points", 0),
             "status": component.get("status", "not_evaluated"),
             "content": component.get("detected_content") or "",
+            "message": component.get("message") or "",
             "is_chip": key in ("attributes", "values"),
             "next_rung": _next_rung(key, component),
         }

@@ -34,12 +34,11 @@
   </div>
   {% if latest_analyses %}
   <div class="table-wrap">
-  <table>
+  <table class="home-recent-table">
     <thead>
       <tr>
         <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
         <th class="col-brand">{{ 'marca' if current_lang == 'es' else 'brand' }}</th>
-        <th class="col-type">{{ 'tipo' if current_lang == 'es' else 'type' }}</th>
         <th class="num col-score">{{ 'puntuación' if current_lang == 'es' else 'score' }}</th>
         <th class="col-bar">bar</th>
         <th class="col-band">band</th>
@@ -51,15 +50,6 @@
       <tr>
         <td class="col-date">{{ row.date }}</td>
         <td class="col-brand"><a href="{{ row.href }}{{ lang_suffix }}">{{ row.brand_name }}</a></td>
-        <td class="col-type">
-          <span class="home-kind home-kind-{{ (row.kind or 'Item')|lower }}">
-            {% if current_lang == 'es' %}
-              {% if row.kind == 'Scanner' %}Escáner{% elif row.kind == 'Audit' %}Auditoría{% else %}{{ row.kind or 'Item' }}{% endif %}
-            {% else %}
-              {{ row.kind or 'Item' }}
-            {% endif %}
-          </span>
-        </td>
         <td class="num num-inline col-score">{{ row.score_display }}</td>
         <td class="bar col-bar">{{ row.bar }}</td>
         <td class="dim col-band">{{ row.band }}</td>

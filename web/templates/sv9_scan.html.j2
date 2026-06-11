@@ -80,10 +80,8 @@
       <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px;
                   display: flex; flex-direction: column; gap: 10px;
                   {% if box.status != 'scored' %}border-style: dashed;{% endif %}">
-        <div class="magnetism-card-head">
-          <div class="magnetism-card-title-stack">
-            <span class="hl-accent magnetism-card-title">{{ box.label }}</span>
-          </div>
+        <div class="magnetism-card-head" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
+          <span class="hl-accent magnetism-card-title">{{ box.label }}</span>
           <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
         </div>
         {% if box.content %}

@@ -346,5 +346,6 @@ async def scanner_api_strategic_reading(
             score_provenance=score_provenance,
             report_base=report_context,
             lang=lang,
+            scanner_display_score=model.get("magnetism_score"),
         ),
     }

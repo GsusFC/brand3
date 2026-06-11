@@ -1106,16 +1106,16 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("drift", response.text.lower())
         self.assertNotIn("provenance", response.text.lower())
 
-    def test_client_tldr_v2_preview_renders_withheld_score_as_status(self):
+    def test_client_tldr_v2_preview_uses_scan_score_when_audit_score_is_blocked(self):
         scan_id, _ = self._seed_internal_audit_scan(drift=True)
 
         response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=es")
 
         self.assertEqual(response.status_code, 200)
-        self.assertIn('data-display-score-source="blocked"', response.text)
-        self.assertIn("magnetism-hero-score-unavailable", response.text)
-        self.assertIn("magnetism-score-status", response.text)
-        self.assertIn("Score retenido", response.text)
+        self.assertIn('data-display-score-source="computed"', response.text)
+        self.assertIn("<span>/100</span>", response.text)
+        self.assertNotIn("magnetism-hero-score-unavailable", response.text)
+        self.assertNotIn("Score retenido", response.text)
         self.assertNotIn("—<span>/100</span>", response.text)
 
     def test_client_tldr_v2_helper_uses_llm_input_and_preserves_review_only_exclusion(self):

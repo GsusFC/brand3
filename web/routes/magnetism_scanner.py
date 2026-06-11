@@ -1193,6 +1193,7 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
                 score_provenance=score_provenance,
                 report_base=report_context,
                 lang=lang,
+                scanner_display_score=model.get("magnetism_score"),
             ),
         }
 

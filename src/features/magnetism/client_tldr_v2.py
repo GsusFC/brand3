@@ -83,11 +83,15 @@ def build_client_tldr_v2(
     report_base: dict[str, Any] | None = None,
     lang: str = "es",
     analyzer: Any | None = None,
+    scanner_display_score: Any | None = None,
 ) -> dict[str, Any]:
     """Build an experimental client-safe TLDR v2 payload."""
     _ensure_client_tldr_runtime_env_loaded()
     language = "en" if lang == "en" else "es"
-    provenance = deepcopy(score_provenance or {})
+    provenance = _client_score_provenance(
+        score_provenance or {},
+        scanner_display_score=scanner_display_score,
+    )
     base = deepcopy(report_base or {})
     current_blocks = _normalize_tldr_blocks(current_tldr)
 
@@ -670,6 +674,48 @@ def _normalize_score_reading(
         "confidence": confidence,
         "limited_confidence": fallback.get("limited_confidence", False) or status == "limited_confidence",
     }
+
+
+def _client_score_provenance(
+    score_provenance: dict[str, Any],
+    *,
+    scanner_display_score: Any | None,
+) -> dict[str, Any]:
+    """Prefer the persisted Magnetism scan score for client TLDR display.
+
+    The internal audit score may be blocked by replay drift. That decision should
+    remain intact for internal audit pages, but TLDR v2 is attached to a persisted
+    Magnetism scan that already has its own client-facing score.
+    """
+
+    provenance = deepcopy(score_provenance or {})
+    score = _display_score_number(scanner_display_score)
+    if score is None:
+        return provenance
+    if (
+        provenance.get("display_score_source") != "blocked"
+        and provenance.get("recommended_display_score") is not None
+    ):
+        return provenance
+
+    provenance["display_score_source"] = "computed"
+    provenance["recommended_display_score"] = score
+    provenance["client_display_score_source"] = "magnetism_scan"
+    provenance["client_score_fallback"] = {
+        "source": "magnetism_scan",
+        "reason": "audit_display_blocked",
+    }
+    return provenance
+
+
+def _display_score_number(value: Any) -> float | None:
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        return None
+    if score < 0 or score > 100:
+        return None
+    return score
 
 
 def _normalize_system_reading(

@@ -92,7 +92,7 @@
         <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
         {% endif %}
         {% if box.message %}
-        <p style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--accent);">{{ box.message }}</p>
+        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ box.message }}</p>
         {% endif %}
         {% if box.next_rung %}
         <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
@@ -105,7 +105,7 @@
     {% endfor %}
 
     {% if coherencia.message %}
-    <p style="margin: 4px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--accent);">
+    <p class="dim" style="margin: 4px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">
       {{ coherencia.message }}
     </p>
     {% endif %}

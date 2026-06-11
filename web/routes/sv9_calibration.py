@@ -22,15 +22,16 @@ router = APIRouter()
 
 
 def _require_team(request: Request) -> None:
-    """Gate on the team cookie when a team token is configured.
+    """Team gating intentionally disabled for now (product decision,
+    2026-06-11): SV9 views are open while the team iterates. To re-enable,
+    restore the cookie check below.
 
-    Local development without BRAND3_TEAM_TOKEN stays open; any deployed
-    environment defines the token and therefore requires /team/unlock first.
-    """
     if not settings.team_token:
         return
     if not is_team_request(request, create_serializer(settings.cookie_secret)):
         raise HTTPException(status_code=403, detail="team access required")
+    """
+    return
 
 
 @router.get("/sv9/calibration")

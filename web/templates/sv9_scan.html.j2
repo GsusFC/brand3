@@ -1,93 +1,117 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: sv9 scan #{{ scan.id }}{% endblock %}
+{% block title %}brand3 :: SV9 :: {{ scan.brand_name }}{% endblock %}
 {% block content %}
-<section>
+<section class="magnetism-hero-section">
+  <div class="section-head">
+    <span class="label">brand3 scanner</span>
+    <span class="tag">// sv9 score · sombra</span>
+  </div>
+
+  {% if model %}
+  {% include "magnetism_scan_nav.html.j2" %}
+  {% else %}
   <div class="lab-review-nav" style="margin-bottom: 14px;">
-    {% if magnetism_scan_id %}
-    <a class="source-link" href="/magnetism-scanner/scan/{{ magnetism_scan_id }}">TLDR Brand3</a>
-    <a class="source-link" href="/magnetism-scanner/scan/{{ magnetism_scan_id }}/client-tldr-v2">TLDR v2 Preview</a>
-    {% endif %}
+    <a class="source-link" href="/sv9/calibration">← Scans SV9</a>
     <a class="source-link badge-ready" href="/sv9/scan/{{ scan.id }}">SV9 Score</a>
     <a class="source-link" href="/sv9/calibration/{{ scan.id }}">Calibración</a>
-    <a class="source-link" href="/sv9/calibration">Scans SV9</a>
   </div>
-
-  <div class="section-head">
-    <span class="label">brand3_score · preview interno sv9</span>
-    <span class="tag">// scan #{{ scan.id }} · {{ scan.rubric_version }} · {{ scan.evaluator_model or '—' }}</span>
-  </div>
-
-  {# --- Capa 1: los cuatro datos --- #}
-  <div style="display:flex; flex-wrap:wrap; gap:1.6em; align-items:baseline; margin:0.8em 0 1.2em;">
-    <div>
-      <div style="font-size:2.6em; line-height:1;"><strong>{{ scan.brand3_score }}</strong><span class="dim">/100</span></div>
-      <div class="dim">{{ scan.brand_name }} · {{ scan.url }}</div>
-    </div>
-    <div>
-      <div class="dim">margen inmediato</div>
-      <div><strong>+{{ scan.immediate_margin }}</strong> puntos a un peldaño</div>
-    </div>
-    {% if gap_label %}
-    <div>
-      <div class="dim">hueco más doloroso</div>
-      <div><strong>{{ gap_label }}</strong></div>
-    </div>
-    {% endif %}
-    <div>
-      {% if scan.magnetism_capped %}<span class="tag">magnetism cap</span>{% endif %}
-      {% if scan.needs_review %}<span class="tag">coherencia en revisión</span>{% endif %}
-      {% if not scan.is_complete %}<span class="tag">scan parcial</span>{% endif %}
-    </div>
-  </div>
-
-  {% if scan.executive_reading %}
-  <p class="prose" style="max-width:62em; margin:0 0 1.2em; line-height:1.6;">
-    {{ scan.executive_reading }}
-  </p>
   {% endif %}
 
-  {# --- Capa 2: canvas TLDR puntuado, Coherencia como marco --- #}
-  <div style="border:2px solid var(--accent, #e6007e); border-radius:6px; padding:0.9em; position:relative;">
-    <span class="tag" style="position:absolute; top:-0.9em; right:1em; background:var(--bg, #fff); padding:0 0.5em;">
+  <div class="magnetism-hero-grid">
+    <div class="magnetism-hero-main">
+      <h1 class="page-title magnetism-hero-title">{{ scan.brand_name }}</h1>
+      {% if scan.executive_reading %}
+      <p class="prose intro-copy magnetism-hero-verdict">
+        {{ scan.executive_reading }}
+      </p>
+      {% endif %}
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">Brand3 Score</div>
+      <div class="hl-accent magnetism-hero-score">
+        {{ scan.brand3_score }}<span>/100</span>
+      </div>
+      <div class="magnetism-score-bar" aria-hidden="true">
+        <span style="--score-width: {{ scan.brand3_score }}%;"></span>
+      </div>
+      {% if gap_label %}
+      <div class="dim magnetism-hero-tier">hueco: {{ gap_label }}</div>
+      {% endif %}
+    </div>
+    <div class="magnetism-hero-metric">
+      <div class="dim magnetism-hero-label">Margen inmediato</div>
+      <div class="hl-ok magnetism-hero-score">
+        +{{ scan.immediate_margin }}<span> pts</span>
+      </div>
+      <div class="dim magnetism-hero-tier" style="margin-top: 8px;">
+        {% if scan.magnetism_capped %}magnetism cap activo{% endif %}
+        {% if scan.needs_review %} · coherencia en revisión{% endif %}
+        {% if not scan.is_complete %} · scan parcial{% endif %}
+        {% if not scan.magnetism_capped and not scan.needs_review and scan.is_complete %}a un paso de subir{% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="lab-index-meta" style="margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 14px;">
+    <span class="inline-kv"><span class="k">rubric</span>=<span class="v">{{ scan.rubric_version }}</span></span>
+    <span class="inline-kv"><span class="k">evaluator</span>=<span class="v">{{ scan.evaluator_model or '—' }}</span></span>
+    {% if scan.source_run_id %}
+    <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ scan.source_run_id }}</span></span>
+    {% endif %}
+  </div>
+</section>
+
+<hr class="rule-thin magnetism-compact-rule">
+
+<section class="magnetism-tldr-section">
+  <div class="section-head">
+    <span class="label">Canvas Brand3 puntuado</span>
+    <span class="tag">// coherencia {{ coherencia.score }}/10 ×2 como marco</span>
+  </div>
+
+  <div style="border: 1px solid var(--accent); padding: 14px; margin-top: 14px; position: relative;">
+    <span class="badge badge-ready" style="position: absolute; top: -10px; right: 14px;">
       coherencia {{ coherencia.score }}/10 ×2
     </span>
 
     {% for row in canvas %}
-    <div style="display:grid; grid-template-columns:repeat({{ row|length }}, 1fr); gap:0.7em; margin:0.7em 0;">
+    <div style="display: grid; grid-template-columns: repeat({{ row|length }}, 1fr); gap: 14px; margin: 14px 0;">
       {% for box in row %}
-      <div style="border:1px solid rgba(128,128,128,0.35); border-radius:4px; padding:0.55em 0.7em; position:relative;
-                  {% if box.is_chip %}opacity:0.92; font-size:0.92em;{% endif %}
-                  {% if box.status != 'scored' %}border-style:dashed;{% endif %}">
-        <div class="section-head" style="margin-bottom:0.25em;">
-          <span class="label" style="font-size:0.82em;">{{ box.label }}</span>
-          <span class="tag">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
+      <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px;
+                  display: flex; flex-direction: column; gap: 10px;
+                  {% if box.status != 'scored' %}border-style: dashed;{% endif %}">
+        <div class="magnetism-card-head">
+          <div class="magnetism-card-title-stack">
+            <span class="hl-accent magnetism-card-title">{{ box.label }}</span>
+          </div>
+          <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
         </div>
         {% if box.content %}
-        <div style="font-size:0.9em;">{{ box.content }}</div>
+        <p class="magnetism-card-result" style="margin: 0;">{{ box.content }}</p>
         {% else %}
-        <div class="dim" style="font-size:0.9em;">(no detectado)</div>
+        <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
         {% endif %}
         {% if box.message %}
-        <div style="font-size:0.88em; margin-top:0.5em; line-height:1.5; color:var(--accent);">{{ box.message }}</div>
+        <p style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--accent);">{{ box.message }}</p>
         {% endif %}
         {% if box.next_rung %}
-        <div class="dim" style="font-size:0.82em; margin-top:0.4em; border-top:1px dashed rgba(128,128,128,0.3); padding-top:0.3em;">
-          → peldaño {{ box.next_rung.rung }}: {{ box.next_rung.criterion }}
-        </div>
+        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
+          → siguiente: {{ box.next_rung.criterion }}
+        </p>
         {% endif %}
       </div>
       {% endfor %}
     </div>
     {% endfor %}
+
+    {% if coherencia.message %}
+    <p style="margin: 4px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55; color: var(--accent);">
+      {{ coherencia.message }}
+    </p>
+    {% endif %}
   </div>
 
-  {% if coherencia.next_rung %}
-  <p class="prose dim" style="font-size:0.88em;">
-    coherencia → peldaño {{ coherencia.next_rung.rung }}: {{ coherencia.next_rung.criterion }}
-  </p>
-  {% endif %}
-
-  <p class="prose dim" style="margin-top:1em;">
+  <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 12px 0 0;">
     <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a>
   </p>
 </section>

@@ -75,15 +75,12 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 303)
 
-    def test_routes_require_team_cookie(self):
+    def test_routes_open_while_gating_is_disabled(self):
+        # Team gating intentionally disabled for now (product decision,
+        # 2026-06-11). When re-enabled, these become 403 without the cookie.
         for path in ("/sv9/calibration", f"/sv9/calibration/{self.scan_id}"):
             response = self.client.get(path)
-            self.assertEqual(response.status_code, 403, path)
-        response = self.client.post(
-            f"/sv9/calibration/{self.scan_id}/mission",
-            data={"score_humano": 4, "evaluador": "sergio"},
-        )
-        self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.status_code, 200, path)
 
     def test_list_and_detail_render_after_unlock(self):
         self._unlock()
@@ -127,15 +124,11 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         response = self.client.get(f"/sv9/calibration/{self.scan_id}")
         self.assertIn("Δ2", response.text)
 
-    def test_scan_canvas_requires_team_and_renders(self):
-        response = self.client.get(f"/sv9/scan/{self.scan_id}")
-        self.assertEqual(response.status_code, 403)
-
-        self._unlock()
+    def test_scan_canvas_renders(self):
         response = self.client.get(f"/sv9/scan/{self.scan_id}")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("brand3_score", response.text)
-        self.assertIn("margen inmediato", response.text)
+        self.assertIn("Brand3 Score", response.text)
+        self.assertIn("Margen inmediato", response.text)
         self.assertIn("coherencia 3/10", response.text)
         self.assertIn("core_purpose text", response.text)
 

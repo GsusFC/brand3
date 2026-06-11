@@ -13,6 +13,7 @@ from src.sv9.rubric import COMPONENTS, component_max_points
 from src.sv9.store import Sv9Store
 
 from ..templates_env import templates
+from .magnetism_scanner import _ui
 from .sv9_calibration import _require_team
 
 router = APIRouter()
@@ -72,6 +73,19 @@ async def sv9_scan_view(request: Request, scan_id: int):
     gap = scan.get("most_painful_gap")
     gap_label = COMPONENTS[gap]["label"] if gap in COMPONENTS else None
 
+    # Shared scan-tab nav (same include as TLDR/Auditoría/Evidencia) needs the
+    # scanner scan id for its hrefs; without one we fall back to SV9-only nav.
+    magnetism_scan_id = _magnetism_scan_id(scan.get("source_run_id"))
+    nav_model = None
+    if magnetism_scan_id:
+        nav_model = {
+            "id": magnetism_scan_id,
+            "lang_query": "?lang=es",
+            "active_tab": "sv9",
+            "t": _ui("es"),
+            "sv9_scan_id": scan_id,
+        }
+
     return templates.TemplateResponse(
         request,
         "sv9_scan.html.j2",
@@ -80,7 +94,8 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "canvas": canvas,
             "coherencia": coherencia,
             "gap_label": gap_label,
-            "magnetism_scan_id": _magnetism_scan_id(scan.get("source_run_id")),
+            "magnetism_scan_id": magnetism_scan_id,
+            "model": nav_model,
             "ui_lang": "es",
         },
     )

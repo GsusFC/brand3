@@ -19,9 +19,7 @@ from src.scoring.provenance import build_score_provenance_report
 from src.reports.dossier import build_brand_dossier
 from src.storage.sqlite_store import SQLiteStore
 
-from ..config import settings
 from ..i18n import magnetism_landing_copy
-from ..middleware.team_cookie import create_serializer, is_team_request
 from ..storage import (
     get_magnetism_scan,
     get_magnetism_scan_by_token,
@@ -454,18 +452,14 @@ _MAGNETISM_UI = {
 
 
 def _attach_sv9_link(model: dict, request: Request) -> None:
-    """Team-only nav link to the internal SV9 scan for this run, when one exists.
+    """Nav link to the SV9 scan for this run, when one exists.
 
-    Public visitors never see the link: it requires the team cookie whenever a
-    team token is configured. Read-only lookup; failures stay silent.
+    Team gating intentionally disabled for now (product decision,
+    2026-06-11). Read-only lookup; failures stay silent.
     """
     model.setdefault("sv9_scan_id", None)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
-        return
-    if settings.team_token and not is_team_request(
-        request, create_serializer(settings.cookie_secret)
-    ):
         return
     try:
         from src.sv9.store import Sv9Store
@@ -513,16 +507,14 @@ async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
         except Exception:
             scan["formatted_date"] = scan["created_at"]
 
-    is_team = not settings.team_token or is_team_request(
-        request, create_serializer(settings.cookie_secret)
-    )
     return templates.TemplateResponse(
         request,
         "magnetism_scanner.html.j2",
         {
             "ui_lang": lang,
             "landing": magnetism_landing_copy(lang),
-            "show_sv9_nav": is_team,
+            # Team gating intentionally disabled for now (product decision).
+            "show_sv9_nav": True,
             "model": {
                 "scans": scans,
                 "audit_runs": audit_runs,

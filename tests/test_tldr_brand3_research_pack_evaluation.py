@@ -17,11 +17,18 @@ def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _db_fingerprint(path: Path) -> float | None:
+    """Mutation guard that also works where no local DB exists (e.g. CI):
+    if the evaluation were to create or touch the database, the fingerprint
+    changes either way."""
+    return path.stat().st_mtime if path.exists() else None
+
+
 def test_evaluation_report_is_deterministic_and_writes_artifacts(tmp_path: Path) -> None:
     dataset = _load_json(DEFAULT_DATASET_PATH)
     gold = _load_json(DEFAULT_GOLD_PATH)
 
-    before_mtime = Path(BRAND3_DB_PATH).stat().st_mtime
+    before_mtime = _db_fingerprint(Path(BRAND3_DB_PATH))
     report_one = build_evaluation_report(dataset, gold)
     md_one = build_markdown_report(report_one)
     report_three = run_evaluation(
@@ -29,7 +36,7 @@ def test_evaluation_report_is_deterministic_and_writes_artifacts(tmp_path: Path)
         gold_path=DEFAULT_GOLD_PATH,
         out_dir=tmp_path,
     )
-    after_mtime = Path(BRAND3_DB_PATH).stat().st_mtime
+    after_mtime = _db_fingerprint(Path(BRAND3_DB_PATH))
 
     report_two = build_evaluation_report(dataset, gold)
     md_two = build_markdown_report(report_two)

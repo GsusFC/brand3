@@ -1,7 +1,11 @@
 name: Fly Deploy
 
+# Deploys only after CI passes on main: a red quality gate keeps the
+# public site untouched (process decision, 2026-06-11).
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches:
       - main
 
@@ -12,9 +16,13 @@ concurrency:
 jobs:
   deploy:
     name: Deploy app
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # Deploy exactly the commit CI verified, not whatever main moved to.
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - uses: superfly/flyctl-actions/setup-flyctl@master
 

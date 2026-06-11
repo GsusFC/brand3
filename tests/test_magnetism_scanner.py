@@ -3123,6 +3123,86 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("deprecation", payload)
 
     @unittest.mock.patch("web.routes.magnetism_scanner.validate_url")
+    def test_web_route_materializes_sv9_after_completed_scan(
+        self,
+        mock_validate_url,
+    ):
+        from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED
+        from src.sv9.rubric import RUBRIC_VERSION
+        from src.sv9.store import Sv9Store
+        from web.workers.queue import set_run_magnetism_override
+
+        source_run_id = 77
+
+        def fake_magnetism(job: dict) -> dict:
+            return {
+                "brand_name": "Canonical Route",
+                "url": "https://example.com",
+                "magnetism_score": 62,
+                "coherence_score": 70,
+                "quadrant": "Low Magnetism - High Coherence",
+                "source": "brand_audit_snapshot",
+                "extraction_mode": "canonical_snapshot",
+                "source_run_id": source_run_id,
+                "metrics": {},
+                "tldr_brand3": {
+                    "mission": {"detected": True, "value": "Clear mission"},
+                    "vision": {"detected": True, "value": "Clear vision"},
+                },
+                "magenta_circle": {},
+            }
+
+        sv9_result = Sv9ScanResult(
+            brand_name="Canonical Route",
+            url="https://example.com",
+            source_run_id=source_run_id,
+            brand3_score=44,
+            components={
+                "mission": ComponentResult(
+                    component="mission",
+                    status=STATUS_SCORED,
+                    score=3,
+                    detected_content="Clear mission",
+                )
+            },
+        )
+        set_run_magnetism_override(fake_magnetism)
+        mock_validate_url.return_value = (True, "https://example.com")
+
+        with unittest.mock.patch(
+            "src.sv9.service.run_sv9_from_audit_run",
+            return_value=sv9_result,
+        ) as run_sv9:
+            self._unlock_team_cookie()
+            response = self.client.post(
+                "/magnetism-scanner/analyze",
+                data={"url": "https://example.com", "manual_text": ""},
+                follow_redirects=False,
+            )
+            self.assertEqual(response.status_code, 303)
+            token = response.headers["location"].split("/")[2]
+
+            from web.storage import get_magnetism_scan_by_token
+
+            scan = None
+            for _ in range(30):
+                scan = get_magnetism_scan_by_token(token)
+                if scan and scan["status"] == "ready":
+                    break
+                time.sleep(0.2)
+
+        self.assertIsNotNone(scan)
+        self.assertEqual(scan["status"], "ready")
+        run_sv9.assert_called_once_with(source_run_id, db_path=str(self.db))
+        sv9_store = Sv9Store(str(self.db))
+        try:
+            sv9_scan = sv9_store.get_scan_for_run(source_run_id, rubric_version=RUBRIC_VERSION)
+        finally:
+            sv9_store.close()
+        self.assertIsNotNone(sv9_scan)
+        self.assertEqual(sv9_scan["brand3_score"], 44)
+
+    @unittest.mock.patch("web.routes.magnetism_scanner.validate_url")
     def test_web_route_url_analysis_blocks_degraded_canonical_tldr(
         self,
         mock_validate_url,
@@ -3212,6 +3292,187 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(stored["scanner_readiness"]["status"], "failed")
         self.assertEqual(stored["publication_decision"]["status"], "failed")
         self.assertEqual(stored["publication_decision"]["source_status"], "failed")
+
+    def test_scan_detail_shows_sv9_tab_when_shadow_scan_exists(self):
+        from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED
+        from src.sv9.store import Sv9Store
+        from web.storage import insert_magnetism_scan
+
+        source_run_id = 123
+        payload = {
+            "brand_name": "SV9 Linked",
+            "url": "https://sv9-linked.test",
+            "magnetism_score": 64,
+            "coherence_score": 72,
+            "quadrant": "High Magnetism - High Coherence",
+            "source": "brand_audit_snapshot",
+            "source_run_id": source_run_id,
+            "scanner_readiness": {"status": "ready", "reason_codes": []},
+            "tldr_brand3": {
+                "mission": {"detected": True, "value": "Clear mission"},
+                "vision": {"detected": True, "value": "Clear vision"},
+            },
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=source_run_id,
+        )
+        sv9_store = Sv9Store(str(self.db))
+        try:
+            sv9_id = sv9_store.save_scan(
+                Sv9ScanResult(
+                    brand_name="SV9 Linked",
+                    url="https://sv9-linked.test",
+                    source_run_id=source_run_id,
+                    brand3_score=55,
+                    components={
+                        "mission": ComponentResult(
+                            component="mission",
+                            status=STATUS_SCORED,
+                            score=3,
+                            detected_content="Clear mission",
+                        )
+                    },
+                )
+            )
+        finally:
+            sv9_store.close()
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("SV9 Score", response.text)
+        self.assertIn(f"/sv9/scan/{sv9_id}", response.text)
+
+    def test_scan_detail_shows_generate_sv9_button_when_shadow_scan_is_missing(self):
+        from src.sv9.aggregator import aggregate
+        from src.sv9.models import ComponentResult, RungVerdict, STATUS_SCORED
+        from src.sv9.rubric import COMPONENTS, RUBRIC_VERSION
+        from src.sv9.store import Sv9Store
+        from web.storage import insert_magnetism_scan
+
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("SV9 Missing", "https://sv9-missing.test")
+            source_run_id = store.create_run(
+                brand_id,
+                "SV9 Missing",
+                "https://sv9-missing.test",
+                use_llm=True,
+                use_social=True,
+            )
+        finally:
+            store.close()
+
+        payload = {
+            "brand_name": "SV9 Missing",
+            "url": "https://sv9-missing.test",
+            "magnetism_score": 64,
+            "coherence_score": 72,
+            "quadrant": "High Magnetism - High Coherence",
+            "source": "brand_audit_snapshot",
+            "source_run_id": source_run_id,
+            "scanner_readiness": {"status": "ready", "reason_codes": []},
+            "tldr_brand3": {
+                "mission": {"detected": True, "value": "Clear mission"},
+            },
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"],
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=source_run_id,
+        )
+
+        components = {}
+        for key, spec in COMPONENTS.items():
+            score = min(2, spec["scale"])
+            profile = [
+                RungVerdict(rung=i, passed=i <= score, evidence="e" if i <= score else "")
+                for i in range(1, spec["scale"] + 1)
+            ]
+            components[key] = ComponentResult(
+                component=key,
+                status=STATUS_SCORED,
+                score=score,
+                rung_profile=profile,
+                detected_content=f"{key} evidence",
+                detection_mode="literal",
+                detection_confidence="high",
+                evidence=[f"{key} evidence"],
+            )
+        sv9_result = aggregate(
+            components,
+            brand_name="SV9 Missing",
+            url="https://sv9-missing.test",
+            source_run_id=source_run_id,
+        )
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('value="Generate SV9"', response.text)
+        self.assertNotIn("SV9 Score", response.text)
+
+        release = threading.Event()
+        generated = {"id": None}
+
+        def fake_ensure(source_run_id_arg: int, *, db_path: str) -> int:
+            self.assertEqual(source_run_id_arg, source_run_id)
+            self.assertEqual(db_path, str(self.db))
+            self.assertTrue(release.wait(timeout=2))
+            sv9_store = Sv9Store(str(self.db))
+            try:
+                generated["id"] = sv9_store.save_scan(sv9_result)
+            finally:
+                sv9_store.close()
+            return int(generated["id"])
+
+        with unittest.mock.patch(
+            "web.routes.magnetism_scanner.ensure_sv9_scan_for_source_run",
+            side_effect=fake_ensure,
+        ):
+            post = self.client.post(
+                f"/magnetism-scanner/scan/{scan_id}/generate-sv9?lang=en",
+                follow_redirects=False,
+            )
+
+            self.assertEqual(post.status_code, 303)
+            self.assertIn("/magnetism-scanner/sv9/", post.headers["location"])
+            self.assertIn("/status?lang=en", post.headers["location"])
+
+            status_resp = self.client.get(post.headers["location"], follow_redirects=False)
+            self.assertEqual(status_resp.status_code, 200)
+            self.assertIn("Generating SV9", status_resp.text)
+
+            release.set()
+            final_resp = None
+            for _ in range(30):
+                final_resp = self.client.get(post.headers["location"], follow_redirects=False)
+                if final_resp.status_code == 303:
+                    break
+                time.sleep(0.2)
+
+        self.assertIsNotNone(final_resp)
+        self.assertEqual(final_resp.status_code, 303)
+        self.assertEqual(final_resp.headers["location"], f"/sv9/scan/{generated['id']}?lang=en")
+
+        sv9_store = Sv9Store(str(self.db))
+        try:
+            persisted = sv9_store.get_scan_for_run(source_run_id, rubric_version=RUBRIC_VERSION)
+        finally:
+            sv9_store.close()
+
+        self.assertIsNotNone(persisted)
+        self.assertEqual(persisted["id"], generated["id"])
+        self.assertEqual(persisted["source_run_id"], source_run_id)
 
     def test_failed_scanner_status_exposes_safe_failure_diagnostics(self):
         from web.storage import insert_magnetism_scan
@@ -3870,6 +4131,10 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertRegex(status_url, r"^/magnetism-scanner/.+/status\?lang=es$")
         r_status = self.client.get(status_url, follow_redirects=False)
         self.assertIn(r_status.status_code, {200, 303})
+        if r_status.status_code == 200:
+            self.assertIn('data-status-waiting data-status="running"', r_status.text)
+            self.assertIn('class="status-game"', r_status.text)
+            self.assertIn('data-dino-canvas', r_status.text)
 
         token = status_url.split("/")[2]
         from web.storage import get_magnetism_scan_by_token

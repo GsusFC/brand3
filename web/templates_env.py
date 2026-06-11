@@ -8,9 +8,13 @@ from fastapi.templating import Jinja2Templates
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
-_STATIC_CSS = Path(__file__).resolve().parent / "static" / "main.css"
+_STATIC_DIR = Path(__file__).resolve().parent / "static"
+_STATIC_FILES = [
+    _STATIC_DIR / "main.css",
+    _STATIC_DIR / "status_waiting.js",
+]
 try:
-    STATIC_ASSET_VERSION = sha256(_STATIC_CSS.read_bytes()).hexdigest()[:12]
+    STATIC_ASSET_VERSION = sha256(b"".join(path.read_bytes() for path in _STATIC_FILES)).hexdigest()[:12]
 except OSError:
     STATIC_ASSET_VERSION = "dev"
 

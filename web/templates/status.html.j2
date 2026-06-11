@@ -1,12 +1,10 @@
 {% extends "base.html.j2" %}
 {% block title %}brand3 :: analyzing {{ brand_slug }}{% endblock %}
 {% block extra_head %}
-  {% if status in ("queued", "running") %}
-  <meta http-equiv="refresh" content="5">
-  {% endif %}
+  <script src="/static/status_waiting.js?v={{ static_asset_version }}" defer></script>
 {% endblock %}
 {% block content %}
-<section>
+<section data-status-waiting data-status="{{ status }}" data-ready-href="{{ ready_href if ready_href else '' }}" data-poll-interval="5000">
   <div class="section-head">
     <span class="label">{{ status_label if status_label else "analysis_status" }}</span>
     <span class="tag">// token={{ token }}</span>
@@ -87,6 +85,28 @@
   <p class="small dim">{{ failure_diagnostics.safe_message }}</p>
   {% endif %}
   <p><a href="{{ back_href if back_href else '/' }}">{{ back_link_label if back_link_label else "← back to form" }}</a></p>
+  {% endif %}
+
+  {% if status in ("queued", "running") %}
+  <section class="status-game" aria-label="{{ 'Mini juego de espera' if ui_lang == 'es' else 'Waiting mini game' }}">
+    <div class="status-game-head">
+      <div>
+        <div class="status-game-label">{{ 'T-Rex de espera' if ui_lang == 'es' else 'Waiting T-Rex' }}</div>
+        <div class="status-game-copy small">{{ 'Pulsa espacio, flecha arriba o toca el panel para saltar.' if ui_lang == 'es' else 'Press space, Arrow Up, or tap the panel to jump.' }}</div>
+      </div>
+      <div class="status-game-scoreboard">
+        <span class="k">{{ 'Score' if ui_lang == 'en' else 'Puntos' }}</span>
+        <span class="v tabular-nums" data-dino-score>0</span>
+      </div>
+    </div>
+    <div class="status-game-board">
+      <canvas class="status-game-canvas" width="640" height="180" data-dino-canvas></canvas>
+    </div>
+    <div class="status-game-footer">
+      <button class="source-link status-game-button" type="button" data-dino-start>{{ 'Empezar' if ui_lang == 'es' else 'Start' }}</button>
+      <span class="small dim" data-dino-state>{{ 'Listo para jugar' if ui_lang == 'es' else 'Ready to play' }}</span>
+    </div>
+  </section>
   {% endif %}
 </section>
 {% endblock %}

@@ -23,6 +23,7 @@ from src.quality.publication_readiness import (
     attach_scanner_publication_decision,
     is_publishable_report,
 )
+from src.services.magnetism_service import ensure_sv9_scan_for_source_run
 from ..config import settings
 
 log = logging.getLogger("brand3.web.queue")
@@ -309,6 +310,7 @@ class AnalysisQueue:
             return
 
         _complete_magnetism_scan(token, result)
+        _ensure_sv9_scan_for_magnetism_result(result)
         log.info("magnetism ready token=%s", token)
 
 
@@ -450,6 +452,27 @@ def _complete_magnetism_scan(token: str, payload: dict) -> None:
             ),
         )
         conn.commit()
+
+
+def _ensure_sv9_scan_for_magnetism_result(payload: dict) -> int | None:
+    """Materialize the shadow SV9 scan for a completed Magnetism result.
+
+    SV9 is internal/shadow here: failures are logged but never block the public
+    scanner result that was already marked ready.
+    """
+    source_run_id = _payload_source_run_id(payload)
+    return ensure_sv9_scan_for_source_run(source_run_id, db_path=str(_db_path()))
+
+
+def _payload_source_run_id(payload: dict) -> int | None:
+    try:
+        value = payload.get("source_run_id")
+        if value is None:
+            return None
+        source_run_id = int(value)
+    except (TypeError, ValueError):
+        return None
+    return source_run_id if source_run_id > 0 else None
 
 
 # Module-level singleton — the FastAPI lifespan owns start/stop.

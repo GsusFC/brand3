@@ -140,15 +140,25 @@ class Sv9Store:
         payload["components"] = [self._component_row_to_dict(row) for row in components]
         return payload
 
-    def get_scan_for_run(self, source_run_id: int) -> dict[str, Any] | None:
+    def get_scan_for_run(
+        self,
+        source_run_id: int,
+        *,
+        rubric_version: str | None = None,
+    ) -> dict[str, Any] | None:
+        where = "source_run_id = ?"
+        params: list[Any] = [source_run_id]
+        if rubric_version is not None:
+            where += " AND rubric_version = ?"
+            params.append(rubric_version)
         row = self.conn.execute(
-            """
+            f"""
             SELECT id FROM sv9_scans
-            WHERE source_run_id = ?
+            WHERE {where}
             ORDER BY created_at DESC, id DESC
             LIMIT 1
             """,
-            (source_run_id,),
+            params,
         ).fetchone()
         return self.get_scan(int(row["id"])) if row else None
 

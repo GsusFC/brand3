@@ -348,6 +348,70 @@ def insert_magnetism_job(
     return int(last_id)
 
 
+def insert_sv9_generation_job(
+    *,
+    token: str,
+    scan_id: int,
+    source_run_id: int,
+    brand_name: str,
+) -> int:
+    """Insert an SV9 generation job and return its primary key ID."""
+    with _connect() as conn:
+        cur = conn.execute(
+            """
+            INSERT INTO sv9_generation_jobs
+              (token, scan_id, source_run_id, brand_name, created_at, status, phase, phase_updated_at)
+            VALUES (?, ?, ?, ?, datetime('now'), 'queued', 'queued', datetime('now'))
+            """,
+            (token, scan_id, source_run_id, brand_name),
+        )
+        conn.commit()
+        return int(cur.lastrowid)
+
+
+def get_sv9_generation_job(token: str) -> dict | None:
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM sv9_generation_jobs WHERE token = ?",
+            (token,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def get_sv9_generation_job_by_scan_id(scan_id: int) -> dict | None:
+    with _connect() as conn:
+        row = conn.execute(
+            "SELECT * FROM sv9_generation_jobs WHERE scan_id = ? ORDER BY id DESC LIMIT 1",
+            (scan_id,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def update_sv9_generation_job(token: str, **columns) -> None:
+    if not columns:
+        return
+    allowed_columns = {
+        "status",
+        "phase",
+        "phase_updated_at",
+        "error_message",
+        "sv9_scan_id",
+        "started_at",
+        "completed_at",
+    }
+    unexpected = set(columns) - allowed_columns
+    if unexpected:
+        raise ValueError(f"Unexpected SV9 generation job columns: {sorted(unexpected)}")
+    assignments = ", ".join(f"{k} = ?" for k in columns)
+    values = list(columns.values()) + [token]
+    with _connect() as conn:
+        conn.execute(
+            f"UPDATE sv9_generation_jobs SET {assignments} WHERE token = ?",
+            values,
+        )
+        conn.commit()
+
+
 def get_magnetism_scan_by_token(token: str) -> dict | None:
     """Retrieve a Magnetism scan/job by public status token."""
     with _connect() as conn:

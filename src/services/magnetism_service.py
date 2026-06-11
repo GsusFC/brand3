@@ -7,6 +7,7 @@ that persisted snapshot. Manual text remains a legacy direct/debug path.
 
 from __future__ import annotations
 
+import logging
 import inspect
 from collections.abc import Callable
 from typing import Any
@@ -16,6 +17,8 @@ from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.services.brand_service import run as run_brand_audit
 from src.storage.sqlite_store import SQLiteStore
+
+log = logging.getLogger(__name__)
 
 
 BrandAuditRunner = Callable[[str], dict[str, Any]]
@@ -83,6 +86,33 @@ def run_legacy_manual_magnetism(
 ) -> dict[str, Any]:
     """Run legacy direct Magnetism for pasted evidence without public acquisition."""
     return MagnetismExtractor(llm=_effective_llm(llm)).extract(url=None, manual_text=manual_text or None)
+
+
+def ensure_sv9_scan_for_source_run(
+    source_run_id: int | None,
+    *,
+    db_path: str = BRAND3_DB_PATH,
+) -> int | None:
+    """Materialize or reuse the shadow SV9 scan for a Brand Audit run."""
+    if source_run_id is None or int(source_run_id) <= 0:
+        return None
+    try:
+        from src.sv9.rubric import RUBRIC_VERSION
+        from src.sv9.service import run_sv9_from_audit_run
+        from src.sv9.store import Sv9Store
+
+        sv9_store = Sv9Store(db_path)
+        try:
+            existing = sv9_store.get_scan_for_run(int(source_run_id), rubric_version=RUBRIC_VERSION)
+            if existing:
+                return int(existing["id"])
+            result = run_sv9_from_audit_run(int(source_run_id), db_path=db_path)
+            return sv9_store.save_scan(result)
+        finally:
+            sv9_store.close()
+    except Exception:  # noqa: BLE001
+        log.exception("SV9 materialization failed source_run_id=%s", source_run_id)
+        return None
 
 
 def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:

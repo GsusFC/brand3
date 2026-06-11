@@ -550,6 +550,10 @@ class WebAppFlowTests(unittest.TestCase):
             self.assertIn("Scoring dimensions", status_resp.text)
             self.assertIn("[active]", status_resp.text)
             self.assertIn("This checklist reflects pipeline phase", status_resp.text)
+            self.assertIn('data-status-waiting data-status="running"', status_resp.text)
+            self.assertIn('src="/static/status_waiting.js?v=', status_resp.text)
+            self.assertIn('class="status-game"', status_resp.text)
+            self.assertIn('data-dino-canvas', status_resp.text)
         finally:
             release.set()
 

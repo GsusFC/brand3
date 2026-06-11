@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 from datetime import datetime, timezone
 
@@ -17,15 +18,20 @@ from src.features.magnetism.translation import apply_magnetism_translation
 from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
 from src.scoring.provenance import build_score_provenance_report
 from src.reports.dossier import build_brand_dossier
+from src.services.magnetism_service import ensure_sv9_scan_for_source_run
 from src.storage.sqlite_store import SQLiteStore
 
 from ..i18n import magnetism_landing_copy
 from ..storage import (
     get_magnetism_scan,
     get_magnetism_scan_by_token,
+    get_sv9_generation_job,
+    get_sv9_generation_job_by_scan_id,
     insert_magnetism_job,
     insert_magnetism_scan,
+    insert_sv9_generation_job,
     list_magnetism_scans,
+    update_sv9_generation_job,
 )
 from ..templates_env import templates
 from ..workers.queue import get_queue
@@ -149,6 +155,14 @@ _MAGNETISM_UI = {
         "system_reading_tag": "tensions and validation questions inside TLDR Brand3",
         "client_tldr_v2": "Client TLDR v2",
         "client_tldr_v2_tag": "score-aware client preview",
+        "generate_sv9": "Generate SV9",
+        "sv9_generation_status": "SV9 generation",
+        "sv9_generation_tag": "shadow scan materialization",
+        "sv9_generation_intro": "Generating the shadow V9 scan from the persisted Brand Audit snapshot.",
+        "sv9_generation_queued": "waiting to materialize the shadow scan",
+        "sv9_generation_ready": "shadow scan ready ...",
+        "sv9_generation_ready_link": "→ open SV9 scan",
+        "sv9_generation_back": "← back to scan",
         "score_reading": "Score reading",
         "score_status": "Score status",
         "score_note": "Score note",
@@ -343,6 +357,14 @@ _MAGNETISM_UI = {
         "system_reading_tag": "tensiones y preguntas de validación dentro del TLDR Brand3",
         "client_tldr_v2": "TLDR v2 para cliente",
         "client_tldr_v2_tag": "preview de cliente con score y evidencia",
+        "generate_sv9": "Generar SV9",
+        "sv9_generation_status": "Generación de SV9",
+        "sv9_generation_tag": "materialización del scan sombra",
+        "sv9_generation_intro": "Generando el scan sombra V9 desde el snapshot persistido de Brand Audit.",
+        "sv9_generation_queued": "esperando para materializar el scan sombra",
+        "sv9_generation_ready": "scan sombra listo ...",
+        "sv9_generation_ready_link": "→ abrir scan SV9",
+        "sv9_generation_back": "← volver al scan",
         "score_reading": "Lectura del score",
         "score_status": "Estado del score",
         "score_note": "Nota del score",
@@ -667,6 +689,38 @@ _MAGNETISM_STATUS_COPY = {
     },
 }
 
+_SV9_GENERATION_PHASES = {
+    "es": [
+        ("queued", "En cola"),
+        ("generating", "Generando SV9"),
+        ("saving", "Guardando scan"),
+    ],
+    "en": [
+        ("queued", "Queued"),
+        ("generating", "Generating SV9"),
+        ("saving", "Saving scan"),
+    ],
+}
+
+_SV9_GENERATION_STATUS_COPY = {
+    "es": {
+        "status_label": "Generación SV9",
+        "status_note": "La página se actualiza cada 5 segundos mientras se materializa el scan sombra.",
+        "queued_message": "esperando para materializar el scan sombra",
+        "ready_message": "scan sombra listo ...",
+        "ready_link_label": "→ abrir scan SV9",
+        "back_link_label": "← volver al scan",
+    },
+    "en": {
+        "status_label": "SV9 generation",
+        "status_note": "Page auto-refreshes every 5 seconds while the shadow scan is materialized.",
+        "queued_message": "waiting to materialize the shadow scan",
+        "ready_message": "shadow scan ready ...",
+        "ready_link_label": "→ open SV9 scan",
+        "back_link_label": "← back to scan",
+    },
+}
+
 
 @router.get("/magnetism-scanner/{token}/status")
 async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Query("es")):
@@ -772,6 +826,103 @@ def _phase_steps(phases: list[tuple[str, str]], current_phase: str, status: str,
     return steps
 
 
+def _sv9_generation_copy(lang: _Lang) -> dict:
+    return _SV9_GENERATION_STATUS_COPY.get(lang, _SV9_GENERATION_STATUS_COPY["es"])
+
+
+def _sv9_generation_phase(job: dict) -> str:
+    status = str(job.get("status") or "queued")
+    if status == "queued":
+        return "queued"
+    if status == "failed":
+        return "failed"
+    if status == "ready":
+        return "ready"
+    phase = str(job.get("phase") or "queued")
+    return phase if phase in {"queued", "generating", "saving"} else "generating"
+
+
+def _sv9_generation_phase_label(phase: str, status: str | None, *, lang: _Lang = "es") -> str:
+    if status == "ready":
+        return "SV9 ready" if lang == "en" else "SV9 listo"
+    if status == "failed":
+        return "SV9 failed" if lang == "en" else "SV9 fallido"
+    for key, label in _SV9_GENERATION_PHASES[lang]:
+        if key == phase:
+            return label
+    return "Generating SV9" if lang == "en" else "Generando SV9"
+
+
+def _sv9_generation_phase_steps(phase: str, status: str | None, *, lang: _Lang = "es") -> list[dict]:
+    phases = _SV9_GENERATION_PHASES[lang]
+    current_phase = phase
+    if status == "failed":
+        current_phase = "failed"
+    if status == "ready":
+        current_phase = "ready"
+
+    current_index = next(
+        (idx for idx, (key, _label) in enumerate(phases) if key == current_phase),
+        -1,
+    )
+    steps = []
+    for idx, (key, label) in enumerate(phases):
+        if current_phase == "ready" or (current_index >= 0 and idx < current_index):
+            state = "done"
+        elif key == current_phase:
+            state = "active"
+        elif current_phase == "failed" and current_index >= 0 and idx == current_index:
+            state = "failed"
+        else:
+            state = "pending"
+        steps.append({"key": key, "label": label, "state": state})
+    if current_phase == "failed":
+        steps.append({"key": "failed", "label": "SV9 failed" if lang == "en" else "SV9 fallido", "state": "failed"})
+    if current_phase == "ready":
+        steps.append({"key": "ready", "label": "SV9 ready" if lang == "en" else "SV9 listo", "state": "done"})
+    return steps
+
+
+async def _run_sv9_generation_job(token: str) -> None:
+    update_sv9_generation_job(
+        token,
+        status="running",
+        phase="generating",
+        phase_updated_at=datetime.now(timezone.utc).isoformat(),
+        started_at=datetime.now(timezone.utc).isoformat(),
+    )
+    job = get_sv9_generation_job(token)
+    if job is None:
+        return
+    try:
+        update_sv9_generation_job(token, phase="generating", phase_updated_at=datetime.now(timezone.utc).isoformat())
+        sv9_scan_id = await asyncio.to_thread(
+            ensure_sv9_scan_for_source_run,
+            int(job["source_run_id"]),
+            db_path=BRAND3_DB_PATH,
+        )
+        if sv9_scan_id is None:
+            raise RuntimeError("SV9 generation failed")
+        update_sv9_generation_job(
+            token,
+            status="ready",
+            phase="ready",
+            sv9_scan_id=int(sv9_scan_id),
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+            error_message=None,
+        )
+    except Exception as exc:  # noqa: BLE001
+        update_sv9_generation_job(
+            token,
+            status="failed",
+            phase="failed",
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+            error_message=str(exc)[:500],
+        )
+
+
 @router.get("/magnetism-scanner/scan/{scan_id}")
 async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render details sheet of a specific magnetism scan."""
@@ -791,6 +942,84 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
         request,
         "magnetism_detail.html.j2",
         {"model": model, "ui_lang": lang},
+    )
+
+
+@router.post("/magnetism-scanner/scan/{scan_id}/generate-sv9")
+async def magnetism_scanner_generate_sv9(
+    request: Request,
+    scan_id: int,
+    lang: _Lang = Query("es"),
+):
+    """Queue SV9 generation and redirect to a loading page."""
+    model = _magnetism_scan_model(scan_id, lang=lang)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
+            status_code=404,
+        )
+
+    source_run_id = model.get("source_run_id")
+    if not source_run_id:
+        raise HTTPException(status_code=409, detail="scan does not have a Brand Audit source run")
+
+    existing_job = get_sv9_generation_job_by_scan_id(scan_id)
+    if existing_job:
+        return RedirectResponse(_with_lang(f"/magnetism-scanner/sv9/{existing_job['token']}/status", lang), status_code=303)
+
+    token = secrets.token_urlsafe(12)
+    insert_sv9_generation_job(
+        token=token,
+        scan_id=scan_id,
+        source_run_id=int(source_run_id),
+        brand_name=str(model.get("brand_name") or f"Magnetism scan #{scan_id}"),
+    )
+    asyncio.create_task(_run_sv9_generation_job(token))
+    return RedirectResponse(_with_lang(f"/magnetism-scanner/sv9/{token}/status", lang), status_code=303)
+
+
+@router.get("/magnetism-scanner/sv9/{token}/status")
+async def magnetism_scanner_sv9_status(request: Request, token: str, lang: _Lang = Query("es")):
+    """Intermediate loading page while the shadow SV9 scan is materialized."""
+    job = get_sv9_generation_job(token)
+    if job is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"SV9 generation job {token}", "ui_lang": lang},
+            status_code=404,
+        )
+    if job.get("status") == "ready" and job.get("sv9_scan_id"):
+        return RedirectResponse(_with_lang(f"/sv9/scan/{job['sv9_scan_id']}", lang), status_code=303)
+
+    phase = _sv9_generation_phase(job)
+    copy = _sv9_generation_copy(lang)
+    return templates.TemplateResponse(
+        request,
+        "status.html.j2",
+        {
+            "token": token,
+            "brand_slug": job.get("brand_name") or f"SV9 scan #{job.get('scan_id')}",
+            "status": job.get("status") or "queued",
+            "elapsed_seconds": _elapsed(job.get("started_at")),
+            "elapsed_label": _elapsed_label(_elapsed(job.get("started_at"))),
+            "error_message": job.get("error_message"),
+            "phase": phase,
+            "phase_label": _sv9_generation_phase_label(phase, job.get("status"), lang=lang),
+            "phase_steps": _sv9_generation_phase_steps(phase, job.get("status"), lang=lang),
+            "ready_href": _with_lang(f"/sv9/scan/{job['sv9_scan_id']}", lang) if job.get("sv9_scan_id") else None,
+            "back_href": _with_lang(f"/magnetism-scanner/scan/{job['scan_id']}", lang),
+            "status_label": copy["status_label"],
+            "typical_run_label": "30-90 sec",
+            "status_note": copy["status_note"],
+            "queued_message": copy["queued_message"],
+            "ready_message": copy["ready_message"],
+            "ready_link_label": copy["ready_link_label"],
+            "back_link_label": copy["back_link_label"],
+            "ui_lang": lang,
+        },
     )
 
 

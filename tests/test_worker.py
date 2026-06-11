@@ -8,7 +8,11 @@ from unittest.mock import patch
 
 from src.services import brand_service
 from src.storage.sqlite_store import SQLiteStore
+from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED
+from src.sv9.rubric import RUBRIC_VERSION
+from src.sv9.store import Sv9Store
 from src.workers import job_runner
+from web.workers import queue as web_queue
 
 
 class ClaimPendingJobTests(unittest.TestCase):
@@ -99,6 +103,92 @@ class ExecuteAnalysisJobTests(unittest.TestCase):
 
             self.assertEqual(payload["status"], "done")
             self.assertEqual(payload["attempt_count"], 1)
+
+
+class Sv9MaterializationTests(unittest.TestCase):
+    def _db_path(self, tmpdir: str) -> Path:
+        db_path = Path(tmpdir) / "brand3.sqlite3"
+        store = SQLiteStore(str(db_path))
+        store.close()
+        return db_path
+
+    def _sv9_result(self, source_run_id: int, *, brand_name: str = "Acme") -> Sv9ScanResult:
+        return Sv9ScanResult(
+            brand_name=brand_name,
+            url="https://acme.test",
+            source_run_id=source_run_id,
+            brand3_score=42,
+            components={
+                "mission": ComponentResult(
+                    component="mission",
+                    status=STATUS_SCORED,
+                    score=2,
+                    detected_content="A clear mission.",
+                    evidence=["Owned page"],
+                )
+            },
+        )
+
+    def test_materializes_sv9_scan_for_completed_magnetism_result(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = self._db_path(tmpdir)
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch(
+                    "src.sv9.service.run_sv9_from_audit_run",
+                    return_value=self._sv9_result(123),
+                ) as run_sv9:
+                    scan_id = web_queue._ensure_sv9_scan_for_magnetism_result(
+                        {"source_run_id": 123}
+                    )
+
+            self.assertIsInstance(scan_id, int)
+            run_sv9.assert_called_once_with(123, db_path=str(db_path))
+            sv9_store = Sv9Store(str(db_path))
+            try:
+                scan = sv9_store.get_scan_for_run(123, rubric_version=RUBRIC_VERSION)
+            finally:
+                sv9_store.close()
+            self.assertIsNotNone(scan)
+            self.assertEqual(scan["brand_name"], "Acme")
+            self.assertEqual(scan["brand3_score"], 42)
+
+    def test_materialization_is_idempotent_for_current_rubric(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = self._db_path(tmpdir)
+            sv9_store = Sv9Store(str(db_path))
+            try:
+                existing_id = sv9_store.save_scan(
+                    self._sv9_result(123, brand_name="Existing")
+                )
+            finally:
+                sv9_store.close()
+
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch("src.sv9.service.run_sv9_from_audit_run") as run_sv9:
+                    scan_id = web_queue._ensure_sv9_scan_for_magnetism_result(
+                        {"source_run_id": 123}
+                    )
+
+            self.assertEqual(scan_id, existing_id)
+            run_sv9.assert_not_called()
+            with sqlite3.connect(str(db_path)) as conn:
+                count = conn.execute("SELECT COUNT(*) FROM sv9_scans WHERE source_run_id = 123").fetchone()[0]
+            self.assertEqual(count, 1)
+
+    def test_materialization_failure_does_not_raise(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = self._db_path(tmpdir)
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch(
+                    "src.sv9.service.run_sv9_from_audit_run",
+                    side_effect=RuntimeError("llm unavailable"),
+                ):
+                    scan_id = web_queue._ensure_sv9_scan_for_magnetism_result({"source_run_id": 123})
+
+            self.assertIsNone(scan_id)
+            with sqlite3.connect(str(db_path)) as conn:
+                count = conn.execute("SELECT COUNT(*) FROM sv9_scans").fetchone()[0]
+            self.assertEqual(count, 0)
 
 
 class WorkerLoopTests(unittest.TestCase):

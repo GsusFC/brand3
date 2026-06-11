@@ -66,14 +66,10 @@
 <section class="magnetism-tldr-section">
   <div class="section-head">
     <span class="label">Canvas Brand3 puntuado</span>
-    <span class="tag">// coherencia {{ coherencia.score }}/10 ×2 como marco</span>
+    <span class="tag">// 9 componentes · coherencia cierra</span>
   </div>
 
-  <div style="border: 1px solid var(--accent); padding: 14px; margin-top: 14px; position: relative;">
-    <span class="badge badge-ready" style="position: absolute; top: -10px; right: 14px;">
-      coherencia {{ coherencia.score }}/10 ×2
-    </span>
-
+  <div style="margin-top: 14px;">
     {% for row in canvas %}
     <div style="display: grid; grid-template-columns: repeat({{ row|length }}, 1fr); gap: 14px; margin: 14px 0;">
       {% for box in row %}
@@ -102,11 +98,23 @@
     </div>
     {% endfor %}
 
-    {% if coherencia.message %}
-    <p class="dim" style="margin: 4px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">
-      {{ coherencia.message }}
-    </p>
-    {% endif %}
+    {# Coherencia reads the whole: full-width card closing the canvas. #}
+    <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; margin: 14px 0 0;
+                display: flex; flex-direction: column; gap: 10px;
+                {% if coherencia.status != 'scored' %}border-style: dashed;{% endif %}">
+      <div class="magnetism-card-head" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 0;">
+        <span class="hl-accent magnetism-card-title">{{ coherencia.label }}</span>
+        <span class="badge">{{ coherencia.score }}/{{ coherencia.scale }} ×2</span>
+      </div>
+      {% if coherencia.message %}
+      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ coherencia.message }}</p>
+      {% endif %}
+      {% if coherencia.next_rung %}
+      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
+        → siguiente: {{ coherencia.next_rung.criterion }}
+      </p>
+      {% endif %}
+    </div>
   </div>
 
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 12px 0 0;">

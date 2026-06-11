@@ -215,6 +215,25 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertNotEqual(response.headers["location"], f"/sv9/scan/{failed_scan_id}")
         run_sv9.assert_called_once_with(42, db_path=str(self.db))
 
+    def test_ranking_renders_and_category_can_be_confirmed(self):
+        response = self.client.get("/sv9/ranking")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("acme.test", response.text)
+        self.assertIn("/takedown", response.text)
+
+        response = self.client.post(
+            "/sv9/ranking/brand/acme.test",
+            data={"primary_category": "fintech", "evaluador": "sergio"},
+            follow_redirects=False,
+        )
+        self.assertEqual(response.status_code, 303)
+        response = self.client.get("/sv9/ranking?categoria=fintech")
+        self.assertIn("acme.test", response.text)
+        self.assertIn("confirmada", response.text)
+
+        response = self.client.get("/sv9/ranking?categoria=nonsense")
+        self.assertEqual(response.status_code, 404)
+
     def test_submit_validates_scale_and_component(self):
         self._unlock()
         response = self.client.post(

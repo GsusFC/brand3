@@ -16,7 +16,11 @@ from typing import Any
 from src.config import BRAND3_DB_PATH
 from src.sv9.models import ComponentResult, RungVerdict, Sv9ScanResult
 
-_MIGRATION_PATH = Path(__file__).resolve().parents[2] / "migrations" / "009_sv9.sql"
+_MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
+_MIGRATION_PATHS = [
+    _MIGRATIONS_DIR / "009_sv9.sql",
+    _MIGRATIONS_DIR / "010_sv9_ranking.sql",
+]
 
 
 def _utcnow() -> str:
@@ -28,7 +32,8 @@ class Sv9Store:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(db_path)
         self.conn.row_factory = sqlite3.Row
-        self.conn.executescript(_MIGRATION_PATH.read_text(encoding="utf-8"))
+        for migration_path in _MIGRATION_PATHS:
+            self.conn.executescript(migration_path.read_text(encoding="utf-8"))
         self._backfill_columns()
         self.conn.commit()
 
@@ -227,6 +232,49 @@ class Sv9Store:
             return json.loads(row["payload_json"])
         except json.JSONDecodeError:
             return None
+
+    # --- brand categories (ranking) ---
+
+    def upsert_brand_category(
+        self,
+        domain: str,
+        *,
+        primary_category: str | None,
+        secondary: list[str] | None = None,
+        source: str = "confirmada",
+        evaluador: str | None = None,
+        exclude_from_ranking: bool = False,
+    ) -> None:
+        self.conn.execute(
+            """
+            INSERT OR REPLACE INTO sv9_brand_categories (
+                domain, primary_category, secondary_json, source, evaluador,
+                exclude_from_ranking, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                domain,
+                primary_category,
+                json.dumps(secondary or [], ensure_ascii=False),
+                source,
+                evaluador,
+                int(exclude_from_ranking),
+                _utcnow(),
+            ),
+        )
+        self.conn.commit()
+
+    def get_brand_categories(self) -> dict[str, dict[str, Any]]:
+        rows = self.conn.execute("SELECT * FROM sv9_brand_categories").fetchall()
+        result: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            payload = dict(row)
+            try:
+                payload["secondary"] = json.loads(payload.pop("secondary_json") or "[]")
+            except json.JSONDecodeError:
+                payload["secondary"] = []
+            result[payload["domain"]] = payload
+        return result
 
     # --- vision evidence (computed at SV9 time, cached per run) ---
 

@@ -1,0 +1,139 @@
+"""SV9 public ranking: deterministic, zero LLM (design doc section 13).
+
+Hard rules:
+- One entry per domain: the most recent complete scan.
+- Only complete scans (no not_evaluated components) and only the current
+  rubric version — scores across rubric versions are not comparable.
+- Percentile per primary-category cohort, and only when the cohort reaches
+  MIN_COHORT_FOR_PERCENTILE; below that it is omitted without apologising.
+- Plain-text domain only; exclusion flag covers internal tests and takedowns.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+from urllib.parse import urlparse
+
+from src.sv9.categories import (
+    CATEGORIES,
+    MIN_COHORT_FOR_PERCENTILE,
+    category_label,
+    suggest_category,
+)
+from src.sv9.rubric import RUBRIC_VERSION
+from src.sv9.store import Sv9Store
+
+
+def domain_from_url(url: str | None) -> str | None:
+    if not url:
+        return None
+    raw = str(url).strip()
+    if "//" not in raw:
+        raw = f"https://{raw}"
+    host = urlparse(raw).netloc.lower().split(":")[0]
+    if host.startswith("www."):
+        host = host[4:]
+    return host or None
+
+
+def build_ranking(
+    store: Sv9Store,
+    *,
+    category: str | None = None,
+    rubric_version: str = RUBRIC_VERSION,
+) -> dict[str, Any]:
+    """Build the ranking model: entries, cohort counts, and taxonomy."""
+    scans = store.conn.execute(
+        """
+        SELECT id, brand_name, url, source_run_id, brand3_score, created_at
+        FROM sv9_scans
+        WHERE is_complete = 1 AND rubric_version = ?
+        ORDER BY created_at DESC, id DESC
+        """,
+        (rubric_version,),
+    ).fetchall()
+
+    categories_by_domain = store.get_brand_categories()
+    niche_by_run = _predicted_niches(store)
+
+    entries_by_domain: dict[str, dict[str, Any]] = {}
+    for scan in scans:
+        domain = domain_from_url(scan["url"]) or domain_from_url(scan["brand_name"])
+        if not domain or domain in entries_by_domain:
+            continue  # newest scan per domain wins (rows arrive newest-first)
+        assignment = categories_by_domain.get(domain) or {}
+        if assignment.get("exclude_from_ranking"):
+            continue
+        confirmed = assignment.get("primary_category")
+        suggested = suggest_category(niche_by_run.get(scan["source_run_id"]))
+        primary = confirmed or suggested
+        entries_by_domain[domain] = {
+            "domain": domain,
+            "scan_id": scan["id"],
+            "brand_name": scan["brand_name"],
+            "brand3_score": scan["brand3_score"],
+            "scanned_at": scan["created_at"],
+            "category": primary,
+            "category_label": category_label(primary),
+            "category_source": "confirmada" if confirmed else ("sugerida" if suggested else None),
+            "secondary": assignment.get("secondary") or [],
+        }
+
+    entries = sorted(
+        entries_by_domain.values(),
+        key=lambda e: (-e["brand3_score"], e["scanned_at"]),
+    )
+
+    cohort_counts: dict[str, int] = {}
+    for entry in entries:
+        if entry["category"]:
+            cohort_counts[entry["category"]] = cohort_counts.get(entry["category"], 0) + 1
+
+    for position, entry in enumerate(entries, start=1):
+        entry["position"] = position
+        entry["percentile"] = _cohort_percentile(entry, entries, cohort_counts)
+
+    if category:
+        entries = [e for e in entries if e["category"] == category]
+
+    return {
+        "entries": entries,
+        "total": len(entries_by_domain),
+        "cohort_counts": cohort_counts,
+        "taxonomy": [
+            {"key": key, "label": spec["label"], "count": cohort_counts.get(key, 0)}
+            for key, spec in CATEGORIES.items()
+        ],
+        "min_cohort": MIN_COHORT_FOR_PERCENTILE,
+        "rubric_version": rubric_version,
+        "active_category": category,
+    }
+
+
+def _cohort_percentile(
+    entry: dict[str, Any],
+    entries: list[dict[str, Any]],
+    cohort_counts: dict[str, int],
+) -> int | None:
+    """Share of the primary-category cohort this entry scores above."""
+    key = entry["category"]
+    if not key or cohort_counts.get(key, 0) < MIN_COHORT_FOR_PERCENTILE:
+        return None
+    cohort = [e for e in entries if e["category"] == key]
+    below = sum(1 for e in cohort if e["brand3_score"] < entry["brand3_score"])
+    return round(100 * below / len(cohort))
+
+
+def _predicted_niches(store: Sv9Store) -> dict[int, str | None]:
+    """Legacy V5 niche prediction per run, for category suggestions.
+
+    The runs table lives in the shared DB but may be absent in isolated test
+    databases; suggestions then simply do not happen.
+    """
+    try:
+        rows = store.conn.execute(
+            "SELECT id, predicted_niche FROM runs WHERE predicted_niche IS NOT NULL"
+        ).fetchall()
+    except Exception:
+        return {}
+    return {int(row["id"]): row["predicted_niche"] for row in rows}

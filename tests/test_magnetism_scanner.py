@@ -1105,6 +1105,18 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("drift", response.text.lower())
         self.assertNotIn("provenance", response.text.lower())
 
+    def test_client_tldr_v2_preview_renders_withheld_score_as_status(self):
+        scan_id, _ = self._seed_internal_audit_scan(drift=True)
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=es")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-display-score-source="blocked"', response.text)
+        self.assertIn("magnetism-hero-score-unavailable", response.text)
+        self.assertIn("magnetism-score-status", response.text)
+        self.assertIn("Score retenido", response.text)
+        self.assertNotIn("—<span>/100</span>", response.text)
+
     def test_client_tldr_v2_helper_uses_llm_input_and_preserves_review_only_exclusion(self):
         from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
         from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2_prompt
@@ -2085,6 +2097,37 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("replay", response.text.lower())
         self.assertNotIn("drift", response.text.lower())
         self.assertNotIn("provenance", response.text.lower())
+
+    def test_client_tldr_v2_route_uses_canonical_score_when_llm_score_reading_drifts(self):
+        scan_id, _ = self._seed_internal_audit_scan(reviewed_score=78.0)
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "score_reading": {
+                "status": "blocked",
+                "label": "Score withheld",
+                "note": "The model tried to override score provenance.",
+                "value": None,
+                "confidence": "low",
+            },
+            "executive_reading": "The brand reads like a governed context layer for AI-native teams.",
+            "blocks": {
+                "core_purpose": "Core purpose editorial reading.",
+                "mission": "Mission editorial reading.",
+            },
+        }
+
+        with unittest.mock.patch(
+            "src.features.magnetism.client_tldr_v2._default_analyzer",
+            return_value=fake_llm,
+        ):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-display-score-source="reviewed"', response.text)
+        self.assertIn("Reviewed score", response.text)
+        self.assertIn("78.0<span>/100</span>", response.text)
+        self.assertNotIn("magnetism-hero-score-unavailable", response.text)
+        self.assertNotIn("Score withheld", response.text)
 
     def test_legacy_tldr_route_output_remains_unchanged(self):
         scan_id, _ = self._seed_internal_audit_scan()

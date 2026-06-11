@@ -2128,6 +2128,21 @@ input.source-link::-moz-focus-inner {
   font-weight: 400;
 }
 
+.magnetism-hero-score-unavailable {
+  max-width: 100%;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.magnetism-hero-score-unavailable .magnetism-score-status {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  white-space: normal;
+}
+
 .magnetism-score-bar {
   width: 100%;
   height: 5px;
@@ -2143,6 +2158,11 @@ input.source-link::-moz-focus-inner {
   background: var(--accent);
   transform-origin: left center;
   animation: magnetism-score-load 900ms steps(14, end) both;
+}
+
+.magnetism-score-bar-muted span {
+  background: transparent;
+  animation: none;
 }
 
 .magnetism-score-bar-ok span {
@@ -2413,6 +2433,56 @@ input.source-link::-moz-focus-inner {
   font-family: var(--font-mono);
   font-size: 12px;
   line-height: 1.25;
+}
+
+.sv9-canvas {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+
+.sv9-canvas-row {
+  display: grid;
+  gap: 14px;
+}
+
+.sv9-canvas-row-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sv9-canvas-row-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sv9-canvas-card {
+  min-width: 0;
+  border: 1px solid var(--border);
+  background: var(--soft-panel-bg);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sv9-canvas-card-muted {
+  border-style: dashed;
+}
+
+.sv9-canvas-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.sv9-canvas-card-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.sv9-canvas-coherence {
+  margin-top: 0;
 }
 
 .lab-detail-list {
@@ -3000,6 +3070,21 @@ a:hover {
 
   .magnetism-tldr-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sv9-canvas-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sv9-canvas-card-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+  }
+
+  .sv9-canvas-card-title {
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   .magnetism-audit-dimension-grid {

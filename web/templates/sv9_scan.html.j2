@@ -91,15 +91,13 @@
     <span class="tag">// 9 componentes · coherencia cierra</span>
   </div>
 
-  <div style="margin-top: 14px;">
+  <div class="sv9-canvas">
     {% for row in canvas %}
-    <div style="display: grid; grid-template-columns: repeat({{ row|length }}, 1fr); gap: 14px; margin: 14px 0;">
+    <div class="sv9-canvas-row sv9-canvas-row-{{ row|length }}">
       {% for box in row %}
-      <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px;
-                  display: flex; flex-direction: column; gap: 10px;
-                  {% if box.status != 'scored' %}border-style: dashed;{% endif %}">
-        <div class="magnetism-card-head" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 12px;">
-          <span class="hl-accent magnetism-card-title">{{ box.label }}</span>
+      <div class="sv9-canvas-card{% if box.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
+        <div class="magnetism-card-head sv9-canvas-card-head">
+          <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ box.label }}</span>
           <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
         </div>
         {% if box.status != 'scored' %}
@@ -126,11 +124,9 @@
     {% endfor %}
 
     {# Coherencia reads the whole: full-width card closing the canvas. #}
-    <div style="border: 1px solid var(--border); background: var(--soft-panel-bg); padding: 14px; margin: 14px 0 0;
-                display: flex; flex-direction: column; gap: 10px;
-                {% if coherencia.status != 'scored' %}border-style: dashed;{% endif %}">
-      <div class="magnetism-card-head" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 0;">
-        <span class="hl-accent magnetism-card-title">{{ coherencia.label }}</span>
+    <div class="sv9-canvas-card sv9-canvas-coherence{% if coherencia.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
+      <div class="magnetism-card-head sv9-canvas-card-head">
+        <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ coherencia.label }}</span>
         <span class="badge">{{ coherencia.score }}/{{ coherencia.scale }} ×2</span>
       </div>
       {% if coherencia.status != 'scored' %}

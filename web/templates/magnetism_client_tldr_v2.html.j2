@@ -4,6 +4,7 @@
 {% set system_reading = client_tldr.system_reading|default({}, true) %}
 {% set editorial_blocks = client_tldr.blocks|default({}, true) %}
 {% set legacy_blocks = client_tldr.legacy_tldr_brand3_v2|default({}, true) %}
+{% set has_display_score = client_tldr and client_tldr.available and score_reading.value is number %}
 {% block title %}brand3 :: {{ model.t.client_tldr_v2 }}{% endblock %}
 {% block content %}
 <section class="magnetism-hero-section" data-generation-mode="{{ client_tldr.generation_mode or '' }}" data-display-score-source="{{ client_tldr.display_score_source or '' }}">
@@ -29,22 +30,24 @@
     </div>
     <div class="magnetism-hero-metric">
       <div class="dim magnetism-hero-label">{{ model.t.score_reading }}</div>
-      <div class="hl-accent magnetism-hero-score">
-        {% if client_tldr and client_tldr.available and score_reading.value is not none %}
+      <div class="hl-accent magnetism-hero-score{% if not has_display_score %} magnetism-hero-score-unavailable{% endif %}">
+        {% if has_display_score %}
         {{ "%.1f"|format(score_reading.value) }}<span>/100</span>
         {% else %}
-        —<span>/100</span>
+        <span class="magnetism-score-status">{{ score_reading.label or model.t.score_reading }}</span>
         {% endif %}
       </div>
-      <div class="magnetism-score-bar" aria-hidden="true">
-        {% if client_tldr and client_tldr.available and score_reading.value is not none %}
+      <div class="magnetism-score-bar{% if not has_display_score %} magnetism-score-bar-muted{% endif %}" aria-hidden="true">
+        {% if has_display_score %}
         <span style="--score-width: {{ score_reading.value }}%;"></span>
         {% else %}
         <span style="--score-width: 0%;"></span>
         {% endif %}
       </div>
-      {% if client_tldr and client_tldr.available %}
+      {% if client_tldr and client_tldr.available and has_display_score %}
       <div class="dim magnetism-hero-tier">{{ score_reading.label or "" }}</div>
+      {% elif client_tldr and client_tldr.available and score_reading.note %}
+      <div class="dim magnetism-hero-tier">{{ score_reading.note }}</div>
       {% endif %}
     </div>
   </div>

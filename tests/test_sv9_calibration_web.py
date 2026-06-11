@@ -160,6 +160,10 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("Coherencia", response.text)
         self.assertIn("3/10 ×2", response.text)
         self.assertIn("core_purpose text", response.text)
+        self.assertIn("sv9-canvas-row sv9-canvas-row-2", response.text)
+        self.assertIn("sv9-canvas-row sv9-canvas-row-3", response.text)
+        self.assertIn("sv9-canvas-card", response.text)
+        self.assertNotIn("grid-template-columns: repeat({{ row|length }}", response.text)
 
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)

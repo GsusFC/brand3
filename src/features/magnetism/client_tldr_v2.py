@@ -656,19 +656,11 @@ def _normalize_score_reading(
 ) -> dict[str, Any]:
     source = raw if isinstance(raw, dict) else {}
     fallback = _build_score_reading(provenance, lang)
-    status = _normalize_choice(
-        source.get("status"),
-        {"computed", "reviewed", "blocked", "limited_confidence", "unavailable"},
-        fallback=fallback["status"],
-    )
-    value = source.get("value")
-    if not isinstance(value, (int, float)):
-        value = fallback.get("value")
-    label = _clean_text(source.get("label")) or fallback["label"]
-    note = _clean_text(source.get("note")) or _clean_text(score_note) or fallback["note"]
-    confidence = _normalize_choice(source.get("confidence"), {"high", "medium", "low"}, fallback=fallback["confidence"])
-    if status == "blocked":
-        value = None
+    status = fallback["status"]
+    value = fallback.get("value")
+    label = fallback["label"]
+    note = fallback["note"] if value is None else (_clean_text(source.get("note")) or _clean_text(score_note) or fallback["note"])
+    confidence = fallback["confidence"]
     return {
         "status": status,
         "display_source": fallback.get("display_source"),

@@ -52,15 +52,28 @@ def run_sv9_from_audit_snapshot(
     if magnetism_result is None:
         magnetism_result = MagnetismExtractor(llm=llm).extract_from_audit_snapshot(snapshot)
 
+    # get_run_snapshot nests run metadata under "run"; manual snapshots may
+    # carry it at the top level. Accept both shapes.
+    run_meta = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
     tldr = magnetism_result.get("tldr_brand3") or {}
     brand_name = str(
         magnetism_result.get("brand_name")
+        or run_meta.get("brand_name")
         or snapshot.get("brand_name")
+        or ""
+    )
+    url = str(
+        magnetism_result.get("source_url")
+        or magnetism_result.get("url")
+        or run_meta.get("url")
         or snapshot.get("url")
         or ""
     )
-    url = str(magnetism_result.get("source_url") or snapshot.get("url") or "")
-    source_run_id = _to_int(magnetism_result.get("source_run_id") or snapshot.get("id"))
+    source_run_id = _to_int(
+        magnetism_result.get("source_run_id")
+        or run_meta.get("id")
+        or snapshot.get("id")
+    )
 
     signals = merge_signals(collect_signals(snapshot), extra_signals)
     components = evaluate_snapshot_components(

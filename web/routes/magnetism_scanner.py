@@ -513,12 +513,16 @@ async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
         except Exception:
             scan["formatted_date"] = scan["created_at"]
 
+    is_team = not settings.team_token or is_team_request(
+        request, create_serializer(settings.cookie_secret)
+    )
     return templates.TemplateResponse(
         request,
         "magnetism_scanner.html.j2",
         {
             "ui_lang": lang,
             "landing": magnetism_landing_copy(lang),
+            "show_sv9_nav": is_team,
             "model": {
                 "scans": scans,
                 "audit_runs": audit_runs,

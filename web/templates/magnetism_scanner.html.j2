@@ -2,6 +2,12 @@
 {% block title %}Brand3 :: {{ model.t.scanner_title }}{% endblock %}
 {% block content %}
 <section class="home-hero">
+  {% if show_sv9_nav %}
+  <div class="lab-review-nav" style="margin-bottom: 10px;">
+    <a class="source-link" href="/sv9/calibration">SV9 · scans en sombra</a>
+    <span class="badge badge-missing">interno</span>
+  </div>
+  {% endif %}
   <h1 class="page-title">{{ landing.title }}</h1>
   <p class="prose dim intro-copy">
     {{ landing.intro }}

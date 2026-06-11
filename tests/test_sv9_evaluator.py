@@ -113,6 +113,46 @@ class EvaluateComponentTests(unittest.TestCase):
         )
         self.assertEqual(result.status, STATUS_NOT_EVALUATED)
 
+    def test_not_evaluable_rungs_are_recorded_but_score_unchanged(self):
+        class ChannelGapLLM(FakeLLM):
+            def _call_json(self, system, user, max_tokens=8000, **kwargs):
+                self.calls.append({"user": user})
+                # Rung 1 fails for lack of an evidence channel; 2-3 pass.
+                return {
+                    "verdicts": [
+                        {"rung": 1, "passed": False, "evaluable": False, "evidence": "", "reasoning": "no visual channel"},
+                        {"rung": 2, "passed": True, "evaluable": True, "evidence": "q", "reasoning": ""},
+                        {"rung": 3, "passed": True, "evaluable": True, "evidence": "q", "reasoning": ""},
+                        {"rung": 4, "passed": False, "evaluable": True, "evidence": "", "reasoning": "evidence against"},
+                        {"rung": 5, "passed": False, "evaluable": True, "evidence": "", "reasoning": ""},
+                    ]
+                }
+
+        result = evaluate_component(
+            "mission", tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=ChannelGapLLM()
+        )
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertEqual(result.score, 0)  # blocked all the same: 0 is 0
+        self.assertEqual(result.not_evaluable_rungs, [1])
+        self.assertEqual(result.non_monotonic_rungs, [2, 3])
+
+    def test_passed_rung_is_evaluable_by_definition(self):
+        class ContradictoryLLM(FakeLLM):
+            def _call_json(self, system, user, max_tokens=8000, **kwargs):
+                self.calls.append({"user": user})
+                return {
+                    "verdicts": [
+                        {"rung": r, "passed": True, "evaluable": False, "evidence": "q", "reasoning": ""}
+                        for r in range(1, 6)
+                    ]
+                }
+
+        result = evaluate_component(
+            "mission", tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=ContradictoryLLM()
+        )
+        self.assertEqual(result.score, 5)
+        self.assertEqual(result.not_evaluable_rungs, [])
+
     def test_pass_without_evidence_is_demoted(self):
         class NoQuoteLLM(FakeLLM):
             def _call_json(self, system, user, max_tokens=8000, **kwargs):

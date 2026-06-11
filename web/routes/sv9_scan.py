@@ -48,7 +48,12 @@ async def sv9_scan_view(request: Request, scan_id: int):
         if component.get("status") == "not_evaluated" or score >= spec["scale"]:
             return None
         rung = spec["ladder"][score]  # ladder is 0-indexed; rung score+1
-        return {"rung": rung["rung"], "criterion": rung["criterion"]}
+        verdict = next(
+            (v for v in component.get("rung_profile") or [] if v.get("rung") == rung["rung"]),
+            None,
+        )
+        evaluable = bool(verdict.get("evaluable", True)) if verdict else True
+        return {"rung": rung["rung"], "criterion": rung["criterion"], "evaluable": evaluable}
 
     def _box(key: str) -> dict:
         component = by_component.get(key) or {}

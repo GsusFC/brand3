@@ -209,10 +209,15 @@
         <li>
           {% if rung.verdict and rung.verdict.passed %}
           <span style="color:var(--accent);">✓</span>
+          {% elif rung.verdict and not rung.verdict.get('evaluable', true) %}
+          <span class="dim" title="sin canal de evidencia">⊘</span>
           {% else %}
           <span class="dim">✗</span>
           {% endif %}
           <strong>{{ rung.rung }}</strong> · {{ rung.criterion }}
+          {% if rung.verdict and not rung.verdict.passed and not rung.verdict.get('evaluable', true) %}
+          <span class="badge">no evaluable</span>
+          {% endif %}
           {% if rung.verdict and rung.verdict.evidence %}
           <div class="dim rung-evidence">evidencia: {{ rung.verdict.evidence }}</div>
           {% endif %}

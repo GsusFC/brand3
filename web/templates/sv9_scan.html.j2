@@ -90,7 +90,7 @@
         {% endif %}
         {% if box.next_rung %}
         <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
-          → siguiente: {{ box.next_rung.criterion }}
+          → siguiente: {{ box.next_rung.criterion }}{% if not box.next_rung.evaluable %} <span title="bloqueado por falta de canal de evidencia, no por evidencia en contra">· ⊘ sin canal de evidencia</span>{% endif %}
         </p>
         {% endif %}
       </div>

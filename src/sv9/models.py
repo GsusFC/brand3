@@ -22,12 +22,21 @@ from src.sv9.rubric import (
 
 @dataclass
 class RungVerdict:
-    """One boolean verdict per ladder rung, with mandatory evidence."""
+    """One verdict per ladder rung, with mandatory evidence.
+
+    `evaluable=False` records that the provided material had no evidence
+    channel that could prove or disprove the criterion (e.g. a visual rung
+    with no visual observations). It still blocks the ladder — the score is
+    unchanged — but failing on evidence and failing on coverage are different
+    facts, and calibration needs to tell them apart (design decision,
+    2026-06-11).
+    """
 
     rung: int
     passed: bool
     evidence: str = ""
     reasoning: str = ""
+    evaluable: bool = True
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -35,6 +44,7 @@ class RungVerdict:
             "passed": self.passed,
             "evidence": self.evidence,
             "reasoning": self.reasoning,
+            "evaluable": self.evaluable,
         }
 
     @classmethod
@@ -44,6 +54,9 @@ class RungVerdict:
             passed=bool(payload.get("passed", False)),
             evidence=str(payload.get("evidence") or ""),
             reasoning=str(payload.get("reasoning") or ""),
+            # Older persisted profiles predate the distinction: they were all
+            # judged with evidence on the table, so they default to evaluable.
+            evaluable=bool(payload.get("evaluable", True)),
         )
 
 
@@ -73,6 +86,11 @@ class ComponentResult:
         return component_points(self.component, self.score)
 
     @property
+    def not_evaluable_rungs(self) -> list[int]:
+        """Rungs blocked by missing evidence channels, not by counter-evidence."""
+        return [v.rung for v in self.rung_profile if not v.passed and not v.evaluable]
+
+    @property
     def non_monotonic_rungs(self) -> list[int]:
         """Rungs passed above the first failure: rubric or evaluator smell."""
         first_fail = None
@@ -93,6 +111,7 @@ class ComponentResult:
             "points": self.points,
             "rung_profile": [v.to_dict() for v in self.rung_profile],
             "non_monotonic_rungs": self.non_monotonic_rungs,
+            "not_evaluable_rungs": self.not_evaluable_rungs,
             "detected_content": self.detected_content,
             "detection_mode": self.detection_mode,
             "detection_confidence": self.detection_confidence,

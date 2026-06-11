@@ -129,7 +129,8 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("Brand3 Score", response.text)
         self.assertIn("Margen inmediato", response.text)
-        self.assertIn("coherencia 3/10", response.text)
+        self.assertIn("Coherencia", response.text)
+        self.assertIn("3/10 ×2", response.text)
         self.assertIn("core_purpose text", response.text)
 
         response = self.client.get("/sv9/scan/99999")

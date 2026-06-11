@@ -30,7 +30,7 @@ from src.sv9.models import (
 )
 from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER, RUBRIC_VERSION
 
-SV9_EVALUATOR_PROMPT_VERSION = "sv9-evaluator-v0.1"
+SV9_EVALUATOR_PROMPT_VERSION = "sv9-evaluator-v0.2"
 SV9_EVALUATOR_TIMEOUT_SECONDS = 90
 SV9_EVALUATOR_MAX_WORKERS = 4
 
@@ -44,10 +44,11 @@ _VERDICTS_JSON_SCHEMA: dict[str, Any] = {
                 "properties": {
                     "rung": {"type": "integer"},
                     "passed": {"type": "boolean"},
+                    "evaluable": {"type": "boolean"},
                     "evidence": {"type": "string"},
                     "reasoning": {"type": "string"},
                 },
-                "required": ["rung", "passed", "evidence", "reasoning"],
+                "required": ["rung", "passed", "evaluable", "evidence", "reasoning"],
             },
         }
     },
@@ -68,6 +69,12 @@ Rules:
   provided material in the evidence field. No quote, no pass.
 - When the evidence is ambiguous or insufficient for a rung, the verdict is
   passed=false. Prefer a false negative over an unsupported pass.
+- For every rung, also report evaluable. evaluable=false means the provided
+  material contains NO evidence channel that could prove or disprove the
+  criterion (e.g. a visual criterion with no visual observations, a
+  third-party-perception criterion with no third-party signals). A rung where
+  evidence exists but the criterion is not met is evaluable=true,
+  passed=false. Both block the ladder; the distinction is recorded.
 - Relational criteria (those that reference another component) fail when the
   referenced component is marked '(no detectado)': you cannot connect to
   something absent.
@@ -97,6 +104,9 @@ Rules:
 - Missing components ('(no detectado)') are coherence information: holes mean
   the pieces cannot be connected at that point.
 - When the evidence is ambiguous, the verdict is passed=false.
+- For every rung, also report evaluable. evaluable=false means the provided
+  material contains no evidence channel that could prove or disprove the
+  criterion. Both block the ladder; the distinction is recorded.
 - Return strict JSON only, with a verdict for every rung from 1 to N.
 """
 
@@ -301,11 +311,23 @@ def _normalize_verdicts(raw: Any, *, scale: int) -> list[RungVerdict] | None:
     for rung in range(1, scale + 1):
         verdict = by_rung[rung]
         if verdict.passed and not verdict.evidence.strip():
+            # Evidence discipline, not a coverage gap: the model judged it
+            # passable, so the channel existed — it stays evaluable.
             verdict = RungVerdict(
                 rung=verdict.rung,
                 passed=False,
                 evidence="",
                 reasoning=(verdict.reasoning + " | demoted: pass without evidence quote").strip(" |"),
+                evaluable=True,
+            )
+        if verdict.passed and not verdict.evaluable:
+            # Contradictory payload: a passed rung is evaluable by definition.
+            verdict = RungVerdict(
+                rung=verdict.rung,
+                passed=True,
+                evidence=verdict.evidence,
+                reasoning=verdict.reasoning,
+                evaluable=True,
             )
         normalized.append(verdict)
     return normalized

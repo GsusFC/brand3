@@ -1082,7 +1082,7 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("TLDR v2 para cliente", response.text)
-        self.assertIn("Estado del score", response.text)
+        self.assertIn("Lectura del score", response.text)
         self.assertIn("67.8<span>/100</span>", response.text)
         self.assertIn("PROPÓSITO CENTRAL", response.text)
         self.assertIn("MAGNETISMO", response.text)

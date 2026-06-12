@@ -1983,10 +1983,16 @@ def run(
         content_web = discovery_enrichment.web_data or content_web
         web_data = discovery_enrichment.web_data or web_data
         if run_id and _web_content_changed(raw_web_data, content_web):
+            effective_web_payload = _to_jsonable(content_web)
+            if isinstance(effective_web_payload, dict):
+                # Run-scoped derived evidence: snapshot readers keep preferring
+                # the newest "web" row, but the cross-run cache must skip it so
+                # a later run never treats enriched content as a raw capture.
+                effective_web_payload["derived"] = "discovery_enrichment"
             _store_safely(
                 store,
                 "effective web input save",
-                lambda: store.save_raw_input(run_id, "web", content_web),
+                lambda: store.save_raw_input(run_id, "web", effective_web_payload),
             )
         discovery_enrichment_payload = discovery_enrichment.payload
         acquisition_provenance = _acquisition_provenance_summary(

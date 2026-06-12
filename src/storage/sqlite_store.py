@@ -659,7 +659,7 @@ class SQLiteStore:
     ) -> Any | None:
         cutoff = datetime.now().timestamp() - (max_age_hours * 3600)
         cutoff_iso = datetime.fromtimestamp(cutoff).isoformat()
-        row = self.conn.execute(
+        rows = self.conn.execute(
             """
             SELECT raw_inputs.payload_json
             FROM raw_inputs
@@ -669,24 +669,28 @@ class SQLiteStore:
               AND raw_inputs.source = ?
               AND raw_inputs.created_at >= ?
             ORDER BY raw_inputs.created_at DESC
-            LIMIT 1
             """,
             (brand_name, url, source, cutoff_iso),
-        ).fetchone()
-        if not row:
-            return None
-        payload, error = _safe_json_loads(
-            row["payload_json"],
-            field="raw_inputs.payload_json",
-            fallback=None,
-        )
-        if error:
-            return _MalformedJSONPayload(
-                field=error["field"],
-                raw_json=str(error["raw_json"]),
-                error=error["error"],
+        ).fetchall()
+        for row in rows:
+            payload, error = _safe_json_loads(
+                row["payload_json"],
+                field="raw_inputs.payload_json",
+                fallback=None,
             )
-        return payload
+            if error:
+                return _MalformedJSONPayload(
+                    field=error["field"],
+                    raw_json=str(error["raw_json"]),
+                    error=error["error"],
+                )
+            # Derived re-saves (payload["derived"]) are run-scoped evidence,
+            # never a cross-run cache source — fall through to the capture
+            # they were derived from.
+            if isinstance(payload, dict) and payload.get("derived"):
+                continue
+            return payload
+        return None
 
     def get_latest_visual_signature_evidence(
         self,

@@ -26,18 +26,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import BRAND3_DB_PATH, LLM_MODEL
-from src.features.llm_analyzer import LLMAnalyzer
+from src.config import BRAND3_DB_PATH
 from src.storage.sqlite_store import SQLiteStore
-from src.sv9.editorial import build_editorial
 from src.sv9.models import Sv9ScanResult
 from src.sv9.rubric import PRESENTATION_ORDER, RUBRIC_VERSION
-from src.sv9.service import detect_for_snapshot, run_sv9_from_audit_snapshot
-from src.sv9.signals import (
-    audit_visual_method,
-    compute_vision_observations,
-    vision_signals,
-)
+from src.sv9.service import materialize_sv9_scan
 from src.sv9.store import Sv9Store
 
 
@@ -54,60 +47,15 @@ def _replay_run(
     run_id: int,
     *,
     editorial: bool = True,
+    db_path: str = BRAND3_DB_PATH,
 ) -> tuple[Sv9ScanResult, int] | None:
+    """One run through the shared full pipeline (service.materialize_sv9_scan)."""
     snapshot = store.get_run_snapshot(run_id)
     if snapshot is None:
         print(f"  run #{run_id}: no snapshot, skipped")
         return None
-    detection = sv9_store.get_detection(run_id)
-    if detection is None:
-        detection = detect_for_snapshot(snapshot)
-        sv9_store.save_detection(run_id, detection)
-    extra_signals = _vision_signals_for_run(sv9_store, run_id, snapshot)
-    result = run_sv9_from_audit_snapshot(
-        snapshot, magnetism_result=detection, extra_signals=extra_signals
-    )
-    scan_id = sv9_store.save_scan(result)
-    if editorial:
-        _attach_editorial(sv9_store, scan_id, result)
+    scan_id, result = materialize_sv9_scan(run_id, db_path=db_path, editorial=editorial)
     return result, scan_id
-
-
-def _attach_editorial(sv9_store: Sv9Store, scan_id: int, result: Sv9ScanResult) -> None:
-    """Generate founder-facing prose. Presentation only: failures leave the
-    scan scored but voiceless, never block the replay."""
-    llm = LLMAnalyzer(model=LLM_MODEL)
-    if not getattr(llm, "api_key", None):
-        return
-    payload = build_editorial(result.to_dict(), llm=llm)
-    if payload["component_messages"] or payload["executive_reading"]:
-        sv9_store.save_editorial(
-            scan_id,
-            component_messages=payload["component_messages"],
-            executive_reading=payload["executive_reading"],
-        )
-
-
-def _vision_signals_for_run(
-    sv9_store: Sv9Store,
-    run_id: int,
-    snapshot: dict[str, Any],
-) -> dict[str, Any] | None:
-    """SV9-time vision pass over the persisted screenshot, cached per run.
-
-    Only computed when the audit-time visual analysis fell back to local pixel
-    heuristics; when the audit already used the vision model, its observations
-    travel through the regular signal detail.
-    """
-    payload = sv9_store.get_visual_evidence(run_id)
-    if payload is None:
-        if audit_visual_method(snapshot) == "vision":
-            return None
-        payload = compute_vision_observations(snapshot)
-        if payload is None:
-            return None
-        sv9_store.save_visual_evidence(run_id, payload)
-    return vision_signals(payload)
 
 
 def _comparison_rows(
@@ -208,7 +156,7 @@ def main() -> int:
                     print(f"  run #{run_id}: already scanned (scan #{existing['id']}), skipped")
                     continue
             print(f"  run #{run_id}: evaluating...")
-            replayed = _replay_run(store, sv9_store, run_id, editorial=not args.no_editorial)
+            replayed = _replay_run(store, sv9_store, run_id, editorial=not args.no_editorial, db_path=args.db_path)
             if replayed is None:
                 continue
             result, scan_id = replayed

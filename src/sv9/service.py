@@ -13,14 +13,22 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
+from src.config import BRAND3_DB_PATH, LLM_MODEL, LLM_PREMIUM_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.services.magnetism_service import load_brand_audit_snapshot
 from src.sv9.aggregator import aggregate
+from src.sv9.editorial import build_editorial
 from src.sv9.evaluator import evaluate_snapshot_components
 from src.sv9.models import Sv9ScanResult
-from src.sv9.signals import collect_signals, merge_signals
+from src.sv9.signals import (
+    audit_visual_method,
+    collect_signals,
+    compute_vision_observations,
+    merge_signals,
+    vision_signals,
+)
+from src.sv9.store import Sv9Store
 
 
 def run_sv9_from_audit_run(
@@ -32,6 +40,59 @@ def run_sv9_from_audit_run(
     """Run SV9 from an existing Brand Audit run snapshot, without re-collecting."""
     snapshot = load_brand_audit_snapshot(run_id, db_path=db_path)
     return run_sv9_from_audit_snapshot(snapshot, llm=llm)
+
+
+def materialize_sv9_scan(
+    run_id: int,
+    *,
+    db_path: str = BRAND3_DB_PATH,
+    llm: LLMAnalyzer | None = None,
+    editorial: bool = True,
+) -> tuple[int, Sv9ScanResult]:
+    """Full shadow pipeline for one audit run — the single source of truth for
+    the replay script, the web materialization button, and retries.
+
+    Includes everything a bare run_sv9_from_audit_run lacks: pinned Pass 1
+    detection (re-evaluations stay comparable), the vision pass over the
+    persisted screenshot when audit-time visual analysis fell back to local
+    pixels (Idea de marca and Coherencia starve without it), and the editorial
+    voice. Returns (scan_id, result).
+    """
+    snapshot = load_brand_audit_snapshot(run_id, db_path=db_path)
+    store = Sv9Store(db_path)
+    try:
+        detection = store.get_detection(run_id)
+        if detection is None:
+            detection = detect_for_snapshot(snapshot, llm=llm)
+            store.save_detection(run_id, detection)
+
+        extra_signals = None
+        vision_payload = store.get_visual_evidence(run_id)
+        if vision_payload is None and audit_visual_method(snapshot) != "vision":
+            vision_payload = compute_vision_observations(snapshot)
+            if vision_payload is not None:
+                store.save_visual_evidence(run_id, vision_payload)
+        if vision_payload is not None:
+            extra_signals = vision_signals(vision_payload)
+
+        result = run_sv9_from_audit_snapshot(
+            snapshot, llm=llm, magnetism_result=detection, extra_signals=extra_signals
+        )
+        scan_id = store.save_scan(result)
+
+        if editorial:
+            editorial_llm = llm if llm is not None else LLMAnalyzer(model=LLM_MODEL)
+            if getattr(editorial_llm, "api_key", None):
+                payload = build_editorial(result.to_dict(), llm=editorial_llm)
+                if payload["component_messages"] or payload["executive_reading"]:
+                    store.save_editorial(
+                        scan_id,
+                        component_messages=payload["component_messages"],
+                        executive_reading=payload["executive_reading"],
+                    )
+        return scan_id, result
+    finally:
+        store.close()
 
 
 def run_sv9_from_audit_snapshot(

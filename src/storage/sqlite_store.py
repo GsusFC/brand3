@@ -782,7 +782,16 @@ class SQLiteStore:
         self.conn.commit()
         payload = dict(row)
         if payload.get("response_json"):
-            payload["response_json"] = json.loads(payload["response_json"])
+            response_json, error = _safe_json_loads(
+                payload["response_json"],
+                field="llm_cache.response_json",
+                fallback=None,
+            )
+            if error:
+                # Corrupt cache entry: treat as a miss so the caller re-queries
+                # the LLM instead of crashing the run.
+                return None
+            payload["response_json"] = response_json
         return payload
 
     def save_llm_cache(

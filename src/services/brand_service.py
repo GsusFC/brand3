@@ -30,6 +30,7 @@ from src.config import (
     BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE,
     BRAND3_PROMOTION_MAX_COMPOSITE_DROP,
     BRAND3_PROMOTION_MAX_DIMENSION_DROPS,
+    BRAND3_SCREENSHOT_DIR,
     EXA_API_KEY,
     FIRECRAWL_API_KEY,
     LLM_CHEAP_MODEL,
@@ -1010,7 +1011,11 @@ def _take_playwright_screenshot(url: str, *, timeout_ms: int = 30000) -> dict[st
             "screenshot_provider": "playwright",
         }
 
-    fd, screenshot_path = tempfile.mkstemp(prefix="brand3-screenshot-", suffix=".png")
+    screenshot_dir = Path(BRAND3_SCREENSHOT_DIR)
+    screenshot_dir.mkdir(parents=True, exist_ok=True)
+    fd, screenshot_path = tempfile.mkstemp(
+        prefix="brand3-screenshot-", suffix=".png", dir=str(screenshot_dir)
+    )
     os.close(fd)
     browser = None
     try:
@@ -1057,6 +1062,14 @@ def _take_playwright_screenshot(url: str, *, timeout_ms: int = 30000) -> dict[st
             if browser is not None:
                 browser.close()
         except Exception:
+            pass
+        # Failed captures leave an empty file behind now that screenshots
+        # land in permanent storage — drop it.
+        try:
+            leftover = Path(screenshot_path)
+            if leftover.exists() and leftover.stat().st_size == 0:
+                leftover.unlink()
+        except OSError:
             pass
 
 

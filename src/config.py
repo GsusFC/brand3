@@ -117,3 +117,9 @@ VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)
 
 # Screenshot capture provider.
 SCREENSHOT_PROVIDER = os.environ.get("SCREENSHOT_PROVIDER", "playwright").strip().lower() or "playwright"
+
+# Screenshots are evidence: they must outlive the OS temp dir cleanup.
+BRAND3_SCREENSHOT_DIR = os.environ.get(
+    "BRAND3_SCREENSHOT_DIR",
+    str(Path(BRAND3_DB_PATH).parent / "screenshots"),
+)

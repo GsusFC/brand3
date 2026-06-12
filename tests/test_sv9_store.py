@@ -90,6 +90,31 @@ class Sv9StoreTests(unittest.TestCase):
         self.assertEqual(labels[0]["rubric_version"], RUBRIC_VERSION)
         self.assertEqual(labels[0]["flag_evidencia"], 0)
 
+    def test_editorial_decision_roundtrip_and_replace(self):
+        scan_id = self.store.save_scan(self._result())
+        self.store.save_editorial_decision(
+            scan_id=scan_id,
+            component="mission",
+            decision="v9",
+            note="más pegado al score",
+            evaluator="sergio",
+        )
+        decisions = self.store.list_editorial_decisions(scan_id)
+        self.assertEqual(decisions["mission"]["decision"], "v9")
+        self.assertEqual(decisions["mission"]["note"], "más pegado al score")
+
+        self.store.save_editorial_decision(
+            scan_id=scan_id,
+            component="mission",
+            decision="mix",
+            note="v9 diagnóstico + v2 tono",
+            evaluator="ana",
+        )
+        decisions = self.store.list_editorial_decisions(scan_id)
+        self.assertEqual(len(decisions), 1)
+        self.assertEqual(decisions["mission"]["decision"], "mix")
+        self.assertEqual(decisions["mission"]["evaluator"], "ana")
+
     def test_detection_cache_roundtrip_and_replace(self):
         self.assertIsNone(self.store.get_detection(175))
         self.store.save_detection(175, {"tldr_brand3": {"mission": {"content": "v1"}}})

@@ -161,6 +161,13 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("Brand3 Score", response.text)
         self.assertIn("Margen inmediato", response.text)
         self.assertIn("Coherencia", response.text)
+        self.assertIn("sv9-editorial-drawer", response.text)
+        self.assertIn(">V9<", response.text)
+        self.assertIn(">V2<", response.text)
+        self.assertIn(">Decisión<", response.text)
+        self.assertIn("No hay editorial V2 persistida", response.text)
+        self.assertNotIn("source=tldr_structured_reference", response.text)
+        self.assertIn(f"/sv9/scan/{self.scan_id}/editorial-decision/mission", response.text)
         self.assertIn("3/10 ×2", response.text)
         self.assertIn("core_purpose text", response.text)
         self.assertIn("sv9-canvas-row sv9-canvas-row-2", response.text)
@@ -170,6 +177,70 @@ class Sv9CalibrationWebTests(unittest.TestCase):
 
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)
+
+    def test_v2_reference_normalizer_accepts_string_blocks(self):
+        from web.routes.sv9_scan import _first_v2_blocks_with_text, _normalize_v2_reference_block
+
+        blocks = _first_v2_blocks_with_text(
+            {"mission": "Editorial V2 mission"},
+            {"mission": {"content": "Legacy mission"}},
+        )
+
+        self.assertEqual(blocks["mission"], "Editorial V2 mission")
+        self.assertEqual(
+            _normalize_v2_reference_block(blocks["mission"])["text"],
+            "Editorial V2 mission",
+        )
+
+    def test_v2_reference_normalizer_falls_back_when_blocks_are_empty(self):
+        from web.routes.sv9_scan import _first_v2_blocks_with_text, _normalize_v2_reference_block
+
+        blocks = _first_v2_blocks_with_text(
+            {"mission": ""},
+            {"mission": {"content": "Legacy mission", "confidence": "high"}},
+        )
+
+        normalized = _normalize_v2_reference_block(blocks["mission"])
+        self.assertEqual(normalized["text"], "Legacy mission")
+        self.assertEqual(normalized["confidence"], "high")
+
+    def test_editorial_decision_persists_without_changing_score(self):
+        self._unlock()
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/mission",
+            data={
+                "decision": "mix",
+                "note": "usar precisión V9 con tono V2",
+                "evaluator": "sergio",
+            },
+            follow_redirects=False,
+        )
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.headers["location"], f"/sv9/scan/{self.scan_id}#sv9-card-mission")
+
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            scan = store.get_scan(self.scan_id)
+            decisions = store.list_editorial_decisions(self.scan_id)
+        finally:
+            store.close()
+        self.assertIsNotNone(scan)
+        self.assertEqual(scan["brand_name"], "Acme")
+        self.assertEqual(decisions["mission"]["decision"], "mix")
+        self.assertEqual(decisions["mission"]["note"], "usar precisión V9 con tono V2")
+
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/nope",
+            data={"decision": "v9"},
+        )
+        self.assertEqual(response.status_code, 404)
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/mission",
+            data={"decision": "bad"},
+        )
+        self.assertEqual(response.status_code, 422)
 
     def test_scan_canvas_explains_provider_failures(self):
         scan_id = self._seed_failed_scan()

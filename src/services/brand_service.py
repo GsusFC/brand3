@@ -1536,6 +1536,53 @@ def _cost_policy_summary(
     }
 
 
+_ACQUISITION_AUDIT_MAX_FIELD_CHARS = 2000
+
+
+def _truncate_for_audit(value):
+    if isinstance(value, str) and len(value) > _ACQUISITION_AUDIT_MAX_FIELD_CHARS:
+        return value[:_ACQUISITION_AUDIT_MAX_FIELD_CHARS] + "...[truncated]"
+    if isinstance(value, dict):
+        return {str(k): _truncate_for_audit(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_truncate_for_audit(v) for v in value]
+    return value
+
+
+def _acquisition_audit_payload(
+    *,
+    acquisition_provenance: dict,
+    acquisition_steps: dict,
+    raw_input_cache: dict,
+    screenshot_capture: dict | None,
+    data_quality: str,
+    content_source: str,
+) -> dict:
+    """Capture conditions for the persisted snapshot.
+
+    Downstream consumers read the DB snapshot, not the in-memory result, so
+    without this they cannot tell fresh fetches from cache hits or partial /
+    failed sources. Long strings are truncated — raw_inputs keeps the full
+    payloads.
+    """
+    steps = {
+        name: step.to_payload() for name, step in (acquisition_steps or {}).items()
+    }
+    return _truncate_for_audit(
+        _to_jsonable(
+            {
+                "version": "acquisition_audit_v1",
+                "data_quality": data_quality,
+                "content_source": content_source,
+                "raw_input_cache": dict(raw_input_cache or {}),
+                "steps": steps,
+                "provenance": acquisition_provenance,
+                "screenshot": screenshot_capture,
+            }
+        )
+    )
+
+
 def _acquisition_provenance_summary(
     *,
     brand_name: str,
@@ -2224,6 +2271,14 @@ def run(
             "timestamp": datetime.now().isoformat(),
         }
         result["audit"]["discovery_calibration_decision"] = discovery_calibration_decision
+        result["audit"]["acquisition"] = _acquisition_audit_payload(
+            acquisition_provenance=acquisition_provenance,
+            acquisition_steps=acquisition_steps,
+            raw_input_cache=raw_input_cache,
+            screenshot_capture=screenshot_capture,
+            data_quality=data_quality,
+            content_source=content_source,
+        )
         if run_id:
             _store_safely(store, "run audit save", lambda: store.save_run_audit(run_id, result["audit"]))
 

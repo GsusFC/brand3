@@ -26,6 +26,7 @@
   {% if not ranking.entries %}
   <p class="prose">Sin scans completos para la rúbrica vigente todavía.</p>
   {% else %}
+  <div class="table-wrap sv9-ranking-table-wrap">
   <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
     <thead>
       <tr style="text-align:left; opacity:0.7;">
@@ -80,6 +81,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% endif %}
 
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin-top: 16px;">

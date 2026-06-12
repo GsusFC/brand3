@@ -115,11 +115,14 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         response = self.client.get("/sv9/calibration")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Acme", response.text)
+        self.assertIn('class="table-wrap sv9-calibration-table-wrap"', response.text)
 
         response = self.client.get(f"/sv9/calibration/{self.scan_id}")
         self.assertEqual(response.status_code, 200)
         self.assertIn("mission text", response.text)
         self.assertIn("score humano", response.text)
+        self.assertIn("@media (max-width: 760px)", response.text)
+        self.assertIn("grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));", response.text)
 
     def test_submit_label_persists_with_delta(self):
         self._unlock()
@@ -224,6 +227,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("acme.test", response.text)
         self.assertIn("/takedown", response.text)
+        self.assertIn('class="table-wrap sv9-ranking-table-wrap"', response.text)
 
         response = self.client.post(
             "/sv9/ranking/brand/acme.test",

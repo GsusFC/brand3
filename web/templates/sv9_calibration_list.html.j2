@@ -15,6 +15,7 @@
   {% if not scans %}
   <p class="prose">No hay scans SV9 todavía. Lanza <code>scripts/sv9_shadow_replay.py</code> primero.</p>
   {% else %}
+  <div class="table-wrap sv9-calibration-table-wrap">
   <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
     <thead>
       <tr style="text-align:left; opacity:0.7;">
@@ -45,6 +46,7 @@
       {% endfor %}
     </tbody>
   </table>
+  </div>
   {% endif %}
 </section>
 {% endblock %}

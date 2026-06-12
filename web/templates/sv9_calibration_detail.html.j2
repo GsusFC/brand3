@@ -160,6 +160,35 @@
   .sv9-cal-submit:active {
     transform: scale(0.97);
   }
+  @media (max-width: 760px) {
+    .sv9-cal-card {
+      margin: 16px 0;
+      padding: 14px;
+    }
+    .sv9-cal-ladder .rung-evidence {
+      margin-left: 0;
+      overflow-wrap: anywhere;
+    }
+    .sv9-score-picker {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
+    }
+    .sv9-score-picker .seg {
+      min-width: 0;
+      width: 100%;
+      padding: 0 6px;
+    }
+    .sv9-cal-form-footer {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .sv9-cal-form-footer .grow {
+      min-width: 0;
+    }
+    .sv9-cal-submit {
+      width: 100%;
+    }
+  }
 </style>
 {% endblock %}
 {% block content %}

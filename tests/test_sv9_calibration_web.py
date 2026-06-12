@@ -115,12 +115,28 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 303)
 
-    def test_routes_open_while_gating_is_disabled(self):
-        # Team gating intentionally disabled for now (product decision,
-        # 2026-06-11). When re-enabled, these become 403 without the cookie.
+    def test_routes_open_while_writes_require_team_cookie(self):
         for path in ("/sv9/calibration", f"/sv9/calibration/{self.scan_id}"):
             response = self.client.get(path)
             self.assertEqual(response.status_code, 200, path)
+
+        response = self.client.post(
+            f"/sv9/calibration/{self.scan_id}/mission",
+            data={"score_humano": 5, "evaluador": "sergio"},
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/mission",
+            data={"decision": "v9"},
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(f"/sv9/scan/{self.scan_id}/retry")
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            "/sv9/ranking/brand/acme.test",
+            data={"primary_category": "", "evaluador": "sergio"},
+        )
+        self.assertEqual(response.status_code, 403)
 
     def test_list_and_detail_render_after_unlock(self):
         self._unlock()
@@ -333,6 +349,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
             source_run_id=42,
         )
 
+        self._unlock()
         with mock.patch(
             "web.routes.sv9_scan.run_sv9_from_audit_run",
             return_value=retry_result,
@@ -354,6 +371,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("/takedown", response.text)
         self.assertIn('class="table-wrap sv9-ranking-table-wrap"', response.text)
 
+        self._unlock()
         response = self.client.post(
             "/sv9/ranking/brand/acme.test",
             data={"primary_category": "fintech", "evaluador": "sergio"},

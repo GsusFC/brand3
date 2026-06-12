@@ -23,15 +23,16 @@ router = APIRouter()
 
 def _require_team(request: Request) -> None:
     """Team gating intentionally disabled for now (product decision,
-    2026-06-11): SV9 views are open while the team iterates. To re-enable,
-    restore the cookie check below.
+    2026-06-11): SV9 read views are open while the team iterates.
+    """
+    return
 
+
+def _require_team_write(request: Request) -> None:
     if not settings.team_token:
         return
     if not is_team_request(request, create_serializer(settings.cookie_secret)):
         raise HTTPException(status_code=403, detail="team access required")
-    """
-    return
 
 
 @router.get("/sv9/calibration")
@@ -124,7 +125,7 @@ async def sv9_calibration_submit(
     flag_evidencia: bool = Form(False),
     evaluador: str = Form(...),
 ):
-    _require_team(request)
+    _require_team_write(request)
     if component not in COMPONENTS:
         raise HTTPException(status_code=404, detail="unknown component")
     evaluador = evaluador.strip()

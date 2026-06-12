@@ -19,7 +19,7 @@ from src.sv9.store import Sv9Store
 
 from ..templates_env import templates
 from .magnetism_scanner import _ui
-from .sv9_calibration import _require_team
+from .sv9_calibration import _require_team, _require_team_write
 
 router = APIRouter()
 
@@ -245,7 +245,7 @@ async def sv9_editorial_decision_submit(
     note: str = Form(""),
     evaluator: str = Form(""),
 ):
-    _require_team(request)
+    _require_team_write(request)
     if component not in COMPONENTS:
         raise HTTPException(status_code=404, detail="component not found")
     if decision not in _EDITORIAL_DECISIONS:
@@ -275,7 +275,7 @@ async def sv9_scan_retry(request: Request, scan_id: int):
     Retries create a new scan instead of mutating the failed one, so calibration
     keeps a trace of provider/API failures.
     """
-    _require_team(request)
+    _require_team_write(request)
     store = Sv9Store(BRAND3_DB_PATH)
     try:
         scan = store.get_scan(scan_id)

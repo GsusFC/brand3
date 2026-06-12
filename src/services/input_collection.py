@@ -541,6 +541,18 @@ def _collect_web_input(
     )
     web_data = web_collector.scrape(url)
     print(f"  Web: {len(web_data.markdown_content)} chars scraped")
+    if getattr(web_data, "capture_obstruction", ""):
+        _set_acquisition_state(
+            raw_input_cache,
+            acquisition_steps,
+            source="web",
+            raw_cache_status="obstructed",
+            status="obstructed",
+            cache_status="miss",
+            eligible=False,
+            details={"capture_obstruction": web_data.capture_obstruction},
+        )
+        print(f"  Web: obstructed ({web_data.capture_obstruction})")
     if run_id:
         _save_raw_input_safely(
             store,

@@ -46,6 +46,9 @@ class WebData:
     tech_stack: list[str] = None
     load_time_ms: int = 0
     error: str = ""
+    # Set when a capture was wiped because it looked like a consent wall —
+    # downstream can then tell "obstructed" apart from "empty" or "failed".
+    capture_obstruction: str = ""
     content_source: str = ""
     browser_status: int | None = None
     owned_fallback_urls: list[str] = None
@@ -688,6 +691,7 @@ class WebCollector:
                 )
                 data.title = ""
                 data.markdown_content = ""
+                data.capture_obstruction = "cookie_banner"
         else:
             data.error = result["error"]
 
@@ -701,6 +705,7 @@ class WebCollector:
                 data.markdown_content = self._html_to_markdown_fallback(html)
                 data.markdown_content = self._trim_to_title(data.markdown_content, data.title)
                 data.error = ""
+                data.capture_obstruction = ""
             elif html_error and not data.error:
                 data.error = html_error
 
@@ -725,9 +730,11 @@ class WebCollector:
                         f" (title: {data.title[:80]})"
                     )
                     data.markdown_content = ""
+                    data.capture_obstruction = "cookie_banner"
                 if self._has_usable_markdown_content(data.markdown_content):
                     data.content_source = "browser_fallback"
                     data.error = ""
+                    data.capture_obstruction = ""
             elif browser_error and not data.error:
                 data.error = browser_error
 

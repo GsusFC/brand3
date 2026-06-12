@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 import sys
 import tempfile
@@ -66,7 +67,18 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         )
         store = Sv9Store(str(self.db))
         try:
-            return store.save_scan(result)
+            scan_id = store.save_scan(result)
+            store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+                """,
+                ("Acme", "https://acme.test", 30, 30, "test", "{}", 1, "ready"),
+            )
+            store.conn.commit()
+            return scan_id
         finally:
             store.close()
 
@@ -162,6 +174,8 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("Margen inmediato", response.text)
         self.assertIn("Coherencia", response.text)
         self.assertIn("sv9-editorial-drawer", response.text)
+        self.assertIn('href="/">Volver a Brand3 Scanner</a>', response.text)
+        self.assertNotIn('href="/magnetism-scanner?lang=es">Volver a Brand3 Scanner</a>', response.text)
         self.assertIn(">V9<", response.text)
         self.assertIn(">V2<", response.text)
         self.assertIn(">Decisión<", response.text)
@@ -203,6 +217,46 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         normalized = _normalize_v2_reference_block(blocks["mission"])
         self.assertEqual(normalized["text"], "Legacy mission")
         self.assertEqual(normalized["confidence"], "high")
+
+    def test_v2_reference_uses_older_persisted_payload_when_latest_has_no_v2(self):
+        from src.sv9.store import Sv9Store
+        from web.routes.sv9_scan import _v2_reference_blocks
+
+        store = Sv9Store(str(self.db))
+        try:
+            store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+                """,
+                (
+                    "V2 Brand",
+                    "https://v2.example",
+                    50,
+                    50,
+                    "test",
+                    json.dumps({"client_tldr_v2": {"blocks": {"mission": "Older V2 mission"}}}),
+                    77,
+                    "ready",
+                ),
+            )
+            store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+                """,
+                ("V2 Brand", "https://v2.example", 50, 50, "test", "{}", 77, "ready"),
+            )
+            store.conn.commit()
+            references = _v2_reference_blocks(store, 77)
+        finally:
+            store.close()
+
+        self.assertEqual(references["mission"]["text"], "Older V2 mission")
 
     def test_editorial_decision_persists_without_changing_score(self):
         self._unlock()

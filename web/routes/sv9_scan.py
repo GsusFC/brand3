@@ -105,6 +105,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "id": magnetism_scan_id,
             "lang_query": "?lang=es",
             "active_tab": "sv9",
+            "back_href": "/",
             "t": _ui("es"),
             "sv9_scan_id": scan_id,
         }
@@ -151,31 +152,32 @@ def _v2_reference_blocks(store: Sv9Store, source_run_id: int | None) -> dict[str
     if not source_run_id:
         return {}
 
-    payload = _latest_magnetism_payload_for_run(store, int(source_run_id))
-    client_v2 = payload.get("client_tldr_v2") if isinstance(payload, dict) else {}
-    if not isinstance(client_v2, dict):
-        client_v2 = payload.get("client_strategic_reading") if isinstance(payload, dict) else {}
-    if not isinstance(client_v2, dict):
-        return {}
+    for payload in _magnetism_payloads_for_run(store, int(source_run_id)):
+        client_v2 = payload.get("client_tldr_v2")
+        if not isinstance(client_v2, dict):
+            client_v2 = payload.get("client_strategic_reading")
+        if not isinstance(client_v2, dict):
+            continue
 
-    references: dict[str, dict] = {}
-    blocks = _first_v2_blocks_with_text(
-        client_v2.get("blocks"),
-        client_v2.get("tldr_brand3_v2"),
-        client_v2.get("legacy_tldr_brand3_v2"),
-    )
-    if not isinstance(blocks, dict):
-        return {}
+        blocks = _first_v2_blocks_with_text(
+            client_v2.get("blocks"),
+            client_v2.get("tldr_brand3_v2"),
+            client_v2.get("legacy_tldr_brand3_v2"),
+        )
+        if not isinstance(blocks, dict):
+            continue
 
-    for key in COMPONENTS:
-        block = _normalize_v2_reference_block(blocks.get(key))
-        references[key] = {
-            "text": block["text"],
-            "confidence": str(block.get("confidence") or "").strip(),
-            "mode": str(block.get("mode") or block.get("claim_type") or "").strip(),
-            "source": "client_tldr_v2_persisted",
-        }
-    return references
+        references: dict[str, dict] = {}
+        for key in COMPONENTS:
+            block = _normalize_v2_reference_block(blocks.get(key))
+            references[key] = {
+                "text": block["text"],
+                "confidence": str(block.get("confidence") or "").strip(),
+                "mode": str(block.get("mode") or block.get("claim_type") or "").strip(),
+                "source": "client_tldr_v2_persisted",
+            }
+        return references
+    return {}
 
 
 def _first_v2_blocks_with_text(*candidates: object) -> dict | None:
@@ -202,25 +204,28 @@ def _normalize_v2_reference_block(value: object) -> dict[str, str]:
     }
 
 
-def _latest_magnetism_payload_for_run(store: Sv9Store, source_run_id: int) -> dict:
+def _magnetism_payloads_for_run(store: Sv9Store, source_run_id: int) -> list[dict]:
     try:
-        row = store.conn.execute(
+        rows = store.conn.execute(
             """
             SELECT raw_payload FROM magnetism_scans
             WHERE source_run_id = ?
-            ORDER BY id DESC LIMIT 1
+            ORDER BY id DESC
             """,
             (source_run_id,),
-        ).fetchone()
+        ).fetchall()
     except Exception:
-        return {}
-    if row is None:
-        return {}
-    try:
-        payload = json.loads(row["raw_payload"] or "{}")
-    except (TypeError, json.JSONDecodeError):
-        return {}
-    return payload if isinstance(payload, dict) else {}
+        return []
+
+    payloads: list[dict] = []
+    for row in rows:
+        try:
+            payload = json.loads(row["raw_payload"] or "{}")
+        except (TypeError, json.JSONDecodeError):
+            continue
+        if isinstance(payload, dict):
+            payloads.append(payload)
+    return payloads
 
 
 def _status_label(status: str) -> str:

@@ -4,12 +4,15 @@
   <script src="/static/status_waiting.js?v={{ static_asset_version }}" defer></script>
 {% endblock %}
 {% block content %}
-<section data-status-waiting data-status="{{ status }}" data-ready-href="{{ ready_href if ready_href else '' }}" data-poll-interval="5000">
+<section data-status-waiting data-status="{{ status }}" data-phase="{{ phase if phase else '' }}" data-elapsed="{{ elapsed_seconds if elapsed_seconds else 0 }}" data-ready-href="{{ ready_href if ready_href else '' }}" data-poll-interval="5000">
   <div class="section-head">
     <span class="label">{{ status_label if status_label else "analysis_status" }}</span>
     <span class="tag">// token={{ token }}</span>
   </div>
 
+  {# Everything inside this wrapper is re-rendered by the live poller; the
+     waiting game below stays out so its state survives updates. #}
+  <div data-status-dynamic>
   <pre class="term-head">
 {%- if status == "queued" -%}
 <span class="hl-warn">[queued]</span>   <span class="dim">{{ brand_slug }} — {{ queued_message if queued_message else "waiting for worker" }}</span>
@@ -18,20 +21,14 @@
 {%- elif status == "ready" -%}
 <span class="hl-ok">[ready]</span>    <span class="dim">{{ brand_slug }} — {{ ready_message if ready_message else "redirecting to report ..." }}</span>
 {%- elif status == "failed" -%}
-<span class="hl-alert">[failed]</span>   <span class="dim">{{ brand_slug }} — {{ error_message or "unknown error" }}</span>
+<span class="hl-alert">[failed]</span>   <span class="dim">{{ brand_slug }} — {{ failed_headline if failed_headline else (error_message or "unknown error") }}</span>
 {%- endif -%}
   </pre>
 
   {% if status in ("queued", "running") %}
-  <div class="matrix-loader phase-{{ phase }}" aria-hidden="true">
-    {% for row in range(4) %}
-    <div class="matrix-row">
-      {% for col in range(320) %}
-      <span class="matrix-dot"></span>
-      {% endfor %}
-    </div>
-    {% endfor %}
-  </div>
+  {# RGB progress: the bar reveals the B3S mark colors in order — red, blue,
+     green — as the scan advances. Driven by --scan-progress from JS. #}
+  <div class="status-progress" data-progress-bar role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-label="{{ 'Progreso del escaneo' if ui_lang == 'es' else 'Scan progress' }}" style="--scan-progress: 2%"></div>
 
   <div class="status-grid">
     <div class="status-metric">
@@ -40,11 +37,11 @@
     </div>
     <div class="status-metric">
       <span class="k">elapsed</span>
-      <span class="v">{{ elapsed_label }}</span>
+      <span class="v tabular-nums" data-elapsed-label>{{ elapsed_label }}</span>
     </div>
     <div class="status-metric">
       <span class="k">typical run</span>
-      <span class="v">{{ typical_run_label if typical_run_label else "2–4 min" }}</span>
+      <span class="v">{{ typical_run_label if typical_run_label else "3–5 min" }}</span>
     </div>
   </div>
 
@@ -63,7 +60,7 @@
     {% endfor %}
   </ol>
 
-  <p class="small dim">{{ status_note if status_note else "Page auto-refreshes every 5 seconds. This checklist reflects pipeline phase, not a percentage estimate." }}</p>
+  <p class="small dim">{{ status_note if status_note else "A full scan takes 3-5 minutes. Keep this tab open — you'll land on the result automatically." }}</p>
   {% elif status == "ready" %}
   <p><a href="{{ ready_href if ready_href else '/r/' ~ token }}">{{ ready_link_label if ready_link_label else "→ open report" }}</a></p>
   {% elif status == "failed" %}
@@ -84,8 +81,16 @@
   </div>
   <p class="small dim">{{ failure_diagnostics.safe_message }}</p>
   {% endif %}
+  {% if retry_url %}
+  <form method="post" action="/magnetism-scanner/analyze" style="margin: 14px 0 4px;">
+    <input type="hidden" name="url" value="{{ retry_url }}">
+    <input type="hidden" name="lang" value="{{ ui_lang if ui_lang else 'es' }}">
+    <button class="source-link" type="submit">⟳ {{ 'Reintentar escaneo' if ui_lang == 'es' else 'Retry scan' }}</button>
+  </form>
+  {% endif %}
   <p><a href="{{ back_href if back_href else '/' }}">{{ back_link_label if back_link_label else "← back to form" }}</a></p>
   {% endif %}
+  </div>
 
   {% if status in ("queued", "running") %}
   <section class="status-game" aria-label="{{ 'Mini juego de espera' if ui_lang == 'es' else 'Waiting mini game' }}">

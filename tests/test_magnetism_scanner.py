@@ -3213,9 +3213,19 @@ class MagnetismScannerTests(unittest.TestCase):
         set_run_magnetism_override(fake_magnetism)
         mock_validate_url.return_value = (True, "https://example.com")
 
+        # ensure_sv9 goes through the full shared pipeline now; the fake
+        # persists like the real one so the downstream assertions hold.
+        def fake_materialize(run_id, *, db_path):
+            fake_store = Sv9Store(db_path)
+            try:
+                fake_scan_id = fake_store.save_scan(sv9_result)
+            finally:
+                fake_store.close()
+            return fake_scan_id, sv9_result
+
         with unittest.mock.patch(
-            "src.sv9.service.run_sv9_from_audit_run",
-            return_value=sv9_result,
+            "src.sv9.service.materialize_sv9_scan",
+            side_effect=fake_materialize,
         ) as run_sv9:
             self._unlock_team_cookie()
             response = self.client.post(
@@ -4106,22 +4116,22 @@ class MagnetismScannerTests(unittest.TestCase):
             status_resp = self.client.get(status_url, follow_redirects=False)
             self.assertEqual(status_resp.status_code, 200)
             self.assertIn("brand_scanner_status", status_resp.text)
-            self.assertIn("Recopilando web pública", status_resp.text)
-            self.assertIn("Leyendo señales externas", status_resp.text)
-            self.assertIn("Construyendo evidencia", status_resp.text)
-            self.assertIn("Calculando salud de marca", status_resp.text)
-            self.assertIn("Generando TLDR estratégico", status_resp.text)
-            self.assertIn("Esta lista muestra la fase del Brand3 Scanner", status_resp.text)
+            self.assertIn("Leyendo su web pública (~1 min)", status_resp.text)
+            self.assertIn("Buscando qué dice el mundo de la marca (~1 min)", status_resp.text)
+            self.assertIn("Organizando la evidencia encontrada", status_resp.text)
+            self.assertIn("Puntuando los componentes Brand3", status_resp.text)
+            self.assertIn("Escribiendo la lectura estratégica (~1-2 min)", status_resp.text)
+            self.assertIn("Un escaneo completo tarda 3-5 minutos", status_resp.text)
 
             status_resp_en = self.client.get(status_url.replace("?lang=es", "?lang=en"), follow_redirects=False)
             self.assertEqual(status_resp_en.status_code, 200)
-            self.assertIn("Collecting public web evidence", status_resp_en.text)
-            self.assertIn("Reading external signals", status_resp_en.text)
-            self.assertIn("Building evidence", status_resp_en.text)
-            self.assertIn("Calculating brand health", status_resp_en.text)
-            self.assertIn("Generating strategic TLDR", status_resp_en.text)
-            self.assertIn("This list shows the Brand3 Scanner phase", status_resp_en.text)
-            self.assertNotIn("Recopilando web pública", status_resp_en.text)
+            self.assertIn("Reading its public website (~1 min)", status_resp_en.text)
+            self.assertIn("Searching what the world says about the brand (~1 min)", status_resp_en.text)
+            self.assertIn("Organizing the evidence found", status_resp_en.text)
+            self.assertIn("Scoring the Brand3 components", status_resp_en.text)
+            self.assertIn("Writing the strategic reading (~1-2 min)", status_resp_en.text)
+            self.assertIn("A full scan takes 3-5 minutes", status_resp_en.text)
+            self.assertNotIn("Leyendo su web pública (~1 min)", status_resp_en.text)
         finally:
             release.set()
 

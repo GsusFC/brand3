@@ -644,20 +644,20 @@ async def magnetism_scanner_from_run(
 
 _MAGNETISM_PHASES = {
     "es": [
-        ("queued", "En cola"),
-        ("collecting", "Recopilando web pública"),
-        ("extracting", "Leyendo señales externas"),
-        ("interpreting", "Construyendo evidencia"),
-        ("scoring", "Calculando salud de marca"),
-        ("finalizing", "Generando TLDR estratégico"),
+        ("queued", "En cola — un worker lo coge en segundos"),
+        ("collecting", "Leyendo su web pública (~1 min)"),
+        ("extracting", "Buscando qué dice el mundo de la marca (~1 min)"),
+        ("interpreting", "Organizando la evidencia encontrada"),
+        ("scoring", "Puntuando los componentes Brand3"),
+        ("finalizing", "Escribiendo la lectura estratégica (~1-2 min)"),
     ],
     "en": [
-        ("queued", "Queued"),
-        ("collecting", "Collecting public web evidence"),
-        ("extracting", "Reading external signals"),
-        ("interpreting", "Building evidence"),
-        ("scoring", "Calculating brand health"),
-        ("finalizing", "Generating strategic TLDR"),
+        ("queued", "Queued — a worker picks it up in seconds"),
+        ("collecting", "Reading its public website (~1 min)"),
+        ("extracting", "Searching what the world says about the brand (~1 min)"),
+        ("interpreting", "Organizing the evidence found"),
+        ("scoring", "Scoring the Brand3 components"),
+        ("finalizing", "Writing the strategic reading (~1-2 min)"),
     ],
 }
 
@@ -674,18 +674,20 @@ _MAGNETISM_PHASE_FINAL_LABELS = {
 
 _MAGNETISM_STATUS_COPY = {
     "es": {
-        "note": "La página se actualiza cada 5 segundos. Esta lista muestra la fase del Brand3 Scanner, no una estimación porcentual.",
+        "note": "Un escaneo completo tarda 3-5 minutos. Puedes dejar esta pestaña abierta: te llevaremos al resultado solos.",
         "queued": "esperando turno de análisis",
         "ready": "abriendo informe ...",
         "ready_link": "→ abrir informe",
         "back_link": "← volver al scanner",
+        "failed": "el escaneo no pudo completarse — suele ser temporal, reintenta en un minuto",
     },
     "en": {
-        "note": "Page auto-refreshes every 5 seconds. This list shows the Brand3 Scanner phase, not a percentage estimate.",
+        "note": "A full scan takes 3-5 minutes. Keep this tab open — we'll take you to the result automatically.",
         "queued": "waiting for analysis slot",
         "ready": "opening report ...",
         "ready_link": "→ open report",
         "back_link": "← back to scanner",
+        "failed": "the scan could not complete — usually temporary, retry in a minute",
     },
 }
 
@@ -760,12 +762,14 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "ready_href": _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang),
             "back_href": _with_lang("/magnetism-scanner", lang),
             "status_label": "brand_scanner_status",
-            "typical_run_label": "1-4 min",
+            "typical_run_label": "3-5 min",
             "status_note": status_copy["note"],
             "queued_message": status_copy["queued"],
             "ready_message": status_copy["ready"],
             "ready_link_label": status_copy["ready_link"],
             "back_link_label": status_copy["back_link"],
+            "failed_headline": status_copy["failed"],
+            "retry_url": row.get("url") if (row.get("status") == "failed" and row.get("url") not in (None, "", "manual")) else None,
         },
     )
 

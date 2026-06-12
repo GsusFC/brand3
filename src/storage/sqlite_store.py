@@ -143,6 +143,7 @@ class SQLiteStore:
         self.conn = sqlite3.connect(self.db_path)
         self.conn.row_factory = sqlite3.Row
         self._init_schema()
+        self._ensure_inline_table_columns()
         self._apply_file_migrations()
 
     def _apply_file_migrations(self) -> None:
@@ -160,6 +161,20 @@ class SQLiteStore:
             sql = path.read_text(encoding="utf-8")
             self.conn.executescript(sql)
         self._ensure_file_migration_columns()
+
+    def _ensure_inline_table_columns(self) -> None:
+        """Additive columns for tables owned by the inline schema.
+
+        Same contract as `_ensure_file_migration_columns`: re-runnable on
+        every open, so older databases pick up new columns.
+        """
+        self._ensure_columns("runs", {"status": "TEXT"})
+        # Pre-status rows: completed runs are complete, the rest died mid-run.
+        self.conn.execute(
+            "UPDATE runs SET status = CASE WHEN completed_at IS NULL "
+            "THEN 'interrupted' ELSE 'complete' END WHERE status IS NULL"
+        )
+        self.conn.commit()
 
     def _ensure_file_migration_columns(self) -> None:
         """Backfill columns for tables owned by SQL migrations.
@@ -242,6 +257,7 @@ class SQLiteStore:
                 composite_score REAL,
                 result_path TEXT,
                 summary TEXT,
+                status TEXT,
                 FOREIGN KEY (brand_id) REFERENCES brands(id)
             );
 
@@ -573,13 +589,20 @@ class SQLiteStore:
     def create_run(self, brand_id: int, brand_name: str, url: str, use_llm: bool, use_social: bool) -> int:
         cursor = self.conn.execute(
             """
-            INSERT INTO runs (brand_id, brand_name, url, started_at, use_llm, use_social)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO runs (brand_id, brand_name, url, started_at, use_llm, use_social, status)
+            VALUES (?, ?, ?, ?, ?, ?, 'running')
             """,
             (brand_id, brand_name, url, datetime.now().isoformat(), int(use_llm), int(use_social)),
         )
         self.conn.commit()
         return int(cursor.lastrowid)
+
+    def mark_run_status(self, run_id: int, status: str) -> None:
+        self.conn.execute(
+            "UPDATE runs SET status=? WHERE id=?",
+            (status, run_id),
+        )
+        self.conn.commit()
 
     def save_raw_input(self, run_id: int, source: str, payload: Any) -> None:
         self.conn.execute(
@@ -897,7 +920,8 @@ class SQLiteStore:
         self.conn.execute(
             """
             UPDATE runs
-            SET completed_at=?,
+            SET status='complete',
+                completed_at=?,
                 llm_used=?,
                 social_scraped=?,
                 composite_score=?,

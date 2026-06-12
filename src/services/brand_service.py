@@ -2329,6 +2329,14 @@ def run(
 
             _store_safely(store, "report narrative persistence", _persist_report_narrative)
         return result
+    except AnalysisJobCancelled:
+        if run_id:
+            _store_safely(store, "run status cancelled", lambda: store.mark_run_status(run_id, "cancelled"))
+        raise
+    except Exception:
+        if run_id:
+            _store_safely(store, "run status failed", lambda: store.mark_run_status(run_id, "failed"))
+        raise
     finally:
         if store:
             _store_safely(store, "close", store.close)

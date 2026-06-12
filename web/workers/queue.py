@@ -160,6 +160,17 @@ class AnalysisQueue:
                 "WHERE status=?",
                 ("queued", "queued", "running"),
             )
+            # Engine runs are not resumable — the re-queued web_requests row
+            # starts a fresh run, so orphaned rows get a terminal state. The
+            # runs table is owned by SQLiteStore and may not exist yet on a
+            # fresh database.
+            runs_exists = conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='runs'"
+            ).fetchone()
+            if runs_exists:
+                conn.execute(
+                    "UPDATE runs SET status='interrupted' WHERE status='running'"
+                )
             tokens = [
                 row[0]
                 for row in conn.execute(

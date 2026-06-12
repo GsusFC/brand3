@@ -46,18 +46,28 @@ async def sv9_scan_view(request: Request, scan_id: int):
     by_component = {c["component"]: c for c in scan["components"]}
 
     def _next_rung(key: str, component: dict) -> dict | None:
-        """First rung not yet earned: the diagnosis line the TLDR cannot give."""
+        """First tile not yet earned: the diagnosis line the TLDR cannot give.
+
+        Tile scoring: the score counts earned criteria, so "next" means the
+        lowest unearned tile, located from the verdict profile.
+        """
         spec = COMPONENTS[key]
         score = int(component.get("score") or 0)
         if component.get("status") == "not_evaluated" or score >= spec["scale"]:
             return None
-        rung = spec["ladder"][score]  # ladder is 0-indexed; rung score+1
-        verdict = next(
-            (v for v in component.get("rung_profile") or [] if v.get("rung") == rung["rung"]),
-            None,
-        )
-        evaluable = bool(verdict.get("evaluable", True)) if verdict else True
-        return {"rung": rung["rung"], "criterion": rung["criterion"], "evaluable": evaluable}
+        verdicts = {
+            int(v.get("rung") or 0): v for v in component.get("rung_profile") or []
+        }
+        for rung in spec["ladder"]:
+            verdict = verdicts.get(rung["rung"])
+            if verdict is None or not verdict.get("passed"):
+                evaluable = bool(verdict.get("evaluable", True)) if verdict else True
+                return {
+                    "rung": rung["rung"],
+                    "criterion": rung["criterion"],
+                    "evaluable": evaluable,
+                }
+        return None
 
     def _box(key: str) -> dict:
         component = by_component.get(key) or {}

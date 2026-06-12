@@ -26,16 +26,16 @@ from src.sv9.rubric import (
 
 
 def score_from_rung_profile(rung_profile: list[RungVerdict]) -> int:
-    """Consecutive rungs passed from the bottom. The number is computed by
-    code, never by the model (design doc section 4.2)."""
-    score = 0
-    for verdict in sorted(rung_profile, key=lambda v: v.rung):
-        if verdict.rung != score + 1:
-            break
-        if not verdict.passed:
-            break
-        score = verdict.rung
-    return score
+    """Tile scoring (rubric v2): every criterion earned adds one point,
+    independently of the others. The number is computed by code, never by
+    the model.
+
+    A failed or not-evaluable tile scores nothing but never truncates what
+    the brand demonstrably earned above it — the strict consecutive ladder
+    punished brands for criteria describing alternative styles rather than
+    prior achievements (product decision, 2026-06-11).
+    """
+    return sum(1 for verdict in rung_profile if verdict.passed)
 
 
 def base_average(components: dict[str, ComponentResult]) -> float:

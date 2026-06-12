@@ -33,28 +33,34 @@ def full_components(**overrides: ComponentResult) -> dict[str, ComponentResult]:
 
 
 class ScoreFromRungProfileTests(unittest.TestCase):
+    """Tile scoring (rubric v2): every earned criterion adds one point."""
+
     def test_all_passed_reaches_ceiling(self):
         profile = [RungVerdict(rung=i, passed=True, evidence="q") for i in range(1, 11)]
         self.assertEqual(score_from_rung_profile(profile), 10)
 
-    def test_stops_at_first_failed_rung(self):
+    def test_failed_tile_does_not_truncate_tiles_above(self):
         profile = [RungVerdict(rung=i, passed=i != 3, evidence="q") for i in range(1, 11)]
-        self.assertEqual(score_from_rung_profile(profile), 2)
+        self.assertEqual(score_from_rung_profile(profile), 9)
 
-    def test_non_monotonic_passes_above_failure_do_not_count(self):
+    def test_gapped_profile_counts_each_earned_tile(self):
         profile = [
             RungVerdict(rung=1, passed=True, evidence="q"),
             RungVerdict(rung=2, passed=False),
             RungVerdict(rung=3, passed=True, evidence="q"),
         ]
-        self.assertEqual(score_from_rung_profile(profile), 1)
+        self.assertEqual(score_from_rung_profile(profile), 2)
 
     def test_empty_profile_scores_zero(self):
         self.assertEqual(score_from_rung_profile([]), 0)
 
-    def test_profile_must_start_at_rung_one(self):
-        profile = [RungVerdict(rung=2, passed=True, evidence="q")]
-        self.assertEqual(score_from_rung_profile(profile), 0)
+    def test_not_evaluable_tiles_never_score(self):
+        profile = [
+            RungVerdict(rung=1, passed=False, evaluable=False),
+            RungVerdict(rung=2, passed=True, evidence="q"),
+            RungVerdict(rung=3, passed=False, evaluable=False),
+        ]
+        self.assertEqual(score_from_rung_profile(profile), 1)
 
 
 class NonMonotonicDetectionTests(unittest.TestCase):

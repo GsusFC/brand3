@@ -1,8 +1,11 @@
-"""SV9 result models.
+"""SV9 result models (baldosas v3.1).
 
 One record per component (not a monolithic blob) so individual components can
-be retried and re-evaluated from the persisted snapshot. See design doc
-section 10.
+be retried and re-evaluated from the persisted snapshot.
+
+The unit of judgement is the tile (baldosa): an independent key characteristic
+with three possible states — `ok` (lit), `no` (off: a brand failure) and
+`sin_evidencia` (blind spot: a limit of the snapshot, never a brand failure).
 """
 
 from __future__ import annotations
@@ -12,51 +15,68 @@ from typing import Any
 
 from src.sv9.rubric import (
     COMPONENTS,
+    ESTADO_NO,
+    ESTADO_OK,
+    ESTADO_SIN_EVIDENCIA,
+    MODEL_LABEL,
     RUBRIC_VERSION,
     STATUS_NOT_DETECTED,
     STATUS_NOT_EVALUATED,
     STATUS_SCORED,
+    TILE_ESTADOS,
     component_points,
+    confidence_from_blind_spots,
 )
 
 
 @dataclass
-class RungVerdict:
-    """One verdict per ladder rung, with mandatory evidence.
+class TileVerdict:
+    """One verdict per tile, with the evidence/motive contract of v3.1.
 
-    `evaluable=False` records that the provided material had no evidence
-    channel that could prove or disprove the criterion (e.g. a visual rung
-    with no visual observations). It still blocks the ladder — the score is
-    unchanged — but failing on evidence and failing on coverage are different
-    facts, and calibration needs to tell them apart (design decision,
-    2026-06-11).
+    - `ok` requires a verbatim `evidencia` quote from the snapshot.
+    - `no` and `sin_evidencia` require a `motivo`.
+    - `sin_evidencia` may carry `contexto_requerido`: what the user could add to
+      light up the blind spot (the FLOC* conversation hook).
     """
 
-    rung: int
-    passed: bool
-    evidence: str = ""
-    reasoning: str = ""
-    evaluable: bool = True
+    tile_id: str
+    estado: str  # ESTADO_OK | ESTADO_NO | ESTADO_SIN_EVIDENCIA
+    evidencia: str = ""
+    motivo: str = ""
+    contexto_requerido: str = ""
+
+    @property
+    def is_ok(self) -> bool:
+        return self.estado == ESTADO_OK
+
+    @property
+    def is_blind_spot(self) -> bool:
+        return self.estado == ESTADO_SIN_EVIDENCIA
+
+    @property
+    def is_off(self) -> bool:
+        return self.estado == ESTADO_NO
 
     def to_dict(self) -> dict[str, Any]:
         return {
-            "rung": self.rung,
-            "passed": self.passed,
-            "evidence": self.evidence,
-            "reasoning": self.reasoning,
-            "evaluable": self.evaluable,
+            "id": self.tile_id,
+            "estado": self.estado,
+            "evidencia": self.evidencia,
+            "motivo": self.motivo,
+            "contexto_requerido": self.contexto_requerido,
         }
 
     @classmethod
-    def from_dict(cls, payload: dict[str, Any]) -> "RungVerdict":
+    def from_dict(cls, payload: dict[str, Any]) -> "TileVerdict":
+        estado = str(payload.get("estado") or "").strip()
+        if estado not in TILE_ESTADOS:
+            estado = ESTADO_NO
         return cls(
-            rung=int(payload.get("rung", 0)),
-            passed=bool(payload.get("passed", False)),
-            evidence=str(payload.get("evidence") or ""),
-            reasoning=str(payload.get("reasoning") or ""),
-            # Older persisted profiles predate the distinction: they were all
-            # judged with evidence on the table, so they default to evaluable.
-            evaluable=bool(payload.get("evaluable", True)),
+            tile_id=str(payload.get("id") or payload.get("tile_id") or "").strip(),
+            estado=estado,
+            evidencia=str(payload.get("evidencia") or "").strip(),
+            motivo=str(payload.get("motivo") or "").strip(),
+            contexto_requerido=str(payload.get("contexto_requerido") or "").strip(),
         )
 
 
@@ -67,7 +87,7 @@ class ComponentResult:
     component: str
     status: str  # STATUS_SCORED | STATUS_NOT_DETECTED | STATUS_NOT_EVALUATED
     score: int = 0
-    rung_profile: list[RungVerdict] = field(default_factory=list)
+    tile_profile: list[TileVerdict] = field(default_factory=list)
     detected_content: str | None = None
     detection_mode: str | None = None
     detection_confidence: str | None = None
@@ -86,21 +106,27 @@ class ComponentResult:
         return component_points(self.component, self.score)
 
     @property
-    def not_evaluable_rungs(self) -> list[int]:
-        """Rungs blocked by missing evidence channels, not by counter-evidence."""
-        return [v.rung for v in self.rung_profile if not v.passed and not v.evaluable]
+    def blind_spot_count(self) -> int:
+        return sum(1 for v in self.tile_profile if v.estado == ESTADO_SIN_EVIDENCIA)
 
     @property
-    def non_monotonic_rungs(self) -> list[int]:
-        """Rungs passed above the first failure: rubric or evaluator smell."""
-        first_fail = None
-        anomalies = []
-        for verdict in sorted(self.rung_profile, key=lambda v: v.rung):
-            if first_fail is None and not verdict.passed:
-                first_fail = verdict.rung
-            elif first_fail is not None and verdict.passed:
-                anomalies.append(verdict.rung)
-        return anomalies
+    def confidence(self) -> str:
+        """Confidence index derived from the count of `sin_evidencia` tiles."""
+        return confidence_from_blind_spots(self.blind_spot_count)
+
+    @property
+    def lit_tiles(self) -> list[str]:
+        return [v.tile_id for v in self.tile_profile if v.estado == ESTADO_OK]
+
+    @property
+    def off_tiles(self) -> list[str]:
+        """Tiles the snapshot proves are not met: the work plan."""
+        return [v.tile_id for v in self.tile_profile if v.estado == ESTADO_NO]
+
+    @property
+    def blind_spot_tiles(self) -> list[str]:
+        """Tiles the snapshot structurally cannot prove: the context to gather."""
+        return [v.tile_id for v in self.tile_profile if v.estado == ESTADO_SIN_EVIDENCIA]
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -109,9 +135,12 @@ class ComponentResult:
             "score": self.score,
             "scale": self.scale,
             "points": self.points,
-            "rung_profile": [v.to_dict() for v in self.rung_profile],
-            "non_monotonic_rungs": self.non_monotonic_rungs,
-            "not_evaluable_rungs": self.not_evaluable_rungs,
+            "confidence": self.confidence,
+            "blind_spot_count": self.blind_spot_count,
+            "tile_profile": [v.to_dict() for v in self.tile_profile],
+            "lit_tiles": self.lit_tiles,
+            "off_tiles": self.off_tiles,
+            "blind_spot_tiles": self.blind_spot_tiles,
             "detected_content": self.detected_content,
             "detection_mode": self.detection_mode,
             "detection_confidence": self.detection_confidence,
@@ -135,6 +164,7 @@ class Sv9ScanResult:
     most_painful_gap: str | None = None
     needs_review: bool = False
     rubric_version: str = RUBRIC_VERSION
+    model: str = MODEL_LABEL
     evaluator_model: str | None = None
 
     @property
@@ -150,12 +180,17 @@ class Sv9ScanResult:
     def not_evaluated(self) -> list[str]:
         return [k for k, c in self.components.items() if c.status == STATUS_NOT_EVALUATED]
 
+    @property
+    def total_blind_spots(self) -> int:
+        return sum(c.blind_spot_count for c in self.components.values())
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "brand_name": self.brand_name,
             "url": self.url,
             "source_run_id": self.source_run_id,
             "rubric_version": self.rubric_version,
+            "model": self.model,
             "evaluator_model": self.evaluator_model,
             "brand3_score": self.brand3_score,
             "base_average": self.base_average,
@@ -164,6 +199,7 @@ class Sv9ScanResult:
             "most_painful_gap": self.most_painful_gap,
             "needs_review": self.needs_review,
             "is_complete": self.is_complete,
+            "total_blind_spots": self.total_blind_spots,
             "not_detected": self.not_detected,
             "not_evaluated": self.not_evaluated,
             "components": {k: c.to_dict() for k, c in self.components.items()},
@@ -172,9 +208,12 @@ class Sv9ScanResult:
 
 __all__ = [
     "ComponentResult",
-    "RungVerdict",
+    "TileVerdict",
     "Sv9ScanResult",
     "STATUS_SCORED",
     "STATUS_NOT_DETECTED",
     "STATUS_NOT_EVALUATED",
+    "ESTADO_OK",
+    "ESTADO_NO",
+    "ESTADO_SIN_EVIDENCIA",
 ]

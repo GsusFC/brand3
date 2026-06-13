@@ -1,17 +1,18 @@
-"""Internal SV9 calibration UI (design doc section 11; briefing section 7).
+"""Internal SV9 calibration UI (baldosas v3.1).
 
-Team-only, never public: lists shadow scans and captures human scores per
-component into sv9_calibration_labels. Read-only over everything else — it
-never mutates scans, V5 data, or any public surface.
+Team-only, never public: lists shadow scans and captures human verdicts per
+tile into sv9_tile_calibration. The form operates per tile (prompt técnico
+step 7): the human evaluator confirms or corrects each tile state. Read-only
+over everything else — it never mutates scans, V5 data, or any public surface.
 """
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Form, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
-from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER, RUBRIC_VERSION
+from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER, RUBRIC_VERSION, TILE_ESTADOS
 from src.sv9.store import Sv9Store
 
 from ..config import settings
@@ -40,7 +41,7 @@ async def sv9_calibration_index(request: Request):
     store = Sv9Store(BRAND3_DB_PATH)
     try:
         scans = store.list_scans(limit=100)
-        labels = store.list_calibration_labels(limit=2000)
+        labels = store.list_tile_calibration(limit=5000)
     finally:
         store.close()
     labels_by_scan: dict[int, int] = {}
@@ -64,16 +65,13 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
     store = Sv9Store(BRAND3_DB_PATH)
     try:
         scan = store.get_scan(scan_id)
-        labels = [
-            label
-            for label in store.list_calibration_labels(limit=2000)
-            if label["scan_id"] == scan_id
-        ]
+        labels = store.list_tile_calibration(scan_id=scan_id, limit=5000)
     finally:
         store.close()
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
 
+    is_legacy = str(scan.get("rubric_version")) != RUBRIC_VERSION
     by_component = {c["component"]: c for c in scan["components"]}
     components = []
     for key in PRESENTATION_ORDER:
@@ -81,15 +79,22 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
         if component is None:
             continue
         spec = COMPONENTS[key]
-        verdicts = {v.get("rung"): v for v in component.get("rung_profile") or []}
-        ladder = [
-            {
-                "rung": rung["rung"],
-                "criterion": rung["criterion"],
-                "verdict": verdicts.get(rung["rung"]),
-            }
-            for rung in spec["ladder"]
-        ]
+        verdicts = {str(v.get("id") or ""): v for v in component.get("tile_profile") or []}
+        tiles = []
+        for tile in spec["tiles"]:
+            verdict = verdicts.get(tile["id"]) or {}
+            tiles.append(
+                {
+                    "id": tile["id"],
+                    "name": tile["name"],
+                    "condition": tile["condition"],
+                    "note": tile.get("note"),
+                    "estado_ia": str(verdict.get("estado") or ""),
+                    "evidencia": str(verdict.get("evidencia") or ""),
+                    "motivo": str(verdict.get("motivo") or ""),
+                    "contexto_requerido": str(verdict.get("contexto_requerido") or ""),
+                }
+            )
         components.append(
             {
                 "key": key,
@@ -97,7 +102,7 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
                 "scale": spec["scale"],
                 "multiplier": spec["multiplier"],
                 "result": component,
-                "ladder": ladder,
+                "tiles": tiles,
                 "labels": [l for l in labels if l["component"] == key],
             }
         )
@@ -109,32 +114,29 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
             "scan": scan,
             "components": components,
             "evaluador": evaluador,
+            "is_legacy": is_legacy,
+            "estados": list(TILE_ESTADOS),
             "ui_lang": "es",
         },
     )
 
 
 @router.post("/sv9/calibration/{scan_id}/{component}")
-async def sv9_calibration_submit(
-    request: Request,
-    scan_id: int,
-    component: str,
-    score_humano: int = Form(...),
-    motivo: str = Form(""),
-    flag_evidencia: bool = Form(False),
-    evaluador: str = Form(...),
-):
+async def sv9_calibration_submit(request: Request, scan_id: int, component: str):
+    """Persist one human verdict per tile for a component.
+
+    The form sends, per tile, `estado__<id>` and optional `motivo__<id>`, plus a
+    single `evaluador`. One sv9_tile_calibration row is written per tile so the
+    agreement rate can be measured tile by tile.
+    """
     _require_team(request)
     if component not in COMPONENTS:
         raise HTTPException(status_code=404, detail="unknown component")
-    evaluador = evaluador.strip()
+
+    form = await request.form()
+    evaluador = str(form.get("evaluador") or "").strip()
     if not evaluador:
         raise HTTPException(status_code=422, detail="evaluador is required")
-    scale = COMPONENTS[component]["scale"]
-    if not 0 <= score_humano <= scale:
-        raise HTTPException(
-            status_code=422, detail=f"score_humano must be between 0 and {scale}"
-        )
 
     store = Sv9Store(BRAND3_DB_PATH)
     try:
@@ -146,17 +148,31 @@ async def sv9_calibration_submit(
         )
         if result is None:
             raise HTTPException(status_code=404, detail="component not in scan")
-        store.save_calibration_label(
-            scan_id=scan_id,
-            url=scan["url"],
-            component=component,
-            score_ia=int(result["score"]),
-            score_humano=score_humano,
-            motivo=motivo.strip() or None,
-            flag_evidencia=flag_evidencia,
-            evaluador=evaluador,
-            rubric_version=str(scan["rubric_version"]),
-        )
+
+        ia_by_id = {
+            str(v.get("id") or ""): str(v.get("estado") or "")
+            for v in result.get("tile_profile") or []
+        }
+        for tile in COMPONENTS[component]["tiles"]:
+            estado_humano = str(form.get(f"estado__{tile['id']}") or "").strip()
+            if not estado_humano:
+                continue
+            if estado_humano not in TILE_ESTADOS:
+                raise HTTPException(
+                    status_code=422, detail=f"invalid estado for {tile['id']}"
+                )
+            motivo = str(form.get(f"motivo__{tile['id']}") or "").strip() or None
+            store.save_tile_calibration(
+                scan_id=scan_id,
+                url=scan["url"],
+                component=component,
+                baldosa_id=tile["id"],
+                estado_ia=ia_by_id.get(tile["id"], ""),
+                estado_humano=estado_humano,
+                motivo=motivo,
+                evaluador=evaluador,
+                rubric_version=str(scan["rubric_version"]),
+            )
     finally:
         store.close()
     return RedirectResponse(

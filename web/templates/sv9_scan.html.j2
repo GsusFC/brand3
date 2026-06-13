@@ -1,19 +1,149 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: SV9 :: {{ scan.brand_name }}{% endblock %}
+{% block title %}brand3 :: baldosas :: {{ scan.brand_name }}{% endblock %}
+{% block extra_head %}
+<style>
+  /* Tile grid: three visual states. Scoped styles, public CSS untouched. */
+  .sv9-tiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 10px 0 0;
+  }
+  .sv9-tile {
+    position: relative;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-strong);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    cursor: default;
+  }
+  /* Encendida: lit, the brand earned the tile. */
+  .sv9-tile.is-on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  /* Apagada: off — a brand failure. Painted red. */
+  .sv9-tile.is-off {
+    background: color-mix(in srgb, var(--danger) 16%, transparent);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  /* Punto ciego: blind spot — a limit of the snapshot. Muted, never red. */
+  .sv9-tile.is-blind {
+    background: transparent;
+    border-style: dashed;
+    border-color: var(--border-strong);
+    color: var(--text-muted, inherit);
+    opacity: 0.65;
+  }
+  .sv9-tile-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 8px 0 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .sv9-tile-legend .swatch {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin-right: 5px;
+    vertical-align: -1px;
+    border: 1px solid var(--border-strong);
+  }
+  .sv9-tile-legend .swatch.on { background: var(--accent); border-color: var(--accent); }
+  .sv9-tile-legend .swatch.off { background: color-mix(in srgb, var(--danger) 16%, transparent); border-color: var(--danger); }
+  .sv9-tile-legend .swatch.blind { background: transparent; border-style: dashed; }
+  .sv9-tile-detail {
+    margin: 10px 0 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .sv9-tile-detail .blind-cta {
+    color: var(--accent);
+  }
+  .sv9-confidence-badge.media { color: var(--warn, #b8860b); }
+  .sv9-confidence-badge.baja { color: var(--danger); }
+</style>
+{% endblock %}
 {% block content %}
+{% macro tile_box(box, full_width=false) %}
+<div class="sv9-canvas-card{% if full_width %} sv9-canvas-coherence{% endif %}{% if box.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
+  <div class="magnetism-card-head sv9-canvas-card-head">
+    <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ box.label }}</span>
+    <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
+  </div>
+  {% if box.status == 'scored' %}
+  <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px;">
+    confianza <span class="sv9-confidence-badge {{ box.confidence }}">{{ box.confidence }}</span>
+    {% if box.blind_spot_count %} · {{ box.blind_spot_count }} punto{% if box.blind_spot_count != 1 %}s{% endif %} ciego{% if box.blind_spot_count != 1 %}s{% endif %}{% endif %}
+  </p>
+  {% else %}
+  <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
+    {{ box.status_label }}{% if box.error %} · {{ box.error }}{% endif %}
+  </p>
+  {% endif %}
+
+  {% if box.content %}
+  <p class="magnetism-card-result" style="margin: 0;">{{ box.content }}</p>
+  {% elif box.status != 'scored' %}
+  <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
+  {% endif %}
+
+  {% if box.tiles %}
+  <div class="sv9-tiles">
+    {% for tile in box.tiles %}
+    <span class="sv9-tile{% if tile.is_on %} is-on{% elif tile.is_off %} is-off{% elif tile.is_blind %} is-blind{% endif %}"
+          title="{{ tile.id }} · {{ tile.name }}: {{ tile.condition }}{% if tile.is_on and tile.evidencia %} — evidencia: {{ tile.evidencia }}{% elif tile.motivo %} — {{ tile.motivo }}{% endif %}">
+      {{ tile.id }}
+    </span>
+    {% endfor %}
+  </div>
+  {% for tile in box.tiles if tile.is_blind %}
+  <p class="sv9-tile-detail">
+    <span class="dim">⊘ {{ tile.id }} {{ tile.name }}:</span> {{ tile.motivo }}
+    <span class="blind-cta">— aporta contexto para iluminar este punto{% if tile.contexto_requerido %}: {{ tile.contexto_requerido }}{% endif %}</span>
+  </p>
+  {% endfor %}
+  {% endif %}
+
+  {% if box.message %}
+  <p class="dim" style="margin: 6px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ box.message }}</p>
+  {% endif %}
+</div>
+{% endmacro %}
 <section class="magnetism-hero-section">
   <div class="section-head">
     <span class="label">brand3 scanner</span>
-    <span class="tag">// sv9 score · sombra</span>
+    <span class="tag">// baldosas v3.1 · sombra</span>
   </div>
 
   {% if model %}
   {% include "magnetism_scan_nav.html.j2" %}
   {% else %}
   <div class="lab-review-nav" style="margin-bottom: 14px;">
-    <a class="source-link" href="/sv9/calibration">← Scans SV9</a>
-    <a class="source-link badge-ready" href="/sv9/scan/{{ scan.id }}">SV9 Score</a>
+    <a class="source-link" href="/sv9/calibration">← Scans</a>
+    <a class="source-link badge-ready" href="/sv9/scan/{{ scan.id }}">Baldosas</a>
     <a class="source-link" href="/sv9/calibration/{{ scan.id }}">Calibración</a>
+    <a class="source-link" href="/sv9/scan/{{ scan.id }}/export.md">Export .md</a>
+  </div>
+  {% endif %}
+
+  {% if is_legacy %}
+  <div style="margin: 14px 0; border: 1px solid var(--border-strong); background: var(--soft-panel-bg); padding: 14px;">
+    <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">
+      Este scan usa el modelo anterior (<strong>{{ scan.rubric_version }}</strong>). No es convertible al modelo de baldosas v3.1:
+      re-escanéalo para ver el grid de baldosas. Se mantiene en el ranking etiquetado como <strong>v2</strong> hasta entonces.
+    </p>
   </div>
   {% endif %}
 
@@ -47,17 +177,18 @@
         {% if scan.magnetism_capped %}magnetism cap activo{% endif %}
         {% if scan.needs_review %} · coherencia en revisión{% endif %}
         {% if not scan.is_complete %} · scan parcial{% endif %}
-        {% if not scan.magnetism_capped and not scan.needs_review and scan.is_complete %}a un paso de subir{% endif %}
+        {% if scan.total_blind_spots %} · {{ scan.total_blind_spots }} puntos ciegos{% endif %}
       </div>
     </div>
   </div>
 
   <div class="lab-index-meta" style="margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 14px;">
-    <span class="inline-kv"><span class="k">rubric</span>=<span class="v">{{ scan.rubric_version }}</span></span>
+    <span class="inline-kv"><span class="k">modelo</span>=<span class="v">{{ scan.model or scan.rubric_version }}</span></span>
     <span class="inline-kv"><span class="k">evaluator</span>=<span class="v">{{ scan.evaluator_model or '—' }}</span></span>
     {% if scan.source_run_id %}
     <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ scan.source_run_id }}</span></span>
     {% endif %}
+    <a class="inline-kv source-link" href="/sv9/scan/{{ scan.id }}/export.md">export .md</a>
   </div>
 
   {% if technical_failures %}
@@ -75,7 +206,7 @@
       </div>
       {% if scan.source_run_id %}
       <form method="post" action="/sv9/scan/{{ scan.id }}/retry">
-        <button class="source-link" type="submit">Reintentar SV9</button>
+        <button class="source-link" type="submit">Reintentar</button>
       </form>
       {% endif %}
     </div>
@@ -87,66 +218,30 @@
 
 <section class="magnetism-tldr-section">
   <div class="section-head">
-    <span class="label">Canvas Brand3 puntuado</span>
+    <span class="label">Canvas de baldosas</span>
     <span class="tag">// 9 componentes · coherencia cierra</span>
   </div>
 
-  <div class="sv9-canvas">
+  <div class="sv9-tile-legend">
+    <span><span class="swatch on"></span>encendida</span>
+    <span><span class="swatch off"></span>apagada (fallo de marca)</span>
+    <span><span class="swatch blind"></span>punto ciego (límite del snapshot)</span>
+  </div>
+
+  <div class="sv9-canvas" style="margin-top: 14px;">
     {% for row in canvas %}
     <div class="sv9-canvas-row sv9-canvas-row-{{ row|length }}">
       {% for box in row %}
-      <div class="sv9-canvas-card{% if box.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
-        <div class="magnetism-card-head sv9-canvas-card-head">
-          <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ box.label }}</span>
-          <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
-        </div>
-        {% if box.status != 'scored' %}
-        <p class="dim" style="margin: -8px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
-          {{ box.status_label }}{% if box.error %} · {{ box.error }}{% endif %}
-        </p>
-        {% endif %}
-        {% if box.content %}
-        <p class="magnetism-card-result" style="margin: 0;">{{ box.content }}</p>
-        {% else %}
-        <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
-        {% endif %}
-        {% if box.message %}
-        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ box.message }}</p>
-        {% endif %}
-        {% if box.next_rung %}
-        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
-          → siguiente: {{ box.next_rung.criterion }}{% if not box.next_rung.evaluable %} <span title="bloqueado por falta de canal de evidencia, no por evidencia en contra">· ⊘ sin canal de evidencia</span>{% endif %}
-        </p>
-        {% endif %}
-      </div>
+      {{ tile_box(box) }}
       {% endfor %}
     </div>
     {% endfor %}
 
-    {# Coherencia reads the whole: full-width card closing the canvas. #}
-    <div class="sv9-canvas-card sv9-canvas-coherence{% if coherencia.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
-      <div class="magnetism-card-head sv9-canvas-card-head">
-        <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ coherencia.label }}</span>
-        <span class="badge">{{ coherencia.score }}/{{ coherencia.scale }} ×2</span>
-      </div>
-      {% if coherencia.status != 'scored' %}
-      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
-        {{ coherencia.status_label }}{% if coherencia.error %} · {{ coherencia.error }}{% endif %}
-      </p>
-      {% endif %}
-      {% if coherencia.message %}
-      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ coherencia.message }}</p>
-      {% endif %}
-      {% if coherencia.next_rung %}
-      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
-        → siguiente: {{ coherencia.next_rung.criterion }}
-      </p>
-      {% endif %}
-    </div>
+    {{ tile_box(coherencia, full_width=true) }}
   </div>
 
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 12px 0 0;">
-    <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a>
+    <a href="/sv9/calibration/{{ scan.id }}">→ baldosas, evidencia y calibración de este scan</a>
   </p>
 </section>
 {% endblock %}

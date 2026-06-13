@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: sv9 calibración #{{ scan.id }}{% endblock %}
+{% block title %}brand3 :: calibración #{{ scan.id }}{% endblock %}
 {% block extra_head %}
 <style>
   /* Internal calibration tool: scoped styles, public CSS untouched. */
@@ -9,89 +9,89 @@
     border: 1px solid var(--border);
     background: var(--soft-panel-bg);
   }
-  .sv9-cal-detected {
-    margin: 10px 0 4px;
-    line-height: 1.55;
+  .sv9-cal-detected { margin: 10px 0 4px; line-height: 1.55; }
+  .sv9-cal-tile {
+    margin: 14px 0;
+    padding: 12px 0;
+    border-top: 1px dashed var(--border);
   }
-  .sv9-cal-ladder summary {
-    cursor: pointer;
-    padding: 8px 0;
-    user-select: none;
+  .sv9-cal-tile-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
   }
-  .sv9-cal-ladder li {
-    margin: 10px 0;
+  .sv9-cal-tile-head .tid {
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .sv9-cal-tile-evidence {
+    margin: 6px 0 0;
+    font-family: var(--font-mono);
+    font-size: 12px;
     line-height: 1.5;
   }
-  .sv9-cal-ladder .rung-evidence {
-    margin-left: 1.8em;
-    line-height: 1.45;
-  }
-  .sv9-cal-labels {
+  .sv9-estado-ia { font-family: var(--font-mono); font-size: 11px; }
+  .sv9-estado-ia.ok { color: var(--accent); }
+  .sv9-estado-ia.no { color: var(--danger); }
+  .sv9-estado-ia.sin_evidencia { color: var(--text-muted, inherit); }
+  /* Three-way state picker: radios styled as segments. */
+  .sv9-estado-picker {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin: 12px 0 0;
+    margin: 8px 0 0;
   }
-  .sv9-cal-form {
-    display: grid;
-    gap: 14px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px dashed var(--border-strong);
-  }
-  .sv9-cal-form .field-label {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text-muted, inherit);
-  }
-  /* Score picker: one click = one score. Radios styled as segments. */
-  .sv9-score-picker {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .sv9-score-picker input[type="radio"] {
+  .sv9-estado-picker input[type="radio"] {
     position: absolute;
     opacity: 0;
     pointer-events: none;
   }
-  .sv9-score-picker .seg {
-    display: flex;
+  .sv9-estado-picker .seg {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 46px;
-    min-height: 44px;
-    padding: 0 10px;
+    min-height: 38px;
+    padding: 0 14px;
     border: 1px solid var(--border-strong);
     background: var(--surface, transparent);
     font-family: var(--font-mono);
-    font-size: 15px;
+    font-size: 12px;
     cursor: pointer;
-    transition: background 160ms ease, border-color 160ms ease,
-      color 160ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
   }
-  @media (hover: hover) and (pointer: fine) {
-    .sv9-score-picker .seg:hover {
-      border-color: var(--accent);
-    }
-  }
-  .sv9-score-picker .seg:active {
-    transform: scale(0.95);
-  }
-  .sv9-score-picker input:checked + .seg {
+  .sv9-estado-picker input:checked + .seg {
     background: var(--accent);
     border-color: var(--accent);
     color: #fff;
     font-weight: 700;
   }
-  .sv9-score-picker input:focus-visible + .seg {
+  .sv9-estado-picker input:focus-visible + .seg {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
-  .sv9-cal-form input[type="text"] {
+  .sv9-cal-motivo {
+    width: 100%;
+    min-height: 38px;
+    margin: 8px 0 0;
+    padding: 8px 12px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface, transparent);
+    color: var(--text, inherit);
+    font-family: var(--font-mono);
+    font-size: 12px;
+  }
+  .sv9-cal-form-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: stretch;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-strong);
+  }
+  .sv9-cal-form-footer .grow { flex: 1 1 220px; }
+  .sv9-cal-form-footer input[type="text"] {
     width: 100%;
     min-height: 44px;
     padding: 10px 14px;
@@ -100,41 +100,6 @@
     color: var(--text, inherit);
     font-family: var(--font-mono);
     font-size: 13px;
-  }
-  .sv9-cal-form input[type="text"]:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(239, 73, 13, 0.12);
-  }
-  .sv9-cal-flag {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    padding: 0 14px;
-    border: 1px solid var(--border-strong);
-    cursor: pointer;
-    user-select: none;
-    transition: border-color 160ms ease, background 160ms ease;
-  }
-  .sv9-cal-flag input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
-  .sv9-cal-flag:has(input:checked) {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-  }
-  .sv9-cal-form-footer {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: stretch;
-  }
-  .sv9-cal-form-footer .grow {
-    flex: 1 1 220px;
   }
   .sv9-cal-submit {
     min-height: 44px;
@@ -148,60 +113,28 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     cursor: pointer;
-    transition: background 160ms ease, border-color 160ms ease,
-      transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .sv9-cal-submit:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-  }
-  .sv9-cal-submit:active {
-    transform: scale(0.97);
   }
   @media (max-width: 760px) {
-    .sv9-cal-card {
-      margin: 16px 0;
-      padding: 14px;
-    }
-    .sv9-cal-ladder .rung-evidence {
-      margin-left: 0;
-      overflow-wrap: anywhere;
-    }
-    .sv9-score-picker {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
-    }
-    .sv9-score-picker .seg {
-      min-width: 0;
-      width: 100%;
-      padding: 0 6px;
-    }
-    .sv9-cal-form-footer {
-      display: grid;
-      grid-template-columns: 1fr;
-    }
-    .sv9-cal-form-footer .grow {
-      min-width: 0;
-    }
-    .sv9-cal-submit {
-      width: 100%;
-    }
+    .sv9-cal-card { margin: 16px 0; padding: 14px; }
+    .sv9-estado-picker { display: grid; grid-template-columns: 1fr 1fr 1fr; }
+    .sv9-estado-picker .seg { padding: 0 6px; }
+    .sv9-cal-form-footer { display: grid; grid-template-columns: 1fr; }
+    .sv9-cal-submit { width: 100%; }
   }
 </style>
 {% endblock %}
 {% block content %}
 <section>
   <div class="lab-review-nav" style="margin-bottom: 14px;">
-    <a class="source-link" href="/sv9/calibration">← Scans SV9</a>
+    <a class="source-link" href="/sv9/calibration">← Scans</a>
     <a class="source-link" href="/sv9/scan/{{ scan.id }}">Canvas</a>
+    <a class="source-link" href="/sv9/scan/{{ scan.id }}/export.md">Export .md</a>
     <span class="badge badge-missing">interno</span>
   </div>
 
   <div class="section-head">
-    <span class="label">sv9_calibracion</span>
-    <span class="tag">// scan #{{ scan.id }} · {{ scan.rubric_version }} · {{ scan.evaluator_model or '—' }}</span>
+    <span class="label">calibración por baldosa</span>
+    <span class="tag">// scan #{{ scan.id }} · {{ scan.model or scan.rubric_version }} · {{ scan.evaluator_model or '—' }}</span>
   </div>
 
   <p class="prose">
@@ -211,13 +144,20 @@
     {% if scan.needs_review %}· <span class="tag">coherencia en revisión</span>{% endif %}
   </p>
 
+  {% if is_legacy %}
+  <p class="prose dim">
+    Modelo anterior ({{ scan.rubric_version }}): no es convertible a baldosas v3.1.
+    Re-escanéalo para calibrar por baldosa.
+  </p>
+  {% endif %}
+
   {% for c in components %}
   <div id="{{ c.key }}" class="sv9-cal-card">
     <div class="section-head">
       <span class="label">{{ c.label }}</span>
       <span class="tag">
         // ia: {{ c.result.score }}/{{ c.scale }}{% if c.multiplier == 2 %} ×2{% endif %}
-        · {{ c.result.status }}
+        · {{ c.result.status }} · confianza {{ c.result.confidence or 'alta' }}
       </span>
     </div>
 
@@ -230,73 +170,53 @@
     <p class="prose dim">error técnico: {{ c.result.error }}</p>
     {% endif %}
 
-    {% if c.ladder and c.result.rung_profile %}
-    <details class="sv9-cal-ladder">
-      <summary class="dim">escalera y veredictos</summary>
-      <ul style="list-style:none; padding-left:0;">
-        {% for rung in c.ladder %}
-        <li>
-          {% if rung.verdict and rung.verdict.passed %}
-          <span style="color:var(--accent);">✓</span>
-          {% elif rung.verdict and not rung.verdict.get('evaluable', true) %}
-          <span class="dim" title="sin canal de evidencia">⊘</span>
-          {% else %}
-          <span class="dim">✗</span>
-          {% endif %}
-          <strong>{{ rung.rung }}</strong> · {{ rung.criterion }}
-          {% if rung.verdict and not rung.verdict.passed and not rung.verdict.get('evaluable', true) %}
-          <span class="badge">no evaluable</span>
-          {% endif %}
-          {% if rung.verdict and rung.verdict.evidence %}
-          <div class="dim rung-evidence">evidencia: {{ rung.verdict.evidence }}</div>
-          {% endif %}
-          {% if rung.verdict and rung.verdict.reasoning %}
-          <div class="dim rung-evidence">{{ rung.verdict.reasoning }}</div>
-          {% endif %}
-        </li>
-        {% endfor %}
-      </ul>
-    </details>
-    {% endif %}
-
-    {% if c.labels %}
-    <div class="sv9-cal-labels">
-      {% for label in c.labels %}
-      <span class="tag">{{ label.evaluador }}: {{ label.score_humano }}/{{ c.scale }} (Δ{{ label.delta }}){% if label.flag_evidencia %} ⚑ evidencia errónea{% endif %}</span>
-      {% endfor %}
-    </div>
-    {% endif %}
-
-    <form method="post" action="/sv9/calibration/{{ scan.id }}/{{ c.key }}" class="sv9-cal-form">
-      <div>
-        <span class="field-label">score humano</span>
-        <div class="sv9-score-picker">
-          {% for n in range(0, c.scale + 1) %}
+    {% if c.tiles and not is_legacy %}
+    <form method="post" action="/sv9/calibration/{{ scan.id }}/{{ c.key }}">
+      {% for tile in c.tiles %}
+      <div class="sv9-cal-tile">
+        <div class="sv9-cal-tile-head">
+          <span class="tid">{{ tile.id }}</span>
+          <span>{{ tile.name }}</span>
+          <span class="sv9-estado-ia {{ tile.estado_ia }}">· ia: {{ tile.estado_ia or '—' }}</span>
+        </div>
+        <p class="dim" style="margin: 4px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.5;">{{ tile.condition }}</p>
+        {% if tile.note %}
+        <p class="dim" style="margin: 4px 0 0; font-family: var(--font-mono); font-size: 11px;">nota: {{ tile.note }}</p>
+        {% endif %}
+        {% if tile.estado_ia == 'ok' and tile.evidencia %}
+        <p class="sv9-cal-tile-evidence dim">evidencia: {{ tile.evidencia }}</p>
+        {% elif tile.motivo %}
+        <p class="sv9-cal-tile-evidence dim">motivo ia: {{ tile.motivo }}{% if tile.contexto_requerido %} · contexto: {{ tile.contexto_requerido }}{% endif %}</p>
+        {% endif %}
+        <div class="sv9-estado-picker" role="radiogroup" aria-label="estado humano {{ tile.id }}">
+          {% for estado in estados %}
           <label>
-            <input type="radio" name="score_humano" value="{{ n }}" required>
-            <span class="seg">{{ n }}</span>
+            <input type="radio" name="estado__{{ tile.id }}" value="{{ estado }}"{% if tile.estado_ia == estado %} checked{% endif %}>
+            <span class="seg">{{ estado }}</span>
           </label>
           {% endfor %}
         </div>
+        <input type="text" class="sv9-cal-motivo" name="motivo__{{ tile.id }}"
+               placeholder="motivo (solo si corriges la IA)" autocomplete="off">
       </div>
-
-      <div>
-        <span class="field-label">motivo</span>
-        <input type="text" name="motivo" placeholder="una línea — por qué este score y no el de la IA" autocomplete="off">
-      </div>
+      {% endfor %}
 
       <div class="sv9-cal-form-footer">
-        <label class="sv9-cal-flag">
-          <input type="checkbox" name="flag_evidencia" value="true">
-          evidencia errónea
-        </label>
         <div class="grow">
-          <input type="text" name="evaluador" value="{{ evaluador }}" placeholder="evaluador" required
-                 style="min-height:44px;" aria-label="evaluador">
+          <input type="text" name="evaluador" value="{{ evaluador }}" placeholder="evaluador" required aria-label="evaluador">
         </div>
-        <button type="submit" class="sv9-cal-submit">guardar</button>
+        <button type="submit" class="sv9-cal-submit">guardar {{ c.label }}</button>
       </div>
     </form>
+    {% endif %}
+
+    {% if c.labels %}
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+      {% for label in c.labels %}
+      <span class="tag">{{ label.evaluador }} · {{ label.baldosa_id }}: {{ label.estado_humano }}{% if label.estado_ia != label.estado_humano %} (ia {{ label.estado_ia }}){% endif %}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
   {% endfor %}
 </section>

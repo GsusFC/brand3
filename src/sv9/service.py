@@ -5,7 +5,7 @@ persisted Brand Audit snapshots via replay. It never collects, never touches
 V5 scoring, and never renders anywhere public.
 
 Acquisition stays owned by Brand Audit; detection (Pass 1) stays owned by the
-existing TLDR extraction. SV9 inserts the ladder engine between detection and
+existing TLDR extraction. SV9 inserts the tile engine between detection and
 the editorial layer.
 """
 

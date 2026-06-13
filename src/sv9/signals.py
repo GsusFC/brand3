@@ -1,9 +1,9 @@
 """SV9 signal library: legacy V5 feature extractors reassigned to components.
 
 The V5 rubric dies; its extractors survive as evidence providers for specific
-ladder rungs (design doc section 9). High rungs in most ladders describe things
-that are not on the brand's own site (who imitates it, who boasts about using
-it, cross-surface consistency) — exactly the external evidence the legacy
+tiles (baldosas v3.1). High tiles in most components describe things that are
+not on the brand's own site (who imitates it, who boasts about using it,
+cross-surface consistency) — exactly the external evidence the legacy
 collectors already gather.
 
 `collect_signals` is read-only over the persisted audit snapshot. The vision
@@ -36,26 +36,26 @@ Return ONLY valid JSON:
 
 # (V5 dimension, V5 feature) -> SV9 component that consumes it as evidence.
 SIGNAL_MAP: dict[str, list[tuple[str, str]]] = {
-    # Visual system rungs of Idea de marca.
+    # Visual-system tiles of Idea de marca.
     "brand_idea": [
         ("coherencia", "visual_consistency"),
     ],
-    # High Magnetism rungs (active preference, belonging pride) are
+    # High Magnetism tiles (active preference, belonging pride) are
     # unobservable without third parties.
     "magnetism": [
         ("percepcion", "brand_sentiment"),
         ("percepcion", "mention_volume"),
     ],
-    # Personality consistency rungs.
+    # Personality consistency tiles.
     "personality": [
         ("coherencia", "tone_consistency"),
     ],
-    # Differential-versus-alternatives rungs of Propuesta de valor.
+    # Differential-versus-alternatives tiles of Propuesta de valor.
     "value_proposition": [
         ("diferenciacion", "positioning_clarity"),
         ("diferenciacion", "competitor_distance"),
     ],
-    # Public business decisions / proof rungs of Propósito.
+    # Public business decisions / proof tiles of Propósito.
     "core_purpose": [
         ("vitalidad", "content_recency"),
         ("vitalidad", "momentum"),
@@ -102,7 +102,7 @@ def collect_signals(snapshot: dict[str, Any]) -> dict[str, list[dict[str, Any]]]
                     "source": feature.get("source"),
                     # The raw extractor payload carries the actual observations
                     # (detected palette, logo, style, quotes). A bare number is
-                    # unjudgeable evidence for ladder rungs.
+                    # unjudgeable evidence for tiles.
                     "detail": str(raw_value)[:600] if raw_value else None,
                 }
             )

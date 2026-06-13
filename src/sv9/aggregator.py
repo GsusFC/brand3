@@ -1,18 +1,21 @@
 """SV9 aggregator: pure code, zero LLM, deterministic and testable without mocks.
 
-Applies (design doc sections 3 and 8): score from rung profile, pairs (implicit:
-each member scores alone, halves never average), x2 multipliers, statuses to 0,
-the Magnetism cap, Brand3 Score, immediate margin, and most painful gap.
+Applies (baldosas v3.1): score from tile profile (count of lit tiles), pairs
+(implicit: each member scores alone, halves never average), x2 multipliers,
+statuses to 0, the Magnetism cap, the Brand3 Score, immediate margin, and the
+most painful gap. The confidence index is a property of each ComponentResult,
+derived from its `sin_evidencia` tiles.
 """
 
 from __future__ import annotations
 
 from src.sv9.models import (
     ComponentResult,
-    RungVerdict,
+    ESTADO_OK,
     STATUS_NOT_EVALUATED,
     STATUS_SCORED,
     Sv9ScanResult,
+    TileVerdict,
 )
 from src.sv9.rubric import (
     BASE_COMPONENTS,
@@ -25,17 +28,13 @@ from src.sv9.rubric import (
 )
 
 
-def score_from_rung_profile(rung_profile: list[RungVerdict]) -> int:
-    """Tile scoring (rubric v2): every criterion earned adds one point,
-    independently of the others. The number is computed by code, never by
-    the model.
+def score_from_tile_profile(tile_profile: list[TileVerdict]) -> int:
+    """Tile scoring (baldosas v3.1): every lit tile adds one point,
+    independently of the others. `no` and `sin_evidencia` both score 0.
 
-    A failed or not-evaluable tile scores nothing but never truncates what
-    the brand demonstrably earned above it — the strict consecutive ladder
-    punished brands for criteria describing alternative styles rather than
-    prior achievements (product decision, 2026-06-11).
+    The number is computed by code, never by the model.
     """
-    return sum(1 for verdict in rung_profile if verdict.passed)
+    return sum(1 for verdict in tile_profile if verdict.estado == ESTADO_OK)
 
 
 def base_average(components: dict[str, ComponentResult]) -> float:
@@ -53,9 +52,10 @@ def base_average(components: dict[str, ComponentResult]) -> float:
 
 
 def apply_magnetism_cap(components: dict[str, ComponentResult]) -> tuple[float, bool]:
-    """Cap Magnetism at 5/10 when the base average is below 4/10.
+    """Cap the lit Magnetism tiles at 5 when the base average is below 4/10.
 
-    Mutates the magnetism ComponentResult in place. Returns (base_avg, capped).
+    Mutates the magnetism ComponentResult in place (the cap is a post-process,
+    not a prompt rule). Returns (base_avg, capped).
     """
     avg = base_average(components)
     magnetism = components["magnetism"]
@@ -71,11 +71,11 @@ def apply_magnetism_cap(components: dict[str, ComponentResult]) -> tuple[float, 
 
 
 def immediate_margin(components: dict[str, ComponentResult], *, magnetism_capped: bool) -> int:
-    """Points unlocked by climbing exactly one rung in each component.
+    """Points unlocked by lighting exactly one more tile in each component.
 
-    Not-detected components count (their next rung is the first one). Technical
-    failures promise nothing. A capped Magnetism gains nothing from one more
-    rung while the base is broken.
+    Not-detected components count (their next tile is the first one). Technical
+    failures promise nothing. A capped Magnetism gains nothing from one more tile
+    while the base is broken.
     """
     margin = 0
     for key, component in components.items():

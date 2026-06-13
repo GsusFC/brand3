@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import os
 
 from src.collectors.competitor_collector import (
@@ -137,6 +137,22 @@ def from_competitor_payload(payload: dict | None) -> CompetitorData | None:
         brand_web=WebData(**payload["brand_web"]) if payload.get("brand_web") else None,
         errors=payload.get("errors", []),
     )
+
+
+def _competitor_storage_payload(competitor_data: CompetitorData) -> dict:
+    """Drop competitor raw HTML before persisting.
+
+    Competitor HTML is ~99% of this payload and is unused once comparisons are
+    computed. The brand's own HTML stays (it backs owned evidence and lives in
+    the 'web' raw input anyway). `asdict` deep-copies, so the in-memory object
+    used downstream keeps its HTML intact.
+    """
+    payload = asdict(competitor_data)
+    for competitor in payload.get("competitors") or []:
+        web_data = competitor.get("web_data")
+        if isinstance(web_data, dict):
+            web_data["html"] = ""
+    return payload
 
 
 def from_context_payload(payload: dict | None) -> ContextData | None:
@@ -1017,7 +1033,7 @@ def _collect_competitor_input(
             store,
             run_id,
             "competitors",
-            competitor_data,
+            _competitor_storage_payload(competitor_data),
             action="competitor save",
             acquisition_steps=acquisition_steps,
         )

@@ -201,9 +201,43 @@ Por cada componente, JSON estricto:
 - `motivo` obligatorio en cada `no` y `sin_evidencia`; `contexto_requerido` opcional en `sin_evidencia` para pedir al usuario lo que iluminaría el punto ciego.
 - `confianza`: `alta` por defecto, `media` con 2 `sin_evidencia`, `baja` con 3 o más.
 - UI: tres estados visuales por celda. Encendida, apagada (rojo: fallo de marca), punto ciego (atenuada, con motivo y CTA de aportar contexto). Nunca pintar un punto ciego como fallo.
+- **Coherencia** añade un campo `veredicto`: una frase de síntesis (copy final) que explica si la marca cuenta una historia única y dónde se rompe o se sostiene. Es obligatoria; si falta, el evaluador reintenta una vez. Se muestra como subtítulo del bloque de Coherencia en el canvas y como cabecera de la sección de Coherencia en el export `.md`.
 
 -----
 
-## 5. Gobierno del modelo
+## 5. Routing de modelo por componente
+
+Los 8 componentes base corren en el tier **Flash**; **Magnetism y Coherencia** —los dos juicios finos que pesan 40/100 y donde se concentra el sesgo— corren en el tier de **razonamiento**. La causa dominante del fallo diagnosticado es el evaluador en esos dos componentes, no la captura.
+
+- `REASONING_COMPONENTS = ("magnetism", "coherencia")` en `src/sv9/rubric.py`.
+- Modelos parametrizables por entorno (`src/config.py`):
+  - `BRAND3_SV9_BASE_MODEL` (por defecto `LLM_CHEAP_MODEL`, tier Flash) — los 8 base + detección Pase 1.
+  - `BRAND3_SV9_REASONING_MODEL` (por defecto `LLM_PREMIUM_MODEL`, tier razonamiento) — Magnetism y Coherencia.
+- Cada componente persiste su `evaluation_model`, para poder comparar Flash vs razonamiento en regresión.
+
+-----
+
+## 6. Despliegue v3.1 (operativa)
+
+La rúbrica es `baldosas-v3-1` (campo `rubric=` del scan). Los scans históricos no se migran: se etiquetan `modelo: v2` y se mantienen en el ranking hasta re-escanear.
+
+**Regresión (obligatoria antes de desplegar).** Re-escanea con `baldosas-v3-1`: spacex.com, poetic.com, factorial.es, criptan.com, work-smart.ai, feverup.com. El harness es `scripts/sv9_shadow_replay.py` (corre sobre snapshots persistidos, sin recolectar):
+
+```
+# por run_id de cada marca (mapea dominio -> run_id en la tabla runs)
+./.venv/bin/python scripts/sv9_shadow_replay.py --run-id <id> --markdown regression.md
+```
+
+Requiere claves de LLM en vivo (Gemini Flash + modelo de razonamiento) y los snapshots persistidos. Devuelve la tabla comparativa: score viejo vs nuevo, total y por componente.
+
+**Criterio de aceptación (binario).** SpaceX sube de forma sustancial (~80+), Poetic recupera Idea de marca y Personalidad, y feverup NO mejora. Si feverup sube, el parche infló en vez de corregir: parar y revisar el modelo con los datos delante, no a ciegas.
+
+**Despliegue (Fly).** Solo tras visto bueno humano a la tabla de regresión. Si el tier de razonamiento usa una API key nueva, va como secret (`fly secrets set ...`), nunca en el repo. Tras `fly deploy`, comprobar `fly logs` que el primer scan v3.1 corre sin errores de parseo. Rollback: `fly releases` + `fly deploy --image <release-anterior>`.
+
+A partir de aquí el modelo de scoring queda congelado hasta tener calibración real: el siguiente cambio sale del dataset de baldosas calibradas, no de otra iteración de diseño.
+
+-----
+
+## 7. Gobierno del modelo
 
 Las baldosas se cambian por calibración, no por intuición. Una baldosa que nunca se enciende, que siempre se enciende o en la que los evaluadores humanos no coinciden está mal escrita: se reescribe, se divide o se elimina en la siguiente versión, con registro.

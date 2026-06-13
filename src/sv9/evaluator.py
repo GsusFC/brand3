@@ -35,7 +35,13 @@ from src.sv9.models import (
     STATUS_SCORED,
     TileVerdict,
 )
-from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER, TILE_ESTADOS, tile_ids
+from src.sv9.rubric import (
+    COMPONENTS,
+    PRESENTATION_ORDER,
+    REASONING_COMPONENTS,
+    TILE_ESTADOS,
+    tile_ids,
+)
 
 SV9_EVALUATOR_PROMPT_VERSION = "baldosas-v3.1-evaluator-v1"
 SV9_EVALUATOR_TIMEOUT_SECONDS = 90
@@ -62,6 +68,7 @@ _TILES_JSON_SCHEMA: dict[str, Any] = {
         },
         "puntos": {"type": "integer"},
         "confianza": {"type": "string"},
+        "veredicto": {"type": "string"},
     },
     "required": ["baldosas"],
 }
@@ -109,6 +116,8 @@ Los componentes ausentes ("(no detectado)") son información de coherencia: los 
 
 {_PROTOCOL}
 
+VEREDICTO (obligatorio en Coherencia): además de las baldosas, devuelve un campo "veredicto": una sola frase de síntesis que explique si la marca cuenta una historia única y dónde se rompe o se sostiene. Es copy final que verá el fundador: directa, concreta, sin jerga de pipeline ni mención a la rúbrica.
+
 La rúbrica de baldosas de Coherencia, con sus ids y condiciones, llega en el mensaje del usuario. Es la única rúbrica."""
 
 
@@ -119,9 +128,20 @@ def evaluate_snapshot_components(
     brand_name: str,
     url: str,
     llm: Any,
+    reasoning_llm: Any | None = None,
 ) -> dict[str, ComponentResult]:
-    """Evaluate the 9 detected components in parallel, then Coherencia."""
+    """Evaluate the 9 detected components in parallel, then Coherencia.
+
+    Model routing (deploy brief section 2.6): components in REASONING_COMPONENTS
+    (Magnetism, Coherencia) run on `reasoning_llm`; the rest run on `llm` (the
+    Flash tier). When `reasoning_llm` is None the same client serves both, so
+    callers that pass a single LLM keep the old single-tier behaviour.
+    """
+    reasoning_llm = reasoning_llm if reasoning_llm is not None else llm
     component_keys = [key for key in PRESENTATION_ORDER if key != "coherencia"]
+
+    def _llm_for(key: str) -> Any:
+        return reasoning_llm if key in REASONING_COMPONENTS else llm
 
     def _evaluate(key: str) -> ComponentResult:
         return evaluate_component(
@@ -130,7 +150,7 @@ def evaluate_snapshot_components(
             signals=signals.get(key) or [],
             brand_name=brand_name,
             url=url,
-            llm=llm,
+            llm=_llm_for(key),
         )
 
     results: dict[str, ComponentResult] = {}
@@ -144,7 +164,7 @@ def evaluate_snapshot_components(
         signals=signals.get("coherencia") or [],
         brand_name=brand_name,
         url=url,
-        llm=llm,
+        llm=reasoning_llm,
     )
     return results
 
@@ -245,6 +265,7 @@ def _run_tile_call(
     evidence: list[str] | None = None,
 ) -> ComponentResult:
     ids = tile_ids(key)
+    requires_veredicto = key == "coherencia"
     last_error = "llm_error"
     user_with_feedback = user
 
@@ -263,28 +284,35 @@ def _run_tile_call(
             break
 
         verdicts, error = _normalize_tiles(raw, ids, lenient=is_last)
-        if verdicts is not None:
+        veredicto = str((raw or {}).get("veredicto") or "").strip() if isinstance(raw, dict) else ""
+        if verdicts is not None and (veredicto or not requires_veredicto or is_last):
             return ComponentResult(
                 component=key,
                 status=STATUS_SCORED,
                 score=score_from_tile_profile(verdicts),
                 tile_profile=verdicts,
+                veredicto=veredicto,
+                evaluation_model=getattr(llm, "model", None),
                 detected_content=detected_content,
                 detection_mode=detection_mode,
                 detection_confidence=detection_confidence,
                 evidence=evidence or [],
             )
 
+        if verdicts is not None and not veredicto and requires_veredicto:
+            error = "falta 'veredicto': frase de síntesis obligatoria en Coherencia"
         last_error = str(getattr(llm, "last_failure_reason", None) or error or "llm_error")
         user_with_feedback = (
             f"{user}\n\nTu respuesta anterior fue inválida: {error}. "
             "Corrige y devuelve JSON estricto con una baldosa por cada id, "
             "evidencia literal en cada 'ok' y motivo en cada 'no' y 'sin_evidencia'."
+            + (" Incluye el campo 'veredicto'." if requires_veredicto else "")
         )
 
     return ComponentResult(
         component=key,
         status=STATUS_NOT_EVALUATED,
+        evaluation_model=getattr(llm, "model", None),
         detected_content=detected_content,
         detection_mode=detection_mode,
         detection_confidence=detection_confidence,
@@ -433,13 +461,14 @@ def _signals_lines(signals: list[dict[str, Any]]) -> str:
 
 def _json_shape_hint(key: str) -> str:
     first = COMPONENTS[key]["tiles"][0]["id"]
+    veredicto = ', "veredicto": "frase de síntesis"' if key == "coherencia" else ""
     return (
         '{"componente": "%s", "baldosas": ['
         '{"id": "%s", "estado": "ok|no|sin_evidencia", '
         '"evidencia": "cita literal (si ok)", '
         '"motivo": "por qué (si no/sin_evidencia)", '
         '"contexto_requerido": "opcional, solo en sin_evidencia"}, '
-        "... una por cada id]}" % (key, first)
+        "... una por cada id]%s}" % (key, first, veredicto)
     )
 
 

@@ -93,6 +93,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "status_label": _status_label(status),
             "confidence": component.get("confidence") or "alta",
             "blind_spot_count": component.get("blind_spot_count") or 0,
+            "veredicto": component.get("veredicto") or "",
             "is_technical_failure": status == "not_evaluated",
             "error": error,
             "content": component.get("detected_content") or "",

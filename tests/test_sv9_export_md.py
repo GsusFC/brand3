@@ -44,6 +44,7 @@ class ExportMarkdownTests(unittest.TestCase):
     def _scan(self):
         components = {key: component(key, ok=3) for key in COMPONENTS}
         components["attributes"] = component("attributes", ok=2, blind=1)
+        components["coherencia"].veredicto = "La marca cuenta una historia única que se sostiene."
         result = aggregate(components, brand_name="Acme", url="https://acme.test", source_run_id=1)
         return result.to_dict()
 
@@ -52,6 +53,11 @@ class ExportMarkdownTests(unittest.TestCase):
         self.assertIn("# Brand3 Scanner — Acme", md)
         self.assertIn("Brand3 Score", md)
         self.assertIn("Modelo: v3.1", md)
+
+    def test_coherencia_verdict_is_the_section_header(self):
+        md = build_scan_markdown(self._scan())
+        coh = md.index("## Coherencia")
+        self.assertIn("La marca cuenta una historia única que se sostiene.", md[coh:])
 
     def test_off_tiles_are_the_work_plan(self):
         md = build_scan_markdown(self._scan())

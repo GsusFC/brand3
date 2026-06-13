@@ -82,6 +82,9 @@
     <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ box.label }}</span>
     <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
   </div>
+  {% if box.veredicto %}
+  <p class="prose" style="margin: 4px 0 0; font-style: italic; line-height: 1.5;">{{ box.veredicto }}</p>
+  {% endif %}
   {% if box.status == 'scored' %}
   <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px;">
     confianza <span class="sv9-confidence-badge {{ box.confidence }}">{{ box.confidence }}</span>

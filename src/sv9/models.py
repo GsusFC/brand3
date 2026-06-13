@@ -88,6 +88,8 @@ class ComponentResult:
     status: str  # STATUS_SCORED | STATUS_NOT_DETECTED | STATUS_NOT_EVALUATED
     score: int = 0
     tile_profile: list[TileVerdict] = field(default_factory=list)
+    veredicto: str = ""  # synthesis sentence (mandatory for Coherencia)
+    evaluation_model: str | None = None  # which model tier judged this component
     detected_content: str | None = None
     detection_mode: str | None = None
     detection_confidence: str | None = None
@@ -137,6 +139,8 @@ class ComponentResult:
             "points": self.points,
             "confidence": self.confidence,
             "blind_spot_count": self.blind_spot_count,
+            "veredicto": self.veredicto,
+            "evaluation_model": self.evaluation_model,
             "tile_profile": [v.to_dict() for v in self.tile_profile],
             "lit_tiles": self.lit_tiles,
             "off_tiles": self.off_tiles,

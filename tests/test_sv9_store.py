@@ -51,6 +51,9 @@ class Sv9StoreTests(unittest.TestCase):
     def _result(self):
         components = {key: scored(key, 3) for key in COMPONENTS}
         components["attributes"] = scored("attributes", 2, blind=2)
+        components["coherencia"].veredicto = "La marca cuenta una historia única."
+        components["coherencia"].evaluation_model = "reasoning-tier"
+        components["mission"].evaluation_model = "flash-tier"
         components["values"] = ComponentResult(
             component="values", status=STATUS_NOT_EVALUATED, error="llm_timeout"
         )
@@ -75,6 +78,9 @@ class Sv9StoreTests(unittest.TestCase):
         by_component = {c["component"]: c for c in loaded["components"]}
         self.assertEqual(by_component["mission"]["score"], 3)
         self.assertEqual(len(by_component["mission"]["tile_profile"]), 5)
+        self.assertEqual(by_component["mission"]["evaluation_model"], "flash-tier")
+        self.assertEqual(by_component["coherencia"]["veredicto"], "La marca cuenta una historia única.")
+        self.assertEqual(by_component["coherencia"]["evaluation_model"], "reasoning-tier")
         self.assertEqual(by_component["attributes"]["confidence"], "media")
         self.assertEqual(by_component["values"]["status"], STATUS_NOT_EVALUATED)
         self.assertEqual(by_component["values"]["error"], "llm_timeout")

@@ -4,6 +4,7 @@ from src.sv9.rubric import (
     BASE_COMPONENTS,
     COMPONENTS,
     PRESENTATION_ORDER,
+    REASONING_COMPONENTS,
     RUBRIC_VERSION,
     component_max_points,
     component_points,
@@ -100,7 +101,12 @@ class Sv9RubricTests(unittest.TestCase):
         self.assertEqual(confidence_from_blind_spots(5), "baja")
 
     def test_rubric_version_is_pinned(self):
-        self.assertEqual(RUBRIC_VERSION, "baldosas-v3.1")
+        self.assertEqual(RUBRIC_VERSION, "baldosas-v3-1")
+
+    def test_reasoning_components_are_the_two_heavy_judgments(self):
+        self.assertEqual(set(REASONING_COMPONENTS), {"magnetism", "coherencia"})
+        for key in REASONING_COMPONENTS:
+            self.assertEqual(COMPONENTS[key]["multiplier"], 2)
 
 
 if __name__ == "__main__":

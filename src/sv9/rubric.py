@@ -30,12 +30,19 @@ Rules encoded here:
 
 from __future__ import annotations
 
-RUBRIC_VERSION = "baldosas-v3.1"
+RUBRIC_VERSION = "baldosas-v3-1"
 
 # The model label persisted on every scan and shown in the ranking during the
 # migration window. Scans from earlier rubric versions are labelled "v2".
 MODEL_LABEL = "v3.1"
 LEGACY_MODEL_LABEL = "v2"
+
+# Model routing (deploy brief section 2.6): the 8 base components run on the
+# fast Flash tier; Magnetism and Coherencia — the two fine judgments that weigh
+# 40/100 and concentrate the bias — run on the reasoning tier. The concrete
+# model ids are parameterized in src/config.py so the routing can be measured in
+# regression (Flash vs reasoning on these two components).
+REASONING_COMPONENTS = ("magnetism", "coherencia")
 
 # Component statuses (same lifecycle as v2).
 STATUS_SCORED = "scored"            # detectado: evaluated against the tiles

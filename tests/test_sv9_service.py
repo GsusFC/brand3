@@ -66,6 +66,30 @@ class Sv9ServiceTests(unittest.TestCase):
         )
         self.assertIn("brand_sentiment", magnetism_call["user"])
 
+        # Coherencia carries its synthesis verdict; a single client labels all
+        # components with its own model.
+        self.assertTrue(result.components["coherencia"].veredicto)
+        self.assertEqual(result.evaluator_model, llm.model)
+
+    def test_model_routing_through_service(self):
+        base = FakeLLM(ok_up_to=3, model="flash-tier")
+        reasoning = FakeLLM(ok_up_to=3, model="reasoning-tier")
+        result = run_sv9_from_audit_snapshot(
+            synthetic_snapshot(),
+            llm=base,
+            reasoning_llm=reasoning,
+            magnetism_result={
+                "brand_name": "Acme",
+                "source_url": "https://acme.test",
+                "source_run_id": 175,
+                "tldr_brand3": full_tldr(),
+            },
+        )
+        self.assertEqual(result.components["magnetism"].evaluation_model, "reasoning-tier")
+        self.assertEqual(result.components["coherencia"].evaluation_model, "reasoning-tier")
+        self.assertEqual(result.components["mission"].evaluation_model, "flash-tier")
+        self.assertEqual(result.evaluator_model, "flash-tier")
+
 
 if __name__ == "__main__":
     unittest.main()

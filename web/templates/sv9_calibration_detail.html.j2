@@ -166,6 +166,9 @@
     {% else %}
     <p class="prose dim sv9-cal-detected">(no detectado)</p>
     {% endif %}
+    {% if c.result.veredicto %}
+    <p class="prose sv9-cal-detected"><span class="dim">veredicto:</span> <em>{{ c.result.veredicto }}</em></p>
+    {% endif %}
     {% if c.result.error %}
     <p class="prose dim">error técnico: {{ c.result.error }}</p>
     {% endif %}

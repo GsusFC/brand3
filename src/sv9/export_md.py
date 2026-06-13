@@ -71,6 +71,10 @@ def build_scan_markdown(scan: dict[str, Any]) -> str:
         multiplier = " ×2" if spec["multiplier"] == 2 else ""
 
         lines.append(f"## {spec['label']}")
+        veredicto = str(component.get("veredicto") or "").strip()
+        if veredicto:
+            lines.append("")
+            lines.append(f"> {veredicto}")
         if status == "not_evaluated":
             lines.append("")
             lines.append(f"_Fallo técnico ({component.get('error') or 'not_evaluated'}). Reintenta el scan._")

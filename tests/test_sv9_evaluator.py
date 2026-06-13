@@ -44,8 +44,9 @@ def full_tldr() -> dict:
 class FakeLLM:
     """Lights the first `ok_up_to` tiles (with evidence), the rest `no`."""
 
-    def __init__(self, ok_up_to: int = 3, *, omit_tiles: bool = False, fail_call: bool = False):
+    def __init__(self, ok_up_to: int = 3, *, omit_tiles: bool = False, fail_call: bool = False, model: str = "fake-flash"):
         self.api_key = "test-key"
+        self.model = model
         self.ok_up_to = ok_up_to
         self.omit_tiles = omit_tiles
         self.fail_call = fail_call
@@ -71,7 +72,10 @@ class FakeLLM:
                 baldosas.append({"id": tid, "estado": "ok", "evidencia": f"quote {tid}"})
             else:
                 baldosas.append({"id": tid, "estado": "no", "motivo": "falta"})
-        return {"componente": schema_name, "baldosas": baldosas}
+        payload = {"componente": schema_name, "baldosas": baldosas}
+        if schema_name == "baldosas_coherencia":
+            payload["veredicto"] = "La marca cuenta una historia única que se sostiene."
+        return payload
 
 
 class EvaluateComponentTests(unittest.TestCase):
@@ -205,6 +209,13 @@ class EvaluateComponentTests(unittest.TestCase):
         self.assertIn("dolor, deseo, asombro, pertenencia", system)
         self.assertIn("M1", llm.calls[0]["user"])
 
+    def test_records_evaluation_model(self):
+        llm = FakeLLM(model="gemini-flash-test")
+        result = evaluate_component(
+            "mission", tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=llm
+        )
+        self.assertEqual(result.evaluation_model, "gemini-flash-test")
+
 
 class BrandIdeaSignalEvaluationTests(unittest.TestCase):
     def test_brand_idea_evaluates_from_visual_signals_without_detection(self):
@@ -269,6 +280,46 @@ class EvaluateCoherenciaTests(unittest.TestCase):
         )
         self.assertEqual(result.status, STATUS_NOT_EVALUATED)
 
+    def test_coherencia_captures_veredicto(self):
+        llm = FakeLLM(ok_up_to=2)
+        components = {
+            key: evaluate_component(key, tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=llm)
+            for key in COMPONENTS if key != "coherencia"
+        }
+        result = evaluate_coherencia(
+            components=components, tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=llm
+        )
+        self.assertTrue(result.veredicto)
+        self.assertIn("historia única", result.veredicto)
+
+    def test_coherencia_missing_veredicto_retries_then_accepts(self):
+        class NoVeredictoLLM(FakeLLM):
+            def __init__(self):
+                super().__init__(ok_up_to=2)
+                self.attempt = 0
+
+            def _call_json(self, system, user, max_tokens=8000, **kwargs):
+                self.calls.append({"user": user, "schema_name": kwargs.get("schema_name")})
+                ids = self._tiles_for(kwargs.get("schema_name"))
+                baldosas = [
+                    {"id": t, "estado": "ok" if i < 2 else "no",
+                     "evidencia": "q" if i < 2 else "", "motivo": "" if i < 2 else "m"}
+                    for i, t in enumerate(ids)
+                ]
+                self.attempt += 1
+                payload = {"baldosas": baldosas}
+                if self.attempt >= 2:
+                    payload["veredicto"] = "Síntesis al segundo intento."
+                return payload
+
+        llm = NoVeredictoLLM()
+        result = evaluate_coherencia(
+            components={}, tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=llm
+        )
+        self.assertEqual(llm.attempt, 2)  # retried because veredicto was missing
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertEqual(result.veredicto, "Síntesis al segundo intento.")
+
 
 class EvaluateSnapshotComponentsTests(unittest.TestCase):
     def test_full_pass_yields_ten_components(self):
@@ -297,6 +348,27 @@ class EvaluateSnapshotComponentsTests(unittest.TestCase):
         others = [k for k in COMPONENTS if k != "personality"]
         for key in others:
             self.assertEqual(results[key].status, STATUS_SCORED, key)
+
+    def test_model_routing_sends_magnetism_and_coherencia_to_reasoning(self):
+        base = FakeLLM(ok_up_to=3, model="flash-tier")
+        reasoning = FakeLLM(ok_up_to=3, model="reasoning-tier")
+        results = evaluate_snapshot_components(
+            tldr=full_tldr(), signals={}, brand_name="Acme", url="u",
+            llm=base, reasoning_llm=reasoning,
+        )
+        self.assertEqual(results["magnetism"].evaluation_model, "reasoning-tier")
+        self.assertEqual(results["coherencia"].evaluation_model, "reasoning-tier")
+        for key in ("mission", "vision", "values", "attributes",
+                    "value_proposition", "personality", "brand_idea", "core_purpose"):
+            self.assertEqual(results[key].evaluation_model, "flash-tier", key)
+
+    def test_single_llm_serves_both_tiers(self):
+        llm = FakeLLM(ok_up_to=3, model="only-tier")
+        results = evaluate_snapshot_components(
+            tldr=full_tldr(), signals={}, brand_name="Acme", url="u", llm=llm
+        )
+        self.assertEqual(results["magnetism"].evaluation_model, "only-tier")
+        self.assertEqual(results["mission"].evaluation_model, "only-tier")
 
 
 if __name__ == "__main__":

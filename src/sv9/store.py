@@ -51,6 +51,8 @@ class Sv9Store:
             "ALTER TABLE sv9_scans ADD COLUMN model TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN tile_profile_json TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN confidence TEXT",
+            "ALTER TABLE sv9_component_scores ADD COLUMN veredicto TEXT",
+            "ALTER TABLE sv9_component_scores ADD COLUMN evaluation_model TEXT",
         ):
             try:
                 self.conn.execute(statement)
@@ -113,10 +115,11 @@ class Sv9Store:
             """
             INSERT INTO sv9_component_scores (
                 scan_id, component, status, score, scale, points,
-                tile_profile_json, confidence, detected_content, detection_mode,
+                tile_profile_json, confidence, veredicto, evaluation_model,
+                detected_content, detection_mode,
                 detection_confidence, evidence_json, message, error,
                 rubric_version, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 scan_id,
@@ -127,6 +130,8 @@ class Sv9Store:
                 component.points,
                 json.dumps([v.to_dict() for v in component.tile_profile], ensure_ascii=False),
                 component.confidence,
+                component.veredicto,
+                component.evaluation_model,
                 component.detected_content,
                 component.detection_mode,
                 component.detection_confidence,

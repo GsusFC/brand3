@@ -40,6 +40,7 @@ def _seed_components(score: int):
             tile_profile=profile,
             detected_content=f"{key} text",
         )
+    components["coherencia"].veredicto = "La marca cuenta una historia única."
     return components
 
 
@@ -193,6 +194,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("sv9-tile", response.text)
         self.assertIn("encendida", response.text)
         self.assertIn("punto ciego", response.text)
+        self.assertIn("La marca cuenta una historia única.", response.text)  # coherencia verdict
 
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)

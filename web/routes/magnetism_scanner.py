@@ -14,6 +14,7 @@ from fastapi.responses import RedirectResponse
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+from src.features.magnetism.moodboard import build_moodboard_model
 from src.features.magnetism.translation import apply_magnetism_translation
 from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
 from src.scoring.provenance import build_score_provenance_report
@@ -149,6 +150,33 @@ _MAGNETISM_UI = {
             "vitalidad": "Vitality",
         },
         "methodology_details": "Methodology Details",
+        "moodboard": "Moodboard",
+        "moodboard_tag": "visual board built from captured brand assets",
+        "moodboard_intro": (
+            "Representative images the brand publishes on its owned surfaces, captured during this scan and "
+            "arranged as a moodboard next to the strategic reading."
+        ),
+        "moodboard_hint": "drag images to rearrange",
+        "moodboard_shuffle": "shuffle",
+        "moodboard_empty": (
+            "No representative images were captured for this scan. The moodboard needs a Brand Audit run "
+            "with a persisted web acquisition."
+        ),
+        "moodboard_visual_reading": "Visual reading",
+        "moodboard_visual_reading_tag": "strategic blocks that frame the imagery",
+        "moodboard_inventory": "Image inventory",
+        "moodboard_inventory_tag": "captured assets and their roles",
+        "moodboard_role": "role",
+        "moodboard_alt": "alt text",
+        "moodboard_roles": {
+            "logo": "logo / icon",
+            "social_card": "social card",
+            "content": "page image",
+        },
+        "moodboard_source_note": (
+            "Images are linked directly from the brand's own pages as captured at scan time; an empty slot "
+            "means the asset is no longer reachable."
+        ),
         "detail_tag": "9 strategic blocks derived from 7 Magenta signals",
         "no_detected": "(not detected)",
         "system_reading": "TLDR System Reading",
@@ -351,6 +379,33 @@ _MAGNETISM_UI = {
             "vitalidad": "Vitalidad",
         },
         "methodology_details": "Detalles de metodología",
+        "moodboard": "Moodboard",
+        "moodboard_tag": "tablero visual con assets capturados de la marca",
+        "moodboard_intro": (
+            "Imágenes representativas que la marca publica en sus superficies propias, capturadas durante "
+            "este escaneo y organizadas como moodboard junto a la lectura estratégica."
+        ),
+        "moodboard_hint": "arrastra las imágenes para reorganizar",
+        "moodboard_shuffle": "reorganizar",
+        "moodboard_empty": (
+            "No se capturaron imágenes representativas para este escaneo. El moodboard necesita un run de "
+            "Brand Audit con adquisición web persistida."
+        ),
+        "moodboard_visual_reading": "Lectura visual",
+        "moodboard_visual_reading_tag": "bloques estratégicos que enmarcan las imágenes",
+        "moodboard_inventory": "Inventario de imágenes",
+        "moodboard_inventory_tag": "assets capturados y su rol",
+        "moodboard_role": "rol",
+        "moodboard_alt": "texto alt",
+        "moodboard_roles": {
+            "logo": "logo / icono",
+            "social_card": "tarjeta social",
+            "content": "imagen de página",
+        },
+        "moodboard_source_note": (
+            "Las imágenes se enlazan directamente desde las páginas de la marca tal como se capturaron; un "
+            "hueco vacío significa que el asset ya no es accesible."
+        ),
         "detail_tag": "9 bloques estratégicos derivados de 7 señales Magenta",
         "no_detected": "(no detectado)",
         "system_reading": "Lectura de sistema TLDR",
@@ -1047,6 +1102,52 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
         request,
         "magnetism_research.html.j2",
         {"model": model, "ui_lang": lang},
+    )
+
+
+@router.get("/magnetism-scanner/scan/{scan_id}/moodboard")
+async def magnetism_scanner_moodboard(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render the visual moodboard for a specific Magnetism scan."""
+    model = _magnetism_scan_model(scan_id, lang=lang)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
+            status_code=404,
+        )
+    model["active_tab"] = "moodboard"
+    model["moodboard"] = _moodboard_model(model)
+    _attach_ui(model, lang)
+    _attach_sv9_link(model, request)
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_moodboard.html.j2",
+        {"model": model, "ui_lang": lang},
+    )
+
+
+def _moodboard_model(model: dict) -> dict:
+    """Build the moodboard view model from the scan's persisted source run."""
+    web_payload: dict | None = None
+    brand_logo_url: str | None = None
+    source_run_id = model.get("source_run_id")
+    if source_run_id:
+        store = SQLiteStore(BRAND3_DB_PATH)
+        try:
+            snapshot = store.get_run_snapshot(int(source_run_id))
+        finally:
+            store.close()
+        if snapshot:
+            brand_logo_url = (snapshot.get("run") or {}).get("brand_logo_url")
+            for item in snapshot.get("raw_inputs") or []:
+                if item.get("source") == "web" and isinstance(item.get("payload"), dict):
+                    web_payload = item["payload"]
+    return build_moodboard_model(
+        model.get("payload") or {},
+        web_payload,
+        brand_logo_url=brand_logo_url,
     )
 
 

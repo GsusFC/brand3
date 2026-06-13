@@ -3207,3 +3207,91 @@ a:hover {
     transition: none;
   }
 }
+
+/* Moodboard: scattered cloud of captured brand images inside the scanner.
+   Tiles are absolutely positioned by moodboard.js; the rotation is kept in
+   a custom property so the drag translate can compose with it. */
+.moodboard-canvas {
+  position: relative;
+  margin-top: 14px;
+  height: 560px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background-color: var(--soft-panel-bg);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.moodboard-item {
+  position: absolute;
+  margin: 0;
+  padding: 6px 6px 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  rotate: var(--moodboard-rotation, 0deg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 160ms ease, rotate 220ms ease;
+}
+
+.moodboard-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.moodboard-item[data-role="logo"] {
+  padding: 10px;
+  background: var(--bg);
+}
+
+.moodboard-item[data-role="logo"] img {
+  object-fit: contain;
+  max-height: 110px;
+}
+
+.moodboard-caption {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moodboard-item-grabbed {
+  cursor: grabbing;
+  rotate: 0deg;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.24);
+}
+
+.moodboard-shuffle {
+  margin-left: auto;
+}
+
+.moodboard-empty {
+  margin-top: 14px;
+  border: 1px dashed var(--border);
+  background: var(--soft-panel-bg);
+  padding: 28px 18px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .moodboard-canvas {
+    height: 420px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moodboard-item {
+    transition: none;
+  }
+}

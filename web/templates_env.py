@@ -11,6 +11,7 @@ templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 _STATIC_DIR = Path(__file__).resolve().parent / "static"
 _STATIC_FILES = [
     _STATIC_DIR / "main.css",
+    _STATIC_DIR / "moodboard.js",
     _STATIC_DIR / "status_waiting.js",
 ]
 try:

@@ -181,6 +181,90 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("Why the brand appears to exist beyond the product.", methodology_es.text)
         self.assertIn('<html lang="es">', detail_es.text)
 
+    def test_moodboard_tab_renders_images_from_source_run(self):
+        from web.storage import insert_magnetism_scan
+
+        store = SQLiteStore(str(self.db))
+        brand_id = store.upsert_brand("Moodboard Brand", "https://moodboard.example")
+        run_id = store.create_run(
+            brand_id,
+            "Moodboard Brand",
+            "https://moodboard.example",
+            use_llm=False,
+            use_social=False,
+        )
+        store.save_raw_input(
+            run_id,
+            "web",
+            {
+                "url": "https://moodboard.example",
+                "html": (
+                    '<html><head>'
+                    '<meta property="og:image" content="https://cdn.moodboard.example/card.png">'
+                    '<link rel="apple-touch-icon" href="/icon.png">'
+                    '</head><body><img src="/img/hero.jpg" alt="Hero image"></body></html>'
+                ),
+                "markdown_content": "![Product](https://moodboard.example/product.png)",
+            },
+        )
+        store.close()
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url="https://moodboard.example",
+            manual_text="A clear, memorable brand for operators.",
+            brand_name="Moodboard Brand",
+        )
+        payload["source_run_id"] = run_id
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "https://moodboard.example",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=run_id,
+        )
+
+        detail = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+        self.assertEqual(detail.status_code, 200)
+        self.assertIn(f"/magnetism-scanner/scan/{scan_id}/moodboard", detail.text)
+
+        moodboard_es = self.client.get(f"/magnetism-scanner/scan/{scan_id}/moodboard?lang=es")
+        self.assertEqual(moodboard_es.status_code, 200)
+        self.assertIn("Moodboard", moodboard_es.text)
+        self.assertIn("Inventario de imágenes", moodboard_es.text)
+        self.assertIn("https://cdn.moodboard.example/card.png", moodboard_es.text)
+        self.assertIn("https://moodboard.example/icon.png", moodboard_es.text)
+        self.assertIn("https://moodboard.example/img/hero.jpg", moodboard_es.text)
+        self.assertIn("https://moodboard.example/product.png", moodboard_es.text)
+        self.assertIn("moodboard.js", moodboard_es.text)
+
+        moodboard_en = self.client.get(f"/magnetism-scanner/scan/{scan_id}/moodboard?lang=en")
+        self.assertEqual(moodboard_en.status_code, 200)
+        self.assertIn("Image inventory", moodboard_en.text)
+
+    def test_moodboard_tab_shows_empty_state_without_source_run(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A manual scan without acquisition inputs.",
+            brand_name="No Run Brand",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        moodboard = self.client.get(f"/magnetism-scanner/scan/{scan_id}/moodboard?lang=es")
+        self.assertEqual(moodboard.status_code, 200)
+        self.assertIn("No se capturaron imágenes representativas", moodboard.text)
+        self.assertNotIn("moodboard.js", moodboard.text)
+
     def test_scan_detail_applies_cached_tldr_translation(self):
         from web.storage import insert_magnetism_scan
 

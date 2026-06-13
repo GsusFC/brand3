@@ -20,6 +20,7 @@ _MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 _MIGRATION_PATHS = [
     _MIGRATIONS_DIR / "009_sv9.sql",
     _MIGRATIONS_DIR / "010_sv9_ranking.sql",
+    _MIGRATIONS_DIR / "011_sv9_editorial_decisions.sql",
 ]
 
 
@@ -208,6 +209,44 @@ class Sv9Store:
                 (executive_reading, scan_id),
             )
         self.conn.commit()
+
+    # --- editorial calibration ---
+
+    def save_editorial_decision(
+        self,
+        *,
+        scan_id: int,
+        component: str,
+        decision: str,
+        note: str | None,
+        evaluator: str | None,
+    ) -> None:
+        now = _utcnow()
+        self.conn.execute(
+            """
+            INSERT INTO sv9_editorial_decisions (
+                scan_id, component, decision, note, evaluator, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(scan_id, component) DO UPDATE SET
+                decision = excluded.decision,
+                note = excluded.note,
+                evaluator = excluded.evaluator,
+                updated_at = excluded.updated_at
+            """,
+            (scan_id, component, decision, note, evaluator, now, now),
+        )
+        self.conn.commit()
+
+    def list_editorial_decisions(self, scan_id: int) -> dict[str, dict[str, Any]]:
+        rows = self.conn.execute(
+            """
+            SELECT * FROM sv9_editorial_decisions
+            WHERE scan_id = ?
+            ORDER BY component ASC
+            """,
+            (scan_id,),
+        ).fetchall()
+        return {str(row["component"]): dict(row) for row in rows}
 
     # --- pinned Pass 1 detection ---
 

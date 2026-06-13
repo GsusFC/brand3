@@ -1,7 +1,6 @@
 <div class="lab-review-nav" style="margin-bottom: 14px;">
-  <a class="source-link" href="/magnetism-scanner{{ model.lang_query }}">{{ model.t.back }}</a>
+  <a class="source-link" href="{{ model.back_href if model.back_href is defined else '/magnetism-scanner' ~ model.lang_query }}">{{ model.t.back }}</a>
   <a class="source-link{% if model.active_tab == 'tldr' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}{{ model.lang_query }}">TLDR Brand3</a>
-  <a class="source-link{% if model.active_tab == 'client_tldr_v2' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/client-tldr-v2{{ model.lang_query }}">TLDR v2 Preview</a>
   {% if model.sv9_scan_id %}
   <a class="source-link{% if model.active_tab == 'sv9' %} badge-ready{% endif %}" href="/sv9/scan/{{ model.sv9_scan_id }}">SV9 Score</a>
   {% elif model.source_run_id %}

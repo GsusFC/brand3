@@ -1,6 +1,93 @@
 {% extends "base.html.j2" %}
 {% block title %}brand3 :: SV9 :: {{ scan.brand_name }}{% endblock %}
 {% block content %}
+{% macro eye_button(box) -%}
+<button class="source-link sv9-editorial-open" type="button" data-sv9-dialog-open="sv9-editorial-{{ box.key }}" aria-label="Abrir lectura editorial de {{ box.label }}" title="Abrir lectura editorial">
+  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+    <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+    <circle cx="12" cy="12" r="2.75"></circle>
+  </svg>
+</button>
+{%- endmacro %}
+
+{% macro editorial_drawer(box, is_coherence=False) -%}
+<dialog class="sv9-editorial-drawer" id="sv9-editorial-{{ box.key }}" aria-labelledby="sv9-editorial-title-{{ box.key }}">
+  <div class="sv9-editorial-drawer-inner">
+    <div class="sv9-editorial-drawer-head">
+      <div>
+        <div class="dim sv9-editorial-kicker">componente</div>
+        <h2 id="sv9-editorial-title-{{ box.key }}" class="sv9-editorial-title">{{ box.label }}</h2>
+      </div>
+      <form method="dialog">
+        <button class="source-link" type="submit" aria-label="Cerrar drawer editorial">Cerrar</button>
+      </form>
+    </div>
+
+    <div class="sv9-editorial-stack">
+      <section class="sv9-editorial-section">
+        <h3>Resumen</h3>
+        <div class="sv9-editorial-scoreline">
+          <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 or is_coherence %} ×2{% endif %}</span>
+          <span class="dim">{{ box.status_label }}</span>
+        </div>
+        <p>{{ box.content or ("Coherencia se evalúa a partir del conjunto del canvas." if is_coherence else "(no detectado)") }}</p>
+        {% if box.next_rung %}
+        <p class="dim">→ siguiente: {{ box.next_rung.criterion }}{% if box.next_rung.evaluable is defined and not box.next_rung.evaluable %} · sin canal de evidencia{% endif %}</p>
+        {% endif %}
+      </section>
+
+      <section class="sv9-editorial-section">
+        <h3>V9</h3>
+        {% if box.message %}
+        <p>{{ box.message }}</p>
+        {% else %}
+        <p class="dim">No hay editorial V9 generada para {{ "coherencia" if is_coherence else "este componente" }}.</p>
+        {% endif %}
+      </section>
+
+      <section class="sv9-editorial-section">
+        <h3>V2</h3>
+        {% if is_coherence %}
+        <p class="dim">V2 no tiene bloque equivalente de coherencia. Este cierre pertenece a SV9.</p>
+        {% elif box.v2_reference.text %}
+        <p>{{ box.v2_reference.text }}</p>
+        <p class="dim sv9-editorial-meta">
+          source={{ box.v2_reference.source }}{% if box.v2_reference.confidence %} · confidence={{ box.v2_reference.confidence }}{% endif %}{% if box.v2_reference.mode %} · mode={{ box.v2_reference.mode }}{% endif %}
+        </p>
+        {% else %}
+        <p class="dim">No hay editorial V2 persistida para este componente. SV9 no ejecuta TLDR v2 al abrir esta vista.</p>
+        {% endif %}
+      </section>
+
+      <section class="sv9-editorial-section">
+        <h3>Decisión</h3>
+        <form method="post" action="/sv9/scan/{{ scan.id }}/editorial-decision/{{ box.key }}">
+          <label class="sv9-editorial-field">
+            <span>Decisión</span>
+            <select name="decision" required>
+              <option value="v9"{% if box.editorial_decision.decision == 'v9' %} selected{% endif %}>V9</option>
+              <option value="v2"{% if box.editorial_decision.decision == 'v2' %} selected{% endif %}>V2</option>
+              <option value="mix"{% if box.editorial_decision.decision == 'mix' %} selected{% endif %}>Mezclar</option>
+              <option value="rewrite"{% if box.editorial_decision.decision == 'rewrite' %} selected{% endif %}>Reescribir</option>
+              <option value="reject_both"{% if box.editorial_decision.decision == 'reject_both' %} selected{% endif %}>Descartar ambas</option>
+            </select>
+          </label>
+          <label class="sv9-editorial-field">
+            <span>Nota interna</span>
+            <textarea name="note" rows="4">{{ box.editorial_decision.note or "" }}</textarea>
+          </label>
+          <label class="sv9-editorial-field">
+            <span>Evaluador</span>
+            <input name="evaluator" value="{{ box.editorial_decision.evaluator or "" }}" placeholder="nombre">
+          </label>
+          <button class="source-link" type="submit">Guardar decisión</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</dialog>
+{%- endmacro %}
+
 <section class="magnetism-hero-section">
   <div class="section-head">
     <span class="label">brand3 scanner</span>
@@ -20,11 +107,6 @@
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
       <h1 class="page-title magnetism-hero-title">{{ scan.brand_name }}</h1>
-      {% if scan.executive_reading %}
-      <p class="prose intro-copy magnetism-hero-verdict">
-        {{ scan.executive_reading }}
-      </p>
-      {% endif %}
     </div>
     <div class="magnetism-hero-metric">
       <div class="dim magnetism-hero-label">Brand3 Score</div>
@@ -95,10 +177,13 @@
     {% for row in canvas %}
     <div class="sv9-canvas-row sv9-canvas-row-{{ row|length }}">
       {% for box in row %}
-      <div class="sv9-canvas-card{% if box.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
+      <div class="sv9-canvas-card{% if box.status != 'scored' %} sv9-canvas-card-muted{% endif %}" id="sv9-card-{{ box.key }}">
         <div class="magnetism-card-head sv9-canvas-card-head">
           <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ box.label }}</span>
-          <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
+          <span class="sv9-canvas-actions">
+            <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 %} ×2{% endif %}</span>
+            {{ eye_button(box) }}
+          </span>
         </div>
         {% if box.status != 'scored' %}
         <p class="dim" style="margin: -8px 0 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
@@ -110,32 +195,30 @@
         {% else %}
         <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
         {% endif %}
-        {% if box.message %}
-        <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ box.message }}</p>
-        {% endif %}
         {% if box.next_rung %}
         <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
           → siguiente: {{ box.next_rung.criterion }}{% if not box.next_rung.evaluable %} <span title="bloqueado por falta de canal de evidencia, no por evidencia en contra">· ⊘ sin canal de evidencia</span>{% endif %}
         </p>
         {% endif %}
       </div>
+      {{ editorial_drawer(box) }}
       {% endfor %}
     </div>
     {% endfor %}
 
     {# Coherencia reads the whole: full-width card closing the canvas. #}
-    <div class="sv9-canvas-card sv9-canvas-coherence{% if coherencia.status != 'scored' %} sv9-canvas-card-muted{% endif %}">
+    <div class="sv9-canvas-card sv9-canvas-coherence{% if coherencia.status != 'scored' %} sv9-canvas-card-muted{% endif %}" id="sv9-card-{{ coherencia.key }}">
       <div class="magnetism-card-head sv9-canvas-card-head">
         <span class="hl-accent magnetism-card-title sv9-canvas-card-title">{{ coherencia.label }}</span>
-        <span class="badge">{{ coherencia.score }}/{{ coherencia.scale }} ×2</span>
+        <span class="sv9-canvas-actions">
+          <span class="badge">{{ coherencia.score }}/{{ coherencia.scale }} ×2</span>
+          {{ eye_button(coherencia) }}
+        </span>
       </div>
       {% if coherencia.status != 'scored' %}
       <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
         {{ coherencia.status_label }}{% if coherencia.error %} · {{ coherencia.error }}{% endif %}
       </p>
-      {% endif %}
-      {% if coherencia.message %}
-      <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ coherencia.message }}</p>
       {% endif %}
       {% if coherencia.next_rung %}
       <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
@@ -143,10 +226,23 @@
       </p>
       {% endif %}
     </div>
+    {{ editorial_drawer(coherencia, is_coherence=True) }}
   </div>
 
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 12px 0 0;">
     <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a>
   </p>
 </section>
+<script>
+  (() => {
+    const openers = document.querySelectorAll("[data-sv9-dialog-open]");
+    openers.forEach((opener) => {
+      opener.addEventListener("click", () => {
+        const dialog = document.getElementById(opener.dataset.sv9DialogOpen);
+        if (!dialog || typeof dialog.showModal !== "function") return;
+        dialog.showModal();
+      });
+    });
+  })();
+</script>
 {% endblock %}

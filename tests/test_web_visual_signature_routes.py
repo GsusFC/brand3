@@ -68,11 +68,11 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
 
     def test_visual_signature_routes_render_read_only_sections(self):
         expected = {
-            "/visual-signature": "Visual Signature Lab",
-            "/visual-signature/governance": "Visual Signature Lab Governance",
-            "/visual-signature/calibration": "Visual Signature Lab Calibration",
-            "/visual-signature/corpus": "Visual Signature Lab Corpus",
-            "/visual-signature/reviewer": "Visual Signature Lab Reviewer",
+            "/visual-signature?lang=en": "Visual Signature Lab",
+            "/visual-signature/governance?lang=en": "Visual Signature Lab Governance",
+            "/visual-signature/calibration?lang=en": "Visual Signature Lab Calibration",
+            "/visual-signature/corpus?lang=en": "Visual Signature Lab Corpus",
+            "/visual-signature/reviewer?lang=en": "Visual Signature Lab Reviewer",
         }
         for path, title in expected.items():
             with self.subTest(path=path):
@@ -83,8 +83,18 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
                 self.assertIn("no scoring impact", response.text)
                 self.assertIn("render-time derived", response.text)
 
-    def test_visual_signature_overview_renders_screenshot_evidence(self):
+    def test_visual_signature_default_ui_is_spanish(self):
         response = self.client.get("/visual-signature")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('<html lang="es">', response.text)
+        self.assertIn("Laboratorio de firma visual", response.text)
+        self.assertIn("Primero evidencia visual", response.text)
+        self.assertIn("Brand3 Scoring sigue separado.", response.text)
+        self.assertNotIn("Visual evidence first", response.text)
+
+    def test_visual_signature_overview_renders_screenshot_evidence(self):
+        response = self.client.get("/visual-signature?lang=en")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("visual_evidence", response.text)
@@ -105,7 +115,7 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertNotIn("content-disposition", response.headers)
 
     def test_visual_signature_screenshot_preview_renders_headspace_in_site(self):
-        response = self.client.get("/visual-signature/screenshots/headspace.png/preview")
+        response = self.client.get("/visual-signature/screenshots/headspace.png/preview?lang=en")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Headspace", response.text)
@@ -122,7 +132,7 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertIn("/visual-signature", response.text)
 
     def test_visual_signature_full_page_preview_has_related_navigation(self):
-        response = self.client.get("/visual-signature/screenshots/headspace.full-page.png/preview")
+        response = self.client.get("/visual-signature/screenshots/headspace.full-page.png/preview?lang=en")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Headspace", response.text)
@@ -138,7 +148,7 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         review_records_path = self.visual_root / "phase_two" / "reviews" / "review_records.json"
         before = review_records_path.read_text(encoding="utf-8")
 
-        response = self.client.get("/visual-signature/reviewer/human-review/headspace")
+        response = self.client.get("/visual-signature/reviewer/human-review/headspace?lang=en")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(review_records_path.read_text(encoding="utf-8"), before)
@@ -164,7 +174,7 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertNotIn('class="raw-json"', response.text)
 
     def test_visual_signature_human_review_renders_allbirds_case(self):
-        response = self.client.get("/visual-signature/reviewer/human-review/allbirds")
+        response = self.client.get("/visual-signature/reviewer/human-review/allbirds?lang=en")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Allbirds", response.text)

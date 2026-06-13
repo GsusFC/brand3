@@ -538,10 +538,11 @@ class WebAppFlowTests(unittest.TestCase):
         try:
             response = self.client.post(
                 "/analyze",
-                data={"url": "https://example.com"},
+                data={"url": "https://example.com", "lang": "en"},
                 follow_redirects=False,
             )
-            token = response.headers["location"].split("/")[2]
+            status_location = response.headers["location"]
+            token = status_location.split("/")[2]
 
             row = None
             for _ in range(30):
@@ -557,12 +558,14 @@ class WebAppFlowTests(unittest.TestCase):
             self.assertEqual(row[0], "running")
             self.assertEqual(row[1], "scoring")
 
-            status_resp = self.client.get(f"/r/{token}/status")
+            status_resp = self.client.get(status_location)
             self.assertEqual(status_resp.status_code, 200)
             self.assertIn("Scoring dimensions", status_resp.text)
             self.assertIn("[active]", status_resp.text)
             self.assertIn("A full scan takes 3-5 minutes", status_resp.text)
-            self.assertIn('data-status-waiting data-status="running"', status_resp.text)
+            self.assertIn("data-status-waiting", status_resp.text)
+            self.assertIn('data-status="running"', status_resp.text)
+            self.assertIn('data-ui-lang="en"', status_resp.text)
             self.assertIn('src="/static/status_waiting.js?v=', status_resp.text)
             self.assertIn('class="status-game"', status_resp.text)
             self.assertIn('data-dino-canvas', status_resp.text)

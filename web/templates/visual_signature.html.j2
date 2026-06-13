@@ -1,29 +1,29 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: {{ model.title }}{% endblock %}
+{% block title %}brand3 :: {{ model.ui.title_by_section.get(model.section, model.title) }}{% endblock %}
 {% block content %}
 <section>
   <div class="section-head">
-    <span class="label">{{ model.title }}</span>
-    <span class="tag">// read-only · evidence-only · no scoring impact</span>
+    <span class="label">{{ model.ui.title_by_section.get(model.section, model.title) }}</span>
+    <span class="tag">// {{ model.ui.guardrails.get('read-only source artifact navigation') }} · {{ model.ui.guardrails.get('evidence-only') }} · {{ model.ui.guardrails.get('no scoring impact') }}</span>
   </div>
 
-  <h1 class="page-title">{{ model.title }}</h1>
-  <p class="prose dim intro-copy vs-summary">{{ model.intro }}</p>
+  <h1 class="page-title">{{ model.ui.title_by_section.get(model.section, model.title) }}</h1>
+  <p class="prose dim intro-copy vs-summary">{{ model.ui.intro_by_section.get(model.section, model.intro) }}</p>
 
-  <nav class="vs-nav" aria-label="Visual Signature sections">
+  <nav class="vs-nav" aria-label="{{ 'Secciones de firma visual' if current_lang == 'es' else 'Visual Signature sections' }}">
     {% for item in model.nav %}
-    <a class="vs-nav-link{% if item.active %} active{% endif %}" href="{{ item.href }}{{ lang_suffix }}">{{ item.label }}</a>
+    <a class="vs-nav-link{% if item.active %} active{% endif %}" href="{{ item.href }}{{ lang_suffix }}">{{ model.ui.nav.get(item.href, item.label) }}</a>
     {% endfor %}
   </nav>
 
   <div class="guardrail-banner">
-    <strong>Brand3 Scoring remains separate.</strong>
-    <span class="dim">New brand scans still run through <a href="{{ model.initial_scoring.href }}{{ lang_suffix }}">Brand Audit</a>. Dimension prose is render-time derived by the current report renderer; no persisted generated_texts_per_dimension artifact is invented here.</span>
+    <strong>{{ model.ui.overview_guardrail_title }}</strong>
+    <span class="dim">{{ model.ui.overview_guardrail_copy }} <a href="{{ model.initial_scoring.href }}{{ lang_suffix }}">Brand Audit</a>. {{ model.ui.overview_guardrail_tail }}</span>
   </div>
 
   <div class="badge-line">
     {% for guardrail in model.guardrails %}
-    <span class="badge">{{ guardrail }}</span>
+    <span class="badge">{{ model.ui.guardrails.get(guardrail, guardrail) }}</span>
     {% endfor %}
   </div>
 </section>
@@ -33,18 +33,18 @@
 
 <section>
   <div class="section-head">
-    <span class="label">visual_evidence</span>
-    <span class="tag">// screenshots are primary evidence</span>
+    <span class="label">{{ model.ui.visual_evidence }}</span>
+    <span class="tag">// {{ model.ui.screenshots_primary }}</span>
   </div>
 
   <div class="visual-evidence-intro">
-    <h2>Visual evidence first</h2>
-    <p>Each capture keeps the raw viewport as primary evidence. Clean attempts and full-page captures are supplemental views for understanding obstruction, dismissal behavior, and what changed without reading raw JSON.</p>
+    <h2>{{ model.ui.visual_evidence_first }}</h2>
+    <p>{{ model.ui.visual_evidence_intro }}</p>
     <div class="vs-meta-row">
-      <span class="inline-kv"><span class="k">captures</span>=<span class="v">{{ model.visual_evidence.summary.capture_count }}</span></span>
-      <span class="inline-kv"><span class="k">raw viewport</span>=<span class="v">{{ model.visual_evidence.summary.raw_viewport_count }}</span></span>
-      <span class="inline-kv"><span class="k">clean attempt</span>=<span class="v">{{ model.visual_evidence.summary.clean_attempt_count }}</span></span>
-      <span class="inline-kv"><span class="k">full page</span>=<span class="v">{{ model.visual_evidence.summary.full_page_count }}</span></span>
+      <span class="inline-kv"><span class="k">{{ model.ui.captures }}</span>=<span class="v">{{ model.visual_evidence.summary.capture_count }}</span></span>
+      <span class="inline-kv"><span class="k">{{ model.ui.raw_viewport }}</span>=<span class="v">{{ model.visual_evidence.summary.raw_viewport_count }}</span></span>
+      <span class="inline-kv"><span class="k">{{ model.ui.clean_attempt }}</span>=<span class="v">{{ model.visual_evidence.summary.clean_attempt_count }}</span></span>
+      <span class="inline-kv"><span class="k">{{ model.ui.full_page }}</span>=<span class="v">{{ model.visual_evidence.summary.full_page_count }}</span></span>
     </div>
   </div>
 
@@ -65,17 +65,17 @@
         {% for screenshot in item.variants %}
         <figure class="screenshot-evidence{% if not screenshot.exists %} is-missing{% endif %}">
           {% if screenshot.exists %}
-          <a href="{{ screenshot.preview_href }}" aria-label="Preview {{ screenshot.label }} screenshot for {{ item.brand_name }}">
+          <a href="{{ screenshot.preview_href }}{{ lang_suffix }}" aria-label="{{ model.ui.preview_screenshot }} {{ model.ui.screenshot_labels.get(screenshot.label, screenshot.label) }} screenshot for {{ item.brand_name }}">
             <img src="{{ screenshot.href }}" alt="{{ screenshot.alt }}">
           </a>
           {% else %}
-          <div class="screenshot-missing">{% if screenshot.label == "clean attempt" %}No clean attempt available{% else %}missing screenshot{% endif %}</div>
+          <div class="screenshot-missing">{% if screenshot.label == "clean attempt" %}{{ model.ui.no_clean_attempt }}{% else %}{{ model.ui.missing_screenshot }}{% endif %}</div>
           {% endif %}
           <figcaption>
-            <span>{{ screenshot.label }}</span>
+            <span>{{ model.ui.screenshot_labels.get(screenshot.label, screenshot.label) }}</span>
             <code>{{ screenshot.filename }}</code>
             {% if screenshot.exists %}
-            <a class="source-link screenshot-source-link" href="{{ screenshot.href }}" target="_blank" rel="noopener">open full-resolution</a>
+            <a class="source-link screenshot-source-link" href="{{ screenshot.href }}" target="_blank" rel="noopener">{{ model.ui.open_full_resolution }}</a>
           {% endif %}
         </figcaption>
       </figure>
@@ -83,15 +83,15 @@
       </div>
 
       <div class="evidence-story">
-        <p><strong>Capture:</strong> raw viewport is preserved as the evidence baseline.</p>
-        <p><strong>Obstruction:</strong> {{ item.obstruction_type }} was recorded with {{ item.obstruction_severity }} severity.</p>
-        <p><strong>Clean attempt:</strong> {% if item.dismissal_attempted %}a safe dismissal attempt was recorded{% if item.dismissal_successful %} and reduced the obstruction{% else %}, but it did not materially reduce the obstruction{% endif %}.{% else %}no dismissal was attempted for this capture.{% endif %}</p>
-        <p><strong>Preservation:</strong> supplemental captures do not replace the raw viewport.</p>
+        <p><strong>{{ model.ui.capture }}:</strong> {{ model.ui.capture_story }}</p>
+        <p><strong>{{ model.ui.obstruction }}:</strong> {{ item.obstruction_type }} {{ model.ui.obstruction_story }} {{ item.obstruction_severity }} {{ model.ui.severity }}.</p>
+        <p><strong>{{ model.ui.clean_attempt }}:</strong> {% if item.dismissal_attempted %}{{ model.ui.clean_attempt_recorded }}{% if item.dismissal_successful %} {{ model.ui.clean_attempt_reduced }}{% else %}, {{ model.ui.clean_attempt_not_reduced }}{% endif %}.{% else %}{{ model.ui.clean_attempt_not_attempted }}{% endif %}</p>
+        <p><strong>{{ model.ui.preservation }}:</strong> {{ model.ui.preservation_story }}</p>
       </div>
 
       {% if item.evidence_notes %}
       <details class="vs-compact-details">
-        <summary>evidence notes</summary>
+        <summary>{{ model.ui.evidence_notes }}</summary>
         <ul class="evidence-notes">
           {% for note in item.evidence_notes %}
           <li>{{ note }}</li>
@@ -104,7 +104,7 @@
 
     {% if not model.visual_evidence["items"] %}
     <div class="visual-evidence-empty">
-      No curated screenshots were found under <code>examples/visual_signature/screenshots/</code>.
+      {{ model.ui.no_curated_screenshots }} <code>examples/visual_signature/screenshots/</code>.
     </div>
     {% endif %}
   </div>
@@ -114,25 +114,25 @@
 
 <section>
   <div class="section-head">
-    <span class="label">evidence_flow</span>
-    <span class="tag">// capture to review</span>
+    <span class="label">{{ model.ui.evidence_flow }}</span>
+    <span class="tag">// {{ model.ui.capture_to_review }}</span>
   </div>
   <div class="evidence-flow">
     <article>
-      <h2>1. Capture</h2>
-      <p>The viewport screenshot records the page as observed. This is the baseline artifact used for evidence review.</p>
+      <h2>{{ model.ui.flow_capture_title }}</h2>
+      <p>{{ model.ui.flow_capture_copy }}</p>
     </article>
     <article>
-      <h2>2. Obstruction dismissal</h2>
-      <p>When a safe candidate exists, the system can record an attempted dismissal. Unsafe or ambiguous actions remain blocked.</p>
+      <h2>{{ model.ui.flow_dismiss_title }}</h2>
+      <p>{{ model.ui.flow_dismiss_copy }}</p>
     </article>
     <article>
-      <h2>3. Clean attempt</h2>
-      <p>A clean-attempt image is supplemental. It helps compare what changed, but it does not overwrite the raw capture.</p>
+      <h2>{{ model.ui.flow_clean_title }}</h2>
+      <p>{{ model.ui.flow_clean_copy }}</p>
     </article>
     <article>
-      <h2>4. Evidence preservation</h2>
-      <p>Raw, clean-attempt, full-page, manifest, and audit artifacts stay linked so reviewers can inspect the lineage.</p>
+      <h2>{{ model.ui.flow_preserve_title }}</h2>
+      <p>{{ model.ui.flow_preserve_copy }}</p>
     </article>
   </div>
 </section>
@@ -142,8 +142,8 @@
 
 <section>
   <div class="section-head">
-    <span class="label">{% if model.section == "overview" %}governance_calibration_reviewer_summary{% else %}status_summary{% endif %}</span>
-    <span class="tag">// source artifacts only</span>
+    <span class="label">{% if model.section == "overview" %}{{ model.ui.governance_summary }}{% else %}{{ model.ui.status_summary }}{% endif %}</span>
+    <span class="tag">// {{ model.ui.source_artifacts_only }}</span>
   </div>
 
   <div class="vs-report-list">
@@ -154,9 +154,9 @@
           <h2>{{ card.label }}</h2>
           <p class="dim">
             {% if card.exists %}
-            Source artifact is available for local review.
+            {{ model.ui.artifact_available }}
             {% else %}
-            Source artifact is missing or unknown; the platform keeps rendering without it.
+            {{ model.ui.artifact_missing }}
             {% endif %}
           </p>
         </div>
@@ -168,17 +168,17 @@
         <span class="inline-kv"><span class="k">{{ key }}</span>=<span class="v">{{ value }}</span></span>
         {% endfor %}
         {% if not card.summary %}
-        <span class="inline-kv"><span class="k">state</span>=<span class="v">missing_or_unknown</span></span>
+        <span class="inline-kv"><span class="k">{{ model.ui.state }}</span>=<span class="v">missing_or_unknown</span></span>
         {% endif %}
       </div>
 
       <details class="vs-compact-details">
-        <summary>artifact metadata</summary>
+        <summary>{{ model.ui.artifact_metadata }}</summary>
         <div class="kv artifact-kv">
           <span class="k">type</span>    <span class="v">{{ card.type }}</span>
           <span class="k">exists</span>  <span class="v">{{ card.exists }}</span>
           <span class="k">path</span>    <span class="v mono-token">{{ card.path }}</span>
-          <span class="k">source</span>  <span class="v">{% if card.exists %}<a href="{{ card.source_href }}">open source {{ card.type }}</a>{% else %}missing_or_unknown{% endif %}</span>
+          <span class="k">{{ model.ui.source }}</span>  <span class="v">{% if card.exists %}<a href="{{ card.source_href }}">{{ model.ui.open_source }} {{ card.type }}</a>{% else %}missing_or_unknown{% endif %}</span>
         </div>
       </details>
     </article>
@@ -191,16 +191,16 @@
 
 <section>
   <div class="section-head">
-    <span class="label">human_review</span>
-    <span class="tag">// screenshot first · local-only draft</span>
+    <span class="label">{{ model.ui.human_review }}</span>
+    <span class="tag">// {{ model.ui.screenshot_first_draft }}</span>
   </div>
   <div class="vs-report-item">
       <div class="vs-report-main">
         <div class="vs-report-title">
-          <h2>Evidence-first human review</h2>
-          <p class="dim">Inspect Headspace and Allbirds screenshots, answer structured visual questions, and draft outcome/confidence/notes without creating completed review records.</p>
+          <h2>{{ model.ui.evidence_first_review }}</h2>
+          <p class="dim">{{ model.ui.human_review_intro }}</p>
         </div>
-      <a class="source-link" href="/visual-signature/reviewer/human-review{{ lang_suffix }}">open human review</a>
+      <a class="source-link" href="/visual-signature/reviewer/human-review{{ lang_suffix }}">{{ model.ui.open_human_review }}</a>
       </div>
   </div>
 </section>
@@ -210,16 +210,16 @@
 <hr class="rule-thin">
 <section>
   <div class="section-head">
-    <span class="label">records</span>
-    <span class="tag">// {{ model.records|length }} shown</span>
+    <span class="label">{{ model.ui.records }}</span>
+    <span class="tag">// {{ model.records|length }} {{ model.ui.shown }}</span>
   </div>
   <div class="table-wrap vs-records-table">
     <table>
       <thead>
         <tr>
-          <th>item</th>
-          <th>status</th>
-          <th>metadata</th>
+          <th>{{ model.ui.item }}</th>
+          <th>{{ model.ui.status }}</th>
+          <th>{{ model.ui.metadata }}</th>
         </tr>
       </thead>
       <tbody>
@@ -244,8 +244,8 @@
 
 <section>
   <div class="section-head">
-    <span class="label">source_artifacts</span>
-    <span class="tag">// raw JSON hidden by default</span>
+    <span class="label">{{ model.ui.source_artifacts }}</span>
+    <span class="tag">// {{ model.ui.raw_json_hidden }}</span>
   </div>
   <div class="artifact-list">
     {% for artifact in model.artifacts %}
@@ -258,12 +258,12 @@
         <span class="k">type</span>    <span class="v">{{ artifact.type }}</span>
         <span class="k">exists</span>  <span class="v">{{ artifact.exists }}</span>
         <span class="k">path</span>    <span class="v mono-token">{{ artifact.path }}</span>
-        <span class="k">source</span>  <span class="v">{% if artifact.exists %}<a href="{{ artifact.source_href }}">open source artifact</a>{% else %}missing_or_unknown{% endif %}</span>
+        <span class="k">{{ model.ui.source }}</span>  <span class="v">{% if artifact.exists %}<a href="{{ artifact.source_href }}">{{ model.ui.open_source_artifact }}</a>{% else %}missing_or_unknown{% endif %}</span>
       </div>
       {% if artifact.raw_json %}
       <pre class="raw-json">{{ artifact.raw_json }}</pre>
       {% else %}
-      <pre class="raw-json">raw JSON unavailable for this artifact.</pre>
+      <pre class="raw-json">{{ model.ui.raw_json_unavailable }}</pre>
       {% endif %}
     </details>
     {% endfor %}
@@ -274,8 +274,8 @@
 
 <section>
   <div class="section-head">
-    <span class="label">what_to_do_next</span>
-    <span class="tag">// no write actions</span>
+    <span class="label">{{ model.ui.what_to_do_next }}</span>
+    <span class="tag">// {{ model.ui.no_write_actions }}</span>
   </div>
   <div class="next-steps">
     {% for step in model.next_steps %}

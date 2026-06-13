@@ -3582,7 +3582,7 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(status_response.status_code, 200)
         self.assertIn("analyst_tldr", status_response.text)
         self.assertIn("timeout", status_response.text)
-        self.assertIn("retryable", status_response.text)
+        self.assertIn("reintentable", status_response.text)
         self.assertNotIn("raw provider detail", status_response.text)
 
     def test_direct_manual_scan_insert_marks_payload_debug_only(self):

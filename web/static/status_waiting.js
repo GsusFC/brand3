@@ -20,6 +20,31 @@
   const prefersReducedMotion = () => Boolean(reducedMotionQuery.matches);
   const pollInterval = Number(root.getAttribute("data-poll-interval")) || 5000;
   const readyHref = root.getAttribute("data-ready-href") || "";
+  const lang = root.getAttribute("data-ui-lang") === "en" ? "en" : "es";
+  const copy = {
+    es: {
+      motionReduced: "Movimiento reducido",
+      motionReducedStart: "Movimiento reducido - pulsa Empezar",
+      running: "Corriendo",
+      jumping: "Saltando",
+      crashed: "Colisión. Pulsa Empezar para reintentar.",
+      gameOver: "Fin de partida",
+      retry: "Pulsa Empezar o Espacio para reintentar",
+      pausedHidden: "Pausado mientras la pestaña está oculta",
+      pausedOffscreen: "Pausado fuera de pantalla",
+    },
+    en: {
+      motionReduced: "Motion reduced",
+      motionReducedStart: "Motion reduced - tap Start",
+      running: "Running",
+      jumping: "Jumping",
+      crashed: "Crashed. Press Start to retry.",
+      gameOver: "Game over",
+      retry: "Press Start or Space to try again",
+      pausedHidden: "Paused while hidden",
+      pausedOffscreen: "Paused while off-screen",
+    },
+  }[lang];
 
   const state = {
     running: false,
@@ -127,7 +152,7 @@
     state.obstacles = [];
     state.clouds = [];
     setScore(0);
-    setStateMessage(prefersReducedMotion() ? "Motion reduced" : "Running");
+    setStateMessage(prefersReducedMotion() ? copy.motionReduced : copy.running);
     if (state.rafId) {
       cancelAnimationFrame(state.rafId);
       state.rafId = 0;
@@ -179,7 +204,7 @@
     }
     if (canJump()) {
       state.jumpVelocity = -world.jumpStrength;
-      setStateMessage("Jumping");
+      setStateMessage(copy.jumping);
     }
   };
 
@@ -308,9 +333,9 @@
     ctx.fillStyle = palette.text;
     ctx.font = "700 14px monospace";
     ctx.textAlign = "center";
-    ctx.fillText("Game over", world.width / 2, world.height / 2 - 4);
+    ctx.fillText(copy.gameOver, world.width / 2, world.height / 2 - 4);
     ctx.font = "12px sans-serif";
-    ctx.fillText("Press Start or Space to try again", world.width / 2, world.height / 2 + 18);
+    ctx.fillText(copy.retry, world.width / 2, world.height / 2 + 18);
   };
 
   const render = () => {
@@ -366,7 +391,7 @@
 
     if (state.obstacles.some(isColliding)) {
       setScore(Math.floor(state.score));
-      stopGame("Crashed. Press Start to retry.");
+      stopGame(copy.crashed);
       render();
       return;
     }
@@ -411,7 +436,7 @@
     if (state.visible) {
       resume();
     } else {
-      pause("Paused while hidden");
+      pause(copy.pausedHidden);
     }
   };
 
@@ -423,7 +448,7 @@
         if (state.visible) {
           resume();
         } else {
-          pause("Paused while off-screen");
+          pause(copy.pausedOffscreen);
         }
       },
       { threshold: 0.1 },
@@ -443,7 +468,7 @@
     if (!state.started || state.gameOver) {
       resetGame();
       state.jumpVelocity = -world.jumpStrength;
-      setStateMessage("Jumping");
+      setStateMessage(copy.jumping);
       return;
     }
     jump();
@@ -474,11 +499,11 @@
   startButton.addEventListener("click", onStart);
   if (reducedMotionQuery.addEventListener) {
     reducedMotionQuery.addEventListener("change", () => {
-      setStateMessage(prefersReducedMotion() ? "Motion reduced" : "Running");
+      setStateMessage(prefersReducedMotion() ? copy.motionReduced : copy.running);
     });
   }
 
-  setStateMessage(prefersReducedMotion() ? "Motion reduced - tap Start" : "Running");
+  setStateMessage(prefersReducedMotion() ? copy.motionReducedStart : copy.running);
   if (!prefersReducedMotion()) {
     resetGame();
   } else {

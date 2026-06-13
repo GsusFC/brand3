@@ -61,12 +61,19 @@ verifier would solve a non-problem.
 
 ## §4 What remains (not done — intentional)
 
-- **The narrative harness is dead by design.** `narrative_harness.py` (8
-  prose-quality checks) and the `unsupported_editorial_synthesis` readiness gate
-  are scaffolding: `entity_narrative_state.py` declares `runtime_enabled: False`.
-  The gate has no producer and the harness is only called by tests. Its checks
-  are prose-quality heuristics — none cross a claim against `raw_inputs` — so
-  wiring it is **polish, not anti-hallucination safety**.
+- **The narrative harness was deleted (2026-06-14).** `narrative_harness.py`,
+  `entity_narrative_state.py`, and the `state_first_findings/prose_generator`
+  modules were an offline-only Phase-2 family (`runtime_enabled: False`) with
+  zero production callers; the `unsupported_editorial_synthesis` readiness gate
+  never received input (`_readiness_inputs_from_snapshot` never populated
+  `narrative_summary`, so the gate always saw `{}`). Removed (~63 files incl.
+  tests/fixtures) rather than carried as dead code, along with the now-unreachable
+  gate plumbing in `report_readiness.py` and `derivation.py`. Its 8 checks were
+  prose-quality heuristics — none crossed a claim against `raw_inputs` — so the
+  removal dropped **no anti-hallucination safety**. Prose quality is governed in
+  the TLDR/SV9 path (`src/features/magnetism/`), which is untouched. Decision:
+  developing post-generation prose QC adds nothing now; rebuild if it ever lands
+  on the roadmap.
 - **Paraphrase-quote fidelity** (non-URL claims like "the copy emphasizes X") is
   unverified — low severity given the 0% URL fabrication; only measurable via
   noisy quote-matching.

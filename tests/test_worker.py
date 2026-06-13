@@ -132,17 +132,29 @@ class Sv9MaterializationTests(unittest.TestCase):
     def test_materializes_sv9_scan_for_completed_magnetism_result(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = self._db_path(tmpdir)
+
+            def fake_materialize(run_id, *, db_path, **kwargs):
+                # The real materialize_sv9_scan persists the scan and returns
+                # (scan_id, result); the fake mirrors that contract.
+                result = self._sv9_result(run_id)
+                store = Sv9Store(db_path)
+                try:
+                    scan_id = store.save_scan(result)
+                finally:
+                    store.close()
+                return scan_id, result
+
             with patch.object(web_queue, "_db_path", return_value=db_path):
                 with patch(
-                    "src.sv9.service.run_sv9_from_audit_run",
-                    return_value=self._sv9_result(123),
-                ) as run_sv9:
+                    "src.sv9.service.materialize_sv9_scan",
+                    side_effect=fake_materialize,
+                ) as materialize:
                     scan_id = web_queue._ensure_sv9_scan_for_magnetism_result(
                         {"source_run_id": 123}
                     )
 
             self.assertIsInstance(scan_id, int)
-            run_sv9.assert_called_once_with(123, db_path=str(db_path))
+            materialize.assert_called_once_with(123, db_path=str(db_path))
             sv9_store = Sv9Store(str(db_path))
             try:
                 scan = sv9_store.get_scan_for_run(123, rubric_version=RUBRIC_VERSION)
@@ -164,13 +176,13 @@ class Sv9MaterializationTests(unittest.TestCase):
                 sv9_store.close()
 
             with patch.object(web_queue, "_db_path", return_value=db_path):
-                with patch("src.sv9.service.run_sv9_from_audit_run") as run_sv9:
+                with patch("src.sv9.service.materialize_sv9_scan") as materialize:
                     scan_id = web_queue._ensure_sv9_scan_for_magnetism_result(
                         {"source_run_id": 123}
                     )
 
             self.assertEqual(scan_id, existing_id)
-            run_sv9.assert_not_called()
+            materialize.assert_not_called()
             with sqlite3.connect(str(db_path)) as conn:
                 count = conn.execute("SELECT COUNT(*) FROM sv9_scans WHERE source_run_id = 123").fetchone()[0]
             self.assertEqual(count, 1)
@@ -180,7 +192,7 @@ class Sv9MaterializationTests(unittest.TestCase):
             db_path = self._db_path(tmpdir)
             with patch.object(web_queue, "_db_path", return_value=db_path):
                 with patch(
-                    "src.sv9.service.run_sv9_from_audit_run",
+                    "src.sv9.service.materialize_sv9_scan",
                     side_effect=RuntimeError("llm unavailable"),
                 ):
                     scan_id = web_queue._ensure_sv9_scan_for_magnetism_result({"source_run_id": 123})

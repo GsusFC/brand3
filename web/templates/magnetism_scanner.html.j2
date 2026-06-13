@@ -4,9 +4,9 @@
 <section class="home-hero">
   {% if show_sv9_nav %}
   <div class="lab-review-nav" style="margin-bottom: 10px;">
-    <a class="source-link" href="/sv9/calibration">SV9 · scans en sombra</a>
-    <a class="source-link" href="/sv9/ranking">Ranking</a>
-    <span class="badge badge-missing">interno</span>
+    <a class="source-link" href="/sv9/calibration{{ lang_suffix }}">SV9 · {{ 'scans en sombra' if current_lang == 'es' else 'shadow scans' }}</a>
+    <a class="source-link" href="/sv9/ranking{{ lang_suffix }}">Ranking</a>
+    <span class="badge badge-missing">{{ 'interno' if current_lang == 'es' else 'internal' }}</span>
   </div>
   {% endif %}
   <h1 class="page-title">{{ landing.title }}</h1>

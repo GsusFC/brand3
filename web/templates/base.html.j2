@@ -51,8 +51,8 @@
     </a>
     <div class="term-actions">
       <div class="lang-toggle" aria-label="Language switch">
-        <a class="source-link{% if current_lang == 'es' %} badge-ready{% endif %}" href="{{ current_path }}?lang=es">ES</a>
-        <a class="source-link{% if current_lang == 'en' %} badge-ready{% endif %}" href="{{ current_path }}?lang=en">EN</a>
+        <a class="source-link{% if current_lang == 'es' %} badge-ready{% endif %}" href="{{ language_switch_url(request, 'es') }}">ES</a>
+        <a class="source-link{% if current_lang == 'en' %} badge-ready{% endif %}" href="{{ language_switch_url(request, 'en') }}">EN</a>
       </div>
       <button class="theme-toggle theme-toggle-term" type="button" data-theme-toggle aria-label="Toggle color theme">Theme</button>
     </div>

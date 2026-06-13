@@ -5,6 +5,8 @@ from pathlib import Path
 
 from fastapi.templating import Jinja2Templates
 
+from .i18n import language_switch_url
+
 TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
 
@@ -19,3 +21,4 @@ except OSError:
     STATIC_ASSET_VERSION = "dev"
 
 templates.env.globals["static_asset_version"] = STATIC_ASSET_VERSION
+templates.env.globals["language_switch_url"] = language_switch_url

@@ -2,7 +2,7 @@
 {% block title %}brand3 :: SV9 :: {{ scan.brand_name }}{% endblock %}
 {% block content %}
 {% macro eye_button(box) -%}
-<button class="source-link sv9-editorial-open" type="button" data-sv9-dialog-open="sv9-editorial-{{ box.key }}" aria-label="Abrir lectura editorial de {{ box.label }}" title="Abrir lectura editorial">
+<button class="source-link sv9-editorial-open" type="button" data-sv9-dialog-open="sv9-editorial-{{ box.key }}" aria-label="{{ 'Abrir lectura editorial de' if current_lang == 'es' else 'Open editorial read for' }} {{ box.label }}" title="{{ 'Abrir lectura editorial' if current_lang == 'es' else 'Open editorial read' }}">
   <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
     <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
     <circle cx="12" cy="12" r="2.75"></circle>
@@ -15,24 +15,24 @@
   <div class="sv9-editorial-drawer-inner">
     <div class="sv9-editorial-drawer-head">
       <div>
-        <div class="dim sv9-editorial-kicker">componente</div>
+        <div class="dim sv9-editorial-kicker">{{ 'componente' if current_lang == 'es' else 'component' }}</div>
         <h2 id="sv9-editorial-title-{{ box.key }}" class="sv9-editorial-title">{{ box.label }}</h2>
       </div>
       <form method="dialog">
-        <button class="source-link" type="submit" aria-label="Cerrar drawer editorial">Cerrar</button>
+        <button class="source-link" type="submit" aria-label="{{ 'Cerrar drawer editorial' if current_lang == 'es' else 'Close editorial drawer' }}">{{ 'Cerrar' if current_lang == 'es' else 'Close' }}</button>
       </form>
     </div>
 
     <div class="sv9-editorial-stack">
       <section class="sv9-editorial-section">
-        <h3>Resumen</h3>
+        <h3>{{ 'Resumen' if current_lang == 'es' else 'Summary' }}</h3>
         <div class="sv9-editorial-scoreline">
           <span class="badge">{{ box.score }}/{{ box.scale }}{% if box.multiplier == 2 or is_coherence %} ×2{% endif %}</span>
           <span class="dim">{{ box.status_label }}</span>
         </div>
-        <p>{{ box.content or ("Coherencia se evalúa a partir del conjunto del canvas." if is_coherence else "(no detectado)") }}</p>
+        <p>{{ box.content or (("Coherencia se evalúa a partir del conjunto del canvas." if current_lang == 'es' else "Coherence is evaluated from the whole canvas.") if is_coherence else ("(no detectado)" if current_lang == 'es' else "(not detected)")) }}</p>
         {% if box.next_rung %}
-        <p class="dim">→ siguiente: {{ box.next_rung.criterion }}{% if box.next_rung.evaluable is defined and not box.next_rung.evaluable %} · sin canal de evidencia{% endif %}</p>
+        <p class="dim">→ {{ 'siguiente' if current_lang == 'es' else 'next' }}: {{ box.next_rung.criterion }}{% if box.next_rung.evaluable is defined and not box.next_rung.evaluable %} · {{ 'sin canal de evidencia' if current_lang == 'es' else 'no evidence channel' }}{% endif %}</p>
         {% endif %}
       </section>
 
@@ -41,46 +41,46 @@
         {% if box.message %}
         <p>{{ box.message }}</p>
         {% else %}
-        <p class="dim">No hay editorial V9 generada para {{ "coherencia" if is_coherence else "este componente" }}.</p>
+        <p class="dim">{{ 'No hay editorial V9 generada para' if current_lang == 'es' else 'No V9 editorial generated for' }} {{ "coherencia" if is_coherence else ("este componente" if current_lang == 'es' else "this component") }}.</p>
         {% endif %}
       </section>
 
       <section class="sv9-editorial-section">
         <h3>V2</h3>
         {% if is_coherence %}
-        <p class="dim">V2 no tiene bloque equivalente de coherencia. Este cierre pertenece a SV9.</p>
+        <p class="dim">{{ 'V2 no tiene bloque equivalente de coherencia. Este cierre pertenece a SV9.' if current_lang == 'es' else 'V2 has no equivalent coherence block. This closing read belongs to SV9.' }}</p>
         {% elif box.v2_reference.text %}
         <p>{{ box.v2_reference.text }}</p>
         <p class="dim sv9-editorial-meta">
           source={{ box.v2_reference.source }}{% if box.v2_reference.confidence %} · confidence={{ box.v2_reference.confidence }}{% endif %}{% if box.v2_reference.mode %} · mode={{ box.v2_reference.mode }}{% endif %}
         </p>
         {% else %}
-        <p class="dim">No hay editorial V2 persistida para este componente. SV9 no ejecuta TLDR v2 al abrir esta vista.</p>
+        <p class="dim">{{ 'No hay editorial V2 persistida para este componente. SV9 no ejecuta TLDR v2 al abrir esta vista.' if current_lang == 'es' else 'No persisted V2 editorial exists for this component. SV9 does not run TLDR v2 when opening this view.' }}</p>
         {% endif %}
       </section>
 
       <section class="sv9-editorial-section">
-        <h3>Decisión</h3>
+        <h3>{{ 'Decisión' if current_lang == 'es' else 'Decision' }}</h3>
         <form method="post" action="/sv9/scan/{{ scan.id }}/editorial-decision/{{ box.key }}">
           <label class="sv9-editorial-field">
-            <span>Decisión</span>
+            <span>{{ 'Decisión' if current_lang == 'es' else 'Decision' }}</span>
             <select name="decision" required>
               <option value="v9"{% if box.editorial_decision.decision == 'v9' %} selected{% endif %}>V9</option>
               <option value="v2"{% if box.editorial_decision.decision == 'v2' %} selected{% endif %}>V2</option>
-              <option value="mix"{% if box.editorial_decision.decision == 'mix' %} selected{% endif %}>Mezclar</option>
-              <option value="rewrite"{% if box.editorial_decision.decision == 'rewrite' %} selected{% endif %}>Reescribir</option>
-              <option value="reject_both"{% if box.editorial_decision.decision == 'reject_both' %} selected{% endif %}>Descartar ambas</option>
+              <option value="mix"{% if box.editorial_decision.decision == 'mix' %} selected{% endif %}>{{ 'Mezclar' if current_lang == 'es' else 'Mix' }}</option>
+              <option value="rewrite"{% if box.editorial_decision.decision == 'rewrite' %} selected{% endif %}>{{ 'Reescribir' if current_lang == 'es' else 'Rewrite' }}</option>
+              <option value="reject_both"{% if box.editorial_decision.decision == 'reject_both' %} selected{% endif %}>{{ 'Descartar ambas' if current_lang == 'es' else 'Reject both' }}</option>
             </select>
           </label>
           <label class="sv9-editorial-field">
-            <span>Nota interna</span>
+            <span>{{ 'Nota interna' if current_lang == 'es' else 'Internal note' }}</span>
             <textarea name="note" rows="4">{{ box.editorial_decision.note or "" }}</textarea>
           </label>
           <label class="sv9-editorial-field">
-            <span>Evaluador</span>
-            <input name="evaluator" value="{{ box.editorial_decision.evaluator or "" }}" placeholder="nombre">
+            <span>{{ 'Evaluador' if current_lang == 'es' else 'Evaluator' }}</span>
+            <input name="evaluator" value="{{ box.editorial_decision.evaluator or "" }}" placeholder="{{ 'nombre' if current_lang == 'es' else 'name' }}">
           </label>
-          <button class="source-link" type="submit">Guardar decisión</button>
+          <button class="source-link" type="submit">{{ 'Guardar decisión' if current_lang == 'es' else 'Save decision' }}</button>
         </form>
       </section>
     </div>
@@ -91,16 +91,16 @@
 <section class="magnetism-hero-section">
   <div class="section-head">
     <span class="label">brand3 scanner</span>
-    <span class="tag">// sv9 score · sombra</span>
+    <span class="tag">// sv9 score · {{ 'sombra' if current_lang == 'es' else 'shadow' }}</span>
   </div>
 
   {% if model %}
   {% include "magnetism_scan_nav.html.j2" %}
   {% else %}
   <div class="lab-review-nav" style="margin-bottom: 14px;">
-    <a class="source-link" href="/sv9/calibration">← Scans SV9</a>
-    <a class="source-link badge-ready" href="/sv9/scan/{{ scan.id }}">SV9 Score</a>
-    <a class="source-link" href="/sv9/calibration/{{ scan.id }}">Calibración</a>
+    <a class="source-link" href="/sv9/calibration{{ lang_suffix }}">← {{ 'Scans SV9' if current_lang == 'es' else 'SV9 scans' }}</a>
+    <a class="source-link badge-ready" href="/sv9/scan/{{ scan.id }}{{ lang_suffix }}">SV9 Score</a>
+    <a class="source-link" href="/sv9/calibration/{{ scan.id }}{{ lang_suffix }}">{{ 'Calibración' if current_lang == 'es' else 'Calibration' }}</a>
   </div>
   {% endif %}
 
@@ -117,19 +117,19 @@
         <span style="--score-width: {{ scan.brand3_score }}%;"></span>
       </div>
       {% if gap_label %}
-      <div class="dim magnetism-hero-tier">hueco: {{ gap_label }}</div>
+      <div class="dim magnetism-hero-tier">{{ 'hueco' if current_lang == 'es' else 'gap' }}: {{ gap_label }}</div>
       {% endif %}
     </div>
     <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">Margen inmediato</div>
+      <div class="dim magnetism-hero-label">{{ 'Margen inmediato' if current_lang == 'es' else 'Immediate margin' }}</div>
       <div class="hl-ok magnetism-hero-score">
         +{{ scan.immediate_margin }}<span> pts</span>
       </div>
       <div class="dim magnetism-hero-tier" style="margin-top: 8px;">
-        {% if scan.magnetism_capped %}magnetism cap activo{% endif %}
-        {% if scan.needs_review %} · coherencia en revisión{% endif %}
-        {% if not scan.is_complete %} · scan parcial{% endif %}
-        {% if not scan.magnetism_capped and not scan.needs_review and scan.is_complete %}a un paso de subir{% endif %}
+        {% if scan.magnetism_capped %}{{ 'magnetism cap activo' if current_lang == 'es' else 'magnetism cap active' }}{% endif %}
+        {% if scan.needs_review %} · {{ 'coherencia en revisión' if current_lang == 'es' else 'coherence under review' }}{% endif %}
+        {% if not scan.is_complete %} · {{ 'scan parcial' if current_lang == 'es' else 'partial scan' }}{% endif %}
+        {% if not scan.magnetism_capped and not scan.needs_review and scan.is_complete %}{{ 'a un paso de subir' if current_lang == 'es' else 'one step from improving' }}{% endif %}
       </div>
     </div>
   </div>
@@ -146,10 +146,15 @@
   <div style="margin-top: 18px; border: 1px solid var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); padding: 14px;">
     <div class="magnetism-card-head" style="display:flex; justify-content:space-between; align-items:flex-start; gap:14px;">
       <div>
-        <div class="hl-warn" style="font-family:var(--font-mono); text-transform:uppercase; font-size:12px;">evaluación técnica fallida</div>
+        <div class="hl-warn" style="font-family:var(--font-mono); text-transform:uppercase; font-size:12px;">{{ 'evaluación técnica fallida' if current_lang == 'es' else 'technical evaluation failed' }}</div>
         <p class="dim" style="margin: 6px 0 0; font-family:var(--font-mono); font-size:12px; line-height:1.55;">
+          {% if current_lang == 'es' %}
           El contenido fue detectado, pero {{ technical_failures|length }} componente{% if technical_failures|length != 1 %}s{% endif %} no se puntuaron por fallo del proveedor.
           Este 0/100 no es un diagnóstico estratégico válido.
+          {% else %}
+          Content was detected, but {{ technical_failures|length }} component{% if technical_failures|length != 1 %}s{% endif %} could not be scored because the provider failed.
+          This 0/100 is not a valid strategic diagnosis.
+          {% endif %}
         </p>
         <p class="dim" style="margin: 6px 0 0; font-family:var(--font-mono); font-size:12px; line-height:1.55;">
           error: {{ technical_failures[0].error or 'not_evaluated' }}
@@ -169,8 +174,8 @@
 
 <section class="magnetism-tldr-section">
   <div class="section-head">
-    <span class="label">Canvas Brand3 puntuado</span>
-    <span class="tag">// 9 componentes · coherencia cierra</span>
+    <span class="label">{{ 'Canvas Brand3 puntuado' if current_lang == 'es' else 'Scored Brand3 canvas' }}</span>
+    <span class="tag">// 9 {{ 'componentes' if current_lang == 'es' else 'components' }} · {{ 'coherencia cierra' if current_lang == 'es' else 'coherence closes' }}</span>
   </div>
 
   <div class="sv9-canvas">
@@ -193,11 +198,11 @@
         {% if box.content %}
         <p class="magnetism-card-result" style="margin: 0;">{{ box.content }}</p>
         {% else %}
-        <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
+        <p class="dim magnetism-card-result" style="margin: 0;">{{ '(no detectado)' if current_lang == 'es' else '(not detected)' }}</p>
         {% endif %}
         {% if box.next_rung %}
         <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
-          → siguiente: {{ box.next_rung.criterion }}{% if not box.next_rung.evaluable %} <span title="bloqueado por falta de canal de evidencia, no por evidencia en contra">· ⊘ sin canal de evidencia</span>{% endif %}
+          → {{ 'siguiente' if current_lang == 'es' else 'next' }}: {{ box.next_rung.criterion }}{% if not box.next_rung.evaluable %} <span title="{{ 'bloqueado por falta de canal de evidencia, no por evidencia en contra' if current_lang == 'es' else 'blocked by missing evidence channel, not counter-evidence' }}">· ⊘ {{ 'sin canal de evidencia' if current_lang == 'es' else 'no evidence channel' }}</span>{% endif %}
         </p>
         {% endif %}
       </div>
@@ -222,7 +227,7 @@
       {% endif %}
       {% if coherencia.next_rung %}
       <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45; border-top: 1px dashed var(--border); padding-top: 8px;">
-        → siguiente: {{ coherencia.next_rung.criterion }}
+        → {{ 'siguiente' if current_lang == 'es' else 'next' }}: {{ coherencia.next_rung.criterion }}
       </p>
       {% endif %}
     </div>
@@ -230,7 +235,7 @@
   </div>
 
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 12px 0 0;">
-    <a href="/sv9/calibration/{{ scan.id }}">→ escaleras, evidencia y calibración de este scan</a>
+    <a href="/sv9/calibration/{{ scan.id }}{{ lang_suffix }}">→ {{ 'escaleras, evidencia y calibración de este scan' if current_lang == 'es' else 'ladders, evidence, and calibration for this scan' }}</a>
   </p>
 </section>
 <script>

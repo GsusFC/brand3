@@ -2,7 +2,7 @@
   <a class="source-link" href="{{ model.back_href if model.back_href is defined else '/magnetism-scanner' ~ model.lang_query }}">{{ model.t.back }}</a>
   <a class="source-link{% if model.active_tab == 'tldr' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}{{ model.lang_query }}">TLDR Brand3</a>
   {% if model.sv9_scan_id %}
-  <a class="source-link{% if model.active_tab == 'sv9' %} badge-ready{% endif %}" href="/sv9/scan/{{ model.sv9_scan_id }}">SV9 Score</a>
+  <a class="source-link{% if model.active_tab == 'sv9' %} badge-ready{% endif %}" href="/sv9/scan/{{ model.sv9_scan_id }}{{ model.lang_query }}">SV9 Score</a>
   {% elif model.source_run_id %}
   <form method="post" action="/magnetism-scanner/scan/{{ model.id }}/generate-sv9{{ model.lang_query }}" style="display:inline;">
     <input class="source-link source-link-button" type="submit" value="{{ model.t.generate_sv9 }}">

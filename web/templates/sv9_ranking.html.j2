@@ -4,39 +4,45 @@
 <section>
   <div class="section-head">
     <span class="label">ranking_brand3</span>
-    <span class="tag">// {{ ranking.rubric_version }} · {{ ranking.total }} dominio{{ 's' if ranking.total != 1 }}</span>
+    <span class="tag">// {{ ranking.rubric_version }} · {{ ranking.total }} {{ 'dominio' if current_lang == 'es' else 'domain' }}{{ 's' if ranking.total != 1 }}</span>
   </div>
 
   <p class="prose dim">
+    {% if current_lang == 'es' %}
     Ordenado por Brand3 Score. Una entrada por dominio, solo scans completos de la
     rúbrica vigente. El percentil aparece cuando su categoría alcanza
     {{ ranking.min_cohort }} dominios.
+    {% else %}
+    Ordered by Brand3 Score. One entry per domain, only complete scans from the
+    current rubric. Percentile appears once its category reaches
+    {{ ranking.min_cohort }} domains.
+    {% endif %}
   </p>
 
   <div class="lab-review-nav" style="margin: 12px 0;">
-    <a class="source-link{% if not ranking.active_category %} badge-ready{% endif %}" href="/sv9/ranking">todas</a>
+    <a class="source-link{% if not ranking.active_category %} badge-ready{% endif %}" href="/sv9/ranking{{ lang_suffix }}">{{ 'todas' if current_lang == 'es' else 'all' }}</a>
     {% for cat in ranking.taxonomy %}
     {% if cat.count > 0 %}
     <a class="source-link{% if ranking.active_category == cat.key %} badge-ready{% endif %}"
-       href="/sv9/ranking?categoria={{ cat.key }}">{{ cat.label }} · {{ cat.count }}</a>
+       href="/sv9/ranking?categoria={{ cat.key }}{{ lang_query }}">{{ cat.label }} · {{ cat.count }}</a>
     {% endif %}
     {% endfor %}
   </div>
 
   {% if not ranking.entries %}
-  <p class="prose">Sin scans completos para la rúbrica vigente todavía.</p>
+  <p class="prose">{{ 'Sin scans completos para la rúbrica vigente todavía.' if current_lang == 'es' else 'No complete scans for the current rubric yet.' }}</p>
   {% else %}
   <div class="table-wrap sv9-ranking-table-wrap">
   <table style="width:100%; border-collapse:collapse; font-size:0.95em;">
     <thead>
       <tr style="text-align:left; opacity:0.7;">
         <th style="padding:10px 12px;">#</th>
-        <th style="padding:10px 12px;">dominio</th>
+        <th style="padding:10px 12px;">{{ 'dominio' if current_lang == 'es' else 'domain' }}</th>
         <th style="padding:10px 12px;">brand3_score</th>
-        <th style="padding:10px 12px;">categoría</th>
-        <th style="padding:10px 12px;">percentil</th>
-        <th style="padding:10px 12px;">fecha</th>
-        <th style="padding:10px 12px;" class="dim">interno</th>
+        <th style="padding:10px 12px;">{{ 'categoría' if current_lang == 'es' else 'category' }}</th>
+        <th style="padding:10px 12px;">{{ 'percentil' if current_lang == 'es' else 'percentile' }}</th>
+        <th style="padding:10px 12px;">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
+        <th style="padding:10px 12px;" class="dim">{{ 'interno' if current_lang == 'es' else 'internal' }}</th>
       </tr>
     </thead>
     <tbody>
@@ -45,13 +51,13 @@
         <td style="padding:10px 12px;">{{ entry.position }}</td>
         <td style="padding:10px 12px;">{{ entry.domain }}</td>
         <td style="padding:10px 12px;">
-          <a href="/sv9/scan/{{ entry.scan_id }}"><strong>{{ entry.brand3_score }}</strong><span class="dim">/100</span></a>
+          <a href="/sv9/scan/{{ entry.scan_id }}{{ lang_suffix }}"><strong>{{ entry.brand3_score }}</strong><span class="dim">/100</span></a>
         </td>
         <td style="padding:10px 12px;">
           {% if entry.category_label %}
           {{ entry.category_label }} <span class="dim">· {{ entry.category_source }}</span>
           {% else %}
-          <span class="dim">sin clasificar</span>
+          <span class="dim">{{ 'sin clasificar' if current_lang == 'es' else 'unclassified' }}</span>
           {% endif %}
         </td>
         <td style="padding:10px 12px;">
@@ -60,20 +66,20 @@
         <td style="padding:10px 12px;" class="dim">{{ entry.scanned_at[:10] }}</td>
         <td style="padding:10px 12px;">
           <details>
-            <summary class="dim" style="cursor:pointer; font-size:0.85em;">editar</summary>
+            <summary class="dim" style="cursor:pointer; font-size:0.85em;">{{ 'editar' if current_lang == 'es' else 'edit' }}</summary>
             <form method="post" action="/sv9/ranking/brand/{{ entry.domain }}"
                   style="display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:8px; font-size:0.9em;">
               <select name="primary_category" style="min-height:36px;">
-                <option value="">sin clasificar</option>
+                <option value="">{{ 'sin clasificar' if current_lang == 'es' else 'unclassified' }}</option>
                 {% for key, spec in categories.items() %}
                 <option value="{{ key }}"{% if entry.category == key %} selected{% endif %}>{{ spec.label }}</option>
                 {% endfor %}
               </select>
               <label style="display:inline-flex; align-items:center; gap:6px;">
-                <input type="checkbox" name="exclude_from_ranking" value="true"> excluir
+                <input type="checkbox" name="exclude_from_ranking" value="true"> {{ 'excluir' if current_lang == 'es' else 'exclude' }}
               </label>
-              <input type="text" name="evaluador" placeholder="evaluador" style="width:7em; min-height:32px;">
-              <button type="submit">guardar</button>
+              <input type="text" name="evaluador" placeholder="{{ 'evaluador' if current_lang == 'es' else 'evaluator' }}" style="width:7em; min-height:32px;">
+              <button type="submit">{{ 'guardar' if current_lang == 'es' else 'save' }}</button>
             </form>
           </details>
         </td>
@@ -85,7 +91,7 @@
   {% endif %}
 
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin-top: 16px;">
-    ¿Eres propietario de una marca listada y quieres retirarla? <a href="/takedown">/takedown</a>
+    {{ '¿Eres propietario de una marca listada y quieres retirarla?' if current_lang == 'es' else 'Own a listed brand and want it removed?' }} <a href="/takedown{{ lang_suffix }}">/takedown</a>
   </p>
 </section>
 {% endblock %}

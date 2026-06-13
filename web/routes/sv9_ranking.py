@@ -7,6 +7,8 @@ goes through the team gate (currently disabled by product decision).
 
 from __future__ import annotations
 
+from typing import Literal
+
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 
@@ -19,10 +21,15 @@ from ..templates_env import templates
 from .sv9_calibration import _require_team_write
 
 router = APIRouter()
+_Lang = Literal["es", "en"]
 
 
 @router.get("/sv9/ranking")
-async def sv9_ranking(request: Request, categoria: str | None = Query(None)):
+async def sv9_ranking(
+    request: Request,
+    categoria: str | None = Query(None),
+    lang: _Lang = Query("es"),
+):
     if categoria and categoria not in CATEGORIES:
         raise HTTPException(status_code=404, detail="unknown category")
     store = Sv9Store(BRAND3_DB_PATH)
@@ -33,7 +40,7 @@ async def sv9_ranking(request: Request, categoria: str | None = Query(None)):
     return templates.TemplateResponse(
         request,
         "sv9_ranking.html.j2",
-        {"ranking": model, "categories": CATEGORIES, "ui_lang": "es"},
+        {"ranking": model, "categories": CATEGORIES, "ui_lang": lang},
     )
 
 

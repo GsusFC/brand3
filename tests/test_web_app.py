@@ -149,6 +149,18 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn('href="/scanner-api?lang=en"', response.text)
         self.assertIn('href="/takedown?lang=en"', response.text)
 
+    def test_language_selector_preserves_current_query_params(self):
+        response = self.client.get("/reports?page=2&q=acme&sort=score_desc&lang=en")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(
+            'href="/reports?page=2&q=acme&sort=score_desc&lang=es"',
+            response.text,
+        )
+        self.assertIn(
+            'href="/reports?page=2&q=acme&sort=score_desc&lang=en"',
+            response.text,
+        )
+
     def test_scanner_api_page_documents_internal_endpoints(self):
         response = self.client.get("/scanner-api")
         self.assertEqual(response.status_code, 200)

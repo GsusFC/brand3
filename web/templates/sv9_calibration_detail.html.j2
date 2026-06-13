@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: sv9 calibración #{{ scan.id }}{% endblock %}
+{% block title %}brand3 :: sv9 {{ 'calibración' if current_lang == 'es' else 'calibration' }} #{{ scan.id }}{% endblock %}
 {% block extra_head %}
 <style>
   /* Internal calibration tool: scoped styles, public CSS untouched. */
@@ -194,13 +194,13 @@
 {% block content %}
 <section>
   <div class="lab-review-nav" style="margin-bottom: 14px;">
-    <a class="source-link" href="/sv9/calibration">← Scans SV9</a>
-    <a class="source-link" href="/sv9/scan/{{ scan.id }}">Canvas</a>
-    <span class="badge badge-missing">interno</span>
+    <a class="source-link" href="/sv9/calibration{{ lang_suffix }}">← {{ 'Scans SV9' if current_lang == 'es' else 'SV9 scans' }}</a>
+    <a class="source-link" href="/sv9/scan/{{ scan.id }}{{ lang_suffix }}">Canvas</a>
+    <span class="badge badge-missing">{{ 'interno' if current_lang == 'es' else 'internal' }}</span>
   </div>
 
   <div class="section-head">
-    <span class="label">sv9_calibracion</span>
+    <span class="label">sv9_{{ 'calibracion' if current_lang == 'es' else 'calibration' }}</span>
     <span class="tag">// scan #{{ scan.id }} · {{ scan.rubric_version }} · {{ scan.evaluator_model or '—' }}</span>
   </div>
 
@@ -216,39 +216,39 @@
     <div class="section-head">
       <span class="label">{{ c.label }}</span>
       <span class="tag">
-        // ia: {{ c.result.score }}/{{ c.scale }}{% if c.multiplier == 2 %} ×2{% endif %}
+        // {{ 'ia' if current_lang == 'es' else 'ai' }}: {{ c.result.score }}/{{ c.scale }}{% if c.multiplier == 2 %} ×2{% endif %}
         · {{ c.result.status }}
       </span>
     </div>
 
     {% if c.result.detected_content %}
-    <p class="prose sv9-cal-detected"><span class="dim">detectado:</span> {{ c.result.detected_content }}</p>
+    <p class="prose sv9-cal-detected"><span class="dim">{{ 'detectado' if current_lang == 'es' else 'detected' }}:</span> {{ c.result.detected_content }}</p>
     {% else %}
-    <p class="prose dim sv9-cal-detected">(no detectado)</p>
+    <p class="prose dim sv9-cal-detected">{{ '(no detectado)' if current_lang == 'es' else '(not detected)' }}</p>
     {% endif %}
     {% if c.result.error %}
-    <p class="prose dim">error técnico: {{ c.result.error }}</p>
+    <p class="prose dim">{{ 'error técnico' if current_lang == 'es' else 'technical error' }}: {{ c.result.error }}</p>
     {% endif %}
 
     {% if c.ladder and c.result.rung_profile %}
     <details class="sv9-cal-ladder">
-      <summary class="dim">escalera y veredictos</summary>
+      <summary class="dim">{{ 'escalera y veredictos' if current_lang == 'es' else 'ladder and verdicts' }}</summary>
       <ul style="list-style:none; padding-left:0;">
         {% for rung in c.ladder %}
         <li>
           {% if rung.verdict and rung.verdict.passed %}
           <span style="color:var(--accent);">✓</span>
           {% elif rung.verdict and not rung.verdict.get('evaluable', true) %}
-          <span class="dim" title="sin canal de evidencia">⊘</span>
+          <span class="dim" title="{{ 'sin canal de evidencia' if current_lang == 'es' else 'no evidence channel' }}">⊘</span>
           {% else %}
           <span class="dim">✗</span>
           {% endif %}
           <strong>{{ rung.rung }}</strong> · {{ rung.criterion }}
           {% if rung.verdict and not rung.verdict.passed and not rung.verdict.get('evaluable', true) %}
-          <span class="badge">no evaluable</span>
+          <span class="badge">{{ 'no evaluable' if current_lang == 'es' else 'not evaluable' }}</span>
           {% endif %}
           {% if rung.verdict and rung.verdict.evidence %}
-          <div class="dim rung-evidence">evidencia: {{ rung.verdict.evidence }}</div>
+          <div class="dim rung-evidence">{{ 'evidencia' if current_lang == 'es' else 'evidence' }}: {{ rung.verdict.evidence }}</div>
           {% endif %}
           {% if rung.verdict and rung.verdict.reasoning %}
           <div class="dim rung-evidence">{{ rung.verdict.reasoning }}</div>
@@ -262,14 +262,14 @@
     {% if c.labels %}
     <div class="sv9-cal-labels">
       {% for label in c.labels %}
-      <span class="tag">{{ label.evaluador }}: {{ label.score_humano }}/{{ c.scale }} (Δ{{ label.delta }}){% if label.flag_evidencia %} ⚑ evidencia errónea{% endif %}</span>
+      <span class="tag">{{ label.evaluador }}: {{ label.score_humano }}/{{ c.scale }} (Δ{{ label.delta }}){% if label.flag_evidencia %} ⚑ {{ 'evidencia errónea' if current_lang == 'es' else 'wrong evidence' }}{% endif %}</span>
       {% endfor %}
     </div>
     {% endif %}
 
     <form method="post" action="/sv9/calibration/{{ scan.id }}/{{ c.key }}" class="sv9-cal-form">
       <div>
-        <span class="field-label">score humano</span>
+        <span class="field-label">{{ 'score humano' if current_lang == 'es' else 'human score' }}</span>
         <div class="sv9-score-picker">
           {% for n in range(0, c.scale + 1) %}
           <label>
@@ -281,20 +281,20 @@
       </div>
 
       <div>
-        <span class="field-label">motivo</span>
-        <input type="text" name="motivo" placeholder="una línea — por qué este score y no el de la IA" autocomplete="off">
+        <span class="field-label">{{ 'motivo' if current_lang == 'es' else 'reason' }}</span>
+        <input type="text" name="motivo" placeholder="{{ 'una línea — por qué este score y no el de la IA' if current_lang == 'es' else 'one line — why this score and not the AI score' }}" autocomplete="off">
       </div>
 
       <div class="sv9-cal-form-footer">
         <label class="sv9-cal-flag">
           <input type="checkbox" name="flag_evidencia" value="true">
-          evidencia errónea
+          {{ 'evidencia errónea' if current_lang == 'es' else 'wrong evidence' }}
         </label>
         <div class="grow">
-          <input type="text" name="evaluador" value="{{ evaluador }}" placeholder="evaluador" required
-                 style="min-height:44px;" aria-label="evaluador">
+          <input type="text" name="evaluador" value="{{ evaluador }}" placeholder="{{ 'evaluador' if current_lang == 'es' else 'evaluator' }}" required
+                 style="min-height:44px;" aria-label="{{ 'evaluador' if current_lang == 'es' else 'evaluator' }}">
         </div>
-        <button type="submit" class="sv9-cal-submit">guardar</button>
+        <button type="submit" class="sv9-cal-submit">{{ 'guardar' if current_lang == 'es' else 'save' }}</button>
       </div>
     </form>
   </div>

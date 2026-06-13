@@ -7,7 +7,9 @@ never mutates scans, V5 data, or any public surface.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Form, HTTPException, Request
+from typing import Literal
+
+from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
@@ -19,6 +21,7 @@ from ..middleware.team_cookie import create_serializer, is_team_request
 from ..templates_env import templates
 
 router = APIRouter()
+_Lang = Literal["es", "en"]
 
 
 def _require_team(request: Request) -> None:
@@ -36,7 +39,7 @@ def _require_team_write(request: Request) -> None:
 
 
 @router.get("/sv9/calibration")
-async def sv9_calibration_index(request: Request):
+async def sv9_calibration_index(request: Request, lang: _Lang = Query("es")):
     _require_team(request)
     store = Sv9Store(BRAND3_DB_PATH)
     try:
@@ -54,13 +57,18 @@ async def sv9_calibration_index(request: Request):
             "scans": scans,
             "labels_by_scan": labels_by_scan,
             "rubric_version": RUBRIC_VERSION,
-            "ui_lang": "es",
+            "ui_lang": lang,
         },
     )
 
 
 @router.get("/sv9/calibration/{scan_id}")
-async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str = ""):
+async def sv9_calibration_detail(
+    request: Request,
+    scan_id: int,
+    evaluador: str = "",
+    lang: _Lang = Query("es"),
+):
     _require_team(request)
     store = Sv9Store(BRAND3_DB_PATH)
     try:
@@ -110,7 +118,7 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
             "scan": scan,
             "components": components,
             "evaluador": evaluador,
-            "ui_lang": "es",
+            "ui_lang": lang,
         },
     )
 

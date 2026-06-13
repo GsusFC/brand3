@@ -208,6 +208,17 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)
 
+    def test_scan_canvas_renders_english_ui(self):
+        response = self.client.get(f"/sv9/scan/{self.scan_id}?lang=en")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('<html lang="en">', response.text)
+        self.assertIn('href="/?lang=en">Back to Brand3 Scanner</a>', response.text)
+        self.assertIn("Immediate margin", response.text)
+        self.assertIn("Scored Brand3 canvas", response.text)
+        self.assertIn("Save decision", response.text)
+        self.assertIn(f"/sv9/calibration/{self.scan_id}?lang=en", response.text)
+        self.assertNotIn("Guardar decisión", response.text)
+
     def test_v2_reference_normalizer_accepts_string_blocks(self):
         from web.routes.sv9_scan import _first_v2_blocks_with_text, _normalize_v2_reference_block
 
@@ -384,6 +395,15 @@ class Sv9CalibrationWebTests(unittest.TestCase):
 
         response = self.client.get("/sv9/ranking?categoria=nonsense")
         self.assertEqual(response.status_code, 404)
+
+    def test_ranking_renders_english_ui_and_preserves_language_links(self):
+        response = self.client.get("/sv9/ranking?lang=en")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('<html lang="en">', response.text)
+        self.assertIn("Ordered by Brand3 Score", response.text)
+        self.assertIn('href="/sv9/scan/', response.text)
+        self.assertIn("?lang=en", response.text)
+        self.assertIn("Own a listed brand and want it removed?", response.text)
 
     def test_submit_validates_scale_and_component(self):
         self._unlock()

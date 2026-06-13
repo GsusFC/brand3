@@ -3397,11 +3397,11 @@ class MagnetismScannerTests(unittest.TestCase):
         finally:
             sv9_store.close()
 
-        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en")
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("SV9 Score", response.text)
-        self.assertIn(f"/sv9/scan/{sv9_id}", response.text)
+        self.assertIn(f"/sv9/scan/{sv9_id}?lang=en", response.text)
 
     def test_scan_detail_shows_generate_sv9_button_when_shadow_scan_is_missing(self):
         from src.sv9.aggregator import aggregate

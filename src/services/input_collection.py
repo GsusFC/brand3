@@ -19,6 +19,7 @@ from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebCollector, WebData
 from src.config import (
     BRAND3_CACHE_TTL_HOURS,
+    BRAND3_CACHE_TTL_HOURS_BY_SOURCE,
     BRAND3_HYPERBROWSER_ENABLED,
     EXA_API_KEY,
     FIRECRAWL_API_KEY,
@@ -423,7 +424,8 @@ def _cache_reader(
     def cache_read(source: str, ttl_hours: int, decoder):
         if refresh:
             return None
-        return load_cached(store, brand_name, url, source, ttl_hours, decoder, acquisition_steps)
+        effective_ttl = BRAND3_CACHE_TTL_HOURS_BY_SOURCE.get(source, ttl_hours)
+        return load_cached(store, brand_name, url, source, effective_ttl, decoder, acquisition_steps)
 
     return cache_read
 

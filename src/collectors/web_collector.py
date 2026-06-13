@@ -10,6 +10,7 @@ Scrapes the brand's website and extracts:
 
 import re
 import json
+import time
 from dataclasses import dataclass
 from html import unescape
 from urllib.parse import urlparse
@@ -20,6 +21,8 @@ from firecrawl import Firecrawl
 
 
 _MIN_USABLE_MARKDOWN_CHARS = 200
+_TRANSIENT_FETCH_ATTEMPTS = 2
+_TRANSIENT_FETCH_DELAY_S = 1.5
 _DESKTOP_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -46,6 +49,9 @@ class WebData:
     tech_stack: list[str] = None
     load_time_ms: int = 0
     error: str = ""
+    # Set when a capture was wiped because it looked like a consent wall —
+    # downstream can then tell "obstructed" apart from "empty" or "failed".
+    capture_obstruction: str = ""
     content_source: str = ""
     browser_status: int | None = None
     owned_fallback_urls: list[str] = None
@@ -106,16 +112,26 @@ class WebCollector:
         """Scrape URL via Firecrawl Python SDK. Returns legacy {content, raw, error} shape."""
         if not self.api_key:
             return {"error": "FIRECRAWL_API_KEY not set"}
-        try:
-            doc = Firecrawl(api_key=self.api_key).scrape(
-                url,
-                formats=["markdown", "html"],
-                timeout=60000,
-                wait_for=2000,
-                only_main_content=True,
-            )
-        except Exception as exc:
-            return {"error": str(exc)}
+        last_error = ""
+        for attempt in range(_TRANSIENT_FETCH_ATTEMPTS):
+            try:
+                doc = Firecrawl(api_key=self.api_key).scrape(
+                    url,
+                    formats=["markdown", "html"],
+                    timeout=60000,
+                    wait_for=2000,
+                    only_main_content=True,
+                )
+                break
+            except Exception as exc:
+                # Transient network failures are the common case here; one
+                # retry keeps the capture on the best tier instead of
+                # degrading to the HTML/browser fallbacks.
+                last_error = str(exc)
+                if attempt + 1 < _TRANSIENT_FETCH_ATTEMPTS:
+                    time.sleep(_TRANSIENT_FETCH_DELAY_S)
+        else:
+            return {"error": last_error}
         content = (doc.markdown or "").strip()
         html = (getattr(doc, "html", None) or "").strip()
         return {"content": content, "raw": content, "html": html}
@@ -688,6 +704,7 @@ class WebCollector:
                 )
                 data.title = ""
                 data.markdown_content = ""
+                data.capture_obstruction = "cookie_banner"
         else:
             data.error = result["error"]
 
@@ -701,6 +718,7 @@ class WebCollector:
                 data.markdown_content = self._html_to_markdown_fallback(html)
                 data.markdown_content = self._trim_to_title(data.markdown_content, data.title)
                 data.error = ""
+                data.capture_obstruction = ""
             elif html_error and not data.error:
                 data.error = html_error
 
@@ -725,9 +743,11 @@ class WebCollector:
                         f" (title: {data.title[:80]})"
                     )
                     data.markdown_content = ""
+                    data.capture_obstruction = "cookie_banner"
                 if self._has_usable_markdown_content(data.markdown_content):
                     data.content_source = "browser_fallback"
                     data.error = ""
+                    data.capture_obstruction = ""
             elif browser_error and not data.error:
                 data.error = browser_error
 

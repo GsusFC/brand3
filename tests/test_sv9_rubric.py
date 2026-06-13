@@ -69,7 +69,8 @@ class Sv9RubricTests(unittest.TestCase):
         self.assertTrue({"internal", "external"} <= axes)
 
     def test_rubric_version_is_pinned(self):
-        self.assertEqual(RUBRIC_VERSION, "sv9-rubric-v1")
+        # v2 = tile scoring (suma de baldosas), product decision 2026-06-11.
+        self.assertEqual(RUBRIC_VERSION, "sv9-rubric-v2")
 
 
 if __name__ == "__main__":

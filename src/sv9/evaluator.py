@@ -28,7 +28,7 @@ from src.sv9.models import (
     STATUS_NOT_EVALUATED,
     STATUS_SCORED,
 )
-from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER, RUBRIC_VERSION
+from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER
 
 SV9_EVALUATOR_PROMPT_VERSION = "sv9-evaluator-v0.2"
 SV9_EVALUATOR_TIMEOUT_SECONDS = 90
@@ -404,7 +404,6 @@ def _build_component_prompt(
 URL: {url}
 Component: {spec['label']} ({key})
 Component question: {spec['question']}
-Rubric version: {RUBRIC_VERSION}
 
 DETECTED READING (Pass 1, evidence-based):
 content: {_block_content_text(block) or "(no detectado)"}
@@ -455,7 +454,6 @@ def _build_coherencia_prompt(
 URL: {url}
 Component: Coherencia
 Component question: {spec['question']}
-Rubric version: {RUBRIC_VERSION}
 
 INTERNAL AXIS — THE 9 PIECES ON THE TABLE (detected texts):
 {chr(10).join(pieces)}

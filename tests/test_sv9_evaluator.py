@@ -132,7 +132,9 @@ class EvaluateComponentTests(unittest.TestCase):
             "mission", tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=ChannelGapLLM()
         )
         self.assertEqual(result.status, STATUS_SCORED)
-        self.assertEqual(result.score, 0)  # blocked all the same: 0 is 0
+        # Tile scoring: the unjudgeable tile 1 neither scores nor truncates
+        # the two tiles genuinely earned above it.
+        self.assertEqual(result.score, 2)
         self.assertEqual(result.not_evaluable_rungs, [1])
         self.assertEqual(result.non_monotonic_rungs, [2, 3])
 

@@ -549,7 +549,7 @@ class WebAppFlowTests(unittest.TestCase):
             self.assertEqual(status_resp.status_code, 200)
             self.assertIn("Scoring dimensions", status_resp.text)
             self.assertIn("[active]", status_resp.text)
-            self.assertIn("This checklist reflects pipeline phase", status_resp.text)
+            self.assertIn("A full scan takes 3-5 minutes", status_resp.text)
             self.assertIn('data-status-waiting data-status="running"', status_resp.text)
             self.assertIn('src="/static/status_waiting.js?v=', status_resp.text)
             self.assertIn('class="status-game"', status_resp.text)

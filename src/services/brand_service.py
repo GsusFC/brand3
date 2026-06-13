@@ -30,6 +30,7 @@ from src.config import (
     BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE,
     BRAND3_PROMOTION_MAX_COMPOSITE_DROP,
     BRAND3_PROMOTION_MAX_DIMENSION_DROPS,
+    BRAND3_SCREENSHOT_DIR,
     EXA_API_KEY,
     FIRECRAWL_API_KEY,
     LLM_CHEAP_MODEL,
@@ -1010,7 +1011,11 @@ def _take_playwright_screenshot(url: str, *, timeout_ms: int = 30000) -> dict[st
             "screenshot_provider": "playwright",
         }
 
-    fd, screenshot_path = tempfile.mkstemp(prefix="brand3-screenshot-", suffix=".png")
+    screenshot_dir = Path(BRAND3_SCREENSHOT_DIR)
+    screenshot_dir.mkdir(parents=True, exist_ok=True)
+    fd, screenshot_path = tempfile.mkstemp(
+        prefix="brand3-screenshot-", suffix=".png", dir=str(screenshot_dir)
+    )
     os.close(fd)
     browser = None
     try:
@@ -1057,6 +1062,14 @@ def _take_playwright_screenshot(url: str, *, timeout_ms: int = 30000) -> dict[st
             if browser is not None:
                 browser.close()
         except Exception:
+            pass
+        # Failed captures leave an empty file behind now that screenshots
+        # land in permanent storage — drop it.
+        try:
+            leftover = Path(screenshot_path)
+            if leftover.exists() and leftover.stat().st_size == 0:
+                leftover.unlink()
+        except OSError:
             pass
 
 
@@ -1523,6 +1536,81 @@ def _cost_policy_summary(
     }
 
 
+_ACQUISITION_AUDIT_MAX_FIELD_CHARS = 2000
+
+
+def _truncate_for_audit(value):
+    if isinstance(value, str) and len(value) > _ACQUISITION_AUDIT_MAX_FIELD_CHARS:
+        return value[:_ACQUISITION_AUDIT_MAX_FIELD_CHARS] + "...[truncated]"
+    if isinstance(value, dict):
+        return {str(k): _truncate_for_audit(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_truncate_for_audit(v) for v in value]
+    return value
+
+
+def _visual_evidence_signal(screenshot_capture: dict | None) -> dict:
+    """Structured visual-evidence quality flag for the snapshot.
+
+    The capture layer describes the condition (captured / skipped / failed /
+    missing) and makes it visible; it does not decide whether a visual
+    dimension is evaluable — that stays with the readiness/scoring layer.
+    """
+    capture = screenshot_capture if isinstance(screenshot_capture, dict) else {}
+    status = str(capture.get("status") or "")
+    if status == "captured" and capture.get("screenshot_url"):
+        return {"status": "captured", "available": True}
+    if status == "skipped":
+        return {
+            "status": "skipped",
+            "available": False,
+            "reason": str(capture.get("reason") or "not_attempted"),
+        }
+    if status in {"error", "timeout"}:
+        return {
+            "status": "failed",
+            "available": False,
+            "error_type": str(capture.get("error_type") or status),
+            "error_message": str(capture.get("error_message") or ""),
+        }
+    return {"status": "missing", "available": False}
+
+
+def _acquisition_audit_payload(
+    *,
+    acquisition_provenance: dict,
+    acquisition_steps: dict,
+    raw_input_cache: dict,
+    screenshot_capture: dict | None,
+    data_quality: str,
+    content_source: str,
+) -> dict:
+    """Capture conditions for the persisted snapshot.
+
+    Downstream consumers read the DB snapshot, not the in-memory result, so
+    without this they cannot tell fresh fetches from cache hits or partial /
+    failed sources. Long strings are truncated — raw_inputs keeps the full
+    payloads.
+    """
+    steps = {
+        name: step.to_payload() for name, step in (acquisition_steps or {}).items()
+    }
+    return _truncate_for_audit(
+        _to_jsonable(
+            {
+                "version": "acquisition_audit_v1",
+                "data_quality": data_quality,
+                "content_source": content_source,
+                "raw_input_cache": dict(raw_input_cache or {}),
+                "steps": steps,
+                "provenance": acquisition_provenance,
+                "screenshot": screenshot_capture,
+                "visual_evidence": _visual_evidence_signal(screenshot_capture),
+            }
+        )
+    )
+
+
 def _acquisition_provenance_summary(
     *,
     brand_name: str,
@@ -1970,10 +2058,16 @@ def run(
         content_web = discovery_enrichment.web_data or content_web
         web_data = discovery_enrichment.web_data or web_data
         if run_id and _web_content_changed(raw_web_data, content_web):
+            effective_web_payload = _to_jsonable(content_web)
+            if isinstance(effective_web_payload, dict):
+                # Run-scoped derived evidence: snapshot readers keep preferring
+                # the newest "web" row, but the cross-run cache must skip it so
+                # a later run never treats enriched content as a raw capture.
+                effective_web_payload["derived"] = "discovery_enrichment"
             _store_safely(
                 store,
                 "effective web input save",
-                lambda: store.save_raw_input(run_id, "web", content_web),
+                lambda: store.save_raw_input(run_id, "web", effective_web_payload),
             )
         discovery_enrichment_payload = discovery_enrichment.payload
         acquisition_provenance = _acquisition_provenance_summary(
@@ -2205,6 +2299,14 @@ def run(
             "timestamp": datetime.now().isoformat(),
         }
         result["audit"]["discovery_calibration_decision"] = discovery_calibration_decision
+        result["audit"]["acquisition"] = _acquisition_audit_payload(
+            acquisition_provenance=acquisition_provenance,
+            acquisition_steps=acquisition_steps,
+            raw_input_cache=raw_input_cache,
+            screenshot_capture=screenshot_capture,
+            data_quality=data_quality,
+            content_source=content_source,
+        )
         if run_id:
             _store_safely(store, "run audit save", lambda: store.save_run_audit(run_id, result["audit"]))
 
@@ -2255,6 +2357,14 @@ def run(
 
             _store_safely(store, "report narrative persistence", _persist_report_narrative)
         return result
+    except AnalysisJobCancelled:
+        if run_id:
+            _store_safely(store, "run status cancelled", lambda: store.mark_run_status(run_id, "cancelled"))
+        raise
+    except Exception:
+        if run_id:
+            _store_safely(store, "run status failed", lambda: store.mark_run_status(run_id, "failed"))
+        raise
     finally:
         if store:
             _store_safely(store, "close", store.close)

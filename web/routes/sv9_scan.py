@@ -14,7 +14,7 @@ from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 from src.sv9.rubric import COMPONENTS, component_max_points
-from src.sv9.service import run_sv9_from_audit_run
+from src.sv9.service import materialize_sv9_scan
 from src.sv9.store import Sv9Store
 
 from ..templates_env import templates
@@ -51,18 +51,28 @@ async def sv9_scan_view(request: Request, scan_id: int):
     by_component = {c["component"]: c for c in scan["components"]}
 
     def _next_rung(key: str, component: dict) -> dict | None:
-        """First rung not yet earned: the diagnosis line the TLDR cannot give."""
+        """First tile not yet earned: the diagnosis line the TLDR cannot give.
+
+        Tile scoring: the score counts earned criteria, so "next" means the
+        lowest unearned tile, located from the verdict profile.
+        """
         spec = COMPONENTS[key]
         score = int(component.get("score") or 0)
         if component.get("status") == "not_evaluated" or score >= spec["scale"]:
             return None
-        rung = spec["ladder"][score]  # ladder is 0-indexed; rung score+1
-        verdict = next(
-            (v for v in component.get("rung_profile") or [] if v.get("rung") == rung["rung"]),
-            None,
-        )
-        evaluable = bool(verdict.get("evaluable", True)) if verdict else True
-        return {"rung": rung["rung"], "criterion": rung["criterion"], "evaluable": evaluable}
+        verdicts = {
+            int(v.get("rung") or 0): v for v in component.get("rung_profile") or []
+        }
+        for rung in spec["ladder"]:
+            verdict = verdicts.get(rung["rung"])
+            if verdict is None or not verdict.get("passed"):
+                evaluable = bool(verdict.get("evaluable", True)) if verdict else True
+                return {
+                    "rung": rung["rung"],
+                    "criterion": rung["criterion"],
+                    "evaluable": evaluable,
+                }
+        return None
 
     def _box(key: str) -> dict:
         component = by_component.get(key) or {}
@@ -287,14 +297,9 @@ async def sv9_scan_retry(request: Request, scan_id: int):
     if not source_run_id:
         raise HTTPException(status_code=409, detail="scan has no source_run_id")
 
-    result = await asyncio.to_thread(
-        run_sv9_from_audit_run,
+    new_scan_id, _result = await asyncio.to_thread(
+        materialize_sv9_scan,
         int(source_run_id),
         db_path=BRAND3_DB_PATH,
     )
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        new_scan_id = store.save_scan(result)
-    finally:
-        store.close()
     return RedirectResponse(f"/sv9/scan/{new_scan_id}", status_code=303)

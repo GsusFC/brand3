@@ -12,17 +12,23 @@ Rules encoded here:
   prose conditioned on the verdict (editorial layer, not this module).
 - Every score and calibration record is traced against RUBRIC_VERSION. Any
   wording change to a ladder must bump the version.
-- The evaluator walks the FULL ladder (one boolean verdict per rung with a
-  mandatory evidence quote). The score is computed by code as the count of
-  consecutive passed rungs from the bottom. See src/sv9/evaluator.py.
+- TILE SCORING (v2, product decision 2026-06-11): the evaluator judges every
+  criterion independently (one boolean verdict per rung with a mandatory
+  evidence quote) and the score is the COUNT OF TILES EARNED — not the
+  consecutive run from the bottom. The strict ladder rule punished brands for
+  criteria that describe alternative styles rather than prior achievements
+  (46 non-monotonic profiles in the first corpus; e.g. a deliberately formal
+  brand failing "intenta ser humana" was capped at 1/10 while demonstrably
+  earning higher tiles). Not-evaluable tiles never score: coverage gaps are
+  recorded, not punished or gifted. See src/sv9/aggregator.py.
 
-Ladder wording status: draft (briefing v2.1 section 5). A joint writing session
-will produce the final wording; format is closed, wording is not.
+Criteria wording status: draft (briefing v2.1 section 5). A joint writing
+session will produce the final wording; tile format is closed, wording is not.
 """
 
 from __future__ import annotations
 
-RUBRIC_VERSION = "sv9-rubric-v1"
+RUBRIC_VERSION = "sv9-rubric-v2"
 
 # Component statuses (doc section 3: detectado / no_detectado / no_evaluado).
 STATUS_SCORED = "scored"            # detectado: evaluated against the ladder

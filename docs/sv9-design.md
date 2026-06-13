@@ -85,7 +85,7 @@ Input por componente, un paquete con:
 
 Proceso: el LLM devuelve **un veredicto booleano por peldaño con cita de evidencia obligatoria**. Se evalúa **la escalera completa**, no se para en el primer fallo. Mismo coste (un prompt), tres beneficios: el mensaje de "qué falta para el siguiente peldaño" existe siempre; la calibración baja a nivel de peldaño; y los perfiles no monótonos (pasa el 7, falla el 4) delatan problemas de rúbrica o alucinación del evaluador.
 
-El score lo calcula código: **peldaños consecutivos superados desde abajo**. El perfil completo de peldaños se persiste.
+El score lo calcula código: **suma de baldosas ganadas** — cada criterio superado añade un punto, independientemente de los demás (modelo de baldosas, decisión de producto 2026-06-11; sustituye a la regla de peldaños consecutivos de la v1). Una baldosa fallada o no evaluable no puntúa, pero **nunca trunca lo que la marca demuestra por encima**: la regla estricta de escalera castigaba criterios que describen estilos alternativos en vez de logros previos (46 perfiles no monótonos en el primer corpus; p. ej. una marca deliberadamente formal fallaba "intenta ser humana" y quedaba capada a 1/10 demostrando nivel 3+). El perfil completo de baldosas se persiste.
 
 ### 4.3 El agregador
 
@@ -272,6 +272,15 @@ Botón visible en cada scan. Mismo schema que el Brand System final: mismo archi
 10. Desguace V5 al cruzar la puerta de calidad (sección 9).
 
 ---
+
+## 16b. Decisiones cerradas después de la v1
+
+| Decisión | Fecha | Detalle |
+|---|---|---|
+| Modelo de baldosas (rubric v2) | 2026-06-11 | Score = suma de criterios superados, no consecutivos. Motivo: 46 perfiles no monótonos demostraron que varios criterios bajos describen estilos alternativos, no logros previos, y truncaban niveles demostrados. |
+| Fallado ≠ no evaluable | 2026-06-11 | Cada baldosa registra si falló con evidencia en contra o si no había canal de evidencia para juzgarla. Ambas puntúan 0; el remedio es distinto (trabajar la marca vs. mejorar la colección). |
+| Pipeline único | 2026-06-11 | materialize_sv9_scan: replay, botón web y reintentos comparten detección clavada, pase de visión y editorial. |
+| Sin gating de equipo (temporal) | 2026-06-11 | Rutas /sv9/* abiertas mientras el equipo itera; el check original queda comentado para reactivar. |
 
 ## 17. Registro de decisiones abiertas
 

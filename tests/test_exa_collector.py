@@ -133,7 +133,7 @@ def test_deep_reasoning_experiment_is_opt_in(monkeypatch):
         brand_url="https://brand.com",
     )
 
-    competitor_call = fake.calls[0]
-    news_call = fake.calls[1]
+    competitor_call = next(call for call in fake.calls if "competitors" in call["query"])
+    news_call = next(call for call in fake.calls if "news" in call["query"])
     assert competitor_call["kwargs"]["type"] == "deep-reasoning"
     assert news_call["kwargs"]["type"] == "fast"

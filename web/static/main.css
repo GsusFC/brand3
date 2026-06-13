@@ -3333,3 +3333,30 @@ a:hover {
     display: none;
   }
 }
+
+/* RGB scan progress: the bar reveals the B3S mark colors in order (red, blue,
+   green) as it fills. The uncovered area is driven by --scan-progress. */
+.status-progress {
+  position: relative;
+  height: 10px;
+  margin: 14px 0 4px;
+  border: 1px solid var(--border);
+  background: linear-gradient(90deg, #ff0000 0 33.34%, #0000ff 33.34% 66.67%, #00ff00 66.67% 100%);
+}
+
+.status-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: calc(100% - var(--scan-progress, 2%));
+  background: var(--surface);
+  transition: width 900ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-progress::after {
+    transition: none;
+  }
+}

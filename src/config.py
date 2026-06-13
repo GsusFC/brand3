@@ -51,6 +51,14 @@ BRAND3_DB_PATH = os.environ.get(
     str(Path(__file__).parent.parent / "data" / "brand3.sqlite3"),
 )
 BRAND3_CACHE_TTL_HOURS = int(os.environ.get("BRAND3_CACHE_TTL_HOURS", "24"))
+# Owned-site captures must stay fresh: a client who changed their site and
+# re-scans must not be served the previous run's capture. External perception
+# sources (exa/social/competitors) change slowly and keep the global TTL.
+BRAND3_CACHE_TTL_HOURS_BY_SOURCE = {
+    "web": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_WEB", "1")),
+    "context": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_CONTEXT", "1")),
+    "hyperbrowser": int(os.environ.get("BRAND3_CACHE_TTL_HOURS_HYPERBROWSER", "1")),
+}
 BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE = float(
     os.environ.get("BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE", "0.65")
 )
@@ -117,3 +125,9 @@ VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)
 
 # Screenshot capture provider.
 SCREENSHOT_PROVIDER = os.environ.get("SCREENSHOT_PROVIDER", "playwright").strip().lower() or "playwright"
+
+# Screenshots are evidence: they must outlive the OS temp dir cleanup.
+BRAND3_SCREENSHOT_DIR = os.environ.get(
+    "BRAND3_SCREENSHOT_DIR",
+    str(Path(BRAND3_DB_PATH).parent / "screenshots"),
+)

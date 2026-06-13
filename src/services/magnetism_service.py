@@ -98,7 +98,7 @@ def ensure_sv9_scan_for_source_run(
         return None
     try:
         from src.sv9.rubric import RUBRIC_VERSION
-        from src.sv9.service import run_sv9_from_audit_run
+        from src.sv9.service import materialize_sv9_scan
         from src.sv9.store import Sv9Store
 
         sv9_store = Sv9Store(db_path)
@@ -106,10 +106,12 @@ def ensure_sv9_scan_for_source_run(
             existing = sv9_store.get_scan_for_run(int(source_run_id), rubric_version=RUBRIC_VERSION)
             if existing:
                 return int(existing["id"])
-            result = run_sv9_from_audit_run(int(source_run_id), db_path=db_path)
-            return sv9_store.save_scan(result)
         finally:
             sv9_store.close()
+        # Full pipeline (pinned detection, vision signals, editorial): the
+        # button must produce the same scan quality as the replay script.
+        scan_id, _result = materialize_sv9_scan(int(source_run_id), db_path=db_path)
+        return scan_id
     except Exception:  # noqa: BLE001
         log.exception("SV9 materialization failed source_run_id=%s", source_run_id)
         return None

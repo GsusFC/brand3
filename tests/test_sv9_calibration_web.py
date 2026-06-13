@@ -351,9 +351,9 @@ class Sv9CalibrationWebTests(unittest.TestCase):
 
         self._unlock()
         with mock.patch(
-            "web.routes.sv9_scan.run_sv9_from_audit_run",
-            return_value=retry_result,
-        ) as run_sv9:
+            "web.routes.sv9_scan.materialize_sv9_scan",
+            return_value=(failed_scan_id + 1, retry_result),
+        ) as materialize:
             response = self.client.post(
                 f"/sv9/scan/{failed_scan_id}/retry",
                 follow_redirects=False,
@@ -362,7 +362,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertEqual(response.status_code, 303)
         self.assertRegex(response.headers["location"], r"^/sv9/scan/\d+$")
         self.assertNotEqual(response.headers["location"], f"/sv9/scan/{failed_scan_id}")
-        run_sv9.assert_called_once_with(42, db_path=str(self.db))
+        materialize.assert_called_once_with(42, db_path=str(self.db))
 
     def test_ranking_renders_and_category_can_be_confirmed(self):
         response = self.client.get("/sv9/ranking")

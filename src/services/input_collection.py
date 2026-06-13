@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field
 import os
 
 from src.collectors.competitor_collector import (
@@ -19,6 +19,7 @@ from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebCollector, WebData
 from src.config import (
     BRAND3_CACHE_TTL_HOURS,
+    BRAND3_CACHE_TTL_HOURS_BY_SOURCE,
     BRAND3_HYPERBROWSER_ENABLED,
     EXA_API_KEY,
     FIRECRAWL_API_KEY,
@@ -136,6 +137,22 @@ def from_competitor_payload(payload: dict | None) -> CompetitorData | None:
         brand_web=WebData(**payload["brand_web"]) if payload.get("brand_web") else None,
         errors=payload.get("errors", []),
     )
+
+
+def _competitor_storage_payload(competitor_data: CompetitorData) -> dict:
+    """Drop competitor raw HTML before persisting.
+
+    Competitor HTML is ~99% of this payload and is unused once comparisons are
+    computed. The brand's own HTML stays (it backs owned evidence and lives in
+    the 'web' raw input anyway). `asdict` deep-copies, so the in-memory object
+    used downstream keeps its HTML intact.
+    """
+    payload = asdict(competitor_data)
+    for competitor in payload.get("competitors") or []:
+        web_data = competitor.get("web_data")
+        if isinstance(web_data, dict):
+            web_data["html"] = ""
+    return payload
 
 
 def from_context_payload(payload: dict | None) -> ContextData | None:
@@ -423,7 +440,8 @@ def _cache_reader(
     def cache_read(source: str, ttl_hours: int, decoder):
         if refresh:
             return None
-        return load_cached(store, brand_name, url, source, ttl_hours, decoder, acquisition_steps)
+        effective_ttl = BRAND3_CACHE_TTL_HOURS_BY_SOURCE.get(source, ttl_hours)
+        return load_cached(store, brand_name, url, source, effective_ttl, decoder, acquisition_steps)
 
     return cache_read
 
@@ -541,6 +559,18 @@ def _collect_web_input(
     )
     web_data = web_collector.scrape(url)
     print(f"  Web: {len(web_data.markdown_content)} chars scraped")
+    if getattr(web_data, "capture_obstruction", ""):
+        _set_acquisition_state(
+            raw_input_cache,
+            acquisition_steps,
+            source="web",
+            raw_cache_status="obstructed",
+            status="obstructed",
+            cache_status="miss",
+            eligible=False,
+            details={"capture_obstruction": web_data.capture_obstruction},
+        )
+        print(f"  Web: obstructed ({web_data.capture_obstruction})")
     if run_id:
         _save_raw_input_safely(
             store,
@@ -1003,7 +1033,7 @@ def _collect_competitor_input(
             store,
             run_id,
             "competitors",
-            competitor_data,
+            _competitor_storage_payload(competitor_data),
             action="competitor save",
             acquisition_steps=acquisition_steps,
         )

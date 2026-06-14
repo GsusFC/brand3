@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from src.models.brand import BrandScore, FeatureValue
 from src.scoring.engine import ScoringEngine
@@ -157,10 +158,12 @@ class ScoreProvenanceReportTests(unittest.TestCase):
             store = SQLiteStore(str(Path(tmpdir) / "brand3.sqlite3"))
             run_id, computed = _seed_run(store)
 
-            report = build_score_provenance_report(store, run_id)
+            with patch.object(store, "get_run_snapshot", wraps=store.get_run_snapshot) as get_snapshot:
+                report = build_score_provenance_report(store, run_id)
 
             store.close()
 
+            self.assertEqual(get_snapshot.call_count, 1)
             self.assertEqual(report["computed_composite_score"], computed)
             self.assertEqual(report["replay_integrity"]["status"], "valid")
             self.assertEqual(report["replay_integrity"]["drift_type"], "none")

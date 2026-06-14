@@ -2,6 +2,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from src.scoring.replay import _compute_scoring_state_fingerprint, DIMENSIONS_PATH, ENGINE_PATH
 from src.models.brand import BrandScore, DimensionScore, FeatureValue
@@ -114,19 +115,21 @@ class ReviewedScoreLayerTests(unittest.TestCase):
             store = SQLiteStore(str(Path(tmpdir) / "brand3.sqlite3"))
             run_id, computed = _seed_run(store)
 
-            reviewed_id = store.save_reviewed_score(
-                run_id,
-                reviewed_composite_score=78.0,
-                reason="Reviewer found the brand to be slightly stronger after checking the evidence trail.",
-                evidence_refs=["raw_inputs:web", "evidence_items:presencia"],
-                reviewer="reviewer-a",
-                affected_dimensions=["presencia", "diferenciacion"],
-                review_status="adjusted",
-            )
+            with patch.object(store, "get_run_snapshot", wraps=store.get_run_snapshot) as get_snapshot:
+                reviewed_id = store.save_reviewed_score(
+                    run_id,
+                    reviewed_composite_score=78.0,
+                    reason="Reviewer found the brand to be slightly stronger after checking the evidence trail.",
+                    evidence_refs=["raw_inputs:web", "evidence_items:presencia"],
+                    reviewer="reviewer-a",
+                    affected_dimensions=["presencia", "diferenciacion"],
+                    review_status="adjusted",
+                )
 
             saved = store.get_reviewed_score(run_id)
             store.close()
 
+            self.assertEqual(get_snapshot.call_count, 1)
             self.assertIsNotNone(saved)
             self.assertEqual(reviewed_id, saved["id"])
             self.assertEqual(saved["run_id"], run_id)

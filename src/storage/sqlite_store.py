@@ -1674,7 +1674,7 @@ class SQLiteStore:
         if score_delta != 0.0 and not evidence_list:
             raise ValueError("evidence_refs are required when reviewed score changes the computed score")
 
-        replay_audit = build_score_replay_audit(self, run_id)
+        replay_audit = build_score_replay_audit(self, run_id, snapshot=snapshot)
         based_on_score_integrity = str(replay_audit.get("score_integrity") or "unverifiable")
         if based_on_score_integrity == "drift_detected" and not technical_override:
             raise ValueError("technical override is required when replay integrity is drift_detected")

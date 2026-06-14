@@ -351,6 +351,30 @@ class EvaluateCoherenciaTests(unittest.TestCase):
         self.assertEqual(result.status, STATUS_SCORED)
         self.assertEqual(result.veredicto, "Síntesis al segundo intento.")
 
+    def test_coherencia_synthesizes_fallback_veredicto_after_retries(self):
+        class NeverVeredictoLLM(FakeLLM):
+            def _call_json(self, system, user, max_tokens=8000, **kwargs):
+                self.calls.append({"user": user, "schema_name": kwargs.get("schema_name")})
+                ids = self._tiles_for(kwargs.get("schema_name"))
+                # Tiles always valid, veredicto never provided.
+                return {"baldosas": [
+                    {"id": t, "estado": "ok" if i < 2 else "no",
+                     "evidencia": "q" if i < 2 else "", "motivo": "" if i < 2 else "m"}
+                    for i, t in enumerate(ids)
+                ]}
+
+        llm = NeverVeredictoLLM(ok_up_to=2)
+        result = evaluate_coherencia(
+            components={}, tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=llm
+        )
+        # Component stays scored (20-pt weight preserved); a deterministic
+        # fallback veredicto is synthesized rather than left blank.
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertEqual(result.score, 2)
+        self.assertTrue(result.veredicto)
+        self.assertIn("Síntesis automática", result.veredicto)
+        self.assertIn("2/10 baldosas encendidas", result.veredicto)
+
 
 class EvaluateSnapshotComponentsTests(unittest.TestCase):
     def test_full_pass_yields_ten_components(self):

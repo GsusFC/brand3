@@ -10,6 +10,7 @@ Scrapes the brand's website and extracts:
 
 import re
 import json
+import time
 from dataclasses import dataclass
 from html import unescape
 from urllib.parse import urlparse
@@ -20,6 +21,8 @@ from firecrawl import Firecrawl
 
 
 _MIN_USABLE_MARKDOWN_CHARS = 200
+_TRANSIENT_FETCH_ATTEMPTS = 2
+_TRANSIENT_FETCH_DELAY_S = 1.5
 _DESKTOP_USER_AGENT = (
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -109,16 +112,26 @@ class WebCollector:
         """Scrape URL via Firecrawl Python SDK. Returns legacy {content, raw, error} shape."""
         if not self.api_key:
             return {"error": "FIRECRAWL_API_KEY not set"}
-        try:
-            doc = Firecrawl(api_key=self.api_key).scrape(
-                url,
-                formats=["markdown", "html"],
-                timeout=60000,
-                wait_for=2000,
-                only_main_content=True,
-            )
-        except Exception as exc:
-            return {"error": str(exc)}
+        last_error = ""
+        for attempt in range(_TRANSIENT_FETCH_ATTEMPTS):
+            try:
+                doc = Firecrawl(api_key=self.api_key).scrape(
+                    url,
+                    formats=["markdown", "html"],
+                    timeout=60000,
+                    wait_for=2000,
+                    only_main_content=True,
+                )
+                break
+            except Exception as exc:
+                # Transient network failures are the common case here; one
+                # retry keeps the capture on the best tier instead of
+                # degrading to the HTML/browser fallbacks.
+                last_error = str(exc)
+                if attempt + 1 < _TRANSIENT_FETCH_ATTEMPTS:
+                    time.sleep(_TRANSIENT_FETCH_DELAY_S)
+        else:
+            return {"error": last_error}
         content = (doc.markdown or "").strip()
         html = (getattr(doc, "html", None) or "").strip()
         return {"content": content, "raw": content, "html": html}

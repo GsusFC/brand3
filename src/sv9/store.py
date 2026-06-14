@@ -20,7 +20,8 @@ _MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 _MIGRATION_PATHS = [
     _MIGRATIONS_DIR / "009_sv9.sql",
     _MIGRATIONS_DIR / "010_sv9_ranking.sql",
-    _MIGRATIONS_DIR / "011_baldosas_v31.sql",
+    _MIGRATIONS_DIR / "011_sv9_editorial_decisions.sql",
+    _MIGRATIONS_DIR / "012_baldosas_v31.sql",
 ]
 
 
@@ -47,7 +48,7 @@ class Sv9Store:
         for statement in (
             "ALTER TABLE sv9_scans ADD COLUMN evaluator_model TEXT",
             "ALTER TABLE sv9_scans ADD COLUMN executive_reading TEXT",
-            # Baldosas v3.1 (migration 011): model label and tile-level data.
+            # Baldosas v3.1 (migration 012): model label and tile-level data.
             "ALTER TABLE sv9_scans ADD COLUMN model TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN tile_profile_json TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN confidence TEXT",
@@ -225,6 +226,44 @@ class Sv9Store:
                 (executive_reading, scan_id),
             )
         self.conn.commit()
+
+    # --- editorial calibration ---
+
+    def save_editorial_decision(
+        self,
+        *,
+        scan_id: int,
+        component: str,
+        decision: str,
+        note: str | None,
+        evaluator: str | None,
+    ) -> None:
+        now = _utcnow()
+        self.conn.execute(
+            """
+            INSERT INTO sv9_editorial_decisions (
+                scan_id, component, decision, note, evaluator, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(scan_id, component) DO UPDATE SET
+                decision = excluded.decision,
+                note = excluded.note,
+                evaluator = excluded.evaluator,
+                updated_at = excluded.updated_at
+            """,
+            (scan_id, component, decision, note, evaluator, now, now),
+        )
+        self.conn.commit()
+
+    def list_editorial_decisions(self, scan_id: int) -> dict[str, dict[str, Any]]:
+        rows = self.conn.execute(
+            """
+            SELECT * FROM sv9_editorial_decisions
+            WHERE scan_id = ?
+            ORDER BY component ASC
+            """,
+            (scan_id,),
+        ).fetchall()
+        return {str(row["component"]): dict(row) for row in rows}
 
     # --- pinned Pass 1 detection ---
 

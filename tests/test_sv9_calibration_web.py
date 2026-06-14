@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 import os
 import sys
 import tempfile
@@ -77,7 +78,18 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         )
         store = Sv9Store(str(self.db))
         try:
-            return store.save_scan(result)
+            scan_id = store.save_scan(result)
+            store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+                """,
+                ("Acme", "https://acme.test", 30, 30, "test", "{}", 1, "ready"),
+            )
+            store.conn.commit()
+            return scan_id
         finally:
             store.close()
 
@@ -114,12 +126,31 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 303)
 
-    def test_routes_open_while_gating_is_disabled(self):
+    def test_routes_open_while_writes_require_team_cookie(self):
         for path in ("/sv9/calibration", f"/sv9/calibration/{self.scan_id}"):
             response = self.client.get(path)
             self.assertEqual(response.status_code, 200, path)
 
-    def test_list_and_detail_render(self):
+        response = self.client.post(
+            f"/sv9/calibration/{self.scan_id}/mission",
+            data={"estado__M1": "ok", "evaluador": "sergio"},
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/mission",
+            data={"decision": "v9"},
+        )
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(f"/sv9/scan/{self.scan_id}/retry")
+        self.assertEqual(response.status_code, 403)
+        response = self.client.post(
+            "/sv9/ranking/brand/acme.test",
+            data={"primary_category": "", "evaluador": "sergio"},
+        )
+        self.assertEqual(response.status_code, 403)
+
+    def test_list_and_detail_render_after_unlock(self):
+        self._unlock()
         response = self.client.get("/sv9/calibration")
         self.assertEqual(response.status_code, 200)
         self.assertIn("Acme", response.text)
@@ -133,6 +164,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("@media (max-width: 760px)", response.text)
 
     def test_submit_tile_labels_persists_states(self):
+        self._unlock()
         response = self.client.post(
             f"/sv9/calibration/{self.scan_id}/mission",
             data={
@@ -165,6 +197,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertEqual(by_id["M4"]["motivo"], "no hay forma de probarlo en la huella")
 
     def test_submit_validates_state_and_component(self):
+        self._unlock()
         response = self.client.post(
             f"/sv9/calibration/{self.scan_id}/mission",
             data={"estado__M1": "tal_vez", "evaluador": "sergio"},
@@ -189,6 +222,15 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("Brand3 Score", response.text)
         self.assertIn("Margen inmediato", response.text)
         self.assertIn("Coherencia", response.text)
+        self.assertIn("sv9-editorial-drawer", response.text)
+        self.assertIn('href="/">Volver a Brand3 Scanner</a>', response.text)
+        self.assertNotIn('href="/magnetism-scanner?lang=es">Volver a Brand3 Scanner</a>', response.text)
+        self.assertIn(">V9<", response.text)
+        self.assertIn(">V2<", response.text)
+        self.assertIn(">Decisión<", response.text)
+        self.assertIn("No hay editorial V2 persistida", response.text)
+        self.assertNotIn("source=tldr_structured_reference", response.text)
+        self.assertIn(f"/sv9/scan/{self.scan_id}/editorial-decision/mission", response.text)
         self.assertIn("3/10 ×2", response.text)
         self.assertIn("core_purpose text", response.text)
         self.assertIn("sv9-tile", response.text)
@@ -205,6 +247,110 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("text/markdown", response.headers["content-type"])
         self.assertIn("Baldosas apagadas (plan de trabajo)", response.text)
         self.assertIn("Puntos ciegos (contexto pendiente)", response.text)
+
+    def test_v2_reference_normalizer_accepts_string_blocks(self):
+        from web.routes.sv9_scan import _first_v2_blocks_with_text, _normalize_v2_reference_block
+
+        blocks = _first_v2_blocks_with_text(
+            {"mission": "Editorial V2 mission"},
+            {"mission": {"content": "Legacy mission"}},
+        )
+
+        self.assertEqual(blocks["mission"], "Editorial V2 mission")
+        self.assertEqual(
+            _normalize_v2_reference_block(blocks["mission"])["text"],
+            "Editorial V2 mission",
+        )
+
+    def test_v2_reference_normalizer_falls_back_when_blocks_are_empty(self):
+        from web.routes.sv9_scan import _first_v2_blocks_with_text, _normalize_v2_reference_block
+
+        blocks = _first_v2_blocks_with_text(
+            {"mission": ""},
+            {"mission": {"content": "Legacy mission", "confidence": "high"}},
+        )
+
+        normalized = _normalize_v2_reference_block(blocks["mission"])
+        self.assertEqual(normalized["text"], "Legacy mission")
+        self.assertEqual(normalized["confidence"], "high")
+
+    def test_v2_reference_uses_older_persisted_payload_when_latest_has_no_v2(self):
+        from src.sv9.store import Sv9Store
+        from web.routes.sv9_scan import _v2_reference_blocks
+
+        store = Sv9Store(str(self.db))
+        try:
+            store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+                """,
+                (
+                    "V2 Brand",
+                    "https://v2.example",
+                    50,
+                    50,
+                    "test",
+                    json.dumps({"client_tldr_v2": {"blocks": {"mission": "Older V2 mission"}}}),
+                    77,
+                    "ready",
+                ),
+            )
+            store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), ?)
+                """,
+                ("V2 Brand", "https://v2.example", 50, 50, "test", "{}", 77, "ready"),
+            )
+            store.conn.commit()
+            references = _v2_reference_blocks(store, 77)
+        finally:
+            store.close()
+
+        self.assertEqual(references["mission"]["text"], "Older V2 mission")
+
+    def test_editorial_decision_persists_without_changing_score(self):
+        self._unlock()
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/mission",
+            data={
+                "decision": "mix",
+                "note": "usar precisión V9 con tono V2",
+                "evaluator": "sergio",
+            },
+            follow_redirects=False,
+        )
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.headers["location"], f"/sv9/scan/{self.scan_id}#sv9-card-mission")
+
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            scan = store.get_scan(self.scan_id)
+            decisions = store.list_editorial_decisions(self.scan_id)
+        finally:
+            store.close()
+        self.assertIsNotNone(scan)
+        self.assertEqual(scan["brand_name"], "Acme")
+        self.assertEqual(decisions["mission"]["decision"], "mix")
+        self.assertEqual(decisions["mission"]["note"], "usar precisión V9 con tono V2")
+
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/nope",
+            data={"decision": "v9"},
+        )
+        self.assertEqual(response.status_code, 404)
+        response = self.client.post(
+            f"/sv9/scan/{self.scan_id}/editorial-decision/mission",
+            data={"decision": "bad"},
+        )
+        self.assertEqual(response.status_code, 422)
 
     def test_scan_canvas_explains_provider_failures(self):
         scan_id = self._seed_failed_scan()
@@ -226,6 +372,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
             source_run_id=42,
         )
 
+        self._unlock()
         with mock.patch(
             "web.routes.sv9_scan.materialize_sv9_scan",
             return_value=(failed_scan_id + 1, retry_result),
@@ -246,6 +393,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("/takedown", response.text)
         self.assertIn('class="table-wrap sv9-ranking-table-wrap"', response.text)
 
+        self._unlock()
         response = self.client.post(
             "/sv9/ranking/brand/acme.test",
             data={"primary_category": "fintech", "evaluador": "sergio"},

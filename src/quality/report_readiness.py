@@ -32,7 +32,6 @@ def evaluate_report_readiness(
     evidence_summary: dict[str, Any] | None = None,
     confidence_summary: dict[str, dict[str, Any]] | None = None,
     features_by_dimension: dict[str, Any] | None = None,
-    narrative_summary: dict[str, Any] | None = None,
     core_dimensions: tuple[str, ...] = CORE_DIMENSIONS,
 ) -> dict[str, Any]:
     """Classify whether a run is ready for an editorial brand report.
@@ -46,7 +45,6 @@ def evaluate_report_readiness(
     evidence_input = copy.deepcopy(evidence_summary or {})
     confidence_input = copy.deepcopy(confidence_summary or {})
     features_input = copy.deepcopy(features_by_dimension or {})
-    narrative_input = copy.deepcopy(narrative_summary or {})
 
     warnings: list[str] = []
     if not _has_entity_relevance_signal(evidence_input):
@@ -77,7 +75,6 @@ def evaluate_report_readiness(
             confidence_summary=confidence_input,
             missing_high_weight_features=missing_high_weight,
             fallback_detected=fallback_by_dim,
-            narrative_summary=narrative_input,
         )
         dimension_states[dimension_name] = state
         reasons[dimension_name] = dimension_reasons
@@ -102,14 +99,10 @@ def evaluate_report_readiness(
         for dim in core_dimensions
         if dimension_states.get(dim) not in (DIMENSION_READY, DIMENSION_OBSERVATION_ONLY)
     ]
-    unsupported_editorial = _unsupported_editorial_synthesis(narrative_input)
 
     if len(core_not_evaluable) >= 2:
         report_mode = REPORT_MODE_INSUFFICIENT
         blockers.append("multiple_core_dimensions_not_evaluable")
-    elif unsupported_editorial:
-        report_mode = REPORT_MODE_TECHNICAL
-        blockers.append("unsupported_editorial_synthesis")
     elif core_technical_only:
         report_mode = REPORT_MODE_TECHNICAL
         blockers.append("core_dimensions_technical_only")
@@ -150,7 +143,6 @@ def _dimension_state(
     confidence_summary: dict[str, dict[str, Any]],
     missing_high_weight_features: dict[str, list[str]],
     fallback_detected: dict[str, bool],
-    narrative_summary: dict[str, Any],
 ) -> tuple[str, list[str]]:
     reasons: list[str] = []
     score = _dimension_score(scores, dimension_name)
@@ -158,7 +150,6 @@ def _dimension_state(
     confidence = confidence_summary.get(dimension_name) or {}
     confidence_status = confidence.get("status")
     confidence_value = _as_float(confidence.get("confidence"))
-    narrative_state = _dimension_narrative_state(narrative_summary, dimension_name)
 
     if score is None:
         reasons.append("score_missing")
@@ -170,16 +161,11 @@ def _dimension_state(
         reasons.append("fallback_value_detected")
     if missing_high_weight_features.get(dimension_name):
         reasons.append("missing_high_weight_features")
-    if narrative_state in ("fallback", "unsupported"):
-        reasons.append(f"narrative_{narrative_state}")
 
     if score is None or evidence_count <= 0 or confidence_status == "insufficient_data":
         return DIMENSION_NOT_EVALUABLE, reasons
 
     if fallback_detected.get(dimension_name) or missing_high_weight_features.get(dimension_name):
-        return DIMENSION_TECHNICAL_ONLY, reasons
-
-    if narrative_state in ("fallback", "unsupported"):
         return DIMENSION_TECHNICAL_ONLY, reasons
 
     if confidence_status == "degraded" or 0 < confidence_value < 0.6:
@@ -317,31 +303,6 @@ def _feature_records(features_by_dimension: dict[str, Any], dimension_name: str)
     if isinstance(raw, list):
         return [dict(item) for item in raw if isinstance(item, dict)]
     return []
-
-
-def _dimension_narrative_state(narrative_summary: dict[str, Any], dimension_name: str) -> str | None:
-    by_dimension = narrative_summary.get("dimension_states") or {}
-    if dimension_name in by_dimension:
-        state = by_dimension.get(dimension_name)
-        if isinstance(state, dict):
-            return state.get("state")
-        if isinstance(state, str):
-            return state
-    fallback_dimensions = set(narrative_summary.get("fallback_dimensions") or [])
-    unsupported_dimensions = set(narrative_summary.get("unsupported_dimensions") or [])
-    if dimension_name in unsupported_dimensions:
-        return "unsupported"
-    if dimension_name in fallback_dimensions:
-        return "fallback"
-    return None
-
-
-def _unsupported_editorial_synthesis(narrative_summary: dict[str, Any]) -> bool:
-    if bool(narrative_summary.get("unsupported_editorial_synthesis")):
-        return True
-    if str(narrative_summary.get("synthesis_state") or "").lower() == "unsupported":
-        return True
-    return False
 
 
 def _has_entity_relevance_signal(evidence_summary: dict[str, Any]) -> bool:

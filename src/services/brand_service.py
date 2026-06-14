@@ -1549,6 +1549,33 @@ def _truncate_for_audit(value):
     return value
 
 
+def _visual_evidence_signal(screenshot_capture: dict | None) -> dict:
+    """Structured visual-evidence quality flag for the snapshot.
+
+    The capture layer describes the condition (captured / skipped / failed /
+    missing) and makes it visible; it does not decide whether a visual
+    dimension is evaluable — that stays with the readiness/scoring layer.
+    """
+    capture = screenshot_capture if isinstance(screenshot_capture, dict) else {}
+    status = str(capture.get("status") or "")
+    if status == "captured" and capture.get("screenshot_url"):
+        return {"status": "captured", "available": True}
+    if status == "skipped":
+        return {
+            "status": "skipped",
+            "available": False,
+            "reason": str(capture.get("reason") or "not_attempted"),
+        }
+    if status in {"error", "timeout"}:
+        return {
+            "status": "failed",
+            "available": False,
+            "error_type": str(capture.get("error_type") or status),
+            "error_message": str(capture.get("error_message") or ""),
+        }
+    return {"status": "missing", "available": False}
+
+
 def _acquisition_audit_payload(
     *,
     acquisition_provenance: dict,
@@ -1578,6 +1605,7 @@ def _acquisition_audit_payload(
                 "steps": steps,
                 "provenance": acquisition_provenance,
                 "screenshot": screenshot_capture,
+                "visual_evidence": _visual_evidence_signal(screenshot_capture),
             }
         )
     )

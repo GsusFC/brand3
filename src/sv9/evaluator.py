@@ -286,12 +286,20 @@ def _run_tile_call(
         verdicts, error = _normalize_tiles(raw, ids, lenient=is_last)
         veredicto = str((raw or {}).get("veredicto") or "").strip() if isinstance(raw, dict) else ""
         if verdicts is not None and (veredicto or not requires_veredicto or is_last):
+            final_veredicto = veredicto
+            if requires_veredicto and not final_veredicto:
+                # Product decision (2026-06-14): the evaluator failed to produce
+                # the mandatory synthesis sentence after retries. Rather than
+                # nuke a 20-point component, synthesize a deterministic fallback
+                # from the tile profile so the "siempre hay veredicto" contract
+                # holds without inflating or zeroing the score.
+                final_veredicto = _fallback_veredicto(key, verdicts)
             return ComponentResult(
                 component=key,
                 status=STATUS_SCORED,
                 score=score_from_tile_profile(verdicts),
                 tile_profile=verdicts,
-                veredicto=veredicto,
+                veredicto=final_veredicto,
                 evaluation_model=getattr(llm, "model", None),
                 detected_content=detected_content,
                 detection_mode=detection_mode,
@@ -319,6 +327,24 @@ def _run_tile_call(
         evidence=evidence or [],
         error=last_error,
     )
+
+
+def _fallback_veredicto(key: str, verdicts: list[TileVerdict]) -> str:
+    """Deterministic synthesis sentence when the evaluator omits `veredicto`.
+
+    Founder-facing copy built from the tile counts, marked as auto-generated so
+    calibration can tell it apart from a model-written verdict.
+    """
+    scale = COMPONENTS[key]["scale"]
+    ok = sum(1 for v in verdicts if v.estado == ESTADO_OK)
+    off = sum(1 for v in verdicts if v.estado == ESTADO_NO)
+    blind = sum(1 for v in verdicts if v.estado == ESTADO_SIN_EVIDENCIA)
+    parts = [f"{ok}/{scale} baldosas encendidas"]
+    if off:
+        parts.append(f"{off} apagada{'s' if off != 1 else ''}")
+    if blind:
+        parts.append(f"{blind} punto{'s' if blind != 1 else ''} ciego{'s' if blind != 1 else ''}")
+    return "Síntesis automática: " + ", ".join(parts) + "."
 
 
 def _normalize_tiles(

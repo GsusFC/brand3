@@ -14,6 +14,9 @@ import os
 import time
 from urllib.parse import urlparse
 
+_TRANSIENT_SEARCH_ATTEMPTS = 2
+_TRANSIENT_SEARCH_DELAY_S = 1.5
+
 
 @dataclass
 class ExaResult:
@@ -350,6 +353,21 @@ class ExaCollector:
             return configured_type, False
         return "deep-reasoning", True
 
+    def _search_with_retry(self, query: str, params: dict):
+        """One retry on transient search failures.
+
+        Config errors (missing API key) surface immediately through the
+        `client` property access, outside the retry loop.
+        """
+        client = self.client
+        for attempt in range(_TRANSIENT_SEARCH_ATTEMPTS):
+            try:
+                return client.search(query, **params)
+            except Exception:
+                if attempt + 1 >= _TRANSIENT_SEARCH_ATTEMPTS:
+                    raise
+                time.sleep(_TRANSIENT_SEARCH_DELAY_S)
+
     def search(
         self,
         query: str,
@@ -369,7 +387,7 @@ class ExaCollector:
         applied_filters = {k: params.get(k) for k in self._FILTER_KEYS if k in params}
         start = time.perf_counter()
         try:
-            response = self.client.search(query, **params)
+            response = self._search_with_retry(query, params)
         except Exception as e:
             elapsed_ms = int((time.perf_counter() - start) * 1000)
             print(f"Exa search error: {e}")

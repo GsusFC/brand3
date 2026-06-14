@@ -16,7 +16,7 @@ from src.sv9.ranking import build_ranking
 from src.sv9.store import Sv9Store
 
 from ..templates_env import templates
-from .sv9_calibration import _require_team
+from .sv9_calibration import _require_team_write
 
 router = APIRouter()
 
@@ -45,7 +45,7 @@ async def sv9_ranking_set_category(
     evaluador: str = Form(""),
     exclude_from_ranking: bool = Form(False),
 ):
-    _require_team(request)
+    _require_team_write(request)
     primary = primary_category.strip() or None
     if primary and primary not in CATEGORIES:
         raise HTTPException(status_code=422, detail="unknown category")

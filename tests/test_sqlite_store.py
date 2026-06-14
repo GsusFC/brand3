@@ -9,6 +9,17 @@ from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
 
 
 class SQLiteStoreTests(unittest.TestCase):
+    def test_store_configures_busy_timeout_per_connection(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            try:
+                timeout_ms = store.conn.execute("PRAGMA busy_timeout").fetchone()[0]
+            finally:
+                store.close()
+
+            self.assertEqual(timeout_ms, 5000)
+
     def test_schema_initialization_runs_once_for_same_database_file(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

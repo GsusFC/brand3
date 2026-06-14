@@ -170,6 +170,7 @@ class SQLiteStore:
 
     def _configure_connection(self) -> None:
         self.conn.execute("PRAGMA journal_mode=WAL")
+        self.conn.execute("PRAGMA busy_timeout=5000")
 
     def _ensure_schema_initialized(self) -> None:
         """Run DDL/migrations once per process for a concrete database file.
@@ -862,16 +863,7 @@ class SQLiteStore:
         if not row:
             return None
         now = datetime.now().isoformat()
-        self.conn.execute(
-            """
-            UPDATE llm_cache
-            SET hit_count = hit_count + 1,
-                last_hit_at = ?
-            WHERE cache_key = ?
-            """,
-            (now, cache_key),
-        )
-        self.conn.commit()
+        self._record_llm_cache_hit(cache_key, now)
         payload = dict(row)
         if payload.get("response_json"):
             response_json, error = _safe_json_loads(
@@ -885,6 +877,24 @@ class SQLiteStore:
                 return None
             payload["response_json"] = response_json
         return payload
+
+    def _record_llm_cache_hit(self, cache_key: str, last_hit_at: str) -> None:
+        try:
+            self._update_llm_cache_hit_count(cache_key, last_hit_at)
+            self.conn.commit()
+        except sqlite3.OperationalError:
+            self.conn.rollback()
+
+    def _update_llm_cache_hit_count(self, cache_key: str, last_hit_at: str) -> None:
+        self.conn.execute(
+            """
+            UPDATE llm_cache
+            SET hit_count = hit_count + 1,
+                last_hit_at = ?
+            WHERE cache_key = ?
+            """,
+            (last_hit_at, cache_key),
+        )
 
     def save_llm_cache(
         self,

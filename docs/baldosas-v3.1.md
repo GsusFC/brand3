@@ -223,7 +223,7 @@ La rúbrica es `baldosas-v3-1` (campo `rubric=` del scan). Los scans históricos
 
 **Regresión (obligatoria antes de desplegar).** Re-escanea con `baldosas-v3-1`: spacex.com, poetic.com, factorial.es, criptan.com, work-smart.ai, feverup.com. El harness es `scripts/sv9_shadow_replay.py` (corre sobre snapshots persistidos, sin recolectar):
 
-```
+```bash
 # por run_id de cada marca (mapea dominio -> run_id en la tabla runs)
 ./.venv/bin/python scripts/sv9_shadow_replay.py --run-id <id> --markdown regression.md
 ```

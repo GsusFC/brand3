@@ -157,7 +157,7 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         finally:
             store.close()
         self.assertEqual(len(labels), 5)
-        by_id = {l["baldosa_id"]: l for l in labels}
+        by_id = {row["baldosa_id"]: row for row in labels}
         # IA had M1-M3 ok, M4-M5 no.
         self.assertEqual(by_id["M3"]["estado_ia"], "ok")
         self.assertEqual(by_id["M3"]["estado_humano"], "no")

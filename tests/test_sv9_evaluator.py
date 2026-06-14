@@ -164,6 +164,37 @@ class EvaluateComponentTests(unittest.TestCase):
         self.assertEqual(result.score, 0)  # all demoted to `no`
         self.assertTrue(all(v.estado == "no" for v in result.tile_profile))
 
+    def test_duplicate_tile_ids_are_rejected_and_retried(self):
+        class DuplicateLLM(FakeLLM):
+            def __init__(self):
+                super().__init__(ok_up_to=2)
+                self.attempt = 0
+
+            def _call_json(self, system, user, max_tokens=8000, **kwargs):
+                self.calls.append({"user": user})
+                ids = self._tiles_for(kwargs.get("schema_name"))
+                self.attempt += 1
+                if self.attempt == 1:
+                    # M1 appears twice with conflicting states.
+                    baldosas = [
+                        {"id": ids[0], "estado": "ok", "evidencia": "first"},
+                        {"id": ids[0], "estado": "no", "motivo": "second"},
+                    ] + [{"id": t, "estado": "no", "motivo": "m"} for t in ids[1:]]
+                    return {"baldosas": baldosas}
+                return {"baldosas": [
+                    {"id": t, "estado": "ok" if i < 2 else "no",
+                     "evidencia": "q" if i < 2 else "", "motivo": "" if i < 2 else "m"}
+                    for i, t in enumerate(ids)
+                ]}
+
+        llm = DuplicateLLM()
+        result = evaluate_component(
+            "mission", tldr=full_tldr(), signals=[], brand_name="Acme", url="u", llm=llm
+        )
+        self.assertEqual(llm.attempt, 2)  # the duplicate triggered a retry
+        self.assertEqual(result.status, STATUS_SCORED)
+        self.assertEqual(result.score, 2)
+
     def test_out_of_catalogue_state_retries(self):
         class BadStateLLM(FakeLLM):
             def __init__(self):

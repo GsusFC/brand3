@@ -157,7 +157,7 @@
       <span class="label">{{ c.label }}</span>
       <span class="tag">
         // ia: {{ c.result.score }}/{{ c.scale }}{% if c.multiplier == 2 %} ×2{% endif %}
-        · {{ c.result.status }} · confianza {{ c.result.confidence or 'alta' }}
+        · {{ c.result.status }}{% if c.result.confidence %} · confianza {{ c.result.confidence }}{% endif %}
       </span>
     </div>
 

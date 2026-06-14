@@ -343,6 +343,7 @@ def _normalize_tiles(
     by_id: dict[str, TileVerdict] = {}
     unknown: list[str] = []
     bad_state: list[str] = []
+    duplicates: list[str] = []
     for item in items:
         if not isinstance(item, dict):
             continue
@@ -357,16 +358,24 @@ def _normalize_tiles(
             if not lenient:
                 continue
             estado = ESTADO_NO
-        by_id[tile_id] = TileVerdict(
+        if tile_id in by_id:
+            # "One verdict per tile": a duplicate is a schema violation, not a
+            # silent last-writer-wins overwrite. Keep the first seen verdict.
+            duplicates.append(tile_id)
+            if not lenient:
+                continue
+        by_id.setdefault(tile_id, TileVerdict(
             tile_id=tile_id,
             estado=estado if estado in TILE_ESTADOS else ESTADO_NO,
             evidencia=str(item.get("evidencia") or "").strip(),
             motivo=str(item.get("motivo") or "").strip(),
             contexto_requerido=str(item.get("contexto_requerido") or "").strip(),
-        )
+        ))
 
     missing = [tid for tid in ids if tid not in by_id]
     if not lenient:
+        if duplicates:
+            return None, f"ids duplicados: {', '.join(sorted(set(duplicates)))}"
         if unknown:
             return None, f"ids fuera de catálogo: {', '.join(sorted(set(unknown)))}"
         if bad_state:

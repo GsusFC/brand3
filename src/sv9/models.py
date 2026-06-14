@@ -112,8 +112,15 @@ class ComponentResult:
         return sum(1 for v in self.tile_profile if v.estado == ESTADO_SIN_EVIDENCIA)
 
     @property
-    def confidence(self) -> str:
-        """Confidence index derived from the count of `sin_evidencia` tiles."""
+    def confidence(self) -> str | None:
+        """Confidence index derived from the count of `sin_evidencia` tiles.
+
+        Only scored components have a confidence; not-detected and not-evaluated
+        components return None so the UI/export never report a misleading "alta"
+        over an empty tile profile.
+        """
+        if self.status != STATUS_SCORED:
+            return None
         return confidence_from_blind_spots(self.blind_spot_count)
 
     @property

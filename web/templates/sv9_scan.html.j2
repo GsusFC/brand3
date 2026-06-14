@@ -98,8 +98,10 @@
 
   {% if box.content %}
   <p class="magnetism-card-result" style="margin: 0;">{{ box.content }}</p>
-  {% elif box.status != 'scored' %}
+  {% elif box.status == 'not_detected' %}
   <p class="dim magnetism-card-result" style="margin: 0;">(no detectado)</p>
+  {% elif box.status == 'not_evaluated' %}
+  <p class="dim magnetism-card-result" style="margin: 0;">(fallo técnico)</p>
   {% endif %}
 
   {% if box.tiles %}

@@ -86,6 +86,13 @@ class ConfidenceTests(unittest.TestCase):
         self.assertEqual(len(comp.off_tiles), 2)
         self.assertEqual(len(comp.blind_spot_tiles), 2)
 
+    def test_non_scored_components_have_no_confidence(self):
+        nd = ComponentResult(component="mission", status=STATUS_NOT_DETECTED)
+        ne = ComponentResult(component="vision", status=STATUS_NOT_EVALUATED, error="x")
+        self.assertIsNone(nd.confidence)
+        self.assertIsNone(ne.confidence)
+        self.assertEqual(scored("mission", 3).confidence, "alta")
+
 
 class BaseAverageAndCapTests(unittest.TestCase):
     def test_base_average_normalizes_five_point_scales(self):

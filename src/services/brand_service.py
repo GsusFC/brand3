@@ -12,6 +12,7 @@ from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
 from statistics import mean
+from time import perf_counter
 from urllib.parse import unquote, urlparse, urlunparse
 
 from src.collectors.competitor_collector import (
@@ -1964,6 +1965,7 @@ def run(
     if not brand_name:
         brand_name = url.replace("https://", "").replace("http://", "").split("/")[0]
 
+    run_started = perf_counter()
     storage = start_analysis_run(
         brand_name,
         url,
@@ -1976,6 +1978,7 @@ def run(
 
     try:
         _check_cancel(cancel_check)
+        phase_started = perf_counter()
         print(f"[1/4] Collecting data for {brand_name}...")
 
         raw_inputs = collect_raw_inputs(
@@ -2106,9 +2109,11 @@ def run(
         llm = llm_setup.llm
         llm_provider = llm_setup.provider
         llm_skipped_reason = llm_setup.skipped_reason
+        print(f"[timing] phase 1 collect+prepare: {(perf_counter() - phase_started):.2f}s")
 
         _emit_progress(progress_cb, "extracting")
         _check_cancel(cancel_check)
+        phase_started = perf_counter()
         print("[2/4] Extracting features...")
 
         feature_result = run_feature_pipeline(
@@ -2162,9 +2167,11 @@ def run(
             content_web=content_web,
             screenshot_capture=screenshot_capture,
         )
+        print(f"[timing] phase 2 features: {(perf_counter() - phase_started):.2f}s")
 
         _emit_progress(progress_cb, "scoring")
         _check_cancel(cancel_check)
+        phase_started = perf_counter()
         print("[3/4] Scoring...")
         scoring = score_features(
             url=url,
@@ -2180,9 +2187,11 @@ def run(
         )
         engine = scoring.engine
         brand_score = scoring.brand_score
+        print(f"[timing] phase 3 scoring: {(perf_counter() - phase_started):.2f}s")
 
         _emit_progress(progress_cb, "finalizing")
         _check_cancel(cancel_check)
+        phase_started = perf_counter()
         print("[4/4] Generating report...\n")
         summary = engine.generate_summary(brand_score)
         print(summary)
@@ -2356,6 +2365,8 @@ def run(
                 )
 
             _store_safely(store, "report narrative persistence", _persist_report_narrative)
+        print(f"[timing] phase 4 report+persist: {(perf_counter() - phase_started):.2f}s")
+        print(f"[timing] total run: {(perf_counter() - run_started):.2f}s")
         return result
     except AnalysisJobCancelled:
         if run_id:

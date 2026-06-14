@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
+from time import perf_counter
 
 from src.collectors.competitor_collector import CompetitorData
 from src.collectors.context_collector import ContextData
@@ -22,6 +24,18 @@ class ScreenshotResult:
 class FeatureExtractionResult:
     features_by_dim: dict[str, dict]
     screenshot_capture: dict[str, object]
+
+
+def _timed_dimension_extract(
+    timings_ms: dict[str, float],
+    dimension: str,
+    extract: Callable[[], dict],
+) -> dict:
+    started = perf_counter()
+    try:
+        return extract()
+    finally:
+        timings_ms[dimension] = (perf_counter() - started) * 1000.0
 
 
 def capture_screenshot(
@@ -98,16 +112,25 @@ def extract_features(
     annotate_content_source,
 ) -> dict[str, dict]:
     features_by_dim = {}
-    features_by_dim["presencia"] = presencia_cls().extract(
-        web=web_data,
-        exa=exa_data,
-        social=social_data,
-        context=context_data,
+    timings_ms: dict[str, float] = {}
+    features_by_dim["presencia"] = _timed_dimension_extract(
+        timings_ms,
+        "presencia",
+        lambda: presencia_cls().extract(
+            web=web_data,
+            exa=exa_data,
+            social=social_data,
+            context=context_data,
+        ),
     )
-    features_by_dim["vitalidad"] = vitalidad_cls(llm=llm).extract(
-        web=web_data,
-        exa=exa_data,
-        context=context_data,
+    features_by_dim["vitalidad"] = _timed_dimension_extract(
+        timings_ms,
+        "vitalidad",
+        lambda: vitalidad_cls(llm=llm).extract(
+            web=web_data,
+            exa=exa_data,
+            context=context_data,
+        ),
     )
 
     if llm:
@@ -129,26 +152,40 @@ def extract_features(
     if data_quality == "insufficient":
         features_by_dim["coherencia"] = {}
         features_by_dim["diferenciacion"] = {}
+        timings_ms["coherencia"] = 0.0
+        timings_ms["diferenciacion"] = 0.0
     else:
-        features_by_dim["coherencia"] = coherencia_ext.extract(
-            web=content_web,
+        features_by_dim["coherencia"] = _timed_dimension_extract(
+            timings_ms,
+            "coherencia",
+            lambda: coherencia_ext.extract(
+                web=content_web,
+                exa=exa_data,
+                context=context_data,
+                screenshot_url=screenshot_url,
+                research_pack=research_pack,
+            ),
+        )
+        features_by_dim["diferenciacion"] = _timed_dimension_extract(
+            timings_ms,
+            "diferenciacion",
+            lambda: diferenciacion_ext.extract(
+                web=content_web,
+                exa=exa_data,
+                competitor_data=competitor_data,
+                screenshot_url=screenshot_url,
+                context=context_data,
+                research_pack=research_pack,
+            ),
+        )
+    features_by_dim["percepcion"] = _timed_dimension_extract(
+        timings_ms,
+        "percepcion",
+        lambda: percepcion_ext.extract(
+            web=web_data,
             exa=exa_data,
             context=context_data,
-            screenshot_url=screenshot_url,
-            research_pack=research_pack,
-        )
-        features_by_dim["diferenciacion"] = diferenciacion_ext.extract(
-            web=content_web,
-            exa=exa_data,
-            competitor_data=competitor_data,
-            screenshot_url=screenshot_url,
-            context=context_data,
-            research_pack=research_pack,
-        )
-    features_by_dim["percepcion"] = percepcion_ext.extract(
-        web=web_data,
-        exa=exa_data,
-        context=context_data,
+        ),
     )
     annotate_content_source(features_by_dim, content_source)
 
@@ -156,7 +193,8 @@ def extract_features(
         llm_feats = sum(1 for f in feats.values() if f.source == "llm")
         heuristic_feats = len(feats) - llm_feats
         src_info = f"{heuristic_feats}h" + (f"+{llm_feats}llm" if llm_feats else "")
-        print(f"  {dim}: {len(feats)} features ({src_info})")
+        elapsed_ms = timings_ms.get(dim, 0.0)
+        print(f"  {dim}: {len(feats)} features ({src_info}, {elapsed_ms:.0f}ms)")
 
     return features_by_dim
 

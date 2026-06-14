@@ -6,6 +6,7 @@ runs only on the analyze endpoint; everything else is untouched.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from collections.abc import Awaitable, Callable
 
@@ -58,7 +59,11 @@ async def rate_limit_middleware(
     if ip in _rate_limit_bypass_ips():
         return await call_next(request)
 
-    count = count_recent_analyses_for_ip(ip, hours=settings.rate_limit_window_hours)
+    count = await asyncio.to_thread(
+        count_recent_analyses_for_ip,
+        ip,
+        hours=settings.rate_limit_window_hours,
+    )
     if count >= settings.rate_limit_per_ip:
         log.info("rate_limit_hit ip=%s count=%d", ip, count)
         return templates.TemplateResponse(

@@ -505,6 +505,26 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("Hallazgo traducido", report_resp.text)
         self.assertIn("Tensión traducida persistida.", report_resp.text)
 
+    def test_report_reads_request_and_snapshot_via_threadpool(self):
+        from web.routes import report as report_route
+
+        token, run_id = self._create_ready_run()
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with patch("web.routes.report.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(f"/r/{token}?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([call[0] for call in calls], [report_route.get_request, report_route._load_snapshot])
+        self.assertEqual(calls[0][1], (token,))
+        self.assertEqual(calls[1][1], (run_id,))
+        self.assertEqual(calls[0][2], {})
+        self.assertEqual(calls[1][2], {})
+
     def test_status_page_shows_live_phase_checklist(self):
         from web.workers.queue import set_run_analysis_override
 
@@ -565,6 +585,35 @@ class WebAppFlowTests(unittest.TestCase):
             self.assertIn('data-dino-canvas', status_resp.text)
         finally:
             release.set()
+
+    def test_status_page_reads_request_via_threadpool(self):
+        from web.routes import status
+
+        token, _run_id = self._create_ready_run()
+        with sqlite3.connect(self.db) as conn:
+            conn.execute(
+                """
+                UPDATE web_requests
+                SET status = 'running', phase = 'scoring', error_message = NULL
+                WHERE token = ?
+                """,
+                (token,),
+            )
+            conn.commit()
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with patch("web.routes.status.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(f"/r/{token}/status")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], status.get_request)
+        self.assertEqual(calls[0][1], (token,))
+        self.assertEqual(calls[0][2], {})
 
     def test_unknown_token_returns_404(self):
         response = self.client.get("/r/nope-nope/status")

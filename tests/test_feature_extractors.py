@@ -5,7 +5,12 @@ import unittest
 import zlib
 from unittest.mock import patch
 
-from src.collectors.competitor_collector import ComparisonResult, CompetitorData
+from src.collectors.competitor_collector import (
+    ComparisonResult,
+    CompetitorCollector,
+    CompetitorData,
+    CompetitorInfo,
+)
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.exa_collector import ExaCollector
 from src.collectors.social_collector import PlatformMetrics, SocialData
@@ -336,6 +341,42 @@ class PercepcionExtractorTests(unittest.TestCase):
             set(features.keys()),
             {"brand_sentiment", "mention_volume", "sentiment_trend", "review_quality"},
         )
+
+
+class CompetitorCollectorTests(unittest.TestCase):
+    def test_competitor_scraping_does_not_crawl_owned_subpages(self):
+        class FakeWebCollector:
+            def __init__(self):
+                self.calls = []
+
+            def scrape(self, url, crawl_subpages=True):
+                self.calls.append({"url": url, "crawl_subpages": crawl_subpages})
+                return WebData(
+                    url=url,
+                    markdown_content="Competitor homepage content " * 20,
+                )
+
+        web = FakeWebCollector()
+        collector = CompetitorCollector(web_collector=web)
+        result = CompetitorData(
+            brand_name="Brand",
+            brand_url="https://brand.example",
+            competitors=[
+                CompetitorInfo(name="Comp A", url="https://a.example"),
+                CompetitorInfo(name="Comp B", url="https://b.example"),
+            ],
+        )
+
+        collector._scrape_competitors(result)
+
+        self.assertEqual(
+            web.calls,
+            [
+                {"url": "https://a.example", "crawl_subpages": False},
+                {"url": "https://b.example", "crawl_subpages": False},
+            ],
+        )
+        self.assertTrue(all(comp.web_data for comp in result.competitors))
 
 
 class DiferenciacionExtractorTests(unittest.TestCase):

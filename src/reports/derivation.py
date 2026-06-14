@@ -53,6 +53,14 @@ _DIMENSION_ORDER: tuple[str, ...] = (
     "vitalidad",
 )
 
+_DIMENSION_LABELS: dict[str, str] = {
+    "coherencia": "Coherence",
+    "presencia": "Presence",
+    "percepcion": "Perception",
+    "diferenciacion": "Differentiation",
+    "vitalidad": "Vitality",
+}
+
 _ENCYCLOPEDIC_HOSTS = {"wikipedia.org", "crunchbase.com", "pitchbook.com"}
 _SOCIAL_HOSTS = {
     "linkedin.com",
@@ -298,13 +306,7 @@ def _format_analysis_date(iso: str | None) -> str:
 
 
 def _load_dimension_labels() -> dict[str, str]:
-    return {
-        "coherencia": "Coherence",
-        "presencia": "Presence",
-        "percepcion": "Perception",
-        "diferenciacion": "Differentiation",
-        "vitalidad": "Vitality",
-    }
+    return _DIMENSION_LABELS
 
 
 def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
@@ -343,7 +345,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         features_by_dim.setdefault(dim, []).append(enriched)
 
     # Build per-dimension blocks
-    known_dim_order = list(_load_dimension_labels().keys())
+    known_dim_order = list(_DIMENSION_LABELS)
     score_by_dim = {row.get("dimension_name"): row for row in scores}
     confidence_by_dim = dimension_confidence_from_snapshot(snapshot)
     persisted_evidence_by_dim = _report_evidence_items_by_dimension(snapshot)
@@ -379,7 +381,7 @@ def build_report_base(snapshot: dict, theme: str = "dark") -> dict:
         short_verdict, verdict_adjective = derive_verdict(score)
         dimensions_ctx.append({
             "name": dim_name,
-            "display_name": _load_dimension_labels().get(dim_name, dim_name),
+            "display_name": _DIMENSION_LABELS.get(dim_name, dim_name),
             "score": score,
             "score_display": "n/a" if score is None else f"{score:.0f}",
             "bar": ascii_bar(score),
@@ -1455,7 +1457,7 @@ def group_by_dimension(
         result.append(
             DimensionEvidences(
                 dimension=name,
-                display_name=_load_dimension_labels().get(name, name),
+                display_name=_DIMENSION_LABELS.get(name, name),
                 score=score,
                 verdict=short,
                 verdict_adjective=adj,

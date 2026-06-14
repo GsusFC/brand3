@@ -282,7 +282,7 @@ class CompetitorCollector:
 
         for comp in result.competitors:
             try:
-                web_data = self.web.scrape(comp.url)
+                web_data = self.web.scrape(comp.url, crawl_subpages=False)
                 if web_data and not web_data.error:
                     # Truncate to save memory
                     if len(web_data.markdown_content) > self.max_scrape_chars:

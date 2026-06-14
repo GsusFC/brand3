@@ -24,8 +24,6 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Optional
 
-from firecrawl import Firecrawl
-
 from src.config import BRAND3_LLM_API_KEY, LLM_BASE_URL, VISION_MODEL
 
 
@@ -62,6 +60,8 @@ class VisualAnalyzer:
         if not self.firecrawl_api_key:
             return {"error": "FIRECRAWL_API_KEY not set"}
         try:
+            from firecrawl import Firecrawl
+
             doc = Firecrawl(api_key=self.firecrawl_api_key).scrape(
                 url, formats=["screenshot"], max_age=0, timeout=60000
             )

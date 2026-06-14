@@ -9,6 +9,74 @@ from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
 
 
 class SQLiteStoreTests(unittest.TestCase):
+    def test_schema_initialization_runs_once_for_same_database_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            first.close()
+            second = SQLiteStore(str(db_path))
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 1)
+            self.assertEqual(metrics["skips"], 1)
+
+    def test_schema_initialization_cache_survives_database_writes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            brand_id = first.upsert_brand("Example", "https://example.com")
+            first.create_run(brand_id, "Example", "https://example.com", True, False)
+            first.close()
+            second = SQLiteStore(str(db_path))
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 1)
+            self.assertEqual(metrics["skips"], 1)
+
+    def test_schema_initialization_runs_for_recreated_database_at_same_path(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            first.close()
+            for suffix in ("", "-wal", "-shm"):
+                Path(f"{db_path}{suffix}").unlink(missing_ok=True)
+
+            second = SQLiteStore(str(db_path))
+            brand_id = second.upsert_brand("Example", "https://example.com")
+            second.create_run(brand_id, "Example", "https://example.com", True, False)
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 2)
+            self.assertEqual(metrics["skips"], 0)
+
+    def test_schema_initialization_runs_when_cached_database_is_not_ready(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            first.conn.execute("DROP TABLE runs")
+            first.conn.commit()
+            first.close()
+
+            second = SQLiteStore(str(db_path))
+            brand_id = second.upsert_brand("Example", "https://example.com")
+            second.create_run(brand_id, "Example", "https://example.com", True, False)
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 2)
+            self.assertEqual(metrics["skips"], 0)
+
     def test_store_persists_run_inputs_features_and_scores(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

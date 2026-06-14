@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import threading
+import time
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
@@ -137,14 +139,83 @@ class _MalformedJSONPayload:
 class SQLiteStore:
     """Persists runs, raw collector inputs, features, and scores in SQLite."""
 
+    _schema_init_lock = threading.Lock()
+    _schema_initialized: set[tuple[str, tuple[int, int], tuple[tuple[str, int, int], ...]]] = set()
+    _schema_init_metrics: dict[str, int | float] = {
+        "runs": 0,
+        "skips": 0,
+        "run_seconds": 0.0,
+    }
+
     def __init__(self, db_path: str):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.conn = sqlite3.connect(self.db_path)
         self.conn.row_factory = sqlite3.Row
-        self._init_schema()
-        self._ensure_inline_table_columns()
-        self._apply_file_migrations()
+        self._configure_connection()
+        self._ensure_schema_initialized()
+
+    @classmethod
+    def reset_schema_init_metrics(cls) -> None:
+        cls._schema_initialized.clear()
+        cls._schema_init_metrics = {
+            "runs": 0,
+            "skips": 0,
+            "run_seconds": 0.0,
+        }
+
+    @classmethod
+    def schema_init_metrics(cls) -> dict[str, int | float]:
+        return dict(cls._schema_init_metrics)
+
+    def _configure_connection(self) -> None:
+        self.conn.execute("PRAGMA journal_mode=WAL")
+
+    def _ensure_schema_initialized(self) -> None:
+        """Run DDL/migrations once per process for a concrete database file.
+
+        The cache key includes the database file identity, so a deleted and
+        recreated database at the same path is initialized again.
+        """
+        with self._schema_init_lock:
+            cache_key = self._schema_cache_key()
+            if cache_key in self._schema_initialized and self._schema_is_ready():
+                self._schema_init_metrics["skips"] += 1
+                return
+            start = time.perf_counter()
+            self._init_schema()
+            self._ensure_inline_table_columns()
+            self._apply_file_migrations()
+            elapsed = time.perf_counter() - start
+            self._schema_initialized.add(self._schema_cache_key())
+            self._schema_init_metrics["runs"] += 1
+            self._schema_init_metrics["run_seconds"] += elapsed
+
+    def _schema_is_ready(self) -> bool:
+        row = self.conn.execute(
+            "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'runs'"
+        ).fetchone()
+        return row is not None
+
+    def _schema_cache_key(self) -> tuple[str, tuple[int, int], tuple[tuple[str, int, int], ...]]:
+        stat = self.db_path.stat()
+        return (
+            str(self.db_path.resolve()),
+            (stat.st_dev, stat.st_ino),
+            self._migration_signature(),
+        )
+
+    @staticmethod
+    def _migration_signature() -> tuple[tuple[str, int, int], ...]:
+        project_root = Path(__file__).resolve().parents[2]
+        migrations_dir = project_root / "migrations"
+        if not migrations_dir.is_dir():
+            return ()
+        signature: list[tuple[str, int, int]] = []
+        for path in sorted(migrations_dir.glob("*.sql")):
+            stat = path.stat()
+            signature.append((path.name, stat.st_mtime_ns, stat.st_size))
+        return tuple(signature)
 
     def _apply_file_migrations(self) -> None:
         """Run idempotent `.sql` files in migrations/ in filename order.
@@ -222,8 +293,6 @@ class SQLiteStore:
     def _init_schema(self) -> None:
         self.conn.executescript(
             """
-            PRAGMA journal_mode=WAL;
-
             CREATE TABLE IF NOT EXISTS brands (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 brand_name TEXT NOT NULL,

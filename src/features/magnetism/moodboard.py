@@ -10,9 +10,12 @@ view stays reproducible against the persisted snapshot.
 
 from __future__ import annotations
 
+import logging
 import re
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlparse
+
+_LOG = logging.getLogger(__name__)
 
 MAX_MOODBOARD_IMAGES = 14
 
@@ -104,7 +107,9 @@ def extract_moodboard_images(web_payload: dict | None) -> list[dict]:
         try:
             parser.feed(html)
         except Exception:
-            pass
+            # Malformed markup should never break a scan view; fall back to the
+            # markdown/images candidates but keep the signal for debugging.
+            _LOG.debug("Moodboard HTML parse failed; using markdown/images fallback", exc_info=True)
         for raw in parser.social_cards:
             candidates.append({"raw": raw, "role": "social_card", "alt": ""})
         for raw in parser.icons:

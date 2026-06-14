@@ -344,6 +344,30 @@ class WebAppFlowTests(unittest.TestCase):
             ).fetchone()
         self.assertIsNotNone(row)
 
+    def test_analyze_persists_request_via_threadpool(self):
+        from web.routes import analyze as analyze_route
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with patch.object(analyze_route.asyncio, "to_thread", fake_to_thread):
+            response = self.client.post(
+                "/analyze",
+                data={"url": "https://example.com"},
+                follow_redirects=False,
+            )
+
+        self.assertEqual(response.status_code, 303)
+        insert_calls = [call for call in calls if call[0] is analyze_route.insert_request]
+        self.assertEqual(len(insert_calls), 1)
+        self.assertEqual(insert_calls[0][1], ())
+        self.assertEqual(insert_calls[0][2]["url"], "https://example.com")
+        self.assertEqual(insert_calls[0][2]["brand_slug"], "example")
+        self.assertIsInstance(insert_calls[0][2]["token"], str)
+
     def test_full_flow_queued_to_ready(self):
         response = self.client.post(
             "/analyze",

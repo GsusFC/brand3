@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from dataclasses import dataclass
 from datetime import datetime
@@ -185,8 +186,11 @@ def create_review_viewer_app(
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request, lang: str = "en") -> HTMLResponse:
         language = _language(lang)
-        cases = load_review_cases(request.app.state.sample_path)
-        records = load_viewer_review_records(request.app.state.review_records_path)
+        cases, records = await asyncio.to_thread(
+            _load_index_data,
+            request.app.state.sample_path,
+            request.app.state.review_records_path,
+        )
         reviewed = {record.get("annotation_id") for record in records}
         return HTMLResponse(
             _page(
@@ -199,23 +203,23 @@ def create_review_viewer_app(
     @app.get("/case/{annotation_id}", response_class=HTMLResponse)
     async def case_detail(request: Request, annotation_id: str, lang: str = "en") -> HTMLResponse:
         language = _language(lang)
-        cases = load_review_cases(request.app.state.sample_path)
+        cases, existing = await asyncio.to_thread(
+            _load_case_detail_data,
+            request.app.state.sample_path,
+            request.app.state.review_records_path,
+            annotation_id,
+        )
         case = _case_by_id(cases, annotation_id)
         if case is None:
             raise HTTPException(status_code=404, detail="review case not found")
-        existing = latest_review_for_case(request.app.state.review_records_path, annotation_id)
         return HTMLResponse(_page(title=f"review {case.brand_name}", body=_case_body(case, existing, language), lang=language))
 
     @app.get("/case/{annotation_id}/screenshot")
     async def screenshot(request: Request, annotation_id: str) -> Response:
-        cases = load_review_cases(request.app.state.sample_path)
-        case = _case_by_id(cases, annotation_id)
-        if case is None or not case.screenshot_path:
+        image = await asyncio.to_thread(_load_case_screenshot, request.app.state.sample_path, annotation_id)
+        if image is None:
             raise HTTPException(status_code=404, detail="screenshot not found")
-        path = Path(case.screenshot_path)
-        if not path.exists() or path.suffix.lower() != ".png":
-            raise HTTPException(status_code=404, detail="screenshot missing")
-        return Response(path.read_bytes(), media_type="image/png")
+        return Response(image, media_type="image/png")
 
     @app.post("/case/{annotation_id}/review")
     async def save_review(
@@ -232,12 +236,11 @@ def create_review_viewer_app(
         lang: str = Form("en"),
     ) -> RedirectResponse:
         language = _language(lang)
-        cases = load_review_cases(request.app.state.sample_path)
-        case = _case_by_id(cases, annotation_id)
-        if case is None:
-            raise HTTPException(status_code=404, detail="review case not found")
-        record = build_viewer_review_record(
-            case,
+        saved = await asyncio.to_thread(
+            _save_viewer_review,
+            request.app.state.sample_path,
+            request.app.state.review_records_path,
+            annotation_id,
             reviewer_id=reviewer_id,
             visually_supported=visually_supported,
             useful=useful,
@@ -247,10 +250,68 @@ def create_review_viewer_app(
             adds_value_beyond_heuristics=adds_value_beyond_heuristics,
             reviewer_notes=reviewer_notes,
         )
-        append_viewer_review_record(request.app.state.review_records_path, record)
+        if not saved:
+            raise HTTPException(status_code=404, detail="review case not found")
         return RedirectResponse(f"/case/{annotation_id}?saved=1&lang={language}", status_code=303)
 
     return app
+
+
+def _load_index_data(sample_path: str | Path, review_records_path: str | Path) -> tuple[list[ReviewViewerCase], list[dict[str, Any]]]:
+    return load_review_cases(sample_path), load_viewer_review_records(review_records_path)
+
+
+def _load_case_detail_data(
+    sample_path: str | Path,
+    review_records_path: str | Path,
+    annotation_id: str,
+) -> tuple[list[ReviewViewerCase], dict[str, Any] | None]:
+    cases = load_review_cases(sample_path)
+    return cases, latest_review_for_case(review_records_path, annotation_id)
+
+
+def _load_case_screenshot(sample_path: str | Path, annotation_id: str) -> bytes | None:
+    cases = load_review_cases(sample_path)
+    case = _case_by_id(cases, annotation_id)
+    if case is None or not case.screenshot_path:
+        return None
+    path = Path(case.screenshot_path)
+    if not path.exists() or path.suffix.lower() != ".png":
+        return None
+    return path.read_bytes()
+
+
+def _save_viewer_review(
+    sample_path: str | Path,
+    review_records_path: str | Path,
+    annotation_id: str,
+    *,
+    reviewer_id: str,
+    visually_supported: str,
+    useful: str,
+    hallucination_or_overreach: str,
+    most_reliable_target: str,
+    most_confusing_target: str,
+    adds_value_beyond_heuristics: str,
+    reviewer_notes: str,
+) -> bool:
+    cases = load_review_cases(sample_path)
+    case = _case_by_id(cases, annotation_id)
+    if case is None:
+        return False
+    record = build_viewer_review_record(
+        case,
+        reviewer_id=reviewer_id,
+        visually_supported=visually_supported,
+        useful=useful,
+        hallucination_or_overreach=hallucination_or_overreach,
+        most_reliable_target=most_reliable_target,
+        most_confusing_target=most_confusing_target,
+        adds_value_beyond_heuristics=adds_value_beyond_heuristics,
+        reviewer_notes=reviewer_notes,
+    )
+    append_viewer_review_record(review_records_path, record)
+    return True
 
 
 def load_review_cases(sample_path: str | Path) -> list[ReviewViewerCase]:

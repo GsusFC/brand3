@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 
@@ -9,6 +10,7 @@ from src.visual_signature.annotations.review.viewer import (
     append_viewer_review_record,
     build_viewer_review_record,
     create_review_viewer_app,
+    _load_index_data,
     load_review_cases,
     load_viewer_review_records,
 )
@@ -122,6 +124,29 @@ def test_review_viewer_serves_case_and_saves_review_record(tmp_path):
     assert records[0]["annotation_id"] == "linear"
     assert records[0]["visually_supported"] == "yes"
     assert records[0]["reviewer_notes"] == "Logo label is supported by the viewport."
+
+
+def test_review_viewer_index_loads_files_via_threadpool(tmp_path):
+    from src.visual_signature.annotations.review import viewer
+
+    sample_path, _, _ = _write_fixture(tmp_path)
+    records_path = tmp_path / "review_records.json"
+    app = create_review_viewer_app(sample_path=sample_path, review_records_path=records_path)
+    client = TestClient(app)
+    calls = []
+
+    async def fake_to_thread(func, *args, **kwargs):
+        calls.append((func, args, kwargs))
+        return func(*args, **kwargs)
+
+    with patch.object(viewer.asyncio, "to_thread", fake_to_thread):
+        response = client.get("/")
+
+    assert response.status_code == 200
+    assert len(calls) == 1
+    assert calls[0][0] is _load_index_data
+    assert calls[0][1] == (sample_path, records_path)
+    assert calls[0][2] == {}
 
 
 def test_review_viewer_supports_spanish_language_selector(tmp_path):

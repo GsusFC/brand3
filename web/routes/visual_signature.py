@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -19,32 +20,32 @@ router = APIRouter()
 
 @router.get("/visual-signature")
 async def visual_signature_index(request: Request, lang: Literal["es", "en"] = Query("es")):
-    return _render(request, "overview", lang)
+    return await _render(request, "overview", lang)
 
 
 @router.get("/visual-signature/governance")
 async def visual_signature_governance(request: Request, lang: Literal["es", "en"] = Query("es")):
-    return _render(request, "governance", lang)
+    return await _render(request, "governance", lang)
 
 
 @router.get("/visual-signature/calibration")
 async def visual_signature_calibration(request: Request, lang: Literal["es", "en"] = Query("es")):
-    return _render(request, "calibration", lang)
+    return await _render(request, "calibration", lang)
 
 
 @router.get("/visual-signature/corpus")
 async def visual_signature_corpus(request: Request, lang: Literal["es", "en"] = Query("es")):
-    return _render(request, "corpus", lang)
+    return await _render(request, "corpus", lang)
 
 
 @router.get("/visual-signature/reviewer")
 async def visual_signature_reviewer(request: Request, lang: Literal["es", "en"] = Query("es")):
-    return _render(request, "reviewer", lang)
+    return await _render(request, "reviewer", lang)
 
 
 @router.get("/visual-signature/reviewer/human-review")
 async def visual_signature_human_review(request: Request, lang: Literal["es", "en"] = Query("es")):
-    return _render_human_review(request, None, lang)
+    return await _render_human_review(request, None, lang)
 
 
 @router.get("/visual-signature/reviewer/human-review/{brand}")
@@ -53,7 +54,7 @@ async def visual_signature_human_review_brand(
     brand: str,
     lang: Literal["es", "en"] = Query("es"),
 ):
-    return _render_human_review(request, brand, lang)
+    return await _render_human_review(request, brand, lang)
 
 
 @router.get("/visual-signature/artifacts/{artifact_key}")
@@ -62,7 +63,7 @@ async def visual_signature_artifact(
     artifact_key: str,
     lang: Literal["es", "en"] = Query("es"),
 ):
-    payload = artifact_file_response_payload(artifact_key)
+    payload = await asyncio.to_thread(artifact_file_response_payload, artifact_key)
     if payload is None:
         return templates.TemplateResponse(
             request,
@@ -80,7 +81,7 @@ async def visual_signature_screenshot_preview(
     filename: str,
     lang: Literal["es", "en"] = Query("es"),
 ):
-    model = build_screenshot_preview_model(filename)
+    model = await asyncio.to_thread(build_screenshot_preview_model, filename)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -101,7 +102,7 @@ async def visual_signature_screenshot(
     filename: str,
     lang: Literal["es", "en"] = Query("es"),
 ):
-    payload = screenshot_file_response_payload(filename)
+    payload = await asyncio.to_thread(screenshot_file_response_payload, filename)
     if payload is None:
         return templates.TemplateResponse(
             request,
@@ -113,16 +114,17 @@ async def visual_signature_screenshot(
     return FileResponse(path, media_type=media_type)
 
 
-def _render(request: Request, section: str, lang: str):
+async def _render(request: Request, section: str, lang: str):
+    model = await asyncio.to_thread(build_visual_signature_model, section)
     return templates.TemplateResponse(
         request,
         "visual_signature.html.j2",
-        {"model": build_visual_signature_model(section), "ui_lang": lang},
+        {"model": model, "ui_lang": lang},
     )
 
 
-def _render_human_review(request: Request, brand: str | None, lang: str):
-    model = build_human_review_model(brand)
+async def _render_human_review(request: Request, brand: str | None, lang: str):
+    model = await asyncio.to_thread(build_human_review_model, brand)
     if model is None:
         return templates.TemplateResponse(
             request,

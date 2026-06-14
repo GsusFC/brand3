@@ -177,7 +177,8 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
                 code="audit_run_not_found",
                 message=f"Brand Audit run #{audit_run_id} not found.",
             )
-        scan_id = insert_magnetism_job(
+        scan_id = await asyncio.to_thread(
+            insert_magnetism_job,
             token=token,
             brand_name=str(run.get("brand_name") or f"Brand Audit run #{audit_run_id}"),
             url=str(run.get("url") or "Brand Audit snapshot"),
@@ -193,7 +194,8 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
                 code="url_rejected",
                 message=f"URL rejected: {result}",
             )
-        scan_id = insert_magnetism_job(
+        scan_id = await asyncio.to_thread(
+            insert_magnetism_job,
             token=token,
             brand_name=slug_from_url(result),
             url=result,

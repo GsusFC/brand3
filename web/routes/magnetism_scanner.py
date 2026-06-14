@@ -473,7 +473,7 @@ _MAGNETISM_UI = {
 }
 
 
-def _attach_sv9_link(model: dict, request: Request) -> None:
+async def _attach_sv9_link(model: dict) -> None:
     """Nav link to the SV9 scan for this run, when one exists.
 
     Team gating intentionally disabled for now (product decision,
@@ -483,6 +483,14 @@ def _attach_sv9_link(model: dict, request: Request) -> None:
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         return
+    scan_id = await asyncio.to_thread(_sv9_scan_id_for_run, source_run_id)
+    if isinstance(scan_id, int):
+        model["sv9_scan_id"] = scan_id
+
+
+def _sv9_scan_id_for_run(source_run_id: object) -> int | None:
+    if not source_run_id:
+        return None
     try:
         from src.sv9.store import Sv9Store
 
@@ -492,9 +500,10 @@ def _attach_sv9_link(model: dict, request: Request) -> None:
         finally:
             store.close()
     except Exception:
-        return
+        return None
     if scan:
-        model["sv9_scan_id"] = scan["id"]
+        return int(scan["id"])
+    return None
 
 
 def _ui(lang: _Lang) -> dict:
@@ -609,7 +618,8 @@ async def magnetism_scanner_analyze(
         brand_name = "Manual Upload Brand"
         display_url = "Manual Upload"
 
-    insert_magnetism_job(
+    await asyncio.to_thread(
+        insert_magnetism_job,
         token=token,
         brand_name=brand_name,
         url=display_url,
@@ -638,7 +648,8 @@ async def magnetism_scanner_from_run(
         )
 
     token = secrets.token_urlsafe(12)
-    insert_magnetism_job(
+    await asyncio.to_thread(
+        insert_magnetism_job,
         token=token,
         brand_name=str(run.get("brand_name") or f"Brand Audit run #{run_id}"),
         url=str(run.get("url") or "Brand Audit snapshot"),
@@ -896,7 +907,7 @@ def _sv9_generation_phase_steps(phase: str, status: str | None, *, lang: _Lang =
 
 
 async def _run_sv9_generation_job(token: str) -> None:
-    update_sv9_generation_job(
+    await _update_sv9_generation_job_async(
         token,
         status="running",
         phase="generating",
@@ -907,7 +918,11 @@ async def _run_sv9_generation_job(token: str) -> None:
     if job is None:
         return
     try:
-        update_sv9_generation_job(token, phase="generating", phase_updated_at=datetime.now(timezone.utc).isoformat())
+        await _update_sv9_generation_job_async(
+            token,
+            phase="generating",
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+        )
         sv9_scan_id = await asyncio.to_thread(
             ensure_sv9_scan_for_source_run,
             int(job["source_run_id"]),
@@ -915,7 +930,7 @@ async def _run_sv9_generation_job(token: str) -> None:
         )
         if sv9_scan_id is None:
             raise RuntimeError("SV9 generation failed")
-        update_sv9_generation_job(
+        await _update_sv9_generation_job_async(
             token,
             status="ready",
             phase="ready",
@@ -925,7 +940,7 @@ async def _run_sv9_generation_job(token: str) -> None:
             error_message=None,
         )
     except Exception as exc:  # noqa: BLE001
-        update_sv9_generation_job(
+        await _update_sv9_generation_job_async(
             token,
             status="failed",
             phase="failed",
@@ -933,6 +948,10 @@ async def _run_sv9_generation_job(token: str) -> None:
             completed_at=datetime.now(timezone.utc).isoformat(),
             error_message=str(exc)[:500],
         )
+
+
+async def _update_sv9_generation_job_async(token: str, **columns) -> None:
+    await asyncio.to_thread(update_sv9_generation_job, token, **columns)
 
 
 @router.get("/magnetism-scanner/scan/{scan_id}")
@@ -948,7 +967,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
         )
     model["active_tab"] = "tldr"
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -982,7 +1001,8 @@ async def magnetism_scanner_generate_sv9(
         return RedirectResponse(_with_lang(f"/magnetism-scanner/sv9/{existing_job['token']}/status", lang), status_code=303)
 
     token = secrets.token_urlsafe(12)
-    insert_sv9_generation_job(
+    await asyncio.to_thread(
+        insert_sv9_generation_job,
         token=token,
         scan_id=scan_id,
         source_run_id=int(source_run_id),
@@ -1049,7 +1069,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     model["active_tab"] = "research"
     model["research"] = _research_evidence_model(model["payload"])
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -1071,7 +1091,7 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
         )
     model["active_tab"] = "audit"
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["audit"] = {"available": False, "reason": "missing_source_run"}
@@ -1156,7 +1176,7 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
         )
     model["active_tab"] = "client_tldr_v2"
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["client_tldr_v2"] = {
@@ -1226,7 +1246,7 @@ async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int,
     model["active_tab"] = "evidence_reliability"
     model["quality"] = _evidence_reliability_model(model["payload"])
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -1249,7 +1269,7 @@ async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _L
     model["active_tab"] = "methodology"
     model["methodology"] = _methodology_model(model["payload"])
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,

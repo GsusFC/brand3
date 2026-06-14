@@ -128,7 +128,7 @@ class AnalysisQueue:
 
     async def start(self) -> None:
         self._stop.clear()
-        self.restart_in_flight()
+        await asyncio.to_thread(self.restart_in_flight)
         for i in range(self.max_concurrent):
             task = asyncio.create_task(self._worker_loop(i), name=f"brand3-worker-{i}")
             self._workers.append(task)
@@ -214,12 +214,13 @@ class AnalysisQueue:
                 self._queue.task_done()
 
     async def _process(self, token: str) -> None:
-        request = _load_request(token)
+        request = await asyncio.to_thread(_load_request, token)
         if request is None:
             log.warning("token not found: %s", token)
             return
 
-        _set_status(
+        await asyncio.to_thread(
+            _set_status,
             token,
             status="running",
             phase="collecting",
@@ -237,25 +238,34 @@ class AnalysisQueue:
                 timeout=settings.analysis_timeout_seconds,
             )
         except asyncio.TimeoutError:
-            _set_status(token, status="failed",
-                        phase="failed",
-                        phase_updated_at=_now(),
-                        completed_at=_now(),
-                        error_message="timeout")
+            await asyncio.to_thread(
+                _set_status,
+                token,
+                status="failed",
+                phase="failed",
+                phase_updated_at=_now(),
+                completed_at=_now(),
+                error_message="timeout",
+            )
             log.warning("analysis timeout token=%s", token)
             return
         except Exception as exc:  # noqa: BLE001
-            _set_status(token, status="failed",
-                        phase="failed",
-                        phase_updated_at=_now(),
-                        completed_at=_now(),
-                        error_message=str(exc)[:500])
+            await asyncio.to_thread(
+                _set_status,
+                token,
+                status="failed",
+                phase="failed",
+                phase_updated_at=_now(),
+                completed_at=_now(),
+                error_message=str(exc)[:500],
+            )
             log.exception("analysis failed token=%s", token)
             return
 
         run_id = int(result.get("run_id") or 0) or None
-        readiness = _analysis_report_readiness(result, run_id=run_id)
-        _set_status(
+        readiness = await asyncio.to_thread(_analysis_report_readiness, result, run_id=run_id)
+        await asyncio.to_thread(
+            _set_status,
             token,
             status="ready",
             phase="ready",
@@ -267,12 +277,13 @@ class AnalysisQueue:
         log.info("analysis ready token=%s run_id=%s", token, run_id)
 
     async def _process_magnetism(self, token: str) -> None:
-        scan = _load_magnetism_scan(token)
+        scan = await asyncio.to_thread(_load_magnetism_scan, token)
         if scan is None:
             log.warning("magnetism token not found: %s", token)
             return
 
-        _set_magnetism_status(
+        await asyncio.to_thread(
+            _set_magnetism_status,
             token,
             status="running",
             phase="collecting",
@@ -291,7 +302,8 @@ class AnalysisQueue:
             )
             progress_cb("finalizing")
         except asyncio.TimeoutError:
-            _set_magnetism_status(
+            await asyncio.to_thread(
+                _set_magnetism_status,
                 token,
                 status="failed",
                 phase="failed",
@@ -302,7 +314,8 @@ class AnalysisQueue:
             log.warning("magnetism timeout token=%s", token)
             return
         except Exception as exc:  # noqa: BLE001
-            _set_magnetism_status(
+            await asyncio.to_thread(
+                _set_magnetism_status,
                 token,
                 status="failed",
                 phase="failed",
@@ -316,12 +329,17 @@ class AnalysisQueue:
         readiness = assess_scanner_readiness(str(scan.get("input_type") or "url"), result)
         attach_scanner_publication_decision(result, readiness.to_payload())
         if readiness.status == "failed":
-            _fail_magnetism_scan_with_payload(token, readiness.error_message or "failed", result)
+            await asyncio.to_thread(
+                _fail_magnetism_scan_with_payload,
+                token,
+                readiness.error_message or "failed",
+                result,
+            )
             log.warning("magnetism blocked token=%s reason=%s", token, readiness.error_message)
             return
 
-        _complete_magnetism_scan(token, result)
-        _ensure_sv9_scan_for_magnetism_result(result)
+        await asyncio.to_thread(_complete_magnetism_scan, token, result)
+        await asyncio.to_thread(_ensure_sv9_scan_for_magnetism_result, result)
         log.info("magnetism ready token=%s", token)
 
 

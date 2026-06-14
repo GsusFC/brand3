@@ -3334,7 +3334,7 @@ a:hover {
 
 .scan-loader-stage {
   position: relative;
-  height: 320px;
+  height: 380px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: #050607;
@@ -3680,6 +3680,3 @@ a:hover {
 /* The loader stage also hosts a rotating cloud and is draggable. */
 .scan-loader-stage { cursor: grab; touch-action: none; }
 .scan-loader-stage:active { cursor: grabbing; }
-
-/* A touch more vertical room for the loader cloud. */
-.scan-loader-stage { height: 380px; }

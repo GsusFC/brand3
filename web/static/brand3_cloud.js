@@ -204,6 +204,7 @@
         velY = 0;
         lastX = e.clientX;
         lastY = e.clientY;
+        // Pointer capture may fail in some browsers; ignore and fall back to standard events.
         try { stage.setPointerCapture(e.pointerId); } catch {}
       });
       stage.addEventListener("pointermove", (e) => {

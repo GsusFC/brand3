@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import secrets
 from datetime import datetime, timezone
 
@@ -48,6 +49,8 @@ from ..scanner_api.models import (
 )
 
 router = APIRouter()
+
+_LOG = logging.getLogger(__name__)
 
 
 _Lang = Literal["es", "en"]
@@ -874,6 +877,7 @@ def _inflight_moodboard_images(row: dict) -> list[dict]:
         finally:
             store.close()
     except Exception:
+        _LOG.exception("Failed to load in-flight moodboard images for %s", brand_name)
         return []
     if not isinstance(payload, dict):
         return []

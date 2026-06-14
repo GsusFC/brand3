@@ -30,6 +30,9 @@
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const gctx = grain.getContext("2d");
     let noiseTile = null;
+    // Reused noise patch canvas — allocated once, not per frame.
+    const noiseCanvas = document.createElement("canvas");
+    const noiseCtx = noiseCanvas.getContext("2d");
     let raf = 0;
     let last = 0;
     let visible = true;
@@ -39,6 +42,8 @@
       grain.width = Math.max(160, Math.round(rect.width / 2));
       grain.height = Math.max(120, Math.round(rect.height / 2));
       noiseTile = gctx.createImageData(96, 72);
+      noiseCanvas.width = noiseTile.width;
+      noiseCanvas.height = noiseTile.height;
     };
     const draw = () => {
       if (!gctx || !noiseTile) return;
@@ -48,12 +53,9 @@
         data[i] = data[i + 1] = data[i + 2] = v;
         data[i + 3] = (Math.random() * 36) | 0;
       }
-      const tmp = document.createElement("canvas");
-      tmp.width = noiseTile.width;
-      tmp.height = noiseTile.height;
-      tmp.getContext("2d").putImageData(noiseTile, 0, 0);
+      noiseCtx.putImageData(noiseTile, 0, 0);
       gctx.clearRect(0, 0, grain.width, grain.height);
-      gctx.fillStyle = gctx.createPattern(tmp, "repeat");
+      gctx.fillStyle = gctx.createPattern(noiseCanvas, "repeat");
       gctx.fillRect(0, 0, grain.width, grain.height);
     };
     const loop = (t) => {

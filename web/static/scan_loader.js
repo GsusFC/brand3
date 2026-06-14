@@ -38,6 +38,10 @@
   // --- procedural grain + glitch --------------------------------------------
   const gctx = grain.getContext("2d");
   let noiseTile = null;
+  // Reused noise patch canvas — allocated once, not per frame, to keep the
+  // grain loop allocation-free.
+  const noiseCanvas = document.createElement("canvas");
+  const noiseCtx = noiseCanvas.getContext("2d");
   let grainRaf = 0;
   let lastGrain = 0;
   let visible = true;
@@ -47,6 +51,8 @@
     grain.width = Math.max(160, Math.round(rect.width / 2));
     grain.height = Math.max(120, Math.round(rect.height / 2));
     noiseTile = gctx.createImageData(96, 72);
+    noiseCanvas.width = noiseTile.width;
+    noiseCanvas.height = noiseTile.height;
   };
 
   const drawNoise = () => {
@@ -57,11 +63,8 @@
       data[i] = data[i + 1] = data[i + 2] = v;
       data[i + 3] = (Math.random() * 42) | 0;
     }
-    const tmp = document.createElement("canvas");
-    tmp.width = noiseTile.width;
-    tmp.height = noiseTile.height;
-    tmp.getContext("2d").putImageData(noiseTile, 0, 0);
-    const pattern = gctx.createPattern(tmp, "repeat");
+    noiseCtx.putImageData(noiseTile, 0, 0);
+    const pattern = gctx.createPattern(noiseCanvas, "repeat");
     gctx.clearRect(0, 0, grain.width, grain.height);
     gctx.fillStyle = pattern;
     gctx.fillRect(0, 0, grain.width, grain.height);
@@ -105,8 +108,10 @@
     const status = statusRoot ? statusRoot.getAttribute("data-status") : "running";
     return status === "queued" || status === "running";
   };
+  let pollInFlight = false;
   const pollAssets = async () => {
-    if (!assetsHref || document.hidden || !isWaiting()) return;
+    if (pollInFlight || !assetsHref || document.hidden || !isWaiting()) return;
+    pollInFlight = true;
     try {
       const res = await fetch(assetsHref, { cache: "no-store", credentials: "same-origin" });
       if (!res.ok) return;
@@ -114,6 +119,8 @@
       if (Array.isArray(data.images) && data.images.length) cloud.addImages(data.images);
     } catch {
       // transient — retry next interval
+    } finally {
+      pollInFlight = false;
     }
   };
 

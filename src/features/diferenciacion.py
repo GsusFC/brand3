@@ -13,6 +13,7 @@ from ..models.brand import FeatureValue
 from ..reports.research_prompt_input import research_pack_prompt_input
 from .authenticity import AI_PHRASES, AI_STRUCTURAL_PATTERNS, AuthenticityAnalyzer
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
+from .score_reconciliation import reconcile_label_score
 
 
 GENERIC_FALLBACK_PHRASES = [
@@ -205,17 +206,10 @@ class DiferenciacionExtractor:
         verdict: str,
         mapping: dict[str, float],
     ) -> float:
-        target = mapping[verdict]
         # LLM verdicts are semantically more stable than the scalar the model emits.
         # Preserve reasonable scores, but neutralise `unclear` and correct
         # pathological low values like clear→8 or unclear→0.
-        if verdict == "unclear":
-            return target
-        if raw_score <= 10:
-            return target
-        if target >= 50 and raw_score < 25:
-            return target
-        return raw_score
+        return reconcile_label_score(raw_score, verdict, mapping)
 
     @staticmethod
     def _tokenize_terms(text: str) -> list[str]:

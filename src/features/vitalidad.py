@@ -24,6 +24,7 @@ from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
+from .score_reconciliation import reconcile_label_score
 
 
 _DATE_FORMATS = ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%S", "%B %d, %Y")
@@ -346,11 +347,4 @@ def _days(n: int):
 
 
 def _reconcile_momentum_score(raw_score: float, verdict: str) -> float:
-    target = _VERDICT_SCORES[verdict]
-    if verdict == "unclear":
-        return target
-    if raw_score <= 10:
-        return target
-    if target >= 50 and raw_score < 25:
-        return target
-    return raw_score
+    return reconcile_label_score(raw_score, verdict, _VERDICT_SCORES)

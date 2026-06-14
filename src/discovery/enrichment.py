@@ -6,7 +6,9 @@ separate and does not touch scoring weights, prompts, cache keys, or calibration
 
 from __future__ import annotations
 
+import concurrent.futures
 from dataclasses import dataclass, field, replace
+from time import perf_counter
 
 from src.collectors.exa_collector import ExaData, ExaResult
 from src.collectors.web_collector import WebData
@@ -20,6 +22,7 @@ class DiscoveryEnrichmentResult:
 
 
 _MAX_ENRICHMENT_RESULTS = 15
+_MAX_EXA_ENRICHMENT_WORKERS = 3
 _ENTITY_SURFACE_ROLES = {
     "audited_surface",
     "parent_home",
@@ -40,8 +43,12 @@ def build_discovery_enrichment(search_plan: dict, evidence_preview: dict, *, exa
         return DiscoveryEnrichmentResult(exa_data, web_data, _payload(False, [], [], 0, 0))
 
     used_queries = queries if use_discovery_preview else []
-    added_pages = _collect_owned_pages(urls, web_collector)
-    added_results, diagnostics = _collect_exa_results(used_queries, exa_collector)
+    added_pages, added_results, diagnostics = _collect_enrichment_sources(
+        urls,
+        web_collector,
+        used_queries,
+        exa_collector,
+    )
     enriched_web = _merge_web(web_data, added_pages)
     enriched_exa = _merge_exa(exa_data, added_results)
     owned_domains = {_domain(url) for url in urls if url}
@@ -60,6 +67,35 @@ def build_discovery_enrichment(search_plan: dict, evidence_preview: dict, *, exa
             entity_research_urls=entity_urls,
         ),
     )
+
+
+def _collect_enrichment_sources(
+    urls: list[str],
+    web_collector,
+    queries: list[str],
+    exa_collector,
+) -> tuple[list[WebData], list[ExaResult], dict[str, object]]:
+    if not urls and not queries:
+        return [], [], {"applied_cap": False, "cap": _MAX_ENRICHMENT_RESULTS, "truncated": 0}
+    if not urls or not web_collector:
+        started = perf_counter()
+        exa_results, diagnostics = _collect_exa_results(queries, exa_collector)
+        print(f"[timing] discovery enrichment exa: {(perf_counter() - started):.2f}s")
+        return [], exa_results, diagnostics
+    if not queries or not exa_collector:
+        started = perf_counter()
+        pages = _collect_owned_pages(urls, web_collector)
+        print(f"[timing] discovery enrichment owned pages: {(perf_counter() - started):.2f}s")
+        return pages, [], {"applied_cap": False, "cap": _MAX_ENRICHMENT_RESULTS, "truncated": 0}
+
+    started = perf_counter()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+        pages_future = pool.submit(_collect_owned_pages, urls, web_collector)
+        exa_future = pool.submit(_collect_exa_results, queries, exa_collector)
+        pages = pages_future.result()
+        exa_results, diagnostics = exa_future.result()
+    print(f"[timing] discovery enrichment sources: {(perf_counter() - started):.2f}s")
+    return pages, exa_results, diagnostics
 
 
 def _payload(
@@ -98,7 +134,8 @@ def _collect_exa_results(queries: list[str], exa_collector) -> tuple[list[ExaRes
         return [], {"applied_cap": False, "cap": _MAX_ENRICHMENT_RESULTS, "truncated": 0}
     results: list[ExaResult] = []
     failures: list[dict[str, str]] = []
-    for query in queries:
+
+    def search_query(query: str) -> tuple[str, list[ExaResult], str | None]:
         try:
             found = exa_collector.search(query, num_results=5, intent="enrichment")
             for item in found:
@@ -108,10 +145,22 @@ def _collect_exa_results(queries: list[str], exa_collector) -> tuple[list[ExaRes
                     "enrichment_rationale": "discovery_search_plan_query_match",
                     "enrichment_inserted": True,
                 }
-            results.extend(found)
+            return query, found, None
         except Exception as exc:
-            failures.append({"query": query, "error": str(exc)})
+            return query, [], str(exc)
+
+    max_workers = min(_MAX_EXA_ENRICHMENT_WORKERS, max(1, len(queries)))
+    if max_workers <= 1:
+        query_results = [search_query(query) for query in queries]
+    else:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+            query_results = list(pool.map(search_query, queries))
+
+    for query, found, error in query_results:
+        if error:
+            failures.append({"query": query, "error": error})
             continue
+        results.extend(found)
     unique = _unique_results(results)
     capped = unique[:_MAX_ENRICHMENT_RESULTS]
     return capped, {

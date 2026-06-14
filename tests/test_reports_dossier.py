@@ -127,6 +127,70 @@ class BrandDossierTests(unittest.TestCase):
             "",
         )
 
+    def test_build_report_narrative_payload_reuses_analyst_pass_without_llm(self):
+        analyzer = MagicMock()
+        analyzer._call.side_effect = AssertionError("analyst payload should avoid synthesis LLM")
+        analyzer._call_json.side_effect = AssertionError("analyst payload should avoid findings LLM")
+        analyst_pass = {
+            "executive_summary": "Analyst executive summary.",
+            "primary_risk": "Evidence is concentrated in owned surfaces.",
+            "primary_opportunity": "External proof could clarify differentiation.",
+            "dimensions": {
+                "coherencia": {
+                    "diagnosis": "Coherence diagnosis.",
+                    "findings": ["Owned messaging repeats one claim."],
+                    "evidence": ["Homepage repeats the positioning line."],
+                    "recommendation": "Connect the claim to proof.",
+                    "limitations": ["Limited third-party evidence."],
+                }
+            },
+        }
+
+        payload = build_report_narrative_payload(
+            _sample_snapshot(),
+            analyzer=analyzer,
+            analyst_pass=analyst_pass,
+        )
+
+        self.assertEqual(payload["source"], REPORT_NARRATIVE_SOURCE)
+        self.assertEqual(payload["synthesis_prose"], "Analyst executive summary.")
+        self.assertIn("Primary risk:", payload["tensions_prose"])
+        self.assertIn("coherencia", payload["findings_by_dimension"])
+        finding = payload["findings_by_dimension"]["coherencia"][0]
+        self.assertEqual(finding["title"], "Coherence diagnosis.")
+        self.assertEqual(finding["observation"], "Owned messaging repeats one claim.")
+        self.assertIn("Connect the claim to proof.", finding["implication"])
+
+    def test_build_report_narrative_payload_falls_back_when_analyst_pass_has_error(self):
+        analyzer = MagicMock()
+        analyzer._call.return_value = "Fallback synthesis."
+        analyzer._call_json.side_effect = lambda system, user, max_tokens=2000: (
+            {"tension": "Fallback tension."}
+            if '"tension"' in user
+            else {
+                "findings": [
+                    {
+                        "title": "Fallback finding",
+                        "observation": "Fallback observation.",
+                        "implication": "Fallback implication.",
+                        "evidence_urls": [],
+                    }
+                ]
+            }
+        )
+
+        payload = build_report_narrative_payload(
+            _sample_snapshot(),
+            analyzer=analyzer,
+            analyst_pass={"analysis_error": {"reason": "llm_error"}},
+        )
+
+        self.assertEqual(payload["synthesis_prose"], "Fallback synthesis.")
+        self.assertEqual(payload["tensions_prose"], "Fallback tension.")
+        self.assertIn("coherencia", payload["findings_by_dimension"])
+        self.assertTrue(analyzer._call.called)
+        self.assertTrue(analyzer._call_json.called)
+
     def test_build_brand_dossier_prefers_persisted_narrative_without_llm(self):
         snapshot = deepcopy(_sample_snapshot())
         snapshot.setdefault("raw_inputs", []).append(

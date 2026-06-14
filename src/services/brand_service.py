@@ -261,6 +261,12 @@ def _print_feature_details(brand_score) -> None:
                 print(f"    raw: {raw}")
 
 
+def _log_timing(label: str, started: float) -> float:
+    now = perf_counter()
+    print(f"[timing] {label}: {(now - started):.2f}s")
+    return now
+
+
 def _save_result(result: dict) -> Path:
     output_dir = PROJECT_ROOT / "output"
     output_dir.mkdir(exist_ok=True)
@@ -1979,6 +1985,7 @@ def run(
     try:
         _check_cancel(cancel_check)
         phase_started = perf_counter()
+        step_started = phase_started
         print(f"[1/4] Collecting data for {brand_name}...")
 
         raw_inputs = collect_raw_inputs(
@@ -2007,6 +2014,7 @@ def run(
         raw_input_cache = raw_inputs.raw_input_cache
         acquisition_steps = raw_inputs.acquisition_steps
         web_collector = raw_inputs.web_collector
+        step_started = _log_timing("phase 1a raw inputs", step_started)
 
         niche = select_niche_profile(
             brand_name=brand_name,
@@ -2024,6 +2032,7 @@ def run(
         profile_source = niche.profile_source
         if run_id:
             _store_safely(store, "run classification", lambda: store.update_run_classification(run_id, niche_classification, calibration_profile, profile_source))
+        step_started = _log_timing("phase 1b niche profile", step_started)
 
         content_plan = plan_content(
             url=url,
@@ -2042,6 +2051,7 @@ def run(
         data_sources = content_plan.data_sources
         data_quality = content_plan.data_quality
         partial_dimensions = content_plan.partial_dimensions
+        step_started = _log_timing("phase 1c content plan", step_started)
         entity_discovery = _entity_discovery_payload(brand_name=brand_name, url=url, web_data=content_web or web_data, exa_data=exa_data, context_data=context_data)
         discovery_search_plan = _discovery_search_plan_payload(entity_discovery=entity_discovery, brand_name=brand_name, url=url)
         entity_research_packet = build_entity_research_packet(
@@ -2054,6 +2064,7 @@ def run(
         ).to_dict()
         if run_id:
             _store_safely(store, "entity research packet save", lambda: store.save_raw_input(run_id, "entity_research_packet", entity_research_packet))
+        step_started = _log_timing("phase 1d entity research packet", step_started)
         discovery_evidence_preview = _to_jsonable(build_discovery_evidence_preview(discovery_search_plan, exa_data=exa_data, web_data=content_web or web_data, context_data=context_data))
         discovery_enrichment = build_discovery_enrichment(discovery_search_plan, discovery_evidence_preview, exa_data=exa_data, web_data=content_web or web_data, web_collector=web_collector, exa_collector=raw_inputs.exa_collector, entity_research_packet=entity_research_packet)
         raw_web_data = web_data
@@ -2073,6 +2084,7 @@ def run(
                 lambda: store.save_raw_input(run_id, "web", effective_web_payload),
             )
         discovery_enrichment_payload = discovery_enrichment.payload
+        step_started = _log_timing("phase 1e discovery enrichment", step_started)
         acquisition_provenance = _acquisition_provenance_summary(
             brand_name=brand_name,
             url=url,
@@ -2095,6 +2107,7 @@ def run(
             store=store,
             run_id=run_id,
         )
+        step_started = _log_timing("phase 1f provenance+calibration", step_started)
 
         llm_setup = setup_llm(
             use_llm=use_llm,
@@ -2109,7 +2122,8 @@ def run(
         llm = llm_setup.llm
         llm_provider = llm_setup.provider
         llm_skipped_reason = llm_setup.skipped_reason
-        print(f"[timing] phase 1 collect+prepare: {(perf_counter() - phase_started):.2f}s")
+        _log_timing("phase 1g llm setup", step_started)
+        _log_timing("phase 1 collect+prepare", phase_started)
 
         _emit_progress(progress_cb, "extracting")
         _check_cancel(cancel_check)
@@ -2192,11 +2206,13 @@ def run(
         _emit_progress(progress_cb, "finalizing")
         _check_cancel(cancel_check)
         phase_started = perf_counter()
+        step_started = phase_started
         print("[4/4] Generating report...\n")
         summary = engine.generate_summary(brand_score)
         print(summary)
         print("\n".join([""] + format_discovery_summary(discovery_payload)))
         _print_feature_details(brand_score)
+        step_started = _log_timing("phase 4a summary output", step_started)
 
         dimension_confidence = _dimension_confidence_summary(
             features_by_dim,
@@ -2229,6 +2245,7 @@ def run(
         )
         trust_summary = _trust_summary_payload(data_quality=data_quality, context_summary=confidence_summary, evidence_summary=evidence_summary, dimension_confidence=dimension_confidence, context_enrichment_summary=context_enrichment_summary, context_effective_readiness=context_effective_readiness)
         trust_summary["evidence_basis_summary"] = discovery_trust_basis["user_message"]
+        step_started = _log_timing("phase 4b confidence+trust summaries", step_started)
         run_audit_context = (
             _build_run_audit_context(
                 store,
@@ -2241,6 +2258,7 @@ def run(
                 niche_classification=niche_classification,
             )
         )
+        step_started = _log_timing("phase 4c audit context", step_started)
         run_audit_context["executive_analysis_v2"] = run_brand_audit_analyst_pass(
             llm=llm,
             brand_name=brand_score.brand_name,
@@ -2249,6 +2267,7 @@ def run(
             dimensions=brand_score.breakdown,
             features_by_dim=features_by_dim,
         )
+        step_started = _log_timing("phase 4d analyst pass", step_started)
 
         result = {
             "brand": brand_score.brand_name,
@@ -2307,6 +2326,7 @@ def run(
             "audit": run_audit_context,
             "timestamp": datetime.now().isoformat(),
         }
+        step_started = _log_timing("phase 4e result assembly", step_started)
         result["audit"]["discovery_calibration_decision"] = discovery_calibration_decision
         result["audit"]["acquisition"] = _acquisition_audit_payload(
             acquisition_provenance=acquisition_provenance,
@@ -2323,6 +2343,7 @@ def run(
         print(json.dumps(result, indent=2))
         output_path = _save_result(result)
         print(f"\nSaved result to: {output_path}")
+        step_started = _log_timing("phase 4f json+output save", step_started)
         if run_id:
             _store_safely(
                 store,
@@ -2342,6 +2363,7 @@ def run(
                     summary=summary,
                 ),
             )
+        step_started = _log_timing("phase 4g finalize persistence", step_started)
         if run_id:
             _store_safely(
                 store,
@@ -2361,12 +2383,17 @@ def run(
                 store.save_raw_input(
                     run_id,
                     REPORT_NARRATIVE_SOURCE,
-                    build_report_narrative_payload(snapshot, analyzer=llm),
+                    build_report_narrative_payload(
+                        snapshot,
+                        analyzer=llm,
+                        analyst_pass=run_audit_context.get("executive_analysis_v2"),
+                    ),
                 )
 
             _store_safely(store, "report narrative persistence", _persist_report_narrative)
-        print(f"[timing] phase 4 report+persist: {(perf_counter() - phase_started):.2f}s")
-        print(f"[timing] total run: {(perf_counter() - run_started):.2f}s")
+        _log_timing("phase 4h report narrative", step_started)
+        _log_timing("phase 4 report+persist", phase_started)
+        _log_timing("total run", run_started)
         return result
     except AnalysisJobCancelled:
         if run_id:

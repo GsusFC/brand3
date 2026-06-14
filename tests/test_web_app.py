@@ -242,6 +242,81 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("auditorías_recientes", response.text)
         self.assertIn('href="/reports"', response.text)
 
+    def test_brand_audit_landing_loads_recent_audits_via_threadpool(self):
+        from web.routes import brand_audit
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return []
+
+        with patch("web.routes.brand_audit.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get("/brand-audit")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], brand_audit.list_latest_public)
+        self.assertEqual(calls[0][1], ())
+        self.assertEqual(calls[0][2], {"limit": 5})
+
+    def test_homepage_loads_recent_items_via_threadpool(self):
+        from web.routes import index as index_route
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return []
+
+        with patch("web.routes.index.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], index_route._recent_home_items)
+        self.assertEqual(calls[0][1], ())
+        self.assertEqual(calls[0][2], {"limit": 15})
+
+    def test_reports_list_loads_rows_via_threadpool(self):
+        from web.routes import reports_list
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return [], 0
+
+        with patch("web.routes.reports_list.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get("/reports?q=example&sort=score_desc&page=2")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], reports_list.list_public_reports)
+        self.assertEqual(calls[0][1], ())
+        self.assertEqual(
+            calls[0][2],
+            {"query": "example", "sort": "score_desc", "page": 2, "per_page": 20},
+        )
+
+    def test_brand_history_loads_rows_via_threadpool(self):
+        from web.routes import brand
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return []
+
+        with patch("web.routes.brand.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get("/brand/example")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], brand.list_brand_history)
+        self.assertEqual(calls[0][1], ("example",))
+        self.assertEqual(calls[0][2], {})
+
     def test_brand3_lab_surface_is_removed(self):
         for path in (
             "/brand3-lab",

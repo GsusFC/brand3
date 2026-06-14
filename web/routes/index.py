@@ -1,5 +1,6 @@
 """GET / — scanner-first landing + latest analyses."""
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -80,7 +81,7 @@ def _recent_home_items(limit: int = 10) -> list[dict]:
 @router.get("/")
 async def index(request: Request, lang: Literal["es", "en"] = Query("es")):
     ui_lang = normalize_lang(lang)
-    rows = _recent_home_items(limit=15)
+    rows = await asyncio.to_thread(_recent_home_items, limit=15)
     return templates.TemplateResponse(
         request,
         "index.html.j2",

@@ -265,6 +265,68 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("No se capturaron imágenes representativas", moodboard.text)
         self.assertNotIn("moodboard.js", moodboard.text)
 
+    def test_inflight_scan_assets_endpoint_returns_discovered_images(self):
+        from web.storage import insert_magnetism_job
+
+        store = SQLiteStore(str(self.db))
+        brand_id = store.upsert_brand("Assets Brand", "https://assets.example")
+        run_id = store.create_run(
+            brand_id, "Assets Brand", "https://assets.example", use_llm=False, use_social=False
+        )
+        store.save_raw_input(
+            run_id,
+            "web",
+            {
+                "url": "https://assets.example",
+                "html": (
+                    '<html><head>'
+                    '<meta property="og:image" content="https://cdn.assets.example/card.png">'
+                    '<link rel="apple-touch-icon" href="/icon.png">'
+                    '</head><body><img src="/img/hero.jpg" alt="Hero"></body></html>'
+                ),
+                "markdown_content": "",
+            },
+        )
+        store.close()
+
+        token = "assets-token-123"
+        insert_magnetism_job(
+            token=token,
+            brand_name="Assets Brand",
+            url="https://assets.example",
+            input_type="url",
+            input_value="https://assets.example",
+        )
+
+        resp = self.client.get(f"/magnetism-scanner/{token}/assets")
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        self.assertEqual(data["status"], "queued")
+        self.assertEqual(data["phase"], "queued")
+        urls = [img["url"] for img in data["images"]]
+        self.assertIn("https://cdn.assets.example/card.png", urls)
+        self.assertIn("https://assets.example/icon.png", urls)
+        self.assertIn("https://assets.example/img/hero.jpg", urls)
+
+    def test_inflight_scan_assets_endpoint_empty_for_manual_scan(self):
+        from web.storage import insert_magnetism_job
+
+        token = "manual-assets-token"
+        insert_magnetism_job(
+            token=token,
+            brand_name="Manual Assets Brand",
+            url="Manual Upload",
+            input_type="manual",
+            input_value="some copy",
+        )
+        resp = self.client.get(f"/magnetism-scanner/{token}/assets")
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()["images"], [])
+
+    def test_inflight_scan_assets_endpoint_unknown_token_404(self):
+        resp = self.client.get("/magnetism-scanner/nope-nope/assets")
+        self.assertEqual(resp.status_code, 404)
+
     def test_scan_detail_applies_cached_tldr_translation(self):
         from web.storage import insert_magnetism_scan
 
@@ -4270,9 +4332,12 @@ class MagnetismScannerTests(unittest.TestCase):
         r_status = self.client.get(status_url, follow_redirects=False)
         self.assertIn(r_status.status_code, {200, 303})
         if r_status.status_code == 200:
+            status_token = status_url.split("/")[2]
             self.assertIn('data-status-waiting data-status="running"', r_status.text)
-            self.assertIn('class="status-game"', r_status.text)
-            self.assertIn('data-dino-canvas', r_status.text)
+            self.assertIn('data-scan-loader', r_status.text)
+            self.assertIn('data-loader-grain', r_status.text)
+            self.assertIn(f'data-assets-href="/magnetism-scanner/{status_token}/assets"', r_status.text)
+            self.assertNotIn('data-dino-canvas', r_status.text)
 
         token = status_url.split("/")[2]
         from web.storage import get_magnetism_scan_by_token

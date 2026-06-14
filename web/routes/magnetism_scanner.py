@@ -14,7 +14,7 @@ from fastapi.responses import RedirectResponse
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
-from src.features.magnetism.moodboard import build_moodboard_model
+from src.features.magnetism.moodboard import build_moodboard_model, extract_moodboard_images
 from src.features.magnetism.translation import apply_magnetism_translation
 from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
 from src.scoring.provenance import build_score_provenance_report
@@ -814,6 +814,8 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "phase": phase,
             "phase_label": phase_labels.get(phase, "Working" if lang == "en" else "Trabajando"),
             "phase_steps": _phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
+            "assets_href": "/magnetism-scanner/{}/assets".format(token),
+            "loader_phase_captions": _LOADER_PHASE_CAPTIONS[lang],
             "ready_href": _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang),
             "back_href": _with_lang("/magnetism-scanner", lang),
             "status_label": "brand_scanner_status",
@@ -827,6 +829,73 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "retry_url": row.get("url") if (row.get("status") == "failed" and row.get("url") not in (None, "", "manual")) else None,
         },
     )
+
+
+# Narrative captions shown by the scan loader as the pipeline advances. Keyed
+# by the same phase tokens the worker reports through progress_cb.
+_LOADER_PHASE_CAPTIONS = {
+    "es": {
+        "queued": "Inicializando el escáner…",
+        "collecting": "Capturando señales de la marca…",
+        "extracting": "Leyendo la firma visual…",
+        "interpreting": "Interpretando el significado…",
+        "scoring": "Puntuando los componentes Brand3…",
+        "finalizing": "Componiendo el resultado…",
+        "ready": "Escaneo completo.",
+    },
+    "en": {
+        "queued": "Booting the scanner…",
+        "collecting": "Capturing brand signals…",
+        "extracting": "Reading the visual signature…",
+        "interpreting": "Interpreting meaning…",
+        "scoring": "Scoring the Brand3 components…",
+        "finalizing": "Composing the result…",
+        "ready": "Scan complete.",
+    },
+}
+
+
+def _inflight_moodboard_images(row: dict) -> list[dict]:
+    """Best-effort representative images for an in-flight scan.
+
+    Reads the most recent persisted ``web`` raw input for this brand/url and
+    runs the same deterministic extractor the report moodboard uses. Returns an
+    empty list until acquisition has persisted something, so the loader simply
+    stays in its procedural phase meanwhile. Never raises into the request path.
+    """
+    brand_name = str(row.get("brand_name") or "").strip()
+    url = str(row.get("url") or "").strip()
+    if not brand_name or not url or url in ("manual", "Manual Upload"):
+        return []
+    try:
+        store = SQLiteStore(BRAND3_DB_PATH)
+        try:
+            payload = store.get_latest_raw_input(brand_name, url, "web", max_age_hours=24)
+        finally:
+            store.close()
+    except Exception:
+        return []
+    if not isinstance(payload, dict):
+        return []
+    return extract_moodboard_images(payload)
+
+
+@router.get("/magnetism-scanner/{token}/assets")
+async def magnetism_scanner_assets(token: str):
+    """Stream representative brand images discovered so far for the loader.
+
+    Polled by the waiting-screen scan loader; returns a small JSON document with
+    the current phase plus whatever imagery acquisition has already captured.
+    """
+    row = get_magnetism_scan_by_token(token)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Unknown scan token.")
+    status = str(row.get("status") or "queued")
+    phase = _magnetism_phase(row)
+    images: list[dict] = []
+    if status in ("queued", "running"):
+        images = _inflight_moodboard_images(row)
+    return {"status": status, "phase": phase, "images": images}
 
 
 def _elapsed(started_at: str | None) -> int:

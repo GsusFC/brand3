@@ -40,11 +40,16 @@
     {% endif %}
   </div>
   {% if model.moodboard.available %}
-  <div class="moodboard-canvas" data-moodboard data-moodboard-seed="{{ model.id }}" aria-label="{{ model.t.moodboard }}"></div>
+  <div class="scan-loader-stage cloud-stage" data-moodboard-stage aria-label="{{ model.t.moodboard }}">
+    <div class="cloud-layer" data-cloud-layer></div>
+    <canvas class="scan-loader-grain" data-moodboard-grain></canvas>
+    <div class="scan-loader-vignette"></div>
+  </div>
   <p class="dim" style="font-family: var(--font-mono); font-size: 10px; margin: 8px 0 0;">
     {{ model.t.moodboard_source_note }}
   </p>
   <script type="application/json" data-moodboard-items>{{ model.moodboard.images | tojson }}</script>
+  <script src="/static/brand3_cloud.js?v={{ static_asset_version }}" defer></script>
   <script src="/static/moodboard.js?v={{ static_asset_version }}" defer></script>
   {% else %}
   <div class="moodboard-empty">

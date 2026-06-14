@@ -3551,3 +3551,135 @@ a:hover {
   .scan-cell.is-alive .scan-cell-img::before,
   .scan-cell.is-alive .scan-cell-img::after { opacity: 0; }
 }
+
+/* ============================================================================
+   Brand3 rotating image cloud — shared by the scan loader and the report
+   moodboard. Cards are absolutely positioned and transformed per-frame by
+   brand3_cloud.js (translate3d + scale); CSS owns only look, reveal, the empty
+   shimmer, and the hover chromatic-aberration glitch.
+   ========================================================================== */
+.cloud-stage {
+  position: relative;
+  height: 560px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #050607;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px;
+  isolation: isolate;
+  cursor: grab;
+  touch-action: none;
+}
+
+.cloud-stage:active { cursor: grabbing; }
+
+.cloud-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cloud-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: #0a0c0e;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  cursor: grab;
+  will-change: transform, opacity;
+}
+
+/* Empty placeholder shimmer (precarga) — scanning bar crawling the skeleton. */
+.cloud-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(0, 255, 0, 0.05) 38%,
+    rgba(0, 120, 255, 0.10) 50%,
+    rgba(255, 0, 0, 0.05) 62%,
+    transparent 100%
+  );
+  background-size: 280% 100%;
+  animation: scan-cell-shimmer 2.6s linear infinite;
+  z-index: 3;
+  transition: opacity 600ms ease;
+}
+
+.cloud-card.is-filled::after { opacity: 0; }
+
+.cloud-card-img,
+.cloud-card-img::before,
+.cloud-card-img::after {
+  position: absolute;
+  inset: 0;
+  background-image: var(--cell-img);
+  background-size: cover;
+  background-position: center;
+}
+
+.cloud-card-img {
+  z-index: 1;
+  opacity: 0;
+  filter: grayscale(0.35) contrast(1.05) brightness(0.92);
+  transition: opacity 220ms ease, filter 160ms ease;
+}
+
+.cloud-card.is-filled .cloud-card-img {
+  opacity: 1;
+  animation: scan-cell-reveal 760ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.cloud-card-img::before,
+.cloud-card-img::after {
+  content: "";
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none;
+}
+
+.cloud-card-img::before { filter: url(#b3-ca-red); }
+.cloud-card-img::after  { filter: url(#b3-ca-cyan); }
+
+.cloud-card.is-alive .cloud-card-img {
+  filter: grayscale(0) contrast(1.12) brightness(1.05) saturate(1.18);
+}
+
+.cloud-card.is-alive .cloud-card-img::before {
+  opacity: 0.85;
+  transform: translate3d(-4px, -2px, 0);
+}
+
+.cloud-card.is-alive .cloud-card-img::after {
+  opacity: 0.85;
+  transform: translate3d(4px, 2px, 0);
+}
+
+@media (max-width: 720px) {
+  .cloud-stage { height: 420px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-card::after { animation: none; opacity: 0; }
+  .cloud-card.is-filled .cloud-card-img { animation: none; }
+  .cloud-card-img { transition: opacity 400ms ease; }
+  .cloud-card.is-alive .cloud-card-img::before,
+  .cloud-card.is-alive .cloud-card-img::after { opacity: 0; }
+}
+
+/* The loader stage also hosts a rotating cloud and is draggable. */
+.scan-loader-stage { cursor: grab; touch-action: none; }
+.scan-loader-stage:active { cursor: grabbing; }
+
+/* A touch more vertical room for the loader cloud. */
+.scan-loader-stage { height: 380px; }

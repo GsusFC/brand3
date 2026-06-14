@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import threading
+import time
 from types import SimpleNamespace
 
 from src.collectors.exa_collector import ExaCollector
@@ -69,6 +71,46 @@ def test_collect_brand_data_emits_structured_diagnostics_for_failed_and_empty_in
     assert "exclude_domains" not in competitor_call["kwargs"]
     stripped = diagnostics["intent_results"]["competitors"]["stripped_filters"]
     assert any(item.get("param") == "exclude_domains" for item in stripped)
+
+
+def test_collect_brand_data_runs_independent_intents_concurrently():
+    class SlowCollector(ExaCollector):
+        def __init__(self):
+            super().__init__(api_key="test")
+            self.active = 0
+            self.max_active = 0
+            self.lock = threading.Lock()
+
+        def search(self, query: str, num_results: int | None = None, *, intent: str = "default", **kwargs):
+            with self.lock:
+                self.active += 1
+                self.max_active = max(self.max_active, self.active)
+            try:
+                time.sleep(0.03)
+                self._record_event(
+                    {
+                        "intent": intent,
+                        "query": query,
+                        "status": "no_results",
+                        "result_count": 0,
+                        "elapsed_ms": 30,
+                        "latency_bucket": "sub_1s",
+                    }
+                )
+                return []
+            finally:
+                with self.lock:
+                    self.active -= 1
+
+    collector = SlowCollector()
+
+    data = collector.collect_brand_data("Brand", "https://brand.com")
+
+    assert collector.max_active > 1
+    assert data.mentions == []
+    assert data.competitors == []
+    assert data.news == []
+    assert data.ai_visibility_results == []
 
 
 def test_same_name_different_root_is_related_unresolved():

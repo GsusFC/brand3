@@ -2217,11 +2217,16 @@ class MagnetismScannerTests(unittest.TestCase):
             lambda job, progress_cb=None: json.loads(json.dumps(payload))
         )
 
-        queued = self.client.post(
-            "/api/v1/scanner",
-            json={"audit_run_id": run_id},
-            headers=self._scanner_api_headers(),
-        )
+        with unittest.mock.patch.object(
+            SQLiteStore,
+            "get_run_snapshot",
+            side_effect=AssertionError("queueing should use run summary"),
+        ):
+            queued = self.client.post(
+                "/api/v1/scanner",
+                json={"audit_run_id": run_id},
+                headers=self._scanner_api_headers(),
+            )
 
         self.assertEqual(queued.status_code, 202)
         queued_payload = queued.json()

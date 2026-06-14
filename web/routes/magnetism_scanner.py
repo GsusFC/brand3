@@ -616,11 +616,11 @@ async def magnetism_scanner_from_run(
     """Queue a Magnetism scan from an existing Brand Audit run snapshot."""
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
-        snapshot = store.get_run_snapshot(run_id)
+        run = store.get_run_summary(run_id)
     finally:
         store.close()
 
-    if snapshot is None:
+    if run is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
@@ -628,7 +628,6 @@ async def magnetism_scanner_from_run(
             status_code=404,
         )
 
-    run = snapshot.get("run") or {}
     token = secrets.token_urlsafe(12)
     insert_magnetism_job(
         token=token,

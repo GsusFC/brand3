@@ -1440,6 +1440,32 @@ class SQLiteStore:
         ).fetchone()
         return int(row["id"]) if row else None
 
+    def get_run_summary(self, run_id: int) -> dict[str, Any] | None:
+        row = self.conn.execute(
+            """
+            SELECT runs.id, runs.brand_name, runs.url, runs.started_at, runs.completed_at,
+                   runs.composite_score, runs.summary,
+                   runs.use_llm, runs.use_social, runs.llm_used, runs.social_scraped, runs.result_path,
+                   runs.predicted_niche, runs.predicted_subtype, runs.niche_confidence,
+                   runs.calibration_profile, runs.profile_source,
+                   brands.domain AS brand_domain, brands.logo_key AS brand_logo_key,
+                   brands.logo_url AS brand_logo_url
+            FROM runs
+            LEFT JOIN brands ON brands.id = runs.brand_id
+            WHERE runs.id = ?
+            """,
+            (run_id,),
+        ).fetchone()
+        if not row:
+            return None
+        run_payload = dict(row)
+        run_payload["brand_profile"] = _brand_profile_from_record(run_payload)
+        run_payload["run_duration_seconds"] = _duration_seconds(
+            run_payload.get("started_at"),
+            run_payload.get("completed_at"),
+        )
+        return run_payload
+
     def get_run_snapshot(self, run_id: int) -> dict[str, Any] | None:
         run = self.conn.execute(
             """

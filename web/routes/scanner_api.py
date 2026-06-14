@@ -144,16 +144,15 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
     if audit_run_id:
         store = SQLiteStore(BRAND3_DB_PATH)
         try:
-            snapshot = store.get_run_snapshot(int(audit_run_id))
+            run = store.get_run_summary(int(audit_run_id))
         finally:
             store.close()
-        if snapshot is None:
+        if run is None:
             return scanner_api_error_response(
                 404,
                 code="audit_run_not_found",
                 message=f"Brand Audit run #{audit_run_id} not found.",
             )
-        run = snapshot.get("run") or {}
         scan_id = insert_magnetism_job(
             token=token,
             brand_name=str(run.get("brand_name") or f"Brand Audit run #{audit_run_id}"),

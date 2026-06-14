@@ -141,6 +141,28 @@ class SQLiteStoreTests(unittest.TestCase):
             self.assertEqual(features[0], ("presencia", "web_presence", 80.0))
             self.assertEqual(scores[0], ("presencia", 80.0))
 
+    def test_get_run_summary_loads_run_metadata_without_snapshot_payloads(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+            store.save_raw_input(run_id, "web", {"large": "payload"})
+            store.finalize_run(run_id, 80.0, True, False, "/tmp/example.json", "summary")
+
+            summary = store.get_run_summary(run_id)
+            snapshot = store.get_run_snapshot(run_id)
+            store.close()
+
+            self.assertEqual(summary["id"], run_id)
+            self.assertEqual(summary["brand_name"], "Example")
+            self.assertEqual(summary["url"], "https://example.com")
+            self.assertEqual(summary["brand_profile"]["domain"], "example.com")
+            self.assertNotIn("raw_inputs", summary)
+            self.assertNotIn("features", summary)
+            self.assertEqual(snapshot["raw_inputs"][0]["payload"], {"large": "payload"})
+
     def test_get_latest_raw_input_respects_ttl(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

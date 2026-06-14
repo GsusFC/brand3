@@ -102,3 +102,17 @@ async def scanner_api_page(request: Request, lang: Literal["es", "en"] = Query("
             "ui_lang": ui_lang,
         },
     )
+
+
+@router.get("/t-rex")
+async def t_rex_playground(request: Request, lang: Literal["es", "en"] = Query("es")):
+    ui_lang = normalize_lang(lang)
+    suffix = "?lang=en" if ui_lang == "en" else ""
+    return templates.TemplateResponse(
+        request,
+        "t_rex.html.j2",
+        {
+            "ui_lang": ui_lang,
+            "lang_suffix": suffix,
+        },
+    )

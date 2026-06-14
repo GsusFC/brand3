@@ -3,63 +3,143 @@
   if (!root) return;
 
   const status = root.getAttribute("data-status") || "";
-  if (status !== "queued" && status !== "running") return;
+  const isPlayground = status === "playground";
+  if (status !== "queued" && status !== "running" && !isPlayground) return;
 
   const canvas = root.querySelector("[data-dino-canvas]");
   const startButton = root.querySelector("[data-dino-start]");
   const scoreNode = root.querySelector("[data-dino-score]");
+  const bestNode = root.querySelector("[data-dino-best]");
+  const speedNode = root.querySelector("[data-dino-speed]");
+  const levelNode = root.querySelector("[data-dino-level]");
   const stateNode = root.querySelector("[data-dino-state]");
-  if (!(canvas instanceof HTMLCanvasElement) || !startButton || !scoreNode || !stateNode) {
+  if (
+    !(canvas instanceof HTMLCanvasElement) ||
+    !startButton ||
+    !scoreNode ||
+    !bestNode ||
+    !speedNode ||
+    !levelNode ||
+    !stateNode
+  ) {
     return;
   }
 
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
 
+  const lang = canvas.getAttribute("data-game-lang") === "en" ? "en" : "es";
+  const copy = {
+    es: {
+      start: "Empezar",
+      pause: "Pausar",
+      resume: "Seguir",
+      running: "Corriendo",
+      ready: "Listo para jugar",
+      jump: "Saltando",
+      doubleJump: "Doble salto",
+      paused: "Pausado",
+      hidden: "Pausado fuera de vista",
+      reduced: "Movimiento reducido - pulsa Empezar",
+      reducedRunning: "Movimiento reducido",
+      crashed: "Choque. Pulsa Empezar para reintentar.",
+      gameOver: "Fin de partida",
+      retry: "Pulsa Empezar o Espacio para reintentar",
+      resumeHint: "Pulsa Empezar, Espacio o P para seguir",
+      signal: "+15 señal",
+      level: "Nivel",
+    },
+    en: {
+      start: "Start",
+      pause: "Pause",
+      resume: "Resume",
+      running: "Running",
+      ready: "Ready to play",
+      jump: "Jumping",
+      doubleJump: "Double jump",
+      paused: "Paused",
+      hidden: "Paused off-screen",
+      reduced: "Motion reduced - tap Start",
+      reducedRunning: "Motion reduced",
+      crashed: "Crashed. Press Start to retry.",
+      gameOver: "Game over",
+      retry: "Press Start or Space to try again",
+      resumeHint: "Press Start, Space, or P to resume",
+      signal: "+15 signal",
+      level: "Level",
+    },
+  }[lang];
+
   const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
   const prefersReducedMotion = () => Boolean(reducedMotionQuery.matches);
   const pollInterval = Number(root.getAttribute("data-poll-interval")) || 5000;
   const readyHref = root.getAttribute("data-ready-href") || "";
+  const bestStorageKey = "brand3-status-trex-best";
+
+  const readBest = () => {
+    try {
+      return Number(window.localStorage.getItem(bestStorageKey)) || 0;
+    } catch {
+      return 0;
+    }
+  };
+
+  const writeBest = (value) => {
+    try {
+      window.localStorage.setItem(bestStorageKey, String(Math.floor(value)));
+    } catch {
+      // Best score is optional; private storage should not break the status page.
+    }
+  };
 
   const state = {
     running: false,
     started: false,
     gameOver: false,
+    userPaused: false,
     visible: true,
     rafId: 0,
     pollId: 0,
     lastTime: 0,
-    lastPollAt: 0,
     score: 0,
-    best: 0,
+    best: readBest(),
+    level: 1,
     runTick: 0,
     speed: 4.2,
     obstacleTimer: 0,
     cloudTimer: 0,
+    pickupTimer: 120,
     groundOffset: 0,
     jumpVelocity: 0,
+    jumpsRemaining: 2,
     playerY: 0,
     playerBaseY: 126,
     obstacles: [],
     clouds: [],
+    pickups: [],
   };
 
   const trex = {
     x: 58,
-    width: 44,
-    height: 47,
-    frame: {
+    width: 66,
+    height: 71,
+    sourceX: 672,
+    sourceY: 2,
+    sourceWidth: 44,
+    sourceHeight: 47,
+    frames: {
       jumping: 0,
       runningA: 88,
       runningB: 132,
-      crashed: 220,
+      crashed: 176,
     },
   };
 
-  const trexImage = new Image();
+  // Original Chromium T-Rex spritesheet via wayou/t-rex-runner, BSD-3-Clause.
+  const trexSpriteImage = new Image();
   const trexFrameCache = new Map();
-  trexImage.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQgAAAAvAgMAAABiRrxWAAAADFBMVEX///9TU1P39/f///+TS9URAAAAAXRSTlMAQObYZgAAAPpJREFUeF7d0jFKRkEMhdGLMM307itNLALyVmHvJuzTDMjdn72E95PGFEZSmeoU4YMMgxhskvQec8YSVFX1NhGcS5ywtbmC8khcZeKq+ZWJ4F8Sr2+ZCErjkJFEfcjAc/6/BMlfcz6xHdhRthYzIZhIHMcTVY1scUUiAphK8CMSPUbieTBhvD9Lj0vyV4wklEGzHpciKGOJoBp7XDcFs4kWxxM7Ey3iZ8JbzASAvMS7XLOJHTTvEkEZSeQl7DMuwVyCasqK5+XzQRYLUJlMbPXjFcn3m8eKBSjWZMJwvGIOvViAzCbUj1VEDoqFOEQGE3SyInJQLOQMJL4B7enP1UbLXJQAAAAASUVORK5CYII=";
-  trexImage.onload = () => {
+  trexSpriteImage.src = "/static/vendor/t-rex-runner/offline-sprite-1x.png";
+  trexSpriteImage.onload = () => {
     trexFrameCache.clear();
     render();
   };
@@ -67,11 +147,13 @@
   const css = getComputedStyle(document.documentElement);
   const palette = {
     background: css.getPropertyValue("--surface").trim() || "#f5f5f5",
+    backgroundAlt: css.getPropertyValue("--surface-2").trim() || "#eeeeee",
     ground: css.getPropertyValue("--border").trim() || "#e4e4e4",
-    dino: "#050806",
-    dinoOutline: "#4f8f5a",
+    dino: css.getPropertyValue("--olive").trim() || "#00ff00",
     hazard: css.getPropertyValue("--accent").trim() || "#ff0000",
+    pickup: css.getPropertyValue("--olive").trim() || "#00ff00",
     text: css.getPropertyValue("--text").trim() || "#161616",
+    muted: css.getPropertyValue("--text-muted").trim() || "#77736d",
   };
 
   const world = {
@@ -80,25 +162,51 @@
     groundY: 147,
     gravity: 0.62,
     jumpStrength: 12.8,
-    maxSpeed: 10.2,
+    doubleJumpStrength: 10.7,
+    maxSpeed: 10.6,
   };
+
+  const playerBox = () => ({
+    x: trex.x + 4,
+    y: state.playerY + 2,
+    width: trex.width - 10,
+    height: trex.height - 4,
+  });
+
+  const intersects = (a, b) => !(
+    a.x + a.width < b.x ||
+    a.x > b.x + b.width ||
+    a.y + a.height < b.y ||
+    a.y > b.y + b.height
+  );
 
   const setStateMessage = (message) => {
     stateNode.textContent = message;
   };
 
-  const setScore = (value) => {
-    scoreNode.textContent = String(Math.max(0, value | 0));
+  const setButton = () => {
+    startButton.textContent = state.running ? copy.pause : state.started && !state.gameOver ? copy.resume : copy.start;
+    startButton.setAttribute("aria-pressed", state.running ? "true" : "false");
   };
 
-  const canJump = () => state.started && !state.gameOver && state.playerY >= state.playerBaseY - 0.5;
+  const setHud = () => {
+    const score = Math.max(0, Math.floor(state.score));
+    if (score > state.best) {
+      state.best = score;
+      writeBest(score);
+    }
+    scoreNode.textContent = String(score);
+    bestNode.textContent = String(Math.floor(state.best));
+    speedNode.textContent = `x${Math.max(1, state.speed / 4.2).toFixed(1)}`;
+    levelNode.textContent = `${copy.level} ${state.level}`;
+  };
 
   const syncCanvasSize = () => {
     const rect = canvas.getBoundingClientRect();
     if (!rect.width || !rect.height) return;
     const scale = window.devicePixelRatio || 1;
     const nextWidth = Math.max(320, Math.round(rect.width * scale));
-    const nextHeight = Math.max(90, Math.round(rect.height * scale));
+    const nextHeight = Math.max(130, Math.round(rect.height * scale));
     if (canvas.width !== nextWidth || canvas.height !== nextHeight) {
       canvas.width = nextWidth;
       canvas.height = nextHeight;
@@ -115,41 +223,70 @@
     state.running = true;
     state.started = true;
     state.gameOver = false;
+    state.userPaused = false;
     state.lastTime = 0;
     state.score = 0;
+    state.level = 1;
     state.speed = 4.2;
     state.runTick = 0;
-    state.obstacleTimer = 0;
-    state.cloudTimer = 0;
+    state.obstacleTimer = 32;
+    state.cloudTimer = 18;
+    state.pickupTimer = 120;
     state.groundOffset = 0;
     state.jumpVelocity = 0;
+    state.jumpsRemaining = 2;
     state.playerY = state.playerBaseY;
     state.obstacles = [];
     state.clouds = [];
-    setScore(0);
-    setStateMessage(prefersReducedMotion() ? "Motion reduced" : "Running");
+    state.pickups = [];
+    setHud();
+    setButton();
+    setStateMessage(prefersReducedMotion() ? copy.reducedRunning : copy.running);
     if (state.rafId) {
       cancelAnimationFrame(state.rafId);
       state.rafId = 0;
     }
-    requestAnimationFrame(tick);
+    state.rafId = requestAnimationFrame(tick);
+  };
+
+  const pause = (message, userInitiated = false) => {
+    if (state.rafId) {
+      cancelAnimationFrame(state.rafId);
+      state.rafId = 0;
+    }
+    state.running = false;
+    if (userInitiated) state.userPaused = true;
+    if (message) setStateMessage(message);
+    setButton();
+  };
+
+  const resume = () => {
+    if (!state.started || state.gameOver || !state.visible || state.userPaused) return;
+    if (state.running && state.rafId) return;
+    state.running = true;
+    state.lastTime = 0;
+    setStateMessage(copy.running);
+    setButton();
+    state.rafId = requestAnimationFrame(tick);
   };
 
   const stopGame = (message) => {
     state.running = false;
     state.gameOver = true;
+    state.userPaused = false;
     if (state.rafId) {
       cancelAnimationFrame(state.rafId);
       state.rafId = 0;
     }
     if (message) setStateMessage(message);
+    setButton();
   };
 
   const spawnObstacle = () => {
-    const sizeRoll = Math.random();
-    const type = sizeRoll > 0.86 ? "wide" : sizeRoll > 0.46 ? "tall" : "short";
-    const height = type === "wide" ? 30 : type === "tall" ? 24 : 18;
-    const width = type === "wide" ? 18 : type === "tall" ? 14 : 12;
+    const roll = Math.random();
+    const type = roll > 0.82 ? "wide" : roll > 0.48 ? "tall" : "short";
+    const height = type === "wide" ? 28 : type === "tall" ? 34 : 20;
+    const width = type === "wide" ? 28 : type === "tall" ? 15 : 13;
     state.obstacles.push({
       x: world.width + 18,
       y: world.groundY - height,
@@ -159,10 +296,20 @@
     });
   };
 
+  const spawnPickup = () => {
+    state.pickups.push({
+      x: world.width + 22,
+      y: world.groundY - 78 - Math.random() * 22,
+      width: 12,
+      height: 12,
+      tick: 0,
+    });
+  };
+
   const spawnCloud = () => {
     state.clouds.push({
       x: world.width + 20,
-      y: 24 + Math.random() * 42,
+      y: 24 + Math.random() * Math.max(24, world.height * 0.28),
       width: 36 + Math.random() * 26,
       speed: 0.35 + Math.random() * 0.25,
     });
@@ -177,31 +324,27 @@
       resetGame();
       return;
     }
-    if (canJump()) {
-      state.jumpVelocity = -world.jumpStrength;
-      setStateMessage("Jumping");
+    if (!state.running && state.userPaused) {
+      state.userPaused = false;
+      resume();
+      return;
     }
-  };
-
-  const isColliding = (obstacle) => {
-    const player = {
-      x: trex.x + 6,
-      y: state.playerY,
-      width: trex.width - 10,
-      height: trex.height,
-    };
-    return !(
-      player.x + player.width < obstacle.x ||
-      player.x > obstacle.x + obstacle.width ||
-      player.y + player.height < obstacle.y ||
-      player.y > obstacle.y + obstacle.height
-    );
+    if (state.jumpsRemaining <= 0) return;
+    const grounded = state.playerY >= state.playerBaseY - 0.5;
+    state.jumpVelocity = grounded ? -world.jumpStrength : -world.doubleJumpStrength;
+    state.jumpsRemaining -= 1;
+    setStateMessage(grounded ? copy.jump : copy.doubleJump);
   };
 
   const drawBackground = () => {
     ctx.clearRect(0, 0, world.width, world.height);
     ctx.fillStyle = palette.background;
     ctx.fillRect(0, 0, world.width, world.height);
+
+    ctx.fillStyle = palette.backgroundAlt;
+    for (let x = 0; x < world.width; x += 48) {
+      ctx.fillRect(x + ((state.groundOffset * -0.35) % 48), 0, 1, world.height);
+    }
 
     ctx.strokeStyle = palette.ground;
     ctx.lineWidth = 1;
@@ -218,107 +361,116 @@
   };
 
   const drawCloud = (cloud) => {
-    ctx.fillStyle = palette.hazard;
+    ctx.fillStyle = palette.muted;
+    ctx.globalAlpha = 0.45;
     ctx.fillRect(cloud.x, cloud.y, cloud.width, 2);
     ctx.fillRect(cloud.x + 8, cloud.y - 4, cloud.width - 16, 2);
     ctx.fillRect(cloud.x + 12, cloud.y + 4, cloud.width - 22, 2);
+    ctx.globalAlpha = 1;
   };
 
   const drawObstacle = (obstacle) => {
     ctx.fillStyle = palette.hazard;
+    if (obstacle.type === "wide") {
+      ctx.fillRect(obstacle.x, obstacle.y + 8, obstacle.width, obstacle.height - 8);
+      ctx.fillRect(obstacle.x + 4, obstacle.y, 6, obstacle.height);
+      ctx.fillRect(obstacle.x + obstacle.width - 10, obstacle.y + 4, 6, obstacle.height - 4);
+      return;
+    }
     ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     ctx.fillRect(obstacle.x - 4, obstacle.y + 8, obstacle.width + 8, 4);
-    ctx.fillRect(obstacle.x + 4, obstacle.y + 14, obstacle.width - 8, 3);
+    ctx.fillRect(obstacle.x + 4, obstacle.y + 16, Math.max(3, obstacle.width - 8), 3);
   };
 
-  const tintTrexFrame = (sourceX) => {
-    if (trexFrameCache.has(sourceX)) return trexFrameCache.get(sourceX);
-    if (!trexImage.complete || trexImage.naturalWidth === 0) return null;
+  const drawPickup = (pickup) => {
+    const y = pickup.y + Math.sin(pickup.tick / 8) * 3;
+    ctx.fillStyle = palette.pickup;
+    ctx.fillRect(pickup.x + 4, y, 4, 12);
+    ctx.fillRect(pickup.x, y + 4, 12, 4);
+  };
+
+  const tintTrexFrame = (frameX) => {
+    const cacheKey = `${frameX}:${palette.dino}:${palette.background}`;
+    if (trexFrameCache.has(cacheKey)) return trexFrameCache.get(cacheKey);
+    if (!trexSpriteImage.complete || trexSpriteImage.naturalWidth === 0) return null;
 
     const frameCanvas = document.createElement("canvas");
-    frameCanvas.width = trex.width;
-    frameCanvas.height = trex.height;
+    frameCanvas.width = trex.sourceWidth;
+    frameCanvas.height = trex.sourceHeight;
     const frameCtx = frameCanvas.getContext("2d");
     if (!frameCtx) return null;
+
     frameCtx.imageSmoothingEnabled = false;
-    frameCtx.drawImage(trexImage, sourceX, 0, trex.width, trex.height, 0, 0, trex.width, trex.height);
-    const imageData = frameCtx.getImageData(0, 0, trex.width, trex.height);
+    frameCtx.drawImage(
+      trexSpriteImage,
+      trex.sourceX + frameX,
+      trex.sourceY,
+      trex.sourceWidth,
+      trex.sourceHeight,
+      0,
+      0,
+      trex.sourceWidth,
+      trex.sourceHeight,
+    );
+
+    const imageData = frameCtx.getImageData(0, 0, trex.sourceWidth, trex.sourceHeight);
     const data = imageData.data;
-    const bodyColor = { r: 5, g: 8, b: 6 };
-    const outlineColor = { r: 79, g: 143, b: 90 };
-    const mask = new Uint8Array(trex.width * trex.height);
     for (let index = 0; index < data.length; index += 4) {
-      const isBackground = data[index] > 225 && data[index + 1] > 225 && data[index + 2] > 225;
-      if (!isBackground) {
-        mask[index / 4] = 1;
+      const isTransparent = data[index + 3] < 16;
+      const isLightBackground = data[index] > 235 && data[index + 1] > 235 && data[index + 2] > 235;
+      if (isTransparent || isLightBackground) {
+        data[index + 3] = 0;
+        continue;
       }
-    }
-    for (let y = 0; y < trex.height; y += 1) {
-      for (let x = 0; x < trex.width; x += 1) {
-        const maskIndex = y * trex.width + x;
-        const dataIndex = maskIndex * 4;
-        if (!mask[maskIndex]) {
-          data[dataIndex + 3] = 0;
-          continue;
-        }
-        let isEdge = false;
-        for (let oy = -1; oy <= 1 && !isEdge; oy += 1) {
-          for (let ox = -1; ox <= 1; ox += 1) {
-            const nx = x + ox;
-            const ny = y + oy;
-            if (nx < 0 || ny < 0 || nx >= trex.width || ny >= trex.height || !mask[ny * trex.width + nx]) {
-              isEdge = true;
-              break;
-            }
-          }
-        }
-        const color = isEdge ? outlineColor : bodyColor;
-        data[dataIndex] = color.r;
-        data[dataIndex + 1] = color.g;
-        data[dataIndex + 2] = color.b;
-        data[dataIndex + 3] = 255;
-      }
+      data[index] = 0;
+      data[index + 1] = 255;
+      data[index + 2] = 0;
+      data[index + 3] = 255;
     }
     frameCtx.putImageData(imageData, 0, 0);
-    trexFrameCache.set(sourceX, frameCanvas);
+    trexFrameCache.set(cacheKey, frameCanvas);
     return frameCanvas;
   };
 
   const drawDino = () => {
-    const x = trex.x;
-    const y = state.playerY;
     const frame = state.gameOver ? 0 : Math.floor(state.runTick / 9) % 2;
     const jumpPose = state.jumpVelocity < 0 || state.playerY < state.playerBaseY - 2;
-    const sourceX = state.gameOver
-      ? trex.frame.crashed
+    const frameX = state.gameOver
+      ? trex.frames.crashed
       : jumpPose
-        ? trex.frame.jumping
+        ? trex.frames.jumping
         : frame === 0
-          ? trex.frame.runningA
-          : trex.frame.runningB;
-    const frameImage = tintTrexFrame(sourceX);
+          ? trex.frames.runningA
+          : trex.frames.runningB;
+    const frameImage = tintTrexFrame(frameX);
     if (!frameImage) return;
+
     ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(frameImage, x, y, trex.width, trex.height);
+    ctx.drawImage(frameImage, Math.round(trex.x), Math.round(state.playerY), trex.width, trex.height);
   };
 
-  const drawGameOver = () => {
+  const drawOverlay = (title, subtitle) => {
     ctx.fillStyle = "rgba(245, 245, 245, 0.88)";
+    if (document.documentElement.dataset.theme === "dark") {
+      ctx.fillStyle = "rgba(18, 22, 21, 0.88)";
+    }
     ctx.fillRect(0, 0, world.width, world.height);
     ctx.fillStyle = palette.text;
     ctx.font = "700 14px monospace";
     ctx.textAlign = "center";
-    ctx.fillText("Game over", world.width / 2, world.height / 2 - 4);
+    ctx.fillText(title, world.width / 2, world.height / 2 - 4);
     ctx.font = "12px sans-serif";
-    ctx.fillText("Press Start or Space to try again", world.width / 2, world.height / 2 + 18);
+    ctx.fillText(subtitle, world.width / 2, world.height / 2 + 18);
   };
 
   const render = () => {
     drawBackground();
     state.clouds.forEach(drawCloud);
+    state.pickups.forEach(drawPickup);
     state.obstacles.forEach(drawObstacle);
     drawDino();
-    if (state.gameOver) drawGameOver();
+    if (state.gameOver) drawOverlay(copy.gameOver, copy.retry);
+    if (state.started && state.userPaused && !state.gameOver) drawOverlay(copy.paused, copy.resumeHint);
   };
 
   const update = (dt) => {
@@ -327,35 +479,43 @@
 
     state.runTick += step;
     state.score += 0.8 * step;
-    state.best = Math.max(state.best, state.score);
-    state.speed = Math.min(world.maxSpeed, 4.2 + state.score / 260);
+    state.level = Math.min(9, 1 + Math.floor(state.score / 140));
+    state.speed = Math.min(world.maxSpeed, 4.2 + state.score / 245 + state.level * 0.08);
     state.groundOffset = (state.groundOffset + state.speed * step) % 26;
 
     state.jumpVelocity += world.gravity * step;
-    state.playerY = Math.min(
-      state.playerBaseY,
-      state.playerY + state.jumpVelocity * step,
-    );
+    state.playerY = Math.min(state.playerBaseY, state.playerY + state.jumpVelocity * step);
     if (state.playerY >= state.playerBaseY) {
       state.playerY = state.playerBaseY;
       state.jumpVelocity = 0;
+      state.jumpsRemaining = 2;
     }
 
     state.obstacleTimer -= step;
     if (state.obstacleTimer <= 0) {
       spawnObstacle();
-      const speedPressure = Math.max(0, 82 - state.speed * 6);
-      state.obstacleTimer = 70 + speedPressure + Math.random() * (70 + speedPressure * 0.55);
+      const speedPressure = Math.max(0, 76 - state.speed * 6);
+      state.obstacleTimer = 58 + speedPressure + Math.random() * (62 + speedPressure * 0.45);
+    }
+
+    state.pickupTimer -= step;
+    if (state.pickupTimer <= 0 && state.score > 60) {
+      spawnPickup();
+      state.pickupTimer = 150 + Math.random() * 125;
     }
 
     state.cloudTimer -= step;
     if (state.cloudTimer <= 0) {
       spawnCloud();
-      state.cloudTimer = 170 + Math.random() * 120;
+      state.cloudTimer = 150 + Math.random() * 110;
     }
 
     state.obstacles.forEach((obstacle) => {
       obstacle.x -= state.speed * step;
+    });
+    state.pickups.forEach((pickup) => {
+      pickup.x -= (state.speed * 0.92) * step;
+      pickup.tick += step;
     });
     state.clouds.forEach((cloud) => {
       cloud.x -= cloud.speed * step;
@@ -364,14 +524,24 @@
     state.obstacles = state.obstacles.filter((obstacle) => obstacle.x + obstacle.width > -12);
     state.clouds = state.clouds.filter((cloud) => cloud.x + cloud.width > -12);
 
-    if (state.obstacles.some(isColliding)) {
-      setScore(Math.floor(state.score));
-      stopGame("Crashed. Press Start to retry.");
+    const player = playerBox();
+    state.pickups = state.pickups.filter((pickup) => {
+      if (intersects(player, pickup)) {
+        state.score += 15;
+        setStateMessage(copy.signal);
+        return false;
+      }
+      return pickup.x + pickup.width > -12;
+    });
+
+    if (state.obstacles.some((obstacle) => intersects(player, obstacle))) {
+      setHud();
+      stopGame(copy.crashed);
       render();
       return;
     }
 
-    setScore(Math.floor(state.score));
+    setHud();
   };
 
   const tick = (time) => {
@@ -379,9 +549,7 @@
       state.rafId = 0;
       return;
     }
-    if (!state.lastTime) {
-      state.lastTime = time;
-    }
+    if (!state.lastTime) state.lastTime = time;
     const elapsed = Math.min(32, Math.max(1, time - state.lastTime));
     state.lastTime = time;
     update(elapsed);
@@ -389,29 +557,12 @@
     state.rafId = requestAnimationFrame(tick);
   };
 
-  const resume = () => {
-    if (!state.started || state.gameOver || !state.visible) return;
-    if (state.running && state.rafId) return;
-    state.running = true;
-    state.lastTime = 0;
-    state.rafId = requestAnimationFrame(tick);
-  };
-
-  const pause = (message) => {
-    if (state.rafId) {
-      cancelAnimationFrame(state.rafId);
-      state.rafId = 0;
-    }
-    state.running = false;
-    if (message) setStateMessage(message);
-  };
-
   const handleVisibility = () => {
     state.visible = document.visibilityState !== "hidden";
     if (state.visible) {
       resume();
     } else {
-      pause("Paused while hidden");
+      pause(copy.hidden);
     }
   };
 
@@ -423,7 +574,7 @@
         if (state.visible) {
           resume();
         } else {
-          pause("Paused while off-screen");
+          pause(copy.hidden);
         }
       },
       { threshold: 0.1 },
@@ -436,20 +587,32 @@
       resetGame();
       return;
     }
-    jump();
+    if (state.running) {
+      pause(copy.paused, true);
+      render();
+      return;
+    }
+    state.userPaused = false;
+    resume();
   };
 
   const onJumpKey = () => {
     if (!state.started || state.gameOver) {
       resetGame();
       state.jumpVelocity = -world.jumpStrength;
-      setStateMessage("Jumping");
+      state.jumpsRemaining = 1;
+      setStateMessage(copy.jump);
       return;
     }
     jump();
   };
 
   const onKeyDown = (event) => {
+    if (event.code === "KeyP") {
+      event.preventDefault();
+      onStart();
+      return;
+    }
     if (event.code !== "Space" && event.code !== "ArrowUp") return;
     event.preventDefault();
     onJumpKey();
@@ -462,6 +625,8 @@
 
   syncCanvasSize();
   state.playerY = state.playerBaseY;
+  setHud();
+  setButton();
   window.addEventListener("resize", () => {
     syncCanvasSize();
     state.playerY = Math.min(state.playerY || state.playerBaseY, state.playerBaseY);
@@ -474,11 +639,11 @@
   startButton.addEventListener("click", onStart);
   if (reducedMotionQuery.addEventListener) {
     reducedMotionQuery.addEventListener("change", () => {
-      setStateMessage(prefersReducedMotion() ? "Motion reduced" : "Running");
+      setStateMessage(prefersReducedMotion() ? copy.reduced : copy.running);
     });
   }
 
-  setStateMessage(prefersReducedMotion() ? "Motion reduced - tap Start" : "Running");
+  setStateMessage(prefersReducedMotion() ? copy.reduced : copy.running);
   if (!prefersReducedMotion()) {
     resetGame();
   } else {

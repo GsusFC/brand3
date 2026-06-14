@@ -221,6 +221,15 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertIn("error", error_schema["required"])
         self.assertIn("409", payload["paths"]["/api/v1/scanner/{scan_id}/result"]["get"]["responses"])
 
+    def test_t_rex_playground_renders_without_scanner_status(self):
+        response = self.client.get("/t-rex")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('data-status-waiting data-status="playground"', response.text)
+        self.assertIn('src="/static/status_waiting.js?v=', response.text)
+        self.assertIn('class="status-game t-rex-playground"', response.text)
+        self.assertIn('data-dino-canvas data-game-lang="es"', response.text)
+        self.assertIn("T-Rex sandbox", response.text)
+
     def test_brand_audit_landing_page_is_dedicated_route(self):
         response = self.client.get("/brand-audit")
         self.assertEqual(response.status_code, 200)

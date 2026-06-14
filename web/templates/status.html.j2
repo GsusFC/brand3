@@ -97,18 +97,29 @@
     <div class="status-game-head">
       <div>
         <div class="status-game-label">{{ 'T-Rex de espera' if ui_lang == 'es' else 'Waiting T-Rex' }}</div>
-        <div class="status-game-copy small">{{ 'Pulsa espacio, flecha arriba o toca el panel para saltar.' if ui_lang == 'es' else 'Press space, Arrow Up, or tap the panel to jump.' }}</div>
+        <div class="status-game-copy small">{{ 'Espacio / ↑ / toque: saltar. Doble salto disponible. P: pausar.' if ui_lang == 'es' else 'Space / ↑ / tap: jump. Double jump available. P: pause.' }}</div>
       </div>
-      <div class="status-game-scoreboard">
-        <span class="k">{{ 'Score' if ui_lang == 'en' else 'Puntos' }}</span>
-        <span class="v tabular-nums" data-dino-score>0</span>
+      <div class="status-game-scoreboard" aria-live="polite">
+        <div>
+          <span class="k">{{ 'Score' if ui_lang == 'en' else 'Puntos' }}</span>
+          <span class="v tabular-nums" data-dino-score>0</span>
+        </div>
+        <div>
+          <span class="k">{{ 'Best' if ui_lang == 'en' else 'Récord' }}</span>
+          <span class="v tabular-nums" data-dino-best>0</span>
+        </div>
+        <div>
+          <span class="k">{{ 'Speed' if ui_lang == 'en' else 'Ritmo' }}</span>
+          <span class="v tabular-nums" data-dino-speed>x1.0</span>
+        </div>
       </div>
     </div>
     <div class="status-game-board">
-      <canvas class="status-game-canvas" width="640" height="180" data-dino-canvas></canvas>
+      <canvas class="status-game-canvas" width="640" height="180" data-dino-canvas data-game-lang="{{ ui_lang }}"></canvas>
     </div>
     <div class="status-game-footer">
-      <button class="source-link status-game-button" type="button" data-dino-start>{{ 'Empezar' if ui_lang == 'es' else 'Start' }}</button>
+      <button class="source-link status-game-button" type="button" data-dino-start aria-pressed="false">{{ 'Empezar' if ui_lang == 'es' else 'Start' }}</button>
+      <span class="small dim" data-dino-level>{{ 'Nivel 1' if ui_lang == 'es' else 'Level 1' }}</span>
       <span class="small dim" data-dino-state>{{ 'Listo para jugar' if ui_lang == 'es' else 'Ready to play' }}</span>
     </div>
   </section>

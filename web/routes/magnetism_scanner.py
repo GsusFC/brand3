@@ -511,15 +511,28 @@ def _with_lang(path: str, lang: _Lang) -> str:
     return f"{path}{_lang_q(lang)}"
 
 
-@router.get("/magnetism-scanner")
-async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
-    """Render index page of Magnetism Scanner showing past analyses and inputs."""
+def _load_magnetism_index_data() -> tuple[list[dict], list[dict]]:
     scans = list_magnetism_scans(limit=25)
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
         audit_runs = store.list_runs(limit=12)
     finally:
         store.close()
+    return scans, audit_runs
+
+
+def _load_run_summary(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_run_summary(run_id)
+    finally:
+        store.close()
+
+
+@router.get("/magnetism-scanner")
+async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
+    """Render index page of Magnetism Scanner showing past analyses and inputs."""
+    scans, audit_runs = await asyncio.to_thread(_load_magnetism_index_data)
 
     # Format dates nicely for template listing
     for scan in scans:
@@ -614,11 +627,7 @@ async def magnetism_scanner_from_run(
     lang: _Lang = Form("es"),
 ):
     """Queue a Magnetism scan from an existing Brand Audit run snapshot."""
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        run = store.get_run_summary(run_id)
-    finally:
-        store.close()
+    run = await asyncio.to_thread(_load_run_summary, run_id)
 
     if run is None:
         return templates.TemplateResponse(
@@ -1073,13 +1082,11 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
             {"model": model, "ui_lang": lang},
         )
 
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
-        score_provenance = build_score_provenance_report(store, int(source_run_id))
-    finally:
-        store.close()
+    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
+        _load_audit_read_context,
+        int(source_run_id),
+        lang,
+    )
     if snapshot is None:
         model["audit"] = {
             "available": False,
@@ -1163,13 +1170,11 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
             {"model": model, "ui_lang": lang},
         )
 
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
-        score_provenance = build_score_provenance_report(store, int(source_run_id))
-    finally:
-        store.close()
+    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
+        _load_audit_read_context,
+        int(source_run_id),
+        lang,
+    )
 
     if snapshot is None:
         model["client_tldr_v2"] = {
@@ -1292,6 +1297,17 @@ def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) ->
         return store.get_report_translation(run_id, lang)
     except Exception:
         return None
+
+
+def _load_audit_read_context(run_id: int, lang: _Lang) -> tuple[dict | None, dict | None, dict]:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        narrative_payload = _report_translation_payload(store, run_id, lang)
+        score_provenance = build_score_provenance_report(store, run_id)
+        return snapshot, narrative_payload, score_provenance
+    finally:
+        store.close()
 
 
 def _executive_analysis_for_language(

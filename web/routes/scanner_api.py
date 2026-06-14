@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 from typing import Literal
 
@@ -37,6 +38,14 @@ from ..workers.url_validator import validate_url
 router = APIRouter()
 
 _Lang = Literal["es", "en"]
+
+
+def _load_run_summary(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_run_summary(run_id)
+    finally:
+        store.close()
 
 
 class _ReportReadAnalyzer:
@@ -125,6 +134,25 @@ def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) ->
         return None
 
 
+def _load_run_snapshot(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_run_snapshot(run_id)
+    finally:
+        store.close()
+
+
+def _load_strategic_read_context(run_id: int, lang: _Lang) -> tuple[dict | None, dict | None, dict]:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        narrative_payload = _report_translation_payload(store, run_id, lang)
+        score_provenance = build_score_provenance_report(store, run_id)
+        return snapshot, narrative_payload, score_provenance
+    finally:
+        store.close()
+
+
 @router.post("/api/v1/scanner", status_code=202, response_model=None)
 async def scanner_api_create(request: Request, payload: ScannerCreateRequest) -> dict | JSONResponse:
     """Queue a complete Brand3 Scanner run from URL or an existing Brand Audit run."""
@@ -142,11 +170,7 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
 
     token = secrets.token_urlsafe(12)
     if audit_run_id:
-        store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            run = store.get_run_summary(int(audit_run_id))
-        finally:
-            store.close()
+        run = await asyncio.to_thread(_load_run_summary, int(audit_run_id))
         if run is None:
             return scanner_api_error_response(
                 404,
@@ -250,11 +274,7 @@ async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONRespon
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         return {"id": scan_id, "available": False, "reason": "missing_source_run"}
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-    finally:
-        store.close()
+    snapshot = await asyncio.to_thread(_load_run_snapshot, int(source_run_id))
     if snapshot is None:
         return scanner_api_error_response(
             404,
@@ -308,13 +328,11 @@ async def scanner_api_strategic_reading(
             "client_strategic_reading": None,
         }
 
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
-        score_provenance = build_score_provenance_report(store, int(source_run_id))
-    finally:
-        store.close()
+    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
+        _load_strategic_read_context,
+        int(source_run_id),
+        lang,
+    )
 
     if snapshot is None:
         return {

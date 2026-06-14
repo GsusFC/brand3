@@ -411,6 +411,66 @@ class DiferenciacionExtractorTests(unittest.TestCase):
         llm.analyze_uniqueness = lambda *args, **kwargs: uniqueness or {}
         return llm
 
+    def test_llm_competitor_snippets_are_built_once_with_feature_specific_limits(self):
+        web = WebData(
+            url="https://example.com",
+            title="Example",
+            markdown_content=("Brand homepage content " * 60),
+        )
+        competitor_body = "A" * 450
+        competitor_data = CompetitorData(
+            brand_name="Example",
+            brand_url="https://example.com",
+            competitors=[
+                CompetitorInfo(
+                    name="Competitor",
+                    url="https://competitor.example",
+                    web_data=WebData(
+                        url="https://competitor.example",
+                        markdown_content=competitor_body,
+                    ),
+                )
+            ],
+        )
+        calls = {}
+
+        class FakeLLM:
+            api_key = "test"
+
+            def analyze_positioning_clarity(self, content, brand_name, competitor_snippets):
+                calls["positioning_snippets"] = competitor_snippets
+                return {
+                    "clarity_score": 80,
+                    "verdict": "clear",
+                    "stated_position": "Position",
+                    "target_audience": "Audience",
+                    "differentiator_claimed": "Claim",
+                    "evidence": [{"quote": "Position", "signal": "clear"}],
+                    "reasoning": "Clear.",
+                }
+
+            def analyze_uniqueness(self, content, brand_name, competitor_snippets):
+                calls["uniqueness_snippets"] = competitor_snippets
+                return {
+                    "uniqueness_score": 70,
+                    "verdict": "moderately_unique",
+                    "unique_phrases": ["Position"],
+                    "generic_phrases": [],
+                    "brand_vocabulary": ["Position"],
+                    "competitor_overlap_signals": [],
+                    "reasoning": "Some signal.",
+                }
+
+        features = DiferenciacionExtractor(llm=FakeLLM()).extract(
+            web=web,
+            competitor_data=competitor_data,
+        )
+
+        self.assertEqual(features["positioning_clarity"].source, "llm")
+        self.assertEqual(features["uniqueness"].source, "llm")
+        self.assertEqual(calls["positioning_snippets"], [f"Competitor: {competitor_body[:400]}"])
+        self.assertEqual(calls["uniqueness_snippets"], [f"Competitor: {competitor_body[:300]}"])
+
     def test_positioning_clarity_without_llm_uses_heuristic_fallback(self):
         web = WebData(
             url="https://priorlabs.ai",

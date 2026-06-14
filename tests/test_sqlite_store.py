@@ -88,6 +88,97 @@ class SQLiteStoreTests(unittest.TestCase):
             self.assertEqual(metrics["runs"], 2)
             self.assertEqual(metrics["skips"], 0)
 
+    def test_core_run_read_indexes_are_created(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+
+            rows = store.conn.execute(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE type = 'index'
+                  AND name IN (
+                      'idx_runs_brand_started',
+                      'idx_runs_brand_name_url_started',
+                      'idx_scores_run',
+                      'idx_features_run',
+                      'idx_annotations_run_created',
+                      'idx_raw_inputs_run_created',
+                      'idx_raw_inputs_source_created'
+                  )
+                """
+            ).fetchall()
+            store.close()
+
+            self.assertEqual(
+                {row["name"] for row in rows},
+                {
+                    "idx_runs_brand_started",
+                    "idx_runs_brand_name_url_started",
+                    "idx_scores_run",
+                    "idx_features_run",
+                    "idx_annotations_run_created",
+                    "idx_raw_inputs_run_created",
+                    "idx_raw_inputs_source_created",
+                },
+            )
+
+    def test_core_run_read_queries_use_indexes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+
+            plans = {
+                "features": store.conn.execute(
+                    "EXPLAIN QUERY PLAN SELECT dimension_name FROM features WHERE run_id = ?",
+                    (1,),
+                ).fetchall(),
+                "scores": store.conn.execute(
+                    "EXPLAIN QUERY PLAN SELECT dimension_name FROM scores WHERE run_id = ?",
+                    (1,),
+                ).fetchall(),
+                "raw_inputs": store.conn.execute(
+                    """
+                    EXPLAIN QUERY PLAN
+                    SELECT source FROM raw_inputs
+                    WHERE run_id = ?
+                    ORDER BY created_at ASC
+                    """,
+                    (1,),
+                ).fetchall(),
+                "annotations": store.conn.execute(
+                    """
+                    EXPLAIN QUERY PLAN
+                    SELECT note FROM annotations
+                    WHERE run_id = ?
+                    ORDER BY created_at ASC
+                    """,
+                    (1,),
+                ).fetchall(),
+                "latest_run": store.conn.execute(
+                    """
+                    EXPLAIN QUERY PLAN
+                    SELECT id FROM runs
+                    WHERE brand_name = ? AND url = ?
+                    ORDER BY started_at DESC
+                    LIMIT 1
+                    """,
+                    ("Example", "https://example.com"),
+                ).fetchall(),
+            }
+            store.close()
+
+            self.assertIn("idx_features_run", self._query_plan_text(plans["features"]))
+            self.assertIn("idx_scores_run", self._query_plan_text(plans["scores"]))
+            self.assertIn("idx_raw_inputs_run_created", self._query_plan_text(plans["raw_inputs"]))
+            self.assertIn("idx_annotations_run_created", self._query_plan_text(plans["annotations"]))
+            self.assertIn("idx_runs_brand_name_url_started", self._query_plan_text(plans["latest_run"]))
+
+    @staticmethod
+    def _query_plan_text(rows):
+        return "\n".join(str(row["detail"]) for row in rows)
+
     def test_store_persists_run_inputs_features_and_scores(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

@@ -252,8 +252,16 @@ SPECIFICITY_TERMS = {
 class MagnetismExtractor:
     """Extract Magenta Circle signals and derive Brand3 TLDR outputs."""
 
-    def __init__(self, llm: LLMAnalyzer | None = None):
+    def __init__(
+        self,
+        llm: LLMAnalyzer | None = None,
+        *,
+        analyst_llm: LLMAnalyzer | None = None,
+        system_reading_llm: LLMAnalyzer | None = None,
+    ):
         self.llm = llm
+        self.analyst_llm = analyst_llm if analyst_llm is not None else llm
+        self.system_reading_llm = system_reading_llm if system_reading_llm is not None else llm
 
     def extract(
         self,
@@ -622,7 +630,7 @@ class MagnetismExtractor:
         if not isinstance(current_tldr, dict):
             return
 
-        if self.llm is None or not getattr(self.llm, "api_key", None):
+        if self.analyst_llm is None or not getattr(self.analyst_llm, "api_key", None):
             result["legacy_tldr_brand3"] = current_tldr
             result["tldr_generation_mode"] = "legacy_fallback_no_llm"
             result.setdefault("warnings", []).append(
@@ -632,7 +640,7 @@ class MagnetismExtractor:
 
         try:
             run = run_analyst_tldr_pass(
-                llm=self.llm,
+                llm=self.analyst_llm,
                 brand_name=brand_name,
                 url=url,
                 research_pack=research_pack or brand_context_brief,
@@ -972,7 +980,7 @@ Return exactly this JSON shape:
         evidence_packet_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         llm_reading = maybe_build_system_reading(
-            llm=self.llm,
+            llm=self.system_reading_llm,
             brand_name=brand_name,
             url=url,
             tldr=tldr,

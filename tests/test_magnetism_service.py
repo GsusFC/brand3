@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from src.features.magnetism.extractor import MagnetismExtractor
 from src.services.magnetism_service import run_magnetism_from_audit_snapshot, run_magnetism_from_url
 from src.storage.sqlite_store import SQLiteStore
 
@@ -144,18 +145,126 @@ def test_run_magnetism_from_audit_snapshot_builds_default_llm_when_available(mon
             self.model = model
 
     class FakeExtractor:
-        def __init__(self, llm=None):
+        def __init__(self, llm=None, *, analyst_llm=None, system_reading_llm=None):
             captured["llm"] = llm
+            captured["analyst_llm"] = analyst_llm
+            captured["system_reading_llm"] = system_reading_llm
 
         def extract_from_audit_snapshot(self, snapshot):
             return {"source": "brand_audit_snapshot", "snapshot": snapshot}
 
     monkeypatch.setattr("src.services.magnetism_service.LLMAnalyzer", FakeLLM)
     monkeypatch.setattr("src.services.magnetism_service.MagnetismExtractor", FakeExtractor)
-    monkeypatch.setattr("src.services.magnetism_service.LLM_PREMIUM_MODEL", "premium-model")
+    monkeypatch.setattr("src.services.magnetism_service.MAGNETISM_EXTRACTOR_MODEL", "extract-model")
+    monkeypatch.setattr("src.services.magnetism_service.MAGNETISM_ANALYST_MODEL", "analyst-model")
+    monkeypatch.setattr("src.services.magnetism_service.MAGNETISM_SYSTEM_READING_MODEL", "system-model")
 
     result = run_magnetism_from_audit_snapshot({"run": {"id": 1}})
 
     assert result["source"] == "brand_audit_snapshot"
     assert captured["llm"].api_key == "test-key"
-    assert captured["llm"].model == "premium-model"
+    assert captured["llm"].model == "extract-model"
+    assert captured["analyst_llm"].model == "analyst-model"
+    assert captured["system_reading_llm"].model == "system-model"
+
+
+def test_run_magnetism_from_audit_snapshot_preserves_explicit_single_llm(monkeypatch) -> None:
+    captured = {}
+
+    class FakeExtractor:
+        def __init__(self, llm=None, *, analyst_llm=None, system_reading_llm=None):
+            captured["llm"] = llm
+            captured["analyst_llm"] = analyst_llm
+            captured["system_reading_llm"] = system_reading_llm
+
+        def extract_from_audit_snapshot(self, snapshot):
+            return {"source": "brand_audit_snapshot", "snapshot": snapshot}
+
+    explicit_llm = object()
+    monkeypatch.setattr("src.services.magnetism_service.MagnetismExtractor", FakeExtractor)
+
+    result = run_magnetism_from_audit_snapshot({"run": {"id": 1}}, llm=explicit_llm)
+
+    assert result["source"] == "brand_audit_snapshot"
+    assert captured["llm"] is explicit_llm
+    assert captured["analyst_llm"] is None
+    assert captured["system_reading_llm"] is None
+
+
+def test_magnetism_extractor_uses_separate_analyst_llm(monkeypatch) -> None:
+    class FakeLLM:
+        api_key = "test-key"
+
+    extraction_llm = FakeLLM()
+    analyst_llm = FakeLLM()
+    system_llm = FakeLLM()
+    captured = {}
+
+    def fake_run_analyst_tldr_pass(**kwargs):
+        captured["llm"] = kwargs["llm"]
+        return {
+            "raw": {},
+            "validated": {
+                "prompt_version": "test",
+                "tldr_brand3": {"mission": {"detected": True}},
+            },
+            "analysis_error": None,
+        }
+
+    monkeypatch.setattr(
+        "src.features.magnetism.extractor.run_analyst_tldr_pass",
+        fake_run_analyst_tldr_pass,
+    )
+
+    result = {"tldr_brand3": {"mission": {"detected": True}}}
+    extractor = MagnetismExtractor(
+        llm=extraction_llm,
+        analyst_llm=analyst_llm,
+        system_reading_llm=system_llm,
+    )
+
+    extractor._apply_research_pack_tldr(
+        result=result,
+        brand_name="Acme",
+        url="https://acme.test",
+        packet_dict={},
+        brand_context_brief={},
+    )
+
+    assert captured["llm"] is analyst_llm
+    assert result["tldr_generation_mode"] == "analyst_pass_validated"
+
+
+def test_magnetism_extractor_uses_separate_system_reading_llm(monkeypatch) -> None:
+    class FakeLLM:
+        api_key = "test-key"
+
+    extraction_llm = FakeLLM()
+    analyst_llm = FakeLLM()
+    system_llm = FakeLLM()
+    captured = {}
+
+    def fake_maybe_build_system_reading(**kwargs):
+        captured["llm"] = kwargs["llm"]
+        return {"diagnosis": "LLM system reading."}
+
+    monkeypatch.setattr(
+        "src.features.magnetism.extractor.maybe_build_system_reading",
+        fake_maybe_build_system_reading,
+    )
+
+    extractor = MagnetismExtractor(
+        llm=extraction_llm,
+        analyst_llm=analyst_llm,
+        system_reading_llm=system_llm,
+    )
+    reading = extractor._build_system_reading(
+        tldr={},
+        layers={},
+        metrics={},
+        url="https://acme.test",
+        brand_name="Acme",
+    )
+
+    assert captured["llm"] is system_llm
+    assert reading == {"diagnosis": "LLM system reading."}

@@ -94,6 +94,9 @@ These values are safe to commit as placeholders or documented defaults, but not 
 | `BRAND3_LLM_PREMIUM_MODEL` | `gemini-3.1-pro-preview` | Final narrative / complex validation |
 | `BRAND3_AUDIT_ANALYST_MODEL` | `BRAND3_LLM_CHEAP_MODEL` | Brand Audit executive analyst pass |
 | `BRAND3_CLIENT_TLDR_V2_MODEL` | `BRAND3_LLM_MODEL` | Client-facing TLDR v2 prose |
+| `BRAND3_MAGNETISM_EXTRACTOR_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | Magnetism layer extraction |
+| `BRAND3_MAGNETISM_ANALYST_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | Magnetism analyst TLDR pass |
+| `BRAND3_MAGNETISM_SYSTEM_READING_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | Magnetism system reading |
 | `BRAND3_SV9_BASE_MODEL` | `BRAND3_LLM_CHEAP_MODEL` | SV9 base components and Pass 1 detection fallback |
 | `BRAND3_SV9_REASONING_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | SV9 Magnetism and Coherencia reasoning components |
 | `BRAND3_SV9_EDITORIAL_MODEL` | `BRAND3_LLM_MODEL` | SV9 founder-facing editorial messages and executive reading |

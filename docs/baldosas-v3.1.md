@@ -214,6 +214,7 @@ Los 8 componentes base corren en el tier **Flash**; **Magnetism y Coherencia** �
   - `BRAND3_SV9_BASE_MODEL` (por defecto `LLM_CHEAP_MODEL`, tier Flash) — los 8 base + detección Pase 1.
   - `BRAND3_SV9_REASONING_MODEL` (por defecto `LLM_PREMIUM_MODEL`, tier razonamiento) — Magnetism y Coherencia.
   - `BRAND3_SV9_EDITORIAL_MODEL` (por defecto `LLM_MODEL`) — prosa editorial y lectura ejecutiva; no afecta al score.
+  - `BRAND3_MAGNETISM_EXTRACTOR_MODEL`, `BRAND3_MAGNETISM_ANALYST_MODEL` y `BRAND3_MAGNETISM_SYSTEM_READING_MODEL` desacoplan extracción, TLDR analista y lectura de sistema en el scanner Magnetism; por defecto siguen `LLM_PREMIUM_MODEL`.
 - Cada componente persiste su `evaluation_model`, para poder comparar Flash vs razonamiento en regresión.
 
 -----

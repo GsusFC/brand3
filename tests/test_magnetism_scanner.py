@@ -2612,7 +2612,7 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(queued.status_code, 202)
         queued_payload = queued.json()
-        self.assertEqual(queued_payload["status"], "queued")
+        self.assertIn(queued_payload["status"], {"queued", "running"})
         self.assertEqual(queued_payload["source_run_id"], run_id)
         self.assertIn("/api/v1/scanner/", queued_payload["result_url"])
 

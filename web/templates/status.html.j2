@@ -2,6 +2,8 @@
 {% block title %}brand3 :: analyzing {{ brand_slug }}{% endblock %}
 {% block extra_head %}
   <script src="/static/status_waiting.js?v={{ static_asset_version }}" defer></script>
+  <script src="/static/brand3_cloud.js?v={{ static_asset_version }}" defer></script>
+  <script src="/static/scan_loader.js?v={{ static_asset_version }}" defer></script>
 {% endblock %}
 {% block content %}
 <section data-status-waiting data-status="{{ status }}" data-phase="{{ phase if phase else '' }}" data-elapsed="{{ elapsed_seconds if elapsed_seconds else 0 }}" data-ready-href="{{ ready_href if ready_href else '' }}" data-poll-interval="5000">
@@ -93,35 +95,32 @@
   </div>
 
   {% if status in ("queued", "running") %}
-  <section class="status-game" aria-label="{{ 'Mini juego de espera' if ui_lang == 'es' else 'Waiting mini game' }}">
-    <div class="status-game-head">
-      <div>
-        <div class="status-game-label">{{ 'T-Rex de espera' if ui_lang == 'es' else 'Waiting T-Rex' }}</div>
-        <div class="status-game-copy small">{{ 'Espacio / ↑ / toque: saltar. Doble salto disponible. P: pausar.' if ui_lang == 'es' else 'Space / ↑ / tap: jump. Double jump available. P: pause.' }}</div>
-      </div>
-      <div class="status-game-scoreboard" aria-live="polite">
-        <div>
-          <span class="k">{{ 'Score' if ui_lang == 'en' else 'Puntos' }}</span>
-          <span class="v tabular-nums" data-dino-score>0</span>
-        </div>
-        <div>
-          <span class="k">{{ 'Best' if ui_lang == 'en' else 'Récord' }}</span>
-          <span class="v tabular-nums" data-dino-best>0</span>
-        </div>
-        <div>
-          <span class="k">{{ 'Speed' if ui_lang == 'en' else 'Ritmo' }}</span>
-          <span class="v tabular-nums" data-dino-speed>x1.0</span>
-        </div>
-      </div>
+  {# Generative scan loader: a procedural scanner field (grain, scanlines, RGB
+     glitch) that progressively fills with the brand's real captured imagery as
+     acquisition discovers it. Lives outside [data-status-dynamic] so it keeps
+     its animation state across status polls. #}
+  <section class="scan-loader"
+           data-scan-loader
+           data-assets-href="{{ assets_href if assets_href is defined else '' }}"
+           data-poll-interval="2500"
+           aria-label="{{ 'Visualización del escaneo en curso' if ui_lang == 'es' else 'Live scan visualization' }}">
+    <div class="scan-loader-head">
+      <span class="scan-loader-caption" data-loader-caption aria-live="polite">{{ phase_label }}</span>
+      <span class="scan-loader-readout">
+        <span class="tabular-nums" data-loader-count>0</span>
+        <span class="dim">{{ 'señales' if ui_lang == 'es' else 'signals' }}</span>
+      </span>
     </div>
-    <div class="status-game-board">
-      <canvas class="status-game-canvas" width="640" height="180" data-dino-canvas data-game-lang="{{ ui_lang }}"></canvas>
+    <div class="scan-loader-stage" data-loader-stage>
+      <div class="cloud-layer" data-cloud-layer></div>
+      <canvas class="scan-loader-grain" data-loader-grain></canvas>
+      <div class="scan-loader-sweep"></div>
+      <div class="scan-loader-vignette"></div>
     </div>
-    <div class="status-game-footer">
-      <button class="source-link status-game-button" type="button" data-dino-start aria-pressed="false">{{ 'Empezar' if ui_lang == 'es' else 'Start' }}</button>
-      <span class="small dim" data-dino-level>{{ 'Nivel 1' if ui_lang == 'es' else 'Level 1' }}</span>
-      <span class="small dim" data-dino-state>{{ 'Listo para jugar' if ui_lang == 'es' else 'Ready to play' }}</span>
-    </div>
+    <p class="small dim scan-loader-hint">{{ 'Estamos mirando tu marca ahora mismo — pasa el ratón por las capturas.' if ui_lang == 'es' else 'We are looking at your brand right now — hover the captures.' }}</p>
+    {% if loader_phase_captions is defined %}
+    <script type="application/json" data-loader-captions>{{ loader_phase_captions | tojson }}</script>
+    {% endif %}
   </section>
   {% endif %}
 </section>

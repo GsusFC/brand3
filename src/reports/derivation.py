@@ -859,8 +859,6 @@ def _readiness_diagnostic_summary(readiness: dict, *, context_readiness: dict) -
 
     if mode == "technical_diagnostic":
         reasons: list[str] = []
-        if "unsupported_editorial_synthesis" in blockers:
-            reasons.append("unsupported editorial synthesis is blocked")
         if technical_only:
             reasons.append(f"technical-only dimensions: {', '.join(technical_only)}")
         if not_evaluable:

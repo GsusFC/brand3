@@ -213,6 +213,7 @@ Los 8 componentes base corren en el tier **Flash**; **Magnetism y Coherencia** �
 - Modelos parametrizables por entorno (`src/config.py`):
   - `BRAND3_SV9_BASE_MODEL` (por defecto `LLM_CHEAP_MODEL`, tier Flash) — los 8 base + detección Pase 1.
   - `BRAND3_SV9_REASONING_MODEL` (por defecto `LLM_PREMIUM_MODEL`, tier razonamiento) — Magnetism y Coherencia.
+  - `BRAND3_SV9_EDITORIAL_MODEL` (por defecto `LLM_MODEL`) — prosa editorial y lectura ejecutiva; no afecta al score.
 - Cada componente persiste su `evaluation_model`, para poder comparar Flash vs razonamiento en regresión.
 
 -----

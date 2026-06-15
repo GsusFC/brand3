@@ -729,6 +729,7 @@ a:focus-visible {
 .status-game {
   margin-top: 22px;
   background: transparent;
+  border-top: 1px solid var(--border);
 }
 
 .status-game-head {
@@ -740,6 +741,10 @@ a:focus-visible {
   border-bottom: 1px solid var(--border);
 }
 
+.status-game-head > div:first-child {
+  min-width: 0;
+}
+
 .status-game-label {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -749,11 +754,20 @@ a:focus-visible {
 .status-game-copy {
   margin-top: 6px;
   max-width: 54ch;
+  overflow-wrap: anywhere;
 }
 
 .status-game-scoreboard {
-  min-width: 110px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(74px, auto));
+  gap: 10px;
+  min-width: 280px;
   text-align: right;
+}
+
+.status-game-scoreboard > div {
+  display: grid;
+  gap: 2px;
 }
 
 .status-game-board {
@@ -763,10 +777,12 @@ a:focus-visible {
 .status-game-canvas {
   display: block;
   width: 100%;
-  height: auto;
-  background: #f7f5ef;
+  height: clamp(150px, 22vw, 210px);
+  border: 1px solid var(--border);
+  background: var(--surface);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  touch-action: manipulation;
 }
 
 .status-game-footer {
@@ -780,6 +796,10 @@ a:focus-visible {
 .status-game-button {
   min-height: 32px;
   padding: 5px 10px;
+}
+
+.status-game-button[aria-pressed="true"] {
+  border-color: var(--accent);
 }
 
 .pager {
@@ -3360,3 +3380,476 @@ a:hover {
     transition: none;
   }
 }
+
+/* Moodboard: scattered cloud of captured brand images inside the scanner.
+   Tiles are absolutely positioned by moodboard.js; the rotation is kept in
+   a custom property so the drag translate can compose with it. */
+.moodboard-canvas {
+  position: relative;
+  margin-top: 14px;
+  height: 560px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background-color: var(--soft-panel-bg);
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.moodboard-item {
+  position: absolute;
+  margin: 0;
+  padding: 6px 6px 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  rotate: var(--moodboard-rotation, 0deg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition: box-shadow 160ms ease, rotate 220ms ease;
+}
+
+.moodboard-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.moodboard-item[data-role="logo"] {
+  padding: 10px;
+  background: var(--bg);
+}
+
+.moodboard-item[data-role="logo"] img {
+  object-fit: contain;
+  max-height: 110px;
+}
+
+.moodboard-caption {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.moodboard-item-grabbed {
+  cursor: grabbing;
+  rotate: 0deg;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.24);
+}
+
+.moodboard-shuffle {
+  margin-left: auto;
+}
+
+.moodboard-empty {
+  margin-top: 14px;
+  border: 1px dashed var(--border);
+  background: var(--soft-panel-bg);
+  padding: 28px 18px;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .moodboard-canvas {
+    height: 420px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moodboard-item {
+    transition: none;
+  }
+}
+
+/* ============================================================================
+   Scan loader — generative waiting field for in-flight brand scans.
+   A dark "scanner" stage (film grain + scanlines + RGB glitch) that fills with
+   the brand's real captured imagery as acquisition discovers it. Replaces the
+   waiting mini-game. Stays dark in both themes to read as an instrument panel.
+   ========================================================================== */
+.scan-loader {
+  margin-top: 18px;
+}
+
+.scan-loader-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.scan-loader-caption {
+  color: var(--text);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.scan-loader-readout {
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
+.scan-loader-readout [data-loader-count] {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.scan-loader-stage {
+  position: relative;
+  height: 380px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #050607;
+  /* faint instrument grid under everything */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px;
+  isolation: isolate;
+}
+
+.scan-loader-grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.5;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.scan-loader-grid {
+  position: absolute;
+  inset: 10px;
+  display: grid;
+  gap: 8px;
+  z-index: 2;
+}
+
+.scan-cell {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #0a0c0e;
+  cursor: crosshair;
+  /* boot-in: skeleton tiles assemble with a subtle stagger */
+  opacity: 0;
+  transform: scale(0.86);
+  animation: scan-cell-boot 620ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--cell-delay, 0ms);
+}
+
+@keyframes scan-cell-boot {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Empty placeholder shimmer — a scanning bar crawling over the skeleton. */
+.scan-cell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(0, 255, 0, 0.05) 38%,
+    rgba(0, 120, 255, 0.10) 50%,
+    rgba(255, 0, 0, 0.05) 62%,
+    transparent 100%
+  );
+  background-size: 280% 100%;
+  animation: scan-cell-shimmer 2.6s linear infinite;
+  animation-delay: var(--cell-delay, 0ms);
+  z-index: 3;
+  transition: opacity 600ms ease;
+}
+
+.scan-cell.is-filled::after { opacity: 0; }
+
+@keyframes scan-cell-shimmer {
+  from { background-position: 140% 0; }
+  to   { background-position: -140% 0; }
+}
+
+/* The captured image: three stacked layers for chromatic-aberration glitch.
+   Base layer reads clean; the red/cyan layers only show on hover. */
+.scan-cell-img,
+.scan-cell-img::before,
+.scan-cell-img::after {
+  position: absolute;
+  inset: 0;
+  background-image: var(--cell-img);
+  background-size: cover;
+  background-position: center;
+}
+
+.scan-cell-img {
+  z-index: 1;
+  opacity: 0;
+  filter: grayscale(0.35) contrast(1.05) brightness(0.92);
+  clip-path: inset(0 100% 0 0);
+  transition: opacity 200ms ease;
+  animation: scan-cell-drift var(--drift-dur, 16s) ease-in-out infinite alternate;
+  animation-delay: var(--cell-delay, 0ms);
+}
+
+/* reveal: a wipe from left like a scanner pass, then settle */
+.scan-cell.is-filled .scan-cell-img {
+  opacity: 1;
+  animation:
+    scan-cell-reveal 760ms cubic-bezier(0.22, 1, 0.36, 1) forwards,
+    scan-cell-drift var(--drift-dur, 16s) ease-in-out 760ms infinite alternate;
+}
+
+@keyframes scan-cell-reveal {
+  0%   { clip-path: inset(0 100% 0 0); filter: grayscale(1) brightness(1.6) contrast(1.4); }
+  60%  { clip-path: inset(0 0 0 0); }
+  100% { clip-path: inset(0 0 0 0); filter: grayscale(0.35) contrast(1.05) brightness(0.92); }
+}
+
+@keyframes scan-cell-drift {
+  from { transform: translate3d(-1.5%, -1%, 0) scale(1.06); }
+  to   { transform: translate3d(1.5%, 1%, 0) scale(1.06); }
+}
+
+.scan-cell-img::before,
+.scan-cell-img::after {
+  content: "";
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none;
+}
+
+.scan-cell-img::before { filter: url(#b3-ca-red); }
+.scan-cell-img::after  { filter: url(#b3-ca-cyan); }
+
+/* Alive on hover: lift, displace toward the cursor, RGB-split glitch. */
+.scan-cell.is-alive { z-index: 5; }
+
+.scan-cell.is-alive .scan-cell-img {
+  filter: grayscale(0) contrast(1.12) brightness(1.04) saturate(1.15);
+  transform:
+    translate3d(calc(var(--mx, 0) * 8px), calc(var(--my, 0) * 8px), 0)
+    scale(1.12)
+    skew(calc(var(--mx, 0) * -2deg), calc(var(--my, 0) * 1deg));
+  animation-play-state: paused;
+  transition: filter 160ms ease, transform 90ms ease;
+}
+
+.scan-cell.is-alive .scan-cell-img::before {
+  opacity: 0.85;
+  transform: translate3d(calc(var(--mx, 0) * -6px - 3px), calc(var(--my, 0) * -2px), 0);
+}
+
+.scan-cell.is-alive .scan-cell-img::after {
+  opacity: 0.85;
+  transform: translate3d(calc(var(--mx, 0) * 6px + 3px), calc(var(--my, 0) * 2px), 0);
+}
+
+/* Bright scanline sweeping top→bottom across the whole stage. */
+.scan-loader-sweep {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 12%;
+  top: -12%;
+  z-index: 4;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(120, 255, 180, 0.05),
+    rgba(180, 255, 210, 0.16),
+    rgba(120, 255, 180, 0.05),
+    transparent
+  );
+  animation: scan-loader-sweep 3.4s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+}
+
+@keyframes scan-loader-sweep {
+  0%   { top: -14%; opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { top: 102%; opacity: 0; }
+}
+
+/* CRT-ish scanlines + edge vignette to sell the instrument look. */
+.scan-loader-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0) 0,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 0, 0, 0.18) 3px
+    ),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.65) 100%);
+}
+
+.scan-loader-hint {
+  margin-top: 8px;
+}
+
+@media (max-width: 720px) {
+  .scan-loader-stage { height: 240px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scan-cell,
+  .scan-cell-img,
+  .scan-cell.is-filled .scan-cell-img {
+    animation: none;
+  }
+  .scan-cell { opacity: 1; transform: none; }
+  .scan-cell::after { animation: none; opacity: 0; }
+  .scan-cell-img { transition: opacity 400ms ease; clip-path: none; }
+  .scan-cell.is-filled .scan-cell-img { animation: none; }
+  .scan-loader-sweep { display: none; }
+  .scan-cell.is-alive .scan-cell-img { transform: scale(1.04); }
+  .scan-cell.is-alive .scan-cell-img::before,
+  .scan-cell.is-alive .scan-cell-img::after { opacity: 0; }
+}
+
+/* ============================================================================
+   Brand3 rotating image cloud — shared by the scan loader and the report
+   moodboard. Cards are absolutely positioned and transformed per-frame by
+   brand3_cloud.js (translate3d + scale); CSS owns only look, reveal, the empty
+   shimmer, and the hover chromatic-aberration glitch.
+   ========================================================================== */
+.cloud-stage {
+  position: relative;
+  height: 560px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: #050607;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px, 28px 28px;
+  isolation: isolate;
+  cursor: grab;
+  touch-action: none;
+}
+
+.cloud-stage:active { cursor: grabbing; }
+
+.cloud-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.cloud-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: #0a0c0e;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  cursor: grab;
+  will-change: transform, opacity;
+}
+
+/* Empty placeholder shimmer (precarga) — scanning bar crawling the skeleton. */
+.cloud-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    rgba(0, 255, 0, 0.05) 38%,
+    rgba(0, 120, 255, 0.10) 50%,
+    rgba(255, 0, 0, 0.05) 62%,
+    transparent 100%
+  );
+  background-size: 280% 100%;
+  animation: scan-cell-shimmer 2.6s linear infinite;
+  z-index: 3;
+  transition: opacity 600ms ease;
+}
+
+.cloud-card.is-filled::after { opacity: 0; }
+
+.cloud-card-img,
+.cloud-card-img::before,
+.cloud-card-img::after {
+  position: absolute;
+  inset: 0;
+  background-image: var(--cell-img);
+  background-size: cover;
+  background-position: center;
+}
+
+.cloud-card-img {
+  z-index: 1;
+  opacity: 0;
+  filter: grayscale(0.35) contrast(1.05) brightness(0.92);
+  transition: opacity 220ms ease, filter 160ms ease;
+}
+
+.cloud-card.is-filled .cloud-card-img {
+  opacity: 1;
+  animation: scan-cell-reveal 760ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.cloud-card-img::before,
+.cloud-card-img::after {
+  content: "";
+  opacity: 0;
+  mix-blend-mode: screen;
+  transition: opacity 120ms ease, transform 120ms ease;
+  pointer-events: none;
+}
+
+.cloud-card-img::before { filter: url(#b3-ca-red); }
+.cloud-card-img::after  { filter: url(#b3-ca-cyan); }
+
+.cloud-card.is-alive .cloud-card-img {
+  filter: grayscale(0) contrast(1.12) brightness(1.05) saturate(1.18);
+}
+
+.cloud-card.is-alive .cloud-card-img::before {
+  opacity: 0.85;
+  transform: translate3d(-4px, -2px, 0);
+}
+
+.cloud-card.is-alive .cloud-card-img::after {
+  opacity: 0.85;
+  transform: translate3d(4px, 2px, 0);
+}
+
+@media (max-width: 720px) {
+  .cloud-stage { height: 420px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud-card::after { animation: none; opacity: 0; }
+  .cloud-card.is-filled .cloud-card-img { animation: none; }
+  .cloud-card-img { transition: opacity 400ms ease; }
+  .cloud-card.is-alive .cloud-card-img::before,
+  .cloud-card.is-alive .cloud-card-img::after { opacity: 0; }
+}
+
+/* The loader stage also hosts a rotating cloud and is draggable. */
+.scan-loader-stage { cursor: grab; touch-action: none; }
+.scan-loader-stage:active { cursor: grabbing; }

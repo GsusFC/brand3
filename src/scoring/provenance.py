@@ -15,10 +15,20 @@ from src.storage.sqlite_store import SQLiteStore
 
 from .replay import build_score_replay_audit
 
+_SNAPSHOT_UNSET = object()
 
-def build_score_provenance_report(store: SQLiteStore, run_id: int) -> dict[str, Any]:
-    snapshot = store.get_run_snapshot(run_id)
-    replay = build_score_replay_audit(store, run_id)
+
+def build_score_provenance_report(
+    store: SQLiteStore,
+    run_id: int,
+    *,
+    snapshot: dict[str, Any] | None | object = _SNAPSHOT_UNSET,
+    replay: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    if snapshot is _SNAPSHOT_UNSET:
+        snapshot = store.get_run_snapshot(run_id)
+    if replay is None:
+        replay = build_score_replay_audit(store, run_id, snapshot=snapshot)
     reviewed_score = store.get_reviewed_score(run_id)
     base = build_report_base(snapshot) if snapshot else None
 

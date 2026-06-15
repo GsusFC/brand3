@@ -4,9 +4,14 @@ Team-only, never public: lists shadow scans and captures human verdicts per
 tile into sv9_tile_calibration. The form operates per tile (prompt técnico
 step 7): the human evaluator confirms or corrects each tile state. Read-only
 over everything else — it never mutates scans, V5 data, or any public surface.
+
+DB access is offloaded to worker threads (asyncio.to_thread) so the event loop
+stays responsive, matching the rest of the web layer.
 """
 
 from __future__ import annotations
+
+import asyncio
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -39,12 +44,7 @@ def _require_team_write(request: Request) -> None:
 @router.get("/sv9/calibration")
 async def sv9_calibration_index(request: Request):
     _require_team(request)
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        scans = store.list_scans(limit=100)
-        labels = store.list_tile_calibration(limit=5000)
-    finally:
-        store.close()
+    scans, labels = await asyncio.to_thread(_load_calibration_index_data)
     labels_by_scan: dict[int, int] = {}
     for label in labels:
         labels_by_scan[label["scan_id"]] = labels_by_scan.get(label["scan_id"], 0) + 1
@@ -60,15 +60,18 @@ async def sv9_calibration_index(request: Request):
     )
 
 
+def _load_calibration_index_data() -> tuple[list[dict], list[dict]]:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        return store.list_scans(limit=100), store.list_tile_calibration(limit=5000)
+    finally:
+        store.close()
+
+
 @router.get("/sv9/calibration/{scan_id}")
 async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str = ""):
     _require_team(request)
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        scan = store.get_scan(scan_id)
-        labels = store.list_tile_calibration(scan_id=scan_id, limit=5000)
-    finally:
-        store.close()
+    scan, labels = await asyncio.to_thread(_load_calibration_detail_data, scan_id)
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
 
@@ -122,6 +125,18 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
     )
 
 
+def _load_calibration_detail_data(scan_id: int) -> tuple[dict | None, list[dict]]:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        scan = store.get_scan(scan_id)
+        if scan is None:
+            return None, []
+        labels = store.list_tile_calibration(scan_id=scan_id, limit=5000)
+        return scan, labels
+    finally:
+        store.close()
+
+
 @router.post("/sv9/calibration/{scan_id}/{component}")
 async def sv9_calibration_submit(request: Request, scan_id: int, component: str):
     """Persist one human verdict per tile for a component.
@@ -139,6 +154,33 @@ async def sv9_calibration_submit(request: Request, scan_id: int, component: str)
     if not evaluador:
         raise HTTPException(status_code=422, detail="evaluador is required")
 
+    # Parse and validate per-tile inputs before offloading: request.form() is
+    # async, and validation errors must surface as HTTP 422 in request context.
+    tile_inputs: dict[str, tuple[str, str | None]] = {}
+    for tile in COMPONENTS[component]["tiles"]:
+        estado_humano = str(form.get(f"estado__{tile['id']}") or "").strip()
+        if not estado_humano:
+            continue
+        if estado_humano not in TILE_ESTADOS:
+            raise HTTPException(status_code=422, detail=f"invalid estado for {tile['id']}")
+        motivo = str(form.get(f"motivo__{tile['id']}") or "").strip() or None
+        tile_inputs[tile["id"]] = (estado_humano, motivo)
+
+    await asyncio.to_thread(
+        _save_tile_calibration, scan_id, component, evaluador, tile_inputs
+    )
+    return RedirectResponse(
+        f"/sv9/calibration/{scan_id}?evaluador={evaluador}#{component}",
+        status_code=303,
+    )
+
+
+def _save_tile_calibration(
+    scan_id: int,
+    component: str,
+    evaluador: str,
+    tile_inputs: dict[str, tuple[str, str | None]],
+) -> None:
     store = Sv9Store(BRAND3_DB_PATH)
     try:
         scan = store.get_scan(scan_id)
@@ -154,21 +196,13 @@ async def sv9_calibration_submit(request: Request, scan_id: int, component: str)
             str(v.get("id") or ""): str(v.get("estado") or "")
             for v in result.get("tile_profile") or []
         }
-        for tile in COMPONENTS[component]["tiles"]:
-            estado_humano = str(form.get(f"estado__{tile['id']}") or "").strip()
-            if not estado_humano:
-                continue
-            if estado_humano not in TILE_ESTADOS:
-                raise HTTPException(
-                    status_code=422, detail=f"invalid estado for {tile['id']}"
-                )
-            motivo = str(form.get(f"motivo__{tile['id']}") or "").strip() or None
+        for baldosa_id, (estado_humano, motivo) in tile_inputs.items():
             store.save_tile_calibration(
                 scan_id=scan_id,
                 url=scan["url"],
                 component=component,
-                baldosa_id=tile["id"],
-                estado_ia=ia_by_id.get(tile["id"], ""),
+                baldosa_id=baldosa_id,
+                estado_ia=ia_by_id.get(baldosa_id, ""),
                 estado_humano=estado_humano,
                 motivo=motivo,
                 evaluador=evaluador,
@@ -176,7 +210,3 @@ async def sv9_calibration_submit(request: Request, scan_id: int, component: str)
             )
     finally:
         store.close()
-    return RedirectResponse(
-        f"/sv9/calibration/{scan_id}?evaluador={evaluador}#{component}",
-        status_code=303,
-    )

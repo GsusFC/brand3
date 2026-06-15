@@ -105,6 +105,27 @@ class RateLimitTests(unittest.TestCase):
         # Valid URL enqueues and 303-redirects to the status page.
         self.assertEqual(response.status_code, 303)
 
+    def test_rate_limit_counter_runs_via_threadpool(self):
+        from web.middleware import rate_limit
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        for _ in range(5):
+            self._insert_request("testclient", seconds_ago=1)
+
+        with patch("web.middleware.rate_limit.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.post("/analyze", data={"url": "https://example.com"})
+
+        self.assertEqual(response.status_code, 429)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], rate_limit.count_recent_analyses_for_ip)
+        self.assertEqual(calls[0][1], ("testclient",))
+        self.assertEqual(calls[0][2], {"hours": 24})
+
     def test_disabled_rate_limit_passes_even_when_counter_is_over_limit(self):
         from web.config import settings
 

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import datetime, timezone
 from typing import Literal
 
@@ -35,7 +36,7 @@ async def analysis_status(
     token: str,
     lang: Literal["es", "en"] = Query("es"),
 ):
-    row = get_request(token)
+    row = await asyncio.to_thread(get_request, token)
     if row is None:
         return templates.TemplateResponse(
             request,

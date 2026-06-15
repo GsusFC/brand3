@@ -1,5 +1,6 @@
 """GET /brand-audit — dedicated Brand Audit hub."""
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -13,7 +14,7 @@ router = APIRouter()
 
 @router.get("/brand-audit")
 async def brand_audit(request: Request, lang: Literal["es", "en"] = Query("es")):
-    rows = enrich(list_latest_public(limit=5))
+    rows = enrich(await asyncio.to_thread(list_latest_public, limit=5))
     return templates.TemplateResponse(
         request,
         "brand_audit.html.j2",

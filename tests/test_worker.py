@@ -1,5 +1,6 @@
 """Tests for the polling worker and atomic claim."""
 
+import asyncio
 import sqlite3
 import tempfile
 import unittest
@@ -204,6 +205,49 @@ class Sv9MaterializationTests(unittest.TestCase):
 
 
 class WorkerLoopTests(unittest.TestCase):
+    def test_web_queue_process_uses_threadpool_for_db_and_engine_work(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            store.close()
+            token = "queued-token"
+            with sqlite3.connect(str(db_path)) as conn:
+                conn.execute(
+                    """
+                    INSERT INTO web_requests
+                      (token, url, brand_slug, requester_ip, requester_is_team, status)
+                    VALUES (?, ?, ?, ?, 0, 'queued')
+                    """,
+                    (token, "https://example.com", "example", "127.0.0.1"),
+                )
+                conn.commit()
+
+            calls = []
+
+            async def fake_to_thread(func, *args, **kwargs):
+                calls.append((func, args, kwargs))
+                return func(*args, **kwargs)
+
+            web_queue.set_run_analysis_override(lambda _url, progress_cb=None: {"run_id": None})
+            try:
+                with patch.object(web_queue, "_db_path", return_value=db_path):
+                    with patch.object(web_queue.asyncio, "to_thread", fake_to_thread):
+                        asyncio.run(web_queue.AnalysisQueue(max_concurrent=1)._process(token))
+            finally:
+                web_queue.set_run_analysis_override(None)
+
+            called = [call[0] for call in calls]
+            self.assertIn(web_queue._load_request, called)
+            self.assertIn(web_queue._call_engine, called)
+            self.assertGreaterEqual(called.count(web_queue._set_status), 2)
+
+            with sqlite3.connect(str(db_path)) as conn:
+                status = conn.execute(
+                    "SELECT status FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            self.assertEqual(status, "ready")
+
     def test_runs_claimed_job_and_stops_on_shutdown(self):
         claimed_jobs = [{"id": 7, "url": "https://a.com"}]
         ran = []

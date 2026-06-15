@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 from typing import Literal
 
@@ -37,6 +38,14 @@ from ..workers.url_validator import validate_url
 router = APIRouter()
 
 _Lang = Literal["es", "en"]
+
+
+def _load_run_summary(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_run_summary(run_id)
+    finally:
+        store.close()
 
 
 class _ReportReadAnalyzer:
@@ -100,15 +109,15 @@ def _scan_not_ready(row: dict, *, lang: _Lang = "es") -> JSONResponse:
     )
 
 
-def _scan_row_or_error(scan_id: int) -> dict | JSONResponse:
-    row = get_magnetism_scan(scan_id)
+async def _scan_row_or_error_async(scan_id: int) -> dict | JSONResponse:
+    row = await asyncio.to_thread(get_magnetism_scan, scan_id)
     if row is None:
         return _scan_not_found(scan_id)
     return row
 
 
-def _ready_scan_row_or_error(scan_id: int, *, lang: _Lang = "es") -> dict | JSONResponse:
-    row = _scan_row_or_error(scan_id)
+async def _ready_scan_row_or_error(scan_id: int, *, lang: _Lang = "es") -> dict | JSONResponse:
+    row = await _scan_row_or_error_async(scan_id)
     if isinstance(row, JSONResponse):
         return row
     if row.get("status") != "ready":
@@ -123,6 +132,25 @@ def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) ->
         return store.get_report_translation(run_id, lang)
     except Exception:
         return None
+
+
+def _load_run_snapshot(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_run_snapshot(run_id)
+    finally:
+        store.close()
+
+
+def _load_strategic_read_context(run_id: int, lang: _Lang) -> tuple[dict | None, dict | None, dict]:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        narrative_payload = _report_translation_payload(store, run_id, lang)
+        score_provenance = build_score_provenance_report(store, run_id)
+        return snapshot, narrative_payload, score_provenance
+    finally:
+        store.close()
 
 
 @router.post("/api/v1/scanner", status_code=202, response_model=None)
@@ -142,19 +170,15 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
 
     token = secrets.token_urlsafe(12)
     if audit_run_id:
-        store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            snapshot = store.get_run_snapshot(int(audit_run_id))
-        finally:
-            store.close()
-        if snapshot is None:
+        run = await asyncio.to_thread(_load_run_summary, int(audit_run_id))
+        if run is None:
             return scanner_api_error_response(
                 404,
                 code="audit_run_not_found",
                 message=f"Brand Audit run #{audit_run_id} not found.",
             )
-        run = snapshot.get("run") or {}
-        scan_id = insert_magnetism_job(
+        scan_id = await asyncio.to_thread(
+            insert_magnetism_job,
             token=token,
             brand_name=str(run.get("brand_name") or f"Brand Audit run #{audit_run_id}"),
             url=str(run.get("url") or "Brand Audit snapshot"),
@@ -170,7 +194,8 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
                 code="url_rejected",
                 message=f"URL rejected: {result}",
             )
-        scan_id = insert_magnetism_job(
+        scan_id = await asyncio.to_thread(
+            insert_magnetism_job,
             token=token,
             brand_name=slug_from_url(result),
             url=result,
@@ -179,7 +204,8 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
         )
 
     await get_queue().enqueue_magnetism(token)
-    row = get_magnetism_scan(scan_id) or {"id": scan_id, "status": "queued", "phase": "queued", "token": token}
+    row = await asyncio.to_thread(get_magnetism_scan, scan_id)
+    row = row or {"id": scan_id, "status": "queued", "phase": "queued", "token": token}
     return _api_scan_status(row, lang=payload.lang)
 
 
@@ -188,7 +214,7 @@ async def scanner_api_status(request: Request, scan_id: int, lang: _Lang = Query
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = _scan_row_or_error(scan_id)
+    row = await _scan_row_or_error_async(scan_id)
     if isinstance(row, JSONResponse):
         return row
     return _api_scan_status(row, lang=lang)
@@ -199,7 +225,7 @@ async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = _ready_scan_row_or_error(scan_id, lang=lang)
+    row = await _ready_scan_row_or_error(scan_id, lang=lang)
     if isinstance(row, JSONResponse):
         return row
     model = magnetism_scan_model_from_row(row)
@@ -212,7 +238,7 @@ async def scanner_api_evidence(request: Request, scan_id: int) -> dict | JSONRes
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = _ready_scan_row_or_error(scan_id)
+    row = await _ready_scan_row_or_error(scan_id)
     if isinstance(row, JSONResponse):
         return row
     model = magnetism_scan_model_from_row(row)
@@ -228,7 +254,7 @@ async def scanner_api_methodology(request: Request, scan_id: int) -> dict | JSON
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = _ready_scan_row_or_error(scan_id)
+    row = await _ready_scan_row_or_error(scan_id)
     if isinstance(row, JSONResponse):
         return row
     model = magnetism_scan_model_from_row(row)
@@ -244,18 +270,14 @@ async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONRespon
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = _ready_scan_row_or_error(scan_id)
+    row = await _ready_scan_row_or_error(scan_id)
     if isinstance(row, JSONResponse):
         return row
     model = magnetism_scan_model_from_row(row)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         return {"id": scan_id, "available": False, "reason": "missing_source_run"}
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-    finally:
-        store.close()
+    snapshot = await asyncio.to_thread(_load_run_snapshot, int(source_run_id))
     if snapshot is None:
         return scanner_api_error_response(
             404,
@@ -287,7 +309,7 @@ async def scanner_api_strategic_reading(
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
-    row = _ready_scan_row_or_error(scan_id, lang=lang)
+    row = await _ready_scan_row_or_error(scan_id, lang=lang)
     if isinstance(row, JSONResponse):
         return row
     model = magnetism_scan_model_from_row(row)
@@ -309,13 +331,11 @@ async def scanner_api_strategic_reading(
             "client_strategic_reading": None,
         }
 
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
-        score_provenance = build_score_provenance_report(store, int(source_run_id))
-    finally:
-        store.close()
+    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
+        _load_strategic_read_context,
+        int(source_run_id),
+        lang,
+    )
 
     if snapshot is None:
         return {

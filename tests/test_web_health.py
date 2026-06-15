@@ -70,6 +70,26 @@ class HealthTests(unittest.TestCase):
         payload_b = self.client.get("/_health").json()
         self.assertEqual(set(payload_a.keys()), set(payload_b.keys()))
 
+    def test_health_db_read_runs_in_threadpool(self):
+        from unittest.mock import patch
+
+        from web.routes import health as health_route
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with patch.object(health_route.asyncio, "to_thread", fake_to_thread):
+            r = self.client.get("/_health")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], health_route._health_db_status)
+        self.assertEqual(calls[0][1], ())
+        self.assertEqual(calls[0][2], {})
+
 
 class JsonFormatterTests(unittest.TestCase):
     def test_formatter_emits_valid_json_with_extras(self):

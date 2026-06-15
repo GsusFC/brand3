@@ -130,33 +130,46 @@ def _attach_composite(rows: list[dict]) -> list[dict]:
 
 
 def _normalize_magnetism_listing_row(row: dict) -> dict:
-    """Prefer the canonical payload values when the stored columns are stale."""
-    raw_payload = row.get("raw_payload")
-    if not raw_payload:
-        return row
-    try:
-        payload = json.loads(raw_payload)
-    except Exception:
-        return row
-    if not isinstance(payload, dict):
-        return row
-
+    """Normalize listing rows whose canonical payload fields were selected by SQL."""
     normalized = dict(row)
+    mode = normalized.pop("_scan_mode_mode", None)
+    comparable = normalized.pop("_scan_mode_comparable", None)
+    reason_codes_json = normalized.pop("_scan_mode_reason_codes", None)
+    payload_source = normalized.pop("_payload_source", None)
+    payload_extraction_mode = normalized.pop("_payload_extraction_mode", None)
+    payload_direct_source_provider = normalized.pop("_payload_direct_source_provider", None)
+
+    scan_mode_payload = None
+    if mode in {"canonical_url", "from_audit_run", "legacy_manual", "unknown"} and comparable is not None:
+        reason_codes = []
+        if isinstance(reason_codes_json, str):
+            try:
+                parsed_reason_codes = json.loads(reason_codes_json)
+            except Exception:
+                parsed_reason_codes = []
+            if isinstance(parsed_reason_codes, list):
+                reason_codes = parsed_reason_codes
+        scan_mode_payload = {
+            "mode": mode,
+            "comparable": bool(comparable),
+            "reason_codes": reason_codes,
+        }
+
+    payload = {
+        "source": payload_source,
+        "extraction_mode": payload_extraction_mode,
+        "direct_source_provider": payload_direct_source_provider,
+        "url": normalized.get("url"),
+    }
+    if normalized.get("source_run_id"):
+        payload["source_run_id"] = normalized.get("source_run_id")
+    if scan_mode_payload:
+        payload["scan_mode"] = scan_mode_payload
+
     normalized["scan_mode"] = scan_mode_from_payload(
         payload,
         source_run_id=normalized.get("source_run_id"),
     ).to_payload()
-    for key in (
-        "brand_name",
-        "url",
-        "magnetism_score",
-        "coherence_score",
-        "quadrant",
-        "source_run_id",
-        "source",
-    ):
-        if key in payload and payload.get(key) is not None:
-            normalized[key] = payload.get(key)
     return normalized
 
 
@@ -446,8 +459,40 @@ def list_magnetism_scans(limit: int = 20) -> list[dict]:
     with _connect() as conn:
         rows = conn.execute(
             """
-            SELECT id, brand_name, url, magnetism_score, coherence_score, quadrant,
-                   source_run_id, raw_payload, created_at
+            SELECT
+                id,
+                COALESCE(
+                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.brand_name') END,
+                    brand_name
+                ) AS brand_name,
+                COALESCE(
+                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.url') END,
+                    url
+                ) AS url,
+                COALESCE(
+                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.magnetism_score') END,
+                    magnetism_score
+                ) AS magnetism_score,
+                COALESCE(
+                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.coherence_score') END,
+                    coherence_score
+                ) AS coherence_score,
+                COALESCE(
+                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.quadrant') END,
+                    quadrant
+                ) AS quadrant,
+                COALESCE(
+                    CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.source_run_id') END,
+                    source_run_id
+                ) AS source_run_id,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.source') END AS source,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.scan_mode.mode') END AS _scan_mode_mode,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.scan_mode.comparable') END AS _scan_mode_comparable,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.scan_mode.reason_codes') END AS _scan_mode_reason_codes,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.source') END AS _payload_source,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.extraction_mode') END AS _payload_extraction_mode,
+                CASE WHEN json_valid(raw_payload) THEN json_extract(raw_payload, '$.direct_source_provider') END AS _payload_direct_source_provider,
+                created_at
             FROM magnetism_scans
             WHERE status = 'ready'
             ORDER BY created_at DESC

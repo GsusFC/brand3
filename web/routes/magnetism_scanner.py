@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import secrets
 from datetime import datetime, timezone
 
@@ -14,6 +15,7 @@ from fastapi.responses import RedirectResponse
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+from src.features.magnetism.moodboard import build_moodboard_model, extract_moodboard_images
 from src.features.magnetism.translation import apply_magnetism_translation
 from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
 from src.scoring.provenance import build_score_provenance_report
@@ -47,6 +49,8 @@ from ..scanner_api.models import (
 )
 
 router = APIRouter()
+
+_LOG = logging.getLogger(__name__)
 
 
 _Lang = Literal["es", "en"]
@@ -149,6 +153,33 @@ _MAGNETISM_UI = {
             "vitalidad": "Vitality",
         },
         "methodology_details": "Methodology Details",
+        "moodboard": "Moodboard",
+        "moodboard_tag": "visual board built from captured brand assets",
+        "moodboard_intro": (
+            "Representative images the brand publishes on its owned surfaces, captured during this scan and "
+            "arranged as a moodboard next to the strategic reading."
+        ),
+        "moodboard_hint": "drag images to rearrange",
+        "moodboard_shuffle": "shuffle",
+        "moodboard_empty": (
+            "No representative images were captured for this scan. The moodboard needs a Brand Audit run "
+            "with a persisted web acquisition."
+        ),
+        "moodboard_visual_reading": "Visual reading",
+        "moodboard_visual_reading_tag": "strategic blocks that frame the imagery",
+        "moodboard_inventory": "Image inventory",
+        "moodboard_inventory_tag": "captured assets and their roles",
+        "moodboard_role": "role",
+        "moodboard_alt": "alt text",
+        "moodboard_roles": {
+            "logo": "logo / icon",
+            "social_card": "social card",
+            "content": "page image",
+        },
+        "moodboard_source_note": (
+            "Images are linked directly from the brand's own pages as captured at scan time; an empty slot "
+            "means the asset is no longer reachable."
+        ),
         "detail_tag": "9 strategic blocks derived from 7 Magenta signals",
         "no_detected": "(not detected)",
         "system_reading": "TLDR System Reading",
@@ -351,6 +382,33 @@ _MAGNETISM_UI = {
             "vitalidad": "Vitalidad",
         },
         "methodology_details": "Detalles de metodología",
+        "moodboard": "Moodboard",
+        "moodboard_tag": "tablero visual con assets capturados de la marca",
+        "moodboard_intro": (
+            "Imágenes representativas que la marca publica en sus superficies propias, capturadas durante "
+            "este escaneo y organizadas como moodboard junto a la lectura estratégica."
+        ),
+        "moodboard_hint": "arrastra las imágenes para reorganizar",
+        "moodboard_shuffle": "reorganizar",
+        "moodboard_empty": (
+            "No se capturaron imágenes representativas para este escaneo. El moodboard necesita un run de "
+            "Brand Audit con adquisición web persistida."
+        ),
+        "moodboard_visual_reading": "Lectura visual",
+        "moodboard_visual_reading_tag": "bloques estratégicos que enmarcan las imágenes",
+        "moodboard_inventory": "Inventario de imágenes",
+        "moodboard_inventory_tag": "assets capturados y su rol",
+        "moodboard_role": "rol",
+        "moodboard_alt": "texto alt",
+        "moodboard_roles": {
+            "logo": "logo / icono",
+            "social_card": "tarjeta social",
+            "content": "imagen de página",
+        },
+        "moodboard_source_note": (
+            "Las imágenes se enlazan directamente desde las páginas de la marca tal como se capturaron; un "
+            "hueco vacío significa que el asset ya no es accesible."
+        ),
         "detail_tag": "9 bloques estratégicos derivados de 7 señales Magenta",
         "no_detected": "(no detectado)",
         "system_reading": "Lectura de sistema TLDR",
@@ -473,7 +531,7 @@ _MAGNETISM_UI = {
 }
 
 
-def _attach_sv9_link(model: dict, request: Request) -> None:
+async def _attach_sv9_link(model: dict) -> None:
     """Nav link to the SV9 scan for this run, when one exists.
 
     Team gating intentionally disabled for now (product decision,
@@ -483,6 +541,14 @@ def _attach_sv9_link(model: dict, request: Request) -> None:
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         return
+    scan_id = await asyncio.to_thread(_sv9_scan_id_for_run, source_run_id)
+    if isinstance(scan_id, int):
+        model["sv9_scan_id"] = scan_id
+
+
+def _sv9_scan_id_for_run(source_run_id: object) -> int | None:
+    if not source_run_id:
+        return None
     try:
         from src.sv9.store import Sv9Store
 
@@ -492,9 +558,10 @@ def _attach_sv9_link(model: dict, request: Request) -> None:
         finally:
             store.close()
     except Exception:
-        return
+        return None
     if scan:
-        model["sv9_scan_id"] = scan["id"]
+        return int(scan["id"])
+    return None
 
 
 def _ui(lang: _Lang) -> dict:
@@ -511,15 +578,28 @@ def _with_lang(path: str, lang: _Lang) -> str:
     return f"{path}{_lang_q(lang)}"
 
 
-@router.get("/magnetism-scanner")
-async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
-    """Render index page of Magnetism Scanner showing past analyses and inputs."""
+def _load_magnetism_index_data() -> tuple[list[dict], list[dict]]:
     scans = list_magnetism_scans(limit=25)
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
         audit_runs = store.list_runs(limit=12)
     finally:
         store.close()
+    return scans, audit_runs
+
+
+def _load_run_summary(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return store.get_run_summary(run_id)
+    finally:
+        store.close()
+
+
+@router.get("/magnetism-scanner")
+async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
+    """Render index page of Magnetism Scanner showing past analyses and inputs."""
+    scans, audit_runs = await asyncio.to_thread(_load_magnetism_index_data)
 
     # Format dates nicely for template listing
     for scan in scans:
@@ -596,7 +676,8 @@ async def magnetism_scanner_analyze(
         brand_name = "Manual Upload Brand"
         display_url = "Manual Upload"
 
-    insert_magnetism_job(
+    await asyncio.to_thread(
+        insert_magnetism_job,
         token=token,
         brand_name=brand_name,
         url=display_url,
@@ -614,13 +695,9 @@ async def magnetism_scanner_from_run(
     lang: _Lang = Form("es"),
 ):
     """Queue a Magnetism scan from an existing Brand Audit run snapshot."""
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(run_id)
-    finally:
-        store.close()
+    run = await asyncio.to_thread(_load_run_summary, run_id)
 
-    if snapshot is None:
+    if run is None:
         return templates.TemplateResponse(
             request,
             "not_found.html.j2",
@@ -628,9 +705,9 @@ async def magnetism_scanner_from_run(
             status_code=404,
         )
 
-    run = snapshot.get("run") or {}
     token = secrets.token_urlsafe(12)
-    insert_magnetism_job(
+    await asyncio.to_thread(
+        insert_magnetism_job,
         token=token,
         brand_name=str(run.get("brand_name") or f"Brand Audit run #{run_id}"),
         url=str(run.get("url") or "Brand Audit snapshot"),
@@ -727,7 +804,7 @@ _SV9_GENERATION_STATUS_COPY = {
 @router.get("/magnetism-scanner/{token}/status")
 async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Query("es")):
     """Render the shared waiting page for an in-flight Magnetism scan."""
-    row = get_magnetism_scan_by_token(token)
+    row = await asyncio.to_thread(get_magnetism_scan_by_token, token)
     if row is None:
         return templates.TemplateResponse(
             request,
@@ -759,6 +836,8 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "phase": phase,
             "phase_label": phase_labels.get(phase, "Working" if lang == "en" else "Trabajando"),
             "phase_steps": _phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
+            "assets_href": "/magnetism-scanner/{}/assets".format(token),
+            "loader_phase_captions": _LOADER_PHASE_CAPTIONS[lang],
             "ready_href": _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang),
             "back_href": _with_lang("/magnetism-scanner", lang),
             "status_label": "brand_scanner_status",
@@ -772,6 +851,74 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "retry_url": row.get("url") if (row.get("status") == "failed" and row.get("url") not in (None, "", "manual")) else None,
         },
     )
+
+
+# Narrative captions shown by the scan loader as the pipeline advances. Keyed
+# by the same phase tokens the worker reports through progress_cb.
+_LOADER_PHASE_CAPTIONS = {
+    "es": {
+        "queued": "Inicializando el escáner…",
+        "collecting": "Capturando señales de la marca…",
+        "extracting": "Leyendo la firma visual…",
+        "interpreting": "Interpretando el significado…",
+        "scoring": "Puntuando los componentes Brand3…",
+        "finalizing": "Componiendo el resultado…",
+        "ready": "Escaneo completo.",
+    },
+    "en": {
+        "queued": "Booting the scanner…",
+        "collecting": "Capturing brand signals…",
+        "extracting": "Reading the visual signature…",
+        "interpreting": "Interpreting meaning…",
+        "scoring": "Scoring the Brand3 components…",
+        "finalizing": "Composing the result…",
+        "ready": "Scan complete.",
+    },
+}
+
+
+def _inflight_moodboard_images(row: dict) -> list[dict]:
+    """Best-effort representative images for an in-flight scan.
+
+    Reads the most recent persisted ``web`` raw input for this brand/url and
+    runs the same deterministic extractor the report moodboard uses. Returns an
+    empty list until acquisition has persisted something, so the loader simply
+    stays in its procedural phase meanwhile. Never raises into the request path.
+    """
+    brand_name = str(row.get("brand_name") or "").strip()
+    url = str(row.get("url") or "").strip()
+    if not brand_name or not url or url in ("manual", "Manual Upload"):
+        return []
+    try:
+        store = SQLiteStore(BRAND3_DB_PATH)
+        try:
+            payload = store.get_latest_raw_input(brand_name, url, "web", max_age_hours=24)
+        finally:
+            store.close()
+    except Exception:
+        _LOG.exception("Failed to load in-flight moodboard images for %s", brand_name)
+        return []
+    if not isinstance(payload, dict):
+        return []
+    return extract_moodboard_images(payload)
+
+
+@router.get("/magnetism-scanner/{token}/assets")
+async def magnetism_scanner_assets(token: str):
+    """Stream representative brand images discovered so far for the loader.
+
+    Polled by the waiting-screen scan loader; returns a small JSON document with
+    the current phase plus whatever imagery acquisition has already captured.
+    """
+    row = get_magnetism_scan_by_token(token)
+    if row is None:
+        raise HTTPException(status_code=404, detail="Unknown scan token.")
+    status = str(row.get("status") or "queued")
+    phase = _magnetism_phase(row)
+    images: list[dict] = []
+    if status in ("queued", "running"):
+        images = _inflight_moodboard_images(row)
+    return {"status": status, "phase": phase, "images": images}
 
 
 def _elapsed(started_at: str | None) -> int:
@@ -888,18 +1035,22 @@ def _sv9_generation_phase_steps(phase: str, status: str | None, *, lang: _Lang =
 
 
 async def _run_sv9_generation_job(token: str) -> None:
-    update_sv9_generation_job(
+    await _update_sv9_generation_job_async(
         token,
         status="running",
         phase="generating",
         phase_updated_at=datetime.now(timezone.utc).isoformat(),
         started_at=datetime.now(timezone.utc).isoformat(),
     )
-    job = get_sv9_generation_job(token)
+    job = await asyncio.to_thread(get_sv9_generation_job, token)
     if job is None:
         return
     try:
-        update_sv9_generation_job(token, phase="generating", phase_updated_at=datetime.now(timezone.utc).isoformat())
+        await _update_sv9_generation_job_async(
+            token,
+            phase="generating",
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+        )
         sv9_scan_id = await asyncio.to_thread(
             ensure_sv9_scan_for_source_run,
             int(job["source_run_id"]),
@@ -907,7 +1058,7 @@ async def _run_sv9_generation_job(token: str) -> None:
         )
         if sv9_scan_id is None:
             raise RuntimeError("SV9 generation failed")
-        update_sv9_generation_job(
+        await _update_sv9_generation_job_async(
             token,
             status="ready",
             phase="ready",
@@ -917,7 +1068,7 @@ async def _run_sv9_generation_job(token: str) -> None:
             error_message=None,
         )
     except Exception as exc:  # noqa: BLE001
-        update_sv9_generation_job(
+        await _update_sv9_generation_job_async(
             token,
             status="failed",
             phase="failed",
@@ -927,10 +1078,14 @@ async def _run_sv9_generation_job(token: str) -> None:
         )
 
 
+async def _update_sv9_generation_job_async(token: str, **columns) -> None:
+    await asyncio.to_thread(update_sv9_generation_job, token, **columns)
+
+
 @router.get("/magnetism-scanner/scan/{scan_id}")
 async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render details sheet of a specific magnetism scan."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -940,7 +1095,7 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
         )
     model["active_tab"] = "tldr"
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -956,7 +1111,7 @@ async def magnetism_scanner_generate_sv9(
     lang: _Lang = Query("es"),
 ):
     """Queue SV9 generation and redirect to a loading page."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -969,12 +1124,13 @@ async def magnetism_scanner_generate_sv9(
     if not source_run_id:
         raise HTTPException(status_code=409, detail="scan does not have a Brand Audit source run")
 
-    existing_job = get_sv9_generation_job_by_scan_id(scan_id)
+    existing_job = await asyncio.to_thread(get_sv9_generation_job_by_scan_id, scan_id)
     if existing_job:
         return RedirectResponse(_with_lang(f"/magnetism-scanner/sv9/{existing_job['token']}/status", lang), status_code=303)
 
     token = secrets.token_urlsafe(12)
-    insert_sv9_generation_job(
+    await asyncio.to_thread(
+        insert_sv9_generation_job,
         token=token,
         scan_id=scan_id,
         source_run_id=int(source_run_id),
@@ -987,7 +1143,7 @@ async def magnetism_scanner_generate_sv9(
 @router.get("/magnetism-scanner/sv9/{token}/status")
 async def magnetism_scanner_sv9_status(request: Request, token: str, lang: _Lang = Query("es")):
     """Intermediate loading page while the shadow SV9 scan is materialized."""
-    job = get_sv9_generation_job(token)
+    job = await asyncio.to_thread(get_sv9_generation_job, token)
     if job is None:
         return templates.TemplateResponse(
             request,
@@ -1030,7 +1186,7 @@ async def magnetism_scanner_sv9_status(request: Request, token: str, lang: _Lang
 @router.get("/magnetism-scanner/scan/{scan_id}/research")
 async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render research evidence for a specific Magnetism scan."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -1041,7 +1197,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     model["active_tab"] = "research"
     model["research"] = _research_evidence_model(model["payload"])
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -1050,10 +1206,56 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
     )
 
 
+@router.get("/magnetism-scanner/scan/{scan_id}/moodboard")
+async def magnetism_scanner_moodboard(request: Request, scan_id: int, lang: _Lang = Query("es")):
+    """Render the visual moodboard for a specific Magnetism scan."""
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    if model is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
+            status_code=404,
+        )
+    model["active_tab"] = "moodboard"
+    model["moodboard"] = _moodboard_model(model)
+    _attach_ui(model, lang)
+    await _attach_sv9_link(model)
+
+    return templates.TemplateResponse(
+        request,
+        "magnetism_moodboard.html.j2",
+        {"model": model, "ui_lang": lang},
+    )
+
+
+def _moodboard_model(model: dict) -> dict:
+    """Build the moodboard view model from the scan's persisted source run."""
+    web_payload: dict | None = None
+    brand_logo_url: str | None = None
+    source_run_id = model.get("source_run_id")
+    if source_run_id:
+        store = SQLiteStore(BRAND3_DB_PATH)
+        try:
+            snapshot = store.get_run_snapshot(int(source_run_id))
+        finally:
+            store.close()
+        if snapshot:
+            brand_logo_url = (snapshot.get("run") or {}).get("brand_logo_url")
+            for item in snapshot.get("raw_inputs") or []:
+                if item.get("source") == "web" and isinstance(item.get("payload"), dict):
+                    web_payload = item["payload"]
+    return build_moodboard_model(
+        model.get("payload") or {},
+        web_payload,
+        brand_logo_url=brand_logo_url,
+    )
+
+
 @router.get("/magnetism-scanner/scan/{scan_id}/audit")
 async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render the Brand Audit tab inside the unified Scanner layout."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -1063,7 +1265,7 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
         )
     model["active_tab"] = "audit"
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["audit"] = {"available": False, "reason": "missing_source_run"}
@@ -1074,13 +1276,11 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
             {"model": model, "ui_lang": lang},
         )
 
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
-        score_provenance = build_score_provenance_report(store, int(source_run_id))
-    finally:
-        store.close()
+    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
+        _load_audit_read_context,
+        int(source_run_id),
+        lang,
+    )
     if snapshot is None:
         model["audit"] = {
             "available": False,
@@ -1140,7 +1340,7 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
 @router.get("/magnetism-scanner/scan/{scan_id}/client-tldr-v2")
 async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render the experimental client-facing TLDR v2 preview."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -1150,7 +1350,7 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
         )
     model["active_tab"] = "client_tldr_v2"
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
     source_run_id = model.get("source_run_id")
     if not source_run_id:
         model["client_tldr_v2"] = {
@@ -1164,13 +1364,11 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
             {"model": model, "ui_lang": lang},
         )
 
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(int(source_run_id))
-        narrative_payload = _report_translation_payload(store, int(source_run_id), lang)
-        score_provenance = build_score_provenance_report(store, int(source_run_id))
-    finally:
-        store.close()
+    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
+        _load_audit_read_context,
+        int(source_run_id),
+        lang,
+    )
 
     if snapshot is None:
         model["client_tldr_v2"] = {
@@ -1211,7 +1409,7 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
 @router.get("/magnetism-scanner/scan/{scan_id}/evidence-reliability")
 async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render Research Pack quality diagnostics for a specific Magnetism scan."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -1222,7 +1420,7 @@ async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int,
     model["active_tab"] = "evidence_reliability"
     model["quality"] = _evidence_reliability_model(model["payload"])
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -1234,7 +1432,7 @@ async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int,
 @router.get("/magnetism-scanner/scan/{scan_id}/methodology")
 async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render methodology details for a specific Magnetism scan."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -1245,7 +1443,7 @@ async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _L
     model["active_tab"] = "methodology"
     model["methodology"] = _methodology_model(model["payload"])
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -1261,8 +1459,8 @@ def _attach_ui(model: dict, lang: _Lang) -> None:
     model["t"] = _ui(lang)
 
 
-def _magnetism_scan_model(scan_id: int, *, lang: _Lang = "es") -> dict | None:
-    row = get_magnetism_scan(scan_id)
+async def _magnetism_scan_model_async(scan_id: int, *, lang: _Lang = "es") -> dict | None:
+    row = await asyncio.to_thread(get_magnetism_scan, scan_id)
     if row is None:
         return None
 
@@ -1293,6 +1491,17 @@ def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) ->
         return store.get_report_translation(run_id, lang)
     except Exception:
         return None
+
+
+def _load_audit_read_context(run_id: int, lang: _Lang) -> tuple[dict | None, dict | None, dict]:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        narrative_payload = _report_translation_payload(store, run_id, lang)
+        score_provenance = build_score_provenance_report(store, run_id)
+        return snapshot, narrative_payload, score_provenance
+    finally:
+        store.close()
 
 
 def _executive_analysis_for_language(

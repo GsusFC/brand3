@@ -1,4 +1,5 @@
 import json
+import sqlite3
 import tempfile
 import unittest
 from pathlib import Path
@@ -40,6 +41,37 @@ class LLMCacheTests(unittest.TestCase):
 
         self.assertEqual(cached["response_json"], {"ok": True})
         self.assertEqual(cached_again["hit_count"], 1)
+
+    def test_sqlite_store_cache_hit_survives_hit_count_update_failure(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            store = SQLiteStore(str(Path(tmpdir) / "brand3.sqlite3"))
+            store.save_llm_cache(
+                cache_key="abc",
+                prompt_version="v1",
+                model="m",
+                response_type="json",
+                response_json={"ok": True},
+            )
+
+            with patch.object(
+                store,
+                "_update_llm_cache_hit_count",
+                side_effect=sqlite3.OperationalError("database is locked"),
+            ):
+                cached = store.get_llm_cache("abc")
+            store.save_llm_cache(
+                cache_key="def",
+                prompt_version="v1",
+                model="m",
+                response_type="text",
+                response_text="still usable",
+            )
+            followup = store.get_llm_cache("def")
+            store.close()
+
+        self.assertEqual(cached["response_json"], {"ok": True})
+        self.assertEqual(cached["hit_count"], 0)
+        self.assertEqual(followup["response_text"], "still usable")
 
     def test_call_json_reuses_persistent_cache(self):
         with tempfile.TemporaryDirectory() as tmpdir:

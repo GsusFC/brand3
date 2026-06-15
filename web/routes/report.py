@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -61,7 +62,7 @@ async def report(
     theme: Literal["dark", "light"] = Query("light"),
     lang: Literal["es", "en"] = Query("es"),
 ):
-    row = get_request(token)
+    row = await asyncio.to_thread(get_request, token)
     if row is None:
         return templates.TemplateResponse(
             request,
@@ -89,7 +90,7 @@ async def report(
             status_code=500,
         )
 
-    snapshot = _load_snapshot(int(run_id))
+    snapshot = await asyncio.to_thread(_load_snapshot, int(run_id))
     if snapshot is None:
         return templates.TemplateResponse(
             request,
@@ -98,12 +99,16 @@ async def report(
             status_code=500,
         )
 
+    narrative_payload = None
+    if lang != "en":
+        narrative_payload = await asyncio.to_thread(_translation_payload, int(run_id), snapshot, lang)
+
     html = ReportRenderer().render(
         snapshot,
         theme=theme,
         analyzer=_WEB_REPORT_ANALYZER,
         app_chrome=True,
         lang=lang,
-        narrative_payload=_translation_payload(int(run_id), snapshot, lang),
+        narrative_payload=narrative_payload,
     )
     return HTMLResponse(content=html)

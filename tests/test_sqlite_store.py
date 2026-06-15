@@ -9,6 +9,176 @@ from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
 
 
 class SQLiteStoreTests(unittest.TestCase):
+    def test_store_configures_busy_timeout_per_connection(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            try:
+                timeout_ms = store.conn.execute("PRAGMA busy_timeout").fetchone()[0]
+            finally:
+                store.close()
+
+            self.assertEqual(timeout_ms, 5000)
+
+    def test_schema_initialization_runs_once_for_same_database_file(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            first.close()
+            second = SQLiteStore(str(db_path))
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 1)
+            self.assertEqual(metrics["skips"], 1)
+
+    def test_schema_initialization_cache_survives_database_writes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            brand_id = first.upsert_brand("Example", "https://example.com")
+            first.create_run(brand_id, "Example", "https://example.com", True, False)
+            first.close()
+            second = SQLiteStore(str(db_path))
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 1)
+            self.assertEqual(metrics["skips"], 1)
+
+    def test_schema_initialization_runs_for_recreated_database_at_same_path(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            first.close()
+            for suffix in ("", "-wal", "-shm"):
+                Path(f"{db_path}{suffix}").unlink(missing_ok=True)
+
+            second = SQLiteStore(str(db_path))
+            brand_id = second.upsert_brand("Example", "https://example.com")
+            second.create_run(brand_id, "Example", "https://example.com", True, False)
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 2)
+            self.assertEqual(metrics["skips"], 0)
+
+    def test_schema_initialization_runs_when_cached_database_is_not_ready(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            SQLiteStore.reset_schema_init_metrics()
+
+            first = SQLiteStore(str(db_path))
+            first.conn.execute("DROP TABLE runs")
+            first.conn.commit()
+            first.close()
+
+            second = SQLiteStore(str(db_path))
+            brand_id = second.upsert_brand("Example", "https://example.com")
+            second.create_run(brand_id, "Example", "https://example.com", True, False)
+            second.close()
+
+            metrics = SQLiteStore.schema_init_metrics()
+            self.assertEqual(metrics["runs"], 2)
+            self.assertEqual(metrics["skips"], 0)
+
+    def test_core_run_read_indexes_are_created(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+
+            rows = store.conn.execute(
+                """
+                SELECT name
+                FROM sqlite_master
+                WHERE type = 'index'
+                  AND name IN (
+                      'idx_runs_brand_started',
+                      'idx_runs_brand_name_url_started',
+                      'idx_scores_run',
+                      'idx_features_run',
+                      'idx_annotations_run_created',
+                      'idx_raw_inputs_run_created',
+                      'idx_raw_inputs_source_created'
+                  )
+                """
+            ).fetchall()
+            store.close()
+
+            self.assertEqual(
+                {row["name"] for row in rows},
+                {
+                    "idx_runs_brand_started",
+                    "idx_runs_brand_name_url_started",
+                    "idx_scores_run",
+                    "idx_features_run",
+                    "idx_annotations_run_created",
+                    "idx_raw_inputs_run_created",
+                    "idx_raw_inputs_source_created",
+                },
+            )
+
+    def test_core_run_read_queries_use_indexes(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+
+            plans = {
+                "features": store.conn.execute(
+                    "EXPLAIN QUERY PLAN SELECT dimension_name FROM features WHERE run_id = ?",
+                    (1,),
+                ).fetchall(),
+                "scores": store.conn.execute(
+                    "EXPLAIN QUERY PLAN SELECT dimension_name FROM scores WHERE run_id = ?",
+                    (1,),
+                ).fetchall(),
+                "raw_inputs": store.conn.execute(
+                    """
+                    EXPLAIN QUERY PLAN
+                    SELECT source FROM raw_inputs
+                    WHERE run_id = ?
+                    ORDER BY created_at ASC
+                    """,
+                    (1,),
+                ).fetchall(),
+                "annotations": store.conn.execute(
+                    """
+                    EXPLAIN QUERY PLAN
+                    SELECT note FROM annotations
+                    WHERE run_id = ?
+                    ORDER BY created_at ASC
+                    """,
+                    (1,),
+                ).fetchall(),
+                "latest_run": store.conn.execute(
+                    """
+                    EXPLAIN QUERY PLAN
+                    SELECT id FROM runs
+                    WHERE brand_name = ? AND url = ?
+                    ORDER BY started_at DESC
+                    LIMIT 1
+                    """,
+                    ("Example", "https://example.com"),
+                ).fetchall(),
+            }
+            store.close()
+
+            self.assertIn("idx_features_run", self._query_plan_text(plans["features"]))
+            self.assertIn("idx_scores_run", self._query_plan_text(plans["scores"]))
+            self.assertIn("idx_raw_inputs_run_created", self._query_plan_text(plans["raw_inputs"]))
+            self.assertIn("idx_annotations_run_created", self._query_plan_text(plans["annotations"]))
+            self.assertIn("idx_runs_brand_name_url_started", self._query_plan_text(plans["latest_run"]))
+
+    @staticmethod
+    def _query_plan_text(rows):
+        return "\n".join(str(row["detail"]) for row in rows)
+
     def test_store_persists_run_inputs_features_and_scores(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"
@@ -61,6 +231,28 @@ class SQLiteStoreTests(unittest.TestCase):
             self.assertEqual(raw_inputs[0][0], "web")
             self.assertEqual(features[0], ("presencia", "web_presence", 80.0))
             self.assertEqual(scores[0], ("presencia", 80.0))
+
+    def test_get_run_summary_loads_run_metadata_without_snapshot_payloads(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+
+            brand_id = store.upsert_brand("Example", "https://example.com")
+            run_id = store.create_run(brand_id, "Example", "https://example.com", True, False)
+            store.save_raw_input(run_id, "web", {"large": "payload"})
+            store.finalize_run(run_id, 80.0, True, False, "/tmp/example.json", "summary")
+
+            summary = store.get_run_summary(run_id)
+            snapshot = store.get_run_snapshot(run_id)
+            store.close()
+
+            self.assertEqual(summary["id"], run_id)
+            self.assertEqual(summary["brand_name"], "Example")
+            self.assertEqual(summary["url"], "https://example.com")
+            self.assertEqual(summary["brand_profile"]["domain"], "example.com")
+            self.assertNotIn("raw_inputs", summary)
+            self.assertNotIn("features", summary)
+            self.assertEqual(snapshot["raw_inputs"][0]["payload"], {"large": "payload"})
 
     def test_get_latest_raw_input_respects_ttl(self):
         with tempfile.TemporaryDirectory() as tmpdir:

@@ -8,6 +8,9 @@ Uses Exa API for:
 - Content freshness (vitalidad)
 """
 
+import concurrent.futures
+import threading
+from collections.abc import Callable
 from datetime import datetime, timedelta, timezone
 from dataclasses import dataclass, field
 import os
@@ -16,6 +19,7 @@ from urllib.parse import urlparse
 
 _TRANSIENT_SEARCH_ATTEMPTS = 2
 _TRANSIENT_SEARCH_DELAY_S = 1.5
+_MAX_BRAND_DATA_WORKERS = 4
 
 
 @dataclass
@@ -158,6 +162,7 @@ class ExaCollector:
         self.api_key = api_key
         self._client = None
         self._search_events: list[dict] = []
+        self._search_events_lock = threading.Lock()
         self._deep_reasoning_enabled = os.environ.get("BRAND3_EXA_ENABLE_DEEP_REASONING", "").strip().lower() in {
             "1",
             "true",
@@ -270,7 +275,8 @@ class ExaCollector:
         return ("external", "external", "external_candidate", False)
 
     def _record_event(self, event: dict) -> None:
-        self._search_events.append(event)
+        with self._search_events_lock:
+            self._search_events.append(event)
 
     @staticmethod
     def _env_int(name: str) -> int | None:
@@ -463,41 +469,61 @@ class ExaCollector:
 
     def collect_brand_data(self, brand_name: str, brand_url: str = None) -> ExaData:
         """Collect all Exa data for a brand."""
-        self._search_events = []
+        with self._search_events_lock:
+            self._search_events = []
         data = ExaData(brand_name=brand_name)
 
-        # 1. Brand mentions — how is the brand talked about?
-        data.mentions = self.search(
-            self._brand_query(brand_name, brand_url, "brand company"),
-            intent="mentions",
-            brand_name=brand_name,
-            brand_url=brand_url,
-        )
-
-        # 2. Competitors — who else is in this space?
+        tasks = {
+            "mentions": lambda: self.search(
+                self._brand_query(brand_name, brand_url, "brand company"),
+                intent="mentions",
+                brand_name=brand_name,
+                brand_url=brand_url,
+            ),
+            "news": lambda: self.search(
+                self._brand_query(brand_name, brand_url, "news"),
+                intent="news",
+                brand_name=brand_name,
+                brand_url=brand_url,
+            ),
+            "ai_visibility": lambda: self.probe_ai_visibility(brand_name, brand_url=brand_url),
+        }
         if brand_url:
-            data.competitors = self.search(
-                f"competitors similar to {brand_name} {self._domain_anchor(brand_url)}",
+            domain_anchor = self._domain_anchor(brand_url)
+            tasks["competitors"] = lambda: self.search(
+                f"competitors similar to {brand_name} {domain_anchor}",
                 intent="competitors",
                 brand_name=brand_name,
                 brand_url=brand_url,
-                exclude_domains=[self._domain_anchor(brand_url)] if self._domain_anchor(brand_url) else None,
+                exclude_domains=[domain_anchor] if domain_anchor else None,
             )
 
-        # 3. News — recent coverage
-        data.news = self.search(
-            self._brand_query(brand_name, brand_url, "news"),
-            intent="news",
-            brand_name=brand_name,
-            brand_url=brand_url,
-        )
-
-        # 4. AI visibility — does the brand appear in AI-related recommendations/content?
-        data.ai_visibility_results = self.probe_ai_visibility(brand_name, brand_url=brand_url)
+        results = self._run_brand_data_tasks(tasks)
+        data.mentions = results.get("mentions") or []
+        data.competitors = results.get("competitors") or []
+        data.news = results.get("news") or []
+        data.ai_visibility_results = results.get("ai_visibility") or []
         data.diagnostics = self._build_diagnostics()
-        data.raw_responses = {"search_events": self._search_events}
+        with self._search_events_lock:
+            data.raw_responses = {"search_events": list(self._search_events)}
 
         return data
+
+    @staticmethod
+    def _run_brand_data_tasks(tasks: dict[str, Callable[[], list[ExaResult]]]) -> dict[str, list[ExaResult]]:
+        if len(tasks) <= 1:
+            return {name: task() for name, task in tasks.items()}
+        results: dict[str, list[ExaResult]] = {}
+        max_workers = min(_MAX_BRAND_DATA_WORKERS, len(tasks))
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as pool:
+            future_to_name = {pool.submit(task): name for name, task in tasks.items()}
+            for future in concurrent.futures.as_completed(future_to_name):
+                name = future_to_name[future]
+                try:
+                    results[name] = future.result()
+                except Exception:
+                    results[name] = []
+        return results
 
     def probe_ai_visibility(self, brand_name: str, brand_url: str | None = None) -> list[ExaResult]:
         """

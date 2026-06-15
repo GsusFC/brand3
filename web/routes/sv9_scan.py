@@ -38,13 +38,10 @@ _CANVAS_ROWS = [
 @router.get("/sv9/scan/{scan_id}")
 async def sv9_scan_view(request: Request, scan_id: int):
     _require_team(request)
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        scan = store.get_scan(scan_id)
-        editorial_decisions = store.list_editorial_decisions(scan_id)
-        v2_blocks = _v2_reference_blocks(store, scan.get("source_run_id") if scan else None)
-    finally:
-        store.close()
+    scan, editorial_decisions, v2_blocks, magnetism_scan_id = await asyncio.to_thread(
+        _load_scan_view_data,
+        scan_id,
+    )
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
 
@@ -108,7 +105,6 @@ async def sv9_scan_view(request: Request, scan_id: int):
 
     # Shared scan-tab nav (same include as TLDR/Auditoría/Evidencia) needs the
     # scanner scan id for its hrefs; without one we fall back to SV9-only nav.
-    magnetism_scan_id = _magnetism_scan_id(scan.get("source_run_id"))
     nav_model = None
     if magnetism_scan_id:
         nav_model = {
@@ -136,11 +132,25 @@ async def sv9_scan_view(request: Request, scan_id: int):
     )
 
 
-def _magnetism_scan_id(source_run_id: int | None) -> int | None:
+def _load_scan_view_data(scan_id: int) -> tuple[dict | None, dict, dict[str, dict], int | None]:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        scan = store.get_scan(scan_id)
+        if scan is None:
+            return None, {}, {}, None
+        source_run_id = scan.get("source_run_id")
+        editorial_decisions = store.list_editorial_decisions(scan_id)
+        v2_blocks = _v2_reference_blocks(store, source_run_id)
+        magnetism_scan_id = _magnetism_scan_id(store, source_run_id)
+        return scan, editorial_decisions, v2_blocks, magnetism_scan_id
+    finally:
+        store.close()
+
+
+def _magnetism_scan_id(store: Sv9Store, source_run_id: int | None) -> int | None:
     """Latest scanner entry for the same audit run, to link back into the flow."""
     if not source_run_id:
         return None
-    store = Sv9Store(BRAND3_DB_PATH)
     try:
         row = store.conn.execute(
             """
@@ -153,8 +163,6 @@ def _magnetism_scan_id(source_run_id: int | None) -> int | None:
         return int(row["id"]) if row else None
     except Exception:
         return None
-    finally:
-        store.close()
 
 
 def _v2_reference_blocks(store: Sv9Store, source_run_id: int | None) -> dict[str, dict]:
@@ -261,21 +269,41 @@ async def sv9_editorial_decision_submit(
     if decision not in _EDITORIAL_DECISIONS:
         raise HTTPException(status_code=422, detail="invalid editorial decision")
 
+    saved = await asyncio.to_thread(
+        _save_editorial_decision,
+        scan_id,
+        component,
+        decision,
+        note.strip() or None,
+        evaluator.strip() or None,
+    )
+    if not saved:
+        raise HTTPException(status_code=404, detail="scan not found")
+    return RedirectResponse(f"/sv9/scan/{scan_id}#sv9-card-{component}", status_code=303)
+
+
+def _save_editorial_decision(
+    scan_id: int,
+    component: str,
+    decision: str,
+    note: str | None,
+    evaluator: str | None,
+) -> bool:
     store = Sv9Store(BRAND3_DB_PATH)
     try:
         scan = store.get_scan(scan_id)
         if scan is None:
-            raise HTTPException(status_code=404, detail="scan not found")
+            return False
         store.save_editorial_decision(
             scan_id=scan_id,
             component=component,
             decision=decision,
-            note=note.strip() or None,
-            evaluator=evaluator.strip() or None,
+            note=note,
+            evaluator=evaluator,
         )
+        return True
     finally:
         store.close()
-    return RedirectResponse(f"/sv9/scan/{scan_id}#sv9-card-{component}", status_code=303)
 
 
 @router.post("/sv9/scan/{scan_id}/retry")
@@ -286,11 +314,7 @@ async def sv9_scan_retry(request: Request, scan_id: int):
     keeps a trace of provider/API failures.
     """
     _require_team_write(request)
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        scan = store.get_scan(scan_id)
-    finally:
-        store.close()
+    scan = await asyncio.to_thread(_load_scan, scan_id)
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
     source_run_id = scan.get("source_run_id")
@@ -303,3 +327,11 @@ async def sv9_scan_retry(request: Request, scan_id: int):
         db_path=BRAND3_DB_PATH,
     )
     return RedirectResponse(f"/sv9/scan/{new_scan_id}", status_code=303)
+
+
+def _load_scan(scan_id: int) -> dict | None:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        return store.get_scan(scan_id)
+    finally:
+        store.close()

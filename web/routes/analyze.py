@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import secrets
 
 from fastapi import APIRouter, Form, Request
@@ -38,7 +39,8 @@ async def analyze(request: Request, url: str = Form(...), lang: str = Form("es")
     ip = get_client_ip(request)
     is_team = is_team_request(request, create_serializer(settings.cookie_secret))
 
-    insert_request(
+    await asyncio.to_thread(
+        insert_request,
         token=token,
         url=normalized,
         brand_slug=slug,

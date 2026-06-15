@@ -143,6 +143,19 @@ class ScoreReplayAuditTests(unittest.TestCase):
             self.assertEqual(report["recommended_action"], "none")
             self.assertEqual(report["persisted_composite"], report["recomputed_composite"])
 
+    def test_replay_uses_provided_snapshot_without_reloading(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            store = SQLiteStore(str(Path(tmpdir) / "brand3.sqlite3"))
+            run_id, _, _ = _persist_fixture_run(store)
+            snapshot = store.get_run_snapshot(run_id)
+
+            with patch.object(store, "get_run_snapshot", side_effect=AssertionError("snapshot should be reused")):
+                report = build_score_replay_audit(store, run_id, snapshot=snapshot)
+
+            store.close()
+
+            self.assertEqual(report["score_integrity"], "valid")
+
     def test_tampered_composite_score_is_detected(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             store = SQLiteStore(str(Path(tmpdir) / "brand3.sqlite3"))

@@ -209,6 +209,7 @@ class ListingsTests(unittest.TestCase):
         from web.storage import list_magnetism_scans
 
         row = list_magnetism_scans(limit=1)[0]
+        self.assertNotIn("raw_payload", row)
         self.assertEqual(row["magnetism_score"], 64)
         self.assertEqual(row["coherence_score"], 74)
         self.assertEqual(row["quadrant"], "Canonical quadrant")

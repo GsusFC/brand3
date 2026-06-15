@@ -22,6 +22,7 @@ from src.storage.sqlite_store import SQLiteStore
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DIMENSIONS_PATH = (PROJECT_ROOT / "src" / "dimensions.py").resolve()
 ENGINE_PATH = (PROJECT_ROOT / "src" / "scoring" / "engine.py").resolve()
+_SNAPSHOT_UNSET = object()
 
 
 def _default_gate_config() -> dict[str, Any]:
@@ -227,8 +228,14 @@ def _classify_drift(
     return "none", True
 
 
-def build_score_replay_audit(store: SQLiteStore, run_id: int) -> dict[str, Any]:
-    snapshot = store.get_run_snapshot(run_id)
+def build_score_replay_audit(
+    store: SQLiteStore,
+    run_id: int,
+    *,
+    snapshot: dict[str, Any] | None | object = _SNAPSHOT_UNSET,
+) -> dict[str, Any]:
+    if snapshot is _SNAPSHOT_UNSET:
+        snapshot = store.get_run_snapshot(run_id)
     if not snapshot:
         return {
             "run_id": run_id,

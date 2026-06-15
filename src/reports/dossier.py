@@ -77,12 +77,17 @@ def build_report_narrative_payload(
     analyzer=None,
     *,
     enable_perceptual_narrative: bool = False,
+    analyst_pass: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Generate the persisted narrative overlay for a run snapshot.
 
     This is intended for audit finalization/backfill, not public report reads.
     Public reads consume the returned payload from storage and never call LLM.
     """
+    payload = build_report_narrative_payload_from_analyst(snapshot, analyst_pass)
+    if payload is not None:
+        return payload
+
     dossier = build_brand_dossier(
         snapshot,
         analyzer=analyzer,
@@ -105,6 +110,89 @@ def build_report_narrative_payload(
             for dim in (dossier.get("dimensions") or [])
             if dim.get("name")
         },
+    }
+
+
+def build_report_narrative_payload_from_analyst(
+    snapshot: dict,
+    analyst_pass: dict[str, Any] | None,
+) -> dict[str, Any] | None:
+    if not isinstance(analyst_pass, dict) or analyst_pass.get("analysis_error"):
+        return None
+
+    summary = str(analyst_pass.get("executive_summary") or "").strip()
+    dimensions = analyst_pass.get("dimensions")
+    if not summary or not isinstance(dimensions, dict):
+        return None
+
+    findings_by_dimension: dict[str, list[dict[str, Any]]] = {}
+    for name, block in dimensions.items():
+        if not isinstance(name, str) or not isinstance(block, dict):
+            continue
+        finding = _finding_payload_from_analyst_dimension(block)
+        if finding is not None:
+            findings_by_dimension[name] = [finding]
+
+    if not findings_by_dimension:
+        return None
+
+    primary_risk = str(analyst_pass.get("primary_risk") or "").strip()
+    primary_opportunity = str(analyst_pass.get("primary_opportunity") or "").strip()
+    tension_parts = []
+    if primary_risk:
+        tension_parts.append(f"Primary risk: {primary_risk}")
+    if primary_opportunity:
+        tension_parts.append(f"Primary opportunity: {primary_opportunity}")
+
+    return {
+        "version": REPORT_NARRATIVE_VERSION,
+        "source": REPORT_NARRATIVE_SOURCE,
+        "generated_at": datetime.now().isoformat(),
+        "run_id": (snapshot.get("run") or {}).get("id"),
+        "synthesis_prose": summary,
+        "summary": summary,
+        "tensions_prose": " ".join(tension_parts) or None,
+        "findings_by_dimension": findings_by_dimension,
+    }
+
+
+def _finding_payload_from_analyst_dimension(block: dict[str, Any]) -> dict[str, Any] | None:
+    diagnosis = str(block.get("diagnosis") or "").strip()
+    findings = [
+        str(item).strip()
+        for item in (block.get("findings") or [])
+        if str(item).strip()
+    ]
+    evidence = [
+        str(item).strip()
+        for item in (block.get("evidence") or [])
+        if str(item).strip()
+    ]
+    recommendation = str(block.get("recommendation") or "").strip()
+    limitations = [
+        str(item).strip()
+        for item in (block.get("limitations") or [])
+        if str(item).strip()
+    ]
+
+    title = diagnosis or (findings[0] if findings else "")
+    observation_parts = findings[:2] or evidence[:2]
+    implication_parts = []
+    if recommendation:
+        implication_parts.append(recommendation)
+    if limitations:
+        implication_parts.append("Limitations: " + "; ".join(limitations[:2]))
+
+    observation = " ".join(observation_parts).strip()
+    implication = " ".join(implication_parts).strip()
+    if not title or not observation:
+        return None
+    return {
+        "title": title,
+        "observation": observation,
+        "implication": implication,
+        "typical_decision": "",
+        "evidence_urls": [],
     }
 
 

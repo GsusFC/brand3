@@ -1,5 +1,6 @@
 """GET / — scanner-first landing + latest analyses."""
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -80,7 +81,7 @@ def _recent_home_items(limit: int = 10) -> list[dict]:
 @router.get("/")
 async def index(request: Request, lang: Literal["es", "en"] = Query("es")):
     ui_lang = normalize_lang(lang)
-    rows = _recent_home_items(limit=15)
+    rows = await asyncio.to_thread(_recent_home_items, limit=15)
     return templates.TemplateResponse(
         request,
         "index.html.j2",
@@ -100,5 +101,19 @@ async def scanner_api_page(request: Request, lang: Literal["es", "en"] = Query("
         "scanner_api.html.j2",
         {
             "ui_lang": ui_lang,
+        },
+    )
+
+
+@router.get("/t-rex")
+async def t_rex_playground(request: Request, lang: Literal["es", "en"] = Query("es")):
+    ui_lang = normalize_lang(lang)
+    suffix = "?lang=en" if ui_lang == "en" else ""
+    return templates.TemplateResponse(
+        request,
+        "t_rex.html.j2",
+        {
+            "ui_lang": ui_lang,
+            "lang_suffix": suffix,
         },
     )

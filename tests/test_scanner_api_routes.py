@@ -1,10 +1,13 @@
 import json
 
+import pytest
 from fastapi.responses import JSONResponse
 
 from web.routes import scanner_api
 from web.scanner_api.schemas import ScannerErrorResponse
 from web.middleware.scanner_api_auth import scanner_api_error_response
+
+pytestmark = pytest.mark.anyio
 
 
 def _json_response_payload(response: JSONResponse) -> dict:
@@ -22,17 +25,17 @@ def test_scanner_api_error_response_matches_public_contract():
     assert ScannerErrorResponse.model_validate(_json_response_payload(response))
 
 
-def test_ready_scan_row_or_error_returns_404_for_missing_scan(monkeypatch):
+async def test_ready_scan_row_or_error_returns_404_for_missing_scan(monkeypatch):
     monkeypatch.setattr(scanner_api, "get_magnetism_scan", lambda scan_id: None)
 
-    response = scanner_api._ready_scan_row_or_error(123)
+    response = await scanner_api._ready_scan_row_or_error(123)
 
     assert isinstance(response, JSONResponse)
     assert response.status_code == 404
     assert ScannerErrorResponse.model_validate(_json_response_payload(response))
 
 
-def test_ready_scan_row_or_error_returns_409_for_unready_scan(monkeypatch):
+async def test_ready_scan_row_or_error_returns_409_for_unready_scan(monkeypatch):
     monkeypatch.setattr(
         scanner_api,
         "get_magnetism_scan",
@@ -70,7 +73,7 @@ def test_ready_scan_row_or_error_returns_409_for_unready_scan(monkeypatch):
         },
     )
 
-    response = scanner_api._ready_scan_row_or_error(123)
+    response = await scanner_api._ready_scan_row_or_error(123)
 
     assert isinstance(response, JSONResponse)
     assert response.status_code == 409
@@ -79,8 +82,8 @@ def test_ready_scan_row_or_error_returns_409_for_unready_scan(monkeypatch):
     assert parsed.error.status.id == 123
 
 
-def test_ready_scan_row_or_error_returns_ready_row(monkeypatch):
+async def test_ready_scan_row_or_error_returns_ready_row(monkeypatch):
     row = {"id": 123, "status": "ready"}
     monkeypatch.setattr(scanner_api, "get_magnetism_scan", lambda scan_id: row)
 
-    assert scanner_api._ready_scan_row_or_error(123) == row
+    assert await scanner_api._ready_scan_row_or_error(123) == row

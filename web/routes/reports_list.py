@@ -1,5 +1,6 @@
 """GET /reports — paginated public observatory list."""
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -25,7 +26,8 @@ async def reports_list(
 ):
     if sort not in _ALLOWED_SORTS:
         sort = "newest"
-    rows, total = list_public_reports(
+    rows, total = await asyncio.to_thread(
+        list_public_reports,
         query=q,
         sort=sort,
         page=page,

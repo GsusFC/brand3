@@ -132,6 +132,222 @@ class MagnetismScannerTests(unittest.TestCase):
         response = self.client.get("/magnetism-scanner/scan/1")
         self.assertEqual(response.status_code, 404)
 
+    def test_magnetism_index_loads_sqlite_data_via_threadpool(self):
+        from web.routes import magnetism_scanner
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get("/magnetism-scanner")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], magnetism_scanner._load_magnetism_index_data)
+        self.assertEqual(calls[0][1], ())
+        self.assertEqual(calls[0][2], {})
+
+    def test_magnetism_from_run_loads_summary_via_threadpool(self):
+        from web.routes import magnetism_scanner
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return None
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.post("/magnetism-scanner/from-run", data={"run_id": 123})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], magnetism_scanner._load_run_summary)
+        self.assertEqual(calls[0][1], (123,))
+        self.assertEqual(calls[0][2], {})
+
+    def test_magnetism_analyze_queues_job_via_threadpool(self):
+        from web.routes import magnetism_scanner
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.post(
+                "/magnetism-scanner/analyze",
+                data={"url": "", "manual_text": "Manual brand evidence text."},
+                follow_redirects=False,
+            )
+
+        self.assertEqual(response.status_code, 303)
+        insert_calls = [call for call in calls if call[0] is magnetism_scanner.insert_magnetism_job]
+        self.assertEqual(len(insert_calls), 1)
+        self.assertEqual(insert_calls[0][1], ())
+        self.assertEqual(insert_calls[0][2]["input_type"], "manual")
+        self.assertEqual(insert_calls[0][2]["input_value"], "Manual brand evidence text.")
+
+    def test_magnetism_audit_tab_loads_audit_context_via_threadpool(self):
+        from web.routes import magnetism_scanner
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A memorable brand with attached audit context.",
+            brand_name="Audit Context Brand",
+        )
+        payload["source_run_id"] = 321
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=321,
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            if func is magnetism_scanner.get_magnetism_scan:
+                return func(*args, **kwargs)
+            if func is magnetism_scanner._sv9_scan_id_for_run:
+                return None
+            return None, None, {}
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/audit")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([call[0] for call in calls], [
+            magnetism_scanner.get_magnetism_scan,
+            magnetism_scanner._sv9_scan_id_for_run,
+            magnetism_scanner._load_audit_read_context,
+        ])
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[1][1], (321,))
+        self.assertEqual(calls[1][2], {})
+        self.assertEqual(calls[2][1], (321, "es"))
+        self.assertEqual(calls[2][2], {})
+
+    def test_magnetism_client_tldr_v2_loads_audit_context_via_threadpool(self):
+        from web.routes import magnetism_scanner
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A memorable brand with attached client reading context.",
+            brand_name="Client Context Brand",
+        )
+        payload["source_run_id"] = 654
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=654,
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            if func is magnetism_scanner.get_magnetism_scan:
+                return func(*args, **kwargs)
+            if func is magnetism_scanner._sv9_scan_id_for_run:
+                return None
+            return None, None, {}
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/client-tldr-v2?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([call[0] for call in calls], [
+            magnetism_scanner.get_magnetism_scan,
+            magnetism_scanner._sv9_scan_id_for_run,
+            magnetism_scanner._load_audit_read_context,
+        ])
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[1][1], (654,))
+        self.assertEqual(calls[1][2], {})
+        self.assertEqual(calls[2][1], (654, "en"))
+        self.assertEqual(calls[2][2], {})
+
+    def test_magnetism_status_loads_scan_token_via_threadpool(self):
+        from web.routes import magnetism_scanner
+        from web.storage import insert_magnetism_job
+
+        token = "status-threadpool-token"
+        insert_magnetism_job(
+            token=token,
+            brand_name="Status Threadpool",
+            url="https://status-threadpool.test",
+            input_type="url",
+            input_value="https://status-threadpool.test",
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(f"/magnetism-scanner/{token}/status")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], magnetism_scanner.get_magnetism_scan_by_token)
+        self.assertEqual(calls[0][1], (token,))
+        self.assertEqual(calls[0][2], {})
+
+    def test_magnetism_detail_loads_scan_model_via_threadpool(self):
+        from web.routes import magnetism_scanner
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A detail page brand for threadpool verification.",
+            brand_name="Detail Threadpool",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with unittest.mock.patch("web.routes.magnetism_scanner.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], magnetism_scanner.get_magnetism_scan)
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[0][2], {})
+
     def test_magnetism_scanner_preserves_language_on_detail_tabs(self):
         from web.storage import insert_magnetism_scan
 
@@ -2363,11 +2579,16 @@ class MagnetismScannerTests(unittest.TestCase):
             lambda job, progress_cb=None: json.loads(json.dumps(payload))
         )
 
-        queued = self.client.post(
-            "/api/v1/scanner",
-            json={"audit_run_id": run_id},
-            headers=self._scanner_api_headers(),
-        )
+        with unittest.mock.patch.object(
+            SQLiteStore,
+            "get_run_snapshot",
+            side_effect=AssertionError("queueing should use run summary"),
+        ):
+            queued = self.client.post(
+                "/api/v1/scanner",
+                json={"audit_run_id": run_id},
+                headers=self._scanner_api_headers(),
+            )
 
         self.assertEqual(queued.status_code, 202)
         queued_payload = queued.json()
@@ -2433,6 +2654,160 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertTrue(audit.json()["available"])
         self.assertIn("API Linked has an attached audit snapshot.", audit.text)
 
+    def test_scanner_api_create_from_audit_run_loads_summary_via_threadpool(self):
+        from web.routes import scanner_api
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            if func is scanner_api.get_magnetism_scan:
+                return func(*args, **kwargs)
+            return None
+
+        with unittest.mock.patch("web.routes.scanner_api.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.post(
+                "/api/v1/scanner",
+                json={"audit_run_id": 456},
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], scanner_api._load_run_summary)
+        self.assertEqual(calls[0][1], (456,))
+        self.assertEqual(calls[0][2], {})
+
+    def test_scanner_api_audit_loads_snapshot_via_threadpool(self):
+        from web.routes import scanner_api
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API brand with an audit source.",
+            brand_name="API Audit Context",
+        )
+        payload["source_run_id"] = 789
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=789,
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            if func is scanner_api.get_magnetism_scan:
+                return func(*args, **kwargs)
+            return None
+
+        with unittest.mock.patch("web.routes.scanner_api.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(
+                f"/api/v1/scanner/{scan_id}/audit",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual([call[0] for call in calls], [
+            scanner_api.get_magnetism_scan,
+            scanner_api._load_run_snapshot,
+        ])
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[1][1], (789,))
+        self.assertEqual(calls[1][2], {})
+
+    def test_scanner_api_strategic_reading_loads_context_via_threadpool(self):
+        from web.routes import scanner_api
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API brand with a strategic reading source.",
+            brand_name="API Strategic Context",
+        )
+        payload["source_run_id"] = 987
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=987,
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            if func is scanner_api.get_magnetism_scan:
+                return func(*args, **kwargs)
+            return None, None, {}
+
+        with unittest.mock.patch("web.routes.scanner_api.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(
+                f"/api/v1/scanner/{scan_id}/strategic-reading?lang=en",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()["available"])
+        self.assertEqual([call[0] for call in calls], [
+            scanner_api.get_magnetism_scan,
+            scanner_api._load_strategic_read_context,
+        ])
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[1][1], (987, "en"))
+        self.assertEqual(calls[1][2], {})
+
+    def test_scanner_api_status_loads_scan_via_threadpool(self):
+        from web.routes import scanner_api
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API status brand.",
+            brand_name="API Status Threadpool",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with unittest.mock.patch("web.routes.scanner_api.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(
+                f"/api/v1/scanner/{scan_id}",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(calls), 1)
+        self.assertIs(calls[0][0], scanner_api.get_magnetism_scan)
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[0][2], {})
+
     def test_scanner_api_requires_token(self):
         response = self.client.post("/api/v1/scanner", json={"url": "https://example.com"})
         invalid_body = self.client.post(
@@ -2464,6 +2839,32 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(payload["scan_mode"]["mode"], "canonical_url")
         self.assertTrue(payload["scan_mode"]["comparable"])
         self.assertIn("/api/v1/scanner/", payload["status_url"])
+
+    def test_scanner_api_create_url_queues_job_via_threadpool(self):
+        from web.routes import scanner_api
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with unittest.mock.patch(
+            "web.workers.url_validator.socket.getaddrinfo",
+            side_effect=lambda _h, _p: [(2, 1, 6, "", ("1.1.1.1", 0))],
+        ), unittest.mock.patch("web.routes.scanner_api.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.post(
+                "/api/v1/scanner",
+                json={"url": "https://example.com", "lang": "en"},
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 202)
+        insert_calls = [call for call in calls if call[0] is scanner_api.insert_magnetism_job]
+        self.assertEqual(len(insert_calls), 1)
+        self.assertEqual(insert_calls[0][1], ())
+        self.assertEqual(insert_calls[0][2]["input_type"], "url")
+        self.assertEqual(insert_calls[0][2]["input_value"], "https://example.com")
 
     def test_scanner_api_rejects_invalid_create_requests(self):
         headers = self._scanner_api_headers()
@@ -4333,7 +4734,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn(r_status.status_code, {200, 303})
         if r_status.status_code == 200:
             status_token = status_url.split("/")[2]
-            self.assertIn('data-status-waiting data-status="running"', r_status.text)
+            self.assertIn("data-status-waiting", r_status.text)
+            self.assertRegex(r_status.text, r'data-status="(queued|running)"')
             self.assertIn('data-scan-loader', r_status.text)
             self.assertIn('data-loader-grain', r_status.text)
             self.assertIn(f'data-assets-href="/magnetism-scanner/{status_token}/assets"', r_status.text)

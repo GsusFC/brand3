@@ -1,5 +1,6 @@
 """GET /brand/{domain} — per-brand history + ASCII evolution chart."""
 
+import asyncio
 from typing import Literal
 
 from fastapi import APIRouter, Query, Request
@@ -13,7 +14,7 @@ router = APIRouter()
 
 @router.get("/brand/{domain}")
 async def brand_history(request: Request, domain: str, lang: Literal["es", "en"] = Query("es")):
-    analyses = enrich(list_brand_history(domain))
+    analyses = enrich(await asyncio.to_thread(list_brand_history, domain))
     return templates.TemplateResponse(
         request,
         "brand_history.html.j2",

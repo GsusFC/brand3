@@ -7,6 +7,8 @@ never mutates scans, V5 data, or any public surface.
 
 from __future__ import annotations
 
+import asyncio
+
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import RedirectResponse
 
@@ -38,12 +40,7 @@ def _require_team_write(request: Request) -> None:
 @router.get("/sv9/calibration")
 async def sv9_calibration_index(request: Request):
     _require_team(request)
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        scans = store.list_scans(limit=100)
-        labels = store.list_calibration_labels(limit=2000)
-    finally:
-        store.close()
+    scans, labels = await asyncio.to_thread(_load_calibration_index_data)
     labels_by_scan: dict[int, int] = {}
     for label in labels:
         labels_by_scan[label["scan_id"]] = labels_by_scan.get(label["scan_id"], 0) + 1
@@ -59,19 +56,18 @@ async def sv9_calibration_index(request: Request):
     )
 
 
+def _load_calibration_index_data() -> tuple[list[dict], list[dict]]:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        return store.list_scans(limit=100), store.list_calibration_labels(limit=2000)
+    finally:
+        store.close()
+
+
 @router.get("/sv9/calibration/{scan_id}")
 async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str = ""):
     _require_team(request)
-    store = Sv9Store(BRAND3_DB_PATH)
-    try:
-        scan = store.get_scan(scan_id)
-        labels = [
-            label
-            for label in store.list_calibration_labels(limit=2000)
-            if label["scan_id"] == scan_id
-        ]
-    finally:
-        store.close()
+    scan, labels = await asyncio.to_thread(_load_calibration_detail_data, scan_id)
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
 
@@ -115,6 +111,22 @@ async def sv9_calibration_detail(request: Request, scan_id: int, evaluador: str 
     )
 
 
+def _load_calibration_detail_data(scan_id: int) -> tuple[dict | None, list[dict]]:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        scan = store.get_scan(scan_id)
+        if scan is None:
+            return None, []
+        labels = [
+            label
+            for label in store.list_calibration_labels(limit=2000)
+            if label["scan_id"] == scan_id
+        ]
+        return scan, labels
+    finally:
+        store.close()
+
+
 @router.post("/sv9/calibration/{scan_id}/{component}")
 async def sv9_calibration_submit(
     request: Request,
@@ -137,6 +149,29 @@ async def sv9_calibration_submit(
             status_code=422, detail=f"score_humano must be between 0 and {scale}"
         )
 
+    await asyncio.to_thread(
+        _save_calibration_label,
+        scan_id,
+        component,
+        score_humano,
+        motivo.strip() or None,
+        flag_evidencia,
+        evaluador,
+    )
+    return RedirectResponse(
+        f"/sv9/calibration/{scan_id}?evaluador={evaluador}#{component}",
+        status_code=303,
+    )
+
+
+def _save_calibration_label(
+    scan_id: int,
+    component: str,
+    score_humano: int,
+    motivo: str | None,
+    flag_evidencia: bool,
+    evaluador: str,
+) -> None:
     store = Sv9Store(BRAND3_DB_PATH)
     try:
         scan = store.get_scan(scan_id)
@@ -153,14 +188,10 @@ async def sv9_calibration_submit(
             component=component,
             score_ia=int(result["score"]),
             score_humano=score_humano,
-            motivo=motivo.strip() or None,
+            motivo=motivo,
             flag_evidencia=flag_evidencia,
             evaluador=evaluador,
             rubric_version=str(scan["rubric_version"]),
         )
     finally:
         store.close()
-    return RedirectResponse(
-        f"/sv9/calibration/{scan_id}?evaluador={evaluador}#{component}",
-        status_code=303,
-    )

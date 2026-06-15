@@ -17,9 +17,6 @@ from urllib.parse import urlparse
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
-from firecrawl import Firecrawl
-
-
 _MIN_USABLE_MARKDOWN_CHARS = 200
 _TRANSIENT_FETCH_ATTEMPTS = 2
 _TRANSIENT_FETCH_DELAY_S = 1.5
@@ -115,6 +112,8 @@ class WebCollector:
         last_error = ""
         for attempt in range(_TRANSIENT_FETCH_ATTEMPTS):
             try:
+                from firecrawl import Firecrawl
+
                 doc = Firecrawl(api_key=self.api_key).scrape(
                     url,
                     formats=["markdown", "html"],

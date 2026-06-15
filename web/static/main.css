@@ -729,6 +729,7 @@ a:focus-visible {
 .status-game {
   margin-top: 22px;
   background: transparent;
+  border-top: 1px solid var(--border);
 }
 
 .status-game-head {
@@ -740,6 +741,10 @@ a:focus-visible {
   border-bottom: 1px solid var(--border);
 }
 
+.status-game-head > div:first-child {
+  min-width: 0;
+}
+
 .status-game-label {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -749,11 +754,20 @@ a:focus-visible {
 .status-game-copy {
   margin-top: 6px;
   max-width: 54ch;
+  overflow-wrap: anywhere;
 }
 
 .status-game-scoreboard {
-  min-width: 110px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(74px, auto));
+  gap: 10px;
+  min-width: 280px;
   text-align: right;
+}
+
+.status-game-scoreboard > div {
+  display: grid;
+  gap: 2px;
 }
 
 .status-game-board {
@@ -763,10 +777,12 @@ a:focus-visible {
 .status-game-canvas {
   display: block;
   width: 100%;
-  height: auto;
-  background: #f7f5ef;
+  height: clamp(150px, 22vw, 210px);
+  border: 1px solid var(--border);
+  background: var(--surface);
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  touch-action: manipulation;
 }
 
 .status-game-footer {
@@ -780,6 +796,10 @@ a:focus-visible {
 .status-game-button {
   min-height: 32px;
   padding: 5px 10px;
+}
+
+.status-game-button[aria-pressed="true"] {
+  border-color: var(--accent);
 }
 
 .pager {

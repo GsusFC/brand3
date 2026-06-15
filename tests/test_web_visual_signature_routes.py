@@ -83,6 +83,30 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
                 self.assertIn("no scoring impact", response.text)
                 self.assertIn("render-time derived", response.text)
 
+    def test_visual_signature_model_builds_via_threadpool(self):
+        from unittest.mock import patch
+
+        from web.routes import visual_signature as visual_signature_route
+
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            return func(*args, **kwargs)
+
+        with patch.object(visual_signature_route.asyncio, "to_thread", fake_to_thread):
+            response = self.client.get("/visual-signature")
+
+        self.assertEqual(response.status_code, 200)
+        model_calls = [
+            call
+            for call in calls
+            if call[0] is visual_signature_route.build_visual_signature_model
+        ]
+        self.assertEqual(len(model_calls), 1)
+        self.assertEqual(model_calls[0][1], ("overview",))
+        self.assertEqual(model_calls[0][2], {})
+
     def test_visual_signature_overview_renders_screenshot_evidence(self):
         response = self.client.get("/visual-signature")
 

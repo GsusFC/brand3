@@ -26,6 +26,7 @@ from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
 from ..reports.research_prompt_input import research_pack_prompt_input
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
+from .score_reconciliation import reconcile_label_score
 from .visual_analyzer import VisualAnalyzer
 
 
@@ -126,14 +127,7 @@ def _clean_tone_examples(raw_examples) -> tuple[list[dict], bool]:
 
 
 def _reconcile_llm_score(raw_score: float, label: str, mapping: dict[str, float]) -> float:
-    target = mapping[label]
-    if label == "unclear":
-        return target
-    if raw_score <= 10:
-        return target
-    if target >= 50 and raw_score < 25:
-        return target
-    return raw_score
+    return reconcile_label_score(raw_score, label, mapping)
 
 
 def _extract_domains_from_web(web: WebData) -> set[str]:

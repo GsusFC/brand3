@@ -132,6 +132,35 @@
   .quality-note strong { color: var(--fg-bright); }
   .quality-note.warn { border-color: var(--warn); }
   .quality-note.alert { border-color: var(--alert); }
+  .diagnostic-block {
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    border: 1px dashed var(--rule);
+    background: transparent;
+    color: var(--fg);
+  }
+  .diagnostic-block .section-head {
+    margin: 0 0 8px;
+  }
+  .diagnostic-summary {
+    margin: 0 0 10px;
+    color: var(--fg);
+  }
+  .diagnostic-block table th {
+    border-bottom: 0;
+    color: var(--muted);
+  }
+  .diagnostic-block table td {
+    color: var(--fg);
+  }
+  .state-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+  .state-list span {
+    white-space: nowrap;
+  }
 
   .tabs {
     margin-top: 24px;
@@ -325,7 +354,72 @@
       <td>Coherence, Presence, Perception, Differentiation, Vitality</td>
     </tr>
   </tbody>
-</table>
+</table><div class="diagnostic-block">
+  <div class="section-head">
+    <span class="label">Report readiness</span>
+    <span class="tag">// diagnostic</span>
+  </div>
+  <p class="diagnostic-summary">Technical diagnostic: the report can show scores and technical signals, but should not be treated as a publishable brand report because technical-only dimensions: presencia, vitalidad; not-evaluable dimensions: coherencia, percepcion; context readiness is limited.</p>
+  <table>
+    <tbody>
+      <tr>
+        <th class="col-meta">mode</th>
+        <td>Technical diagnostic</td>
+      </tr>
+      <tr>
+        <th>blockers</th>
+        <td><span class="hl-warn">core_dimensions_technical_only</span></td>
+      </tr>
+      <tr>
+        <th>warnings</th>
+        <td><span class="dim">entity_relevance_not_available: direct evidence may only mean URL presence</span></td>
+      </tr>
+      <tr>
+        <th>dimensiones</th>
+        <td>
+          <div class="state-list">
+            <span>coherencia: Not evaluable</span>
+            <span>presencia: Technical only</span>
+            <span>percepcion: Not evaluable</span>
+            <span>diferenciacion: Ready</span>
+            <span>vitalidad: Technical only</span>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>missing high-weight</th>
+        <td>coherencia: messaging_consistency, visual_consistency; presencia: social_footprint; percepcion: mention_volume; vitalidad: momentum, publication_cadence</td>
+      </tr>
+      <tr>
+        <th>Presentation policy</th>
+        <td>
+          <strong>Technical diagnostic</strong>
+          <br><span class="dim">Technical diagnostic: the report can show scores and technical signals, but should not be treated as a publishable brand report because technical-only dimensions: presencia, vitalidad; not-evaluable dimensions: coherencia, percepcion; context readiness is limited.</span>
+        </td>
+      </tr>
+      <tr>
+        <th>Editorial conclusions</th>
+        <td>blocked</td>
+      </tr>
+      <tr>
+        <th>Strategic recommendations</th>
+        <td>blocked</td>
+      </tr>
+      <tr>
+        <th>Dimension language modes</th>
+        <td>
+          <div class="state-list">
+            <span>coherencia: blocked</span>
+            <span>presencia: technical_only</span>
+            <span>percepcion: blocked</span>
+            <span>diferenciacion: technical_only</span>
+            <span>vitalidad: technical_only</span>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 <hr class="rule">
 

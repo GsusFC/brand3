@@ -13,6 +13,7 @@ from ..models.brand import FeatureValue
 from ..reports.research_prompt_input import research_pack_prompt_input
 from .authenticity import AI_PHRASES, AI_STRUCTURAL_PATTERNS, AuthenticityAnalyzer
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
+from .score_reconciliation import reconcile_label_score
 
 
 GENERIC_FALLBACK_PHRASES = [
@@ -114,9 +115,20 @@ class DiferenciacionExtractor:
         research_pack=None,
     ) -> dict[str, FeatureValue]:
         pack = research_pack if research_pack is not None else self.research_pack
+        competitor_excerpt_sources = self._competitor_excerpt_sources(competitor_data)
         return {
-            "positioning_clarity": self._positioning_clarity(web, competitor_data, pack),
-            "uniqueness": self._uniqueness(web, competitor_data, pack),
+            "positioning_clarity": self._positioning_clarity(
+                web,
+                competitor_data,
+                pack,
+                competitor_excerpt_sources=competitor_excerpt_sources,
+            ),
+            "uniqueness": self._uniqueness(
+                web,
+                competitor_data,
+                pack,
+                competitor_excerpt_sources=competitor_excerpt_sources,
+            ),
             "competitor_distance": self._competitor_distance(
                 web, exa, competitor_webs, competitor_data
             ),
@@ -159,6 +171,30 @@ class DiferenciacionExtractor:
         return web.title or web.url or "Unknown"
 
     @staticmethod
+    def _competitor_excerpt_sources(
+        competitor_data: CompetitorData = None,
+    ) -> list[tuple[str, str]]:
+        if not competitor_data:
+            return []
+        sources: list[tuple[str, str]] = []
+        for competitor in competitor_data.competitors[:3]:
+            if competitor.web_data and competitor.web_data.markdown_content:
+                sources.append((competitor.name, competitor.web_data.markdown_content))
+        return sources
+
+    @staticmethod
+    def _format_competitor_snippets(
+        excerpt_sources: list[tuple[str, str]],
+        *,
+        max_chars: int,
+    ) -> list[str]:
+        return [
+            f"{name}: {content[:max_chars]}"
+            for name, content in excerpt_sources
+            if content
+        ]
+
+    @staticmethod
     def _sentence_count(content: str) -> int:
         chunks = re.split(r"[.!?\n]+", content)
         substantial = [chunk for chunk in chunks if len(chunk.split()) >= 3]
@@ -170,17 +206,10 @@ class DiferenciacionExtractor:
         verdict: str,
         mapping: dict[str, float],
     ) -> float:
-        target = mapping[verdict]
         # LLM verdicts are semantically more stable than the scalar the model emits.
         # Preserve reasonable scores, but neutralise `unclear` and correct
         # pathological low values like clear→8 or unclear→0.
-        if verdict == "unclear":
-            return target
-        if raw_score <= 10:
-            return target
-        if target >= 50 and raw_score < 25:
-            return target
-        return raw_score
+        return reconcile_label_score(raw_score, verdict, mapping)
 
     @staticmethod
     def _tokenize_terms(text: str) -> list[str]:
@@ -255,6 +284,7 @@ class DiferenciacionExtractor:
         web: WebData = None,
         competitor_data: CompetitorData = None,
         research_pack=None,
+        competitor_excerpt_sources: list[tuple[str, str]] | None = None,
     ) -> FeatureValue:
         content = self._content(web)
         if not content:
@@ -263,16 +293,12 @@ class DiferenciacionExtractor:
         if not self.llm:
             return self._positioning_fallback(web, reason="llm_unavailable")
 
-        competitor_snippets = []
-        if competitor_data:
-            for competitor in competitor_data.competitors[:3]:
-                snippet = ""
-                if competitor.web_data and competitor.web_data.markdown_content:
-                    snippet = competitor.web_data.markdown_content[:400]
-                if snippet:
-                    competitor_snippets.append(
-                        f"{competitor.name}: {snippet}"
-                    )
+        if competitor_excerpt_sources is None:
+            competitor_excerpt_sources = self._competitor_excerpt_sources(competitor_data)
+        competitor_snippets = self._format_competitor_snippets(
+            competitor_excerpt_sources,
+            max_chars=400,
+        )
         prompt_input = (
             research_pack_prompt_input(research_pack, feature="positioning_clarity")
             or content
@@ -345,6 +371,7 @@ class DiferenciacionExtractor:
         web: WebData = None,
         competitor_data: CompetitorData = None,
         research_pack=None,
+        competitor_excerpt_sources: list[tuple[str, str]] | None = None,
     ) -> FeatureValue:
         content = self._content(web)
         if not content:
@@ -352,14 +379,12 @@ class DiferenciacionExtractor:
         if not self.llm:
             return self._uniqueness_fallback(web, reason="llm_unavailable")
 
-        competitor_snippets = []
-        if competitor_data:
-            for competitor in competitor_data.competitors[:3]:
-                snippet = ""
-                if competitor.web_data and competitor.web_data.markdown_content:
-                    snippet = competitor.web_data.markdown_content[:300]
-                if snippet:
-                    competitor_snippets.append(f"{competitor.name}: {snippet}")
+        if competitor_excerpt_sources is None:
+            competitor_excerpt_sources = self._competitor_excerpt_sources(competitor_data)
+        competitor_snippets = self._format_competitor_snippets(
+            competitor_excerpt_sources,
+            max_chars=300,
+        )
         prompt_input = (
             research_pack_prompt_input(research_pack, feature="uniqueness")
             or content

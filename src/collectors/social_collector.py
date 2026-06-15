@@ -17,9 +17,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional, Dict, List, Tuple
 
-from firecrawl import Firecrawl
-
-
 @dataclass
 class PlatformMetrics:
     """Metrics for a single social platform."""
@@ -90,6 +87,8 @@ class SocialCollector:
         if not self.api_key:
             return {"error": "FIRECRAWL_API_KEY not set"}
         try:
+            from firecrawl import Firecrawl
+
             doc = Firecrawl(api_key=self.api_key).scrape(
                 url, formats=["markdown"], timeout=60000
             )

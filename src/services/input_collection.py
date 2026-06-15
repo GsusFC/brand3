@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 import os
+from time import perf_counter
 
 from src.collectors.competitor_collector import (
     CompetitorCollector,
@@ -261,6 +262,12 @@ def _raw_payload_ref(run_id: int, source: str) -> dict[str, object]:
         "run_id": run_id,
         "source": source,
     }
+
+
+def _log_timing(label: str, started: float) -> float:
+    now = perf_counter()
+    print(f"[timing] {label}: {(now - started):.2f}s")
+    return now
 
 
 def load_cached(
@@ -1060,6 +1067,7 @@ def collect_raw_inputs(
 ) -> RawInputs:
     raw_input_cache: dict[str, str] = {}
     acquisition_steps: dict[str, AcquisitionResult] = {}
+    step_started = perf_counter()
     cache_read = _cache_reader(
         store=store,
         brand_name=brand_name,
@@ -1078,6 +1086,7 @@ def collect_raw_inputs(
         context_evidence_builder=context_evidence_builder,
         context_collector_cls=context_collector_cls,
     )
+    step_started = _log_timing("raw input context", step_started)
     web_data, web_collector = _collect_web_input(
         store=store,
         run_id=run_id,
@@ -1087,6 +1096,7 @@ def collect_raw_inputs(
         acquisition_steps=acquisition_steps,
         web_collector_cls=web_collector_cls,
     )
+    step_started = _log_timing("raw input web", step_started)
     hyperbrowser_data = _collect_hyperbrowser_input(
         store=store,
         run_id=run_id,
@@ -1097,6 +1107,7 @@ def collect_raw_inputs(
         run_input_sources=run_input_sources,
         hyperbrowser_collector_cls=hyperbrowser_collector_cls,
     )
+    step_started = _log_timing("raw input hyperbrowser", step_started)
     effective_brand_url = effective_brand_url_builder(url, web_data)
     exa_data, exa_collector = _collect_exa_input(
         store=store,
@@ -1108,6 +1119,7 @@ def collect_raw_inputs(
         acquisition_steps=acquisition_steps,
         exa_collector_cls=exa_collector_cls,
     )
+    step_started = _log_timing("raw input exa", step_started)
     parallel_shadow_data = _collect_parallel_shadow_input(
         store=store,
         run_id=run_id,
@@ -1117,6 +1129,7 @@ def collect_raw_inputs(
         raw_input_cache=raw_input_cache,
         acquisition_steps=acquisition_steps,
     )
+    step_started = _log_timing("raw input parallel shadow", step_started)
     social_data, social_limitation = _collect_social_input(
         store=store,
         run_id=run_id,
@@ -1128,6 +1141,7 @@ def collect_raw_inputs(
         acquisition_steps=acquisition_steps,
         social_collector=social_collector,
     )
+    step_started = _log_timing("raw input social", step_started)
     competitor_data = _collect_competitor_input(
         store=store,
         run_id=run_id,
@@ -1142,6 +1156,7 @@ def collect_raw_inputs(
         raw_input_cache=raw_input_cache,
         acquisition_steps=acquisition_steps,
     )
+    _log_timing("raw input competitors", step_started)
     return RawInputs(
         context_data=context_data,
         web_data=web_data,

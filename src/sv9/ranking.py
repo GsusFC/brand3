@@ -20,7 +20,7 @@ from src.sv9.categories import (
     category_label,
     suggest_category,
 )
-from src.sv9.rubric import RUBRIC_VERSION
+from src.sv9.rubric import LEGACY_MODEL_LABEL, MODEL_LABEL, RUBRIC_VERSION
 from src.sv9.store import Sv9Store
 
 
@@ -42,15 +42,23 @@ def build_ranking(
     category: str | None = None,
     rubric_version: str = RUBRIC_VERSION,
 ) -> dict[str, Any]:
-    """Build the ranking model: entries, cohort counts, and taxonomy."""
+    """Build the ranking model: entries, cohort counts, and taxonomy.
+
+    Migration window (prompt técnico step 8): scans from earlier rubric
+    versions are not convertible but stay in the ranking, labelled
+    model = 'v2', until they are re-scanned with the current model. The newest
+    scan per domain wins, so a re-scan automatically supersedes the v2 entry.
+    Percentiles are only computed within the current-rubric cohort, because
+    scores across rubric versions are not comparable.
+    """
     scans = store.conn.execute(
         """
-        SELECT id, brand_name, url, source_run_id, brand3_score, created_at
+        SELECT id, brand_name, url, source_run_id, brand3_score, created_at,
+               rubric_version
         FROM sv9_scans
-        WHERE is_complete = 1 AND rubric_version = ?
+        WHERE is_complete = 1
         ORDER BY created_at DESC, id DESC
         """,
-        (rubric_version,),
     ).fetchall()
 
     categories_by_domain = store.get_brand_categories()
@@ -67,12 +75,17 @@ def build_ranking(
         confirmed = assignment.get("primary_category")
         suggested = suggest_category(niche_by_run.get(scan["source_run_id"]))
         primary = confirmed or suggested
+        is_current = scan["rubric_version"] == rubric_version
         entries_by_domain[domain] = {
             "domain": domain,
             "scan_id": scan["id"],
             "brand_name": scan["brand_name"],
             "brand3_score": scan["brand3_score"],
             "scanned_at": scan["created_at"],
+            "rubric_version": scan["rubric_version"],
+            "model": MODEL_LABEL if is_current else LEGACY_MODEL_LABEL,
+            "is_current_model": is_current,
+            "needs_rescan": not is_current,
             "category": primary,
             "category_label": category_label(primary),
             "category_source": "confirmada" if confirmed else ("sugerida" if suggested else None),
@@ -84,14 +97,21 @@ def build_ranking(
         key=lambda e: (-e["brand3_score"], e["scanned_at"]),
     )
 
+    # Cohort counts and percentiles are restricted to the current model: a v2
+    # score has no comparable cohort.
+    current_entries = [e for e in entries if e["is_current_model"]]
     cohort_counts: dict[str, int] = {}
-    for entry in entries:
+    for entry in current_entries:
         if entry["category"]:
             cohort_counts[entry["category"]] = cohort_counts.get(entry["category"], 0) + 1
 
     for position, entry in enumerate(entries, start=1):
         entry["position"] = position
-        entry["percentile"] = _cohort_percentile(entry, entries, cohort_counts)
+        entry["percentile"] = (
+            _cohort_percentile(entry, current_entries, cohort_counts)
+            if entry["is_current_model"]
+            else None
+        )
 
     if category:
         entries = [e for e in entries if e["category"] == category]
@@ -99,6 +119,7 @@ def build_ranking(
     return {
         "entries": entries,
         "total": len(entries_by_domain),
+        "legacy_count": sum(1 for e in entries_by_domain.values() if not e["is_current_model"]),
         "cohort_counts": cohort_counts,
         "taxonomy": [
             {"key": key, "label": spec["label"], "count": cohort_counts.get(key, 0)}

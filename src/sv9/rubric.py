@@ -1,50 +1,78 @@
-"""SV9 rubric: components, ladders, pairs, and scoring rules as data.
+"""SV9 rubric (baldosas v3.1): components, tiles, pairs, and scoring rules as data.
 
 This module is the SV9 counterpart of the legacy `src/dimensions.py`. It defines
-the 9 scored components plus Coherencia, their cumulative ladders, the pair
-groupings, the x2 multipliers, and the Magnetism cap rule.
+the 9 scored components plus Coherencia, their 80 independent tiles (baldosas),
+the pair groupings, the x2 multipliers, the Magnetism cap rule, and the
+confidence thresholds.
 
-Design source of truth: brand3-scanner-sv9-design-v1.md.
+Design source of truth: docs/baldosas-v3.1.md.
 
 Rules encoded here:
-- Ladder criteria are the INTERNAL evaluation rubric and the shared calibration
-  rubric. They are NOT public copy: the founder-facing message is generated
-  prose conditioned on the verdict (editorial layer, not this module).
+- TILE MODEL (v3.1, replaces the cumulative ladders of v2). Each tile is an
+  independent key characteristic that is met or not. A component's score is the
+  number of lit tiles — there is no order and no dependency between tiles. The
+  tile texts in `condition` are FINAL COPY (briefing section 3), shown verbatim
+  in the canvas and the calibration form.
+- THREE STATES, TWO MEANINGS OF ZERO. A tile is `ok` (lit, +1 point), `no`
+  (off: the snapshot proves the brand does not communicate or meet it — a brand
+  failure) or `sin_evidencia` (blind spot: the snapshot structurally cannot hold
+  the proof — not a brand failure). `no` and `sin_evidencia` both score 0 but are
+  never conflated in the report or the UI.
+- CONFIDENCE. A component drops to `media` confidence with 2 `sin_evidencia`
+  tiles and to `baja` with 3 or more.
 - Every score and calibration record is traced against RUBRIC_VERSION. Any
-  wording change to a ladder must bump the version.
-- TILE SCORING (v2, product decision 2026-06-11): the evaluator judges every
-  criterion independently (one boolean verdict per rung with a mandatory
-  evidence quote) and the score is the COUNT OF TILES EARNED — not the
-  consecutive run from the bottom. The strict ladder rule punished brands for
-  criteria that describe alternative styles rather than prior achievements
-  (46 non-monotonic profiles in the first corpus; e.g. a deliberately formal
-  brand failing "intenta ser humana" was capped at 1/10 while demonstrably
-  earning higher tiles). Not-evaluable tiles never score: coverage gaps are
-  recorded, not punished or gifted. See src/sv9/aggregator.py.
-
-Criteria wording status: draft (briefing v2.1 section 5). A joint writing
-session will produce the final wording; tile format is closed, wording is not.
+  wording change to a tile must bump the version (governance: tiles change by
+  calibration, not by intuition; see docs/baldosas-v3.1.md section 5).
+- The LLM judges tiles and quotes evidence. The score, the x2 multipliers, the
+  confidence index, and the Magnetism cap are all computed by code
+  (src/sv9/aggregator.py), never by the model.
 """
 
 from __future__ import annotations
 
-RUBRIC_VERSION = "sv9-rubric-v2"
+RUBRIC_VERSION = "baldosas-v3-1"
 
-# Component statuses (doc section 3: detectado / no_detectado / no_evaluado).
-STATUS_SCORED = "scored"            # detectado: evaluated against the ladder
+# The model label persisted on every scan and shown in the ranking during the
+# migration window. Scans from earlier rubric versions are labelled "v2".
+MODEL_LABEL = "v3.1"
+LEGACY_MODEL_LABEL = "v2"
+
+# Model routing (deploy brief section 2.6): the 8 base components run on the
+# fast Flash tier; Magnetism and Coherencia — the two fine judgments that weigh
+# 40/100 and concentrate the bias — run on the reasoning tier. The concrete
+# model ids are parameterized in src/config.py so the routing can be measured in
+# regression (Flash vs reasoning on these two components).
+REASONING_COMPONENTS = ("magnetism", "coherencia")
+
+# Component statuses (same lifecycle as v2).
+STATUS_SCORED = "scored"            # detectado: evaluated against the tiles
 STATUS_NOT_DETECTED = "not_detected"  # no_detectado: diagnosis, scores 0
 STATUS_NOT_EVALUATED = "not_evaluated"  # no_evaluado: technical failure, scores 0, retryable
 
-# Magnetism cap rule (doc section 3): if the normalized mean of the 8 base
-# components is below this threshold (0-10 scale), Magnetism cannot exceed the cap.
+# Tile states (briefing section 1, rule 3).
+ESTADO_OK = "ok"
+ESTADO_NO = "no"
+ESTADO_SIN_EVIDENCIA = "sin_evidencia"
+TILE_ESTADOS = (ESTADO_OK, ESTADO_NO, ESTADO_SIN_EVIDENCIA)
+
+# Confidence thresholds (briefing section 1, rule 4; section 4).
+CONFIDENCE_ALTA = "alta"
+CONFIDENCE_MEDIA = "media"
+CONFIDENCE_BAJA = "baja"
+CONFIDENCE_MEDIA_BLIND_SPOTS = 2
+CONFIDENCE_BAJA_BLIND_SPOTS = 3
+
+# Magnetism cap rule (briefing section 1, rule 5): if the normalized mean of the
+# 8 base components is below this threshold (0-10 scale), the lit Magnetism tiles
+# are capped at MAGNETISM_CAP_VALUE (10/20 after the x2).
 MAGNETISM_CAP_BASE_THRESHOLD = 4.0
 MAGNETISM_CAP_VALUE = 5
 
-# Coherencia review queue rule (doc section 6): scans with Coherencia at or
-# below this score enter the priority human review queue. Internal only.
+# Coherencia review queue rule: scans with Coherencia at or below this score
+# enter the priority human review queue. Internal only.
 COHERENCIA_REVIEW_THRESHOLD = 3
 
-# Presentation order (doc section 12). Calculation order is independent.
+# Presentation order. Calculation order is independent.
 PRESENTATION_ORDER = [
     "mission",
     "vision",
@@ -71,6 +99,13 @@ BASE_COMPONENTS = [
     "core_purpose",
 ]
 
+# C8's evaluator note lives inside the tile definition (prompt técnico, step 1).
+_C8_NOTE = (
+    "El scanner no puede probar el producto. Por defecto sin_evidencia, salvo que "
+    "el snapshot contenga pruebas sociales contundentes: reviews, casos de estudio "
+    "detallados o demos comprobables."
+)
+
 COMPONENTS = {
 
     "mission": {
@@ -81,12 +116,12 @@ COMPONENTS = {
         "pair": "mission_vision",
         "question": "¿Qué hace la marca concretamente hoy y para qué?",
         "level_zero": "No detectada en ninguna superficie pública.",
-        "ladder": [
-            {"rung": 1, "criterion": "Existe una misión detectable, aunque sea plantilla intercambiable: 'ser líderes', 'dar el mejor servicio'.", "internal_label": "plantilla"},
-            {"rung": 2, "criterion": "La misión es concreta, aunque limitada al producto y no al problema.", "internal_label": "concreta-producto"},
-            {"rung": 3, "criterion": "La misión es concreta y está anclada al problema real del usuario.", "internal_label": "anclada-problema"},
-            {"rung": 4, "criterion": "La misión conecta con el resto del discurso y está publicada en la web principal, no escondida en el LinkedIn del fundador.", "internal_label": "publicada-conectada"},
-            {"rung": 5, "criterion": "La misión redefine las reglas de su categoría y lo dice en público.", "internal_label": "redefine-categoria"},
+        "tiles": [
+            {"id": "M1", "name": "Detectada", "condition": "Hay una misión identificable en superficie pública propia."},
+            {"id": "M2", "name": "Propia", "condition": "No es intercambiable con cualquier marca de su categoría (“ser líderes” no enciende)."},
+            {"id": "M3", "name": "Anclada", "condition": "Conecta con un problema real: del usuario, de la categoría, del mundo o una frontera tecnológica."},
+            {"id": "M4", "name": "Coherente", "condition": "No contradice propósito ni propuesta; encaja en el discurso."},
+            {"id": "M5", "name": "Ambiciosa", "condition": "Marca un camino que lidera o redefine su categoría."},
         ],
     },
 
@@ -98,12 +133,12 @@ COMPONENTS = {
         "pair": "mission_vision",
         "question": "¿Qué futuro o cambio de categoría intenta construir la marca?",
         "level_zero": "No detectada.",
-        "ladder": [
-            {"rung": 1, "criterion": "Existe una visión detectable, aunque sea humo aspiracional sin destino: 'transformar la industria'.", "internal_label": "humo-aspiracional"},
-            {"rung": 2, "criterion": "El destino está nombrado, aunque sea indistinguible del de su competencia.", "internal_label": "destino-nombrado"},
-            {"rung": 3, "criterion": "El destino es propio: imaginable o medible.", "internal_label": "destino-propio"},
-            {"rung": 4, "criterion": "Se entiende el camino: la visión conecta con la misión.", "internal_label": "conecta-mision", "context_needs": ["mission"]},
-            {"rung": 5, "criterion": "La visión define hacia dónde va el mercado, no solo la empresa.", "internal_label": "define-mercado"},
+        "tiles": [
+            {"id": "V1", "name": "Detectada", "condition": "Hay un destino identificable."},
+            {"id": "V2", "name": "Concreta", "condition": "El destino se nombra; “transformar la industria” no enciende."},
+            {"id": "V3", "name": "Propia", "condition": "Distinguible de la visión de su competencia."},
+            {"id": "V4", "name": "Conectada", "condition": "Se entiende el camino entre la misión de hoy y el destino.", "context_needs": ["mission"]},
+            {"id": "V5", "name": "De categoría", "condition": "Define hacia dónde va el mercado, no solo la empresa."},
         ],
     },
 
@@ -115,12 +150,12 @@ COMPONENTS = {
         "pair": "values_attributes",
         "question": "¿Qué valores defiende la marca a través de lo que dice o hace?",
         "level_zero": "No detectados.",
-        "ladder": [
-            {"rung": 1, "criterion": "Existen valores detectables, aunque sean higiénicos y vacíos: 'transparencia, innovación, calidad'.", "internal_label": "higienicos"},
-            {"rung": 2, "criterion": "Los valores están declarados, aunque no se demuestren en el copy ni en la identidad.", "internal_label": "declarados"},
-            {"rung": 3, "criterion": "Los valores son propios y con ángulo claro.", "internal_label": "propios"},
-            {"rung": 4, "criterion": "Los valores son perceptibles en el tono sin necesidad de leer la lista de valores.", "internal_label": "perceptibles-tono"},
-            {"rung": 5, "criterion": "Los valores son polarizantes: repelen activamente a quien no es su cliente ideal.", "internal_label": "polarizantes"},
+        "tiles": [
+            {"id": "VA1", "name": "Detectados", "condition": "Declarados o inferibles en tono y decisiones del snapshot."},
+            {"id": "VA2", "name": "Propios", "condition": "Con ángulo; “transparencia, innovación, calidad” no enciende."},
+            {"id": "VA3", "name": "Perceptibles", "condition": "El tono los transmite sin leer ninguna lista."},
+            {"id": "VA4", "name": "Demostrados", "condition": "Copy, producto o decisiones públicas del snapshot los ejecutan."},
+            {"id": "VA5", "name": "Polarizantes", "condition": "Repelen activamente a quien no es su cliente o talento ideal."},
         ],
     },
 
@@ -132,12 +167,12 @@ COMPONENTS = {
         "pair": "values_attributes",
         "question": "¿Qué atributos demuestra la marca de forma consistente?",
         "level_zero": "No detectados.",
-        "ladder": [
-            {"rung": 1, "criterion": "Existen atributos detectables, aunque sean adjetivos comodín aplicables a cualquier marca.", "internal_label": "comodin"},
-            {"rung": 2, "criterion": "Los atributos están listados, aunque sin reflejo en producto o web.", "internal_label": "listados"},
-            {"rung": 3, "criterion": "Los atributos son específicos y observables en la experiencia real.", "internal_label": "observables"},
-            {"rung": 4, "criterion": "Los atributos son diferenciales frente al top 3 de su competencia.", "internal_label": "diferenciales"},
-            {"rung": 5, "criterion": "Los atributos son inseparables de la marca: son su firma funcional.", "internal_label": "firma-funcional"},
+        "tiles": [
+            {"id": "A1", "name": "Detectados", "condition": "Características tangibles identificables."},
+            {"id": "A2", "name": "Específicos", "condition": "Sin adjetivos comodín."},
+            {"id": "A3", "name": "Verificables", "condition": "Comprobables en producto o experiencia según el snapshot."},
+            {"id": "A4", "name": "Diferenciales", "condition": "Distintos frente a alternativas. Requiere evidencia de cohorte en el snapshot; si no la hay, sin_evidencia.", "blind_spot": True},
+            {"id": "A5", "name": "Integrados", "condition": "La marca los usa como argumento de venta, no solo los lista."},
         ],
     },
 
@@ -149,18 +184,17 @@ COMPONENTS = {
         "pair": None,
         "question": "¿Qué ofrece la marca, a quién, y qué cambia para esa audiencia?",
         "level_zero": "Ausente: la hero no dice qué venden.",
-        # Ladder order (briefing section 5): claridad, especificidad, diferencial, prueba.
-        "ladder": [
-            {"rung": 1, "criterion": "La oferta se deduce navegando, no leyendo.", "internal_label": "se-deduce"},
-            {"rung": 2, "criterion": "La oferta es clara al menos para quien ya conoce la categoría.", "internal_label": "clara-iniciados"},
-            {"rung": 3, "criterion": "La oferta es clara aunque commodity: la frase vale para cualquiera de su mercado.", "internal_label": "clara-commodity"},
-            {"rung": 4, "criterion": "La propuesta está expresada en beneficios, no en features.", "internal_label": "beneficios"},
-            {"rung": 5, "criterion": "La propuesta nombra a quién sirve: nicho definido.", "internal_label": "nicho"},
-            {"rung": 6, "criterion": "La propuesta nombra el dolor crítico que resuelve.", "internal_label": "dolor-critico"},
-            {"rung": 7, "criterion": "Hay diferencial explícito frente a las alternativas.", "internal_label": "diferencial"},
-            {"rung": 8, "criterion": "El diferencial es difícil de copiar: hay mecanismo propio.", "internal_label": "mecanismo-propio"},
-            {"rung": 9, "criterion": "Hay proof signals en la primera pantalla.", "internal_label": "proof-signals"},
-            {"rung": 10, "criterion": "La promesa es verificable: datos reales, casos o garantías irrefutables.", "internal_label": "verificable"},
+        "tiles": [
+            {"id": "P1", "name": "Detectada", "condition": "La hero dice qué venden."},
+            {"id": "P2", "name": "Clara", "condition": "Se entiende sin conocer la categoría."},
+            {"id": "P3", "name": "En beneficios", "condition": "Habla de resultado, no solo de features."},
+            {"id": "P4", "name": "Público inequívoco", "condition": "Nombrado, o evidente por producto y contexto."},
+            {"id": "P5", "name": "Tensión nombrada", "condition": "Se sabe qué dolor, deseo, necesidad o frontera tecnológica resuelve o rompe."},
+            {"id": "P6", "name": "Propia", "condition": "La frase no vale para su competencia."},
+            {"id": "P7", "name": "Diferencial explícito", "condition": "Dice por qué ella y no las alternativas. Requiere cohorte; si no, sin_evidencia.", "blind_spot": True},
+            {"id": "P8", "name": "Mecanismo propio", "condition": "El cómo es identificable y difícil de copiar."},
+            {"id": "P9", "name": "Prueba a la vista", "condition": "Proof signals en la primera pantalla."},
+            {"id": "P10", "name": "Promesa verificable", "condition": "Datos, casos o garantías irrefutables en el snapshot."},
         ],
     },
 
@@ -172,17 +206,17 @@ COMPONENTS = {
         "pair": None,
         "question": "¿Qué personalidad ejecuta la marca a través de tono, vocabulario, comportamiento y postura visual?",
         "level_zero": "Robótica: plantilla B2B estándar.",
-        "ladder": [
-            {"rung": 1, "criterion": "Hay intención de tono, aunque sea inconsistente entre páginas.", "internal_label": "tono-inconsistente"},
-            {"rung": 2, "criterion": "Intenta ser humana, aunque caiga en clichés.", "internal_label": "humana-cliches"},
-            {"rung": 3, "criterion": "Es correcta y profesional, sin arquetipo.", "internal_label": "correcta"},
-            {"rung": 4, "criterion": "Hay arquetipo insinuado, aunque no sostenido.", "internal_label": "arquetipo-insinuado"},
-            {"rung": 5, "criterion": "El arquetipo es claro en los titulares.", "internal_label": "arquetipo-titulares"},
-            {"rung": 6, "criterion": "Es consistente de titulares a microcopy.", "internal_label": "consistente-microcopy"},
-            {"rung": 7, "criterion": "Es consistente también en redes y producto.", "internal_label": "consistente-redes"},
-            {"rung": 8, "criterion": "Tiene rasgos propios reconocibles: giros, ritmo, humor.", "internal_label": "rasgos-propios"},
-            {"rung": 9, "criterion": "Pasa el test del logo tapado: sabes quién habla sin ver la marca.", "internal_label": "logo-tapado"},
-            {"rung": 10, "criterion": "La personalidad genera contenido citable; otros la imitan.", "internal_label": "citable"},
+        "tiles": [
+            {"id": "PE1", "name": "Voz detectable", "condition": "Hay un tono, no una plantilla."},
+            {"id": "PE2", "name": "Sin clichés", "condition": "No cae en los tics de su categoría."},
+            {"id": "PE3", "name": "Arquetipo identificable", "condition": "Se puede nombrar: rebelde, sabio, creador, maverick…"},
+            {"id": "PE4", "name": "Consistente entre páginas", "condition": "El tono no cambia de la home al pricing."},
+            {"id": "PE5", "name": "Consistente en microcopy", "condition": "Botones, errores y detalles hablan igual."},
+            {"id": "PE6", "name": "Consistente en redes y producto", "condition": "La voz sobrevive fuera de la web."},
+            {"id": "PE7", "name": "Rasgos propios", "condition": "Giros, ritmo, humor o dureza reconocibles."},
+            {"id": "PE8", "name": "Coherente con valores e idea", "condition": "La personalidad ejecuta lo que la marca dice ser. Temperatura libre."},
+            {"id": "PE9", "name": "Test del logo tapado", "condition": "Se reconoce quién habla sin ver la marca."},
+            {"id": "PE10", "name": "Citable", "condition": "Genera contenido que otros recuerdan o imitan."},
         ],
     },
 
@@ -192,24 +226,23 @@ COMPONENTS = {
         "scale": 10,
         "multiplier": 1,
         "pair": None,
-        # The low rungs (logo/color, estética, sistema) are judgeable from
-        # visual evidence alone even when no conceptual brand idea was detected
-        # in text; only the concept rungs (5+) need the detection. Without this,
-        # a missing concept erases observable visual identity.
+        # The visual tiles (I1-I3, I6-I9) are judgeable from visual evidence
+        # alone even when no conceptual brand idea was detected in text, so the
+        # component evaluates on signals when detection is empty.
         "evaluate_on_signals": True,
         "question": "¿Qué idea conceptual conecta categoría, oferta, expresión y metáfora?",
         "level_zero": "Plantilla sin alterar: identidad visual nula.",
-        "ladder": [
-            {"rung": 1, "criterion": "Hay logo y color, aunque sin sistema detrás.", "internal_label": "logo-color"},
-            {"rung": 2, "criterion": "Hay estética, aunque sea la genérica de su categoría.", "internal_label": "estetica-generica"},
-            {"rung": 3, "criterion": "Hay sistema visual básico y consistente.", "internal_label": "sistema-basico"},
-            {"rung": 4, "criterion": "Es correcta visualmente, aunque vacía conceptualmente.", "internal_label": "correcta-vacia"},
-            {"rung": 5, "criterion": "Hay concepto declarado, aunque no ejecutado.", "internal_label": "concepto-declarado"},
-            {"rung": 6, "criterion": "El concepto está ejecutado en la web principal.", "internal_label": "concepto-ejecutado"},
-            {"rung": 7, "criterion": "El visual traduce propósito y personalidad: dirección de arte intencionada.", "internal_label": "direccion-arte"},
-            {"rung": 8, "criterion": "El sistema es consistente en todas las superficies.", "internal_label": "consistente-superficies"},
-            {"rung": 9, "criterion": "Hay universo estético propio reconocible.", "internal_label": "universo-propio"},
-            {"rung": 10, "criterion": "La firma visual eleva el precio percibido: el envoltorio hace al producto parecer mejor de lo que sus features justifican.", "internal_label": "firma-visual"},
+        "tiles": [
+            {"id": "I1", "name": "Identidad existente", "condition": "No es una plantilla sin alterar."},
+            {"id": "I2", "name": "Sistema", "condition": "Logo, color y tipografía funcionan como conjunto."},
+            {"id": "I3", "name": "No genérica", "condition": "Se distingue de la estética estándar de su categoría."},
+            {"id": "I4", "name": "Concepto detectable", "condition": "Hay una idea detrás, declarada o evidente."},
+            {"id": "I5", "name": "Concepto ejecutado", "condition": "La idea se ve en la web principal, no solo se declara."},
+            {"id": "I6", "name": "Dirección de arte", "condition": "Decisiones visuales intencionadas, no decorativas."},
+            {"id": "I7", "name": "Traduce la estrategia", "condition": "El visual expresa propósito y personalidad."},
+            {"id": "I8", "name": "Consistente", "condition": "El sistema se sostiene en todas las superficies del snapshot."},
+            {"id": "I9", "name": "Universo propio", "condition": "Estética reconocible como suya."},
+            {"id": "I10", "name": "Eleva el precio percibido", "condition": "El envoltorio hace al producto parecer mejor de lo que sus features justifican."},
         ],
     },
 
@@ -221,17 +254,17 @@ COMPONENTS = {
         "pair": None,
         "question": "¿Por qué existe la marca más allá del producto?",
         "level_zero": "Ningún rastro del porqué en ninguna superficie pública.",
-        "ladder": [
-            {"rung": 1, "criterion": "El porqué se intuye por contexto, aunque no haya nada escrito.", "internal_label": "intuido"},
-            {"rung": 2, "criterion": "El 'about' cuenta al menos qué hacen, aunque no por qué existen.", "internal_label": "about-que"},
-            {"rung": 3, "criterion": "Hay propósito declarado, aunque genérico: 'hacer el mundo mejor'.", "internal_label": "declarado-generico"},
-            {"rung": 4, "criterion": "El propósito, aunque genérico, está anclado a su categoría.", "internal_label": "anclado-categoria"},
-            {"rung": 5, "criterion": "El propósito es explícito y propio, aunque aislado del producto.", "internal_label": "explicito-propio"},
-            {"rung": 6, "criterion": "El propósito conecta con la propuesta de valor.", "internal_label": "conecta-propuesta", "context_needs": ["value_proposition"]},
-            {"rung": 7, "criterion": "El propósito conecta con misión y visión: la cadena del porqué se sostiene.", "internal_label": "cadena-porque", "context_needs": ["mission", "vision"]},
-            {"rung": 8, "criterion": "El tono y el diseño lo respiran sin leer el 'about'.", "internal_label": "respirado"},
-            {"rung": 9, "criterion": "Está demostrado en una decisión de negocio pública: pricing, renuncias, open source.", "internal_label": "decision-publica"},
-            {"rung": 10, "criterion": "Está demostrado en varias decisiones verificables por terceros: el porqué es su reputación.", "internal_label": "reputacion"},
+        "tiles": [
+            {"id": "PR1", "name": "Detectado", "condition": "Hay un porqué en alguna superficie."},
+            {"id": "PR2", "name": "Explícito", "condition": "Escrito, no solo intuible."},
+            {"id": "PR3", "name": "Más allá del qué", "condition": "Responde por qué existen, no qué hacen."},
+            {"id": "PR4", "name": "Propio", "condition": "“Hacer el mundo mejor” no enciende."},
+            {"id": "PR5", "name": "Anclado", "condition": "Conecta con su categoría y su producto."},
+            {"id": "PR6", "name": "Conectado a la propuesta", "condition": "El porqué justifica el qué venden.", "context_needs": ["value_proposition"]},
+            {"id": "PR7", "name": "Cadena completa", "condition": "Propósito, misión y visión se sostienen juntos.", "context_needs": ["mission", "vision"]},
+            {"id": "PR8", "name": "Respirado", "condition": "Tono y diseño lo transmiten sin leer el “about”."},
+            {"id": "PR9", "name": "Demostrado", "condition": "Al menos una decisión de negocio pública del snapshot lo ejecuta."},
+            {"id": "PR10", "name": "Reputación", "condition": "Varias decisiones verificables por terceros; el porqué es su prueba social."},
         ],
     },
 
@@ -241,44 +274,41 @@ COMPONENTS = {
         "scale": 10,
         "multiplier": 2,
         "pair": None,
-        "question": "¿Qué frase, tensión o promesa es más probable que se recuerde — y está ganada, no solo expresada?",
+        "question": "¿Qué frase, tensión o promesa retiene, y por qué mecanismo: dolor, deseo, asombro, pertenencia o estatus?",
         "level_zero": "Invisible: nada retiene la atención.",
-        "ladder": [
-            {"rung": 1, "criterion": "Consigue atención de cortesía: se lee, aunque se olvide al instante.", "internal_label": "cortesia"},
-            {"rung": 2, "criterion": "Es legible aunque forgettable: sin tensión narrativa ni gancho.", "internal_label": "forgettable"},
-            {"rung": 3, "criterion": "Es funcional: se entiende, aunque no se desee.", "internal_label": "funcional"},
-            {"rung": 4, "criterion": "Hay un gancho detectable, aunque blando.", "internal_label": "gancho-blando"},
-            {"rung": 5, "criterion": "Hay hook claro que toca el dolor del cliente.", "internal_label": "hook-dolor"},
-            {"rung": 6, "criterion": "Genera interés genuino: invita a seguir explorando.", "internal_label": "interes"},
-            {"rung": 7, "criterion": "Genera deseo: el packaging hace al producto parecer superior.", "internal_label": "deseo"},
-            {"rung": 8, "criterion": "Genera preferencia activa frente a competencia con más features.", "internal_label": "preferencia"},
-            {"rung": 9, "criterion": "Genera orgullo de pertenencia: los usuarios presumen de usarla.", "internal_label": "orgullo"},
-            {"rung": 10, "criterion": "Es culto: irracionalmente atractiva, la marca tira sola.", "internal_label": "culto"},
+        "tiles": [
+            {"id": "MG1", "name": "Retiene", "condition": "Algo detiene el scroll, verbal o visual."},
+            {"id": "MG2", "name": "Mecanismo identificable", "condition": "Se sabe cuál opera: dolor, deseo, asombro, pertenencia o estatus."},
+            {"id": "MG3", "name": "Hook", "condition": "Gancho claro anclado a una tensión real de su audiencia."},
+            {"id": "MG4", "name": "Tensión narrativa", "condition": "Hay historia, no solo descripción."},
+            {"id": "MG5", "name": "Memorable", "condition": "Una frase o imagen que se queda."},
+            {"id": "MG6", "name": "Invita a explorar", "condition": "La huella pide seguir navegando."},
+            {"id": "MG7", "name": "Genera deseo", "condition": "El packaging hace al producto parecer superior."},
+            {"id": "MG8", "name": "Genera preferencia", "condition": "Da razones para elegirla frente a alternativas con más features."},
+            {"id": "MG9", "name": "Pertenencia o estatus", "condition": "Señales de orgullo: comunidad que presume o posición que se exhibe.", "blind_spot": True},
+            {"id": "MG10", "name": "Gravedad propia", "condition": "Atrae talento, prensa o comunidad sin empujar, según evidencia del snapshot.", "blind_spot": True},
         ],
     },
 
     "coherencia": {
         "label": "Coherencia",
-        "tldr_key": None,  # No detection of its own: reads the whole (doc section 6).
+        "tldr_key": None,  # No detection of its own: reads the whole.
         "scale": 10,
         "multiplier": 2,
         "pair": None,
         "question": "¿Los componentes cuentan la misma historia entre sí y en todos los espacios digitales?",
         "level_zero": "Contradicciones graves: prometen simplicidad y el producto es complejo.",
-        # Axis tags are draft metadata for the writing session (doc section 17):
-        # internal = sintonía entre los 9 componentes; external = web vs resto
-        # de espacios digitales.
-        "ladder": [
-            {"rung": 1, "criterion": "Las contradicciones son solo parciales, en mensajes clave.", "internal_label": "contradicciones-parciales", "axis": "both"},
-            {"rung": 2, "criterion": "No hay contradicción, aunque las piezas vivan en compartimentos estancos.", "internal_label": "estancos", "axis": "internal"},
-            {"rung": 3, "criterion": "Hay conexiones entre componentes, aunque débiles.", "internal_label": "conexiones-debiles", "axis": "internal"},
-            {"rung": 4, "criterion": "Lo que dicen, lo hacen: sin fricciones graves entre discurso y comportamiento.", "internal_label": "dicen-hacen", "axis": "external"},
-            {"rung": 5, "criterion": "Propósito, misión y propuesta están alineados en el texto.", "internal_label": "alineacion-texto", "axis": "internal"},
-            {"rung": 6, "criterion": "El tono coincide con los valores declarados.", "internal_label": "tono-valores", "axis": "internal"},
-            {"rung": 7, "criterion": "El diseño cuenta la misma historia que el copy.", "internal_label": "diseno-copy", "axis": "internal"},
-            {"rung": 8, "criterion": "La alineación es profunda en todas las superficies públicas: la web y el resto de espacios digitales dicen lo mismo.", "internal_label": "superficies", "axis": "external"},
-            {"rung": 9, "criterion": "Cada punto de contacto retroalimenta el propósito central.", "internal_label": "retroalimenta", "axis": "both"},
-            {"rung": 10, "criterion": "Inseparable: imposible distinguir dónde acaba el producto y empieza la marca.", "internal_label": "inseparable", "axis": "both"},
+        "tiles": [
+            {"id": "C1", "name": "Sin contradicciones graves", "condition": "No prometen simplicidad con un producto laberíntico."},
+            {"id": "C2", "name": "Sin contradicciones parciales", "condition": "Los mensajes clave no se pisan entre sí."},
+            {"id": "C3", "name": "Propósito-misión", "condition": "El porqué y el camino encajan."},
+            {"id": "C4", "name": "Misión-propuesta", "condition": "Lo que persiguen y lo que venden encajan."},
+            {"id": "C5", "name": "Valores en el tono", "condition": "La personalidad ejecuta los valores declarados o inferidos."},
+            {"id": "C6", "name": "Diseño-copy", "condition": "El visual cuenta la misma historia que el texto."},
+            {"id": "C7", "name": "Web-redes", "condition": "El discurso sobrevive al cambio de canal."},
+            {"id": "C8", "name": "Marca-producto", "condition": "La experiencia real cumple lo que la marca proyecta.", "note": _C8_NOTE, "blind_spot": True},
+            {"id": "C9", "name": "Refuerzo mutuo", "condition": "Las piezas se apoyan entre sí, no solo conviven."},
+            {"id": "C10", "name": "Inseparable", "condition": "Imposible distinguir dónde acaba el producto y empieza la marca."},
         ],
     },
 }
@@ -296,6 +326,33 @@ def component_points(key: str, score: int) -> int:
     return score * spec["multiplier"]
 
 
+def tile_ids(key: str) -> list[str]:
+    """The tile IDs for a component, in presentation order."""
+    return [tile["id"] for tile in COMPONENTS[key]["tiles"]]
+
+
+def tile_index() -> dict[str, dict[str, str]]:
+    """Flat {tile_id: {component, name, condition}} for validation and reports."""
+    index: dict[str, dict[str, str]] = {}
+    for key, spec in COMPONENTS.items():
+        for tile in spec["tiles"]:
+            index[tile["id"]] = {
+                "component": key,
+                "name": tile["name"],
+                "condition": tile["condition"],
+            }
+    return index
+
+
+def confidence_from_blind_spots(blind_spot_count: int) -> str:
+    """Component confidence from its count of `sin_evidencia` tiles."""
+    if blind_spot_count >= CONFIDENCE_BAJA_BLIND_SPOTS:
+        return CONFIDENCE_BAJA
+    if blind_spot_count >= CONFIDENCE_MEDIA_BLIND_SPOTS:
+        return CONFIDENCE_MEDIA
+    return CONFIDENCE_ALTA
+
+
 # --- Integrity checks (same spirit as legacy dimensions.py) ---
 
 assert set(PRESENTATION_ORDER) == set(COMPONENTS), "Presentation order must cover every component exactly once"
@@ -306,14 +363,21 @@ assert set(BASE_COMPONENTS) == set(COMPONENTS) - {"magnetism", "coherencia"}, \
 _total = sum(component_max_points(key) for key in COMPONENTS)
 assert _total == 100, f"Brand3 Score must total 100, got {_total}"
 
+_all_tiles = 0
+_seen_ids: set[str] = set()
 for _key, _spec in COMPONENTS.items():
-    assert len(_spec["ladder"]) == _spec["scale"], \
-        f"Ladder for '{_key}' must have exactly {_spec['scale']} rungs, got {len(_spec['ladder'])}"
-    for _idx, _rung in enumerate(_spec["ladder"], start=1):
-        assert _rung["rung"] == _idx, f"Ladder for '{_key}' must be consecutive from 1; rung {_idx} is {_rung['rung']}"
-        assert _rung["criterion"].strip(), f"Ladder for '{_key}' rung {_idx} has an empty criterion"
-    for _ctx_key in {c for r in _spec["ladder"] for c in r.get("context_needs", [])}:
-        assert _ctx_key in COMPONENTS, f"Ladder for '{_key}' references unknown component '{_ctx_key}'"
+    assert len(_spec["tiles"]) == _spec["scale"], \
+        f"Component '{_key}' must have exactly {_spec['scale']} tiles, got {len(_spec['tiles'])}"
+    for _tile in _spec["tiles"]:
+        assert _tile["id"] not in _seen_ids, f"Duplicate tile id {_tile['id']}"
+        _seen_ids.add(_tile["id"])
+        assert _tile["condition"].strip(), f"Tile {_tile['id']} has an empty condition"
+        assert _tile["name"].strip(), f"Tile {_tile['id']} has an empty name"
+        _all_tiles += 1
+    for _ctx_key in {c for t in _spec["tiles"] for c in t.get("context_needs", [])}:
+        assert _ctx_key in COMPONENTS, f"Component '{_key}' references unknown component '{_ctx_key}'"
+
+assert _all_tiles == 80, f"The baldosas model has exactly 80 tiles, got {_all_tiles}"
 
 _pairs: dict[str, list[str]] = {}
 for _key, _spec in COMPONENTS.items():

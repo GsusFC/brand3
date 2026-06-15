@@ -8,8 +8,9 @@
   </div>
 
   <p class="prose dim">
-    Scans en sombra del motor SV9. Puntúa cada componente con la escalera delante;
-    el delta humano-IA alimenta los few-shots y decide cuándo se apaga el V5.
+    Scans en sombra del motor de baldosas. Confirma o corrige cada baldosa con la
+    evidencia delante; el acuerdo humano-IA por baldosa alimenta la calibración y
+    decide cuándo se apaga el V5.
   </p>
 
   {% if not scans %}
@@ -34,7 +35,7 @@
         <td style="padding:10px 12px;"><a href="/sv9/calibration/{{ scan.id }}">#{{ scan.id }}</a></td>
         <td style="padding:10px 12px;"><a href="/sv9/scan/{{ scan.id }}">{{ scan.brand_name }}</a></td>
         <td style="padding:10px 12px;">{{ scan.brand3_score }}/100</td>
-        <td style="padding:10px 12px;" class="dim">{{ scan.evaluator_model or '—' }}</td>
+        <td style="padding:10px 12px;" class="dim">{{ scan.model or 'v2' }}</td>
         <td style="padding:10px 12px;">
           {% if scan.magnetism_capped %}<span class="tag">cap</span>{% endif %}
           {% if scan.needs_review %}<span class="tag">revisión</span>{% endif %}

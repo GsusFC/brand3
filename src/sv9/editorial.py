@@ -1,11 +1,9 @@
 """SV9 editorial layer: founder-facing prose conditioned on the verdict.
 
-Implementation order step 3 (design doc section 7). The inviolable order is
-number first, prose after: generation receives the reached rung, the first
-failed criterion, and the brand's own evidence as hard constraints — it can
-explain the score, never move it. This is what replaces the generic ladder
-copy the briefing originally planned: same rubric underneath, personalized
-voice on top.
+The inviolable order is number first, prose after: generation receives the
+score, the first off tile (baldosa apagada), and the brand's own evidence as
+hard constraints — it can explain the score, never move it. Same rubric
+underneath, personalized voice on top.
 
 Messages are presentation, not scoring: a generation failure leaves the
 component without a message and never touches scores or statuses.
@@ -126,21 +124,21 @@ def _component_message(
     spec = COMPONENTS[key]
     score = int(component.get("score") or 0)
     detected = str(component.get("detected_content") or "").strip()
+    tiles_by_id = {tile["id"]: tile for tile in spec["tiles"]}
 
-    passed_evidence = []
+    lit_evidence = []
     failed_criterion = None
-    for verdict in component.get("rung_profile") or []:
+    for verdict in component.get("tile_profile") or []:
         verdict = verdict if isinstance(verdict, dict) else verdict.to_dict()
-        rung_number = int(verdict.get("rung") or 0)
-        if verdict.get("passed") and verdict.get("evidence"):
-            passed_evidence.append(str(verdict["evidence"]))
-        elif failed_criterion is None and not verdict.get("passed") and 1 <= rung_number <= spec["scale"]:
-            ladder_rung = spec["ladder"][rung_number - 1]
-            failed_criterion = ladder_rung["criterion"]
-    if failed_criterion is None and score < spec["scale"]:
-        failed_criterion = spec["ladder"][score]["criterion"]
+        estado = str(verdict.get("estado") or "")
+        tile = tiles_by_id.get(str(verdict.get("id") or ""))
+        if estado == "ok" and verdict.get("evidencia"):
+            lit_evidence.append(str(verdict["evidencia"]))
+        elif failed_criterion is None and estado == "no" and tile:
+            # The work plan is the off tiles; blind spots are not failures.
+            failed_criterion = tile["condition"]
 
-    evidence_section = "\n".join(f"- {quote}" for quote in passed_evidence[:6]) or "(ninguna)"
+    evidence_section = "\n".join(f"- {quote}" for quote in lit_evidence[:6]) or "(ninguna)"
     user = f"""Marca: {scan.get('brand_name')} ({scan.get('url')})
 Componente: {spec['label']}
 Pregunta del componente: {spec['question']}

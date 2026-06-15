@@ -8,8 +8,10 @@
   </div>
 
   <p class="prose dim">
-    Ordenado por Brand3 Score. Una entrada por dominio, solo scans completos de la
-    rúbrica vigente. El percentil aparece cuando su categoría alcanza
+    Ordenado por Brand3 Score. Una entrada por dominio (el scan completo más
+    reciente). Los scans del modelo anterior se mantienen etiquetados
+    <strong>v2</strong> hasta re-escanear{% if ranking.legacy_count %} ({{ ranking.legacy_count }} pendiente{{ 's' if ranking.legacy_count != 1 }}){% endif %}.
+    El percentil, solo para el modelo vigente, aparece cuando su categoría alcanza
     {{ ranking.min_cohort }} dominios.
   </p>
 
@@ -46,6 +48,7 @@
         <td style="padding:10px 12px;">{{ entry.domain }}</td>
         <td style="padding:10px 12px;">
           <a href="/sv9/scan/{{ entry.scan_id }}"><strong>{{ entry.brand3_score }}</strong><span class="dim">/100</span></a>
+          {% if entry.needs_rescan %}<span class="tag" title="modelo anterior: re-escanea para el modelo de baldosas v3.1">v2</span>{% endif %}
         </td>
         <td style="padding:10px 12px;">
           {% if entry.category_label %}

@@ -5,7 +5,7 @@ persisted Brand Audit snapshots via replay. It never collects, never touches
 V5 scoring, and never renders anywhere public.
 
 Acquisition stays owned by Brand Audit; detection (Pass 1) stays owned by the
-existing TLDR extraction. SV9 inserts the ladder engine between detection and
+existing TLDR extraction. SV9 inserts the tile engine between detection and
 the editorial layer.
 """
 
@@ -13,7 +13,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.config import BRAND3_DB_PATH, LLM_MODEL, LLM_PREMIUM_MODEL
+from src.config import (
+    BRAND3_DB_PATH,
+    LLM_MODEL,
+    SV9_BASE_MODEL,
+    SV9_REASONING_MODEL,
+)
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.services.magnetism_service import load_brand_audit_snapshot
@@ -99,6 +104,7 @@ def run_sv9_from_audit_snapshot(
     snapshot: dict[str, Any],
     *,
     llm: LLMAnalyzer | None = None,
+    reasoning_llm: LLMAnalyzer | None = None,
     magnetism_result: dict[str, Any] | None = None,
     extra_signals: dict[str, Any] | None = None,
 ) -> Sv9ScanResult:
@@ -108,10 +114,21 @@ def run_sv9_from_audit_snapshot(
     (e.g. a persisted Magnetism scan payload) and skip re-detection.
     `extra_signals` ({component: [signal, ...]}) merge on top of the snapshot
     signals — e.g. the SV9-time vision pass over the persisted screenshot.
+
+    Model routing (deploy brief section 2.6): detection and the 8 base
+    components run on the Flash tier (`llm`); Magnetism and Coherencia run on
+    the reasoning tier (`reasoning_llm`). When a caller passes an explicit
+    `llm`, it serves both tiers unless `reasoning_llm` is also given.
     """
-    llm = _effective_llm(llm)
+    base_llm = _effective_llm(llm)
+    if reasoning_llm is not None:
+        reasoning = reasoning_llm
+    elif llm is not None:
+        reasoning = llm  # caller-supplied single client serves both tiers
+    else:
+        reasoning = _reasoning_llm()
     if magnetism_result is None:
-        magnetism_result = MagnetismExtractor(llm=llm).extract_from_audit_snapshot(snapshot)
+        magnetism_result = MagnetismExtractor(llm=base_llm).extract_from_audit_snapshot(snapshot)
 
     # get_run_snapshot nests run metadata under "run"; manual snapshots may
     # carry it at the top level. Accept both shapes.
@@ -142,7 +159,8 @@ def run_sv9_from_audit_snapshot(
         signals=signals,
         brand_name=brand_name,
         url=url,
-        llm=llm,
+        llm=base_llm,
+        reasoning_llm=reasoning,
     )
     result = aggregate(
         components,
@@ -150,7 +168,9 @@ def run_sv9_from_audit_snapshot(
         url=url,
         source_run_id=source_run_id,
     )
-    result.evaluator_model = getattr(llm, "model", None)
+    # Scan-level label records the base tier; per-component evaluation_model
+    # captures the Flash/reasoning routing for regression measurement.
+    result.evaluator_model = getattr(base_llm, "model", None)
     return result
 
 
@@ -169,9 +189,18 @@ def detect_for_snapshot(
 
 
 def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
+    """Base (Flash) tier: detection and the 8 base components."""
     if llm is not None:
         return llm
-    candidate = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
+    candidate = LLMAnalyzer(model=SV9_BASE_MODEL)
+    if getattr(candidate, "api_key", None):
+        return candidate
+    return None
+
+
+def _reasoning_llm() -> LLMAnalyzer | None:
+    """Reasoning tier: Magnetism and Coherencia, the two fine judgments."""
+    candidate = LLMAnalyzer(model=SV9_REASONING_MODEL)
     if getattr(candidate, "api_key", None):
         return candidate
     return None

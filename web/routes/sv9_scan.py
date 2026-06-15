@@ -1,7 +1,9 @@
-"""Internal SV9 scan result view: the scored TLDR canvas, shadow phase.
+"""Internal SV9 scan result view: the scored TLDR canvas (baldosas v3.1).
 
-Team-only preview of what the public result screen becomes after the engine
-is validated (design doc sections 8 and 12). Read-only.
+Team-only preview of what the public result screen becomes after the engine is
+validated. Each component shows its grid of tiles with three visual states:
+lit (encendida), off (apagada, fallo de marca) and blind spot (punto ciego,
+límite del snapshot — never painted as a failure).
 """
 
 from __future__ import annotations
@@ -10,10 +12,11 @@ import asyncio
 import json
 
 from fastapi import APIRouter, Form, HTTPException, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from src.config import BRAND3_DB_PATH
-from src.sv9.rubric import COMPONENTS, component_max_points
+from src.sv9.export_md import build_scan_markdown
+from src.sv9.rubric import COMPONENTS, RUBRIC_VERSION, component_max_points
 from src.sv9.service import materialize_sv9_scan
 from src.sv9.store import Sv9Store
 
@@ -25,8 +28,8 @@ router = APIRouter()
 
 _EDITORIAL_DECISIONS = {"v9", "v2", "mix", "rewrite", "reject_both"}
 
-# Canvas layout (briefing section 6): crown on top, base at the bottom,
-# Coherencia as the frame connecting the boxes.
+# Canvas layout: crown on top, base at the bottom, Coherencia as the frame
+# connecting the boxes.
 _CANVAS_ROWS = [
     ["core_purpose", "magnetism"],
     ["value_proposition", "personality", "brand_idea"],
@@ -45,37 +48,41 @@ async def sv9_scan_view(request: Request, scan_id: int):
     if scan is None:
         raise HTTPException(status_code=404, detail="scan not found")
 
+    is_legacy = str(scan.get("rubric_version")) != RUBRIC_VERSION
     by_component = {c["component"]: c for c in scan["components"]}
 
-    def _next_rung(key: str, component: dict) -> dict | None:
-        """First tile not yet earned: the diagnosis line the TLDR cannot give.
-
-        Tile scoring: the score counts earned criteria, so "next" means the
-        lowest unearned tile, located from the verdict profile.
-        """
+    def _tiles(key: str, component: dict) -> list[dict]:
+        """Merge the rubric tiles with the component's verdicts for the grid."""
         spec = COMPONENTS[key]
-        score = int(component.get("score") or 0)
-        if component.get("status") == "not_evaluated" or score >= spec["scale"]:
-            return None
         verdicts = {
-            int(v.get("rung") or 0): v for v in component.get("rung_profile") or []
+            str(v.get("id") or ""): v for v in component.get("tile_profile") or []
         }
-        for rung in spec["ladder"]:
-            verdict = verdicts.get(rung["rung"])
-            if verdict is None or not verdict.get("passed"):
-                evaluable = bool(verdict.get("evaluable", True)) if verdict else True
-                return {
-                    "rung": rung["rung"],
-                    "criterion": rung["criterion"],
-                    "evaluable": evaluable,
+        tiles = []
+        for tile in spec["tiles"]:
+            verdict = verdicts.get(tile["id"]) or {}
+            estado = str(verdict.get("estado") or "")
+            tiles.append(
+                {
+                    "id": tile["id"],
+                    "name": tile["name"],
+                    "condition": tile["condition"],
+                    "estado": estado,
+                    "is_on": estado == "ok",
+                    "is_off": estado == "no",
+                    "is_blind": estado == "sin_evidencia",
+                    "evidencia": str(verdict.get("evidencia") or ""),
+                    "motivo": str(verdict.get("motivo") or ""),
+                    "contexto_requerido": str(verdict.get("contexto_requerido") or ""),
                 }
-        return None
+            )
+        return tiles
 
     def _box(key: str) -> dict:
         component = by_component.get(key) or {}
         spec = COMPONENTS[key]
         status = component.get("status", "not_evaluated")
         error = component.get("error") or ""
+        scored = status == "scored"
         return {
             "key": key,
             "label": spec["label"],
@@ -86,6 +93,9 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "points": component.get("points", 0),
             "status": status,
             "status_label": _status_label(status),
+            "confidence": component.get("confidence") or "alta",
+            "blind_spot_count": component.get("blind_spot_count") or 0,
+            "veredicto": component.get("veredicto") or "",
             "is_technical_failure": status == "not_evaluated",
             "error": error,
             "content": component.get("detected_content") or "",
@@ -93,7 +103,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "v2_reference": v2_blocks.get(key, {}),
             "editorial_decision": editorial_decisions.get(key, {}),
             "is_chip": key in ("attributes", "values"),
-            "next_rung": _next_rung(key, component),
+            "tiles": _tiles(key, component) if scored and not is_legacy else [],
         }
 
     canvas = [[_box(key) for key in row] for row in _CANVAS_ROWS]
@@ -127,9 +137,34 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "gap_label": gap_label,
             "magnetism_scan_id": magnetism_scan_id,
             "model": nav_model,
+            "is_legacy": is_legacy,
             "ui_lang": "es",
         },
     )
+
+
+@router.get("/sv9/scan/{scan_id}/export.md")
+async def sv9_scan_export(request: Request, scan_id: int):
+    """Download the scan as a Brand3 .md report (work plan + pending context)."""
+    _require_team(request)
+    scan = await asyncio.to_thread(_load_scan_for_export, scan_id)
+    if scan is None:
+        raise HTTPException(status_code=404, detail="scan not found")
+    markdown = build_scan_markdown(scan)
+    filename = f"brand3-scan-{scan_id}.md"
+    return PlainTextResponse(
+        markdown,
+        media_type="text/markdown; charset=utf-8",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+def _load_scan_for_export(scan_id: int) -> dict | None:
+    store = Sv9Store(BRAND3_DB_PATH)
+    try:
+        return store.get_scan(scan_id)
+    finally:
+        store.close()
 
 
 def _load_scan_view_data(scan_id: int) -> tuple[dict | None, dict, dict[str, dict], int | None]:

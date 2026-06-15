@@ -3952,8 +3952,8 @@ class MagnetismScannerTests(unittest.TestCase):
 
     def test_scan_detail_shows_generate_sv9_button_when_shadow_scan_is_missing(self):
         from src.sv9.aggregator import aggregate
-        from src.sv9.models import ComponentResult, RungVerdict, STATUS_SCORED
-        from src.sv9.rubric import COMPONENTS, RUBRIC_VERSION
+        from src.sv9.models import ComponentResult, STATUS_SCORED, TileVerdict
+        from src.sv9.rubric import COMPONENTS, RUBRIC_VERSION, tile_ids
         from src.sv9.store import Sv9Store
         from web.storage import insert_magnetism_scan
 
@@ -3997,14 +3997,19 @@ class MagnetismScannerTests(unittest.TestCase):
         for key, spec in COMPONENTS.items():
             score = min(2, spec["scale"])
             profile = [
-                RungVerdict(rung=i, passed=i <= score, evidence="e" if i <= score else "")
-                for i in range(1, spec["scale"] + 1)
+                TileVerdict(
+                    tile_id=tid,
+                    estado="ok" if i < score else "no",
+                    evidencia="e" if i < score else "",
+                    motivo="" if i < score else "m",
+                )
+                for i, tid in enumerate(tile_ids(key))
             ]
             components[key] = ComponentResult(
                 component=key,
                 status=STATUS_SCORED,
                 score=score,
-                rung_profile=profile,
+                tile_profile=profile,
                 detected_content=f"{key} evidence",
                 detection_mode="literal",
                 detection_confidence="high",

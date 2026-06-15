@@ -6,24 +6,39 @@ from src.sv9.aggregator import (
     base_average,
     immediate_margin,
     most_painful_gap,
-    score_from_rung_profile,
+    score_from_tile_profile,
 )
 from src.sv9.models import (
     ComponentResult,
-    RungVerdict,
+    ESTADO_NO,
+    ESTADO_OK,
+    ESTADO_SIN_EVIDENCIA,
     STATUS_NOT_DETECTED,
     STATUS_NOT_EVALUATED,
     STATUS_SCORED,
+    TileVerdict,
 )
-from src.sv9.rubric import COMPONENTS
+from src.sv9.rubric import COMPONENTS, tile_ids
 
 
-def scored(key: str, score: int) -> ComponentResult:
-    profile = [
-        RungVerdict(rung=i, passed=i <= score, evidence="quote" if i <= score else "")
-        for i in range(1, COMPONENTS[key]["scale"] + 1)
-    ]
-    return ComponentResult(component=key, status=STATUS_SCORED, score=score, rung_profile=profile)
+def _tile(tid: str, estado: str) -> TileVerdict:
+    if estado == ESTADO_OK:
+        return TileVerdict(tile_id=tid, estado=estado, evidencia="cita")
+    return TileVerdict(tile_id=tid, estado=estado, motivo="motivo")
+
+
+def scored(key: str, score: int, *, blind: int = 0) -> ComponentResult:
+    """Light the first `score` tiles; mark `blind` of the rest as sin_evidencia."""
+    ids = tile_ids(key)
+    profile = []
+    for i, tid in enumerate(ids):
+        if i < score:
+            profile.append(_tile(tid, ESTADO_OK))
+        elif i < score + blind:
+            profile.append(_tile(tid, ESTADO_SIN_EVIDENCIA))
+        else:
+            profile.append(_tile(tid, ESTADO_NO))
+    return ComponentResult(component=key, status=STATUS_SCORED, score=score, tile_profile=profile)
 
 
 def full_components(**overrides: ComponentResult) -> dict[str, ComponentResult]:
@@ -32,66 +47,60 @@ def full_components(**overrides: ComponentResult) -> dict[str, ComponentResult]:
     return components
 
 
-class ScoreFromRungProfileTests(unittest.TestCase):
-    """Tile scoring (rubric v2): every earned criterion adds one point."""
+class ScoreFromTileProfileTests(unittest.TestCase):
+    def test_all_lit_reaches_ceiling(self):
+        profile = [TileVerdict(tile_id=f"X{i}", estado=ESTADO_OK, evidencia="q") for i in range(10)]
+        self.assertEqual(score_from_tile_profile(profile), 10)
 
-    def test_all_passed_reaches_ceiling(self):
-        profile = [RungVerdict(rung=i, passed=True, evidence="q") for i in range(1, 11)]
-        self.assertEqual(score_from_rung_profile(profile), 10)
-
-    def test_failed_tile_does_not_truncate_tiles_above(self):
-        profile = [RungVerdict(rung=i, passed=i != 3, evidence="q") for i in range(1, 11)]
-        self.assertEqual(score_from_rung_profile(profile), 9)
-
-    def test_gapped_profile_counts_each_earned_tile(self):
+    def test_off_and_blind_tiles_score_zero(self):
         profile = [
-            RungVerdict(rung=1, passed=True, evidence="q"),
-            RungVerdict(rung=2, passed=False),
-            RungVerdict(rung=3, passed=True, evidence="q"),
+            TileVerdict(tile_id="A", estado=ESTADO_OK, evidencia="q"),
+            TileVerdict(tile_id="B", estado=ESTADO_NO, motivo="m"),
+            TileVerdict(tile_id="C", estado=ESTADO_SIN_EVIDENCIA, motivo="m"),
+            TileVerdict(tile_id="D", estado=ESTADO_OK, evidencia="q"),
         ]
-        self.assertEqual(score_from_rung_profile(profile), 2)
+        self.assertEqual(score_from_tile_profile(profile), 2)
+
+    def test_independent_no_order(self):
+        # A gap below a lit tile never truncates it (the v2 ladder bug).
+        profile = [
+            TileVerdict(tile_id="A", estado=ESTADO_NO, motivo="m"),
+            TileVerdict(tile_id="B", estado=ESTADO_OK, evidencia="q"),
+            TileVerdict(tile_id="C", estado=ESTADO_OK, evidencia="q"),
+        ]
+        self.assertEqual(score_from_tile_profile(profile), 2)
 
     def test_empty_profile_scores_zero(self):
-        self.assertEqual(score_from_rung_profile([]), 0)
-
-    def test_not_evaluable_tiles_never_score(self):
-        profile = [
-            RungVerdict(rung=1, passed=False, evaluable=False),
-            RungVerdict(rung=2, passed=True, evidence="q"),
-            RungVerdict(rung=3, passed=False, evaluable=False),
-        ]
-        self.assertEqual(score_from_rung_profile(profile), 1)
+        self.assertEqual(score_from_tile_profile([]), 0)
 
 
-class NonMonotonicDetectionTests(unittest.TestCase):
-    def test_anomalous_rungs_are_reported(self):
-        component = ComponentResult(
-            component="personality",
-            status=STATUS_SCORED,
-            score=1,
-            rung_profile=[
-                RungVerdict(rung=1, passed=True, evidence="q"),
-                RungVerdict(rung=2, passed=False),
-                RungVerdict(rung=3, passed=False),
-                RungVerdict(rung=4, passed=True, evidence="q"),
-                RungVerdict(rung=5, passed=False),
-                RungVerdict(rung=6, passed=False),
-                RungVerdict(rung=7, passed=True, evidence="q"),
-                RungVerdict(rung=8, passed=False),
-                RungVerdict(rung=9, passed=False),
-                RungVerdict(rung=10, passed=False),
-            ],
-        )
-        self.assertEqual(component.non_monotonic_rungs, [4, 7])
+class ConfidenceTests(unittest.TestCase):
+    def test_component_confidence_from_blind_spots(self):
+        self.assertEqual(scored("personality", 4, blind=0).confidence, "alta")
+        self.assertEqual(scored("personality", 4, blind=2).confidence, "media")
+        self.assertEqual(scored("personality", 4, blind=3).confidence, "baja")
+
+    def test_blind_spot_count_excludes_off_tiles(self):
+        comp = scored("attributes", 1, blind=2)  # 1 ok, 2 blind, 2 off
+        self.assertEqual(comp.blind_spot_count, 2)
+        self.assertEqual(len(comp.off_tiles), 2)
+        self.assertEqual(len(comp.blind_spot_tiles), 2)
+
+    def test_non_scored_components_have_no_confidence(self):
+        nd = ComponentResult(component="mission", status=STATUS_NOT_DETECTED)
+        ne = ComponentResult(component="vision", status=STATUS_NOT_EVALUATED, error="x")
+        self.assertIsNone(nd.confidence)
+        self.assertIsNone(ne.confidence)
+        self.assertEqual(scored("mission", 3).confidence, "alta")
 
 
 class BaseAverageAndCapTests(unittest.TestCase):
     def test_base_average_normalizes_five_point_scales(self):
         components = full_components(
-            mission=scored("mission", 5),  # 10 normalized
-            vision=scored("vision", 0),  # 0
-            values=scored("values", 5),  # 10
-            attributes=scored("attributes", 0),  # 0
+            mission=scored("mission", 5),
+            vision=scored("vision", 0),
+            values=scored("values", 5),
+            attributes=scored("attributes", 0),
             value_proposition=scored("value_proposition", 10),
             personality=scored("personality", 0),
             brand_idea=scored("brand_idea", 10),
@@ -151,7 +160,6 @@ class AggregateTests(unittest.TestCase):
             brand_name="Acme",
             url="https://acme.test",
         )
-        # mission 4 + vision 0: the pair contributes 4, never (4+0)/2 scaled.
         self.assertEqual(result.brand3_score, 100 - 5 - 1)
 
     def test_multipliers_double_magnetism_and_coherencia(self):
@@ -189,6 +197,17 @@ class AggregateTests(unittest.TestCase):
         )
         self.assertTrue(result.needs_review)
 
+    def test_total_blind_spots_reported(self):
+        result = aggregate(
+            full_components(
+                attributes=scored("attributes", 2, blind=1),
+                value_proposition=scored("value_proposition", 6, blind=2),
+            ),
+            brand_name="Acme",
+            url="https://acme.test",
+        )
+        self.assertEqual(result.total_blind_spots, 3)
+
     def test_aggregate_requires_every_component(self):
         components = full_components()
         components.pop("coherencia")
@@ -197,14 +216,14 @@ class AggregateTests(unittest.TestCase):
 
 
 class ImmediateMarginTests(unittest.TestCase):
-    def test_margin_counts_one_rung_per_component_with_multiplier(self):
+    def test_margin_counts_one_tile_per_component_with_multiplier(self):
         components = full_components(
             mission=scored("mission", 3),  # +1
             coherencia=scored("coherencia", 8),  # +2
         )
         self.assertEqual(immediate_margin(components, magnetism_capped=False), 3)
 
-    def test_not_detected_components_offer_their_first_rung(self):
+    def test_not_detected_components_offer_their_first_tile(self):
         components = full_components(
             values=ComponentResult(component="values", status=STATUS_NOT_DETECTED),
         )
@@ -216,7 +235,7 @@ class ImmediateMarginTests(unittest.TestCase):
         )
         self.assertEqual(immediate_margin(components, magnetism_capped=False), 0)
 
-    def test_capped_magnetism_gains_nothing_from_one_rung(self):
+    def test_capped_magnetism_gains_nothing_from_one_tile(self):
         components = full_components(magnetism=scored("magnetism", 5))
         self.assertEqual(immediate_margin(components, magnetism_capped=True), 0)
         self.assertEqual(immediate_margin(components, magnetism_capped=False), 2)
@@ -233,10 +252,8 @@ class MostPainfulGapTests(unittest.TestCase):
     def test_tie_breaks_toward_heavier_component(self):
         components = full_components(
             mission=scored("mission", 0),  # gap 5
-            magnetism=scored("magnetism", 8),  # gap 4 in points... use coherencia below
             coherencia=scored("coherencia", 7),  # gap 6
         )
-        # coherencia gap (6 points) > mission gap (5 points)
         self.assertEqual(most_painful_gap(components), "coherencia")
 
     def test_excludes_technical_failures(self):

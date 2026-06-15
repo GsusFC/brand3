@@ -4,9 +4,13 @@ from src.sv9.rubric import (
     BASE_COMPONENTS,
     COMPONENTS,
     PRESENTATION_ORDER,
+    REASONING_COMPONENTS,
     RUBRIC_VERSION,
     component_max_points,
     component_points,
+    confidence_from_blind_spots,
+    tile_ids,
+    tile_index,
 )
 
 
@@ -21,19 +25,43 @@ class Sv9RubricTests(unittest.TestCase):
         self.assertNotIn("magnetism", BASE_COMPONENTS)
         self.assertNotIn("coherencia", BASE_COMPONENTS)
 
+    def test_exactly_80_tiles(self):
+        self.assertEqual(sum(len(spec["tiles"]) for spec in COMPONENTS.values()), 80)
+
     def test_presentation_order_covers_everything_and_closes_with_coherencia(self):
         self.assertEqual(set(PRESENTATION_ORDER), set(COMPONENTS))
         self.assertEqual(PRESENTATION_ORDER[-1], "coherencia")
         self.assertEqual(PRESENTATION_ORDER[-2], "magnetism")
 
-    def test_ladders_match_scales_and_are_consecutive(self):
+    def test_tiles_match_scales(self):
         for key, spec in COMPONENTS.items():
-            self.assertEqual(len(spec["ladder"]), spec["scale"], key)
-            self.assertEqual(
-                [r["rung"] for r in spec["ladder"]],
-                list(range(1, spec["scale"] + 1)),
-                key,
-            )
+            self.assertEqual(len(spec["tiles"]), spec["scale"], key)
+
+    def test_tile_ids_are_unique_and_non_empty(self):
+        seen = set()
+        for key in COMPONENTS:
+            for tid in tile_ids(key):
+                self.assertTrue(tid.strip(), key)
+                self.assertNotIn(tid, seen, f"duplicate {tid}")
+                seen.add(tid)
+        self.assertEqual(len(seen), 80)
+
+    def test_expected_tile_prefixes(self):
+        self.assertEqual(tile_ids("mission"), ["M1", "M2", "M3", "M4", "M5"])
+        self.assertEqual(tile_ids("values"), ["VA1", "VA2", "VA3", "VA4", "VA5"])
+        self.assertEqual(tile_ids("magnetism")[0], "MG1")
+        self.assertEqual(tile_ids("coherencia")[-1], "C10")
+
+    def test_tile_index_maps_id_to_component(self):
+        index = tile_index()
+        self.assertEqual(index["M1"]["component"], "mission")
+        self.assertEqual(index["C8"]["component"], "coherencia")
+        self.assertEqual(len(index), 80)
+
+    def test_c8_carries_evaluator_note(self):
+        c8 = next(t for t in COMPONENTS["coherencia"]["tiles"] if t["id"] == "C8")
+        self.assertIn("sin_evidencia", c8["note"])
+        self.assertIn("reviews", c8["note"])
 
     def test_pairs_are_five_point_scales(self):
         pairs = {}
@@ -58,19 +86,27 @@ class Sv9RubricTests(unittest.TestCase):
 
     def test_relational_context_needs_reference_real_components(self):
         for key, spec in COMPONENTS.items():
-            for rung in spec["ladder"]:
-                for dep in rung.get("context_needs", []):
-                    self.assertIn(dep, COMPONENTS, f"{key} rung {rung['rung']}")
+            for tile in spec["tiles"]:
+                for dep in tile.get("context_needs", []):
+                    self.assertIn(dep, COMPONENTS, f"{key} tile {tile['id']}")
 
-    def test_coherencia_has_no_detection_and_tagged_axes(self):
-        spec = COMPONENTS["coherencia"]
-        self.assertIsNone(spec["tldr_key"])
-        axes = {r.get("axis") for r in spec["ladder"]}
-        self.assertTrue({"internal", "external"} <= axes)
+    def test_coherencia_has_no_detection(self):
+        self.assertIsNone(COMPONENTS["coherencia"]["tldr_key"])
+
+    def test_confidence_thresholds(self):
+        self.assertEqual(confidence_from_blind_spots(0), "alta")
+        self.assertEqual(confidence_from_blind_spots(1), "alta")
+        self.assertEqual(confidence_from_blind_spots(2), "media")
+        self.assertEqual(confidence_from_blind_spots(3), "baja")
+        self.assertEqual(confidence_from_blind_spots(5), "baja")
 
     def test_rubric_version_is_pinned(self):
-        # v2 = tile scoring (suma de baldosas), product decision 2026-06-11.
-        self.assertEqual(RUBRIC_VERSION, "sv9-rubric-v2")
+        self.assertEqual(RUBRIC_VERSION, "baldosas-v3-1")
+
+    def test_reasoning_components_are_the_two_heavy_judgments(self):
+        self.assertEqual(set(REASONING_COMPONENTS), {"magnetism", "coherencia"})
+        for key in REASONING_COMPONENTS:
+            self.assertEqual(COMPONENTS[key]["multiplier"], 2)
 
 
 if __name__ == "__main__":

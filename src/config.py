@@ -123,6 +123,13 @@ LLM_CHEAP_MODEL = os.environ.get("BRAND3_LLM_CHEAP_MODEL", DEFAULT_LLM_CHEAP_MOD
 LLM_PREMIUM_MODEL = os.environ.get("BRAND3_LLM_PREMIUM_MODEL", DEFAULT_LLM_PREMIUM_MODEL)
 VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)
 
+# SV9 baldosas v3.1 model routing (deploy brief section 2.6): the 8 base
+# components run on the Flash tier; Magnetism and Coherencia run on the
+# reasoning tier. Parameterized per tier so the routing is measurable in
+# regression and adjustable via secrets without a code change.
+SV9_BASE_MODEL = os.environ.get("BRAND3_SV9_BASE_MODEL", LLM_CHEAP_MODEL)
+SV9_REASONING_MODEL = os.environ.get("BRAND3_SV9_REASONING_MODEL", LLM_PREMIUM_MODEL)
+
 # Screenshot capture provider.
 SCREENSHOT_PROVIDER = os.environ.get("SCREENSHOT_PROVIDER", "playwright").strip().lower() or "playwright"
 

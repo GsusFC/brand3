@@ -1,17 +1,21 @@
-"""SV9 component evaluator: full ladder, one boolean verdict per rung.
+"""SV9 component evaluator (baldosas v3.1): one verdict per tile, three states.
 
-Evaluation principles (design doc section 5):
+Evaluation principles:
 - Chained context, independent verdicts. Evaluators receive detected texts
   (facts) from other components, never their scores (judgments).
 - Every evaluation is total: each component always returns score + status.
-  Nothing blocks anything.
-- Dependencies live in the rungs, never as preconditions. A missing upstream
-  component fails its relational rung semantically; it never aborts evaluation.
-- The LLM judges rungs and quotes evidence. The score is computed by code
-  (src/sv9/aggregator.py), never by the model.
+  Nothing blocks anything. All tiles are evaluated, always.
+- The LLM judges tiles and quotes evidence. The score, the confidence index, the
+  x2 multipliers and the Magnetism cap are computed by code, never by the model.
 
-A passed rung without an evidence quote is demoted to failed: the quote is the
-contract (cita obligatoria).
+The evidence/motive contract:
+- `ok` requires a verbatim `evidencia` quote from the snapshot. An `ok` without a
+  quote is invalid and triggers a retry; if it survives the last attempt it is
+  demoted to `no`.
+- `no` and `sin_evidencia` require a `motivo`; a missing motivo is auto-filled
+  rather than retried, to avoid burning attempts on cheap omissions.
+- Out-of-catalogue states or missing tile coverage trigger a retry with the
+  validation error fed back to the model.
 """
 
 from __future__ import annotations
@@ -20,95 +24,101 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
-from src.sv9.aggregator import score_from_rung_profile
+from src.sv9.aggregator import score_from_tile_profile
 from src.sv9.models import (
     ComponentResult,
-    RungVerdict,
+    ESTADO_NO,
+    ESTADO_OK,
+    ESTADO_SIN_EVIDENCIA,
     STATUS_NOT_DETECTED,
     STATUS_NOT_EVALUATED,
     STATUS_SCORED,
+    TileVerdict,
 )
-from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER
+from src.sv9.rubric import (
+    COMPONENTS,
+    PRESENTATION_ORDER,
+    REASONING_COMPONENTS,
+    TILE_ESTADOS,
+    tile_ids,
+)
 
-SV9_EVALUATOR_PROMPT_VERSION = "sv9-evaluator-v0.2"
+SV9_EVALUATOR_PROMPT_VERSION = "baldosas-v3.1-evaluator-v1"
 SV9_EVALUATOR_TIMEOUT_SECONDS = 90
 SV9_EVALUATOR_MAX_WORKERS = 4
+SV9_EVALUATOR_MAX_ATTEMPTS = 2
 
-_VERDICTS_JSON_SCHEMA: dict[str, Any] = {
+_TILES_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
     "properties": {
-        "verdicts": {
+        "componente": {"type": "string"},
+        "baldosas": {
             "type": "array",
             "items": {
                 "type": "object",
                 "properties": {
-                    "rung": {"type": "integer"},
-                    "passed": {"type": "boolean"},
-                    "evaluable": {"type": "boolean"},
-                    "evidence": {"type": "string"},
-                    "reasoning": {"type": "string"},
+                    "id": {"type": "string"},
+                    "estado": {"type": "string", "enum": list(TILE_ESTADOS)},
+                    "evidencia": {"type": "string"},
+                    "motivo": {"type": "string"},
+                    "contexto_requerido": {"type": "string"},
                 },
-                "required": ["rung", "passed", "evaluable", "evidence", "reasoning"],
+                "required": ["id", "estado"],
             },
-        }
+        },
+        "puntos": {"type": "integer"},
+        "confianza": {"type": "string"},
+        "veredicto": {"type": "string"},
     },
-    "required": ["verdicts"],
+    "required": ["baldosas"],
 }
 
-_EVALUATOR_SYSTEM_PROMPT = """You are the SV9 evaluator of the Brand3 Scanner.
+# Anti-bias framing (briefing section 2): injected before the tiles in every
+# system prompt. Literal, including rule 6 (evaluate only the snapshot).
+_ANTIBIAS_PREAMBLE = """Eres el evaluador del Brand3 Scanner. Juzgas UN componente de marca contra una rúbrica de baldosas (características clave independientes). Cada baldosa se enciende o no.
 
-You judge ONE brand component against a cumulative ladder rubric. Each rung
-adds exactly one observable criterion. You return one verdict per rung.
+MARCO DE CATEGORÍA (antes de puntuar)
+Clasifica el juego de la marca a partir de la evidencia del snapshot, nunca de tu conocimiento previo: consumo, B2B SaaS, infraestructura/DeepTech, institucional, lujo/cultural. La clasificación no cambia las baldosas ni los puntos: cambia qué cuenta como evidencia válida.
 
-Rules:
-- You are an evidence analyst, not a brand strategist. Judge only from the
-  material provided in the user message.
-- For every rung, decide passed=true or passed=false against that rung's
-  criterion on its own.
-- Every passed=true REQUIRES a verbatim or near-verbatim quote from the
-  provided material in the evidence field. No quote, no pass.
-- When the evidence is ambiguous or insufficient for a rung, the verdict is
-  passed=false. Prefer a false negative over an unsupported pass.
-- For every rung, also report evaluable. evaluable=false means the provided
-  material contains NO evidence channel that could prove or disprove the
-  criterion (e.g. a visual criterion with no visual observations, a
-  third-party-perception criterion with no third-party signals). A rung where
-  evidence exists but the criterion is not met is evaluable=true,
-  passed=false. Both block the ladder; the distinction is recorded.
-- Relational criteria (those that reference another component) fail when the
-  referenced component is marked '(no detectado)': you cannot connect to
-  something absent.
-- Auxiliary signals are supporting evidence collected from third-party sources
-  (mentions, sentiment, consistency analysis). They may support high rungs that
-  the brand's own site cannot prove.
-- Do not invent. Do not average. Do not reward ambition without proof.
-- Return strict JSON only, with a verdict for every rung from 1 to N.
-"""
+REGLAS ANTI-SESGO
+1. Las baldosas miden construcción, no temperatura. Ninguna exige tono "humano", "cercano" o "empático". Un arquetipo implacable y técnico ejecutado con consistencia total puntúa igual que uno cálido. Evalúa nitidez y consistencia, no simpatía.
+2. El magnetismo tiene cinco mecanismos válidos: dolor, deseo, asombro, pertenencia y estatus. Pertenencia es formar parte de algo; estatus es señalar posición ante los demás (clave en lujo, premium y Web3). No los confundas ni los cuentes doble. Identifica el mecanismo dominante antes de evaluar su ejecución; exigir "gancho de dolor" a una marca cuyo motor es el asombro o el estatus es un error de evaluación, no un fallo de la marca.
+3. El público puede ser inequívoco sin estar nombrado. Si producto y contexto del snapshot hacen evidente quién compra, el criterio se cumple con esa evidencia.
+4. "Problema real" incluye problemas de industria, de infraestructura, de mundo y fronteras tecnológicas, no solo dolores cotidianos de usuario final.
+5. Detección no es declaración. Valores y atributos perceptibles de forma consistente en tono, decisiones y producto cuentan como detectados aunque no exista una página que los liste. Anota la vía: declarado o inferido.
+6. Evalúa ÚNICAMENTE el contenido presente en el snapshot. Tu conocimiento pre-entrenado sobre la marca no existe a efectos de esta evaluación. Si sabes que la marca hace X pero X no aparece en el snapshot, la marca está fallando en comunicarlo: la baldosa se apaga. No completes, no asumas, no rellenes huecos con memoria. Toda evidencia citada debe ser literal del snapshot. La fama no sube puntos, no baja puntos y no es evidencia en ningún sentido."""
 
-_COHERENCIA_SYSTEM_PROMPT = """You are the SV9 Coherencia evaluator of the Brand3 Scanner.
+# Three-state protocol (briefing sections 1 and 4): shared by all evaluators.
+_PROTOCOL = """PROTOCOLO DE BALDOSAS (tres estados, dos significados de cero)
+- "ok": baldosa encendida. La marca lo comunica o lo cumple. Requiere "evidencia": cita LITERAL del snapshot. Sin cita literal, no es ok.
+- "no": baldosa apagada. El snapshot demuestra que la marca NO lo comunica o NO lo cumple. Es un fallo de marca. Requiere "motivo".
+- "sin_evidencia": punto ciego. La prueba que encendería la baldosa el snapshot estructuralmente NO puede contenerla (cohorte competitivo, experiencia real de producto, dinámica interna de comunidad). No es un fallo de marca. Requiere "motivo" y, si procede, "contexto_requerido": qué aportaría el usuario para iluminarlo.
 
-Coherencia reads the whole: it has no detection of its own. You judge two axes
-against a cumulative ladder rubric:
+FRONTERA ENTRE "no" Y "sin_evidencia": si la prueba PODRÍA estar en la huella pública y no está, la baldosa se APAGA ("no"): no comunicarlo es el fallo. Reserva "sin_evidencia" solo para baldosas cuya prueba el snapshot no puede contener por su naturaleza.
 
-- INTERNAL axis (sintonía): do the 9 components tell the same story? Does the
-  vision continue the mission? Does the personality embody the values? Does the
-  magnetism grow from the value proposition or is it a pasted slogan?
-- EXTERNAL axis (consistencia): does what the brand says on its site match what
-  it says — and what is said about it — across the rest of its digital spaces?
-  Judge this axis from the auxiliary consistency signals.
+REGLAS DE SALIDA
+- Evalúa TODAS las baldosas del componente, siempre. Una por una. Sin orden ni dependencia.
+- No inventes. No promedies. No premies ambición sin prueba.
+- Devuelve JSON estricto con una entrada por cada baldosa, usando su id exacto."""
 
-Rules:
-- Judge only from the material provided. One verdict per rung.
-- Every passed=true REQUIRES a quote or a concrete reference to the provided
-  material in the evidence field. No quote, no pass.
-- Missing components ('(no detectado)') are coherence information: holes mean
-  the pieces cannot be connected at that point.
-- When the evidence is ambiguous, the verdict is passed=false.
-- For every rung, also report evaluable. evaluable=false means the provided
-  material contains no evidence channel that could prove or disprove the
-  criterion. Both block the ladder; the distinction is recorded.
-- Return strict JSON only, with a verdict for every rung from 1 to N.
-"""
+_EVALUATOR_SYSTEM_PROMPT = f"""{_ANTIBIAS_PREAMBLE}
+
+{_PROTOCOL}
+
+La rúbrica de baldosas de este componente, con sus ids y condiciones, llega en el mensaje del usuario. Es la única rúbrica: no añadas ni quites baldosas."""
+
+_COHERENCIA_SYSTEM_PROMPT = f"""{_ANTIBIAS_PREAMBLE}
+
+Evalúas COHERENCIA. Coherencia no tiene detección propia: lee el conjunto en dos ejes.
+- EJE INTERNO (sintonía): ¿los 9 componentes cuentan la misma historia? ¿La visión continúa la misión? ¿La personalidad ejecuta los valores? ¿El magnetismo nace de la propuesta o es un eslogan pegado?
+- EJE EXTERNO (consistencia): ¿lo que la marca dice en su web coincide con lo que dice — y con lo que se dice de ella — en el resto de sus espacios digitales? Júzgalo con las señales auxiliares de consistencia.
+Los componentes ausentes ("(no detectado)") son información de coherencia: los huecos significan que las piezas no se pueden conectar en ese punto.
+
+{_PROTOCOL}
+
+VEREDICTO (obligatorio en Coherencia): además de las baldosas, devuelve un campo "veredicto": una sola frase de síntesis que explique si la marca cuenta una historia única y dónde se rompe o se sostiene. Es copy final que verá el fundador: directa, concreta, sin jerga de pipeline ni mención a la rúbrica.
+
+La rúbrica de baldosas de Coherencia, con sus ids y condiciones, llega en el mensaje del usuario. Es la única rúbrica."""
 
 
 def evaluate_snapshot_components(
@@ -118,13 +128,20 @@ def evaluate_snapshot_components(
     brand_name: str,
     url: str,
     llm: Any,
+    reasoning_llm: Any | None = None,
 ) -> dict[str, ComponentResult]:
     """Evaluate the 9 detected components in parallel, then Coherencia.
 
-    All nine only need detection texts (available upfront), so they are
-    independent. Coherencia needs the nine verdicts and runs last.
+    Model routing (deploy brief section 2.6): components in REASONING_COMPONENTS
+    (Magnetism, Coherencia) run on `reasoning_llm`; the rest run on `llm` (the
+    Flash tier). When `reasoning_llm` is None the same client serves both, so
+    callers that pass a single LLM keep the old single-tier behaviour.
     """
+    reasoning_llm = reasoning_llm if reasoning_llm is not None else llm
     component_keys = [key for key in PRESENTATION_ORDER if key != "coherencia"]
+
+    def _llm_for(key: str) -> Any:
+        return reasoning_llm if key in REASONING_COMPONENTS else llm
 
     def _evaluate(key: str) -> ComponentResult:
         return evaluate_component(
@@ -133,7 +150,7 @@ def evaluate_snapshot_components(
             signals=signals.get(key) or [],
             brand_name=brand_name,
             url=url,
-            llm=llm,
+            llm=_llm_for(key),
         )
 
     results: dict[str, ComponentResult] = {}
@@ -147,7 +164,7 @@ def evaluate_snapshot_components(
         signals=signals.get("coherencia") or [],
         brand_name=brand_name,
         url=url,
-        llm=llm,
+        llm=reasoning_llm,
     )
     return results
 
@@ -161,7 +178,7 @@ def evaluate_component(
     url: str,
     llm: Any,
 ) -> ComponentResult:
-    """Evaluate one of the 9 components against its full ladder."""
+    """Evaluate one of the 9 components against its full tile set."""
     spec = COMPONENTS[key]
     block = tldr.get(spec["tldr_key"]) if spec["tldr_key"] else None
     block = block if isinstance(block, dict) else {}
@@ -192,7 +209,7 @@ def evaluate_component(
         brand_name=brand_name,
         url=url,
     )
-    return _run_ladder_call(
+    return _run_tile_call(
         key,
         system=_EVALUATOR_SYSTEM_PROMPT,
         user=user_prompt,
@@ -228,7 +245,7 @@ def evaluate_coherencia(
         brand_name=brand_name,
         url=url,
     )
-    return _run_ladder_call(
+    return _run_tile_call(
         "coherencia",
         system=_COHERENCIA_SYSTEM_PROMPT,
         user=user_prompt,
@@ -236,7 +253,7 @@ def evaluate_coherencia(
     )
 
 
-def _run_ladder_call(
+def _run_tile_call(
     key: str,
     *,
     system: str,
@@ -247,90 +264,184 @@ def _run_ladder_call(
     detection_confidence: str | None = None,
     evidence: list[str] | None = None,
 ) -> ComponentResult:
-    spec = COMPONENTS[key]
-    try:
-        raw = llm._call_json(
-            system,
-            user,
-            json_schema=_VERDICTS_JSON_SCHEMA,
-            schema_name=f"sv9_ladder_{key}",
-            timeout_seconds=SV9_EVALUATOR_TIMEOUT_SECONDS,
-        )
-    except Exception as exc:  # Total evaluation: a crash is a status, not an abort.
-        raw = {}
-        failure_detail = f"evaluator_exception: {exc}"
-    else:
-        failure_detail = str(getattr(llm, "last_failure_reason", None) or "llm_error")
+    ids = tile_ids(key)
+    requires_veredicto = key == "coherencia"
+    last_error = "llm_error"
+    user_with_feedback = user
 
-    verdicts = _normalize_verdicts(raw, scale=spec["scale"])
-    if verdicts is None:
-        return ComponentResult(
-            component=key,
-            status=STATUS_NOT_EVALUATED,
-            detected_content=detected_content,
-            detection_mode=detection_mode,
-            detection_confidence=detection_confidence,
-            evidence=evidence or [],
-            error=failure_detail,
+    for attempt in range(SV9_EVALUATOR_MAX_ATTEMPTS):
+        is_last = attempt == SV9_EVALUATOR_MAX_ATTEMPTS - 1
+        try:
+            raw = llm._call_json(
+                system,
+                user_with_feedback,
+                json_schema=_TILES_JSON_SCHEMA,
+                schema_name=f"baldosas_{key}",
+                timeout_seconds=SV9_EVALUATOR_TIMEOUT_SECONDS,
+            )
+        except Exception as exc:  # Total evaluation: a crash is a status, not an abort.
+            last_error = f"evaluator_exception: {exc}"
+            break
+
+        verdicts, error = _normalize_tiles(raw, ids, lenient=is_last)
+        veredicto = str((raw or {}).get("veredicto") or "").strip() if isinstance(raw, dict) else ""
+        if verdicts is not None and (veredicto or not requires_veredicto or is_last):
+            final_veredicto = veredicto
+            if requires_veredicto and not final_veredicto:
+                # Product decision (2026-06-14): the evaluator failed to produce
+                # the mandatory synthesis sentence after retries. Rather than
+                # nuke a 20-point component, synthesize a deterministic fallback
+                # from the tile profile so the "siempre hay veredicto" contract
+                # holds without inflating or zeroing the score.
+                final_veredicto = _fallback_veredicto(key, verdicts)
+            return ComponentResult(
+                component=key,
+                status=STATUS_SCORED,
+                score=score_from_tile_profile(verdicts),
+                tile_profile=verdicts,
+                veredicto=final_veredicto,
+                evaluation_model=getattr(llm, "model", None),
+                detected_content=detected_content,
+                detection_mode=detection_mode,
+                detection_confidence=detection_confidence,
+                evidence=evidence or [],
+            )
+
+        if verdicts is not None and not veredicto and requires_veredicto:
+            error = "falta 'veredicto': frase de síntesis obligatoria en Coherencia"
+        last_error = str(getattr(llm, "last_failure_reason", None) or error or "llm_error")
+        user_with_feedback = (
+            f"{user}\n\nTu respuesta anterior fue inválida: {error}. "
+            "Corrige y devuelve JSON estricto con una baldosa por cada id, "
+            "evidencia literal en cada 'ok' y motivo en cada 'no' y 'sin_evidencia'."
+            + (" Incluye el campo 'veredicto'." if requires_veredicto else "")
         )
 
     return ComponentResult(
         component=key,
-        status=STATUS_SCORED,
-        score=score_from_rung_profile(verdicts),
-        rung_profile=verdicts,
+        status=STATUS_NOT_EVALUATED,
+        evaluation_model=getattr(llm, "model", None),
         detected_content=detected_content,
         detection_mode=detection_mode,
         detection_confidence=detection_confidence,
         evidence=evidence or [],
+        error=last_error,
     )
 
 
-def _normalize_verdicts(raw: Any, *, scale: int) -> list[RungVerdict] | None:
-    """Validate the LLM payload into one verdict per rung, or None on failure.
+def _fallback_veredicto(key: str, verdicts: list[TileVerdict]) -> str:
+    """Deterministic synthesis sentence when the evaluator omits `veredicto`.
 
-    Enforces the evidence contract: a pass without a quote is demoted to fail.
+    Founder-facing copy built from the tile counts, marked as auto-generated so
+    calibration can tell it apart from a model-written verdict.
+    """
+    scale = COMPONENTS[key]["scale"]
+    ok = sum(1 for v in verdicts if v.estado == ESTADO_OK)
+    off = sum(1 for v in verdicts if v.estado == ESTADO_NO)
+    blind = sum(1 for v in verdicts if v.estado == ESTADO_SIN_EVIDENCIA)
+    parts = [f"{ok}/{scale} baldosas encendidas"]
+    if off:
+        parts.append(f"{off} apagada{'s' if off != 1 else ''}")
+    if blind:
+        parts.append(f"{blind} punto{'s' if blind != 1 else ''} ciego{'s' if blind != 1 else ''}")
+    return "Síntesis automática: " + ", ".join(parts) + "."
+
+
+def _normalize_tiles(
+    raw: Any,
+    ids: list[str],
+    *,
+    lenient: bool,
+) -> tuple[list[TileVerdict] | None, str]:
+    """Validate the LLM payload into one verdict per tile.
+
+    Returns (verdicts, "") on success or (None, error) when the payload should
+    be retried. On the last attempt (`lenient`), recoverable problems are fixed
+    in place rather than retried: `ok` without evidence is demoted to `no`,
+    missing motivos are auto-filled.
     """
     if not isinstance(raw, dict):
-        return None
-    items = raw.get("verdicts")
+        return None, "la respuesta no es un objeto JSON"
+    items = raw.get("baldosas")
     if not isinstance(items, list):
-        return None
+        return None, "falta el array 'baldosas'"
 
-    by_rung: dict[int, RungVerdict] = {}
+    by_id: dict[str, TileVerdict] = {}
+    unknown: list[str] = []
+    bad_state: list[str] = []
+    duplicates: list[str] = []
     for item in items:
         if not isinstance(item, dict):
             continue
-        verdict = RungVerdict.from_dict(item)
-        if 1 <= verdict.rung <= scale:
-            by_rung[verdict.rung] = verdict
-    if set(by_rung) != set(range(1, scale + 1)):
-        return None
+        tile_id = str(item.get("id") or item.get("tile_id") or "").strip()
+        if tile_id not in ids:
+            if tile_id:
+                unknown.append(tile_id)
+            continue
+        estado = str(item.get("estado") or "").strip()
+        if estado not in TILE_ESTADOS:
+            bad_state.append(tile_id)
+            if not lenient:
+                continue
+            estado = ESTADO_NO
+        if tile_id in by_id:
+            # "One verdict per tile": a duplicate is a schema violation, not a
+            # silent last-writer-wins overwrite. Keep the first seen verdict.
+            duplicates.append(tile_id)
+            if not lenient:
+                continue
+        by_id.setdefault(tile_id, TileVerdict(
+            tile_id=tile_id,
+            estado=estado if estado in TILE_ESTADOS else ESTADO_NO,
+            evidencia=str(item.get("evidencia") or "").strip(),
+            motivo=str(item.get("motivo") or "").strip(),
+            contexto_requerido=str(item.get("contexto_requerido") or "").strip(),
+        ))
 
-    normalized = []
-    for rung in range(1, scale + 1):
-        verdict = by_rung[rung]
-        if verdict.passed and not verdict.evidence.strip():
-            # Evidence discipline, not a coverage gap: the model judged it
-            # passable, so the channel existed — it stays evaluable.
-            verdict = RungVerdict(
-                rung=verdict.rung,
-                passed=False,
-                evidence="",
-                reasoning=(verdict.reasoning + " | demoted: pass without evidence quote").strip(" |"),
-                evaluable=True,
+    missing = [tid for tid in ids if tid not in by_id]
+    if not lenient:
+        if duplicates:
+            return None, f"ids duplicados: {', '.join(sorted(set(duplicates)))}"
+        if unknown:
+            return None, f"ids fuera de catálogo: {', '.join(sorted(set(unknown)))}"
+        if bad_state:
+            return None, f"estado fuera de catálogo en: {', '.join(sorted(set(bad_state)))}"
+        if missing:
+            return None, f"faltan baldosas: {', '.join(missing)}"
+        no_quote = [
+            tid for tid, v in by_id.items() if v.estado == ESTADO_OK and not v.evidencia
+        ]
+        if no_quote:
+            return None, f"'ok' sin evidencia literal en: {', '.join(no_quote)}"
+
+    # Lenient pass (last attempt): fill the gaps instead of failing.
+    if missing and not lenient:
+        return None, f"faltan baldosas: {', '.join(missing)}"
+
+    normalized: list[TileVerdict] = []
+    for tid in ids:
+        verdict = by_id.get(tid)
+        if verdict is None:
+            # Only reachable when lenient: an unjudged tile is a brand failure
+            # by default, never a free pass.
+            normalized.append(
+                TileVerdict(tile_id=tid, estado=ESTADO_NO, motivo="sin veredicto del evaluador")
             )
-        if verdict.passed and not verdict.evaluable:
-            # Contradictory payload: a passed rung is evaluable by definition.
-            verdict = RungVerdict(
-                rung=verdict.rung,
-                passed=True,
-                evidence=verdict.evidence,
-                reasoning=verdict.reasoning,
-                evaluable=True,
+            continue
+        if verdict.estado == ESTADO_OK and not verdict.evidencia:
+            verdict = TileVerdict(
+                tile_id=tid,
+                estado=ESTADO_NO,
+                motivo="degradada: 'ok' sin evidencia literal citada",
+            )
+        if verdict.estado in (ESTADO_NO, ESTADO_SIN_EVIDENCIA) and not verdict.motivo:
+            verdict.motivo = (
+                "punto ciego sin motivo explícito"
+                if verdict.estado == ESTADO_SIN_EVIDENCIA
+                else "sin evidencia que la encienda"
             )
         normalized.append(verdict)
-    return normalized
+    return normalized, ""
 
 
 def _block_content_text(block: dict[str, Any]) -> str:
@@ -340,18 +451,21 @@ def _block_content_text(block: dict[str, Any]) -> str:
     return json.dumps(content, ensure_ascii=False) if content else ""
 
 
-def _ladder_lines(key: str) -> str:
-    spec = COMPONENTS[key]
-    lines = [f"0: {spec['level_zero']} (baseline, not judged)"]
-    for rung in spec["ladder"]:
-        lines.append(f"{rung['rung']}: {rung['criterion']}")
+def _tiles_lines(key: str) -> str:
+    lines = []
+    for tile in COMPONENTS[key]["tiles"]:
+        line = f"{tile['id']} · {tile['name']}: {tile['condition']}"
+        note = tile.get("note")
+        if note:
+            line += f" [NOTA: {note}]"
+        lines.append(line)
     return "\n".join(lines)
 
 
 def _context_texts(key: str, tldr: dict[str, Any]) -> dict[str, str]:
-    """Detected texts of components referenced by relational rungs. Facts, not scores."""
+    """Detected texts of components referenced by relational tiles. Facts, not scores."""
     spec = COMPONENTS[key]
-    needed = {dep for rung in spec["ladder"] for dep in rung.get("context_needs", [])}
+    needed = {dep for tile in spec["tiles"] for dep in tile.get("context_needs", [])}
     context = {}
     for dep in sorted(needed):
         dep_block = tldr.get(COMPONENTS[dep]["tldr_key"]) or {}
@@ -380,6 +494,19 @@ def _signals_lines(signals: list[dict[str, Any]]) -> str:
     return "\n".join(lines)
 
 
+def _json_shape_hint(key: str) -> str:
+    first = COMPONENTS[key]["tiles"][0]["id"]
+    veredicto = ', "veredicto": "frase de síntesis"' if key == "coherencia" else ""
+    return (
+        '{"componente": "%s", "baldosas": ['
+        '{"id": "%s", "estado": "ok|no|sin_evidencia", '
+        '"evidencia": "cita literal (si ok)", '
+        '"motivo": "por qué (si no/sin_evidencia)", '
+        '"contexto_requerido": "opcional, solo en sin_evidencia"}, '
+        "... una por cada id]%s}" % (key, first, veredicto)
+    )
+
+
 def _build_component_prompt(
     key: str,
     *,
@@ -394,7 +521,7 @@ def _build_component_prompt(
     context_section = (
         "\n".join(f"- {COMPONENTS[dep]['label']}: {text}" for dep, text in context.items())
         if context
-        else "(not needed for this ladder)"
+        else "(not needed for these tiles)"
     )
     evidence_quotes = block.get("evidence") or []
     evidence_section = (
@@ -402,28 +529,28 @@ def _build_component_prompt(
     )
     return f"""Brand: {brand_name}
 URL: {url}
-Component: {spec['label']} ({key})
-Component question: {spec['question']}
+Componente: {spec['label']} ({key})
+Pregunta del componente: {spec['question']}
 
-DETECTED READING (Pass 1, evidence-based):
+LECTURA DETECTADA (Pase 1, basada en evidencia):
 content: {_block_content_text(block) or "(no detectado)"}
 mode: {block.get('mode')}
 confidence: {block.get('confidence')}
 rationale: {block.get('rationale')}
 
-EVIDENCE QUOTES:
+CITAS DE EVIDENCIA:
 {evidence_section}
 
-AUXILIARY SIGNALS (third-party / cross-surface):
+SEÑALES AUXILIARES (terceros / cross-surface):
 {_signals_lines(signals)}
 
-FACTUAL CONTEXT FROM OTHER COMPONENTS (texts, not judgments):
+CONTEXTO FACTUAL DE OTROS COMPONENTES (textos, no juicios):
 {context_section}
 
-LADDER (cumulative; judge each rung against its own criterion):
-{_ladder_lines(key)}
+RÚBRICA DE BALDOSAS (evalúa cada una de forma independiente):
+{_tiles_lines(key)}
 
-Return JSON: {{"verdicts": [{{"rung": 1, "passed": true|false, "evidence": "quote", "reasoning": "..."}}, ... one per rung 1..{spec['scale']}]}}"""
+Devuelve JSON: {_json_shape_hint(key)}"""
 
 
 def _build_coherencia_prompt(
@@ -452,16 +579,16 @@ def _build_coherencia_prompt(
             pieces.append(f"- {COMPONENTS[key]['label']}: {text}")
     return f"""Brand: {brand_name}
 URL: {url}
-Component: Coherencia
-Component question: {spec['question']}
+Componente: Coherencia
+Pregunta del componente: {spec['question']}
 
-INTERNAL AXIS — THE 9 PIECES ON THE TABLE (detected texts):
+EJE INTERNO — LAS 9 PIEZAS SOBRE LA MESA (textos detectados):
 {chr(10).join(pieces)}
 
-EXTERNAL AXIS — CROSS-SURFACE CONSISTENCY SIGNALS:
+EJE EXTERNO — SEÑALES DE CONSISTENCIA CROSS-SURFACE:
 {_signals_lines(signals)}
 
-LADDER (cumulative; judge each rung against its own criterion):
-{_ladder_lines('coherencia')}
+RÚBRICA DE BALDOSAS (evalúa cada una de forma independiente):
+{_tiles_lines('coherencia')}
 
-Return JSON: {{"verdicts": [{{"rung": 1, "passed": true|false, "evidence": "quote or concrete reference", "reasoning": "..."}}, ... one per rung 1..{spec['scale']}]}}"""
+Devuelve JSON: {_json_shape_hint('coherencia')}"""

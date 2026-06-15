@@ -14,13 +14,14 @@ from pathlib import Path
 from typing import Any
 
 from src.config import BRAND3_DB_PATH
-from src.sv9.models import ComponentResult, RungVerdict, Sv9ScanResult
+from src.sv9.models import ComponentResult, Sv9ScanResult, TileVerdict
 
 _MIGRATIONS_DIR = Path(__file__).resolve().parents[2] / "migrations"
 _MIGRATION_PATHS = [
     _MIGRATIONS_DIR / "009_sv9.sql",
     _MIGRATIONS_DIR / "010_sv9_ranking.sql",
     _MIGRATIONS_DIR / "011_sv9_editorial_decisions.sql",
+    _MIGRATIONS_DIR / "012_baldosas_v31.sql",
 ]
 
 
@@ -47,6 +48,12 @@ class Sv9Store:
         for statement in (
             "ALTER TABLE sv9_scans ADD COLUMN evaluator_model TEXT",
             "ALTER TABLE sv9_scans ADD COLUMN executive_reading TEXT",
+            # Baldosas v3.1 (migration 012): model label and tile-level data.
+            "ALTER TABLE sv9_scans ADD COLUMN model TEXT",
+            "ALTER TABLE sv9_component_scores ADD COLUMN tile_profile_json TEXT",
+            "ALTER TABLE sv9_component_scores ADD COLUMN confidence TEXT",
+            "ALTER TABLE sv9_component_scores ADD COLUMN veredicto TEXT",
+            "ALTER TABLE sv9_component_scores ADD COLUMN evaluation_model TEXT",
         ):
             try:
                 self.conn.execute(statement)
@@ -72,8 +79,8 @@ class Sv9Store:
                 brand_name, url, source_run_id, rubric_version, brand3_score,
                 base_average, magnetism_capped, immediate_margin,
                 most_painful_gap, needs_review, is_complete, evaluator_model,
-                created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                model, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 result.brand_name,
@@ -88,6 +95,7 @@ class Sv9Store:
                 int(result.needs_review),
                 int(result.is_complete),
                 result.evaluator_model,
+                result.model,
                 now,
             ),
         )
@@ -108,10 +116,11 @@ class Sv9Store:
             """
             INSERT INTO sv9_component_scores (
                 scan_id, component, status, score, scale, points,
-                rung_profile_json, detected_content, detection_mode,
+                tile_profile_json, confidence, veredicto, evaluation_model,
+                detected_content, detection_mode,
                 detection_confidence, evidence_json, message, error,
                 rubric_version, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 scan_id,
@@ -120,12 +129,15 @@ class Sv9Store:
                 component.score,
                 component.scale,
                 component.points,
-                json.dumps([v.to_dict() for v in component.rung_profile], ensure_ascii=False),
+                json.dumps([v.to_dict() for v in component.tile_profile], ensure_ascii=False),
+                component.confidence,
+                component.veredicto,
+                component.evaluation_model,
                 component.detected_content,
                 component.detection_mode,
                 component.detection_confidence,
                 json.dumps(component.evidence, ensure_ascii=False),
-                None,  # editorial message: implementation order step 3
+                None,  # editorial message: presentation layer
                 component.error,
                 rubric_version,
                 created_at,
@@ -178,7 +190,12 @@ class Sv9Store:
     @staticmethod
     def _component_row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
         payload = dict(row)
-        for json_field, target in (("rung_profile_json", "rung_profile"), ("evidence_json", "evidence")):
+        json_fields = (
+            ("tile_profile_json", "tile_profile"),
+            ("rung_profile_json", "rung_profile"),  # legacy v2 scans
+            ("evidence_json", "evidence"),
+        )
+        for json_field, target in json_fields:
             raw = payload.pop(json_field, None)
             try:
                 payload[target] = json.loads(raw) if raw else []
@@ -400,7 +417,73 @@ class Sv9Store:
             ).fetchall()
         return [dict(row) for row in rows]
 
+    # --- per-tile calibration (baldosas v3.1) ---
 
-def load_rung_profile(component_payload: dict[str, Any]) -> list[RungVerdict]:
-    """Rebuild typed rung verdicts from a persisted component payload."""
-    return [RungVerdict.from_dict(item) for item in component_payload.get("rung_profile") or []]
+    def save_tile_calibration(
+        self,
+        *,
+        scan_id: int,
+        url: str,
+        component: str,
+        baldosa_id: str,
+        estado_ia: str,
+        estado_humano: str,
+        motivo: str | None,
+        evaluador: str,
+        rubric_version: str,
+    ) -> int:
+        """One human verdict on one tile: confirms or corrects the IA state.
+
+        Record schema (prompt técnico step 7): scan_id, componente, baldosa_id,
+        estado_ia, estado_humano, motivo, evaluador, fecha.
+        """
+        cursor = self.conn.execute(
+            """
+            INSERT INTO sv9_tile_calibration (
+                scan_id, url, component, baldosa_id, estado_ia, estado_humano,
+                motivo, evaluador, rubric_version, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                scan_id,
+                url,
+                component,
+                baldosa_id,
+                estado_ia,
+                estado_humano,
+                motivo,
+                evaluador,
+                rubric_version,
+                _utcnow(),
+            ),
+        )
+        self.conn.commit()
+        return int(cursor.lastrowid)
+
+    def list_tile_calibration(
+        self,
+        *,
+        scan_id: int | None = None,
+        baldosa_id: str | None = None,
+        limit: int = 2000,
+    ) -> list[dict[str, Any]]:
+        clauses = []
+        params: list[Any] = []
+        if scan_id is not None:
+            clauses.append("scan_id = ?")
+            params.append(scan_id)
+        if baldosa_id is not None:
+            clauses.append("baldosa_id = ?")
+            params.append(baldosa_id)
+        where = f"WHERE {' AND '.join(clauses)}" if clauses else ""
+        params.append(limit)
+        rows = self.conn.execute(
+            f"SELECT * FROM sv9_tile_calibration {where} ORDER BY created_at DESC, id DESC LIMIT ?",
+            params,
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+
+def load_tile_profile(component_payload: dict[str, Any]) -> list[TileVerdict]:
+    """Rebuild typed tile verdicts from a persisted component payload."""
+    return [TileVerdict.from_dict(item) for item in component_payload.get("tile_profile") or []]

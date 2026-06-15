@@ -1,6 +1,6 @@
 import unittest
 
-from src.sv9.rubric import COMPONENTS, RUBRIC_VERSION
+from src.sv9.rubric import COMPONENTS, MODEL_LABEL, RUBRIC_VERSION
 from src.sv9.service import run_sv9_from_audit_snapshot
 from tests.test_sv9_evaluator import FakeLLM, full_tldr
 
@@ -34,7 +34,7 @@ def synthetic_snapshot() -> dict:
 
 class Sv9ServiceTests(unittest.TestCase):
     def test_full_chain_from_snapshot_with_injected_detection(self):
-        llm = FakeLLM(pass_up_to=4)
+        llm = FakeLLM(ok_up_to=4)
         result = run_sv9_from_audit_snapshot(
             synthetic_snapshot(),
             llm=llm,
@@ -49,22 +49,46 @@ class Sv9ServiceTests(unittest.TestCase):
         self.assertEqual(result.brand_name, "Acme")
         self.assertEqual(result.source_run_id, 175)
         self.assertEqual(result.rubric_version, RUBRIC_VERSION)
+        self.assertEqual(result.model, MODEL_LABEL)
         self.assertEqual(set(result.components), set(COMPONENTS))
         self.assertTrue(result.is_complete)
-        # pass_up_to=4: base avg = (4*2*4 + 4*4)/8 = 6 -> no cap; score:
+        # ok_up_to=4: base avg = 6 -> no cap; score:
         # 4 five-scales (4) + 4 ten-scales (4) + magnetism 4x2 + coherencia 4x2
         self.assertEqual(result.brand3_score, 4 * 4 + 4 * 4 + 8 + 8)
         self.assertFalse(result.magnetism_capped)
 
-        # External signals reached the evaluators that own them.
         coherencia_call = next(
-            c for c in llm.calls if c.get("schema_name") == "sv9_ladder_coherencia"
+            c for c in llm.calls if c.get("schema_name") == "baldosas_coherencia"
         )
         self.assertIn("messaging_consistency", coherencia_call["user"])
         magnetism_call = next(
-            c for c in llm.calls if c.get("schema_name") == "sv9_ladder_magnetism"
+            c for c in llm.calls if c.get("schema_name") == "baldosas_magnetism"
         )
         self.assertIn("brand_sentiment", magnetism_call["user"])
+
+        # Coherencia carries its synthesis verdict; a single client labels all
+        # components with its own model.
+        self.assertTrue(result.components["coherencia"].veredicto)
+        self.assertEqual(result.evaluator_model, llm.model)
+
+    def test_model_routing_through_service(self):
+        base = FakeLLM(ok_up_to=3, model="flash-tier")
+        reasoning = FakeLLM(ok_up_to=3, model="reasoning-tier")
+        result = run_sv9_from_audit_snapshot(
+            synthetic_snapshot(),
+            llm=base,
+            reasoning_llm=reasoning,
+            magnetism_result={
+                "brand_name": "Acme",
+                "source_url": "https://acme.test",
+                "source_run_id": 175,
+                "tldr_brand3": full_tldr(),
+            },
+        )
+        self.assertEqual(result.components["magnetism"].evaluation_model, "reasoning-tier")
+        self.assertEqual(result.components["coherencia"].evaluation_model, "reasoning-tier")
+        self.assertEqual(result.components["mission"].evaluation_model, "flash-tier")
+        self.assertEqual(result.evaluator_model, "flash-tier")
 
 
 if __name__ == "__main__":

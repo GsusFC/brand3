@@ -2,20 +2,34 @@ import unittest
 
 from src.sv9.aggregator import aggregate
 from src.sv9.editorial import build_editorial
-from src.sv9.models import ComponentResult, RungVerdict, STATUS_NOT_DETECTED, STATUS_NOT_EVALUATED, STATUS_SCORED
-from src.sv9.rubric import COMPONENTS
+from src.sv9.models import (
+    ComponentResult,
+    ESTADO_NO,
+    ESTADO_OK,
+    STATUS_NOT_DETECTED,
+    STATUS_NOT_EVALUATED,
+    STATUS_SCORED,
+    TileVerdict,
+)
+from src.sv9.rubric import COMPONENTS, tile_ids
 
 
 def scored(key: str, score: int) -> ComponentResult:
+    ids = tile_ids(key)
     profile = [
-        RungVerdict(rung=i, passed=i <= score, evidence=f"quote {i}" if i <= score else "")
-        for i in range(1, COMPONENTS[key]["scale"] + 1)
+        TileVerdict(
+            tile_id=tid,
+            estado=ESTADO_OK if i < score else ESTADO_NO,
+            evidencia=f"quote {tid}" if i < score else "",
+            motivo="" if i < score else "falta",
+        )
+        for i, tid in enumerate(ids)
     ]
     return ComponentResult(
         component=key,
         status=STATUS_SCORED,
         score=score,
-        rung_profile=profile,
+        tile_profile=profile,
         detected_content=f"{key} detected text",
     )
 
@@ -49,15 +63,14 @@ class BuildEditorialTests(unittest.TestCase):
         self.assertEqual(len(payload["component_messages"]), 10)
         self.assertEqual(payload["executive_reading"], "Lectura ejecutiva de prueba.")
 
-    def test_prompt_carries_score_evidence_and_next_criterion(self):
+    def test_prompt_carries_score_evidence_and_next_off_tile(self):
         llm = FakeEditorialLLM()
         build_editorial(scan_dict(mission=scored("mission", 3)), llm=llm)
         call = next(c for c in llm.calls if c["schema_name"] == "sv9_editorial_mission")
         self.assertIn("3/5", call["user"])
-        self.assertIn("quote 1", call["user"])
-        # next criterion: mission rung 4
-        self.assertIn(COMPONENTS["mission"]["ladder"][3]["criterion"], call["user"])
-        # the verdict is a hard constraint
+        self.assertIn("quote M1", call["user"])
+        # first off tile is M4 (index 3) when 3 are lit
+        self.assertIn(COMPONENTS["mission"]["tiles"][3]["condition"], call["user"])
         self.assertIn("definitivo", call["user"] + call["system"])
 
     def test_not_detected_gets_message_not_evaluated_does_not(self):
@@ -83,7 +96,6 @@ class BuildEditorialTests(unittest.TestCase):
         self.assertEqual(payload, {"component_messages": {}, "executive_reading": None})
 
     def test_accepts_persisted_scan_shape(self):
-        # Sv9Store.get_scan returns components as a list of dicts.
         scan = scan_dict()
         scan["components"] = [
             {**c, "component": key} for key, c in scan["components"].items()

@@ -4,21 +4,33 @@ from pathlib import Path
 
 from src.sv9.aggregator import aggregate
 from src.sv9.categories import MIN_COHORT_FOR_PERCENTILE, suggest_category
-from src.sv9.models import ComponentResult, RungVerdict, STATUS_NOT_EVALUATED, STATUS_SCORED
+from src.sv9.models import (
+    ComponentResult,
+    ESTADO_NO,
+    ESTADO_OK,
+    STATUS_NOT_EVALUATED,
+    STATUS_SCORED,
+    TileVerdict,
+)
 from src.sv9.ranking import build_ranking, domain_from_url
-from src.sv9.rubric import COMPONENTS
-from src.sv9.store import Sv9Store
+from src.sv9.rubric import COMPONENTS, tile_ids
 
 
 def scored(key: str, score: int) -> ComponentResult:
+    ids = tile_ids(key)
     profile = [
-        RungVerdict(rung=i, passed=i <= score, evidence="q" if i <= score else "")
-        for i in range(1, COMPONENTS[key]["scale"] + 1)
+        TileVerdict(
+            tile_id=tid,
+            estado=ESTADO_OK if i < score else ESTADO_NO,
+            evidencia="q" if i < score else "",
+            motivo="" if i < score else "m",
+        )
+        for i, tid in enumerate(ids)
     ]
-    return ComponentResult(component=key, status=STATUS_SCORED, score=score, rung_profile=profile)
+    return ComponentResult(component=key, status=STATUS_SCORED, score=score, tile_profile=profile)
 
 
-def make_scan(store: Sv9Store, *, brand: str, url: str, score_level: int, complete: bool = True) -> int:
+def make_scan(store, *, brand: str, url: str, score_level: int, complete: bool = True) -> int:
     components = {key: scored(key, score_level) for key in COMPONENTS}
     if not complete:
         components["values"] = ComponentResult(
@@ -26,6 +38,9 @@ def make_scan(store: Sv9Store, *, brand: str, url: str, score_level: int, comple
         )
     result = aggregate(components, brand_name=brand, url=url)
     return store.save_scan(result)
+
+
+from src.sv9.store import Sv9Store
 
 
 class DomainExtractionTests(unittest.TestCase):
@@ -55,24 +70,52 @@ class RankingTests(unittest.TestCase):
 
     def test_orders_by_score_and_dedupes_latest_per_domain(self):
         make_scan(self.store, brand="Acme", url="https://acme.test", score_level=2)
-        make_scan(self.store, brand="Acme", url="https://www.acme.test", score_level=4)  # latest wins
+        make_scan(self.store, brand="Acme", url="https://www.acme.test", score_level=4)
         make_scan(self.store, brand="Beta", url="https://beta.test", score_level=5)
 
         ranking = build_ranking(self.store)
         self.assertEqual([e["domain"] for e in ranking["entries"]], ["beta.test", "acme.test"])
         self.assertEqual(ranking["entries"][0]["position"], 1)
-        # Acme shows its latest scan's score, not the older one.
         acme = ranking["entries"][1]
         self.assertGreater(acme["brand3_score"], 40)
 
-    def test_incomplete_scans_and_other_rubric_versions_stay_out(self):
-        make_scan(self.store, brand="Par", url="https://par.test", score_level=3, complete=False)
-        complete_id = make_scan(self.store, brand="Ok", url="https://ok.test", score_level=3)
+    def test_legacy_rubric_scans_stay_labelled_v2_until_rescan(self):
+        legacy_id = make_scan(self.store, brand="Old", url="https://old.test", score_level=3)
+        current_id = make_scan(self.store, brand="New", url="https://new.test", score_level=3)
+        # Backdate-label the legacy scan to an old rubric version.
         self.store.conn.execute(
-            "UPDATE sv9_scans SET rubric_version='sv9-rubric-v0' WHERE id != ?", (complete_id,)
+            "UPDATE sv9_scans SET rubric_version='sv9-rubric-v2', model='v2' WHERE id = ?",
+            (legacy_id,),
         )
         self.store.conn.commit()
 
+        ranking = build_ranking(self.store)
+        by_domain = {e["domain"]: e for e in ranking["entries"]}
+        self.assertIn("old.test", by_domain)
+        self.assertEqual(by_domain["old.test"]["model"], "v2")
+        self.assertTrue(by_domain["old.test"]["needs_rescan"])
+        self.assertIsNone(by_domain["old.test"]["percentile"])
+        self.assertEqual(by_domain["new.test"]["model"], "v3.1")
+        self.assertFalse(by_domain["new.test"]["needs_rescan"])
+        self.assertEqual(ranking["legacy_count"], 1)
+
+    def test_rescan_supersedes_legacy_entry(self):
+        legacy_id = make_scan(self.store, brand="Brand", url="https://brand.test", score_level=2)
+        self.store.conn.execute(
+            "UPDATE sv9_scans SET rubric_version='sv9-rubric-v2', model='v2' WHERE id = ?",
+            (legacy_id,),
+        )
+        self.store.conn.commit()
+        make_scan(self.store, brand="Brand", url="https://brand.test", score_level=5)
+
+        ranking = build_ranking(self.store)
+        entries = [e for e in ranking["entries"] if e["domain"] == "brand.test"]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["model"], "v3.1")
+
+    def test_incomplete_scans_stay_out(self):
+        make_scan(self.store, brand="Par", url="https://par.test", score_level=3, complete=False)
+        make_scan(self.store, brand="Ok", url="https://ok.test", score_level=3)
         ranking = build_ranking(self.store)
         self.assertEqual([e["domain"] for e in ranking["entries"]], ["ok.test"])
 
@@ -98,7 +141,6 @@ class RankingTests(unittest.TestCase):
 
         filtered = build_ranking(self.store, category="fintech")
         self.assertEqual([e["domain"] for e in filtered["entries"]], ["acme.test"])
-        # Position is global, kept even under filter.
         self.assertEqual(filtered["entries"][0]["position"], 2)
 
     def test_percentile_omitted_below_min_cohort_and_present_above(self):
@@ -115,7 +157,7 @@ class RankingTests(unittest.TestCase):
 
         ranking = build_ranking(self.store)
         solo = next(e for e in ranking["entries"] if e["domain"] == "solo.test")
-        self.assertIsNone(solo["percentile"])  # cohort of 1
+        self.assertIsNone(solo["percentile"])
         cohort_entries = [e for e in ranking["entries"] if e["category"] == "saas_b2b"]
         self.assertTrue(all(e["percentile"] is not None for e in cohort_entries))
         best = max(cohort_entries, key=lambda e: e["brand3_score"])

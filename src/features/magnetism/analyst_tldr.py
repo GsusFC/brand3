@@ -306,6 +306,8 @@ def run_analyst_tldr_pass(
         timeout_seconds=_analyst_tldr_timeout_seconds(),
     )
     raw = _coerce_analyst_raw_json(raw_response)
+    if not raw and str(_latest_llm_failure(llm).get("reason") or "") == "schema_validation_error":
+        raw = _coerce_analyst_raw_json(getattr(llm, "last_raw_response", None))
     if not isinstance(raw, dict) or not raw:
         failure = _latest_llm_failure(llm)
         reason = str(failure.get("reason") or "llm_error")

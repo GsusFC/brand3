@@ -268,3 +268,23 @@ def test_magnetism_extractor_uses_separate_system_reading_llm(monkeypatch) -> No
 
     assert captured["llm"] is system_llm
     assert reading == {"diagnosis": "LLM system reading."}
+
+
+def test_magnetism_extractor_records_llm_model_roles() -> None:
+    class FakeLLM:
+        api_key = "test-key"
+
+        def __init__(self, model: str):
+            self.model = model
+
+    extractor = MagnetismExtractor(
+        llm=FakeLLM("extract-tier"),
+        analyst_llm=FakeLLM("analyst-tier"),
+        system_reading_llm=FakeLLM("system-tier"),
+    )
+
+    assert extractor._llm_model_roles() == {
+        "magnetism_extractor": "extract-tier",
+        "magnetism_analyst": "analyst-tier",
+        "magnetism_system_reading": "system-tier",
+    }

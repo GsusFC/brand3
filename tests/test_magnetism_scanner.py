@@ -2653,6 +2653,11 @@ class MagnetismScannerTests(unittest.TestCase):
             result.json()["result_metadata"]["publication_decision"]["status"],
             "publishable",
         )
+        self.assertEqual(
+            set(result.json()["result_metadata"]["llm_model_roles"]),
+            {"magnetism_extractor", "magnetism_analyst", "magnetism_system_reading"},
+        )
+        self.assertNotIn("api_key", result.json()["result_metadata"]["llm_model_roles"])
         self.assertTrue(
             result.json()["result_metadata"]["publication_decision"]["publishable"]
         )

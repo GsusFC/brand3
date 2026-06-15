@@ -434,6 +434,7 @@ class MagnetismExtractor:
         result["source"] = "brand_audit_snapshot"
         result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
         result["canonical_evidence_source"] = "brand_audit_snapshot"
+        result["llm_model_roles"] = self._llm_model_roles()
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
         result.update(recommended_research_pack.metadata_payload())
@@ -688,13 +689,20 @@ class MagnetismExtractor:
             "degraded_fields": validated.get("degraded_fields") or [],
         }
 
-    @staticmethod
-    def _mark_legacy_direct_result(result: dict[str, Any], source_provider: str) -> None:
+    def _mark_legacy_direct_result(self, result: dict[str, Any], source_provider: str) -> None:
         result["source"] = LEGACY_DIRECT_SOURCE
         result["extraction_mode"] = LEGACY_DIRECT_EXTRACTION_MODE
         result["direct_source_provider"] = source_provider
         result["canonical_evidence_source"] = None
+        result["llm_model_roles"] = self._llm_model_roles()
         result["deprecation"] = dict(LEGACY_DIRECT_DEPRECATION)
+
+    def _llm_model_roles(self) -> dict[str, str | None]:
+        return {
+            "magnetism_extractor": getattr(self.llm, "model", None),
+            "magnetism_analyst": getattr(self.analyst_llm, "model", None),
+            "magnetism_system_reading": getattr(self.system_reading_llm, "model", None),
+        }
 
     def _extract_via_llm(
         self,

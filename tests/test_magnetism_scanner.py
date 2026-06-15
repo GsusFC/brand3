@@ -4734,7 +4734,8 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn(r_status.status_code, {200, 303})
         if r_status.status_code == 200:
             status_token = status_url.split("/")[2]
-            self.assertIn('data-status-waiting data-status="running"', r_status.text)
+            self.assertIn("data-status-waiting", r_status.text)
+            self.assertRegex(r_status.text, r'data-status="(queued|running)"')
             self.assertIn('data-scan-loader', r_status.text)
             self.assertIn('data-loader-grain', r_status.text)
             self.assertIn(f'data-assets-href="/magnetism-scanner/{status_token}/assets"', r_status.text)

@@ -1209,7 +1209,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
 @router.get("/magnetism-scanner/scan/{scan_id}/moodboard")
 async def magnetism_scanner_moodboard(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render the visual moodboard for a specific Magnetism scan."""
-    model = _magnetism_scan_model(scan_id, lang=lang)
+    model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -1220,7 +1220,7 @@ async def magnetism_scanner_moodboard(request: Request, scan_id: int, lang: _Lan
     model["active_tab"] = "moodboard"
     model["moodboard"] = _moodboard_model(model)
     _attach_ui(model, lang)
-    _attach_sv9_link(model, request)
+    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,

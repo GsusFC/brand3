@@ -139,6 +139,7 @@ These variables are read by `web/config.py` with the `BRAND3_` prefix.
 | --- | --- | --- |
 | `BRAND3_ENVIRONMENT` | `development` | App environment. In `production`, required team/cookie secrets are enforced. |
 | `BRAND3_BASE_URL` | `http://127.0.0.1:8000` | Base URL used by local/deployed app surfaces |
+| `BRAND3_DISABLE_LITESTREAM` | `false` | Set to `true` only for disposable staging apps that should start without SQLite replication |
 | `BRAND3_TEAM_TOKEN` | local generated value | Token used by team unlock flow |
 | `BRAND3_COOKIE_SECRET` | local generated value, 32+ chars | Secret for signed team cookies |
 | `BRAND3_MAX_CONCURRENT_ANALYSES` | `2` | Queue worker concurrency |

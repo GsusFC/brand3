@@ -13,6 +13,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
+from src.config import CLIENT_TLDR_V2_MODEL
 from src.features.magnetism.analyst_tldr import TLDR_KEYS
 from src.features.llm_analyzer import LLMAnalyzer
 from src.reports.experimental_perceptual_narrative import build_perceptual_narrative_hints
@@ -1167,7 +1168,7 @@ def _fallback_payload(
 def _default_analyzer() -> Any | None:
     _ensure_client_tldr_runtime_env_loaded()
     try:
-        analyzer = LLMAnalyzer()
+        analyzer = LLMAnalyzer(model=CLIENT_TLDR_V2_MODEL)
         return analyzer if getattr(analyzer, "api_key", None) else None
     except Exception:
         return None

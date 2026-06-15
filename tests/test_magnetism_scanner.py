@@ -1480,6 +1480,26 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertNotIn("Score retenido", response.text)
         self.assertNotIn("—<span>/100</span>", response.text)
 
+    def test_client_tldr_v2_default_analyzer_uses_client_model(self):
+        from src.features.magnetism import client_tldr_v2
+
+        created_models = []
+
+        class FakeAnalyzer:
+            api_key = "test-key"
+
+            def __init__(self, *, model=None):
+                self.model = model
+                created_models.append(model)
+
+        with unittest.mock.patch.object(client_tldr_v2, "CLIENT_TLDR_V2_MODEL", "client-tier"):
+            with unittest.mock.patch.object(client_tldr_v2, "LLMAnalyzer", FakeAnalyzer):
+                with unittest.mock.patch.object(client_tldr_v2, "_ensure_client_tldr_runtime_env_loaded"):
+                    analyzer = client_tldr_v2._default_analyzer()
+
+        self.assertEqual(created_models, ["client-tier"])
+        self.assertEqual(analyzer.model, "client-tier")
+
     def test_client_tldr_v2_helper_uses_llm_input_and_preserves_review_only_exclusion(self):
         from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
         from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2_prompt

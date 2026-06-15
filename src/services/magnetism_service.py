@@ -92,6 +92,7 @@ def ensure_sv9_scan_for_source_run(
     source_run_id: int | None,
     *,
     db_path: str = BRAND3_DB_PATH,
+    magnetism_result: dict[str, Any] | None = None,
 ) -> int | None:
     """Materialize or reuse the shadow SV9 scan for a Brand Audit run."""
     if source_run_id is None or int(source_run_id) <= 0:
@@ -106,6 +107,8 @@ def ensure_sv9_scan_for_source_run(
             existing = sv9_store.get_scan_for_run(int(source_run_id), rubric_version=RUBRIC_VERSION)
             if existing:
                 return int(existing["id"])
+            if _is_reusable_sv9_detection(magnetism_result, int(source_run_id)):
+                sv9_store.save_detection(int(source_run_id), magnetism_result)
         finally:
             sv9_store.close()
         # Full pipeline (pinned detection, vision signals, editorial): the
@@ -115,6 +118,26 @@ def ensure_sv9_scan_for_source_run(
     except Exception:  # noqa: BLE001
         log.exception("SV9 materialization failed source_run_id=%s", source_run_id)
         return None
+
+
+def _is_reusable_sv9_detection(payload: dict[str, Any] | None, source_run_id: int) -> bool:
+    """Return whether a completed Magnetism payload is safe as SV9 Pass 1."""
+    if not isinstance(payload, dict):
+        return False
+    if _payload_source_run_id(payload) != int(source_run_id):
+        return False
+    return isinstance(payload.get("tldr_brand3"), dict)
+
+
+def _payload_source_run_id(payload: dict[str, Any]) -> int | None:
+    try:
+        value = payload.get("source_run_id")
+        if value is None:
+            return None
+        source_run_id = int(value)
+    except (TypeError, ValueError):
+        return None
+    return source_run_id if source_run_id > 0 else None
 
 
 def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:

@@ -129,6 +129,7 @@ VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)
 # regression and adjustable via secrets without a code change.
 SV9_BASE_MODEL = os.environ.get("BRAND3_SV9_BASE_MODEL", LLM_CHEAP_MODEL)
 SV9_REASONING_MODEL = os.environ.get("BRAND3_SV9_REASONING_MODEL", LLM_PREMIUM_MODEL)
+SV9_EDITORIAL_MODEL = os.environ.get("BRAND3_SV9_EDITORIAL_MODEL", LLM_MODEL)
 
 # Screenshot capture provider.
 SCREENSHOT_PROVIDER = os.environ.get("SCREENSHOT_PROVIDER", "playwright").strip().lower() or "playwright"

@@ -72,6 +72,9 @@ class BuildEditorialTests(unittest.TestCase):
         # first off tile is M4 (index 3) when 3 are lit
         self.assertIn(COMPONENTS["mission"]["tiles"][3]["condition"], call["user"])
         self.assertIn("definitivo", call["user"] + call["system"])
+        self.assertIn("tensión estratégica", call["system"])
+        self.assertIn("ha consolidado", call["system"])
+        self.assertIn("se posiciona como", call["system"])
 
     def test_not_detected_gets_message_not_evaluated_does_not(self):
         llm = FakeEditorialLLM()

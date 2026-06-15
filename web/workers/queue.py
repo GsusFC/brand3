@@ -490,7 +490,11 @@ def _ensure_sv9_scan_for_magnetism_result(payload: dict) -> int | None:
     scanner result that was already marked ready.
     """
     source_run_id = _payload_source_run_id(payload)
-    return ensure_sv9_scan_for_source_run(source_run_id, db_path=str(_db_path()))
+    return ensure_sv9_scan_for_source_run(
+        source_run_id,
+        db_path=str(_db_path()),
+        magnetism_result=payload,
+    )
 
 
 def _payload_source_run_id(payload: dict) -> int | None:

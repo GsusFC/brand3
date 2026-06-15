@@ -165,6 +165,38 @@ class Sv9MaterializationTests(unittest.TestCase):
             self.assertEqual(scan["brand_name"], "Acme")
             self.assertEqual(scan["brand3_score"], 42)
 
+    def test_materialization_reuses_completed_magnetism_payload_as_sv9_detection(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = self._db_path(tmpdir)
+            magnetism_payload = {
+                "source_run_id": 123,
+                "brand_name": "Acme",
+                "source_url": "https://acme.test",
+                "tldr_brand3": {
+                    "mission": {"detected": True, "content": "A clear mission."}
+                },
+            }
+
+            def fake_materialize(run_id, *, db_path, **kwargs):
+                store = Sv9Store(db_path)
+                try:
+                    detection = store.get_detection(run_id)
+                    self.assertEqual(detection, magnetism_payload)
+                    scan_id = store.save_scan(self._sv9_result(run_id))
+                finally:
+                    store.close()
+                return scan_id, self._sv9_result(run_id)
+
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch(
+                    "src.sv9.service.materialize_sv9_scan",
+                    side_effect=fake_materialize,
+                ) as materialize:
+                    scan_id = web_queue._ensure_sv9_scan_for_magnetism_result(magnetism_payload)
+
+            self.assertIsInstance(scan_id, int)
+            materialize.assert_called_once_with(123, db_path=str(db_path))
+
     def test_materialization_is_idempotent_for_current_rubric(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = self._db_path(tmpdir)

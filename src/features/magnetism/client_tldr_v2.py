@@ -1167,10 +1167,16 @@ def _fallback_payload(
 def _default_analyzer() -> Any | None:
     _ensure_client_tldr_runtime_env_loaded()
     try:
-        analyzer = LLMAnalyzer()
+        analyzer = LLMAnalyzer(model=_client_tldr_v2_model())
         return analyzer if getattr(analyzer, "api_key", None) else None
     except Exception:
         return None
+
+
+def _client_tldr_v2_model() -> str:
+    from src.config import CLIENT_TLDR_V2_MODEL
+
+    return os.environ.get("BRAND3_CLIENT_TLDR_V2_MODEL", CLIENT_TLDR_V2_MODEL)
 
 
 def _ensure_client_tldr_runtime_env_loaded() -> None:

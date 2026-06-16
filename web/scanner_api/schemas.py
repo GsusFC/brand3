@@ -106,6 +106,7 @@ class ScannerResultMetadata(BaseModel):
     result_version: Literal["scanner_result_v1"]
     pipeline_version: str
     generated_with: ScannerGeneratedWith
+    llm_model_roles: dict[str, str | None] = Field(default_factory=dict)
     scanner_readiness: ScannerReadiness
     publication_decision: ScannerPublicationDecision
     stale_against_current_pipeline: bool

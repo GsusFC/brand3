@@ -15,8 +15,8 @@ from typing import Any
 
 from src.config import (
     BRAND3_DB_PATH,
-    LLM_MODEL,
     SV9_BASE_MODEL,
+    SV9_EDITORIAL_MODEL,
     SV9_REASONING_MODEL,
 )
 from src.features.llm_analyzer import LLMAnalyzer
@@ -86,7 +86,7 @@ def materialize_sv9_scan(
         scan_id = store.save_scan(result)
 
         if editorial:
-            editorial_llm = llm if llm is not None else LLMAnalyzer(model=LLM_MODEL)
+            editorial_llm = llm if llm is not None else LLMAnalyzer(model=SV9_EDITORIAL_MODEL)
             if getattr(editorial_llm, "api_key", None):
                 payload = build_editorial(result.to_dict(), llm=editorial_llm)
                 if payload["component_messages"] or payload["executive_reading"]:

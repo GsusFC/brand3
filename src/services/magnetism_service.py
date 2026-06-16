@@ -12,7 +12,12 @@ import inspect
 from collections.abc import Callable
 from typing import Any
 
-from src.config import BRAND3_DB_PATH, LLM_PREMIUM_MODEL
+from src.config import (
+    BRAND3_DB_PATH,
+    MAGNETISM_ANALYST_MODEL,
+    MAGNETISM_EXTRACTOR_MODEL,
+    MAGNETISM_SYSTEM_READING_MODEL,
+)
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.services.brand_service import run as run_brand_audit
@@ -42,7 +47,6 @@ def run_magnetism_from_url(
     progress_cb: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     """Run canonical Magnetism for a URL via a persisted Brand Audit snapshot."""
-    llm = _effective_llm(llm)
     audit_result = _run_audit_with_progress(
         url,
         audit_runner,
@@ -65,7 +69,6 @@ def run_magnetism_from_audit_run(
     db_path: str = BRAND3_DB_PATH,
 ) -> dict[str, Any]:
     """Run Magnetism from an existing Brand Audit run snapshot."""
-    llm = _effective_llm(llm)
     snapshot = load_brand_audit_snapshot(run_id, db_path=db_path)
     return run_magnetism_from_audit_snapshot(snapshot, llm=llm)
 
@@ -76,7 +79,7 @@ def run_magnetism_from_audit_snapshot(
     llm: LLMAnalyzer | None = None,
 ) -> dict[str, Any]:
     """Run Magnetism from an already loaded Brand Audit snapshot."""
-    return MagnetismExtractor(llm=_effective_llm(llm)).extract_from_audit_snapshot(snapshot)
+    return _magnetism_extractor(llm).extract_from_audit_snapshot(snapshot)
 
 
 def run_legacy_manual_magnetism(
@@ -85,13 +88,14 @@ def run_legacy_manual_magnetism(
     llm: LLMAnalyzer | None = None,
 ) -> dict[str, Any]:
     """Run legacy direct Magnetism for pasted evidence without public acquisition."""
-    return MagnetismExtractor(llm=_effective_llm(llm)).extract(url=None, manual_text=manual_text or None)
+    return _magnetism_extractor(llm).extract(url=None, manual_text=manual_text or None)
 
 
 def ensure_sv9_scan_for_source_run(
     source_run_id: int | None,
     *,
     db_path: str = BRAND3_DB_PATH,
+    magnetism_result: dict[str, Any] | None = None,
 ) -> int | None:
     """Materialize or reuse the shadow SV9 scan for a Brand Audit run."""
     if source_run_id is None or int(source_run_id) <= 0:
@@ -106,6 +110,8 @@ def ensure_sv9_scan_for_source_run(
             existing = sv9_store.get_scan_for_run(int(source_run_id), rubric_version=RUBRIC_VERSION)
             if existing:
                 return int(existing["id"])
+            if _is_reusable_sv9_detection(magnetism_result, int(source_run_id)):
+                sv9_store.save_detection(int(source_run_id), magnetism_result)
         finally:
             sv9_store.close()
         # Full pipeline (pinned detection, vision signals, editorial): the
@@ -117,14 +123,57 @@ def ensure_sv9_scan_for_source_run(
         return None
 
 
-def _effective_llm(llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
-    """Use the configured Magnetism analyst LLM unless the caller supplied one."""
-    if llm is not None:
-        return llm
-    candidate = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
+def _is_reusable_sv9_detection(payload: dict[str, Any] | None, source_run_id: int) -> bool:
+    """Return whether a completed Magnetism payload is safe as SV9 Pass 1."""
+    if not isinstance(payload, dict):
+        return False
+    if _payload_source_run_id(payload) != int(source_run_id):
+        return False
+    return isinstance(payload.get("tldr_brand3"), dict)
+
+
+def _payload_source_run_id(payload: dict[str, Any]) -> int | None:
+    try:
+        value = payload.get("source_run_id")
+        if value is None:
+            return None
+        source_run_id = int(value)
+    except (TypeError, ValueError):
+        return None
+    return source_run_id if source_run_id > 0 else None
+
+
+def _llm_for_model(model: str) -> LLMAnalyzer | None:
+    candidate = LLMAnalyzer(model=model)
     if getattr(candidate, "api_key", None):
         return candidate
     return None
+
+
+def _magnetism_extractor(llm: LLMAnalyzer | None = None) -> MagnetismExtractor:
+    if llm is not None:
+        return MagnetismExtractor(llm=llm)
+
+    extraction_llm = _llm_for_model(MAGNETISM_EXTRACTOR_MODEL)
+    analyst_llm = (
+        extraction_llm
+        if MAGNETISM_ANALYST_MODEL == MAGNETISM_EXTRACTOR_MODEL
+        else _llm_for_model(MAGNETISM_ANALYST_MODEL)
+    )
+    system_reading_llm = (
+        analyst_llm
+        if MAGNETISM_SYSTEM_READING_MODEL == MAGNETISM_ANALYST_MODEL
+        else (
+            extraction_llm
+            if MAGNETISM_SYSTEM_READING_MODEL == MAGNETISM_EXTRACTOR_MODEL
+            else _llm_for_model(MAGNETISM_SYSTEM_READING_MODEL)
+        )
+    )
+    return MagnetismExtractor(
+        llm=extraction_llm,
+        analyst_llm=analyst_llm,
+        system_reading_llm=system_reading_llm,
+    )
 
 
 def _run_audit_with_progress(

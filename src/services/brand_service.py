@@ -26,6 +26,7 @@ from src.collectors.exa_collector import ExaCollector, ExaData, ExaResult
 from src.collectors.social_collector import PlatformMetrics, SocialCollector, SocialData
 from src.collectors.web_collector import WebCollector, WebData
 from src.config import (
+    AUDIT_ANALYST_MODEL,
     BRAND3_CACHE_TTL_HOURS,
     BRAND3_DB_PATH,
     BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE,
@@ -1493,8 +1494,18 @@ def _llm_model_roles_payload() -> dict[str, str]:
         "default": LLM_MODEL,
         "cheap": LLM_CHEAP_MODEL,
         "premium": LLM_PREMIUM_MODEL,
+        "audit_analyst": AUDIT_ANALYST_MODEL,
         "vision": VISION_MODEL,
     }
+
+
+def _audit_analyst_llm(feature_llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
+    if feature_llm is None:
+        return None
+    if getattr(feature_llm, "model", None) == AUDIT_ANALYST_MODEL:
+        return feature_llm
+    candidate = LLMAnalyzer(model=AUDIT_ANALYST_MODEL)
+    return candidate if getattr(candidate, "api_key", None) else None
 
 
 def _cost_policy_summary(
@@ -2260,7 +2271,7 @@ def run(
         )
         step_started = _log_timing("phase 4c audit context", step_started)
         run_audit_context["executive_analysis_v2"] = run_brand_audit_analyst_pass(
-            llm=llm,
+            llm=_audit_analyst_llm(llm),
             brand_name=brand_score.brand_name,
             url=brand_score.url,
             research_pack=research_pack_for_feature_prompts,

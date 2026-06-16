@@ -16,7 +16,7 @@ from typing import Any
 
 from src.sv9.rubric import COMPONENTS, PRESENTATION_ORDER
 
-SV9_EDITORIAL_PROMPT_VERSION = "sv9-editorial-v0.1"
+SV9_EDITORIAL_PROMPT_VERSION = "sv9-editorial-v0.2"
 SV9_EDITORIAL_TIMEOUT_SECONDS = 60
 SV9_EDITORIAL_MAX_WORKERS = 4
 
@@ -40,12 +40,17 @@ adulación y sin alarmismo. Hablas de la marca en tercera persona.
 Reglas duras:
 - El veredicto es definitivo. Nunca contradigas el score ni insinúes que
   debería ser otro.
+- No escribas un resumen descriptivo. Escribe un diagnóstico: tesis concreta,
+  tensión estratégica y coste de no resolverla.
 - Máximo dos frases. Primera: por qué la marca está donde está, usando su
-  propia evidencia (cita o parafrasea lo detectado). Segunda: qué exige el
-  siguiente peldaño, en términos de esa marca, no de un manual.
+  propia evidencia (cita o parafrasea lo detectado). Segunda: qué tensión
+  limita el siguiente salto y qué ajuste observable exigiría.
 - Si el componente no fue detectado, di qué significa ese vacío para esta
   marca concreta y qué requeriría el primer peldaño.
 - No inventes datos, menciones ni logros que no estén en el material.
+- Evita fórmulas blandas y repetidas: "se posiciona como", "ha consolidado",
+  "su fuerza reside", "para avanzar debe", "comunica con claridad",
+  "mantener este nivel exige".
 - No uses la palabra "peldaño" ni menciones la rúbrica o el motor: el
   fundador ve un diagnóstico, no la maquinaria.
 - Devuelve JSON estricto: {"message": "..."}
@@ -57,10 +62,12 @@ Voz FLOC*: directa, concreta, en castellano, sin lenguaje de consultor.
 
 Reglas duras:
 - El scorecard es definitivo: no contradigas ningún score.
-- Tres frases como máximo. La historia, no la lista: qué clase de marca es
-  según lo que articula en público, dónde está su fuerza, y cuál es el hueco
-  que más le cuesta.
+- Tres frases como máximo. La historia, no la lista: tesis de marca, tensión
+  principal y coste inmediato de no resolver el hueco más doloroso.
 - Usa la evidencia detectada de la marca, no generalidades.
+- No abras con "se posiciona como" salvo que sea la forma más precisa de
+  describir la evidencia. Evita frases comodín como "su fuerza reside" o
+  "para avanzar debe".
 - No menciones el motor, la rúbrica, dimensiones internas ni jerga de
   pipeline.
 - Devuelve JSON estricto: {"reading": "..."}

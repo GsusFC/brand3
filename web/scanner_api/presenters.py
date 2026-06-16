@@ -115,6 +115,7 @@ def scanner_result_metadata(
         "result_version": "scanner_result_v1",
         "pipeline_version": "brand3_scanner_pipeline_2026_06_03",
         "generated_with": generated_with,
+        "llm_model_roles": payload.get("llm_model_roles") if isinstance(payload.get("llm_model_roles"), dict) else {},
         "scanner_readiness": scanner_readiness,
         "publication_decision": publication_decision,
         "stale_against_current_pipeline": not all(freshness_requirements),

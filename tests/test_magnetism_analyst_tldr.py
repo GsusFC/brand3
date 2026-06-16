@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from src.features.magnetism.analyst_tldr import (
@@ -8,6 +9,7 @@ from src.features.magnetism.analyst_tldr import (
     build_analyst_tldr_prompt,
     maybe_build_analyst_tldr,
     normalize_analyst_response,
+    run_analyst_tldr_pass,
 )
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
 
@@ -38,6 +40,29 @@ class FakeFailingAnalystLLM(FakeAnalystLLM):
                 "model": "model-a",
             }
         ]
+
+
+class FakeSchemaDriftAnalystLLM(FakeAnalystLLM):
+    def __init__(self, raw_payload: dict[str, Any]):
+        super().__init__({})
+        self.raw_payload = raw_payload
+        self.last_raw_response = ""
+        self.call_failures: list[dict[str, Any]] = []
+
+    def _call_json(self, system: str, user: str, max_tokens: int = 8000, **kwargs: Any) -> Any:
+        self.captured_system = system
+        self.captured_user = user
+        self.captured_kwargs = kwargs
+        self.last_raw_response = json.dumps(self.raw_payload)
+        self.call_failures.append(
+            {
+                "reason": "schema_validation_error",
+                "error": "$.scoring_context.expressive_magnetism_score: expected integer",
+                "error_type": "schema_validation_error",
+                "model": "model-a",
+            }
+        )
+        return {}
 
 
 def _research_pack(brand_name: str = "Base44", url: str = "https://base44.com") -> Any:
@@ -200,6 +225,39 @@ def test_analyst_scoring_context_preserves_earned_magnetism_judgement() -> None:
     assert scoring["evidence_duty_status"] == "weak"
     assert scoring["coherence_evidence_duty_penalty"] == 12
     assert "scientific validation" in scoring["evidence_gaps"]
+
+
+def test_analyst_pass_recovers_schema_failure_from_last_raw_response() -> None:
+    raw = {
+        "entity_reading": "Archetype reads as a crypto-native venture firm.",
+        "verdict_vs_current": "better",
+        "main_gain": "Keeps scores and TLDR grounded in the research pack.",
+        "main_risk": "Some proof claims remain sparse.",
+        "scoring_context": {
+            "expressive_magnetism_score": "82",
+            "earned_magnetism_score": 74.0,
+            "promise_requires_evidence": True,
+            "evidence_duty_status": "partial",
+            "coherence_evidence_duty_penalty": "6",
+            "reasoning": "The promise needs visible investment proof and third-party validation.",
+            "evidence_gaps": ["external reputation"],
+        },
+        "tldr_brand3": {},
+    }
+    llm = FakeSchemaDriftAnalystLLM(raw)
+
+    result = run_analyst_tldr_pass(
+        llm=llm,
+        brand_name="Archetype",
+        url="https://www.archetype.fund",
+        research_pack=_research_pack("Archetype", "https://www.archetype.fund"),
+        current_tldr={},
+    )
+
+    assert "analysis_error" not in result
+    assert result["validated"]["scoring_context"]["expressive_magnetism_score"] == 82
+    assert result["validated"]["scoring_context"]["earned_magnetism_score"] == 74
+    assert result["validated"]["scoring_context"]["coherence_evidence_duty_penalty"] == 6
 
 
 def test_partial_response_fills_missing_blocks_as_not_detected() -> None:

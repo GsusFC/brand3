@@ -252,8 +252,16 @@ SPECIFICITY_TERMS = {
 class MagnetismExtractor:
     """Extract Magenta Circle signals and derive Brand3 TLDR outputs."""
 
-    def __init__(self, llm: LLMAnalyzer | None = None):
+    def __init__(
+        self,
+        llm: LLMAnalyzer | None = None,
+        *,
+        analyst_llm: LLMAnalyzer | None = None,
+        system_reading_llm: LLMAnalyzer | None = None,
+    ):
         self.llm = llm
+        self.analyst_llm = analyst_llm if analyst_llm is not None else llm
+        self.system_reading_llm = system_reading_llm if system_reading_llm is not None else llm
 
     def extract(
         self,
@@ -426,6 +434,7 @@ class MagnetismExtractor:
         result["source"] = "brand_audit_snapshot"
         result["extraction_mode"] = CANONICAL_EXTRACTION_MODE
         result["canonical_evidence_source"] = "brand_audit_snapshot"
+        result["llm_model_roles"] = self._llm_model_roles()
         result["limitations"].extend(canonical_evidence.limitations)
         result["evidence_packet_summary"] = evidence_packet_summary
         result.update(recommended_research_pack.metadata_payload())
@@ -622,7 +631,7 @@ class MagnetismExtractor:
         if not isinstance(current_tldr, dict):
             return
 
-        if self.llm is None or not getattr(self.llm, "api_key", None):
+        if self.analyst_llm is None or not getattr(self.analyst_llm, "api_key", None):
             result["legacy_tldr_brand3"] = current_tldr
             result["tldr_generation_mode"] = "legacy_fallback_no_llm"
             result.setdefault("warnings", []).append(
@@ -632,7 +641,7 @@ class MagnetismExtractor:
 
         try:
             run = run_analyst_tldr_pass(
-                llm=self.llm,
+                llm=self.analyst_llm,
                 brand_name=brand_name,
                 url=url,
                 research_pack=research_pack or brand_context_brief,
@@ -680,13 +689,20 @@ class MagnetismExtractor:
             "degraded_fields": validated.get("degraded_fields") or [],
         }
 
-    @staticmethod
-    def _mark_legacy_direct_result(result: dict[str, Any], source_provider: str) -> None:
+    def _mark_legacy_direct_result(self, result: dict[str, Any], source_provider: str) -> None:
         result["source"] = LEGACY_DIRECT_SOURCE
         result["extraction_mode"] = LEGACY_DIRECT_EXTRACTION_MODE
         result["direct_source_provider"] = source_provider
         result["canonical_evidence_source"] = None
+        result["llm_model_roles"] = self._llm_model_roles()
         result["deprecation"] = dict(LEGACY_DIRECT_DEPRECATION)
+
+    def _llm_model_roles(self) -> dict[str, str | None]:
+        return {
+            "magnetism_extractor": getattr(self.llm, "model", None),
+            "magnetism_analyst": getattr(self.analyst_llm, "model", None),
+            "magnetism_system_reading": getattr(self.system_reading_llm, "model", None),
+        }
 
     def _extract_via_llm(
         self,
@@ -972,7 +988,7 @@ Return exactly this JSON shape:
         evidence_packet_summary: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         llm_reading = maybe_build_system_reading(
-            llm=self.llm,
+            llm=self.system_reading_llm,
             brand_name=brand_name,
             url=url,
             tldr=tldr,

@@ -165,6 +165,38 @@ class Sv9MaterializationTests(unittest.TestCase):
             self.assertEqual(scan["brand_name"], "Acme")
             self.assertEqual(scan["brand3_score"], 42)
 
+    def test_materialization_reuses_completed_magnetism_payload_as_sv9_detection(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = self._db_path(tmpdir)
+            magnetism_payload = {
+                "source_run_id": 123,
+                "brand_name": "Acme",
+                "source_url": "https://acme.test",
+                "tldr_brand3": {
+                    "mission": {"detected": True, "content": "A clear mission."}
+                },
+            }
+
+            def fake_materialize(run_id, *, db_path, **kwargs):
+                store = Sv9Store(db_path)
+                try:
+                    detection = store.get_detection(run_id)
+                    self.assertEqual(detection, magnetism_payload)
+                    scan_id = store.save_scan(self._sv9_result(run_id))
+                finally:
+                    store.close()
+                return scan_id, self._sv9_result(run_id)
+
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch(
+                    "src.sv9.service.materialize_sv9_scan",
+                    side_effect=fake_materialize,
+                ) as materialize:
+                    scan_id = web_queue._ensure_sv9_scan_for_magnetism_result(magnetism_payload)
+
+            self.assertIsInstance(scan_id, int)
+            materialize.assert_called_once_with(123, db_path=str(db_path))
+
     def test_materialization_is_idempotent_for_current_rubric(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = self._db_path(tmpdir)
@@ -202,6 +234,82 @@ class Sv9MaterializationTests(unittest.TestCase):
             with sqlite3.connect(str(db_path)) as conn:
                 count = conn.execute("SELECT COUNT(*) FROM sv9_scans").fetchone()[0]
             self.assertEqual(count, 0)
+
+
+class MagnetismWorkerRoutingTests(unittest.TestCase):
+    def tearDown(self):
+        web_queue.set_run_magnetism_override(None)
+
+    def test_url_magnetism_uses_service_role_router_without_injected_llm(self):
+        captured = {}
+        phases = []
+
+        def fake_run(url, *, llm=None, progress_cb=None):
+            captured["url"] = url
+            captured["llm"] = llm
+            captured["progress_cb"] = progress_cb
+            return {"ok": True}
+
+        with patch(
+            "src.services.magnetism_service.run_magnetism_from_url",
+            side_effect=fake_run,
+        ):
+            result = web_queue._call_magnetism_engine(
+                {"input_type": "url", "input_value": "https://example.com"},
+                progress_cb=phases.append,
+            )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(captured["url"], "https://example.com")
+        self.assertIsNone(captured["llm"])
+        self.assertIsNotNone(captured["progress_cb"])
+        self.assertEqual(phases, ["collecting"])
+
+    def test_audit_run_magnetism_uses_service_role_router_without_injected_llm(self):
+        captured = {}
+        phases = []
+
+        def fake_run(run_id, *, llm=None):
+            captured["run_id"] = run_id
+            captured["llm"] = llm
+            return {"ok": True}
+
+        with patch(
+            "src.services.magnetism_service.run_magnetism_from_audit_run",
+            side_effect=fake_run,
+        ):
+            result = web_queue._call_magnetism_engine(
+                {"input_type": "audit_run", "input_value": "123"},
+                progress_cb=phases.append,
+            )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(captured["run_id"], 123)
+        self.assertIsNone(captured["llm"])
+        self.assertEqual(phases, ["interpreting"])
+
+    def test_manual_magnetism_uses_service_role_router_without_injected_llm(self):
+        captured = {}
+        phases = []
+
+        def fake_run(text, *, llm=None):
+            captured["text"] = text
+            captured["llm"] = llm
+            return {"ok": True}
+
+        with patch(
+            "src.services.magnetism_service.run_legacy_manual_magnetism",
+            side_effect=fake_run,
+        ):
+            result = web_queue._call_magnetism_engine(
+                {"input_type": "manual", "input_value": "manual evidence"},
+                progress_cb=phases.append,
+            )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(captured["text"], "manual evidence")
+        self.assertIsNone(captured["llm"])
+        self.assertEqual(phases, ["extracting"])
 
 
 class WorkerLoopTests(unittest.TestCase):

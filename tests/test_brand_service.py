@@ -10,6 +10,7 @@ from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebData
 from src.services import brand_service
 from src.config import (
+    AUDIT_ANALYST_MODEL,
     DEFAULT_LLM_CHEAP_MODEL,
     DEFAULT_LLM_MODEL,
     DEFAULT_LLM_PREMIUM_MODEL,
@@ -20,6 +21,7 @@ from src.config import (
 from src.services.brand_service import (
     _aggregate_exa_content,
     _acquisition_provenance_summary,
+    _audit_analyst_llm,
     _build_content_web,
     _build_research_pack_for_feature_prompts,
     _compute_data_quality,
@@ -1359,10 +1361,40 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
     def test_llm_model_roles_payload_exposes_models_without_secrets(self):
         roles = _llm_model_roles_payload()
 
-        self.assertEqual(set(roles), {"default", "cheap", "premium", "vision"})
+        self.assertEqual(set(roles), {"default", "cheap", "premium", "audit_analyst", "vision"})
         self.assertTrue(all(isinstance(value, str) and value for value in roles.values()))
         self.assertNotIn("api_key", roles)
         self.assertNotIn("key", roles)
+
+    def test_audit_analyst_llm_can_route_to_separate_model(self):
+        class FeatureLLM:
+            api_key = "key"
+            model = "feature-tier"
+
+        created_models = []
+
+        class FakeAnalyzer:
+            api_key = "key"
+
+            def __init__(self, *, model=None):
+                self.model = model
+                created_models.append(model)
+
+        with patch.object(brand_service, "AUDIT_ANALYST_MODEL", "analyst-tier"):
+            with patch("src.services.brand_service.LLMAnalyzer", FakeAnalyzer):
+                analyst_llm = _audit_analyst_llm(FeatureLLM())
+
+        self.assertEqual(created_models, ["analyst-tier"])
+        self.assertEqual(analyst_llm.model, "analyst-tier")
+
+    def test_audit_analyst_llm_reuses_feature_llm_when_model_matches(self):
+        class FeatureLLM:
+            api_key = "key"
+            model = AUDIT_ANALYST_MODEL
+
+        feature_llm = FeatureLLM()
+
+        self.assertIs(_audit_analyst_llm(feature_llm), feature_llm)
 
     def test_screenshot_capture_diagnostic_reports_success_error_and_skip(self):
         captured = _screenshot_capture_diagnostic(
@@ -2167,7 +2199,10 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                 "openai_compatible": True,
             },
         )
-        self.assertEqual(set(result["data_sources"]["llm_model_roles"]), {"default", "cheap", "premium", "vision"})
+        self.assertEqual(
+            set(result["data_sources"]["llm_model_roles"]),
+            {"default", "cheap", "premium", "audit_analyst", "vision"},
+        )
         self.assertNotIn("api_key", result["data_sources"]["llm_model_roles"])
         self.assertEqual(
             result["data_sources"]["screenshot_capture"],

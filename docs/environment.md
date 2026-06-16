@@ -92,6 +92,14 @@ These values are safe to commit as placeholders or documented defaults, but not 
 | `BRAND3_LLM_MODEL` | `gemini-3.1-pro-preview` | Default scoring model |
 | `BRAND3_LLM_CHEAP_MODEL` | `gemini-3.1-flash-lite` | High-volume extraction / low-risk checks |
 | `BRAND3_LLM_PREMIUM_MODEL` | `gemini-3.1-pro-preview` | Final narrative / complex validation |
+| `BRAND3_AUDIT_ANALYST_MODEL` | `BRAND3_LLM_CHEAP_MODEL` | Brand Audit executive analyst pass |
+| `BRAND3_CLIENT_TLDR_V2_MODEL` | `BRAND3_LLM_MODEL` | Client-facing TLDR v2 prose |
+| `BRAND3_MAGNETISM_EXTRACTOR_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | Magnetism layer extraction |
+| `BRAND3_MAGNETISM_ANALYST_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | Magnetism analyst TLDR pass |
+| `BRAND3_MAGNETISM_SYSTEM_READING_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | Magnetism system reading |
+| `BRAND3_SV9_BASE_MODEL` | `BRAND3_LLM_CHEAP_MODEL` | SV9 base components and Pass 1 detection fallback |
+| `BRAND3_SV9_REASONING_MODEL` | `BRAND3_LLM_PREMIUM_MODEL` | SV9 Magnetism and Coherencia reasoning components |
+| `BRAND3_SV9_EDITORIAL_MODEL` | `BRAND3_LLM_MODEL` | SV9 founder-facing editorial messages and executive reading |
 | `BRAND3_VISION_MODEL` | `gemini-2.5-flash` | Screenshot/vision analysis |
 | `BRAND3_LLM_CALL_TIMEOUT_SECONDS` | `35` | Per LLM call timeout in `src/features/llm_analyzer.py` |
 
@@ -131,6 +139,7 @@ These variables are read by `web/config.py` with the `BRAND3_` prefix.
 | --- | --- | --- |
 | `BRAND3_ENVIRONMENT` | `development` | App environment. In `production`, required team/cookie secrets are enforced. |
 | `BRAND3_BASE_URL` | `http://127.0.0.1:8000` | Base URL used by local/deployed app surfaces |
+| `BRAND3_DISABLE_LITESTREAM` | `false` | Set to `true` only for disposable staging apps that should start without SQLite replication |
 | `BRAND3_TEAM_TOKEN` | local generated value | Token used by team unlock flow |
 | `BRAND3_COOKIE_SECRET` | local generated value, 32+ chars | Secret for signed team cookies |
 | `BRAND3_MAX_CONCURRENT_ANALYSES` | `2` | Queue worker concurrency |

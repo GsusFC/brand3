@@ -118,6 +118,7 @@ class ListingsTests(unittest.TestCase):
         coherence_score: int,
         days_ago: int = 0,
         raw_payload: dict | None = None,
+        source_run_id: int | None = None,
     ) -> int:
         payload_json = "{}"
         if raw_payload is not None:
@@ -127,9 +128,9 @@ class ListingsTests(unittest.TestCase):
                 """
                 INSERT INTO magnetism_scans
                   (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
-                   created_at, status, token, phase, phase_updated_at, completed_at)
+                   created_at, status, token, phase, phase_updated_at, completed_at, source_run_id)
                 VALUES (?, ?, ?, ?, ?, ?, datetime('now', ?), 'ready', ?, 'ready',
-                        datetime('now', ?), datetime('now', ?))
+                        datetime('now', ?), datetime('now', ?), ?)
                 """,
                 (
                     brand_name,
@@ -142,16 +143,44 @@ class ListingsTests(unittest.TestCase):
                     f"scan-{brand_name}-{time.time_ns()}",
                     f"-{days_ago} days",
                     f"-{days_ago} days",
+                    source_run_id,
                 ),
             )
             conn.commit()
         return int(cur.lastrowid)
 
+    def _seed_sv9_scan(self, source_run_id: int, brand_name: str) -> int:
+        from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            return int(
+                store.save_scan(
+                    Sv9ScanResult(
+                        brand_name=brand_name,
+                        url=f"https://{brand_name}.com",
+                        source_run_id=source_run_id,
+                        brand3_score=71,
+                        components={
+                            "mission": ComponentResult(
+                                component="mission",
+                                status=STATUS_SCORED,
+                                score=2,
+                                detected_content="Clear mission.",
+                            )
+                        },
+                    )
+                )
+            )
+        finally:
+            store.close()
+
     def test_index_empty_shows_placeholder(self):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
         self.assertIn("Brand3 Scanner", r.text)
-        self.assertIn("Auditoría de Marca", r.text)
+        self.assertIn("SV9 Brand Score", r.text)
         self.assertNotIn('href="/brand-audit"', r.text)
         self.assertIn("todavía no hay análisis", r.text)
         self.assertIn("scanner de marca", r.text)
@@ -178,6 +207,54 @@ class ListingsTests(unittest.TestCase):
         self.assertNotIn('class="home-kind', r.text)
         self.assertIn("/magnetism-scanner/scan/", r.text)
         self.assertIn("/r/tok-", r.text)
+
+    def test_home_recent_scanner_link_prefers_sv9_when_available(self):
+        source_run_id = 321
+        self._seed_ready_scan(
+            "sv9home",
+            magnetism_score=83,
+            coherence_score=72,
+            source_run_id=source_run_id,
+            raw_payload={
+                "brand_name": "sv9home",
+                "url": "https://sv9home.com",
+                "magnetism_score": 83,
+                "coherence_score": 72,
+                "quadrant": "quadrant",
+                "source_run_id": source_run_id,
+                "source": "brand_audit_snapshot",
+            },
+        )
+        sv9_id = self._seed_sv9_scan(source_run_id, "sv9home")
+
+        r = self.client.get("/")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(f'href="/sv9/scan/{sv9_id}?lang=es"', r.text)
+
+    def test_scanner_recent_list_prefers_sv9_when_available(self):
+        source_run_id = 322
+        self._seed_ready_scan(
+            "sv9scanner",
+            magnetism_score=83,
+            coherence_score=72,
+            source_run_id=source_run_id,
+            raw_payload={
+                "brand_name": "sv9scanner",
+                "url": "https://sv9scanner.com",
+                "magnetism_score": 83,
+                "coherence_score": 72,
+                "quadrant": "quadrant",
+                "source_run_id": source_run_id,
+                "source": "brand_audit_snapshot",
+            },
+        )
+        sv9_id = self._seed_sv9_scan(source_run_id, "sv9scanner")
+
+        r = self.client.get("/magnetism-scanner")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(f'href="/sv9/scan/{sv9_id}?lang=es"', r.text)
 
     def test_index_dedupes_repeated_scans_per_brand(self):
         self._seed_ready_scan("dupco", magnetism_score=81, coherence_score=70, days_ago=0)

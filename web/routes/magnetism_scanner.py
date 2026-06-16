@@ -47,6 +47,7 @@ from ..scanner_api.models import (
     scan_model_from_payload as _scan_model_from_payload,
     scanner_result_metadata_model as _scanner_result_metadata,
 )
+from ..scan_links import attach_primary_scan_hrefs, sv9_scan_id_for_run
 
 router = APIRouter()
 
@@ -105,6 +106,7 @@ _MAGNETISM_UI = {
         "run": "run",
         "result": "result",
         "back": "Back to Brand3 Scanner",
+        "base_reading": "Base reading",
         "research_evidence": "Research Evidence",
         "audit": "Audit",
         "audit_tag": "Brand Audit inside the scanner result",
@@ -334,6 +336,7 @@ _MAGNETISM_UI = {
         "run": "run",
         "result": "resultado",
         "back": "Volver a Brand3 Scanner",
+        "base_reading": "Lectura base",
         "research_evidence": "Evidencia de investigación",
         "audit": "Auditoría",
         "audit_tag": "Brand Audit dentro del resultado del scanner",
@@ -547,21 +550,7 @@ async def _attach_sv9_link(model: dict) -> None:
 
 
 def _sv9_scan_id_for_run(source_run_id: object) -> int | None:
-    if not source_run_id:
-        return None
-    try:
-        from src.sv9.store import Sv9Store
-
-        store = Sv9Store(BRAND3_DB_PATH)
-        try:
-            scan = store.get_scan_for_run(int(source_run_id))
-        finally:
-            store.close()
-    except Exception:
-        return None
-    if scan:
-        return int(scan["id"])
-    return None
+    return sv9_scan_id_for_run(source_run_id, db_path=BRAND3_DB_PATH)
 
 
 def _primary_scan_ready_href(row: dict, *, lang: _Lang = "es") -> str:
@@ -609,6 +598,7 @@ async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
     scans, audit_runs = await asyncio.to_thread(_load_magnetism_index_data)
 
     # Format dates nicely for template listing
+    scans = attach_primary_scan_hrefs(scans, db_path=BRAND3_DB_PATH, lang=lang)
     for scan in scans:
         try:
             dt = datetime.fromisoformat(scan["created_at"].replace("Z", "+00:00"))

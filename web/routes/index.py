@@ -5,8 +5,11 @@ from typing import Literal
 
 from fastapi import APIRouter, Query, Request
 
-from ..presenters import enrich
+from src.config import BRAND3_DB_PATH
+
 from ..i18n import magnetism_landing_copy, normalize_lang
+from ..presenters import enrich
+from ..scan_links import primary_scan_href
 from ..storage import list_latest_public, list_magnetism_scans
 from ..templates_env import templates
 
@@ -30,7 +33,7 @@ def _brand_key(value: str | None) -> str:
     return (value or "").strip().lower()
 
 
-def _recent_home_items(limit: int = 10) -> list[dict]:
+def _recent_home_items(limit: int = 10, *, lang: str = "es") -> list[dict]:
     source_limit = max(limit * 4, 50)
     scans = []
     for scan in list_magnetism_scans(limit=source_limit):
@@ -39,7 +42,7 @@ def _recent_home_items(limit: int = 10) -> list[dict]:
             {
                 "brand_key": _brand_key(brand_name),
                 "brand_name": brand_name,
-                "href": f"/magnetism-scanner/scan/{scan['id']}",
+                "href": primary_scan_href(scan, db_path=BRAND3_DB_PATH, lang=lang),
                 "composite": scan.get("magnetism_score"),
                 "kind": "Scanner",
                 "completed_at": scan.get("created_at"),
@@ -81,7 +84,7 @@ def _recent_home_items(limit: int = 10) -> list[dict]:
 @router.get("/")
 async def index(request: Request, lang: Literal["es", "en"] = Query("es")):
     ui_lang = normalize_lang(lang)
-    rows = await asyncio.to_thread(_recent_home_items, limit=15)
+    rows = await asyncio.to_thread(_recent_home_items, limit=15, lang=ui_lang)
     return templates.TemplateResponse(
         request,
         "index.html.j2",

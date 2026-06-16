@@ -117,7 +117,7 @@
         <td class="num num-inline hl-accent col-score" style="font-weight: 600;">{{ scan.magnetism_score }}</td>
         <td class="num num-inline hl-ok col-score" style="font-weight: 600;">{{ scan.coherence_score }}</td>
         <td class="dim col-band-wide">{{ scan.quadrant }}</td>
-        <td class="action-cell col-action"><a href="/magnetism-scanner/scan/{{ scan.id }}{{ model.lang_query }}">{{ model.t.view_sheet }}</a></td>
+        <td class="action-cell col-action"><a href="{{ scan.primary_href or '/magnetism-scanner/scan/' ~ scan.id ~ model.lang_query }}">{{ model.t.view_sheet }}</a></td>
       </tr>
     {% endfor %}
     </tbody>

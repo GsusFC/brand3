@@ -1492,7 +1492,7 @@ class MagnetismScannerTests(unittest.TestCase):
                 self.model = model
                 created_models.append(model)
 
-        with unittest.mock.patch.object(client_tldr_v2, "CLIENT_TLDR_V2_MODEL", "client-tier"):
+        with unittest.mock.patch.object(client_tldr_v2, "_client_tldr_v2_model", return_value="client-tier"):
             with unittest.mock.patch.object(client_tldr_v2, "LLMAnalyzer", FakeAnalyzer):
                 with unittest.mock.patch.object(client_tldr_v2, "_ensure_client_tldr_runtime_env_loaded"):
                     analyzer = client_tldr_v2._default_analyzer()

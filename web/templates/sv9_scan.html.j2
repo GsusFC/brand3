@@ -88,12 +88,7 @@
   {% if box.veredicto %}
   <p class="prose{% if full_width %} sv9-coherence-verdict{% endif %}" style="margin: 4px 0 0; font-style: italic; line-height: 1.5;">{{ box.veredicto }}</p>
   {% endif %}
-  {% if box.status == 'scored' %}
-  <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px;">
-    confianza <span class="sv9-confidence-badge {{ box.confidence }}">{{ box.confidence }}</span>
-    {% if box.blind_spot_count %} · {{ box.blind_spot_count }} punto{% if box.blind_spot_count != 1 %}s{% endif %} ciego{% if box.blind_spot_count != 1 %}s{% endif %}{% endif %}
-  </p>
-  {% else %}
+  {% if box.status != 'scored' %}
   <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px; line-height: 1.45;">
     {{ box.status_label }}{% if box.error %} · {{ box.error }}{% endif %}
   </p>
@@ -143,9 +138,6 @@
           <span class="dim">{{ box.status_label }}</span>
         </div>
         <p>{{ box.content or ("Coherencia se evalúa a partir del conjunto del canvas." if is_coherence else "(no detectado)") }}</p>
-        {% if box.next_rung %}
-        <p class="dim">→ siguiente: {{ box.next_rung.criterion }}{% if box.next_rung.evaluable is defined and not box.next_rung.evaluable %} · sin canal de evidencia{% endif %}</p>
-        {% endif %}
       </section>
 
       {% if box.tiles %}

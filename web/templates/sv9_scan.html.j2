@@ -86,7 +86,7 @@
     </span>
   </div>
   {% if box.veredicto %}
-  <p class="prose" style="margin: 4px 0 0; font-style: italic; line-height: 1.5;">{{ box.veredicto }}</p>
+  <p class="prose{% if full_width %} sv9-coherence-verdict{% endif %}" style="margin: 4px 0 0; font-style: italic; line-height: 1.5;">{{ box.veredicto }}</p>
   {% endif %}
   {% if box.status == 'scored' %}
   <p class="dim" style="margin: 0; font-family: var(--font-mono); font-size: 11px;">

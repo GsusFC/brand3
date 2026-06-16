@@ -2558,6 +2558,10 @@ input.source-link::-moz-focus-inner {
   margin-top: 0;
 }
 
+.sv9-coherence-verdict {
+  max-width: none;
+}
+
 .sv9-editorial-drawer {
   width: min(520px, calc(100dvw - 24px));
   max-width: calc(100dvw - 24px);

@@ -1,5 +1,5 @@
-<div class="lab-review-nav" style="margin-bottom: 14px;">
-  <a class="source-link" href="{{ model.back_href if model.back_href is defined else '/magnetism-scanner' ~ model.lang_query }}">{{ model.t.back }}</a>
+<div class="lab-review-nav lab-review-nav-split" style="margin-bottom: 14px;">
+  <div class="lab-review-nav-tabs">
   {% if model.sv9_scan_id %}
   <a class="source-link{% if model.active_tab == 'sv9' %} badge-ready{% endif %}" href="/sv9/scan/{{ model.sv9_scan_id }}{{ model.lang_query }}">SV9 Score</a>
   {% elif model.source_run_id %}
@@ -10,8 +10,12 @@
   {% if not model.sv9_scan_id %}
   <a class="source-link{% if model.active_tab == 'tldr' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}{{ model.lang_query }}">{{ model.t.base_reading }}</a>
   {% endif %}
-  <a class="source-link{% if model.active_tab == 'audit' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/audit{{ model.lang_query }}">{{ model.t.audit }}</a>
   <a class="source-link{% if model.active_tab == 'moodboard' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/moodboard{{ model.lang_query }}">{{ model.t.moodboard }}</a>
+  <a class="source-link{% if model.active_tab == 'audit' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/audit{{ model.lang_query }}">{{ model.t.audit }}</a>
   <a class="source-link{% if model.active_tab in ['research', 'evidence_reliability'] %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/research{{ model.lang_query }}">{{ model.t.evidence }}</a>
-  <a class="source-link{% if model.active_tab == 'methodology' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/methodology{{ model.lang_query }}">{{ model.t.methodology_details }}</a>
+  <a class="source-link{% if model.active_tab == 'methodology' %} badge-ready{% endif %}" href="/magnetism-scanner/scan/{{ model.id }}/methodology{{ model.lang_query }}">{{ model.t.methodology }}</a>
+  </div>
+  {% if model.export_href is defined %}
+  <a class="source-link lab-review-nav-action" href="{{ model.export_href }}">export .md</a>
+  {% endif %}
 </div>

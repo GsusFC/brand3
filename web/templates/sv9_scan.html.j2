@@ -218,11 +218,6 @@
 {%- endmacro %}
 
 <section class="magnetism-hero-section">
-  <div class="section-head">
-    <span class="label">brand3 scanner</span>
-    <span class="tag">// baldosas v3.1 · sombra</span>
-  </div>
-
   {% if model %}
   {% include "magnetism_scan_nav.html.j2" %}
   {% else %}
@@ -271,15 +266,6 @@
         {% if scan.total_blind_spots %} · {{ scan.total_blind_spots }} puntos ciegos{% endif %}
       </div>
     </div>
-  </div>
-
-  <div class="lab-index-meta" style="margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 14px;">
-    <span class="inline-kv"><span class="k">modelo</span>=<span class="v">{{ scan.model or scan.rubric_version }}</span></span>
-    <span class="inline-kv"><span class="k">evaluator</span>=<span class="v">{{ scan.evaluator_model or '—' }}</span></span>
-    {% if scan.source_run_id %}
-    <span class="inline-kv"><span class="k">brand_audit_run</span>=<span class="v">#{{ scan.source_run_id }}</span></span>
-    {% endif %}
-    <a class="inline-kv source-link" href="/sv9/scan/{{ scan.id }}/export.md">export .md</a>
   </div>
 
   {% if technical_failures %}

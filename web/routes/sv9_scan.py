@@ -121,7 +121,11 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
             "id": magnetism_scan_id,
             "lang_query": _lang_q(lang),
             "active_tab": "sv9",
-            "back_href": f"/magnetism-scanner{_lang_q(lang)}",
+            "home_href": f"/{_lang_q(lang)}",
+            "history_href": f"/magnetism-scanner{_lang_q(lang)}",
+            "sv9_shadow_href": "/sv9/calibration",
+            "ranking_href": "/sv9/ranking",
+            "export_href": f"/sv9/scan/{scan_id}/export.md",
             "t": _ui(lang),
             "sv9_scan_id": scan_id,
         }
@@ -191,6 +195,18 @@ def _magnetism_scan_id(store: Sv9Store, source_run_id: int | None) -> int | None
             """
             SELECT id FROM magnetism_scans
             WHERE source_run_id = ?
+            ORDER BY id DESC LIMIT 1
+            """,
+            (source_run_id,),
+        ).fetchone()
+        if row:
+            return int(row["id"])
+        row = store.conn.execute(
+            """
+            SELECT id FROM magnetism_scans
+            WHERE source_run_id IS NULL
+              AND json_valid(raw_payload)
+              AND CAST(json_extract(raw_payload, '$.source_run_id') AS INTEGER) = ?
             ORDER BY id DESC LIMIT 1
             """,
             (source_run_id,),

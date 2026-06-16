@@ -223,9 +223,24 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("Margen inmediato", response.text)
         self.assertIn("Coherencia", response.text)
         self.assertIn("sv9-editorial-drawer", response.text)
-        self.assertIn('href="/magnetism-scanner?lang=es">Volver a Brand3 Scanner</a>', response.text)
-        self.assertNotIn('href="/">Volver a Brand3 Scanner</a>', response.text)
+        self.assertIn('href="/magnetism-scanner?lang=es">Scans recientes</a>', response.text)
+        self.assertIn('href="/sv9/calibration">SV9 sombra</a>', response.text)
+        self.assertIn('href="/sv9/ranking">Ranking</a>', response.text)
+        self.assertNotIn('href="/?lang=es">Inicio</a>', response.text)
+        self.assertNotIn("Volver a Brand3 Scanner", response.text)
         self.assertNotIn(">Lectura base<", response.text)
+        nav_order = [
+            response.text.index("SV9 Score</a>"),
+            response.text.index("Moodboard</a>"),
+            response.text.index("Auditoría</a>"),
+            response.text.index("Evidencia</a>"),
+            response.text.index("Metodología</a>"),
+        ]
+        self.assertEqual(nav_order, sorted(nav_order))
+        self.assertIn(f'href="/sv9/scan/{self.scan_id}/export.md">export .md</a>', response.text)
+        self.assertNotIn("<span class=\"k\">modelo</span>", response.text)
+        self.assertNotIn("<span class=\"k\">evaluator</span>", response.text)
+        self.assertNotIn("<span class=\"k\">brand_audit_run</span>", response.text)
         self.assertIn(">V9<", response.text)
         self.assertIn(">V2<", response.text)
         self.assertIn(">Decisión<", response.text)
@@ -241,6 +256,49 @@ class Sv9CalibrationWebTests(unittest.TestCase):
 
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)
+
+    def test_scan_canvas_uses_scanner_nav_when_source_run_only_lives_in_payload(self):
+        from src.sv9.aggregator import aggregate
+        from src.sv9.store import Sv9Store
+
+        source_run_id = 77
+        result = aggregate(
+            _seed_components(3),
+            brand_name="Legacy Link",
+            url="https://legacy-link.test",
+            source_run_id=source_run_id,
+        )
+        store = Sv9Store(str(self.db))
+        try:
+            scan_id = store.save_scan(result)
+            cursor = store.conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   source_run_id, created_at, status)
+                VALUES (?, ?, ?, ?, ?, ?, NULL, datetime('now'), ?)
+                """,
+                (
+                    "Legacy Link",
+                    "https://legacy-link.test",
+                    30,
+                    30,
+                    "test",
+                    json.dumps({"source_run_id": source_run_id}),
+                    "ready",
+                ),
+            )
+            magnetism_scan_id = cursor.lastrowid
+            store.conn.commit()
+        finally:
+            store.close()
+
+        response = self.client.get(f"/sv9/scan/{scan_id}?lang=es")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(f'href="/magnetism-scanner/scan/{magnetism_scan_id}/audit?lang=es"', response.text)
+        self.assertNotIn('href="/sv9/calibration">← Scans</a>', response.text)
+        self.assertNotIn(">Lectura base<", response.text)
 
     def test_scan_export_md_downloads(self):
         response = self.client.get(f"/sv9/scan/{self.scan_id}/export.md")

@@ -4893,7 +4893,7 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Method notes", r_detail.text)
         self.assertIn("Evidence", r_detail.text)
         self.assertIn("evidence_basis:", r_detail.text)
-        self.assertIn("Detalles de metodología", r_detail.text)
+        self.assertIn("Metodología", r_detail.text)
 
         # GET non-existent detail
         r_not_found = self.client.get("/magnetism-scanner/scan/99999")

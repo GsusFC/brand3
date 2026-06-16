@@ -124,9 +124,9 @@ body {
 
 .term-head {
   min-height: 44px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
   margin: 0;
   padding: 0 28px;
@@ -142,8 +142,30 @@ body {
 .term-actions {
   display: inline-flex;
   align-items: center;
+  justify-self: end;
   gap: 10px;
   min-width: 0;
+}
+
+.term-global-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-self: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  min-width: 0;
+}
+
+.term-global-nav .source-link {
+  min-height: auto;
+  border-color: transparent;
+  background: transparent;
+  padding: 2px 0;
+}
+
+.term-global-nav .source-link.badge-ready {
+  border-color: transparent;
 }
 
 .lang-toggle {
@@ -2695,6 +2717,21 @@ input.source-link::-moz-focus-inner {
   flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 14px;
+}
+
+.lab-review-nav-split {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.lab-review-nav-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.lab-review-nav-action {
+  margin-left: auto;
 }
 
 .lab-review-nav-center {

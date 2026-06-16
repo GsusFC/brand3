@@ -183,7 +183,10 @@ async def sv9_scan_export(request: Request, scan_id: int):
 def _load_scan_for_export(scan_id: int) -> dict | None:
     store = Sv9Store(BRAND3_DB_PATH)
     try:
-        return store.get_scan(scan_id)
+        scan = store.get_scan(scan_id)
+        if scan is not None:
+            _attach_display_identity(store, scan)
+        return scan
     finally:
         store.close()
 

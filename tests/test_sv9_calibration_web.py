@@ -364,9 +364,23 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertNotIn(">Lectura base<", response.text)
 
     def test_scan_export_md_downloads(self):
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            store.conn.execute(
+                "UPDATE sv9_scans SET brand_name = ? WHERE id = ?",
+                ("https://acme.test", self.scan_id),
+            )
+            store.conn.commit()
+        finally:
+            store.close()
+
         response = self.client.get(f"/sv9/scan/{self.scan_id}/export.md")
         self.assertEqual(response.status_code, 200)
         self.assertIn("text/markdown", response.headers["content-type"])
+        self.assertIn("# Brand3 Scanner — Acme", response.text)
+        self.assertNotIn("# Brand3 Scanner — https://acme.test", response.text)
         self.assertIn("Baldosas apagadas (plan de trabajo)", response.text)
         self.assertIn("Puntos ciegos (contexto pendiente)", response.text)
 

@@ -40,7 +40,7 @@ def _components_by_key(scan: dict[str, Any]) -> dict[str, dict[str, Any]]:
 def build_scan_markdown(scan: dict[str, Any]) -> str:
     """Render the scan as a Brand3 .md report."""
     components = _components_by_key(scan)
-    brand = scan.get("brand_name") or "(marca)"
+    brand = scan.get("display_name") or scan.get("brand_name") or "(marca)"
     url = scan.get("url") or ""
     model = scan.get("model") or scan.get("rubric_version") or ""
 
@@ -75,6 +75,10 @@ def build_scan_markdown(scan: dict[str, Any]) -> str:
         if veredicto:
             lines.append("")
             lines.append(f"> {veredicto}")
+        message = str(component.get("message") or "").strip()
+        if message and message != veredicto:
+            lines.append("")
+            lines.append(message)
         if status == "not_evaluated":
             lines.append("")
             lines.append(f"_Fallo técnico ({component.get('error') or 'not_evaluated'}). Reintenta el scan._")
@@ -92,13 +96,20 @@ def build_scan_markdown(scan: dict[str, Any]) -> str:
             f"({component.get('points', 0)}/{component_max_points(key)} pts) · confianza {confidence}"
         )
 
+        verdicts = {
+            str(verdict.get("id") or verdict.get("tile_id") or ""): verdict
+            for verdict in component.get("tile_profile") or []
+            if isinstance(verdict, dict)
+        }
         off_tiles = []
         blind_spots = []
-        for verdict in component.get("tile_profile") or []:
-            estado = str(verdict.get("estado") or "")
-            tile = tiles.get(str(verdict.get("id") or ""))
-            if tile is None:
+        missing_tiles = []
+        for tile_id, tile in tiles.items():
+            verdict = verdicts.get(tile_id)
+            if verdict is None:
+                missing_tiles.append(tile)
                 continue
+            estado = str(verdict.get("estado") or "")
             if estado == ESTADO_NO:
                 off_tiles.append((tile, verdict))
             elif estado == ESTADO_SIN_EVIDENCIA:
@@ -111,6 +122,12 @@ def build_scan_markdown(scan: dict[str, Any]) -> str:
                 lines.append(f"- **{tile['id']} · {tile['name']}** — {tile['condition']}")
         else:
             lines.append("- (ninguna: todas las baldosas evaluables están encendidas)")
+
+        if missing_tiles:
+            lines.append("")
+            lines.append("### Baldosas sin veredicto persistido")
+            for tile in missing_tiles:
+                lines.append(f"- **{tile['id']} · {tile['name']}** — {tile['condition']}")
 
         lines.append("")
         lines.append("### Puntos ciegos (contexto pendiente)")

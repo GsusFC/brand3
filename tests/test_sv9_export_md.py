@@ -54,6 +54,14 @@ class ExportMarkdownTests(unittest.TestCase):
         self.assertIn("Brand3 Score", md)
         self.assertIn("Modelo: v3.1", md)
 
+    def test_header_prefers_display_name(self):
+        scan = self._scan()
+        scan["brand_name"] = "https://acme.test"
+        scan["display_name"] = "Acme"
+        md = build_scan_markdown(scan)
+        self.assertIn("# Brand3 Scanner — Acme", md)
+        self.assertNotIn("# Brand3 Scanner — https://acme.test", md)
+
     def test_coherencia_verdict_is_the_section_header(self):
         md = build_scan_markdown(self._scan())
         coh = md.index("## Coherencia")
@@ -63,6 +71,24 @@ class ExportMarkdownTests(unittest.TestCase):
         md = build_scan_markdown(self._scan())
         self.assertIn("Baldosas apagadas (plan de trabajo)", md)
         # mission with 3 lit leaves M4/M5 off
+        self.assertIn("M4", md)
+        self.assertIn("M5", md)
+
+    def test_component_message_is_exported(self):
+        scan = self._scan()
+        scan["components"]["mission"]["message"] = "Lectura V9 de misión."
+        md = build_scan_markdown(scan)
+        self.assertIn("Lectura V9 de misión.", md)
+
+    def test_missing_tile_verdicts_are_exported(self):
+        scan = self._scan()
+        scan["components"]["mission"]["tile_profile"] = [
+            {"id": "M1", "estado": "ok", "evidencia": "visible"},
+            {"id": "M2", "estado": "ok", "evidencia": "visible"},
+            {"id": "M3", "estado": "ok", "evidencia": "visible"},
+        ]
+        md = build_scan_markdown(scan)
+        self.assertIn("Baldosas sin veredicto persistido", md)
         self.assertIn("M4", md)
         self.assertIn("M5", md)
 

@@ -66,7 +66,7 @@ async def scanner_api_openapi() -> JSONResponse:
     return JSONResponse(scanner_openapi_spec())
 
 
-def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
+def _api_scan_status(row: dict, *, sv9_scan_id: int | None = None, lang: _Lang = "es") -> dict:
     phase = _magnetism_phase(row)
     readiness = scanner_readiness_from_row(row)
     scan_mode = scanner_scan_mode_from_row(row)
@@ -77,6 +77,7 @@ def _api_scan_status(row: dict, *, lang: _Lang = "es") -> dict:
         readiness=readiness,
         scan_mode=scan_mode,
         failure_diagnostics=failure_diagnostics,
+        sv9_scan_id=sv9_scan_id,
         lang=lang,
     )
 
@@ -107,6 +108,39 @@ def _scan_not_ready(row: dict, *, lang: _Lang = "es") -> JSONResponse:
         message="Scanner result is not ready.",
         status=_api_scan_status(row, lang=lang),
     )
+
+
+def _sv9_scan_id_for_source_run(source_run_id: object) -> int | None:
+    try:
+        run_id = int(source_run_id)
+    except (TypeError, ValueError):
+        return None
+    if run_id <= 0:
+        return None
+    try:
+        from src.sv9.rubric import RUBRIC_VERSION
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(BRAND3_DB_PATH)
+        try:
+            scan = store.get_scan_for_run(run_id, rubric_version=RUBRIC_VERSION)
+        finally:
+            store.close()
+    except Exception:
+        return None
+    if not scan:
+        return None
+    try:
+        return int(scan["id"])
+    except (KeyError, TypeError, ValueError):
+        return None
+
+
+async def _sv9_scan_id_for_row(row: dict) -> int | None:
+    source_run_id = row.get("source_run_id")
+    if not source_run_id:
+        return None
+    return await asyncio.to_thread(_sv9_scan_id_for_source_run, source_run_id)
 
 
 async def _scan_row_or_error_async(scan_id: int) -> dict | JSONResponse:
@@ -206,7 +240,7 @@ async def scanner_api_create(request: Request, payload: ScannerCreateRequest) ->
     await get_queue().enqueue_magnetism(token)
     row = await asyncio.to_thread(get_magnetism_scan, scan_id)
     row = row or {"id": scan_id, "status": "queued", "phase": "queued", "token": token}
-    return _api_scan_status(row, lang=payload.lang)
+    return _api_scan_status(row, sv9_scan_id=await _sv9_scan_id_for_row(row), lang=payload.lang)
 
 
 @router.get("/api/v1/scanner/{scan_id}", response_model=None)
@@ -217,7 +251,7 @@ async def scanner_api_status(request: Request, scan_id: int, lang: _Lang = Query
     row = await _scan_row_or_error_async(scan_id)
     if isinstance(row, JSONResponse):
         return row
-    return _api_scan_status(row, lang=lang)
+    return _api_scan_status(row, sv9_scan_id=await _sv9_scan_id_for_row(row), lang=lang)
 
 
 @router.get("/api/v1/scanner/{scan_id}/result", response_model=None)
@@ -230,7 +264,13 @@ async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query
         return row
     model = magnetism_scan_model_from_row(row)
     metadata = scanner_result_metadata_model(model["payload"])
-    return scanner_result_payload(row, model, result_metadata=metadata, lang=lang)
+    return scanner_result_payload(
+        row,
+        model,
+        result_metadata=metadata,
+        sv9_scan_id=await _sv9_scan_id_for_row(row),
+        lang=lang,
+    )
 
 
 @router.get("/api/v1/scanner/{scan_id}/evidence", response_model=None)

@@ -69,6 +69,8 @@ async def test_ready_scan_row_or_error_returns_409_for_unready_scan(monkeypatch)
             "methodology_url": f"/api/v1/scanner/{row['id']}/methodology",
             "audit_url": f"/api/v1/scanner/{row['id']}/audit",
             "strategic_reading_url": f"/api/v1/scanner/{row['id']}/strategic-reading",
+            "sv9_scan_id": None,
+            "sv9_url": None,
             "ui_url": None,
         },
     )

@@ -19,6 +19,7 @@ def scanner_status_payload(
     readiness: dict[str, Any],
     scan_mode: dict[str, Any] | None = None,
     failure_diagnostics: dict[str, Any] | None = None,
+    sv9_scan_id: int | None = None,
     lang: Lang = "es",
 ) -> dict[str, Any]:
     scan_id = int(row.get("id") or 0)
@@ -44,6 +45,8 @@ def scanner_status_payload(
         "methodology_url": f"/api/v1/scanner/{scan_id}/methodology",
         "audit_url": f"/api/v1/scanner/{scan_id}/audit",
         "strategic_reading_url": f"/api/v1/scanner/{scan_id}/strategic-reading",
+        "sv9_scan_id": sv9_scan_id,
+        "sv9_url": f"/sv9/scan/{sv9_scan_id}" if sv9_scan_id else None,
         "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}" if status == "ready" else None,
     }
 
@@ -53,6 +56,7 @@ def scanner_result_payload(
     model: dict[str, Any],
     *,
     result_metadata: dict[str, Any],
+    sv9_scan_id: int | None = None,
     lang: Lang = "es",
 ) -> dict[str, Any]:
     scan_id = int(model["id"])
@@ -81,6 +85,8 @@ def scanner_result_payload(
         "evidence_api_url": f"/api/v1/scanner/{scan_id}/evidence",
         "methodology_api_url": f"/api/v1/scanner/{scan_id}/methodology",
         "strategic_reading_api_url": f"/api/v1/scanner/{scan_id}/strategic-reading",
+        "sv9_scan_id": sv9_scan_id,
+        "sv9_url": f"/sv9/scan/{sv9_scan_id}" if sv9_scan_id else None,
         "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}",
     }
 

@@ -71,6 +71,8 @@ class ScannerStatus(BaseModel):
     methodology_url: str
     audit_url: str
     strategic_reading_url: str
+    sv9_scan_id: int | None
+    sv9_url: str | None
     ui_url: str | None
 
 
@@ -144,6 +146,8 @@ class ScannerResultResponse(BaseModel):
     evidence_api_url: str
     methodology_api_url: str
     strategic_reading_api_url: str
+    sv9_scan_id: int | None = None
+    sv9_url: str | None = None
     ui_url: str
 
 

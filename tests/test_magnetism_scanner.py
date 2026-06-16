@@ -2625,6 +2625,30 @@ class MagnetismScannerTests(unittest.TestCase):
             raw_payload=json.dumps(payload),
             source_run_id=run_id,
         )
+        from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED
+        from src.sv9.store import Sv9Store
+
+        sv9_store = Sv9Store(str(self.db))
+        try:
+            sv9_scan_id = sv9_store.save_scan(
+                Sv9ScanResult(
+                    brand_name="API Linked",
+                    url="https://api-linked.test",
+                    source_run_id=run_id,
+                    brand3_score=74,
+                    components={
+                        "mission": ComponentResult(
+                            component="mission",
+                            status=STATUS_SCORED,
+                            score=2,
+                            detected_content="API Linked has an attached audit snapshot.",
+                            evidence=["Audit snapshot"],
+                        )
+                    },
+                )
+            )
+        finally:
+            sv9_store.close()
 
         status = self.client.get(f"/api/v1/scanner/{scan_id}", headers=self._scanner_api_headers())
         result = self.client.get(f"/api/v1/scanner/{scan_id}/result", headers=self._scanner_api_headers())
@@ -2637,10 +2661,14 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(status.json()["scanner_readiness"]["status"], "publishable")
         self.assertEqual(status.json()["scan_mode"]["mode"], "from_audit_run")
         self.assertTrue(status.json()["scan_mode"]["comparable"])
+        self.assertEqual(status.json()["sv9_scan_id"], sv9_scan_id)
+        self.assertEqual(status.json()["sv9_url"], f"/sv9/scan/{sv9_scan_id}")
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json()["audit"]["source_run_id"], run_id)
         self.assertEqual(result.json()["scan_mode"]["mode"], "from_audit_run")
         self.assertTrue(result.json()["scan_mode"]["comparable"])
+        self.assertEqual(result.json()["sv9_scan_id"], sv9_scan_id)
+        self.assertEqual(result.json()["sv9_url"], f"/sv9/scan/{sv9_scan_id}")
         self.assertEqual(
             result.json()["result_metadata"]["scanner_readiness"]["status"],
             "publishable",

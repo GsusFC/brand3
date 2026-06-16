@@ -15,7 +15,7 @@
   {% include "magnetism_scan_nav.html.j2" %}
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      <h1 class="page-title magnetism-hero-title">{{ model.display_name or model.brand_name }}</h1>
       {% if client_tldr and client_tldr.available and client_tldr.executive_reading %}
       <details style="margin-top: 14px; border: 1px solid var(--border); background: var(--surface);">
         <summary class="dim" style="cursor: pointer; padding: 10px 16px; font-family: var(--font-ui); font-size: 12px; text-transform: uppercase; font-weight: 700; letter-spacing: .04em; user-select: none;">Executive reading</summary>

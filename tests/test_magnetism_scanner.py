@@ -97,6 +97,21 @@ class MagnetismScannerTests(unittest.TestCase):
         self.screenshot_mock.stop()
         self.client.__exit__(None, None, None)
         self._tmp.cleanup()
+
+    def test_magnetism_display_name_derives_company_from_domain(self):
+        from web.routes.magnetism_scanner import _magnetism_display_name
+
+        self.assertEqual(
+            _magnetism_display_name(
+                "https://hermes-agent.nousresearch.com",
+                "https://hermes-agent.nousresearch.com",
+            ),
+            "Hermes Agent",
+        )
+        self.assertEqual(
+            _magnetism_display_name("Hermes Agent", "https://hermes-agent.nousresearch.com"),
+            "Hermes Agent",
+        )
         for key in (
             "BRAND3_DB_PATH",
             "BRAND3_COOKIE_SECRET",
@@ -458,6 +473,32 @@ class MagnetismScannerTests(unittest.TestCase):
         moodboard_en = self.client.get(f"/magnetism-scanner/scan/{scan_id}/moodboard?lang=en")
         self.assertEqual(moodboard_en.status_code, 200)
         self.assertIn("Image inventory", moodboard_en.text)
+
+    def test_scan_hero_uses_company_name_when_brand_name_is_a_url(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url="https://hermes-agent.nousresearch.com",
+            manual_text="A clear, memorable brand for operators.",
+            brand_name="https://hermes-agent.nousresearch.com",
+        )
+        scan_id = insert_magnetism_scan(
+            brand_name="https://hermes-agent.nousresearch.com",
+            url=payload["url"] or "https://hermes-agent.nousresearch.com",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+        )
+
+        moodboard = self.client.get(f"/magnetism-scanner/scan/{scan_id}/moodboard?lang=es")
+        self.assertEqual(moodboard.status_code, 200)
+        self.assertIn("<title>brand3 :: Moodboard · Hermes Agent</title>", moodboard.text)
+        self.assertIn('<h1 class="page-title magnetism-hero-title">Hermes Agent</h1>', moodboard.text)
+        self.assertNotIn(
+            '<h1 class="page-title magnetism-hero-title">https://hermes-agent.nousresearch.com</h1>',
+            moodboard.text,
+        )
 
     def test_moodboard_tab_shows_empty_state_without_source_run(self):
         from web.storage import insert_magnetism_scan

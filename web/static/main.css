@@ -2112,7 +2112,8 @@ input.source-link::-moz-focus-inner {
   line-height: 0.95;
 }
 
-.sv9-scan-url-subtitle {
+.sv9-scan-url-subtitle,
+.magnetism-hero-url {
   display: inline-block;
   max-width: 100%;
   margin-top: 12px;
@@ -2124,7 +2125,8 @@ input.source-link::-moz-focus-inner {
   text-decoration: none;
 }
 
-.sv9-scan-url-subtitle:hover {
+.sv9-scan-url-subtitle:hover,
+.magnetism-hero-url:hover {
   color: var(--accent);
 }
 
@@ -2141,7 +2143,8 @@ input.source-link::-moz-focus-inner {
 
 .magnetism-hero-metric-value-compact {
   max-width: 100%;
-  font-size: 15px !important;
+  font-size: clamp(20px, 2.4vw, 30px) !important;
+  font-weight: 700;
   line-height: 1.08 !important;
   white-space: nowrap;
   overflow: hidden;

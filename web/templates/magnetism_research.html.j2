@@ -1,33 +1,14 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: {{ model.t.research_evidence }} · {{ model.brand_name }}{% endblock %}
+{% block title %}brand3 :: {{ model.t.research_evidence }} · {{ model.display_name or model.brand_name }}{% endblock %}
 {% block content %}
-<section class="magnetism-hero-section">
-  <div class="section-head">
-    <span class="label">magnetism scanner</span>
-    <span class="tag">// {{ model.t.research_tag }}</span>
-  </div>
-  {% include "magnetism_scan_nav.html.j2" %}
-  <div class="magnetism-hero-grid">
-    <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
-      <p class="prose intro-copy magnetism-hero-verdict">
-        {{ model.t.research_intro }}
-      </p>
-    </div>
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">{{ model.t.pack_source }}</div>
-      <div class="hl-accent magnetism-hero-metric-value-compact" style="font-family: var(--font-mono);">
-        {{ model.research.research_pack_source }}
-      </div>
-    </div>
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">{{ model.t.tldr_mode }}</div>
-      <div class="hl-ok magnetism-hero-metric-value-compact" style="font-family: var(--font-mono);">
-        {{ model.research.tldr_generation_mode }}
-      </div>
-    </div>
-  </div>
-</section>
+{% set hero_label = "magnetism scanner" %}
+{% set hero_tag = model.t.research_tag %}
+{% set hero_intro = model.t.research_intro %}
+{% set hero_metrics = [
+  {"label": model.t.pack_source, "value": model.research.research_pack_source, "class": "hl-accent magnetism-hero-metric-value-compact"},
+  {"label": model.t.tldr_mode, "value": model.research.tldr_generation_mode, "class": "hl-ok magnetism-hero-metric-value-compact"}
+] %}
+{% include "magnetism_scan_hero.html.j2" %}
 
 <hr class="rule-thin magnetism-compact-rule">
 
@@ -50,7 +31,7 @@
   <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 14px;">
     <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
       <div class="dim" style="font-family:var(--font-mono); font-size:11px;">resolved_entity</div>
-      <strong style="font-family:var(--font-ui); font-size:18px;">{{ model.research.entity.resolved_entity or model.brand_name }}</strong>
+      <strong style="font-family:var(--font-ui); font-size:18px;">{{ model.research.entity.resolved_entity or model.display_name or model.brand_name }}</strong>
     </article>
     <article style="border:1px solid var(--border); background:var(--surface); padding:16px;">
       <div class="dim" style="font-family:var(--font-mono); font-size:11px;">entity_type</div>

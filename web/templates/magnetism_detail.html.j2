@@ -9,7 +9,7 @@
   {% include "magnetism_scan_nav.html.j2" %}
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      <h1 class="page-title magnetism-hero-title">{{ model.display_name or model.brand_name }}</h1>
       {% if model.quadrant %}
       <p class="prose intro-copy magnetism-hero-verdict">
         {{ model.quadrant }}

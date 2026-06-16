@@ -6,6 +6,7 @@ import asyncio
 import logging
 import secrets
 from datetime import datetime, timezone
+from urllib.parse import urlparse
 
 from typing import Literal
 
@@ -1489,7 +1490,41 @@ async def _magnetism_scan_model_async(scan_id: int, *, lang: _Lang = "es") -> di
 
     payload = _normalized_scan_payload(row)
     payload = _payload_for_language(scan_id, payload, lang)
-    return _scan_model_from_payload(row, payload, scan_id=scan_id)
+    model = _scan_model_from_payload(row, payload, scan_id=scan_id)
+    model["display_name"] = _magnetism_display_name(
+        str(model.get("brand_name") or ""),
+        str(model.get("url") or ""),
+    )
+    model["display_url"] = _display_url(str(model.get("url") or ""))
+    return model
+
+
+def _magnetism_display_name(brand_name: str, url: str) -> str:
+    raw_name = str(brand_name or "").strip()
+    if raw_name and not _looks_like_url_or_domain(raw_name):
+        return raw_name
+    return _domain_label(url or raw_name) or raw_name or "Brand"
+
+
+def _looks_like_url_or_domain(value: str) -> bool:
+    text = str(value or "").strip().lower()
+    return text.startswith(("http://", "https://")) or ("." in text and " " not in text)
+
+
+def _domain_label(url: str) -> str:
+    parsed = urlparse(str(url or "").strip() if "://" in str(url or "") else f"https://{url}")
+    host = (parsed.hostname or "").removeprefix("www.")
+    if not host:
+        return ""
+    stem = host.split(".")[0]
+    return stem.replace("-", " ").replace("_", " ").title()
+
+
+def _display_url(url: str) -> str:
+    value = str(url or "").strip()
+    if value.startswith(("http://", "https://")):
+        return value
+    return ""
 
 
 def _payload_for_language(scan_id: int, payload: dict, lang: _Lang) -> dict:

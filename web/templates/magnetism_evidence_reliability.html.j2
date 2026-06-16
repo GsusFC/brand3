@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: {{ model.t.evidence_reliability }} · {{ model.brand_name }}{% endblock %}
+{% block title %}brand3 :: {{ model.t.evidence_reliability }} · {{ model.display_name or model.brand_name }}{% endblock %}
 {% block content %}
 <section class="magnetism-hero-section">
   <div class="section-head">
@@ -9,7 +9,7 @@
   {% include "magnetism_scan_nav.html.j2" %}
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
+      <h1 class="page-title magnetism-hero-title">{{ model.display_name or model.brand_name }}</h1>
       <p class="prose intro-copy magnetism-hero-verdict">
         {{ model.t.evidence_reliability_intro }}
       </p>

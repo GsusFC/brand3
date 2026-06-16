@@ -1,33 +1,14 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: {{ model.t.moodboard }} · {{ model.brand_name }}{% endblock %}
+{% block title %}brand3 :: {{ model.t.moodboard }} · {{ model.display_name or model.brand_name }}{% endblock %}
 {% block content %}
-<section class="magnetism-hero-section">
-  <div class="section-head">
-    <span class="label">magnetism scanner</span>
-    <span class="tag">// {{ model.t.moodboard_tag }}</span>
-  </div>
-  {% include "magnetism_scan_nav.html.j2" %}
-  <div class="magnetism-hero-grid">
-    <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
-      <p class="prose intro-copy magnetism-hero-verdict">
-        {{ model.t.moodboard_intro }}
-      </p>
-    </div>
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">{{ model.t.moodboard_inventory }}</div>
-      <div class="hl-accent magnetism-hero-metric-value-compact" style="font-family: var(--font-mono);">
-        {{ model.moodboard.image_count }}
-      </div>
-    </div>
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">Magnetism</div>
-      <div class="hl-ok magnetism-hero-metric-value-compact" style="font-family: var(--font-mono);">
-        {{ model.magnetism_score }}<span>/100</span>
-      </div>
-    </div>
-  </div>
-</section>
+{% set hero_label = "magnetism scanner" %}
+{% set hero_tag = model.t.moodboard_tag %}
+{% set hero_intro = model.t.moodboard_intro %}
+{% set hero_metrics = [
+  {"label": model.t.moodboard_inventory, "value": model.moodboard.image_count, "class": "hl-accent magnetism-hero-metric-value-compact"},
+  {"label": "Magnetism", "value": model.magnetism_score, "suffix": "/100", "class": "hl-ok magnetism-hero-metric-value-compact"}
+] %}
+{% include "magnetism_scan_hero.html.j2" %}
 
 <hr class="rule-thin magnetism-compact-rule">
 

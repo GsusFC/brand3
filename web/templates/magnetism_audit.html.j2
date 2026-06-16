@@ -1,45 +1,22 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: {{ model.t.audit }} · {{ model.brand_name }}{% endblock %}
+{% block title %}brand3 :: {{ model.t.audit }} · {{ model.display_name or model.brand_name }}{% endblock %}
 {% block content %}
-<section class="magnetism-hero-section">
-  <div class="section-head">
-    <span class="label">brand3 scanner</span>
-    <span class="tag">// {{ model.t.audit_tag }}</span>
-  </div>
-  {% include "magnetism_scan_nav.html.j2" %}
-  <div class="magnetism-hero-grid">
-    <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ model.brand_name }}</h1>
-      <p class="prose intro-copy magnetism-hero-verdict">{{ model.t.audit_intro }}</p>
-    </div>
-    {% if model.audit.available %}
-    {% set audit_ctx = model.audit.context %}
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">{{ model.t.audit_score }}</div>
-      <div class="hl-accent magnetism-hero-score">
-        {{ audit_ctx.score.global_display }}<span>/100</span>
-      </div>
-      <div class="magnetism-score-bar" aria-hidden="true">
-        <span style="--score-width: {{ audit_ctx.score.global or 0 }}%;"></span>
-      </div>
-      <div class="dim magnetism-hero-tier">{{ audit_ctx.score.band_letter }} · {{ audit_ctx.score.band_label }}</div>
-    </div>
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">data_quality</div>
-      <div class="{% if audit_ctx.brand.data_quality == 'good' %}hl-ok{% elif audit_ctx.brand.data_quality == 'insufficient' %}hl-warn{% else %}hl-accent{% endif %}" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">
-        {{ audit_ctx.brand.data_quality }}
-      </div>
-      <div class="dim magnetism-hero-tier">{{ model.t.audit_run }} #{{ model.audit.source_run_id }}</div>
-    </div>
-    {% else %}
-    <div class="magnetism-hero-metric">
-      <div class="dim magnetism-hero-label">{{ model.t.audit }}</div>
-      <div class="hl-warn" style="font-family: var(--font-mono); font-size: 22px; line-height: 1.1;">n/a</div>
-      <div class="dim magnetism-hero-tier">{{ model.audit.reason }}</div>
-    </div>
-    {% endif %}
-  </div>
-</section>
+{% set hero_label = "brand3 scanner" %}
+{% set hero_tag = model.t.audit_tag %}
+{% set hero_intro = model.t.audit_intro %}
+{% if model.audit.available %}
+{% set audit_ctx = model.audit.context %}
+{% set data_quality_class = "hl-ok" if audit_ctx.brand.data_quality == "good" else ("hl-warn" if audit_ctx.brand.data_quality == "insufficient" else "hl-accent") %}
+{% set hero_metrics = [
+  {"label": model.t.audit_score, "value": audit_ctx.score.global_display, "suffix": "/100", "class": "hl-accent magnetism-hero-score", "bar_width": audit_ctx.score.global or 0, "tier": audit_ctx.score.band_letter ~ " · " ~ audit_ctx.score.band_label},
+  {"label": "data_quality", "value": audit_ctx.brand.data_quality, "class": data_quality_class ~ " magnetism-hero-metric-value-compact", "tier": model.t.audit_run ~ " #" ~ model.audit.source_run_id}
+] %}
+{% else %}
+{% set hero_metrics = [
+  {"label": model.t.audit, "value": "n/a", "class": "hl-warn magnetism-hero-metric-value-compact", "tier": model.audit.reason}
+] %}
+{% endif %}
+{% include "magnetism_scan_hero.html.j2" %}
 
 <hr class="rule-thin magnetism-compact-rule">
 

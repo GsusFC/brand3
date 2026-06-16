@@ -335,8 +335,8 @@ class AnalysisQueue:
             log.warning("magnetism blocked token=%s reason=%s", token, readiness.error_message)
             return
 
-        await asyncio.to_thread(_complete_magnetism_scan, token, result)
         await asyncio.to_thread(_ensure_sv9_scan_for_magnetism_result, result)
+        await asyncio.to_thread(_complete_magnetism_scan, token, result)
         log.info("magnetism ready token=%s", token)
 
 
@@ -483,8 +483,8 @@ def _complete_magnetism_scan(token: str, payload: dict) -> None:
 def _ensure_sv9_scan_for_magnetism_result(payload: dict) -> int | None:
     """Materialize the shadow SV9 scan for a completed Magnetism result.
 
-    SV9 is internal/shadow here: failures are logged but never block the public
-    scanner result that was already marked ready.
+    SV9 is the primary public destination when available, but materialization
+    failures stay best-effort and never block the Magnetism fallback result.
     """
     source_run_id = _payload_source_run_id(payload)
     return ensure_sv9_scan_for_source_run(

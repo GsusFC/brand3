@@ -24,6 +24,8 @@ def scanner_status_payload(
 ) -> dict[str, Any]:
     scan_id = int(row.get("id") or 0)
     status = str(row.get("status") or "queued")
+    sv9_url = f"/sv9/scan/{sv9_scan_id}" if sv9_scan_id else None
+    magnetism_ui_url = f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}"
     return {
         "id": scan_id,
         "status": status,
@@ -46,8 +48,8 @@ def scanner_status_payload(
         "audit_url": f"/api/v1/scanner/{scan_id}/audit",
         "strategic_reading_url": f"/api/v1/scanner/{scan_id}/strategic-reading",
         "sv9_scan_id": sv9_scan_id,
-        "sv9_url": f"/sv9/scan/{sv9_scan_id}" if sv9_scan_id else None,
-        "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}" if status == "ready" else None,
+        "sv9_url": sv9_url,
+        "ui_url": (sv9_url or magnetism_ui_url) if status == "ready" else None,
     }
 
 
@@ -62,6 +64,7 @@ def scanner_result_payload(
     scan_id = int(model["id"])
     payload = model["payload"]
     source_run_id = model.get("source_run_id")
+    sv9_url = f"/sv9/scan/{sv9_scan_id}" if sv9_scan_id else None
     return {
         "id": scan_id,
         "status": row.get("status") or "ready",
@@ -86,8 +89,8 @@ def scanner_result_payload(
         "methodology_api_url": f"/api/v1/scanner/{scan_id}/methodology",
         "strategic_reading_api_url": f"/api/v1/scanner/{scan_id}/strategic-reading",
         "sv9_scan_id": sv9_scan_id,
-        "sv9_url": f"/sv9/scan/{sv9_scan_id}" if sv9_scan_id else None,
-        "ui_url": f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}",
+        "sv9_url": sv9_url,
+        "ui_url": sv9_url or f"/magnetism-scanner/scan/{scan_id}{lang_query(lang)}",
     }
 
 

@@ -2663,12 +2663,14 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertTrue(status.json()["scan_mode"]["comparable"])
         self.assertEqual(status.json()["sv9_scan_id"], sv9_scan_id)
         self.assertEqual(status.json()["sv9_url"], f"/sv9/scan/{sv9_scan_id}")
+        self.assertEqual(status.json()["ui_url"], f"/sv9/scan/{sv9_scan_id}")
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json()["audit"]["source_run_id"], run_id)
         self.assertEqual(result.json()["scan_mode"]["mode"], "from_audit_run")
         self.assertTrue(result.json()["scan_mode"]["comparable"])
         self.assertEqual(result.json()["sv9_scan_id"], sv9_scan_id)
         self.assertEqual(result.json()["sv9_url"], f"/sv9/scan/{sv9_scan_id}")
+        self.assertEqual(result.json()["ui_url"], f"/sv9/scan/{sv9_scan_id}")
         self.assertEqual(
             result.json()["result_metadata"]["scanner_readiness"]["status"],
             "publishable",
@@ -4002,6 +4004,68 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn("SV9 Score", response.text)
         self.assertIn(f"/sv9/scan/{sv9_id}", response.text)
+
+    def test_ready_status_redirects_to_sv9_when_shadow_scan_exists(self):
+        from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED
+        from src.sv9.store import Sv9Store
+        from web.storage import insert_magnetism_job
+
+        source_run_id = 123
+        token = "ready-sv9-token"
+        scan_id = insert_magnetism_job(
+            token=token,
+            brand_name="SV9 Primary",
+            url="https://sv9-primary.test",
+            input_type="audit_run",
+            input_value=str(source_run_id),
+            source_run_id=source_run_id,
+        )
+        with sqlite3.connect(str(self.db)) as conn:
+            conn.execute(
+                """
+                UPDATE magnetism_scans
+                SET status = 'ready', phase = 'ready', raw_payload = ?
+                WHERE id = ?
+                """,
+                (
+                    json.dumps(
+                        {
+                            "brand_name": "SV9 Primary",
+                            "url": "https://sv9-primary.test",
+                            "source_run_id": source_run_id,
+                            "tldr_brand3": {},
+                        }
+                    ),
+                    scan_id,
+                ),
+            )
+            conn.commit()
+
+        sv9_store = Sv9Store(str(self.db))
+        try:
+            sv9_id = sv9_store.save_scan(
+                Sv9ScanResult(
+                    brand_name="SV9 Primary",
+                    url="https://sv9-primary.test",
+                    source_run_id=source_run_id,
+                    brand3_score=60,
+                    components={
+                        "mission": ComponentResult(
+                            component="mission",
+                            status=STATUS_SCORED,
+                            score=3,
+                            detected_content="Clear mission",
+                        )
+                    },
+                )
+            )
+        finally:
+            sv9_store.close()
+
+        response = self.client.get(f"/magnetism-scanner/{token}/status?lang=en", follow_redirects=False)
+
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.headers["location"], f"/sv9/scan/{sv9_id}?lang=en")
 
     def test_scan_detail_shows_generate_sv9_button_when_shadow_scan_is_missing(self):
         from src.sv9.aggregator import aggregate

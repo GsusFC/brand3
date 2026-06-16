@@ -356,6 +356,68 @@ class WorkerLoopTests(unittest.TestCase):
                 ).fetchone()[0]
             self.assertEqual(status, "ready")
 
+    def test_magnetism_process_materializes_sv9_before_marking_ready(self):
+        from src.features.magnetism.readiness import ScannerReadiness
+        from web.storage import insert_magnetism_job
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            store.close()
+            token = "magnetism-token"
+            with patch("web.storage.BRAND3_DB_PATH", str(db_path)):
+                insert_magnetism_job(
+                    token=token,
+                    brand_name="Acme",
+                    url="https://acme.test",
+                    input_type="audit_run",
+                    input_value="123",
+                    source_run_id=123,
+                )
+
+            result = {
+                "source_run_id": 123,
+                "brand_name": "Acme",
+                "url": "https://acme.test",
+                "magnetism_score": 64,
+                "coherence_score": 72,
+                "quadrant": "High Magnetism - High Coherence",
+                "source": "brand_audit_snapshot",
+                "tldr_brand3": {},
+            }
+            calls = []
+
+            async def fake_to_thread(func, *args, **kwargs):
+                calls.append(func)
+                return func(*args, **kwargs)
+
+            def fake_ensure(payload):
+                calls.append("ensure_sv9")
+                self.assertEqual(payload, result)
+                return 99
+
+            def fake_complete(complete_token, payload):
+                calls.append("complete_magnetism")
+                self.assertEqual(complete_token, token)
+                self.assertEqual(payload, result)
+
+            web_queue.set_run_magnetism_override(lambda _job, progress_cb=None: result)
+            try:
+                with patch.object(web_queue, "_db_path", return_value=db_path):
+                    with patch.object(web_queue.asyncio, "to_thread", fake_to_thread):
+                        with patch.object(
+                            web_queue,
+                            "assess_scanner_readiness",
+                            return_value=ScannerReadiness("publishable"),
+                        ):
+                            with patch.object(web_queue, "_ensure_sv9_scan_for_magnetism_result", side_effect=fake_ensure):
+                                with patch.object(web_queue, "_complete_magnetism_scan", side_effect=fake_complete):
+                                    asyncio.run(web_queue.AnalysisQueue(max_concurrent=1)._process_magnetism(token))
+            finally:
+                web_queue.set_run_magnetism_override(None)
+
+            self.assertLess(calls.index("ensure_sv9"), calls.index("complete_magnetism"))
+
     def test_runs_claimed_job_and_stops_on_shutdown(self):
         claimed_jobs = [{"id": 7, "url": "https://a.com"}]
         ran = []

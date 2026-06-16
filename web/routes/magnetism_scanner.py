@@ -564,6 +564,13 @@ def _sv9_scan_id_for_run(source_run_id: object) -> int | None:
     return None
 
 
+def _primary_scan_ready_href(row: dict, *, lang: _Lang = "es") -> str:
+    sv9_scan_id = _sv9_scan_id_for_run(row.get("source_run_id"))
+    if sv9_scan_id:
+        return _with_lang(f"/sv9/scan/{sv9_scan_id}", lang)
+    return _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang)
+
+
 def _ui(lang: _Lang) -> dict:
     labels = dict(_MAGNETISM_UI["en"])
     labels.update(_MAGNETISM_UI.get(lang, {}))
@@ -813,7 +820,7 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             status_code=404,
         )
     if row.get("status") == "ready":
-        return RedirectResponse(_with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang), status_code=303)
+        return RedirectResponse(_primary_scan_ready_href(row, lang=lang), status_code=303)
 
     phase = _magnetism_phase(row)
     phase_labels = {
@@ -838,7 +845,7 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
             "phase_steps": _phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
             "assets_href": "/magnetism-scanner/{}/assets".format(token),
             "loader_phase_captions": _LOADER_PHASE_CAPTIONS[lang],
-            "ready_href": _with_lang("/magnetism-scanner/scan/{}".format(row["id"]), lang),
+            "ready_href": _primary_scan_ready_href(row, lang=lang),
             "back_href": _with_lang("/magnetism-scanner", lang),
             "status_label": "brand_scanner_status",
             "typical_run_label": "3-5 min",

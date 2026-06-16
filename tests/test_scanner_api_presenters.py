@@ -109,6 +109,29 @@ def test_scanner_status_payload_exposes_stable_urls_for_ready_scan():
     assert ScannerStatus.model_validate(payload).id == 42
 
 
+def test_scanner_status_payload_uses_sv9_as_primary_ui_when_available():
+    payload = scanner_status_payload(
+        {
+            "id": 42,
+            "status": "ready",
+            "phase": "ready",
+            "brand_name": "Example",
+            "url": "https://example.com",
+            "source_run_id": 7,
+        },
+        phase="ready",
+        readiness={"status": "publishable", "publishable": True, "reason_codes": []},
+        scan_mode={"mode": "from_audit_run", "comparable": True, "reason_codes": []},
+        sv9_scan_id=99,
+        lang="en",
+    )
+
+    assert payload["sv9_scan_id"] == 99
+    assert payload["sv9_url"] == "/sv9/scan/99"
+    assert payload["ui_url"] == "/sv9/scan/99"
+    assert ScannerStatus.model_validate(payload).sv9_scan_id == 99
+
+
 def test_scanner_status_payload_hides_ui_url_until_ready():
     payload = scanner_status_payload(
         {"id": 42, "status": "running"},
@@ -203,6 +226,33 @@ def test_scanner_result_payload_exposes_stable_section_urls_and_audit_link():
     assert payload["ui_url"] == "/magnetism-scanner/scan/42?lang=en"
     assert payload["result_metadata"]["result_version"] == "scanner_result_v1"
     assert ScannerResultResponse.model_validate(payload).id == 42
+
+
+def test_scanner_result_payload_uses_sv9_as_primary_ui_when_available():
+    result_metadata = _scanner_result_metadata_fixture()
+    payload = scanner_result_payload(
+        {"status": "ready"},
+        {
+            "id": 42,
+            "brand_name": "Example",
+            "url": "https://example.com",
+            "created_at": "June 04, 2026 at 10:00 AM UTC",
+            "magnetism_score": 74,
+            "coherence_score": 81,
+            "quadrant": "Clear",
+            "scan_mode": {"mode": "from_audit_run", "comparable": True, "reason_codes": []},
+            "source_run_id": 7,
+            "payload": {"tldr_brand3": {}, "tldr_strategy": {}},
+        },
+        result_metadata=result_metadata,
+        sv9_scan_id=99,
+        lang="en",
+    )
+
+    assert payload["sv9_scan_id"] == 99
+    assert payload["sv9_url"] == "/sv9/scan/99"
+    assert payload["ui_url"] == "/sv9/scan/99"
+    assert ScannerResultResponse.model_validate(payload).sv9_scan_id == 99
 
 
 def test_scanner_result_metadata_reports_current_pipeline_inputs():

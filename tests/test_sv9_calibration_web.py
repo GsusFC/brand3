@@ -253,8 +253,15 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn("3/10 ×2", response.text)
         self.assertIn("core_purpose text", response.text)
         self.assertIn("sv9-tile", response.text)
-        self.assertIn("encendida", response.text)
-        self.assertIn("punto ciego", response.text)
+        first_card = response.text[
+            response.text.index('id="sv9-card-core_purpose"') : response.text.index(
+                'id="sv9-editorial-core_purpose"'
+            )
+        ]
+        self.assertNotIn("sv9-tiles", first_card)
+        self.assertIn("se muestran solo fallos y puntos ciegos", response.text)
+        self.assertIn("sv9-tile-card is-off", response.text)
+        self.assertNotIn("swatch on", response.text)
         self.assertIn("La marca cuenta una historia única.", response.text)  # coherencia verdict
 
         response = self.client.get("/sv9/scan/99999")
@@ -279,6 +286,39 @@ class Sv9CalibrationWebTests(unittest.TestCase):
         self.assertIn('<h1 class="page-title magnetism-hero-title">Acme</h1>', response.text)
         self.assertIn('class="sv9-scan-url-subtitle"', response.text)
         self.assertIn('href="https://acme.test"', response.text)
+
+    def test_scan_drawer_shows_missing_tile_verdicts(self):
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            store.conn.execute(
+                """
+                UPDATE sv9_component_scores
+                SET tile_profile_json = ?
+                WHERE scan_id = ? AND component = ?
+                """,
+                (
+                    json.dumps(
+                        [
+                            {"id": "P1", "estado": "ok", "evidencia": "visible"},
+                            {"id": "P2", "estado": "ok", "evidencia": "visible"},
+                            {"id": "P3", "estado": "ok", "evidencia": "visible"},
+                        ]
+                    ),
+                    self.scan_id,
+                    "personality",
+                ),
+            )
+            store.conn.commit()
+        finally:
+            store.close()
+
+        response = self.client.get(f"/sv9/scan/{self.scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("sin veredicto persistido para esta baldosa", response.text)
+        self.assertIn("sv9-tile-card is-missing", response.text)
 
     def test_scan_canvas_uses_scanner_nav_when_source_run_only_lives_in_payload(self):
         from src.sv9.aggregator import aggregate

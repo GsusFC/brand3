@@ -56,12 +56,15 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
         """Merge the rubric tiles with the component's verdicts for the grid."""
         spec = COMPONENTS[key]
         verdicts = {
-            str(v.get("id") or ""): v for v in component.get("tile_profile") or []
+            str(v.get("id") or v.get("tile_id") or ""): v
+            for v in component.get("tile_profile") or []
         }
         tiles = []
         for tile in spec["tiles"]:
-            verdict = verdicts.get(tile["id"]) or {}
-            estado = str(verdict.get("estado") or "")
+            verdict = verdicts.get(tile["id"])
+            has_verdict = verdict is not None
+            verdict_payload = verdict or {}
+            estado = str(verdict_payload.get("estado") or "")
             tiles.append(
                 {
                     "id": tile["id"],
@@ -71,9 +74,16 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
                     "is_on": estado == "ok",
                     "is_off": estado == "no",
                     "is_blind": estado == "sin_evidencia",
-                    "evidencia": str(verdict.get("evidencia") or ""),
-                    "motivo": str(verdict.get("motivo") or ""),
-                    "contexto_requerido": str(verdict.get("contexto_requerido") or ""),
+                    "is_missing": not has_verdict,
+                    "evidencia": str(verdict_payload.get("evidencia") or ""),
+                    "motivo": str(
+                        verdict_payload.get("motivo")
+                        if has_verdict
+                        else "sin veredicto persistido para esta baldosa"
+                    ),
+                    "contexto_requerido": str(
+                        verdict_payload.get("contexto_requerido") or ""
+                    ),
                 }
             )
         return tiles
@@ -84,6 +94,10 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
         status = component.get("status", "not_evaluated")
         error = component.get("error") or ""
         scored = status == "scored"
+        tiles = _tiles(key, component) if scored and not is_legacy else []
+        action_tiles = [
+            tile for tile in tiles if tile["is_off"] or tile["is_blind"] or tile["is_missing"]
+        ]
         return {
             "key": key,
             "label": spec["label"],
@@ -104,7 +118,9 @@ async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es"
             "v2_reference": v2_blocks.get(key, {}),
             "editorial_decision": editorial_decisions.get(key, {}),
             "is_chip": key in ("attributes", "values"),
-            "tiles": _tiles(key, component) if scored and not is_legacy else [],
+            "tiles": tiles,
+            "action_tiles": action_tiles,
+            "lit_tile_count": sum(1 for tile in tiles if tile["is_on"]),
         }
 
     canvas = [[_box(key) for key in row] for row in _CANVAS_ROWS]

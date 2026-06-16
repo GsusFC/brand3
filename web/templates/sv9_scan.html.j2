@@ -107,23 +107,6 @@
   <p class="dim magnetism-card-result" style="margin: 0;">(fallo técnico)</p>
   {% endif %}
 
-  {% if box.tiles %}
-  <div class="sv9-tiles">
-    {% for tile in box.tiles %}
-    <span class="sv9-tile{% if tile.is_on %} is-on{% elif tile.is_off %} is-off{% elif tile.is_blind %} is-blind{% endif %}"
-          title="{{ tile.id }} · {{ tile.name }}: {{ tile.condition }}{% if tile.is_on and tile.evidencia %} — evidencia: {{ tile.evidencia }}{% elif tile.motivo %} — {{ tile.motivo }}{% endif %}">
-      {{ tile.id }}
-    </span>
-    {% endfor %}
-  </div>
-  {% for tile in box.tiles if tile.is_blind %}
-  <p class="sv9-tile-detail">
-    <span class="dim">⊘ {{ tile.id }} {{ tile.name }}:</span> {{ tile.motivo }}
-    <span class="blind-cta">— aporta contexto para iluminar este punto{% if tile.contexto_requerido %}: {{ tile.contexto_requerido }}{% endif %}</span>
-  </p>
-  {% endfor %}
-  {% endif %}
-
   {% if box.message %}
   <p class="dim" style="margin: 6px 0 0; font-family: var(--font-mono); font-size: 12px; line-height: 1.55;">{{ box.message }}</p>
   {% endif %}
@@ -164,6 +147,33 @@
         <p class="dim">→ siguiente: {{ box.next_rung.criterion }}{% if box.next_rung.evaluable is defined and not box.next_rung.evaluable %} · sin canal de evidencia{% endif %}</p>
         {% endif %}
       </section>
+
+      {% if box.tiles %}
+      <section class="sv9-editorial-section">
+        <h3>Baldosas</h3>
+        <p class="dim sv9-editorial-meta">
+          {{ box.lit_tile_count }} encendida{% if box.lit_tile_count != 1 %}s{% endif %}; se muestran solo fallos y puntos ciegos.
+        </p>
+        {% if box.action_tiles %}
+        <div class="sv9-tiles">
+          {% for tile in box.action_tiles %}
+          <article class="sv9-tile-card{% if tile.is_off %} is-off{% elif tile.is_blind %} is-blind{% elif tile.is_missing %} is-missing{% endif %}">
+            <span class="sv9-tile">{{ tile.id }}</span>
+            <div>
+              <strong>{{ tile.name }}{% if tile.is_missing %} · sin veredicto{% endif %}</strong>
+              <p>{{ tile.motivo or tile.condition }}</p>
+              {% if tile.is_blind and tile.contexto_requerido %}
+              <p class="dim">Contexto requerido: {{ tile.contexto_requerido }}</p>
+              {% endif %}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="dim">No hay fallos ni puntos ciegos en este componente.</p>
+        {% endif %}
+      </section>
+      {% endif %}
 
       <section class="sv9-editorial-section">
         <h3>V9</h3>
@@ -297,12 +307,6 @@
 </section>
 
 <section class="magnetism-tldr-section">
-  <div class="sv9-tile-legend">
-    <span><span class="swatch on"></span>encendida</span>
-    <span><span class="swatch off"></span>apagada (fallo de marca)</span>
-    <span><span class="swatch blind"></span>punto ciego (límite del snapshot)</span>
-  </div>
-
   <div class="sv9-canvas" style="margin-top: 14px;">
     {% for row in canvas %}
     <div class="sv9-canvas-row sv9-canvas-row-{{ row|length }}">

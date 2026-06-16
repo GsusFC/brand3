@@ -2612,10 +2612,10 @@ input.source-link::-moz-focus-inner {
 
 .sv9-editorial-section {
   border: 1px solid var(--border);
-  padding: 16px;
+  padding: 14px;
   font-family: var(--font-ui);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 .sv9-editorial-section h3 {
@@ -2627,19 +2627,68 @@ input.source-link::-moz-focus-inner {
 }
 
 .sv9-editorial-section p {
-  margin: 0 0 16px;
+  margin: 0 0 12px;
 }
 
 .sv9-editorial-scoreline {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .sv9-editorial-meta {
   font-family: var(--font-mono);
   font-size: 11px;
+  line-height: 1.45;
+}
+
+.sv9-editorial-section .sv9-tiles {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sv9-tile-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  border: 1px solid var(--border);
+  padding: 10px;
+}
+
+.sv9-tile-card.is-off {
+  border-color: color-mix(in srgb, var(--danger) 55%, var(--border));
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+
+.sv9-tile-card.is-blind {
+  border-style: dashed;
+  background: var(--soft-panel-bg);
+}
+
+.sv9-tile-card.is-missing {
+  border-style: dotted;
+  background: var(--surface);
+}
+
+.sv9-tile-card .sv9-tile {
+  margin-top: 1px;
+}
+
+.sv9-tile-card strong {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+
+.sv9-tile-card p {
+  margin: 0 0 6px;
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 .sv9-editorial-field {

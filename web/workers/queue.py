@@ -72,28 +72,25 @@ def _call_magnetism_engine(job: dict, progress_cb=None) -> dict:
             return _run_magnetism_override(job, progress_cb=progress_cb)
         return _run_magnetism_override(job)
 
-    from src.config import LLM_PREMIUM_MODEL
-    from src.features.llm_analyzer import LLMAnalyzer
     from src.services.magnetism_service import (
         run_legacy_manual_magnetism,
         run_magnetism_from_audit_run,
         run_magnetism_from_url,
     )
 
-    llm = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
     input_type = str(job.get("input_type") or "url")
     input_value = str(job.get("input_value") or "")
     if input_type == "audit_run":
         if progress_cb is not None:
             progress_cb("interpreting")
-        return run_magnetism_from_audit_run(int(input_value), llm=llm)
+        return run_magnetism_from_audit_run(int(input_value))
     if input_type == "manual":
         if progress_cb is not None:
             progress_cb("extracting")
-        return run_legacy_manual_magnetism(input_value, llm=llm)
+        return run_legacy_manual_magnetism(input_value)
     if progress_cb is not None:
         progress_cb("collecting")
-    return run_magnetism_from_url(input_value, llm=llm, progress_cb=progress_cb)
+    return run_magnetism_from_url(input_value, progress_cb=progress_cb)
 
 
 def _db_path() -> Path:

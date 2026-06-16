@@ -236,6 +236,82 @@ class Sv9MaterializationTests(unittest.TestCase):
             self.assertEqual(count, 0)
 
 
+class MagnetismWorkerRoutingTests(unittest.TestCase):
+    def tearDown(self):
+        web_queue.set_run_magnetism_override(None)
+
+    def test_url_magnetism_uses_service_role_router_without_injected_llm(self):
+        captured = {}
+        phases = []
+
+        def fake_run(url, *, llm=None, progress_cb=None):
+            captured["url"] = url
+            captured["llm"] = llm
+            captured["progress_cb"] = progress_cb
+            return {"ok": True}
+
+        with patch(
+            "src.services.magnetism_service.run_magnetism_from_url",
+            side_effect=fake_run,
+        ):
+            result = web_queue._call_magnetism_engine(
+                {"input_type": "url", "input_value": "https://example.com"},
+                progress_cb=phases.append,
+            )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(captured["url"], "https://example.com")
+        self.assertIsNone(captured["llm"])
+        self.assertIsNotNone(captured["progress_cb"])
+        self.assertEqual(phases, ["collecting"])
+
+    def test_audit_run_magnetism_uses_service_role_router_without_injected_llm(self):
+        captured = {}
+        phases = []
+
+        def fake_run(run_id, *, llm=None):
+            captured["run_id"] = run_id
+            captured["llm"] = llm
+            return {"ok": True}
+
+        with patch(
+            "src.services.magnetism_service.run_magnetism_from_audit_run",
+            side_effect=fake_run,
+        ):
+            result = web_queue._call_magnetism_engine(
+                {"input_type": "audit_run", "input_value": "123"},
+                progress_cb=phases.append,
+            )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(captured["run_id"], 123)
+        self.assertIsNone(captured["llm"])
+        self.assertEqual(phases, ["interpreting"])
+
+    def test_manual_magnetism_uses_service_role_router_without_injected_llm(self):
+        captured = {}
+        phases = []
+
+        def fake_run(text, *, llm=None):
+            captured["text"] = text
+            captured["llm"] = llm
+            return {"ok": True}
+
+        with patch(
+            "src.services.magnetism_service.run_legacy_manual_magnetism",
+            side_effect=fake_run,
+        ):
+            result = web_queue._call_magnetism_engine(
+                {"input_type": "manual", "input_value": "manual evidence"},
+                progress_cb=phases.append,
+            )
+
+        self.assertEqual(result, {"ok": True})
+        self.assertEqual(captured["text"], "manual evidence")
+        self.assertIsNone(captured["llm"])
+        self.assertEqual(phases, ["extracting"])
+
+
 class WorkerLoopTests(unittest.TestCase):
     def test_web_queue_process_uses_threadpool_for_db_and_engine_work(self):
         with tempfile.TemporaryDirectory() as tmpdir:

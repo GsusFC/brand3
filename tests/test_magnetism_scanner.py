@@ -3999,11 +3999,17 @@ class MagnetismScannerTests(unittest.TestCase):
         finally:
             sv9_store.close()
 
-        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}")
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}?lang=en", follow_redirects=False)
 
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("SV9 Score", response.text)
-        self.assertIn(f"/sv9/scan/{sv9_id}", response.text)
+        self.assertEqual(response.status_code, 303)
+        self.assertEqual(response.headers["location"], f"/sv9/scan/{sv9_id}?lang=en")
+
+        fallback = self.client.get(f"/magnetism-scanner/scan/{scan_id}?base=1&lang=en")
+
+        self.assertEqual(fallback.status_code, 200)
+        self.assertIn("SV9 Score", fallback.text)
+        self.assertIn(f"/sv9/scan/{sv9_id}?lang=en", fallback.text)
+        self.assertNotIn("Base reading", fallback.text)
 
     def test_ready_status_redirects_to_sv9_when_shadow_scan_exists(self):
         from src.sv9.models import ComponentResult, Sv9ScanResult, STATUS_SCORED

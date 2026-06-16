@@ -1080,7 +1080,12 @@ async def _update_sv9_generation_job_async(token: str, **columns) -> None:
 
 
 @router.get("/magnetism-scanner/scan/{scan_id}")
-async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang = Query("es")):
+async def magnetism_scanner_detail(
+    request: Request,
+    scan_id: int,
+    lang: _Lang = Query("es"),
+    base: bool = Query(False),
+):
     """Render details sheet of a specific magnetism scan."""
     model = await _magnetism_scan_model_async(scan_id, lang=lang)
     if model is None:
@@ -1093,6 +1098,11 @@ async def magnetism_scanner_detail(request: Request, scan_id: int, lang: _Lang =
     model["active_tab"] = "tldr"
     _attach_ui(model, lang)
     await _attach_sv9_link(model)
+    if model.get("sv9_scan_id") and not base:
+        return RedirectResponse(
+            _with_lang(f"/sv9/scan/{model['sv9_scan_id']}", lang),
+            status_code=303,
+        )
 
     return templates.TemplateResponse(
         request,

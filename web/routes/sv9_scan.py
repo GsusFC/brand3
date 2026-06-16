@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import json
 
-from fastapi import APIRouter, Form, HTTPException, Request
+from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse, RedirectResponse
 
 from src.config import BRAND3_DB_PATH
@@ -21,7 +21,7 @@ from src.sv9.service import materialize_sv9_scan
 from src.sv9.store import Sv9Store
 
 from ..templates_env import templates
-from .magnetism_scanner import _ui
+from .magnetism_scanner import _Lang, _lang_q, _ui
 from .sv9_calibration import _require_team, _require_team_write
 
 router = APIRouter()
@@ -39,7 +39,7 @@ _CANVAS_ROWS = [
 
 
 @router.get("/sv9/scan/{scan_id}")
-async def sv9_scan_view(request: Request, scan_id: int):
+async def sv9_scan_view(request: Request, scan_id: int, lang: _Lang = Query("es")):
     _require_team(request)
     scan, editorial_decisions, v2_blocks, magnetism_scan_id = await asyncio.to_thread(
         _load_scan_view_data,
@@ -119,10 +119,10 @@ async def sv9_scan_view(request: Request, scan_id: int):
     if magnetism_scan_id:
         nav_model = {
             "id": magnetism_scan_id,
-            "lang_query": "?lang=es",
+            "lang_query": _lang_q(lang),
             "active_tab": "sv9",
-            "back_href": "/",
-            "t": _ui("es"),
+            "back_href": f"/magnetism-scanner{_lang_q(lang)}",
+            "t": _ui(lang),
             "sv9_scan_id": scan_id,
         }
 
@@ -138,7 +138,7 @@ async def sv9_scan_view(request: Request, scan_id: int):
             "magnetism_scan_id": magnetism_scan_id,
             "model": nav_model,
             "is_legacy": is_legacy,
-            "ui_lang": "es",
+            "ui_lang": lang,
         },
     )
 

@@ -2095,6 +2095,13 @@ input.source-link::-moz-focus-inner {
   background: var(--surface);
 }
 
+/* Single-metric hero (moodboard, audit fallback): drop the empty third column
+   so the metric sits beside the main block instead of leaving a gap. The mobile
+   media query below resets this to 1fr and wins by source order. */
+.magnetism-hero-grid-1 {
+  grid-template-columns: minmax(0, 1.6fr) minmax(160px, 0.9fr);
+}
+
 .magnetism-hero-main,
 .magnetism-hero-metric {
   min-width: 0;

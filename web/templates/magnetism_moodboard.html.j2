@@ -5,8 +5,7 @@
 {% set hero_tag = model.t.moodboard_tag %}
 {% set hero_intro = model.t.moodboard_intro %}
 {% set hero_metrics = [
-  {"label": model.t.moodboard_inventory, "value": model.moodboard.image_count, "class": "hl-accent magnetism-hero-metric-value-compact"},
-  {"label": "Magnetism", "value": model.magnetism_score, "suffix": "/100", "class": "hl-ok magnetism-hero-metric-value-compact"}
+  {"label": model.t.moodboard_inventory, "value": model.moodboard.image_count, "class": "hl-accent magnetism-hero-score"}
 ] %}
 {% include "magnetism_scan_hero.html.j2" %}
 

@@ -136,6 +136,14 @@
       const probe = new Image();
       probe.referrerPolicy = "no-referrer";
       probe.onload = () => {
+        // Adopt the image's real aspect so the card box matches it exactly and
+        // `cover` fills without cropping (the random ASPECTS seed only shapes
+        // empty placeholders until their image lands). Area stays constant:
+        // w·h = k² regardless of aspect, so even a panoramic strip can't overflow.
+        if (probe.naturalWidth > 0 && probe.naturalHeight > 0) {
+          card.aspect = probe.naturalWidth / probe.naturalHeight;
+          sizeCard(card);
+        }
         card.img.style.setProperty("--cell-img", `url("${url}")`);
         card.el.classList.add("is-filled");
         card.filled = true;

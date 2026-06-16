@@ -219,6 +219,9 @@ class Sv9CalibrationWebTests(unittest.TestCase):
     def test_scan_canvas_renders_tile_grid(self):
         response = self.client.get(f"/sv9/scan/{self.scan_id}")
         self.assertEqual(response.status_code, 200)
+        self.assertIn('<h1 class="page-title magnetism-hero-title">Acme</h1>', response.text)
+        self.assertIn('class="sv9-scan-url-subtitle"', response.text)
+        self.assertIn('href="https://acme.test"', response.text)
         self.assertIn("Brand3 Score", response.text)
         self.assertIn("Margen inmediato", response.text)
         self.assertIn("Coherencia", response.text)
@@ -256,6 +259,26 @@ class Sv9CalibrationWebTests(unittest.TestCase):
 
         response = self.client.get("/sv9/scan/99999")
         self.assertEqual(response.status_code, 404)
+
+    def test_scan_header_prefers_company_name_when_sv9_name_is_url(self):
+        from src.sv9.store import Sv9Store
+
+        store = Sv9Store(str(self.db))
+        try:
+            store.conn.execute(
+                "UPDATE sv9_scans SET brand_name = ? WHERE id = ?",
+                ("https://acme.test", self.scan_id),
+            )
+            store.conn.commit()
+        finally:
+            store.close()
+
+        response = self.client.get(f"/sv9/scan/{self.scan_id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('<h1 class="page-title magnetism-hero-title">Acme</h1>', response.text)
+        self.assertIn('class="sv9-scan-url-subtitle"', response.text)
+        self.assertIn('href="https://acme.test"', response.text)
 
     def test_scan_canvas_uses_scanner_nav_when_source_run_only_lives_in_payload(self):
         from src.sv9.aggregator import aggregate

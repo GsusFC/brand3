@@ -1,5 +1,5 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: baldosas :: {{ scan.brand_name }}{% endblock %}
+{% block title %}brand3 :: baldosas :: {{ scan.display_name or scan.brand_name }}{% endblock %}
 {% block extra_head %}
 <style>
   /* Tile grid: three visual states. Scoped styles, public CSS untouched. */
@@ -240,7 +240,12 @@
 
   <div class="magnetism-hero-grid">
     <div class="magnetism-hero-main">
-      <h1 class="page-title magnetism-hero-title">{{ scan.brand_name }}</h1>
+      <h1 class="page-title magnetism-hero-title">{{ scan.display_name or scan.brand_name }}</h1>
+      {% if scan.display_url %}
+      <a class="sv9-scan-url-subtitle" href="{{ scan.display_url }}" target="_blank" rel="noopener">
+        {{ scan.display_url }}
+      </a>
+      {% endif %}
     </div>
     <div class="magnetism-hero-metric">
       <div class="dim magnetism-hero-label">Brand3 Score</div>

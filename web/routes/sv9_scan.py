@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import PlainTextResponse, RedirectResponse
@@ -181,9 +182,89 @@ def _load_scan_view_data(scan_id: int) -> tuple[dict | None, dict, dict[str, dic
         editorial_decisions = store.list_editorial_decisions(scan_id)
         v2_blocks = _v2_reference_blocks(store, source_run_id)
         magnetism_scan_id = _magnetism_scan_id(store, source_run_id)
+        _attach_display_identity(store, scan)
         return scan, editorial_decisions, v2_blocks, magnetism_scan_id
     finally:
         store.close()
+
+
+def _attach_display_identity(store: Sv9Store, scan: dict) -> None:
+    """Presentation identity: company name first, URL as secondary context."""
+    raw_name = str(scan.get("brand_name") or "").strip()
+    url = str(scan.get("url") or "").strip()
+    candidates = [raw_name]
+
+    source_run_id = scan.get("source_run_id")
+    if source_run_id:
+        candidates.extend(_identity_candidates_for_run(store, source_run_id))
+
+    display_name = next((c for c in candidates if _is_company_name(c, url)), "")
+    scan["display_name"] = display_name or _domain_label(url) or raw_name or "Brand"
+    scan["display_url"] = url
+
+
+def _identity_candidates_for_run(store: Sv9Store, source_run_id: object) -> list[str]:
+    try:
+        run_id = int(source_run_id)
+    except (TypeError, ValueError):
+        return []
+
+    candidates: list[str] = []
+    try:
+        row = store.conn.execute(
+            """
+            SELECT brand_name FROM magnetism_scans
+            WHERE source_run_id = ?
+            ORDER BY id DESC LIMIT 1
+            """,
+            (run_id,),
+        ).fetchone()
+        if row:
+            candidates.append(str(row["brand_name"] or ""))
+
+        row = store.conn.execute(
+            """
+            SELECT b.name AS brand_name
+            FROM runs r
+            JOIN brands b ON b.id = r.brand_id
+            WHERE r.id = ?
+            LIMIT 1
+            """,
+            (run_id,),
+        ).fetchone()
+        if row:
+            candidates.append(str(row["brand_name"] or ""))
+    except Exception:
+        return candidates
+    return candidates
+
+
+def _is_company_name(value: str, url: str) -> bool:
+    candidate = str(value or "").strip()
+    if not candidate:
+        return False
+    if _looks_like_url(candidate):
+        return False
+    host = _host(url)
+    return not host or candidate.lower().strip("/") != host.lower().strip("/")
+
+
+def _looks_like_url(value: str) -> bool:
+    text = str(value or "").strip().lower()
+    return text.startswith(("http://", "https://")) or "." in text and " " not in text
+
+
+def _host(url: str) -> str:
+    parsed = urlparse(str(url or "").strip())
+    return (parsed.netloc or parsed.path).split("/")[0].removeprefix("www.")
+
+
+def _domain_label(url: str) -> str:
+    host = _host(url)
+    if not host:
+        return ""
+    stem = host.split(".")[0]
+    return stem.replace("-", " ").replace("_", " ").title()
 
 
 def _magnetism_scan_id(store: Sv9Store, source_run_id: int | None) -> int | None:

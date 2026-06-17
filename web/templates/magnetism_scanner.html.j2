@@ -30,7 +30,7 @@
     {% for scan in model.scans %}
       <tr>
         <td class="col-date">{{ scan.formatted_date }}</td>
-        <td class="col-brand"><strong>{{ scan.brand_name }}</strong></td>
+        <td class="col-brand"><strong>{{ scan.display_name or scan.brand_name }}</strong></td>
         <td class="num num-inline hl-accent col-score" style="font-weight: 600;">{{ scan.magnetism_score }}</td>
         <td class="num num-inline hl-ok col-score" style="font-weight: 600;">{{ scan.coherence_score }}</td>
         <td class="dim col-band-wide">{{ scan.quadrant }}</td>
@@ -62,7 +62,6 @@
       <tr>
         <th class="col-date">{{ model.t.run }}</th>
         <th class="col-brand">{{ model.t.brand }}</th>
-        <th>{{ model.t.url }}</th>
         <th class="num col-score">{{ model.t.audit_score }}</th>
         <th></th>
       </tr>
@@ -71,8 +70,7 @@
     {% for run in model.audit_runs %}
       <tr>
         <td class="col-date">#{{ run.id }}</td>
-        <td class="col-brand"><strong>{{ run.brand_name }}</strong></td>
-        <td class="dim">{{ run.url }}</td>
+        <td class="col-brand"><strong>{{ run.display_name or run.brand_name }}</strong></td>
         <td class="num num-inline col-score">{{ run.composite_score if run.composite_score is not none else "n/a" }}</td>
         <td class="action-cell col-action">
           <form action="/magnetism-scanner/from-run" method="post" style="margin:0;">

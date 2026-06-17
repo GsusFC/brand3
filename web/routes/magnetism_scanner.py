@@ -617,11 +617,20 @@ async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
     # Format dates nicely for template listing
     scans = attach_primary_scan_hrefs(scans, db_path=BRAND3_DB_PATH, lang=lang)
     for scan in scans:
+        scan["display_name"] = _magnetism_display_name(
+            str(scan.get("brand_name") or ""),
+            str(scan.get("url") or ""),
+        )
         try:
             dt = datetime.fromisoformat(scan["created_at"].replace("Z", "+00:00"))
-            scan["formatted_date"] = dt.strftime("%b %d, %Y · %H:%M")
+            scan["formatted_date"] = dt.strftime("%y/%m/%d")
         except Exception:
             scan["formatted_date"] = scan["created_at"]
+    for run in audit_runs:
+        run["display_name"] = _magnetism_display_name(
+            str(run.get("brand_name") or ""),
+            str(run.get("url") or ""),
+        )
 
     return templates.TemplateResponse(
         request,

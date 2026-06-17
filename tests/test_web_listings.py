@@ -265,6 +265,15 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn(f'href="/sv9/scan/{sv9_id}?lang=es"', r.text)
 
+    def test_scanner_recent_list_uses_compact_date_and_company_name(self):
+        self._seed_ready_scan("www.sklum.com", magnetism_score=83, coherence_score=72, days_ago=0)
+        r = self.client.get("/magnetism-scanner?lang=es")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(">Sklum<", r.text)
+        self.assertNotIn(">www.sklum.com<", r.text)
+        self.assertIn("26/", r.text)
+        self.assertNotIn("2026 ·", r.text)
+
     def test_index_dedupes_repeated_scans_per_brand(self):
         self._seed_ready_scan("dupco", magnetism_score=81, coherence_score=70, days_ago=0)
         self._seed_ready_scan("dupco", magnetism_score=82, coherence_score=71, days_ago=1)

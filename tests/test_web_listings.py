@@ -180,7 +180,7 @@ class ListingsTests(unittest.TestCase):
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
         self.assertIn("Brand3 Scanner", r.text)
-        self.assertIn("SV9 Brand Score", r.text)
+        self.assertNotIn("SV9 Brand Score", r.text)
         self.assertNotIn('href="/brand-audit"', r.text)
         self.assertIn("todavía no hay análisis", r.text)
         self.assertIn("scanner de marca", r.text)
@@ -202,11 +202,20 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn('class="home-recent-table"', r.text)
         self.assertIn("score", r.text)
-        self.assertIn("band", r.text)
+        self.assertIn("cat.", r.text)
+        self.assertNotIn('<th class="col-bar">bar</th>', r.text)
+        self.assertNotIn('<th class="col-band">band</th>', r.text)
         self.assertNotIn('class="col-type"', r.text)
         self.assertNotIn('class="home-kind', r.text)
         self.assertIn("/magnetism-scanner/scan/", r.text)
         self.assertIn("/r/tok-", r.text)
+
+    def test_index_displays_company_name_instead_of_url(self):
+        self._seed_ready_scan("www.sklum.com", magnetism_score=83, coherence_score=72, days_ago=0)
+        r = self.client.get("/")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(">Sklum<", r.text)
+        self.assertNotIn(">www.sklum.com<", r.text)
 
     def test_home_recent_scanner_link_prefers_sv9_when_available(self):
         source_run_id = 321
@@ -262,10 +271,10 @@ class ListingsTests(unittest.TestCase):
         self._seed_ready_scan("dupco", magnetism_score=83, coherence_score=72, days_ago=2)
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.text.count("dupco"), 1)
+        self.assertEqual(r.text.count(">Dupco<"), 1)
         self.assertEqual(r.text.count("<tr>"), 2)  # header + 1 row
         self.assertIn("81", r.text)
-        self.assertIn("[", r.text)
+        self.assertIn("26/", r.text)
 
     def test_scanner_recent_list_prefers_magnetism_payload_when_columns_are_stale(self):
         self._seed_ready_scan(

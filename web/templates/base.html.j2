@@ -51,9 +51,8 @@
       </svg>
     </a>
     <nav class="term-global-nav" aria-label="{{ 'Navegación global' if current_lang == 'es' else 'Global navigation' }}">
-      <a class="source-link{% if current_path == '/magnetism-scanner' %} badge-ready{% endif %}" href="/magnetism-scanner{{ global_lang_suffix }}">{{ 'Scans recientes' if current_lang == 'es' else 'Recent scans' }}</a>
-      <a class="source-link{% if current_path == '/sv9/calibration' %} badge-ready{% endif %}" href="/sv9/calibration">{{ 'SV9 sombra' if current_lang == 'es' else 'SV9 shadow' }}</a>
-      <a class="source-link{% if current_path == '/sv9/ranking' %} badge-ready{% endif %}" href="/sv9/ranking">Ranking</a>
+      <a class="source-link{% if current_path == '/' %} badge-ready{% endif %}" href="/{{ global_lang_suffix }}">{{ 'Observatorio' if current_lang == 'es' else 'Observatory' }}</a>
+      <a class="source-link{% if current_path == '/magnetism-scanner' %} badge-ready{% endif %}" href="/magnetism-scanner{{ global_lang_suffix }}">{{ 'Nuevo análisis' if current_lang == 'es' else 'New analysis' }}</a>
     </nav>
     <div class="term-actions">
       <div class="lang-toggle" aria-label="Language switch">

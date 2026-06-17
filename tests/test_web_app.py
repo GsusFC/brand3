@@ -124,15 +124,15 @@ class WebAppFlowTests(unittest.TestCase):
     def test_homepage_prioritizes_brand_audit_and_supported_surfaces(self):
         response = self.client.get("/")
         self.assertEqual(response.status_code, 200)
-        self.assertIn("Brand3 Scanner", response.text)
+        self.assertIn("Observatorio Brand3", response.text)
         self.assertIn("Analizar marca", response.text)
         self.assertNotIn("home-secondary-actions", response.text)
         self.assertNotIn("abre Brand Audit", response.text)
-        self.assertIn("Score SV9, evidencia y lectura estratégica de una marca pública.", response.text)
-        self.assertIn("Resultado incluido", response.text)
-        self.assertIn("SV9 Brand Score", response.text)
-        self.assertIn("Lectura estratégica", response.text)
-        self.assertIn("Metodología", response.text)
+        self.assertIn("Analiza una marca pública y compara los resultados recientes del observatorio.", response.text)
+        self.assertNotIn("Resultado incluido", response.text)
+        self.assertNotIn("SV9 Brand Score", response.text)
+        self.assertNotIn("Lectura estratégica", response.text)
+        self.assertNotIn("Metodología", response.text)
         self.assertIn("brand3-theme", response.text)
         self.assertIn('data-theme-toggle', response.text)
         self.assertIn(f"/static/main.css?v={STATIC_ASSET_VERSION}", response.text)
@@ -276,7 +276,10 @@ class WebAppFlowTests(unittest.TestCase):
         self.assertEqual(len(calls), 1)
         self.assertIs(calls[0][0], index_route._recent_home_items)
         self.assertEqual(calls[0][1], ())
-        self.assertEqual(calls[0][2], {"limit": 15, "lang": "es"})
+        self.assertEqual(
+            calls[0][2],
+            {"limit": 15, "lang": "es", "sort": "recent", "category": None},
+        )
 
     def test_reports_list_loads_rows_via_threadpool(self):
         from web.routes import reports_list

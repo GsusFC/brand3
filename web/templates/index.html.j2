@@ -1,10 +1,10 @@
 {% extends "base.html.j2" %}
-{% block title %}Brand3 Scanner{% endblock %}
+{% block title %}{{ 'Observatorio Brand3' if current_lang == 'es' else 'Brand3 Observatory' }}{% endblock %}
 {% block content %}
 <section class="home-hero">
-  <h1 class="page-title">{{ landing.title }}</h1>
+  <h1 class="page-title">{{ 'Observatorio Brand3' if current_lang == 'es' else 'Brand3 Observatory' }}</h1>
   <p class="prose dim intro-copy">
-    {{ landing.intro }}
+    {{ 'Analiza una marca pública y compara los resultados recientes del observatorio.' if current_lang == 'es' else 'Analyze a public brand and compare recent observatory results.' }}
   </p>
 
   <div class="home-scanner-shell">
@@ -15,13 +15,6 @@
       {% endif %}
       <button type="submit">{{ landing.button }}</button>
     </form>
-    <div class="scanner-result-includes" aria-label="{{ landing.result_label }}">
-      <span class="scanner-result-label">{{ landing.result_label }}</span>
-      <span>{{ landing.result_tldr }}</span>
-      <span>{{ landing.result_audit }}</span>
-      <span>{{ landing.result_evidence }}</span>
-      <span>{{ landing.result_methodology }}</span>
-    </div>
   </div>
 </section>
 
@@ -29,31 +22,56 @@
 
 <section>
   <div class="section-head">
-    <span class="label">{{ 'analisis_recientes' if current_lang == 'es' else 'recent_analyses' }}</span>
-    <span class="tag">// {{ 'escáneres y auditorías' if current_lang == 'es' else 'scanners and audits' }}</span>
+    <span class="label">{{ 'observatorio_brand3' if current_lang == 'es' else 'brand3_observatory' }}</span>
+    <span class="tag">// {{ 'marcas analizadas' if current_lang == 'es' else 'analyzed brands' }}</span>
+  </div>
+  <div class="observatory-controls" aria-label="{{ 'Controles del observatorio' if current_lang == 'es' else 'Observatory controls' }}">
+    <div class="segmented-links">
+      <a class="source-link{% if observatory.sort == 'recent' %} badge-ready{% endif %}"
+         href="/?lang={{ current_lang }}{% if observatory.category %}&category={{ observatory.category }}{% endif %}">
+        {{ 'Recientes' if current_lang == 'es' else 'Recent' }}
+      </a>
+      <a class="source-link{% if observatory.sort == 'score' %} badge-ready{% endif %}"
+         href="/?lang={{ current_lang }}&sort=score{% if observatory.category %}&category={{ observatory.category }}{% endif %}">
+        {{ 'Mejor puntuadas' if current_lang == 'es' else 'Top scored' }}
+      </a>
+    </div>
+    <form class="observatory-category-form" method="get" action="/">
+      <input type="hidden" name="lang" value="{{ current_lang }}">
+      {% if observatory.sort == 'score' %}<input type="hidden" name="sort" value="score">{% endif %}
+      <label class="sr-only" for="observatory-category">{{ 'Categoría' if current_lang == 'es' else 'Category' }}</label>
+      <select id="observatory-category" name="category" aria-label="{{ 'Categoría' if current_lang == 'es' else 'Category' }}">
+        <option value="">{{ 'Todas' if current_lang == 'es' else 'All' }}</option>
+      {% for key, spec in observatory.categories.items() %}
+        <option value="{{ key }}"{% if observatory.category == key %} selected{% endif %}>{{ spec["label"] }}</option>
+      {% endfor %}
+      </select>
+      <button class="source-link source-link-button" type="submit" aria-label="{{ 'Aplicar categoría' if current_lang == 'es' else 'Apply category' }}">&rarr;</button>
+    </form>
   </div>
   {% if latest_analyses %}
   <div class="table-wrap">
   <table class="home-recent-table">
     <thead>
       <tr>
-        <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
         <th class="col-brand">{{ 'marca' if current_lang == 'es' else 'brand' }}</th>
-        <th class="num col-score">{{ 'puntuación' if current_lang == 'es' else 'score' }}</th>
-        <th class="col-bar">bar</th>
-        <th class="col-band">band</th>
-        <th></th>
+        <th class="num col-score">score</th>
+        <th class="col-category">cat.</th>
+        <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
+        <th class="col-action"><span class="sr-only">{{ 'abrir' if current_lang == 'es' else 'open' }}</span></th>
       </tr>
     </thead>
     <tbody>
     {% for row in latest_analyses %}
       <tr>
-        <td class="col-date">{{ row.date }}</td>
-        <td class="col-brand"><a href="{{ row.href }}{{ lang_suffix }}">{{ row.brand_name }}</a></td>
-        <td class="num num-inline col-score">{{ row.score_display }}</td>
-        <td class="bar col-bar">{{ row.bar }}</td>
-        <td class="dim col-band">{{ row.band }}</td>
-        <td class="action-cell col-action"><a href="{{ row.href }}{{ lang_suffix }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>
+        <td class="col-brand"><a href="{{ row.href }}{{ lang_suffix }}">{{ row.display_name or row.brand_name }}</a></td>
+        <td class="num num-inline col-score">
+          <span class="score-compact">{{ row.score_compact }}</span>
+          <span class="status-dot" title="{{ row.status_label }}" aria-label="{{ row.status_label }}">{{ row.status_icon }}</span>
+        </td>
+        <td class="dim col-category">{{ row.category_label or '-' }}</td>
+        <td class="dim col-date">{{ row.compact_date }}</td>
+        <td class="action-cell col-action"><a class="icon-link" href="{{ row.href }}{{ lang_suffix }}" aria-label="{{ 'Abrir análisis de ' if current_lang == 'es' else 'Open analysis for ' }}{{ row.display_name or row.brand_name }}" title="{{ 'Abrir análisis' if current_lang == 'es' else 'Open analysis' }}">&rarr;</a></td>
       </tr>
     {% endfor %}
     </tbody>

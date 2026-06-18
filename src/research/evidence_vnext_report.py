@@ -1197,6 +1197,10 @@ def _contract_projection_row(
         promotion=projected_promotion,
         manual_audit=projected_manual_audit,
     )
+    projected_material_overlaps = _review_material_overlaps(
+        gate_payload=projected_gate_payload,
+        vnext_pack=vnext_pack,
+    )
     return {
         "run_id": comparison.get("run_id"),
         "brand_name": comparison.get("brand_name") or "",
@@ -1210,6 +1214,9 @@ def _contract_projection_row(
         "projected_manual_audit_required": bool(projected_manual_audit.get("required")),
         "projected_promotion_reason_codes": list(projected_promotion.get("reason_codes") or []),
         "projected_manual_audit_reason_codes": list(projected_manual_audit.get("reason_codes") or []),
+        "remaining_review_examples": _compact_review_observations(filtered_review_required, limit=5),
+        "projected_material_overlaps": projected_material_overlaps,
+        "changed_material_fields": _changed_material_field_previews(comparison),
     }
 
 
@@ -1273,7 +1280,10 @@ def _is_projected_social_placeholder_contract_observation(
         return False
     item_url_key = _url_identity(item_url)
     for overlap in material_overlaps:
-        if _observation_reason(overlap) != "same_name_external_profile_not_alias":
+        if _observation_reason(overlap) not in {
+            "same_name_external_profile_not_alias",
+            "same_name_external_profile_material_source",
+        }:
             continue
         if item_url_key and _url_identity(str(overlap.get("url") or "")) == item_url_key:
             return False
@@ -1461,6 +1471,9 @@ def _shadow_policy_runs(projected_rows: list[dict[str, Any]]) -> list[dict[str, 
                 "projected_manual_audit_required": bool(row.get("projected_manual_audit_required")),
                 "projected_manual_audit_reason_codes": list(row.get("projected_manual_audit_reason_codes") or []),
                 "remaining_reason_codes": remaining_reason_codes,
+                "remaining_review_examples": list(row.get("remaining_review_examples") or []),
+                "projected_material_overlaps": list(row.get("projected_material_overlaps") or []),
+                "changed_material_fields": list(row.get("changed_material_fields") or []),
                 "next_action": next_action,
                 "human_required": next_action
                 not in {"candidate_after_contract", "candidate_without_contract_effect"},
@@ -1555,6 +1568,9 @@ def _readiness_row(shadow_run: dict[str, Any]) -> dict[str, Any]:
         "human_required": human_required,
         "next_action": next_action,
         "remaining_reason_codes": list(shadow_run.get("remaining_reason_codes") or []),
+        "remaining_review_examples": list(shadow_run.get("remaining_review_examples") or []),
+        "projected_material_overlaps": list(shadow_run.get("projected_material_overlaps") or []),
+        "changed_material_fields": list(shadow_run.get("changed_material_fields") or []),
     }
 
 
@@ -1634,6 +1650,9 @@ def _intervention_packet(intervention_type: str, rows: list[dict[str, Any]]) -> 
                 "projected_promotion_status": row.get("projected_promotion_status") or "",
                 "automation_lane": row.get("automation_lane") or "",
                 "next_action": row.get("next_action") or "",
+                "remaining_review_examples": list(row.get("remaining_review_examples") or []),
+                "projected_material_overlaps": list(row.get("projected_material_overlaps") or []),
+                "changed_material_fields": list(row.get("changed_material_fields") or []),
             }
             for row in rows
         ],
@@ -1776,9 +1795,11 @@ def _work_orders(intervention_packets: list[dict[str, Any]]) -> list[dict[str, A
             run_id = run.get("run_id")
             if run_id is None:
                 continue
+            context = _work_order_context(run)
+            work_order_id = f"workorder:{packet.get('intervention_type') or 'unknown'}:{run_id}"
             orders.append(
                 {
-                    "work_order_id": f"workorder:{packet.get('intervention_type') or 'unknown'}:{run_id}",
+                    "work_order_id": work_order_id,
                     "packet_id": packet.get("packet_id") or "",
                     "run_id": run_id,
                     "brand_name": run.get("brand_name") or "",
@@ -1794,9 +1815,11 @@ def _work_orders(intervention_packets: list[dict[str, Any]]) -> list[dict[str, A
                     "decision_required_fields": list(packet.get("decision_required_fields") or []),
                     "decision_record_template": _decision_record_template(
                         run_id=run_id,
-                        work_order_id=f"workorder:{packet.get('intervention_type') or 'unknown'}:{run_id}",
+                        work_order_id=work_order_id,
                         packet=packet,
+                        context=context,
                     ),
+                    "context": context,
                     "expected_output": _work_order_expected_output(str(packet.get("promotion_after_closure") or "")),
                     "requires_recompute": packet.get("promotion_after_closure") == "recompute_required",
                     "promotion_after_closure": packet.get("promotion_after_closure") or "",
@@ -1825,7 +1848,45 @@ def _work_order_expected_output(promotion_after_closure: str) -> str:
     return "manual_decision"
 
 
-def _decision_record_template(*, run_id: Any, work_order_id: str, packet: dict[str, Any]) -> dict[str, Any]:
+def _work_order_context(run: dict[str, Any]) -> dict[str, Any]:
+    review_examples = list(run.get("remaining_review_examples") or [])
+    material_overlaps = list(run.get("projected_material_overlaps") or [])
+    changed_material_fields = list(run.get("changed_material_fields") or [])
+    profile_urls = [
+        _context_url_identity(item.get("url"))
+        for item in (*review_examples, *material_overlaps)
+        if str(item.get("classification_reason") or "")
+        in {"same_name_external_profile_not_alias", "same_name_external_profile_material_source"}
+    ]
+    review_urls = [_context_url_identity(item.get("url")) for item in review_examples if str(item.get("url") or "")]
+    affected_material_fields = [
+        str(item.get("field") or "")
+        for item in material_overlaps
+        if str(item.get("field") or "") in MANUAL_AUDIT_MATERIAL_FIELDS
+    ]
+    changed_material_field_names = [
+        str(item.get("field") or "")
+        for item in changed_material_fields
+        if str(item.get("field") or "") in MANUAL_AUDIT_MATERIAL_FIELDS
+    ]
+    return {
+        "remaining_review_examples": review_examples,
+        "projected_material_overlaps": material_overlaps,
+        "changed_material_fields": changed_material_fields,
+        "profile_urls": _unique([url for url in profile_urls if url]),
+        "review_urls": _unique([url for url in review_urls if url]),
+        "affected_material_fields": _unique(affected_material_fields or changed_material_field_names),
+        "changed_material_field_names": _unique(changed_material_field_names),
+    }
+
+
+def _decision_record_template(
+    *,
+    run_id: Any,
+    work_order_id: str,
+    packet: dict[str, Any],
+    context: dict[str, Any],
+) -> dict[str, Any]:
     template: dict[str, Any] = {
         "work_order_id": work_order_id,
         "run_id": run_id,
@@ -1835,6 +1896,14 @@ def _decision_record_template(*, run_id: Any, work_order_id: str, packet: dict[s
     }
     for field in packet.get("decision_required_fields") or []:
         template.setdefault(str(field), "")
+    if "profile_url" in template:
+        template["profile_url"] = _join_unique(context.get("profile_urls") or [])
+    if "affected_material_fields" in template:
+        template["affected_material_fields"] = _join_unique(context.get("affected_material_fields") or [])
+    if "approved_material_fields" in template:
+        template["approved_material_fields"] = _join_unique(context.get("changed_material_field_names") or [])
+    if "quarantined_source_urls" in template:
+        template["quarantined_source_urls"] = _join_unique(context.get("review_urls") or [])
     return template
 
 
@@ -2454,6 +2523,41 @@ def _collect_examples(
         )
 
 
+def _compact_review_observations(observations: list[dict[str, Any]], *, limit: int) -> list[dict[str, Any]]:
+    examples: list[dict[str, Any]] = []
+    for item in observations:
+        if not isinstance(item, dict):
+            continue
+        examples.append(
+            {
+                "feature_name": str(item.get("feature_name") or ""),
+                "provider": str(item.get("provider") or ""),
+                "source_class": str(item.get("source_class") or ""),
+                "eligibility": str(item.get("eligibility") or ""),
+                "classification_reason": _observation_reason(item),
+                "url": str(item.get("url") or ""),
+                "text_preview": _preview_text(item.get("text"), limit=160),
+            }
+        )
+        if len(examples) >= limit:
+            break
+    return examples
+
+
+def _changed_material_field_previews(comparison: dict[str, Any]) -> list[dict[str, str]]:
+    return [
+        {
+            "field": str(field.get("field") or ""),
+            "current_preview": _preview_text(field.get("legacy_preview"), limit=160),
+            "vnext_preview": _preview_text(field.get("graph_preview"), limit=160),
+        }
+        for field in comparison.get("fields") or []
+        if isinstance(field, dict)
+        and field.get("changed")
+        and str(field.get("field") or "") in MANUAL_AUDIT_MATERIAL_FIELDS
+    ]
+
+
 def _review_material_overlaps(*, gate_payload: dict[str, Any], vnext_pack: dict[str, Any]) -> list[dict[str, str]]:
     material_text_by_field = {
         field: _pack_field_text(vnext_pack.get(field))
@@ -2617,6 +2721,17 @@ def _unique(values: list[str]) -> list[str]:
         seen.add(text)
         result.append(text)
     return result
+
+
+def _join_unique(values: list[Any]) -> str:
+    return ", ".join(_unique([str(value or "") for value in values]))
+
+
+def _context_url_identity(value: Any) -> str:
+    identity = _url_identity(value)
+    if not identity:
+        return ""
+    return f"https://{identity}"
 
 
 def _batch_recommendation(

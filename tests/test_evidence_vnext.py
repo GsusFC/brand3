@@ -1440,6 +1440,11 @@ def test_batch_report_blocks_external_profile_review_when_it_overlaps_material_f
     assert report["blocked_evidence_queue"][0]["review_material_overlaps"][0]["field"] == "proof_points"
     assert "confirm_entity_alias_before_promotion" in report["blocked_evidence_queue"][0]["triage_actions"]
     assert "keep_blocked_until_triage_resolved" in report["blocked_evidence_queue"][0]["triage_actions"]
+    assert report["work_orders"][0]["packet_id"] == "intervention:entity_alias_confirmation"
+    assert report["work_orders"][0]["context"]["profile_urls"] == ["https://linkedin.com/company/auditco"]
+    assert report["work_orders"][0]["context"]["affected_material_fields"] == ["proof_points"]
+    assert report["work_orders"][0]["decision_record_template"]["profile_url"] == "https://linkedin.com/company/auditco"
+    assert report["work_orders"][0]["decision_record_template"]["affected_material_fields"] == "proof_points"
 
 
 def test_batch_report_blocks_unresolved_profile_source_url_in_material_fields() -> None:
@@ -1501,6 +1506,12 @@ def test_batch_report_blocks_unresolved_profile_source_url_in_material_fields() 
         "same_name_external_profile_material_source"
     )
     assert "confirm_entity_alias_before_promotion" in report["blocked_evidence_queue"][0]["triage_actions"]
+    assert report["work_orders"][0]["context"]["profile_urls"] == ["https://linkedin.com/company/auditco"]
+    assert report["work_orders"][0]["context"]["affected_material_fields"] == ["founder_or_press_context"]
+    assert report["work_orders"][0]["decision_record_template"]["profile_url"] == "https://linkedin.com/company/auditco"
+    assert report["work_orders"][0]["decision_record_template"]["affected_material_fields"] == (
+        "founder_or_press_context"
+    )
 
 
 def test_batch_report_lists_material_quote_contract_violations() -> None:

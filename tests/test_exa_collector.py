@@ -156,6 +156,47 @@ def test_same_name_different_root_is_related_unresolved():
     assert item.classification_reason == "same_name_different_root_domain"
 
 
+def test_search_filters_url_results_without_content_body():
+    class EmptyContentClient:
+        def search(self, query: str, **kwargs):
+            return SimpleNamespace(
+                results=[
+                    SimpleNamespace(
+                        url="https://press.example.com/title-only",
+                        title="Title is not enough",
+                        text="",
+                        highlights=[],
+                        summary="",
+                        score=0.1,
+                        published_date="2026-05-15",
+                    ),
+                    SimpleNamespace(
+                        url="https://press.example.com/body",
+                        title="Body exists",
+                        text="Independent body content",
+                        highlights=[],
+                        summary="",
+                        score=0.2,
+                        published_date="2026-05-15",
+                    ),
+                ]
+            )
+
+    collector = ExaCollector(api_key="test")
+    collector._client = EmptyContentClient()
+
+    results = collector.search(
+        "brand query",
+        intent="external_mentions",
+        brand_name="Brand",
+        brand_url="https://brand.com",
+    )
+
+    assert [item.url for item in results] == ["https://press.example.com/body"]
+    diagnostics = collector._build_diagnostics()
+    assert diagnostics["intent_results"]["external_mentions"]["filtered_empty_content_count"] == 1
+
+
 def test_company_category_strips_unsupported_date_filters():
     collector = ExaCollector(api_key="test")
     fake = _FakeExaClient()

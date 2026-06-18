@@ -390,6 +390,16 @@ class ExaCollector:
                     raise
                 time.sleep(_TRANSIENT_SEARCH_DELAY_S)
 
+    @staticmethod
+    def _result_has_content(result) -> bool:
+        for attr in ("text", "summary"):
+            if str(getattr(result, attr, "") or "").strip():
+                return True
+        highlights = getattr(result, "highlights", None)
+        if isinstance(highlights, list) and any(str(item or "").strip() for item in highlights):
+            return True
+        return False
+
     def search(
         self,
         query: str,
@@ -436,7 +446,11 @@ class ExaCollector:
             return []
 
         results = []
+        filtered_empty_content_count = 0
         for r in response.results:
+            if getattr(r, "url", "") and not self._result_has_content(r):
+                filtered_empty_content_count += 1
+                continue
             source_class, relation, reason, requires_review = self._classify_source(
                 url=getattr(r, "url", ""),
                 brand_url=brand_url,
@@ -465,6 +479,7 @@ class ExaCollector:
                 "query": query,
                 "status": "no_results" if not results else "ok",
                 "result_count": len(results),
+                "filtered_empty_content_count": filtered_empty_content_count,
                 "params": {k: v for k, v in params.items() if k != "contents"},
                 "score_missing_count": sum(1 for item in results if item.score_is_missing),
                 "configured_type": configured_type,
@@ -573,6 +588,7 @@ class ExaCollector:
                 "error": event.get("error") or "",
                 "query": event.get("query") or "",
                 "params": event.get("params") or {},
+                "filtered_empty_content_count": int(event.get("filtered_empty_content_count") or 0),
                 "score_missing_count": int(event.get("score_missing_count") or 0),
                 "configured_type": event.get("configured_type") or "",
                 "effective_type": event.get("effective_type") or "",

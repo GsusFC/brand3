@@ -15,7 +15,7 @@ class _FakeExaClient:
         self.calls.append({"query": query, "kwargs": kwargs})
         if "competitors" in query:
             raise RuntimeError("fixture competitor failure")
-        if "news" in query:
+        if "news" in query or "announcement launch funding partnership product" in query:
             return SimpleNamespace(results=[])
         return SimpleNamespace(
             results=[
@@ -71,6 +71,29 @@ def test_collect_brand_data_emits_structured_diagnostics_for_failed_and_empty_in
     assert "exclude_domains" not in competitor_call["kwargs"]
     stripped = diagnostics["intent_results"]["competitors"]["stripped_filters"]
     assert any(item.get("param") == "exclude_domains" for item in stripped)
+
+
+def test_collect_brand_data_uses_precision_exa_queries_in_production():
+    collector = ExaCollector(api_key="test")
+    fake = _FakeExaClient()
+    collector._client = fake
+
+    data = collector.collect_brand_data("Brand", "https://brand.com")
+    queries = [call["query"] for call in fake.calls]
+
+    assert any("official website product company about" in query for query in queries)
+    assert any("review case study customer integration" in query for query in queries)
+    assert any("announcement launch funding partnership product" in query for query in queries)
+    assert any("AI recommendation alternatives best tools" in query for query in queries)
+    assert any("alternatives competitors similar to Brand brand.com category" in query for query in queries)
+
+    owned_call = next(call for call in fake.calls if "official website product company about" in call["query"])
+    external_call = next(call for call in fake.calls if "review case study customer integration" in call["query"])
+    assert owned_call["kwargs"]["include_domains"] == ["brand.com"]
+    assert external_call["kwargs"]["exclude_domains"] == ["brand.com"]
+    assert len(data.mentions) == 2
+    assert "owned_confirmation" in data.diagnostics["intent_results"]
+    assert "external_mentions" in data.diagnostics["intent_results"]
 
 
 def test_collect_brand_data_runs_independent_intents_concurrently():

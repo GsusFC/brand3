@@ -20,6 +20,7 @@ from typing import Any
 
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.llm_analyzer import LLMAnalyzer
+from src.models.brand import FeatureValue
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -182,6 +183,158 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIs(calls[0][0], magnetism_scanner._load_run_summary)
         self.assertEqual(calls[0][1], (123,))
         self.assertEqual(calls[0][2], {})
+
+    def test_magnetism_index_links_evidence_vnext_diagnostic_for_audit_runs(self):
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Evidence VNext Link", "https://evidence-vnext-link.test")
+            run_id = store.create_run(
+                brand_id,
+                "Evidence VNext Link",
+                "https://evidence-vnext-link.test",
+                use_llm=False,
+                use_social=False,
+            )
+            store.finalize_run(run_id, 72.0, False, False, "", "summary")
+        finally:
+            store.close()
+
+        response = self.client.get("/magnetism-scanner")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(f"/magnetism-scanner/run/{run_id}/evidence-vnext/view?lang=es", response.text)
+        self.assertIn("evidencia vNext", response.text)
+
+    def test_evidence_vnext_diagnostic_endpoint_reads_brand_audit_run(self):
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Evidence VNext Demo", "https://evidence-vnext.test")
+            run_id = store.create_run(
+                brand_id,
+                "Evidence VNext Demo",
+                "https://evidence-vnext.test",
+                use_llm=False,
+                use_social=False,
+            )
+            store.save_raw_input(
+                run_id,
+                "web",
+                {
+                    "url": "https://evidence-vnext.test",
+                    "title": "Evidence VNext Demo",
+                    "markdown": "# Evidence VNext Demo\nEvidence VNext Demo helps teams validate research evidence.",
+                },
+            )
+            store.mark_run_status(run_id, "complete")
+        finally:
+            store.close()
+
+        response = self.client.get(f"/magnetism-scanner/run/{run_id}/evidence-vnext")
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["diagnostic"], "evidence_vnext")
+        self.assertFalse(payload["runtime_effect"])
+        self.assertFalse(payload["prompt_effect"])
+        self.assertFalse(payload["persistence_effect"])
+        self.assertEqual(payload["run_id"], run_id)
+        self.assertEqual(payload["report"]["totals"]["run_count"], 1)
+        self.assertIn("adjudication_intake", payload["report"])
+
+    def test_evidence_vnext_diagnostic_view_renders_report_summary(self):
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Evidence VNext View", "https://evidence-vnext-view.test")
+            run_id = store.create_run(
+                brand_id,
+                "Evidence VNext View",
+                "https://evidence-vnext-view.test",
+                use_llm=False,
+                use_social=False,
+            )
+            store.save_raw_input(
+                run_id,
+                "web",
+                {
+                    "url": "https://evidence-vnext-view.test",
+                    "title": "Evidence VNext View",
+                    "markdown": "# Evidence VNext View\nEvidence VNext View validates research evidence.",
+                },
+            )
+            store.save_raw_input(
+                run_id,
+                "exa",
+                {
+                    "mentions": [
+                        {
+                            "url": "https://www.publicisgroupe.com/news/microsoft-publicis",
+                            "title": "Microsoft and Publicis Groupe expand media partnership",
+                            "summary": "Publicis Media announces a global advertising collaboration.",
+                            "source_class": "related_unresolved",
+                            "relation": "unresolved",
+                            "classification_reason": "same_name_different_root_domain",
+                            "requires_human_review": True,
+                        }
+                    ],
+                    "competitors": [],
+                    "ai_visibility_results": [],
+                    "news": [],
+                },
+            )
+            store.save_features(
+                run_id,
+                {
+                    "percepcion": {
+                        "brand_sentiment": FeatureValue(
+                            "brand_sentiment",
+                            0.5,
+                            raw_value=(
+                                "{'evidence': [{'quote': 'Publicis Media announces a global advertising collaboration.', "
+                                "'source_url': 'https://www.publicisgroupe.com/news/microsoft-publicis'}]}"
+                            ),
+                            confidence=0.7,
+                            source="exa",
+                        )
+                    }
+                },
+            )
+            store.mark_run_status(run_id, "complete")
+        finally:
+            store.close()
+
+        response = self.client.get(f"/magnetism-scanner/run/{run_id}/evidence-vnext/view")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("evidence vNext", response.text)
+        self.assertIn("runtime_effect=False", response.text)
+        self.assertIn("gate summary", response.text)
+        self.assertIn("run decision", response.text)
+        self.assertIn("acquisition matrix", response.text)
+        self.assertIn("<td>exa</td>", response.text)
+        self.assertIn("<td>related_unresolved</td>", response.text)
+        self.assertIn("shadow exclusions", response.text)
+        self.assertIn("acquisition contract dry run", response.text)
+        self.assertIn("provider contracts", response.text)
+        self.assertIn("exa.entity_boundary_review", response.text)
+        self.assertIn("exa_entity_classification", response.text)
+        self.assertIn("vnext_gate_enforced", response.text)
+        self.assertIn("contract backlog", response.text)
+        self.assertIn("status summary", response.text)
+        self.assertIn("evidence_gate", response.text)
+        self.assertIn("source examples", response.text)
+        self.assertIn("same_name_different_root_domain", response.text)
+        self.assertIn("Publicis Media announces a global advertising collaboration.", response.text)
+        self.assertIn(f"/magnetism-scanner/run/{run_id}/evidence-vnext", response.text)
+
+    def test_evidence_vnext_diagnostic_endpoint_404s_unknown_run(self):
+        response = self.client.get("/magnetism-scanner/run/999/evidence-vnext")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_evidence_vnext_diagnostic_view_404s_unknown_run(self):
+        response = self.client.get("/magnetism-scanner/run/999/evidence-vnext/view")
+
+        self.assertEqual(response.status_code, 404)
 
     def test_magnetism_analyze_queues_job_via_threadpool(self):
         from web.routes import magnetism_scanner

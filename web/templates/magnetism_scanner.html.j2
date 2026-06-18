@@ -78,6 +78,7 @@
             <input type="hidden" name="lang" value="{{ model.lang }}">
             <button type="submit" style="padding: 6px 10px; font-size: 11px;">{{ model.t.use_evidence }}</button>
           </form>
+          <a href="/magnetism-scanner/run/{{ run.id }}/evidence-vnext/view{{ model.lang_query }}" style="display:inline-block; margin-top: 6px; font-size: 11px;">{{ model.t.evidence_vnext_diag }}</a>
         </td>
       </tr>
     {% endfor %}

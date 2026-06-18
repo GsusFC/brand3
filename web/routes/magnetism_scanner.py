@@ -11,7 +11,7 @@ from urllib.parse import urlparse
 from typing import Literal
 
 from fastapi import APIRouter, Form, HTTPException, Query, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.extractor import MagnetismExtractor
@@ -21,6 +21,8 @@ from src.features.magnetism.translation import apply_magnetism_translation
 from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
 from src.scoring.provenance import build_score_provenance_report
 from src.reports.dossier import build_brand_dossier
+from src.research.evidence_vnext import compare_legacy_current_and_vnext_from_snapshot
+from src.research.evidence_vnext_report import build_batch_report
 from src.services.magnetism_service import ensure_sv9_scan_for_source_run
 from src.storage.sqlite_store import SQLiteStore
 
@@ -92,6 +94,8 @@ _MAGNETISM_UI = {
             "same kind of Brand Audit snapshot first; this table simply reuses one that already exists."
         ),
         "use_evidence": "use evidence",
+        "evidence_vnext_diag": "vNext evidence",
+        "evidence_vnext_json": "raw JSON",
         "no_audits": "// no Brand Audit runs available yet — run a URL scan above or create a normal audit first.",
         "recent_scans": "recent_scans",
         "latest_runs": "latest runs",
@@ -330,6 +334,8 @@ _MAGNETISM_UI = {
             "crean primero ese mismo tipo de snapshot; esta tabla solo reutiliza uno ya disponible."
         ),
         "use_evidence": "usar evidencia",
+        "evidence_vnext_diag": "evidencia vNext",
+        "evidence_vnext_json": "JSON crudo",
         "no_audits": "// todavía no hay Brand Audits disponibles — ejecuta una URL arriba o crea un audit normal primero.",
         "recent_scans": "escaneos_recientes",
         "latest_runs": "últimas ejecuciones",
@@ -609,6 +615,26 @@ def _load_run_summary(run_id: int) -> dict | None:
         store.close()
 
 
+def _load_evidence_vnext_diagnostic(run_id: int) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+    finally:
+        store.close()
+    if snapshot is None:
+        return None
+    comparison = compare_legacy_current_and_vnext_from_snapshot(snapshot)
+    report = build_batch_report([comparison], db_path=BRAND3_DB_PATH)
+    return {
+        "diagnostic": "evidence_vnext",
+        "runtime_effect": False,
+        "prompt_effect": False,
+        "persistence_effect": False,
+        "run_id": run_id,
+        "report": report,
+    }
+
+
 @router.get("/magnetism-scanner")
 async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
@@ -740,6 +766,55 @@ async def magnetism_scanner_from_run(
     )
     await get_queue().enqueue_magnetism(token)
     return RedirectResponse(_with_lang(f"/magnetism-scanner/{token}/status", lang), status_code=303)
+
+
+@router.get("/magnetism-scanner/run/{run_id}/evidence-vnext")
+async def magnetism_scanner_evidence_vnext(run_id: int):
+    """Return read-only evidence vNext diagnostics for a Brand Audit run."""
+    diagnostic = await asyncio.to_thread(_load_evidence_vnext_diagnostic, run_id)
+    if diagnostic is None:
+        raise HTTPException(status_code=404, detail=f"Brand Audit run #{run_id} not found")
+    return JSONResponse(diagnostic)
+
+
+@router.get("/magnetism-scanner/run/{run_id}/evidence-vnext/view")
+async def magnetism_scanner_evidence_vnext_view(
+    request: Request,
+    run_id: int,
+    lang: _Lang = Query("es"),
+):
+    """Render read-only evidence vNext diagnostics for a Brand Audit run."""
+    diagnostic = await asyncio.to_thread(_load_evidence_vnext_diagnostic, run_id)
+    if diagnostic is None:
+        return templates.TemplateResponse(
+            request,
+            "not_found.html.j2",
+            {"resource": f"Brand Audit run #{run_id}", "ui_lang": lang},
+            status_code=404,
+        )
+    report = diagnostic["report"]
+    rows = report.get("rows") or []
+    row = rows[0] if rows else {}
+    return templates.TemplateResponse(
+        request,
+        "magnetism_evidence_vnext.html.j2",
+        {
+            "ui_lang": lang,
+            "model": {
+                "lang": lang,
+                "lang_query": _lang_q(lang),
+                "t": _ui(lang),
+                "run_id": run_id,
+                "brand_name": row.get("brand_name") or f"Brand Audit run #{run_id}",
+                "url": row.get("url") or "",
+                "diagnostic": diagnostic,
+                "report": report,
+                "row": row,
+                "json_href": f"/magnetism-scanner/run/{run_id}/evidence-vnext",
+                "back_href": _with_lang("/magnetism-scanner", lang),
+            },
+        },
+    )
 
 
 _MAGNETISM_PHASES = {

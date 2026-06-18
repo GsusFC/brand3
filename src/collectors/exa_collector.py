@@ -73,6 +73,22 @@ class ExaCollector:
                 "text": {"max_characters": 5000},
             },
         },
+        "owned_confirmation": {
+            "type": "auto",
+            "num_results": 10,
+            "contents": {
+                "highlights": {"max_characters": 4000},
+                "text": {"max_characters": 5000},
+            },
+        },
+        "external_mentions": {
+            "type": "auto",
+            "num_results": 10,
+            "contents": {
+                "highlights": {"max_characters": 4000},
+                "text": {"max_characters": 5000},
+            },
+        },
         "competitors": {
             "type": "deep",
             "num_results": 10,
@@ -472,26 +488,34 @@ class ExaCollector:
         with self._search_events_lock:
             self._search_events = []
         data = ExaData(brand_name=brand_name)
+        domain_anchor = self._domain_anchor(brand_url)
 
         tasks = {
-            "mentions": lambda: self.search(
-                self._brand_query(brand_name, brand_url, "brand company"),
-                intent="mentions",
+            "owned_confirmation": lambda: self.search(
+                self._brand_query(brand_name, brand_url, "official website product company about"),
+                intent="owned_confirmation",
                 brand_name=brand_name,
                 brand_url=brand_url,
+                include_domains=[domain_anchor] if domain_anchor else None,
+            ),
+            "external_mentions": lambda: self.search(
+                self._brand_query(brand_name, brand_url, "review case study customer integration"),
+                intent="external_mentions",
+                brand_name=brand_name,
+                brand_url=brand_url,
+                exclude_domains=[domain_anchor] if domain_anchor else None,
             ),
             "news": lambda: self.search(
-                self._brand_query(brand_name, brand_url, "news"),
+                self._brand_query(brand_name, brand_url, "announcement launch funding partnership product"),
                 intent="news",
                 brand_name=brand_name,
                 brand_url=brand_url,
             ),
             "ai_visibility": lambda: self.probe_ai_visibility(brand_name, brand_url=brand_url),
         }
-        if brand_url:
-            domain_anchor = self._domain_anchor(brand_url)
+        if domain_anchor:
             tasks["competitors"] = lambda: self.search(
-                f"competitors similar to {brand_name} {domain_anchor}",
+                f"alternatives competitors similar to {brand_name} {domain_anchor} category",
                 intent="competitors",
                 brand_name=brand_name,
                 brand_url=brand_url,
@@ -499,7 +523,7 @@ class ExaCollector:
             )
 
         results = self._run_brand_data_tasks(tasks)
-        data.mentions = results.get("mentions") or []
+        data.mentions = (results.get("owned_confirmation") or []) + (results.get("external_mentions") or [])
         data.competitors = results.get("competitors") or []
         data.news = results.get("news") or []
         data.ai_visibility_results = results.get("ai_visibility") or []
@@ -531,7 +555,7 @@ class ExaCollector:
         Proxies 'AI visibility' — do LLMs know this brand?
         """
         return self.search(
-            self._brand_query(brand_name, brand_url, "AI artificial intelligence recommendation"),
+            self._brand_query(brand_name, brand_url, "AI recommendation alternatives best tools"),
             intent="ai_visibility",
             brand_name=brand_name,
             brand_url=brand_url,

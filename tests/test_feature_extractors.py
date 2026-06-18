@@ -1210,6 +1210,7 @@ class VitalidadExtractorTests(unittest.TestCase):
         exa = self._exa_with_dates([3])
         features = self.extractor.extract(exa=exa)
         self.assertEqual(features["content_recency"].value, 100.0)
+        self.assertEqual(features["content_recency"].raw_value["evidence_snippet"], "content")
 
     def test_content_recency_30_days_is_mid_high(self):
         exa = self._exa_with_dates([25])
@@ -1245,6 +1246,28 @@ class VitalidadExtractorTests(unittest.TestCase):
 
     # ── publication_cadence ────────────────────────────────────────────
 
+    def test_dated_mentions_without_content_are_not_used_as_evidence(self):
+        from datetime import datetime, timedelta
+
+        exa = ExaData(
+            brand_name="Test",
+            mentions=[
+                ExaResult(
+                    url="https://example.com/title-only",
+                    title="Title alone",
+                    text="",
+                    summary="",
+                    highlights=[],
+                    published_date=(datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d"),
+                )
+            ],
+        )
+
+        features = self.extractor.extract(exa=exa)
+
+        self.assertEqual(features["content_recency"].source, "none")
+        self.assertEqual(features["content_recency"].raw_value["reason"], "no_dates_found")
+
     def test_publication_cadence_fewer_than_2_dates_is_low(self):
         import json
         exa = self._exa_with_dates([15])
@@ -1253,12 +1276,14 @@ class VitalidadExtractorTests(unittest.TestCase):
         self.assertEqual(fv.value, 20.0)
         payload = fv.raw_value
         self.assertEqual(payload["reason"], "insufficient_dates_12m")
+        self.assertEqual(payload["evidence"][0]["snippet"], "content")
 
     def test_publication_cadence_regular_rhythm_scores_high(self):
         # 3 dates roughly ~20 days apart → mean_gap < 30 → 90
         exa = self._exa_with_dates([10, 35, 60])
         features = self.extractor.extract(exa=exa)
         self.assertEqual(features["publication_cadence"].value, 90.0)
+        self.assertTrue(all(item["snippet"] == "content" for item in features["publication_cadence"].raw_value["evidence"]))
 
     def test_publication_cadence_moderate_rhythm_scores_mid(self):
         # 3 dates ~100 days apart → 90 <= mean < 180 → 50

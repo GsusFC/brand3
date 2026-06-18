@@ -94,9 +94,26 @@ def _collect_dated_mentions(exa: ExaData | None) -> list[tuple[datetime, str, st
         if not d:
             continue
         url = getattr(r, "url", "") or ""
-        text = (getattr(r, "text", "") or "") + " " + (getattr(r, "summary", "") or "")
+        text = _exa_result_content(r)
+        if not text:
+            continue
         out.append((d, url, text.strip()))
     return out
+
+
+def _exa_result_content(result) -> str:
+    parts = [
+        str(getattr(result, "text", "") or ""),
+        str(getattr(result, "summary", "") or ""),
+    ]
+    highlights = getattr(result, "highlights", None)
+    if isinstance(highlights, list):
+        parts.extend(str(item or "") for item in highlights)
+    return " ".join(part.strip() for part in parts if part and part.strip()).strip()
+
+
+def _snippet(text: str, limit: int = 240) -> str:
+    return " ".join(str(text or "").split())[:limit]
 
 
 class VitalidadExtractor:
@@ -147,7 +164,7 @@ class VitalidadExtractor:
                 confidence=0.3, source="none",
             )
 
-        most_recent_date, most_recent_url, _ = max(dated, key=lambda t: t[0])
+        most_recent_date, most_recent_url, most_recent_text = max(dated, key=lambda t: t[0])
         days_ago = (datetime.now() - most_recent_date).days
 
         if days_ago <= 7:
@@ -169,6 +186,7 @@ class VitalidadExtractor:
                 "most_recent_date": most_recent_date.strftime("%Y-%m-%d"),
                 "days_ago": days_ago,
                 "evidence_url": most_recent_url or None,
+                "evidence_snippet": _snippet(most_recent_text),
             },
             confidence=0.7, source="exa",
         )
@@ -178,11 +196,11 @@ class VitalidadExtractor:
     def _publication_cadence(self, dated: list[tuple[datetime, str, str]]) -> FeatureValue:
         """Consistency of publishing in the last 12 months."""
         cutoff = datetime.now() - _days(365)
-        recent = sorted([(d, u) for d, u, _ in dated if d >= cutoff], key=lambda t: t[0])
+        recent = sorted([(d, u, text) for d, u, text in dated if d >= cutoff], key=lambda t: t[0])
 
         evidence = [
-            {"date": d.strftime("%Y-%m-%d"), "url": u or None}
-            for d, u in recent[-3:]
+            {"date": d.strftime("%Y-%m-%d"), "url": u or None, "snippet": _snippet(text)}
+            for d, u, text in recent[-3:]
         ]
 
         if len(recent) < 2:

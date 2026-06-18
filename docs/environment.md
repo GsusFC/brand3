@@ -148,8 +148,9 @@ These variables are read by `web/config.py` with the `BRAND3_` prefix.
 | `BRAND3_DISABLE_LITESTREAM` | `false` | Set to `true` only for disposable staging apps that should start without SQLite replication |
 | `BRAND3_TEAM_TOKEN` | local generated value | Token used by team unlock flow |
 | `BRAND3_COOKIE_SECRET` | local generated value, 32+ chars | Secret for signed team cookies |
-| `BRAND3_MAX_CONCURRENT_ANALYSES` | `2` | Queue worker concurrency |
+| `BRAND3_MAX_CONCURRENT_ANALYSES` | `2` (`1` on Fly) | Queue worker concurrency |
 | `BRAND3_ANALYSIS_TIMEOUT_SECONDS` | `600` | Analysis timeout for queued web requests |
+| `BRAND3_REQUEUE_IN_FLIGHT_ON_STARTUP` | `true` (`false` on Fly) | Requeue or interrupt running web/scanner jobs after process restart |
 | `BRAND3_RATE_LIMIT_PER_IP` | `5` | Per-IP analyze request limit |
 | `BRAND3_RATE_LIMIT_WINDOW_HOURS` | `24` | Rate-limit window |
 | `BRAND3_RATE_LIMIT_BYPASS_IPS` | `127.0.0.1,::1` locally | Comma-separated IPs that bypass local rate limiting |

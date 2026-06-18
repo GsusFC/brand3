@@ -313,6 +313,85 @@ class MagnetismWorkerRoutingTests(unittest.TestCase):
 
 
 class WorkerLoopTests(unittest.TestCase):
+    def _insert_running_rows(self, db_path: Path) -> None:
+        with sqlite3.connect(str(db_path)) as conn:
+            conn.execute(
+                """
+                INSERT INTO web_requests
+                  (token, url, brand_slug, requester_ip, requester_is_team, status, phase, started_at)
+                VALUES ('web-running', 'https://example.com', 'example', '127.0.0.1', 0,
+                        'running', 'collecting', datetime('now'))
+                """
+            )
+            conn.execute(
+                """
+                INSERT INTO magnetism_scans
+                  (brand_name, url, magnetism_score, coherence_score, quadrant, raw_payload,
+                   created_at, status, token, phase, input_type, input_value, started_at)
+                VALUES ('Acme', 'https://acme.test', 0, 0, 'pending', '{}', datetime('now'),
+                        'running', 'magnetism-running', 'collecting', 'url',
+                        'https://acme.test', datetime('now'))
+                """
+            )
+            conn.commit()
+
+    def test_restart_in_flight_requeues_running_rows_by_default(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            store.close()
+            self._insert_running_rows(db_path)
+
+            queue = web_queue.AnalysisQueue(max_concurrent=1)
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch.object(web_queue.settings, "requeue_in_flight_on_startup", True):
+                    queue.restart_in_flight()
+
+            self.assertEqual(queue._queue.qsize(), 2)
+            queued = {queue._queue.get_nowait(), queue._queue.get_nowait()}
+            self.assertEqual(
+                queued,
+                {"web-running", f"{web_queue.MAGNETISM_QUEUE_PREFIX}magnetism-running"},
+            )
+            with sqlite3.connect(str(db_path)) as conn:
+                web_status = conn.execute(
+                    "SELECT status, phase FROM web_requests WHERE token='web-running'"
+                ).fetchone()
+                magnetism_status = conn.execute(
+                    "SELECT status, phase FROM magnetism_scans WHERE token='magnetism-running'"
+                ).fetchone()
+            self.assertEqual(web_status, ("queued", "queued"))
+            self.assertEqual(magnetism_status, ("queued", "queued"))
+
+    def test_restart_in_flight_can_interrupt_running_rows(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = Path(tmpdir) / "brand3.sqlite3"
+            store = SQLiteStore(str(db_path))
+            store.close()
+            self._insert_running_rows(db_path)
+
+            queue = web_queue.AnalysisQueue(max_concurrent=1)
+            with patch.object(web_queue, "_db_path", return_value=db_path):
+                with patch.object(web_queue.settings, "requeue_in_flight_on_startup", False):
+                    queue.restart_in_flight()
+
+            self.assertEqual(queue._queue.qsize(), 0)
+            with sqlite3.connect(str(db_path)) as conn:
+                web_status = conn.execute(
+                    "SELECT status, phase, error_message FROM web_requests WHERE token='web-running'"
+                ).fetchone()
+                magnetism_status = conn.execute(
+                    "SELECT status, phase, error_message FROM magnetism_scans WHERE token='magnetism-running'"
+                ).fetchone()
+            self.assertEqual(
+                web_status,
+                ("failed", "failed", "interrupted by application restart"),
+            )
+            self.assertEqual(
+                magnetism_status,
+                ("failed", "failed", "interrupted by application restart"),
+            )
+
     def test_web_queue_process_uses_threadpool_for_db_and_engine_work(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "brand3.sqlite3"

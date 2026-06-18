@@ -2,9 +2,9 @@
 
 A single queue instance runs N worker loops (default 2). Each worker reads a
 token from the queue, loads the `web_requests` row, calls the engine in a
-thread, and updates the row. Crash-tolerance is handled by the database —
+thread, and updates the row. Crash-tolerance is handled by the database:
 rows marked as ``running`` without a completion timestamp on startup are
-flipped back to ``queued`` (see `AnalysisQueue.restart_in_flight`).
+requeued or interrupted depending on configuration.
 """
 
 from __future__ import annotations
@@ -142,21 +142,50 @@ class AnalysisQueue:
         log.info("queue stopped")
 
     def restart_in_flight(self) -> None:
-        """Reset `running` rows to `queued` after an ungraceful restart."""
+        """Recover rows left running after an ungraceful restart."""
         with sqlite3.connect(str(_db_path())) as conn:
-            cur = conn.execute(
-                "UPDATE web_requests SET status='queued', phase='queued', "
-                "phase_updated_at=NULL, started_at=NULL "
-                "WHERE status='running'"
-            )
-            if cur.rowcount:
-                log.warning("reset %d stale running rows back to queued", cur.rowcount)
-            conn.execute(
-                "UPDATE magnetism_scans SET status=?, phase=?, "
-                "phase_updated_at=NULL, started_at=NULL "
-                "WHERE status=?",
-                ("queued", "queued", "running"),
-            )
+            if settings.requeue_in_flight_on_startup:
+                cur = conn.execute(
+                    "UPDATE web_requests SET status='queued', phase='queued', "
+                    "phase_updated_at=NULL, started_at=NULL "
+                    "WHERE status='running'"
+                )
+                if cur.rowcount:
+                    log.warning("reset %d stale running rows back to queued", cur.rowcount)
+                magnetism_cur = conn.execute(
+                    "UPDATE magnetism_scans SET status=?, phase=?, "
+                    "phase_updated_at=NULL, started_at=NULL "
+                    "WHERE status=?",
+                    ("queued", "queued", "running"),
+                )
+                if magnetism_cur.rowcount:
+                    log.warning(
+                        "reset %d stale running magnetism rows back to queued",
+                        magnetism_cur.rowcount,
+                    )
+            else:
+                now = _now()
+                cur = conn.execute(
+                    "UPDATE web_requests SET status='failed', phase='failed', "
+                    "phase_updated_at=?, completed_at=?, "
+                    "error_message='interrupted by application restart' "
+                    "WHERE status='running'",
+                    (now, now),
+                )
+                if cur.rowcount:
+                    log.warning("interrupted %d stale running web request rows", cur.rowcount)
+                magnetism_cur = conn.execute(
+                    "UPDATE magnetism_scans SET status='failed', phase='failed', "
+                    "phase_updated_at=?, completed_at=?, "
+                    "error_message='interrupted by application restart' "
+                    "WHERE status='running'",
+                    (now, now),
+                )
+                if magnetism_cur.rowcount:
+                    log.warning(
+                        "interrupted %d stale running magnetism rows",
+                        magnetism_cur.rowcount,
+                    )
             # Engine runs are not resumable — the re-queued web_requests row
             # starts a fresh run, so orphaned rows get a terminal state. The
             # runs table is owned by SQLiteStore and may not exist yet on a
@@ -186,6 +215,8 @@ class AnalysisQueue:
                 ).fetchall()
             ]
             conn.commit()
+        if not settings.requeue_in_flight_on_startup:
+            return
         for token in tokens:
             self._queue.put_nowait(token)
         for token in magnetism_tokens:

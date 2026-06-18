@@ -13,7 +13,7 @@ from typing import Literal
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
-from src.config import BRAND3_DB_PATH
+from src.config import BRAND3_DB_PATH, BRAND3_EVIDENCE_LLM_MODEL
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
 from src.features.magnetism.moodboard import build_moodboard_model, extract_moodboard_images
@@ -21,8 +21,14 @@ from src.features.magnetism.translation import apply_magnetism_translation
 from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
 from src.scoring.provenance import build_score_provenance_report
 from src.reports.dossier import build_brand_dossier
-from src.research.evidence_vnext import compare_legacy_current_and_vnext_from_snapshot
+from src.research.evidence_semantic_llm import build_llm_semantic_assessment
+from src.research.evidence_vnext import (
+    build_evidence_vnext_packet_from_snapshot,
+    build_evidence_vnext_semantic_assessment,
+    compare_legacy_current_and_vnext_from_snapshot,
+)
 from src.research.evidence_vnext_report import build_batch_report
+from src.features.llm_analyzer import LLMAnalyzer
 from src.services.magnetism_service import ensure_sv9_scan_for_source_run
 from src.storage.sqlite_store import SQLiteStore
 
@@ -635,6 +641,93 @@ def _load_evidence_vnext_diagnostic(run_id: int) -> dict | None:
     }
 
 
+def _load_evidence_vnext_llm_shadow(run_id: int, *, no_cache: bool = False) -> dict | None:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+    finally:
+        store.close()
+    if snapshot is None:
+        return None
+
+    packet = build_evidence_vnext_packet_from_snapshot(snapshot)
+    heuristic = build_evidence_vnext_semantic_assessment(packet)
+    llm = None
+    if no_cache:
+        llm = LLMAnalyzer(model=BRAND3_EVIDENCE_LLM_MODEL)
+        llm.use_cache = False
+    llm_assessment = build_llm_semantic_assessment(packet, llm=llm, enabled=True)
+    return {
+        "diagnostic": "evidence_vnext_llm_shadow",
+        "runtime_effect": False,
+        "prompt_effect": False,
+        "persistence_effect": False,
+        "run_id": run_id,
+        "brand_name": packet.brand_name,
+        "url": packet.url,
+        "no_cache": no_cache,
+        "summary": _evidence_llm_shadow_summary(heuristic, llm_assessment),
+        "disagreements": _evidence_llm_shadow_disagreements(heuristic, llm_assessment),
+        "heuristic": {
+            "classifier": heuristic.get("classifier") or "",
+            "summary": heuristic.get("summary") or {},
+        },
+        "llm": llm_assessment,
+    }
+
+
+def _evidence_llm_shadow_summary(heuristic: dict, llm: dict) -> dict:
+    disagreements = _evidence_llm_shadow_disagreements(heuristic, llm)
+    return {
+        "llm_status": llm.get("status") or "",
+        "llm_model": llm.get("model") or "",
+        "llm_transport": llm.get("transport") or "",
+        "llm_reason": llm.get("reason") or "",
+        "llm_attempt_count": llm.get("attempt_count") or 0,
+        "llm_batch_count": llm.get("batch_count") or 0,
+        "llm_retry_count": llm.get("retry_count") or 0,
+        "heuristic_accepted_material": (heuristic.get("summary") or {}).get("accepted_material_count") or 0,
+        "heuristic_accepted_weak": (heuristic.get("summary") or {}).get("accepted_weak_count") or 0,
+        "llm_accepted_material": (llm.get("summary") or {}).get("accepted_material_count") or 0,
+        "llm_accepted_weak": (llm.get("summary") or {}).get("accepted_weak_count") or 0,
+        "semantic_class_disagreement_count": sum(1 for item in disagreements if item.get("class_changed")),
+        "materiality_disagreement_count": sum(1 for item in disagreements if item.get("materiality_changed")),
+    }
+
+
+def _evidence_llm_shadow_disagreements(heuristic: dict, llm: dict) -> list[dict]:
+    heuristic_by_id = {
+        str(item.get("observation_id") or ""): item
+        for item in heuristic.get("assessments") or []
+        if isinstance(item, dict)
+    }
+    out: list[dict] = []
+    for item in llm.get("assessments") or []:
+        if not isinstance(item, dict):
+            continue
+        observation_id = str(item.get("observation_id") or "")
+        baseline = heuristic_by_id.get(observation_id)
+        if not baseline:
+            continue
+        class_changed = item.get("semantic_class") != baseline.get("semantic_class")
+        materiality_changed = item.get("materiality") != baseline.get("materiality")
+        if not class_changed and not materiality_changed:
+            continue
+        out.append(
+            {
+                "observation_id": observation_id,
+                "class_changed": class_changed,
+                "materiality_changed": materiality_changed,
+                "heuristic_class": baseline.get("semantic_class") or "",
+                "llm_class": item.get("semantic_class") or "",
+                "heuristic_materiality": baseline.get("materiality") or "",
+                "llm_materiality": item.get("materiality") or "",
+                "llm_reason_codes": list(item.get("reason_codes") or []),
+            }
+        )
+    return out[:25]
+
+
 @router.get("/magnetism-scanner")
 async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
@@ -772,6 +865,18 @@ async def magnetism_scanner_from_run(
 async def magnetism_scanner_evidence_vnext(run_id: int):
     """Return read-only evidence vNext diagnostics for a Brand Audit run."""
     diagnostic = await asyncio.to_thread(_load_evidence_vnext_diagnostic, run_id)
+    if diagnostic is None:
+        raise HTTPException(status_code=404, detail=f"Brand Audit run #{run_id} not found")
+    return JSONResponse(diagnostic)
+
+
+@router.get("/api/v1/scanner/run/{run_id}/evidence-vnext/llm-shadow")
+async def scanner_api_evidence_vnext_llm_shadow(
+    run_id: int,
+    no_cache: bool = Query(False),
+):
+    """Run read-only evidence vNext LLM shadow diagnostics for a Brand Audit run."""
+    diagnostic = await asyncio.to_thread(_load_evidence_vnext_llm_shadow, run_id, no_cache=no_cache)
     if diagnostic is None:
         raise HTTPException(status_code=404, detail=f"Brand Audit run #{run_id} not found")
     return JSONResponse(diagnostic)

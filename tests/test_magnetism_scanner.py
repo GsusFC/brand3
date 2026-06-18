@@ -241,6 +241,80 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(payload["report"]["totals"]["run_count"], 1)
         self.assertIn("adjudication_intake", payload["report"])
 
+    def test_evidence_vnext_llm_shadow_api_requires_scanner_token(self):
+        response = self.client.get("/api/v1/scanner/run/1/evidence-vnext/llm-shadow")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["error"]["code"], "scanner_api_unauthorized")
+
+    def test_evidence_vnext_llm_shadow_api_reads_brand_audit_run_without_persistence(self):
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Evidence LLM Shadow", "https://evidence-llm-shadow.test")
+            run_id = store.create_run(
+                brand_id,
+                "Evidence LLM Shadow",
+                "https://evidence-llm-shadow.test",
+                use_llm=False,
+                use_social=False,
+            )
+            store.save_raw_input(
+                run_id,
+                "web",
+                {
+                    "url": "https://evidence-llm-shadow.test",
+                    "title": "Evidence LLM Shadow",
+                    "markdown": "# Evidence LLM Shadow\nEvidence LLM Shadow validates semantic classifier diagnostics.",
+                },
+            )
+            store.mark_run_status(run_id, "complete")
+        finally:
+            store.close()
+
+        fake_llm_payload = {
+            "version": "evidence_vnext_llm_semantic_assessment_v0_1",
+            "runtime_effect": False,
+            "prompt_effect": False,
+            "model_effect": True,
+            "classifier": "llm_shadow_v0",
+            "status": "ok",
+            "model": "gemini-3.5-flash",
+            "transport": "gemini_native_structured_output",
+            "reason": "",
+            "detail": "",
+            "attempt_count": 1,
+            "batch_count": 1,
+            "retry_count": 0,
+            "assessments": [],
+            "summary": {
+                "assessment_count": 0,
+                "accepted_count": 0,
+                "accepted_material_count": 0,
+                "accepted_weak_count": 0,
+            },
+        }
+        with unittest.mock.patch(
+            "web.routes.magnetism_scanner.build_llm_semantic_assessment",
+            return_value=fake_llm_payload,
+        ):
+            response = self.client.get(
+                f"/api/v1/scanner/run/{run_id}/evidence-vnext/llm-shadow",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["diagnostic"], "evidence_vnext_llm_shadow")
+        self.assertFalse(payload["runtime_effect"])
+        self.assertFalse(payload["prompt_effect"])
+        self.assertFalse(payload["persistence_effect"])
+        self.assertEqual(payload["run_id"], run_id)
+        self.assertEqual(payload["brand_name"], "Evidence LLM Shadow")
+        self.assertEqual(payload["summary"]["llm_status"], "ok")
+        self.assertEqual(payload["summary"]["llm_model"], "gemini-3.5-flash")
+        self.assertIn("heuristic", payload)
+        self.assertEqual(payload["llm"]["classifier"], "llm_shadow_v0")
+
     def test_evidence_vnext_diagnostic_view_renders_report_summary(self):
         store = SQLiteStore(str(self.db))
         try:

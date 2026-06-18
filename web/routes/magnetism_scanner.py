@@ -667,7 +667,7 @@ def _load_evidence_vnext_llm_shadow(run_id: int, *, no_cache: bool = False) -> d
         "url": packet.url,
         "no_cache": no_cache,
         "summary": _evidence_llm_shadow_summary(heuristic, llm_assessment),
-        "disagreements": _evidence_llm_shadow_disagreements(heuristic, llm_assessment),
+        "disagreements": _evidence_llm_shadow_disagreements(heuristic, llm_assessment, packet=packet),
         "heuristic": {
             "classifier": heuristic.get("classifier") or "",
             "summary": heuristic.get("summary") or {},
@@ -695,12 +695,15 @@ def _evidence_llm_shadow_summary(heuristic: dict, llm: dict) -> dict:
     }
 
 
-def _evidence_llm_shadow_disagreements(heuristic: dict, llm: dict) -> list[dict]:
+def _evidence_llm_shadow_disagreements(heuristic: dict, llm: dict, *, packet=None) -> list[dict]:
     heuristic_by_id = {
         str(item.get("observation_id") or ""): item
         for item in heuristic.get("assessments") or []
         if isinstance(item, dict)
     }
+    observations_by_id = {}
+    if packet is not None:
+        observations_by_id = {item.observation_id: item for item in packet.observations}
     out: list[dict] = []
     for item in llm.get("assessments") or []:
         if not isinstance(item, dict):
@@ -713,6 +716,19 @@ def _evidence_llm_shadow_disagreements(heuristic: dict, llm: dict) -> list[dict]
         materiality_changed = item.get("materiality") != baseline.get("materiality")
         if not class_changed and not materiality_changed:
             continue
+        observation = observations_by_id.get(observation_id)
+        context = {}
+        if observation is not None:
+            context = {
+                "url": observation.url,
+                "provider": observation.provider,
+                "feature_name": observation.feature_name,
+                "source_class": observation.source_class,
+                "eligibility": observation.eligibility,
+                "gate_status": observation.gate_status,
+                "classification_reason": observation.classification_reason,
+                "text_preview": observation.text[:240],
+            }
         out.append(
             {
                 "observation_id": observation_id,
@@ -722,7 +738,11 @@ def _evidence_llm_shadow_disagreements(heuristic: dict, llm: dict) -> list[dict]
                 "llm_class": item.get("semantic_class") or "",
                 "heuristic_materiality": baseline.get("materiality") or "",
                 "llm_materiality": item.get("materiality") or "",
+                "heuristic_entity_fit": baseline.get("entity_fit") or "",
+                "llm_entity_fit": item.get("entity_fit") or "",
+                "heuristic_reason_codes": list(baseline.get("reason_codes") or []),
                 "llm_reason_codes": list(item.get("reason_codes") or []),
+                "context": context,
             }
         )
     return out[:25]

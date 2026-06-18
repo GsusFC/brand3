@@ -267,35 +267,64 @@ class MagnetismScannerTests(unittest.TestCase):
                     "markdown": "# Evidence LLM Shadow\nEvidence LLM Shadow validates semantic classifier diagnostics.",
                 },
             )
+            store.save_features(
+                run_id,
+                {
+                    "percepcion": {
+                        "brand_sentiment": FeatureValue(
+                            "brand_sentiment",
+                            0.7,
+                            raw_value=(
+                                "{'evidence': [{'quote': 'Evidence LLM Shadow validates semantic classifier diagnostics.', "
+                                "'source_url': 'https://evidence-llm-shadow.test'}]}"
+                            ),
+                            confidence=0.8,
+                            source="web",
+                        )
+                    }
+                },
+            )
             store.mark_run_status(run_id, "complete")
         finally:
             store.close()
 
-        fake_llm_payload = {
-            "version": "evidence_vnext_llm_semantic_assessment_v0_1",
-            "runtime_effect": False,
-            "prompt_effect": False,
-            "model_effect": True,
-            "classifier": "llm_shadow_v0",
-            "status": "ok",
-            "model": "gemini-3.5-flash",
-            "transport": "gemini_native_structured_output",
-            "reason": "",
-            "detail": "",
-            "attempt_count": 1,
-            "batch_count": 1,
-            "retry_count": 0,
-            "assessments": [],
-            "summary": {
-                "assessment_count": 0,
-                "accepted_count": 0,
-                "accepted_material_count": 0,
-                "accepted_weak_count": 0,
-            },
-        }
+        def fake_llm_shadow(packet, **_kwargs):
+            observation_id = packet.observations[0].observation_id
+            return {
+                "version": "evidence_vnext_llm_semantic_assessment_v0_1",
+                "runtime_effect": False,
+                "prompt_effect": False,
+                "model_effect": True,
+                "classifier": "llm_shadow_v0",
+                "status": "ok",
+                "model": "gemini-3.5-flash",
+                "transport": "gemini_native_structured_output",
+                "reason": "",
+                "detail": "",
+                "attempt_count": 1,
+                "batch_count": 1,
+                "retry_count": 0,
+                "assessments": [
+                    {
+                        "observation_id": observation_id,
+                        "semantic_class": "wrong_entity",
+                        "entity_fit": "wrong_entity",
+                        "materiality": "not_applicable",
+                        "confidence": 0.91,
+                        "reason_codes": ["wrong_entity"],
+                    }
+                ],
+                "summary": {
+                    "assessment_count": 1,
+                    "accepted_count": 1,
+                    "accepted_material_count": 0,
+                    "accepted_weak_count": 1,
+                },
+            }
+
         with unittest.mock.patch(
             "web.routes.magnetism_scanner.build_llm_semantic_assessment",
-            return_value=fake_llm_payload,
+            side_effect=fake_llm_shadow,
         ):
             response = self.client.get(
                 f"/api/v1/scanner/run/{run_id}/evidence-vnext/llm-shadow",
@@ -312,8 +341,12 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(payload["brand_name"], "Evidence LLM Shadow")
         self.assertEqual(payload["summary"]["llm_status"], "ok")
         self.assertEqual(payload["summary"]["llm_model"], "gemini-3.5-flash")
+        self.assertEqual(payload["summary"]["semantic_class_disagreement_count"], 1)
         self.assertIn("heuristic", payload)
         self.assertEqual(payload["llm"]["classifier"], "llm_shadow_v0")
+        self.assertEqual(payload["disagreements"][0]["context"]["url"], "https://evidence-llm-shadow.test")
+        self.assertEqual(payload["disagreements"][0]["context"]["provider"], "web")
+        self.assertIn("Evidence LLM Shadow validates", payload["disagreements"][0]["context"]["text_preview"])
 
     def test_evidence_vnext_diagnostic_view_renders_report_summary(self):
         store = SQLiteStore(str(self.db))

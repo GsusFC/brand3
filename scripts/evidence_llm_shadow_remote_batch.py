@@ -289,8 +289,17 @@ def _markdown(payload: dict[str, Any]) -> str:
     lines.extend(["", "## Runs", ""])
     for row in payload.get("rows") or []:
         lines.append(
-            "- `{run_id}` {brand_name}: status `{llm_status}`, projected `{vnext_projected_status}`, "
-            "class_delta `{class_delta}`, materiality_delta `{materiality_delta}`, retries `{retries}`".format(**row)
+            "- `{run_id}` {brand_name}: status `{status}`, llm `{llm_status}`, projected `{vnext_projected_status}`, "
+            "class_delta `{class_delta}`, materiality_delta `{materiality_delta}`, retries `{retries}`".format(
+                run_id=row.get("run_id"),
+                brand_name=row.get("brand_name") or "",
+                status=row.get("status") or "",
+                llm_status=row.get("llm_status") or "",
+                vnext_projected_status=row.get("vnext_projected_status") or "",
+                class_delta=row.get("class_delta") or 0,
+                materiality_delta=row.get("materiality_delta") or 0,
+                retries=row.get("retries") or 0,
+            )
         )
         for bucket, count in (row.get("bucket_counts") or {}).items():
             lines.append(f"  - `{bucket}`: `{count}`")

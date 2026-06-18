@@ -6,6 +6,8 @@
 {% set row = model.row %}
 {% set readiness_rows = report.readiness_matrix.rows if report.readiness_matrix else [] %}
 {% set readiness = readiness_rows[0] if readiness_rows else {} %}
+{% set work_order = report.work_orders[0] if report.work_orders else {} %}
+{% set adjudication = report.adjudication_intake if report.adjudication_intake else {} %}
 
 <section class="magnetism-hero-section">
   <div class="section-head">
@@ -50,6 +52,90 @@
 </section>
 
 <hr class="rule-thin magnetism-compact-rule">
+
+<section>
+  <div class="section-head">
+    <span class="label">operator path</span>
+    <span class="tag">// what happens next</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">promotion path</div>
+      <strong class="hl-accent" style="font-family:var(--font-mono); font-size:16px;">
+        {{ readiness.current_promotion_status or row.promotion_status or "unknown" }} -> {{ readiness.projected_promotion_status or row.promotion_status or "unknown" }}
+      </strong>
+      <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:8px 0 0;">
+        readiness={{ readiness.readiness_status or report.recommendation.status or "unknown" }}
+      </p>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">next action</div>
+      <strong class="{% if readiness.human_required %}hl-warn{% else %}hl-ok{% endif %}" style="font-family:var(--font-mono); font-size:16px;">
+        {{ readiness.next_action or "none" }}
+      </strong>
+      <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:8px 0 0;">
+        human_required={{ readiness.human_required }} · lane={{ readiness.automation_lane or "unknown" }}
+      </p>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">adjudication</div>
+      <strong class="{% if adjudication.pending_count %}hl-warn{% else %}hl-ok{% endif %}" style="font-family:var(--font-mono); font-size:16px;">
+        {{ adjudication.status or "empty" }}
+      </strong>
+      <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:8px 0 0;">
+        pending={{ adjudication.pending_count or 0 }} · work_orders={{ report.work_orders | length }}
+      </p>
+    </article>
+  </div>
+
+  {% if readiness.remaining_reason_codes %}
+  <div class="badge-line" style="margin-top:12px;">
+    {% for reason in readiness.remaining_reason_codes %}
+    <span class="badge {% if readiness.human_required %}badge-error{% endif %}">{{ reason }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if work_order %}
+  <article style="border:1px solid var(--border); background:var(--surface); padding:14px; margin-top:14px;">
+    <div class="section-head" style="margin-bottom:8px;">
+      <span class="label">{{ work_order.work_order_id }}</span>
+      <span class="tag">{{ work_order.expected_output }} · {{ work_order.priority }}</span>
+    </div>
+    <strong style="font-family:var(--font-ui); font-size:14px;">{{ work_order.task }}</strong>
+    <p class="prose" style="font-size:13px; line-height:1.55; margin:8px 0 0;">{{ work_order.closure_criteria }}</p>
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; margin-top:12px;">
+      <div>
+        <div class="dim" style="font-family:var(--font-mono); font-size:11px;">checklist</div>
+        <ul style="margin:8px 0 0; padding-left:18px; font-size:13px; line-height:1.55;">
+          {% for item in work_order.checklist %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div>
+        <div class="dim" style="font-family:var(--font-mono); font-size:11px;">decision template</div>
+        <pre style="white-space:pre-wrap; border:1px solid var(--border); background:var(--bg); padding:10px; font-size:11px; line-height:1.45; margin:8px 0 0;">{{ work_order.decision_record_template }}</pre>
+      </div>
+    </div>
+    {% if work_order.context.review_urls or work_order.context.profile_urls or work_order.context.affected_material_fields %}
+    <div class="badge-line" style="margin-top:12px;">
+      {% for url in work_order.context.profile_urls or [] %}
+      <span class="badge badge-missing">profile={{ url }}</span>
+      {% endfor %}
+      {% for url in work_order.context.review_urls or [] %}
+      <span class="badge">review_url={{ url }}</span>
+      {% endfor %}
+      {% for field in work_order.context.affected_material_fields or [] %}
+      <span class="badge badge-error">field={{ field }}</span>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </article>
+  {% endif %}
+</section>
+
+<hr class="rule-thin">
 
 <section>
   <div class="section-head">

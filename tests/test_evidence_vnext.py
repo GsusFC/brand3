@@ -1204,6 +1204,7 @@ def test_batch_report_keeps_external_profile_review_only_without_material_overla
     assert report["contract_projection"]["applied_contracts"] == ["social_scrape.placeholder_profile_non_material"]
     assert report["contract_projection"]["removed_review_observation_count"] == 1
     assert report["contract_projection"]["projected_promotion_counts"]["candidate"] == 1
+    assert report["decision_queue"] == []
     assert report["shadow_policy"]["runs"][0]["next_action"] == "candidate_after_contract"
 
 

@@ -1330,6 +1330,8 @@ def _decision_queue(
     manual_audit_queue: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     decisions: list[dict[str, Any]] = []
+    projected_rows = list(contract_projection.get("rows") or [])
+    social_placeholder_auto_cleared_runs = _social_placeholder_auto_cleared_runs(projected_rows)
     for item in contract_recommendations:
         decisions.append(
             {
@@ -1344,6 +1346,12 @@ def _decision_queue(
     for item in provider_acquisition_contracts:
         if str(item.get("implementation_status") or "") == "vnext_gate_enforced":
             continue
+        if (
+            str(item.get("contract") or "") == "social_scrape.alias_confirmation"
+            and social_placeholder_auto_cleared_runs
+            and int(item.get("affected_observation_count") or 0) <= len(social_placeholder_auto_cleared_runs)
+        ):
+            continue
         decisions.append(
             {
                 "action": "implement_provider_acquisition_contract",
@@ -1357,7 +1365,6 @@ def _decision_queue(
             }
         )
 
-    projected_rows = list(contract_projection.get("rows") or [])
     projected_manual_runs = [
         int(row.get("run_id"))
         for row in projected_rows
@@ -1399,6 +1406,7 @@ def _decision_queue(
         int(item.get("run_id"))
         for item in manual_audit_queue
         if item.get("run_id") is not None and "confirm_external_profile_alias" in set(item.get("triage_actions") or [])
+        and int(item.get("run_id")) not in social_placeholder_auto_cleared_runs
     ]
     if alias_audit_runs:
         decisions.append(
@@ -1411,6 +1419,20 @@ def _decision_queue(
         )
 
     return decisions
+
+
+def _social_placeholder_auto_cleared_runs(projected_rows: list[dict[str, Any]]) -> set[int]:
+    runs: set[int] = set()
+    for row in projected_rows:
+        if "social_scrape.placeholder_profile_non_material" not in set(row.get("applied_contracts") or []):
+            continue
+        if row.get("projected_manual_audit_required"):
+            continue
+        if row.get("remaining_review_examples"):
+            continue
+        if row.get("run_id") is not None:
+            runs.add(int(row["run_id"]))
+    return runs
 
 
 def _append_projected_reason_decision(

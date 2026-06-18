@@ -2462,9 +2462,9 @@ def _provider_contract_implementation(contract: str) -> dict[str, Any]:
         },
         "social_scrape.alias_confirmation": {
             "enforcement_point": "social_profile_entity_gate",
-            "implementation_status": "policy_confirmation_needed",
-            "implementation_lane": "entity_adjudication_policy",
-            "next_step": "Define alias-confirmation policy before social profiles can affect material fields or promotion.",
+            "implementation_status": "vnext_gate_enforced",
+            "implementation_lane": "evidence_gate",
+            "next_step": "Keep social profiles review-gated unless placeholder auto-clear or explicit material alias work order applies.",
             "acceptance_criteria": [
                 "Same-name social profiles require alias confirmation before material or promotion use.",
                 "Unconfirmed social profiles remain review-gated with entity-boundary reason codes.",

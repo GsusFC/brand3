@@ -1487,6 +1487,9 @@ def test_batch_report_blocks_external_profile_review_when_it_overlaps_material_f
     assert report["work_orders"][0]["context"]["affected_material_fields"] == ["proof_points"]
     assert report["work_orders"][0]["decision_record_template"]["profile_url"] == "https://linkedin.com/company/auditco"
     assert report["work_orders"][0]["decision_record_template"]["affected_material_fields"] == "proof_points"
+    backlog_rows = {item["contract"]: item for item in report["provider_contract_backlog"]["rows"]}
+    assert backlog_rows["social_scrape.alias_confirmation"]["implementation_status"] == "vnext_gate_enforced"
+    assert not any(item.get("contract") == "social_scrape.alias_confirmation" for item in report["decision_queue"])
 
 
 def test_batch_report_blocks_unresolved_profile_source_url_in_material_fields() -> None:

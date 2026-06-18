@@ -972,6 +972,20 @@ def _semantic_assessment_for_observation(
             reason_codes=("social_profile_placeholder_only",),
         )
 
+    comparison_text = f"{item.text} {item.feature_name} {item.classification_reason}".lower()
+    if item.source_class == "competitor_comparison" or _contains_any(
+        comparison_text,
+        ("alternative", "alternatives", "competitor", "competitors", "best tools", "compared"),
+    ):
+        return _semantic_result(
+            item,
+            semantic_class="competitor_comparison",
+            entity_fit=entity_fit,
+            materiality="low",
+            confidence=0.75,
+            reason_codes=("comparison_or_alternatives_surface",),
+        )
+
     if item.source_class in {"audited_surface", "owned_surface"}:
         return _semantic_result(
             item,
@@ -1040,20 +1054,6 @@ def _semantic_assessment_for_observation(
             materiality="medium",
             confidence=0.8,
             reason_codes=("market_news_or_press_signal",),
-        )
-
-    comparison_text = f"{item.text} {item.feature_name} {item.classification_reason}".lower()
-    if item.source_class == "competitor_comparison" or _contains_any(
-        comparison_text,
-        ("alternative", "alternatives", "competitor", "competitors", "best tools", "compared"),
-    ):
-        return _semantic_result(
-            item,
-            semantic_class="competitor_comparison",
-            entity_fit=entity_fit,
-            materiality="low",
-            confidence=0.75,
-            reason_codes=("comparison_or_alternatives_surface",),
         )
 
     if "github.com" in url_lower and entity_fit != "strong":

@@ -795,7 +795,7 @@ def test_vnext_semantic_shadow_marks_social_profile_placeholders_as_wrong_entity
     assert semantic["summary"]["accepted_weak_count"] == 1
 
 
-def test_vnext_semantic_entity_fit_ignores_domain_stopwords_and_substrings() -> None:
+def test_vnext_semantic_shadow_keeps_synthetic_competitor_comparison_as_weak() -> None:
     packet = EvidenceVNextPacket(
         version="test",
         run_id=4202,
@@ -813,6 +813,38 @@ def test_vnext_semantic_entity_fit_ignores_domain_stopwords_and_substrings() -> 
                 provider="competitor_web_comparison",
                 feature_name="competitor_distance",
                 source_class="competitor_comparison",
+                eligibility="eligible_for_narrative_finding",
+                gate_status="accepted",
+            ),
+        ),
+    )
+
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    row = semantic["assessments"][0]
+    assert row["entity_fit"] == "missing"
+    assert row["semantic_class"] == "competitor_comparison"
+    assert row["materiality"] == "low"
+    assert row["reason_codes"] == ["comparison_or_alternatives_surface"]
+    assert semantic["summary"]["accepted_material_count"] == 0
+    assert semantic["summary"]["accepted_weak_count"] == 1
+
+
+def test_vnext_semantic_entity_fit_ignores_domain_stopwords_and_substrings() -> None:
+    packet = EvidenceVNextPacket(
+        version="test",
+        run_id=4202,
+        brand_name="Becauce",
+        url="https://www.becauce.com",
+        observations=(
+            SourceObservation(
+                observation_id="obs_0001",
+                text="Be helps teams validate climate work with operational workflows.",
+                url="https://example.com/be-climate-workflows",
+                dimension="percepcion",
+                provider="llm",
+                feature_name="brand_sentiment",
+                source_class="external_third_party",
                 eligibility="eligible_for_narrative_finding",
                 gate_status="accepted",
             ),

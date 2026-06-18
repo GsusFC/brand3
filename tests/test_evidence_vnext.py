@@ -628,10 +628,11 @@ def test_vnext_infers_url_for_split_feature_snippet_and_url() -> None:
     graph = build_vnext_evidence_graph_from_snapshot(_split_snippet_url_snapshot()).to_dict()
 
     assert packet["summary"]["review_reason_counts"].get("missing_evidence_url", 0) == 0
+    assert packet["summary"]["rejected_reason_counts"].get("empty_text_evidence_blocked", 0) == 0
     assert any(
-        item["classification_reason"] == "evidence_url_inferred_from_same_feature"
-        and item["gate_status"] == "accepted"
+        item["gate_status"] == "accepted"
         and item["url"] == "https://news.example.com/publicit-partner-program"
+        and "verified agency partner program" in item["text"]
         for item in packet["observations"]
     )
     assert any(

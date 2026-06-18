@@ -425,10 +425,14 @@ def _candidates_from_raw(raw: Any, base: dict) -> list[dict]:
         if third_party or url:
             add(text=third_party, url=url, raw_key="gap_third_party_says")
 
-    if isinstance(raw.get("evidence_url"), str):
-        add(url=raw["evidence_url"], raw_key="evidence_url")
-    if isinstance(raw.get("evidence_snippet"), str):
-        add(text=raw["evidence_snippet"], raw_key="evidence_snippet")
+    evidence_url = raw.get("evidence_url")
+    evidence_snippet = raw.get("evidence_snippet")
+    if isinstance(evidence_url, str) and isinstance(evidence_snippet, str):
+        add(text=evidence_snippet, url=evidence_url, raw_key="evidence_snippet")
+    elif isinstance(evidence_url, str):
+        add(url=evidence_url, raw_key="evidence_url")
+    elif isinstance(evidence_snippet, str):
+        add(text=evidence_snippet, raw_key="evidence_snippet")
     for snippet in raw.get("evidence_snippets") or []:
         if isinstance(snippet, str):
             add(text=snippet, raw_key="evidence_snippets")

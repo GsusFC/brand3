@@ -1700,6 +1700,15 @@ Tabular foundation models for real-world data.
         self.assertIn("https://example.com/platform/solutions", links)
         self.assertNotIn("https://external.com/blog", links)
 
+    def test_extract_internal_links_encodes_spaces(self):
+        collector = WebCollector()
+        markdown = "See [Modelo de negocio](/Modelo de negocio/03_01_01_Modelo de Negocio_beCAUCE.html)."
+        links = collector._extract_internal_links(markdown, "https://example.com")
+        self.assertIn(
+            "https://example.com/Modelo%20de%20negocio/03_01_01_Modelo%20de%20Negocio_beCAUCE.html",
+            links,
+        )
+
     def test_score_internal_links(self):
         collector = WebCollector()
         links = [
@@ -1828,6 +1837,31 @@ Tabular foundation models for real-world data.
             data.owned_fallback_urls,
             ["https://example.com/product", "https://example.com/about"],
         )
+
+    def test_scrape_recursive_crawling_handles_internal_links_with_spaces(self):
+        from unittest.mock import patch
+
+        collector = WebCollector()
+
+        main_content = (
+            "# Main Page\n\n"
+            "See the [business model](/Modelo de negocio/03_01_01_Modelo de Negocio_beCAUCE.html).\n" * 6
+        )
+        encoded_subpage = "https://example.com/Modelo%20de%20negocio/03_01_01_Modelo%20de%20Negocio_beCAUCE.html"
+        subpage_content = "# Modelo de negocio\n\nTexto de prueba." * 8
+
+        def mock_run_firecrawl(url):
+            if url == "https://example.com":
+                return {"content": main_content, "html": "<html></html>"}
+            if url == encoded_subpage:
+                return {"content": subpage_content, "html": "<html></html>"}
+            return {"error": f"unexpected url: {url}"}
+
+        with patch.object(WebCollector, "_run_firecrawl", side_effect=mock_run_firecrawl):
+            data = collector.scrape("https://example.com", crawl_subpages=True)
+
+        self.assertIn("Subpage: https://example.com/Modelo%20de%20negocio/03_01_01_Modelo%20de%20Negocio_beCAUCE.html", data.markdown_content)
+        self.assertIn("Texto de prueba", data.markdown_content)
 
 
     def test_dismiss_cookie_banners_playwright(self):

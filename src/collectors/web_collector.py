@@ -13,7 +13,7 @@ import json
 import time
 from dataclasses import dataclass
 from html import unescape
-from urllib.parse import urlparse
+from urllib.parse import quote, urljoin, urlparse, urlsplit, urlunsplit
 from urllib.error import URLError
 from urllib.request import Request, urlopen
 
@@ -104,6 +104,20 @@ class WebCollector:
 
     def __init__(self, api_key: str = None):
         self.api_key = api_key
+
+    @staticmethod
+    def _normalize_request_url(url: str) -> str:
+        """Percent-encode unsafe characters before issuing an HTTP request."""
+        raw = str(url or "").strip()
+        if not raw:
+            return raw
+        parts = urlsplit(raw)
+        if not parts.scheme or not parts.netloc:
+            return raw
+        path = quote(parts.path or "", safe="/:%@-._~!$&'()*+,;=")
+        query = quote(parts.query or "", safe="=&?/:@-._~!$&'()*+,;=%[]")
+        fragment = quote(parts.fragment or "", safe="=&?/:@-._~!$&'()*+,;=%[]")
+        return urlunsplit((parts.scheme, parts.netloc, path, query, fragment))
 
     def _run_firecrawl(self, url: str) -> dict:
         """Scrape URL via Firecrawl Python SDK. Returns legacy {content, raw, error} shape."""
@@ -255,6 +269,7 @@ class WebCollector:
 
     def _fetch_html_fallback(self, url: str) -> tuple[str, str]:
         """Fetch raw HTML directly when Firecrawl returns no useful markdown."""
+        url = self._normalize_request_url(url)
         request = Request(
             url,
             headers={
@@ -271,6 +286,7 @@ class WebCollector:
 
     def _fetch_browser_fallback(self, url: str) -> tuple[dict, str]:
         """Render a page in Chromium when static fetches cannot see useful text."""
+        url = self._normalize_request_url(url)
         try:
             from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
             from playwright.sync_api import sync_playwright
@@ -497,8 +513,6 @@ class WebCollector:
         if not base_url:
             return []
 
-        from urllib.parse import urljoin
-
         parsed_base = urlparse(base_url)
         base_domain = parsed_base.netloc.lower()
         if base_domain.startswith("www."):
@@ -517,7 +531,7 @@ class WebCollector:
             if not link or link.startswith("#") or link.startswith("javascript:") or link.startswith("mailto:") or link.startswith("tel:"):
                 continue
 
-            absolute_url = urljoin(base_url, link)
+            absolute_url = self._normalize_request_url(urljoin(base_url, link))
 
             try:
                 parsed_link = urlparse(absolute_url)
@@ -687,6 +701,7 @@ class WebCollector:
 
     def scrape(self, url: str, crawl_subpages: bool = True) -> WebData:
         """Scrape a website and return structured data."""
+        url = self._normalize_request_url(url)
         data = WebData(url=url)
 
         # Basic scrape

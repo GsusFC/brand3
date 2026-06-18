@@ -95,7 +95,7 @@ def _collect_dated_mentions(exa: ExaData | None) -> list[tuple[datetime, str, st
             continue
         url = getattr(r, "url", "") or ""
         text = _exa_result_content(r)
-        if not text:
+        if not _has_material_text(text):
             continue
         out.append((d, url, text.strip()))
     return out
@@ -114,6 +114,11 @@ def _exa_result_content(result) -> str:
 
 def _snippet(text: str, limit: int = 240) -> str:
     return " ".join(str(text or "").split())[:limit]
+
+
+def _has_material_text(text: str) -> bool:
+    normalized = " ".join(str(text or "").split())
+    return any(char.isalnum() for char in normalized)
 
 
 class VitalidadExtractor:

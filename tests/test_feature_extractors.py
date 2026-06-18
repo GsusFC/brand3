@@ -1268,6 +1268,28 @@ class VitalidadExtractorTests(unittest.TestCase):
         self.assertEqual(features["content_recency"].source, "none")
         self.assertEqual(features["content_recency"].raw_value["reason"], "no_dates_found")
 
+    def test_dated_mentions_with_placeholder_content_are_not_used_as_evidence(self):
+        from datetime import datetime, timedelta
+
+        exa = ExaData(
+            brand_name="Test",
+            mentions=[
+                ExaResult(
+                    url="https://example.com/placeholder",
+                    title="Placeholder",
+                    text="-",
+                    summary="",
+                    highlights=[],
+                    published_date=(datetime.now() - timedelta(days=5)).strftime("%Y-%m-%d"),
+                )
+            ],
+        )
+
+        features = self.extractor.extract(exa=exa)
+
+        self.assertEqual(features["content_recency"].source, "none")
+        self.assertEqual(features["content_recency"].raw_value["reason"], "no_dates_found")
+
     def test_publication_cadence_fewer_than_2_dates_is_low(self):
         import json
         exa = self._exa_with_dates([15])

@@ -1273,18 +1273,11 @@ def test_batch_report_distinguishes_quote_plus_alias_manual_audit() -> None:
     assert report["intervention_packets"][0]["automation_lane"] == "contract_can_auto_clear"
     assert report["intervention_packets"][0]["closure_criteria"]
     assert report["intervention_packets"][0]["checklist"]
-    assert report["work_orders"][0]["work_order_id"] == "workorder:none:4207"
-    assert report["work_orders"][0]["expected_output"] == "candidate"
-    assert report["work_orders"][0]["requires_recompute"] is False
-    assert report["work_orders"][0]["checklist"]
-    assert report["work_orders"][0]["allowed_decisions"] == ["no_action_required"]
-    assert report["work_orders"][0]["decision_required_fields"] == ["decision"]
-    assert report["work_orders"][0]["decision_record_template"]["work_order_id"] == "workorder:none:4207"
-    assert report["adjudication_intake"]["status"] == "pending_decisions"
-    assert report["adjudication_intake"]["pending_count"] == 1
-    assert report["adjudication_intake"]["expected_output_counts"]["candidate"] == 1
-    assert report["adjudication_intake"]["records"][0]["status"] == "pending_decision"
-    assert report["adjudication_intake"]["records"][0]["record"]["work_order_id"] == "workorder:none:4207"
+    assert report["work_orders"] == []
+    assert report["adjudication_intake"]["status"] == "empty"
+    assert report["adjudication_intake"]["pending_count"] == 0
+    assert report["adjudication_intake"]["expected_output_counts"] == {}
+    assert report["adjudication_intake"]["records"] == []
 
 
 def test_batch_report_projects_contract_effect_on_review_required_runs() -> None:

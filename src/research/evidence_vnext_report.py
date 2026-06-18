@@ -1770,6 +1770,8 @@ def _dominant_count_key(counts: dict[str, int]) -> str:
 def _work_orders(intervention_packets: list[dict[str, Any]]) -> list[dict[str, Any]]:
     orders: list[dict[str, Any]] = []
     for packet in intervention_packets:
+        if not packet.get("human_required"):
+            continue
         for run in packet.get("runs") or []:
             run_id = run.get("run_id")
             if run_id is None:

@@ -763,7 +763,7 @@ def test_vnext_semantic_shadow_separates_material_and_weak_accepted_evidence() -
     assert weak[0]["gate_status"] == "accepted"
 
 
-def test_vnext_semantic_shadow_marks_social_profile_placeholders_as_weak() -> None:
+def test_vnext_semantic_shadow_marks_social_profile_placeholders_as_wrong_entity() -> None:
     packet = EvidenceVNextPacket(
         version="test",
         run_id=4201,
@@ -787,8 +787,9 @@ def test_vnext_semantic_shadow_marks_social_profile_placeholders_as_weak() -> No
     semantic = build_evidence_vnext_semantic_assessment(packet)
 
     row = semantic["assessments"][0]
-    assert row["semantic_class"] == "tangential"
-    assert row["materiality"] == "low"
+    assert row["semantic_class"] == "wrong_entity"
+    assert row["entity_fit"] == "wrong_entity"
+    assert row["materiality"] == "not_applicable"
     assert row["reason_codes"] == ["social_profile_placeholder_only"]
     assert semantic["summary"]["accepted_material_count"] == 0
     assert semantic["summary"]["accepted_weak_count"] == 1

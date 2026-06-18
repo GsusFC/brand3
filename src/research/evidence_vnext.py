@@ -98,6 +98,7 @@ SEMANTIC_MATERIAL_CLASSES = {
 SEMANTIC_WEAK_CLASSES = {
     "competitor_comparison",
     "tangential",
+    "wrong_entity",
 }
 
 SEMANTIC_BRAND_TOKEN_STOPWORDS = {
@@ -964,9 +965,9 @@ def _semantic_assessment_for_observation(
     if _is_placeholder_social_profile(item):
         return _semantic_result(
             item,
-            semantic_class="tangential",
-            entity_fit=entity_fit,
-            materiality="low",
+            semantic_class="wrong_entity",
+            entity_fit="wrong_entity",
+            materiality="not_applicable",
             confidence=0.9,
             reason_codes=("social_profile_placeholder_only",),
         )

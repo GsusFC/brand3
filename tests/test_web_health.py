@@ -58,10 +58,9 @@ class HealthTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         payload = r.json()
         self.assertEqual(payload["status"], "ok")
-        self.assertEqual(payload["db"], "ok")
         self.assertIsInstance(payload["queue_size"], int)
         self.assertIsInstance(payload["running"], int)
-        self.assertIn("last_analysis_completed_at", payload)
+        self.assertEqual(set(payload.keys()), {"status", "queue_size", "running"})
 
     def test_health_fields_survive_serialization(self):
         r = self.client.get("/_health")
@@ -70,25 +69,18 @@ class HealthTests(unittest.TestCase):
         payload_b = self.client.get("/_health").json()
         self.assertEqual(set(payload_a.keys()), set(payload_b.keys()))
 
-    def test_health_db_read_runs_in_threadpool(self):
+    def test_health_does_not_depend_on_db_probe(self):
         from unittest.mock import patch
 
         from web.routes import health as health_route
 
-        calls = []
-
-        async def fake_to_thread(func, *args, **kwargs):
-            calls.append((func, args, kwargs))
-            return func(*args, **kwargs)
-
-        with patch.object(health_route.asyncio, "to_thread", fake_to_thread):
+        with patch.object(health_route, "get_queue") as get_queue:
+            get_queue.return_value.stats.return_value.queued = 3
+            get_queue.return_value.stats.return_value.running = 1
             r = self.client.get("/_health")
 
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(len(calls), 1)
-        self.assertIs(calls[0][0], health_route._health_db_status)
-        self.assertEqual(calls[0][1], ())
-        self.assertEqual(calls[0][2], {})
+        self.assertEqual(r.json(), {"status": "ok", "queue_size": 3, "running": 1})
 
 
 class JsonFormatterTests(unittest.TestCase):

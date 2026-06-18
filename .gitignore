@@ -27,6 +27,7 @@ env/
 
 # Local data and generated outputs
 data/
+out/
 output/
 scratch/
 
@@ -73,3 +74,4 @@ graphify-out/.graphify_root
 # policy is finalized in docs/PR review.
 
 _local_session_archive/
+.claude/

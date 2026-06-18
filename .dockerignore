@@ -1,12 +1,22 @@
 .git
 .gitignore
 .venv
+.env
+.env.*
+.claude
 __pycache__
 *.py[cod]
 .pytest_cache
 .mypy_cache
 .ruff_cache
 .DS_Store
+brand3.db
+brand3.db-*
+*.sqlite
+*.sqlite3
+*.sqlite3-*
+*.db
+*.db-*
 
 # Local runtime state. Production uses the mounted /data volume.
 data/*.db
@@ -28,3 +38,4 @@ examples/visual_signature/screenshots
 # Local editor/tooling noise.
 .codex
 .agents
+.mcp.json

@@ -59,6 +59,28 @@ def _llm_http_request_once(url: str, payload: bytes, headers: dict[str, str], ti
         return reason, str(exc)
 
 
+def _gemini_http_request_once(url: str, payload: bytes, headers: dict[str, str], timeout_seconds: int | None) -> tuple[str, str]:
+    req = urllib.request.Request(url, data=payload, headers=headers)
+    try:
+        with urllib.request.urlopen(req, timeout=timeout_seconds) as resp:
+            data = json.loads(resp.read())
+            candidates = data.get("candidates") if isinstance(data, dict) else None
+            if not isinstance(candidates, list) or not candidates:
+                return "error", "gemini_response_missing_candidates"
+            content = candidates[0].get("content") if isinstance(candidates[0], dict) else None
+            parts = content.get("parts") if isinstance(content, dict) else None
+            if not isinstance(parts, list):
+                return "error", "gemini_response_missing_parts"
+            text_parts = [str(part.get("text") or "") for part in parts if isinstance(part, dict) and part.get("text")]
+            return "ok", "".join(text_parts)
+    except urllib.error.HTTPError as exc:
+        error_body = exc.read().decode("utf-8", errors="replace")[:500]
+        return "http_error", f"HTTP {exc.code}: {error_body}"
+    except Exception as exc:
+        reason = "timeout" if _looks_like_timeout(exc) else "error"
+        return reason, str(exc)
+
+
 def _llm_http_worker(output_queue, url: str, payload: bytes, headers: dict[str, str], timeout_seconds: int) -> None:
     output_queue.put(_llm_http_request_once(url, payload, headers, timeout_seconds))
 
@@ -73,6 +95,18 @@ def _run_llm_http_call(
     if timeout_seconds <= 0:
         return _llm_http_request_once(url, payload, headers, None)
     return _llm_http_request_once(url, payload, headers, timeout_seconds)
+
+
+def _run_gemini_http_call(
+    *,
+    url: str,
+    payload: bytes,
+    headers: dict[str, str],
+    timeout_seconds: int,
+) -> tuple[str, str]:
+    if timeout_seconds <= 0:
+        return _gemini_http_request_once(url, payload, headers, None)
+    return _gemini_http_request_once(url, payload, headers, timeout_seconds)
 
 
 def llm_failure_reason(llm, default: str) -> str:
@@ -137,6 +171,18 @@ def _transport_debug_enabled() -> bool:
 
 def _chat_completions_url(base_url: str) -> str:
     return f"{base_url.rstrip('/')}/chat/completions"
+
+
+def _gemini_native_base_url(base_url: str) -> str:
+    cleaned = (base_url or "").rstrip("/")
+    if cleaned.endswith("/openai"):
+        cleaned = cleaned[: -len("/openai")]
+    return cleaned
+
+
+def _gemini_generate_content_url(base_url: str, model: str) -> str:
+    encoded_model = urllib.parse.quote(model, safe="")
+    return f"{_gemini_native_base_url(base_url)}/models/{encoded_model}:generateContent"
 
 
 def _redacted_headers(headers: dict[str, str]) -> dict[str, str]:
@@ -306,6 +352,12 @@ class LLMAnalyzer:
         self.cache_hits = 0
         self.cache_misses = 0
         self.cache_writes = 0
+        self.use_cache = os.environ.get("BRAND3_LLM_CACHE_ENABLED", "true").strip().lower() not in {
+            "0",
+            "false",
+            "no",
+            "off",
+        }
         self.timeout_seconds = LLM_CALL_TIMEOUT_SECONDS
         self.last_failure_reason: str | None = None
         self.last_raw_response: str | None = None
@@ -362,6 +414,8 @@ class LLMAnalyzer:
         return digest
 
     def _cache_get(self, cache_key: str, response_type: str):
+        if not self.use_cache:
+            return None
         try:
             from src.storage.sqlite_store import SQLiteStore
             store = SQLiteStore(BRAND3_DB_PATH)
@@ -379,6 +433,8 @@ class LLMAnalyzer:
         return cached.get("response_text") or ""
 
     def _cache_save(self, cache_key: str, response_type: str, value) -> None:
+        if not self.use_cache:
+            return
         if value in ("", None, {}):
             return
         try:
@@ -595,6 +651,109 @@ class LLMAnalyzer:
             return parsed
         except json.JSONDecodeError as e:
             print(f"  LLM JSON parse failed: {e}; got: {content[:200]}")
+            self._record_failure(
+                "llm_error",
+                str(e),
+                error_type="json_parse_error",
+                json_parse_error=True,
+            )
+            return {}
+
+    def _call_json_gemini_native(
+        self,
+        system: str,
+        user: str,
+        max_tokens: int = 8000,
+        *,
+        json_schema: dict[str, Any],
+        schema_name: str | None = None,
+        timeout_seconds: int | None = None,
+    ) -> dict:
+        """Call Gemini's native structured output API for JSON Schema responses."""
+        if not self.api_key:
+            return {}
+
+        cache_key = self._cache_key(
+            "json_gemini_native",
+            system,
+            user,
+            max_tokens,
+            schema_name=schema_name or "brand3_json_response",
+        )
+        cached = self._cache_get(cache_key, "json")
+        if cached is not None:
+            self._clear_failure()
+            return cached
+        self.cache_misses += 1
+
+        body = {
+            "systemInstruction": {"parts": [{"text": system}]},
+            "contents": [{"role": "user", "parts": [{"text": user}]}],
+            "generationConfig": {
+                "temperature": 0.0,
+                "maxOutputTokens": max_tokens,
+                "responseFormat": {
+                    "text": {
+                        "mimeType": "APPLICATION_JSON",
+                        "schema": json_schema,
+                    }
+                },
+            },
+        }
+        effective_timeout = self.timeout_seconds if timeout_seconds is None else int(timeout_seconds)
+        final_url = _gemini_generate_content_url(self.base_url, self.model)
+        headers = {
+            "Content-Type": "application/json",
+            "x-goog-api-key": self.api_key,
+        }
+        payload = json.dumps(body).encode("utf-8")
+        status, content = _run_gemini_http_call(
+            url=final_url,
+            payload=payload,
+            headers=headers,
+            timeout_seconds=effective_timeout,
+        )
+        if status != "ok":
+            if status == "timeout":
+                reason = "llm_timeout"
+            elif status == "transport_error" or _looks_like_transport_error(content):
+                reason = "transport_error"
+            elif status == "http_error" or (content or "").startswith("HTTP "):
+                reason = "provider_http_error"
+            else:
+                reason = "llm_error"
+            self._record_failure(reason, content)
+            self.last_raw_response = content
+            print(f"  Gemini native JSON call failed: {content}")
+            return {}
+
+        if not content:
+            self._record_failure(
+                "llm_error",
+                "empty_provider_response",
+                error_type="empty_response",
+                response_empty=True,
+            )
+            self.last_raw_response = ""
+            return {}
+
+        content = content.strip()
+        self.last_raw_response = content
+        try:
+            parsed = _parse_json_content(content)
+            schema_error = _validate_json_schema(parsed, json_schema)
+            if schema_error:
+                self._record_failure(
+                    "schema_validation_error",
+                    schema_error,
+                    error_type="schema_validation_error",
+                )
+                return {}
+            self._cache_save(cache_key, "json", parsed)
+            self._clear_failure()
+            return parsed
+        except json.JSONDecodeError as e:
+            print(f"  Gemini native JSON parse failed: {e}; got: {content[:200]}")
             self._record_failure(
                 "llm_error",
                 str(e),

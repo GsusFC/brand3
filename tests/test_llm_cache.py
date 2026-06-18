@@ -90,6 +90,28 @@ class LLMCacheTests(unittest.TestCase):
             self.assertEqual(second.cache_hits, 1)
             self.assertEqual(first.cache_writes, 1)
 
+    def test_call_json_can_disable_persistent_cache(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            first = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+            second = LLMAnalyzer(api_key="key", base_url="https://llm.test", model="model-a")
+            first.use_cache = False
+            second.use_cache = False
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_llm_http_call",
+                    side_effect=[
+                        ("ok", json.dumps({"score": 88})),
+                        ("ok", json.dumps({"score": 77})),
+                    ],
+                ) as llm_http:
+                    self.assertEqual(first._call_json("system", "user"), {"score": 88})
+                    self.assertEqual(second._call_json("system", "user"), {"score": 77})
+
+            self.assertEqual(llm_http.call_count, 2)
+            self.assertEqual(first.cache_writes, 0)
+            self.assertEqual(second.cache_hits, 0)
+
     def test_call_text_reuses_persistent_cache(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = str(Path(tmpdir) / "brand3.sqlite3")
@@ -361,6 +383,44 @@ class LLMCacheTests(unittest.TestCase):
         self.assertEqual(body["response_format"]["json_schema"]["name"], "score_schema")
         self.assertTrue(body["response_format"]["json_schema"]["strict"])
         self.assertEqual(body["response_format"]["json_schema"]["schema"], schema)
+
+    def test_call_json_gemini_native_sends_response_format_schema(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            db_path = str(Path(tmpdir) / "brand3.sqlite3")
+            llm = LLMAnalyzer(
+                api_key="key",
+                base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+                model="gemini-3.5-flash",
+            )
+            schema = {
+                "type": "object",
+                "additionalProperties": False,
+                "required": ["score"],
+                "properties": {"score": {"type": "number"}},
+            }
+
+            with patch("src.features.llm_analyzer.BRAND3_DB_PATH", db_path):
+                with patch(
+                    "src.features.llm_analyzer._run_gemini_http_call",
+                    return_value=("ok", json.dumps({"score": 88})),
+                ) as llm_http:
+                    result = llm._call_json_gemini_native(
+                        "system",
+                        "user",
+                        json_schema=schema,
+                        schema_name="score_schema",
+                    )
+
+        self.assertEqual(result, {"score": 88})
+        self.assertEqual(
+            llm_http.call_args.kwargs["url"],
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent",
+        )
+        body = json.loads(llm_http.call_args.kwargs["payload"].decode("utf-8"))
+        self.assertEqual(body["systemInstruction"]["parts"][0]["text"], "system")
+        self.assertEqual(body["generationConfig"]["temperature"], 0.0)
+        self.assertEqual(body["generationConfig"]["responseFormat"]["text"]["mimeType"], "APPLICATION_JSON")
+        self.assertEqual(body["generationConfig"]["responseFormat"]["text"]["schema"], schema)
 
     def test_call_json_can_override_timeout_per_call(self):
         with tempfile.TemporaryDirectory() as tmpdir:

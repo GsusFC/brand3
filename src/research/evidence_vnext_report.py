@@ -38,6 +38,23 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
         "by_surface": {},
         "by_feature": {},
     }
+    semantic_evidence: dict[str, Any] = {
+        "classifier": "none",
+        "accepted_material": 0,
+        "accepted_weak": 0,
+        "semantic_class_counts": {},
+        "materiality_counts": {},
+        "entity_fit_counts": {},
+        "weak_examples": [],
+    }
+    semantic_llm: dict[str, Any] = {
+        "classifier": "llm_shadow_v0",
+        "status_counts": {},
+        "models": {},
+        "semantic_class_disagreement_count": 0,
+        "materiality_disagreement_count": 0,
+        "rows": [],
+    }
     promotion_counts: dict[str, int] = {}
     manual_audit_counts: dict[str, int] = {"required": 0, "not_required": 0}
     manual_audit_verdict_counts: dict[str, int] = {}
@@ -143,6 +160,19 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
             target=acquisition_contract_exclusions,
             payload=result.get("vnext_acquisition_contracts") if isinstance(result.get("vnext_acquisition_contracts"), dict) else {},
         )
+        _accumulate_semantic_evidence(
+            target=semantic_evidence,
+            payload=result.get("vnext_semantic_assessment") if isinstance(result.get("vnext_semantic_assessment"), dict) else {},
+            run_id=comparison.get("run_id"),
+            brand_name=comparison.get("brand_name") or "",
+        )
+        _accumulate_semantic_llm_comparison(
+            target=semantic_llm,
+            heuristic=result.get("vnext_semantic_assessment") if isinstance(result.get("vnext_semantic_assessment"), dict) else {},
+            llm=result.get("vnext_semantic_llm_assessment") if isinstance(result.get("vnext_semantic_llm_assessment"), dict) else {},
+            run_id=comparison.get("run_id"),
+            brand_name=comparison.get("brand_name") or "",
+        )
 
         rows.append(
             {
@@ -213,6 +243,8 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
         "rejected_examples_by_reason": rejected_examples,
         "acquisition_matrix": acquisition_matrix,
         "acquisition_contract_exclusions": acquisition_contract_exclusions,
+        "semantic_evidence": semantic_evidence,
+        "semantic_llm": semantic_llm,
         "provider_acquisition_contracts": provider_acquisition_contracts,
         "provider_contract_backlog": provider_contract_backlog,
         "manual_audit_queue": manual_audit_queue,
@@ -276,6 +308,50 @@ def render_batch_report_markdown(report: dict[str, Any]) -> str:
             )
     else:
         lines.append("- None")
+    semantic = report.get("semantic_evidence") or {}
+    lines.extend(["", "## Semantic Evidence Shadow", ""])
+    lines.append(f"- Classifier: `{semantic.get('classifier') or 'none'}`")
+    lines.append(f"- Accepted material: `{semantic.get('accepted_material', 0)}`")
+    lines.append(f"- Accepted weak: `{semantic.get('accepted_weak', 0)}`")
+    class_counts = semantic.get("semantic_class_counts") or {}
+    if class_counts:
+        lines.extend(["", "| Semantic class | Count |", "| --- | ---: |"])
+        for key, value in class_counts.items():
+            lines.append(f"| {key} | {value} |")
+    weak_examples = semantic.get("weak_examples") or []
+    if weak_examples:
+        lines.extend(["", "Weak accepted examples:"])
+        for item in weak_examples[:10]:
+            lines.append(
+                "- run `{run_id}` `{brand_name}` · `{semantic_class}` `{url}`: {text_preview}".format(
+                    run_id=item.get("run_id"),
+                    brand_name=item.get("brand_name") or "",
+                    semantic_class=item.get("semantic_class") or "",
+                    url=item.get("url") or "-",
+                    text_preview=item.get("text_preview") or "-",
+                )
+            )
+    semantic_llm = report.get("semantic_llm") or {}
+    lines.extend(["", "## Semantic LLM Shadow", ""])
+    lines.append(f"- Status counts: `{semantic_llm.get('status_counts') or {}}`")
+    lines.append(f"- Models: `{semantic_llm.get('models') or {}}`")
+    lines.append(
+        f"- Semantic class disagreements: `{semantic_llm.get('semantic_class_disagreement_count', 0)}`"
+    )
+    lines.append(
+        f"- Materiality disagreements: `{semantic_llm.get('materiality_disagreement_count', 0)}`"
+    )
+    for item in (semantic_llm.get("rows") or [])[:10]:
+        lines.append(
+            "- run `{run_id}` `{brand_name}` · status `{status}` · model `{model}` · class_delta `{class_delta}` · materiality_delta `{materiality_delta}`".format(
+                run_id=item.get("run_id"),
+                brand_name=item.get("brand_name") or "",
+                status=item.get("status") or "",
+                model=item.get("model") or "",
+                class_delta=item.get("semantic_class_disagreement_count") or 0,
+                materiality_delta=item.get("materiality_disagreement_count") or 0,
+            )
+        )
     exclusions = report.get("acquisition_contract_exclusions") or {}
     lines.extend(["", "## Acquisition Contract Exclusions", ""])
     lines.append(f"- Shadow exclusions: `{exclusions.get('total', 0)}`")
@@ -1832,6 +1908,121 @@ def _accumulate_acquisition_contract_exclusions(*, target: dict[str, Any], paylo
         for key, value in counts.items():
             bucket[str(key)] = int(bucket.get(str(key)) or 0) + int(value or 0)
         target[target_key] = dict(sorted(bucket.items()))
+
+
+def _accumulate_semantic_evidence(
+    *,
+    target: dict[str, Any],
+    payload: dict[str, Any],
+    run_id: int | None,
+    brand_name: str,
+) -> None:
+    if not payload:
+        return
+    classifier = str(payload.get("classifier") or "")
+    if classifier:
+        target["classifier"] = classifier
+    summary = payload.get("summary") if isinstance(payload.get("summary"), dict) else {}
+    target["accepted_material"] = int(target.get("accepted_material") or 0) + int(
+        summary.get("accepted_material_count") or 0
+    )
+    target["accepted_weak"] = int(target.get("accepted_weak") or 0) + int(summary.get("accepted_weak_count") or 0)
+    for source_key, target_key in (
+        ("semantic_class_counts", "semantic_class_counts"),
+        ("materiality_counts", "materiality_counts"),
+        ("entity_fit_counts", "entity_fit_counts"),
+    ):
+        counts = summary.get(source_key) if isinstance(summary.get(source_key), dict) else {}
+        bucket = target.setdefault(target_key, {})
+        for key, value in counts.items():
+            bucket[str(key)] = int(bucket.get(str(key)) or 0) + int(value or 0)
+        target[target_key] = dict(sorted(bucket.items()))
+    weak_examples = target.setdefault("weak_examples", [])
+    for item in payload.get("assessments") or []:
+        if not isinstance(item, dict):
+            continue
+        if item.get("gate_status") != "accepted" or item.get("materiality") != "low":
+            continue
+        weak_examples.append(
+            {
+                "run_id": run_id,
+                "brand_name": brand_name,
+                "semantic_class": item.get("semantic_class") or "",
+                "entity_fit": item.get("entity_fit") or "",
+                "url": item.get("url") or "",
+                "text_preview": item.get("text_preview") or "",
+                "reason_codes": list(item.get("reason_codes") or []),
+            }
+        )
+    target["weak_examples"] = weak_examples[:20]
+
+
+def _accumulate_semantic_llm_comparison(
+    *,
+    target: dict[str, Any],
+    heuristic: dict[str, Any],
+    llm: dict[str, Any],
+    run_id: int | None,
+    brand_name: str,
+) -> None:
+    status = str(llm.get("status") or "missing")
+    status_counts = target.setdefault("status_counts", {})
+    status_counts[status] = int(status_counts.get(status) or 0) + 1
+    target["status_counts"] = dict(sorted(status_counts.items()))
+    model = str(llm.get("model") or "")
+    if model:
+        models = target.setdefault("models", {})
+        models[model] = int(models.get(model) or 0) + 1
+        target["models"] = dict(sorted(models.items()))
+
+    heuristic_by_id = {
+        str(item.get("observation_id") or ""): item
+        for item in heuristic.get("assessments") or []
+        if isinstance(item, dict)
+    }
+    llm_rows = [item for item in llm.get("assessments") or [] if isinstance(item, dict)]
+    semantic_disagreements = 0
+    materiality_disagreements = 0
+    examples: list[dict[str, Any]] = []
+    for item in llm_rows:
+        observation_id = str(item.get("observation_id") or "")
+        baseline = heuristic_by_id.get(observation_id)
+        if not baseline:
+            continue
+        class_changed = item.get("semantic_class") != baseline.get("semantic_class")
+        materiality_changed = item.get("materiality") != baseline.get("materiality")
+        if class_changed:
+            semantic_disagreements += 1
+        if materiality_changed:
+            materiality_disagreements += 1
+        if class_changed or materiality_changed:
+            examples.append(
+                {
+                    "observation_id": observation_id,
+                    "heuristic_class": baseline.get("semantic_class") or "",
+                    "llm_class": item.get("semantic_class") or "",
+                    "heuristic_materiality": baseline.get("materiality") or "",
+                    "llm_materiality": item.get("materiality") or "",
+                    "llm_reason_codes": list(item.get("reason_codes") or []),
+                }
+            )
+    target["semantic_class_disagreement_count"] = int(target.get("semantic_class_disagreement_count") or 0) + semantic_disagreements
+    target["materiality_disagreement_count"] = int(target.get("materiality_disagreement_count") or 0) + materiality_disagreements
+    rows = target.setdefault("rows", [])
+    rows.append(
+        {
+            "run_id": run_id,
+            "brand_name": brand_name,
+            "status": status,
+            "model": model,
+            "assessment_count": len(llm_rows),
+            "semantic_class_disagreement_count": semantic_disagreements,
+            "materiality_disagreement_count": materiality_disagreements,
+            "examples": examples[:5],
+            "reason": llm.get("reason") or "",
+        }
+    )
+    target["rows"] = rows
 
 
 def _increment_acquisition_row(

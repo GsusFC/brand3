@@ -127,3 +127,270 @@ Generated artifacts:
 Promote `vnext_precision_plan` as the next Exa candidate for a larger shadow bakeoff, not for production rollout yet.
 
 The next experiment should add semantic labels on top of these same results. That classifier should not replace the deterministic evidence gate; it should score accepted candidates by materiality and entity fit so we can measure accepted-but-weak content separately from contract-invalid content.
+
+## Semantic Shadow Layer
+
+Implemented after the corrected harness rerun as `evidence_vnext_semantic_assessment_v0_1`.
+
+This is not a model classifier yet. It is a deterministic shadow classifier that runs after the evidence gate and keeps the same no-runtime-effect policy:
+
+- `runtime_effect=False`
+- `prompt_effect=False`
+- `model_effect=False`
+- classifier: `heuristic_shadow_v0`
+
+Purpose:
+
+1. Preserve Python contracts for admissibility: text, URL, source class, entity boundary, technical/internal rejection.
+2. Add a second measurement layer for accepted evidence quality.
+3. Split accepted evidence into material vs weak/tangential evidence before introducing an LLM classifier.
+
+Current semantic classes:
+
+- `owned_brand_evidence`
+- `customer_case`
+- `market_news`
+- `direct_brand_evidence`
+- `competitor_comparison`
+- `tangential`
+- `contract_blocked`
+
+Current materiality buckets:
+
+- `high`
+- `medium`
+- `low`
+- `not_applicable`
+
+The important metric is no longer just accepted rate. The next batch should report:
+
+- accepted count
+- accepted material count
+- accepted weak count
+- weak accepted examples
+- semantic class distribution
+- entity fit distribution
+
+This gives us a clean place to compare a future Gemini/OpenRouter structured-output classifier against the deterministic shadow classifier without changing evidence acquisition or production scoring.
+
+## LLM Shadow Classifier
+
+Implemented as `evidence_vnext_llm_semantic_assessment_v0_1`.
+
+Default state:
+
+- `BRAND3_EVIDENCE_LLM_CLASSIFIER_ENABLED=false`
+- `BRAND3_EVIDENCE_LLM_MODEL=gemini-3.5-flash`
+- classifier: `llm_shadow_v0`
+
+Runtime behavior:
+
+- Disabled by default.
+- Runs only after the deterministic evidence gate.
+- Uses the same accepted evidence observations as `heuristic_shadow_v0`.
+- Returns structured JSON under a closed schema.
+- Does not alter scoring, promotion, persisted canonical evidence, or prompt inputs.
+- Batch report compares LLM labels against heuristic labels via semantic-class and materiality disagreement counts.
+
+Operational interpretation:
+
+- `heuristic_shadow_v0` remains the baseline.
+- `llm_shadow_v0` is used to measure whether a model can reduce rule growth around entity fit and materiality.
+- Production promotion should only consider LLM classifier output after agreement/disagreement metrics are measured on a larger batch.
+
+### First Live Probe
+
+Command:
+
+```bash
+./.venv/bin/python scripts/evidence_llm_shadow.py --limit 3 --output-json out/evidence_vnext/llm_shadow_latest3.json --output-md out/evidence_vnext/llm_shadow_latest3.md
+```
+
+Result:
+
+| Run | Brand | LLM status | Model | Accepted | Heuristic material | LLM material | Class delta | Materiality delta |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 291 | www.becauce.com | ok | gemini-3.5-flash | 11 | 9 | 8 | 3 | 5 |
+| 288 | CAUCE | ok | gemini-3.5-flash | 5 | 3 | 4 | 2 | 3 |
+| 286 | guru-usa.com | ok | gemini-3.5-flash | 15 | 13 | 11 | 4 | 11 |
+
+Aggregate:
+
+- 3/3 runs returned `ok`.
+- Semantic class disagreements: 9.
+- Materiality disagreements: 19.
+
+Observed useful disagreements:
+
+- LLM demoted placeholder/profile-like evidence from `direct_brand_evidence` to `tangential`.
+- LLM flagged one CAUCE candidate as `wrong_entity`.
+- LLM sometimes promoted competitor/comparison evidence from low to medium materiality when it contained usable positioning or distance information.
+
+Interpretation:
+
+The first live probe supports keeping the LLM classifier. It is not merely echoing the heuristic; it finds materiality and entity-fit differences that are hard to encode with simple rules.
+
+### Retry Probe
+
+The first 10-run batch exposed model-output variability:
+
+- Initial 10-run result: 6 `ok`, 4 `schema_validation_error`.
+- Retrying an individual failed run later returned `ok`, so at least some failures were recoverable/transient.
+- Added `BRAND3_EVIDENCE_LLM_MAX_ATTEMPTS=2` for each classifier batch.
+- Added `attempt_count` tracking so latency/cost can be measured per run.
+
+Command:
+
+```bash
+./.venv/bin/python scripts/evidence_llm_shadow.py --limit 10 --output-json out/evidence_vnext/llm_shadow_latest10_attempts.json --output-md out/evidence_vnext/llm_shadow_latest10_attempts.md
+```
+
+Latest result after retry + attempt tracking:
+
+| Run | Brand | LLM status | Model | Accepted | Heuristic material | LLM material | Class delta | Materiality delta | Attempts |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 291 | www.becauce.com | ok | gemini-3.5-flash | 11 | 9 | 8 | 3 | 5 | 2 |
+| 288 | CAUCE | ok | gemini-3.5-flash | 5 | 3 | 4 | 2 | 3 | 1 |
+| 286 | guru-usa.com | ok | gemini-3.5-flash | 15 | 13 | 11 | 4 | 11 | 2 |
+| 285 | hermes-agent.nousresearch.com | ok | gemini-3.5-flash | 20 | 17 | 17 | 8 | 14 | 3 |
+| 284 | hermes-agent.nousresearch.com | ok | gemini-3.5-flash | 20 | 17 | 17 | 8 | 15 | 3 |
+| 283 | mistral.ai | ok | gemini-3.5-flash | 23 | 19 | 20 | 9 | 17 | 3 |
+| 282 | instantly.ai | ok | gemini-3.5-flash | 17 | 15 | 16 | 3 | 12 | 3 |
+| 279 | example.com | ok | gemini-3.5-flash | 8 | 6 | 4 | 4 | 8 | 1 |
+| 275 | example.com | ok | gemini-3.5-flash | 8 | 6 | 4 | 4 | 8 | 1 |
+| 264 | gurusup.com | ok | gemini-3.5-flash | 17 | 15 | 11 | 6 | 10 | 3 |
+
+Latest aggregate:
+
+- 10/10 runs returned `ok`.
+- Semantic class disagreements: 51.
+- Materiality disagreements: 103.
+- Runs with more than eight accepted observations required multiple classifier calls because the batch size is eight. This makes attempt tracking necessary before any asynchronous production use.
+
+Interpretation:
+
+The LLM classifier is useful but not ready as a synchronous production dependency. The correct near-term role is offline/asynchronous shadow classification with Python enforcing schema, retries, and hard failure isolation.
+
+### Curated Real-Brand Probe
+
+The automatic distinct-brand selector found duplicated and synthetic recent runs. For a cleaner brand comparison, this probe used explicit recent real-brand run IDs and excluded `example.com` plus the diagnostic `LangChain exa parallel timing` run.
+
+Command:
+
+```bash
+./.venv/bin/python scripts/evidence_llm_shadow.py 291 286 285 283 282 264 263 248 231 228 --output-json out/evidence_vnext/llm_shadow_curated_real10.json --output-md out/evidence_vnext/llm_shadow_curated_real10.md
+```
+
+Result:
+
+| Run | Brand | LLM status | Model | Accepted | Heuristic material | LLM material | Class delta | Materiality delta | Attempts |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 291 | www.becauce.com | ok | gemini-3.5-flash | 11 | 9 | 8 | 3 | 5 | 2 |
+| 286 | guru-usa.com | ok | gemini-3.5-flash | 15 | 13 | 11 | 4 | 11 | 2 |
+| 285 | hermes-agent.nousresearch.com | ok | gemini-3.5-flash | 20 | 17 | 17 | 8 | 14 | 3 |
+| 283 | mistral.ai | ok | gemini-3.5-flash | 23 | 19 | 20 | 9 | 17 | 3 |
+| 282 | instantly.ai | ok | gemini-3.5-flash | 17 | 15 | 16 | 3 | 12 | 3 |
+| 264 | gurusup.com | ok | gemini-3.5-flash | 17 | 15 | 11 | 6 | 10 | 3 |
+| 263 | www.archetype.fund | ok | gemini-3.5-flash | 18 | 16 | 15 | 6 | 7 | 3 |
+| 248 | www.lemlist.com | ok | gemini-3.5-flash | 4 | 4 | 1 | 3 | 3 | 1 |
+| 231 | mirroringforiphone.com | ok | gemini-3.5-flash | 10 | 8 | 6 | 4 | 6 | 2 |
+| 228 | blinka.co | error | gemini-3.5-flash | 15 | 9 | 0 | 0 | 0 | 4 |
+
+Follow-up:
+
+```bash
+./.venv/bin/python scripts/evidence_llm_shadow.py 228 --output-json out/evidence_vnext/llm_shadow_blinka_probe.json --output-md out/evidence_vnext/llm_shadow_blinka_probe.md
+```
+
+`blinka.co` returned `ok` when isolated: heuristic material `9`, LLM material `7`, class delta `9`, materiality delta `8`, attempts `2`.
+
+Interpretation:
+
+The curated probe keeps the same conclusion: Gemini 3.5 Flash provides useful semantic disagreement signals, especially materiality demotions, but structured-output variability remains real. The next production-safe step is not to put the model in the synchronous scanner path; it is to keep collecting shadow metrics, improve corpus selection, and only later decide whether LLM labels can feed a non-blocking review layer.
+
+### Native Structured Output + Compact Schema Probe
+
+The first Gemini native structured-output attempt used a long schema with human-readable field names. It was not an improvement: after correcting the REST enum value from `application/json` to `APPLICATION_JSON`, the long schema still produced timeouts and truncated JSON in larger runs.
+
+The second native attempt changed two things:
+
+- Reduced `BRAND3_EVIDENCE_LLM_BATCH_SIZE` from `8` to `4`.
+- Changed the model-facing schema to compact fields: `items[].id`, `items[].c`, `items[].e`, `items[].m`, `items[].conf`, `items[].r`.
+
+Brand3 still normalizes the output back to full internal fields:
+
+- `observation_id`
+- `semantic_class`
+- `entity_fit`
+- `materiality`
+- `confidence`
+- `reason_codes`
+
+Command:
+
+```bash
+./.venv/bin/python scripts/evidence_llm_shadow.py 291 286 285 283 282 264 263 248 231 228 --output-json out/evidence_vnext/llm_shadow_curated_real10_native_compact.json --output-md out/evidence_vnext/llm_shadow_curated_real10_native_compact.md
+```
+
+Result:
+
+| Run | Brand | LLM status | Model | Accepted | Heuristic material | LLM material | Class delta | Materiality delta | Attempts |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| 291 | www.becauce.com | ok | gemini-3.5-flash | 11 | 9 | 6 | 5 | 5 | 3 |
+| 286 | guru-usa.com | ok | gemini-3.5-flash | 15 | 13 | 13 | 4 | 9 | 4 |
+| 285 | hermes-agent.nousresearch.com | ok | gemini-3.5-flash | 20 | 17 | 16 | 8 | 8 | 5 |
+| 283 | mistral.ai | ok | gemini-3.5-flash | 23 | 19 | 20 | 10 | 16 | 6 |
+| 282 | instantly.ai | ok | gemini-3.5-flash | 17 | 15 | 17 | 3 | 12 | 6 |
+| 264 | gurusup.com | ok | gemini-3.5-flash | 17 | 15 | 11 | 5 | 10 | 5 |
+| 263 | www.archetype.fund | ok | gemini-3.5-flash | 18 | 16 | 15 | 6 | 9 | 5 |
+| 248 | www.lemlist.com | ok | gemini-3.5-flash | 4 | 4 | 1 | 3 | 3 | 1 |
+| 231 | mirroringforiphone.com | ok | gemini-3.5-flash | 10 | 8 | 6 | 4 | 8 | 3 |
+| 228 | blinka.co | ok | gemini-3.5-flash | 15 | 9 | 5 | 9 | 10 | 5 |
+
+Aggregate:
+
+- 10/10 runs returned `ok`.
+- Semantic class disagreements: 57.
+- Materiality disagreements: 90.
+- Total classifier attempts: 43.
+- Attempt tracking was later split into `batch_count` and `retry_count` because attempts include normal batches. With `BRAND3_EVIDENCE_LLM_BATCH_SIZE=4`, a 15-observation run requires four normal classifier calls before any retry.
+
+Interpretation:
+
+Compact structured output materially improves final validity, but it does not make the classifier suitable for synchronous runtime. The correct contract is: deterministic Python evidence gate first, compact Gemini structured-output classifier second, asynchronous/shadow execution, and attempt/timeout tracking as a required operational metric.
+
+### No-Cache Timing Probe
+
+Cached probe results are not valid latency evidence. The shadow script now supports `--no-cache` and records:
+
+- `transport`
+- `batch_count`
+- `attempt_count`
+- `retry_count`
+- `elapsed_seconds`
+
+Command:
+
+```bash
+./.venv/bin/python scripts/evidence_llm_shadow.py 291 286 248 --no-cache --output-json out/evidence_vnext/llm_shadow_native_compact_curated3_nocache.json --output-md out/evidence_vnext/llm_shadow_native_compact_curated3_nocache.md
+```
+
+Result:
+
+| Run | Brand | Transport | Status | Accepted | Batches | Attempts | Retries | Seconds |
+| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
+| 291 | www.becauce.com | gemini_native | ok | 11 | 3 | 3 | 0 | 19.63 |
+| 286 | guru-usa.com | gemini_native | ok | 15 | 4 | 4 | 0 | 44.27 |
+| 248 | www.lemlist.com | gemini_native | ok | 4 | 1 | 1 | 0 | 7.94 |
+
+Interpretation:
+
+The compact native contract is stable in this small no-cache sample: 3/3 ok and 0 retries. Latency remains too high for synchronous scanner use. This supports an async/shadow job, not a blocking request path.
+
+OpenAI-compatible compact mode was also probed with native output disabled:
+
+```bash
+BRAND3_EVIDENCE_LLM_NATIVE_STRUCTURED_OUTPUT=false ./.venv/bin/python scripts/evidence_llm_shadow.py 248 --no-cache
+```
+
+It failed with `transport_error` against the OpenAI-compatible Gemini endpoint in this local environment. That means current evidence favors `gemini_native` for this classifier, while keeping the compatible path available for non-Gemini providers.

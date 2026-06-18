@@ -102,6 +102,12 @@ These values are safe to commit as placeholders or documented defaults, but not 
 | `BRAND3_SV9_EDITORIAL_MODEL` | `BRAND3_LLM_MODEL` | SV9 founder-facing editorial messages and executive reading |
 | `BRAND3_VISION_MODEL` | `gemini-2.5-flash` | Screenshot/vision analysis |
 | `BRAND3_LLM_CALL_TIMEOUT_SECONDS` | `35` | Per LLM call timeout in `src/features/llm_analyzer.py` |
+| `BRAND3_EVIDENCE_LLM_CLASSIFIER_ENABLED` | `false` | Enables the evidence vNext LLM semantic classifier in shadow mode only |
+| `BRAND3_EVIDENCE_LLM_MODEL` | `gemini-3.5-flash` | Evidence vNext semantic classifier model |
+| `BRAND3_EVIDENCE_LLM_BATCH_SIZE` | `4` | Evidence observations per classifier call |
+| `BRAND3_EVIDENCE_LLM_TIMEOUT_SECONDS` | `20` | Timeout for one evidence semantic classifier call |
+| `BRAND3_EVIDENCE_LLM_MAX_ATTEMPTS` | `2` | Attempts per evidence classifier batch before returning a shadow error |
+| `BRAND3_EVIDENCE_LLM_NATIVE_STRUCTURED_OUTPUT` | `true` | Uses Gemini native structured output for the evidence classifier when the configured base URL is Google Gemini |
 
 ## Screenshot Provider
 

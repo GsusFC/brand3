@@ -210,6 +210,88 @@
 </section>
 {% endif %}
 
+{% if report.semantic_evidence %}
+<hr class="rule-thin">
+
+<section>
+  <div class="section-head">
+    <span class="label">semantic shadow</span>
+    <span class="tag">// materiality over accepted evidence</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-top:14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">classifier</div>
+      <strong class="hl-accent" style="font-family:var(--font-mono); font-size:14px;">{{ report.semantic_evidence.classifier or "none" }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">accepted_material</div>
+      <strong class="hl-ok" style="font-family:var(--font-mono); font-size:24px;">{{ report.semantic_evidence.accepted_material or 0 }}</strong>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">accepted_weak</div>
+      <strong class="hl-warn" style="font-family:var(--font-mono); font-size:24px;">{{ report.semantic_evidence.accepted_weak or 0 }}</strong>
+    </article>
+  </div>
+  {% if report.semantic_evidence.semantic_class_counts %}
+  <div class="table-wrap" style="margin-top:14px;">
+    <table>
+      <thead>
+        <tr>
+          <th>semantic_class</th>
+          <th class="num">count</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for class_name, count in report.semantic_evidence.semantic_class_counts.items() %}
+        <tr>
+          <td>{{ class_name }}</td>
+          <td class="num num-inline">{{ count }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% if report.semantic_evidence.weak_examples %}
+  <div class="table-wrap" style="margin-top:14px;">
+    <table>
+      <thead>
+        <tr>
+          <th>weak accepted example</th>
+          <th>class</th>
+          <th>source</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in report.semantic_evidence.weak_examples[:6] %}
+        <tr>
+          <td>{{ item.text_preview }}</td>
+          <td>{{ item.semantic_class }}</td>
+          <td><a class="source-link" href="{{ item.url }}">{{ item.url }}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+  {% if report.semantic_llm %}
+  <div style="border:1px solid var(--border); background:var(--surface); padding:14px; margin-top:14px;">
+    <strong style="font-family:var(--font-ui); font-size:13px;">llm shadow</strong>
+    <div class="badge-line" style="margin-top:10px;">
+      {% for status, count in report.semantic_llm.status_counts.items() %}
+      <span class="badge">{{ status }}={{ count }}</span>
+      {% endfor %}
+      <span class="badge badge-ready">class_delta={{ report.semantic_llm.semantic_class_disagreement_count or 0 }}</span>
+      <span class="badge badge-ready">materiality_delta={{ report.semantic_llm.materiality_disagreement_count or 0 }}</span>
+    </div>
+    {% if report.semantic_llm.models %}
+    <p class="dim" style="margin:8px 0 0; font-family:var(--font-mono); font-size:12px;">models={{ report.semantic_llm.models }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+
 {% if report.acquisition_contract_exclusions %}
 <hr class="rule-thin">
 

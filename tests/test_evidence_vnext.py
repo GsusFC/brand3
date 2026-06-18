@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from src.research.evidence_vnext import (
     apply_evidence_vnext_acquisition_contracts,
+    build_evidence_vnext_semantic_assessment,
     build_evidence_vnext_packet_from_snapshot,
     build_vnext_brand_research_pack_from_snapshot,
     build_vnext_evidence_graph_from_snapshot,
@@ -321,6 +322,68 @@ def _exa_external_visual_product_evidence_snapshot() -> dict:
                                 "quote": "Figma Design reviews describe collaborative visual design workflows.",
                                 "source_url": "https://www.gartner.com/reviews/product/figma-design",
                             }
+                        ]
+                    }
+                ),
+                "confidence": 0.7,
+                "source": "exa",
+            },
+        ],
+        "evidence_items": [],
+    }
+
+
+def _exa_semantic_materiality_snapshot() -> dict:
+    return {
+        "run": {
+            "id": 4111,
+            "brand_name": "Canva",
+            "url": "https://www.canva.com",
+        },
+        "raw_inputs": [
+            {
+                "source": "exa",
+                "payload": {
+                    "mentions": [
+                        {
+                            "url": "https://www.enterpret.com/customers/canva",
+                            "title": "Case Study: How Canva leverages Enterpret",
+                            "summary": "Case Study: How Canva leverages Enterpret to build products that delight users.",
+                            "source_class": "external",
+                            "relation": "external",
+                            "classification_reason": "external_candidate",
+                        },
+                        {
+                            "url": "https://www.guideflow.com/blog/ai-design-tools",
+                            "title": "15 best AI design tools in 2026 compared",
+                            "summary": "A comparison of AI design tools, Canva alternatives, and visual design workflows.",
+                            "source_class": "external",
+                            "relation": "external",
+                            "classification_reason": "external_candidate",
+                        },
+                    ],
+                    "competitors": [],
+                    "ai_visibility_results": [],
+                    "news": [],
+                },
+            }
+        ],
+        "features": [
+            {
+                "dimension_name": "percepcion",
+                "feature_name": "search_visibility",
+                "value": 0.7,
+                "raw_value": repr(
+                    {
+                        "evidence": [
+                            {
+                                "quote": "Case Study: How Canva leverages Enterpret to build products that delight users.",
+                                "source_url": "https://www.enterpret.com/customers/canva",
+                            },
+                            {
+                                "quote": "A comparison of AI design tools, Canva alternatives, and visual design workflows.",
+                                "source_url": "https://www.guideflow.com/blog/ai-design-tools",
+                            },
                         ]
                     }
                 ),
@@ -676,6 +739,41 @@ def test_vnext_keeps_exa_external_visual_product_evidence_as_market_evidence() -
     assert len(accepted) == 1
     assert accepted[0]["source_class"] == "external_third_party"
     assert accepted[0]["classification_reason"] == "exa_external_product_evidence_not_internal_visual_analysis"
+
+
+def test_vnext_semantic_shadow_separates_material_and_weak_accepted_evidence() -> None:
+    packet = build_evidence_vnext_packet_from_snapshot(_exa_semantic_materiality_snapshot())
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    assert packet.summary()["accepted_count"] == 2
+    assert semantic["model_effect"] is False
+    assert semantic["classifier"] == "heuristic_shadow_v0"
+    assert semantic["summary"]["accepted_material_count"] == 1
+    assert semantic["summary"]["accepted_weak_count"] == 1
+    assert semantic["summary"]["semantic_class_counts"]["customer_case"] == 1
+    assert semantic["summary"]["semantic_class_counts"]["competitor_comparison"] == 1
+    weak = [
+        item
+        for item in semantic["assessments"]
+        if item["semantic_class"] == "competitor_comparison"
+    ]
+    assert weak[0]["materiality"] == "low"
+    assert weak[0]["gate_status"] == "accepted"
+
+
+def test_vnext_batch_report_includes_semantic_shadow_counts() -> None:
+    result = compare_legacy_current_and_vnext_from_snapshot(_exa_semantic_materiality_snapshot())
+    report = build_batch_report([result])
+    markdown = render_batch_report_markdown(report)
+
+    assert result["vnext_semantic_assessment"]["summary"]["accepted_weak_count"] == 1
+    assert report["semantic_evidence"]["classifier"] == "heuristic_shadow_v0"
+    assert report["semantic_evidence"]["accepted_material"] == 1
+    assert report["semantic_evidence"]["accepted_weak"] == 1
+    assert report["semantic_evidence"]["semantic_class_counts"]["competitor_comparison"] == 1
+    assert report["semantic_evidence"]["weak_examples"][0]["brand_name"] == "Canva"
+    assert "## Semantic Evidence Shadow" in markdown
+    assert "| competitor_comparison | 1 |" in markdown
 
 
 def test_batch_report_summarizes_vnext_results_for_review() -> None:

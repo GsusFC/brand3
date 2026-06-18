@@ -1163,6 +1163,10 @@ def test_batch_report_keeps_external_profile_review_only_without_material_overla
     assert report["manual_audit_queue"][0]["audit_verdict"] == "alias_confirmation_review"
     assert report["manual_audit_queue"][0]["review_material_overlaps"] == []
     assert "confirm_external_profile_alias" in report["manual_audit_queue"][0]["triage_actions"]
+    assert report["contract_projection"]["applied_contracts"] == ["social_scrape.placeholder_profile_non_material"]
+    assert report["contract_projection"]["removed_review_observation_count"] == 1
+    assert report["contract_projection"]["projected_promotion_counts"]["candidate"] == 1
+    assert report["shadow_policy"]["runs"][0]["next_action"] == "candidate_after_contract"
 
 
 def test_batch_report_distinguishes_quote_plus_alias_manual_audit() -> None:
@@ -1245,42 +1249,42 @@ def test_batch_report_distinguishes_quote_plus_alias_manual_audit() -> None:
         "require_source_url_or_exclude_from_material_evidence"
     )
     assert report["contract_recommendations"][0]["affected_runs"] == [4207]
-    assert report["contract_projection"]["removed_review_observation_count"] == 1
-    assert report["contract_projection"]["projected_promotion_counts"]["audit_required"] == 1
-    assert report["contract_projection"]["status_transitions"] == []
+    assert report["contract_projection"]["applied_contracts"] == [
+        "social_scrape.placeholder_profile_non_material",
+        "tone_consistency.source_url",
+    ]
+    assert report["contract_projection"]["removed_review_observation_count"] == 2
+    assert report["contract_projection"]["projected_promotion_counts"]["candidate"] == 1
+    assert report["contract_projection"]["status_transitions"][0]["projected_promotion_status"] == "candidate"
     assert report["decision_queue"][0]["action"] == "implement_contract_recommendation"
     assert report["decision_queue"][0]["affected_runs"] == [4207]
-    assert report["decision_action_counts"]["manual_audit_projected_material_changes"] == 1
+    assert "manual_audit_projected_material_changes" not in report["decision_action_counts"]
     assert report["shadow_policy"]["runtime_effect"] is False
     assert report["shadow_policy"]["prompt_effect"] is False
     assert report["shadow_policy"]["runs"][0]["contract_effect"] == "removes_review_observations"
-    assert report["shadow_policy"]["runs"][0]["next_action"] == "manual_audit_projected_material_changes"
-    assert report["shadow_policy"]["next_action_counts"]["manual_audit_projected_material_changes"] == 1
-    assert report["readiness_matrix"]["rows"][0]["readiness_status"] == "needs_manual_audit"
-    assert report["readiness_matrix"]["rows"][0]["intervention_type"] == "material_audit"
-    assert report["readiness_matrix"]["rows"][0]["automation_lane"] == "contract_then_human_review"
-    assert report["readiness_matrix"]["counts"]["intervention:material_audit"] == 1
-    assert report["intervention_packets"][0]["packet_id"] == "intervention:material_audit"
+    assert report["shadow_policy"]["runs"][0]["next_action"] == "candidate_after_contract"
+    assert report["shadow_policy"]["next_action_counts"]["candidate_after_contract"] == 1
+    assert report["readiness_matrix"]["rows"][0]["readiness_status"] == "ready_after_shadow_policy"
+    assert report["readiness_matrix"]["rows"][0]["intervention_type"] == "none"
+    assert report["readiness_matrix"]["rows"][0]["automation_lane"] == "contract_can_auto_clear"
+    assert report["readiness_matrix"]["counts"]["intervention:none"] == 1
+    assert report["intervention_packets"][0]["packet_id"] == "intervention:none"
     assert report["intervention_packets"][0]["affected_runs"] == [4207]
-    assert report["intervention_packets"][0]["automation_lane"] == "contract_then_human_review"
+    assert report["intervention_packets"][0]["automation_lane"] == "contract_can_auto_clear"
     assert report["intervention_packets"][0]["closure_criteria"]
     assert report["intervention_packets"][0]["checklist"]
-    assert report["work_orders"][0]["work_order_id"] == "workorder:material_audit:4207"
-    assert report["work_orders"][0]["expected_output"] == "manual_decision"
+    assert report["work_orders"][0]["work_order_id"] == "workorder:none:4207"
+    assert report["work_orders"][0]["expected_output"] == "candidate"
     assert report["work_orders"][0]["requires_recompute"] is False
     assert report["work_orders"][0]["checklist"]
-    assert report["work_orders"][0]["allowed_decisions"] == [
-        "approve_vnext_material",
-        "send_back_for_evidence_correction",
-    ]
-    assert "approved_material_fields" in report["work_orders"][0]["decision_required_fields"]
-    assert report["work_orders"][0]["decision_record_template"]["work_order_id"] == "workorder:material_audit:4207"
-    assert "approved_material_fields" in report["work_orders"][0]["decision_record_template"]
+    assert report["work_orders"][0]["allowed_decisions"] == ["no_action_required"]
+    assert report["work_orders"][0]["decision_required_fields"] == ["decision"]
+    assert report["work_orders"][0]["decision_record_template"]["work_order_id"] == "workorder:none:4207"
     assert report["adjudication_intake"]["status"] == "pending_decisions"
     assert report["adjudication_intake"]["pending_count"] == 1
-    assert report["adjudication_intake"]["expected_output_counts"]["manual_decision"] == 1
+    assert report["adjudication_intake"]["expected_output_counts"]["candidate"] == 1
     assert report["adjudication_intake"]["records"][0]["status"] == "pending_decision"
-    assert report["adjudication_intake"]["records"][0]["record"]["work_order_id"] == "workorder:material_audit:4207"
+    assert report["adjudication_intake"]["records"][0]["record"]["work_order_id"] == "workorder:none:4207"
 
 
 def test_batch_report_projects_contract_effect_on_review_required_runs() -> None:
@@ -1367,7 +1371,11 @@ def test_batch_report_projects_contract_effect_on_review_required_runs() -> None
     report = build_batch_report([result])
 
     assert report["rows"][0]["promotion_status"] == "review_required"
-    assert report["contract_projection"]["removed_review_observation_count"] == 1
+    assert report["contract_projection"]["applied_contracts"] == [
+        "social_scrape.placeholder_profile_non_material",
+        "tone_consistency.source_url",
+    ]
+    assert report["contract_projection"]["removed_review_observation_count"] == 2
     assert report["contract_projection"]["projected_promotion_counts"]["audit_required"] == 1
     assert report["contract_projection"]["status_transitions"][0]["run_id"] == 4208
     assert report["contract_projection"]["status_transitions"][0]["current_promotion_status"] == "review_required"

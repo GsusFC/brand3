@@ -1162,15 +1162,23 @@ def _contract_projection_row(
     current_manual_audit: dict[str, Any],
     vnext_pack: dict[str, Any],
 ) -> dict[str, Any]:
+    material_overlaps = _review_material_overlaps(
+        gate_payload=gate_payload or {},
+        vnext_pack=vnext_pack or {},
+    )
     removed_review = [
         item
         for item in gate_payload.get("review_required") or []
-        if isinstance(item, dict) and _is_projected_contract_filtered_observation(item)
+        if isinstance(item, dict)
+        and _is_projected_contract_filtered_observation(item, material_overlaps=material_overlaps)
     ]
     filtered_review_required = [
         item
         for item in gate_payload.get("review_required") or []
-        if not (isinstance(item, dict) and _is_projected_contract_filtered_observation(item))
+        if not (
+            isinstance(item, dict)
+            and _is_projected_contract_filtered_observation(item, material_overlaps=material_overlaps)
+        )
     ]
     projected_gate_payload = {
         **gate_payload,
@@ -1193,7 +1201,7 @@ def _contract_projection_row(
         "run_id": comparison.get("run_id"),
         "brand_name": comparison.get("brand_name") or "",
         "url": comparison.get("url") or "",
-        "applied_contracts": ["tone_consistency.source_url"] if removed_review else [],
+        "applied_contracts": _projected_applied_contracts(removed_review),
         "removed_review_observation_count": len(removed_review),
         "removed_review_reason_counts": _removed_review_reason_counts(removed_review),
         "current_promotion_status": current_promotion.get("status") or "",
@@ -1229,12 +1237,57 @@ def _contract_projection_summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
-def _is_projected_contract_filtered_observation(item: dict[str, Any]) -> bool:
+def _is_projected_contract_filtered_observation(
+    item: dict[str, Any],
+    *,
+    material_overlaps: list[dict[str, Any]],
+) -> bool:
+    return _is_projected_missing_url_contract_observation(item) or _is_projected_social_placeholder_contract_observation(
+        item,
+        material_overlaps=material_overlaps,
+    )
+
+
+def _is_projected_missing_url_contract_observation(item: dict[str, Any]) -> bool:
     return (
         _observation_reason(item) == "missing_evidence_url"
         and str(item.get("feature_name") or "") == "tone_consistency"
         and not str(item.get("url") or "").strip()
     )
+
+
+def _is_projected_social_placeholder_contract_observation(
+    item: dict[str, Any],
+    *,
+    material_overlaps: list[dict[str, Any]],
+) -> bool:
+    if _observation_reason(item) != "same_name_external_profile_not_alias":
+        return False
+    if str(item.get("provider") or "") != "social_scrape":
+        return False
+    text = str(item.get("text") or item.get("text_preview") or "").strip().lower()
+    if "profile candidate" not in text:
+        return False
+    item_url = str(item.get("url") or "").strip()
+    if not item_url:
+        return False
+    item_url_key = _url_identity(item_url)
+    for overlap in material_overlaps:
+        if _observation_reason(overlap) != "same_name_external_profile_not_alias":
+            continue
+        if item_url_key and _url_identity(str(overlap.get("url") or "")) == item_url_key:
+            return False
+    return True
+
+
+def _projected_applied_contracts(removed_review: list[dict[str, Any]]) -> list[str]:
+    contracts: set[str] = set()
+    for item in removed_review:
+        if _is_projected_missing_url_contract_observation(item):
+            contracts.add("tone_consistency.source_url")
+        elif _is_projected_social_placeholder_contract_observation(item, material_overlaps=[]):
+            contracts.add("social_scrape.placeholder_profile_non_material")
+    return sorted(contracts)
 
 
 def _projected_gate_summary(gate: dict[str, Any], removed_review: list[dict[str, Any]]) -> dict[str, Any]:

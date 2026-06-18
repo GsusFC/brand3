@@ -1009,8 +1009,12 @@ def test_batch_report_summarizes_vnext_results_for_review() -> None:
     backlog_rows = {item["contract"]: item for item in report["provider_contract_backlog"]["rows"]}
     assert backlog_rows["exa.entity_boundary_review"]["implementation_status"] == "vnext_gate_enforced"
     assert report["provider_contract_backlog"]["counts"]["vnext_gate_enforced"] >= 1
-    assert any(item["action"] == "implement_provider_acquisition_contract" for item in report["decision_queue"])
-    assert report["decision_action_counts"]["implement_provider_acquisition_contract"] >= 1
+    assert not any(
+        item["action"] == "implement_provider_acquisition_contract"
+        and backlog_rows[item["contract"]]["implementation_status"] == "vnext_gate_enforced"
+        for item in report["decision_queue"]
+    )
+    assert report["decision_action_counts"].get("implement_provider_acquisition_contract", 0) == 0
     assert "# Evidence vNext Batch Report" in markdown
     assert "## Acquisition Matrix" in markdown
     assert "| exa |" in markdown

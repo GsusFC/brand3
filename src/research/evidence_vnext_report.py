@@ -1342,6 +1342,8 @@ def _decision_queue(
             }
         )
     for item in provider_acquisition_contracts:
+        if str(item.get("implementation_status") or "") == "vnext_gate_enforced":
+            continue
         decisions.append(
             {
                 "action": "implement_provider_acquisition_contract",

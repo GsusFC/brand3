@@ -100,6 +100,20 @@ SEMANTIC_WEAK_CLASSES = {
     "tangential",
 }
 
+SEMANTIC_BRAND_TOKEN_STOPWORDS = {
+    "www",
+    "com",
+    "net",
+    "org",
+    "io",
+    "ai",
+    "app",
+    "co",
+    "inc",
+    "llc",
+    "ltd",
+}
+
 
 @dataclass(frozen=True, slots=True)
 class SourceObservation:
@@ -947,6 +961,16 @@ def _semantic_assessment_for_observation(
     url_lower = item.url.lower()
     entity_fit = _semantic_entity_fit(haystack, brand_tokens=brand_tokens, audit_url=packet.url, source_url=item.url)
 
+    if _is_placeholder_social_profile(item):
+        return _semantic_result(
+            item,
+            semantic_class="tangential",
+            entity_fit=entity_fit,
+            materiality="low",
+            confidence=0.9,
+            reason_codes=("social_profile_placeholder_only",),
+        )
+
     if item.source_class in {"audited_surface", "owned_surface"}:
         return _semantic_result(
             item,
@@ -967,6 +991,16 @@ def _semantic_assessment_for_observation(
             reason_codes=("brand_entity_not_visible_in_text_or_url",),
         )
 
+    if "github.com" in url_lower and entity_fit == "strong":
+        return _semantic_result(
+            item,
+            semantic_class="owned_brand_evidence",
+            entity_fit=entity_fit,
+            materiality="high",
+            confidence=0.85,
+            reason_codes=("official_repository_signal",),
+        )
+
     if _contains_any(haystack, ("case study", "case-stud", "customer story", "/customers/", "customers/")):
         return _semantic_result(
             item,
@@ -983,8 +1017,12 @@ def _semantic_assessment_for_observation(
             "announces",
             "announced",
             "announcement",
+            "releases",
+            "released",
             "launches",
             "launched",
+            "ships",
+            "shipped",
             "funding",
             "raises",
             "raised",
@@ -998,12 +1036,16 @@ def _semantic_assessment_for_observation(
             item,
             semantic_class="market_news",
             entity_fit=entity_fit,
-            materiality="high" if entity_fit == "strong" else "medium",
+            materiality="medium",
             confidence=0.8,
             reason_codes=("market_news_or_press_signal",),
         )
 
-    if _contains_any(haystack, ("alternative", "alternatives", "competitor", "competitors", "best tools", "compared")):
+    comparison_text = f"{item.text} {item.feature_name} {item.classification_reason}".lower()
+    if item.source_class == "competitor_comparison" or _contains_any(
+        comparison_text,
+        ("alternative", "alternatives", "competitor", "competitors", "best tools", "compared"),
+    ):
         return _semantic_result(
             item,
             semantic_class="competitor_comparison",
@@ -1063,12 +1105,12 @@ def _semantic_haystack(item: SourceObservation) -> str:
 def _semantic_brand_tokens(brand_name: str, brand_url: str) -> tuple[str, ...]:
     tokens: list[str] = []
     for token in re.split(r"[^a-z0-9]+", str(brand_name or "").lower()):
-        if len(token) >= 3:
+        if len(token) >= 3 and token not in SEMANTIC_BRAND_TOKEN_STOPWORDS:
             tokens.append(token)
     root = _root_domain(_host(brand_url))
     if root:
         domain_token = root.split(".")[0]
-        if len(domain_token) >= 3:
+        if len(domain_token) >= 3 and domain_token not in SEMANTIC_BRAND_TOKEN_STOPWORDS:
             tokens.append(domain_token)
     return tuple(_unique(tokens))
 
@@ -1084,7 +1126,8 @@ def _semantic_entity_fit(
     source_root = _root_domain(_host(source_url))
     if audit_root and source_root == audit_root:
         return "strong"
-    visible_tokens = [token for token in brand_tokens if token and token in haystack]
+    haystack_tokens = set(re.findall(r"[a-z0-9]+", haystack.lower()))
+    visible_tokens = [token for token in brand_tokens if token and token in haystack_tokens]
     if len(visible_tokens) >= 1:
         return "strong"
     return "missing"
@@ -1092,6 +1135,13 @@ def _semantic_entity_fit(
 
 def _contains_any(text: str, needles: tuple[str, ...]) -> bool:
     return any(needle in text for needle in needles)
+
+
+def _is_placeholder_social_profile(item: SourceObservation) -> bool:
+    if item.provider != "social_scrape" and item.feature_name != "social_footprint":
+        return False
+    text = _clean_text(item.text).lower()
+    return bool(re.fullmatch(r"[a-z0-9_. -]+ profile candidate", text))
 
 
 def _dimension_url_hints(dimension_inputs: dict[str, Any]) -> dict[tuple[str, str, str], str]:

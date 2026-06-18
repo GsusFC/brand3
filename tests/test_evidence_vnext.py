@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from src.research.evidence_vnext import (
+    EvidenceVNextPacket,
+    SourceObservation,
     apply_evidence_vnext_acquisition_contracts,
     build_evidence_vnext_semantic_assessment,
     build_evidence_vnext_packet_from_snapshot,
@@ -759,6 +761,158 @@ def test_vnext_semantic_shadow_separates_material_and_weak_accepted_evidence() -
     ]
     assert weak[0]["materiality"] == "low"
     assert weak[0]["gate_status"] == "accepted"
+
+
+def test_vnext_semantic_shadow_marks_social_profile_placeholders_as_weak() -> None:
+    packet = EvidenceVNextPacket(
+        version="test",
+        run_id=4201,
+        brand_name="Becauce",
+        url="https://www.becauce.com",
+        observations=(
+            SourceObservation(
+                observation_id="obs_0001",
+                text="instagram profile candidate",
+                url="https://www.instagram.com/wwwbecaucecom",
+                dimension="presencia",
+                provider="social_scrape",
+                feature_name="social_footprint",
+                source_class="external_third_party",
+                eligibility="observation_only",
+                gate_status="accepted",
+            ),
+        ),
+    )
+
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    row = semantic["assessments"][0]
+    assert row["semantic_class"] == "tangential"
+    assert row["materiality"] == "low"
+    assert row["reason_codes"] == ["social_profile_placeholder_only"]
+    assert semantic["summary"]["accepted_material_count"] == 0
+    assert semantic["summary"]["accepted_weak_count"] == 1
+
+
+def test_vnext_semantic_entity_fit_ignores_domain_stopwords_and_substrings() -> None:
+    packet = EvidenceVNextPacket(
+        version="test",
+        run_id=4202,
+        brand_name="Becauce",
+        url="https://www.becauce.com",
+        observations=(
+            SourceObservation(
+                observation_id="obs_0001",
+                text=(
+                    "Existing Brand3 competitor comparison identifies Be as the audited brand's "
+                    "closest measured competitor with measured distance 0.941."
+                ),
+                url="snapshot://feature/competitor_web_comparison",
+                dimension="diferenciacion",
+                provider="competitor_web_comparison",
+                feature_name="competitor_distance",
+                source_class="competitor_comparison",
+                eligibility="eligible_for_narrative_finding",
+                gate_status="accepted",
+            ),
+        ),
+    )
+
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    row = semantic["assessments"][0]
+    assert row["entity_fit"] == "missing"
+    assert row["semantic_class"] == "tangential"
+    assert row["reason_codes"] == ["brand_entity_not_visible_in_text_or_url"]
+    assert semantic["summary"]["accepted_material_count"] == 0
+    assert semantic["summary"]["accepted_weak_count"] == 1
+
+
+def test_vnext_semantic_shadow_classifies_strong_github_repo_as_owned_material() -> None:
+    packet = EvidenceVNextPacket(
+        version="test",
+        run_id=4203,
+        brand_name="Hermes Agent",
+        url="https://hermes-agent.nousresearch.com",
+        observations=(
+            SourceObservation(
+                observation_id="obs_0001",
+                text="# Repository: NousResearch/hermes-agent The agent that grows with you - Stars: 194428",
+                url="https://github.com/NousResearch/hermes-agent",
+                dimension="presencia",
+                provider="exa",
+                feature_name="search_visibility",
+                source_class="external_third_party",
+                eligibility="observation_only",
+                gate_status="accepted",
+            ),
+        ),
+    )
+
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    row = semantic["assessments"][0]
+    assert row["semantic_class"] == "owned_brand_evidence"
+    assert row["materiality"] == "high"
+    assert row["reason_codes"] == ["official_repository_signal"]
+    assert semantic["summary"]["accepted_material_count"] == 1
+
+
+def test_vnext_semantic_shadow_detects_release_and_ship_news_terms() -> None:
+    packet = EvidenceVNextPacket(
+        version="test",
+        run_id=4204,
+        brand_name="Hermes Agent",
+        url="https://hermes-agent.nousresearch.com",
+        observations=(
+            SourceObservation(
+                observation_id="obs_0001",
+                text="Nous Research ships Hermes Agent Profile Builder in one dashboard flow",
+                url="https://news.example.com/hermes-agent-profile-builder",
+                dimension="vitalidad",
+                provider="llm",
+                feature_name="momentum",
+                source_class="external_third_party",
+                eligibility="eligible_for_narrative_finding",
+                gate_status="accepted",
+            ),
+        ),
+    )
+
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    row = semantic["assessments"][0]
+    assert row["semantic_class"] == "market_news"
+    assert row["materiality"] == "medium"
+    assert row["reason_codes"] == ["market_news_or_press_signal"]
+
+
+def test_vnext_semantic_shadow_does_not_treat_url_slug_alternative_as_comparison() -> None:
+    packet = EvidenceVNextPacket(
+        version="test",
+        run_id=4205,
+        brand_name="Hermes Agent",
+        url="https://hermes-agent.nousresearch.com",
+        observations=(
+            SourceObservation(
+                observation_id="obs_0001",
+                text="Hermes Agent is an open-source AI agent framework from Nous Research that runs locally.",
+                url="https://blog.example.com/hermes-agent-an-openclaw-alternative-with-memory",
+                dimension="percepcion",
+                provider="llm",
+                feature_name="brand_sentiment",
+                source_class="external_third_party",
+                eligibility="eligible_for_narrative_finding",
+                gate_status="accepted",
+            ),
+        ),
+    )
+
+    semantic = build_evidence_vnext_semantic_assessment(packet)
+
+    row = semantic["assessments"][0]
+    assert row["semantic_class"] == "direct_brand_evidence"
+    assert row["materiality"] == "medium"
 
 
 def test_vnext_batch_report_includes_semantic_shadow_counts() -> None:

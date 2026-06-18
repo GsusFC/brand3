@@ -1042,6 +1042,9 @@ def test_batch_report_aggregates_shadow_acquisition_contract_exclusions() -> Non
     assert exclusions["by_contract"]["exa.non_empty_text"] == 2
     assert exclusions["by_surface"]["raw_inputs.exa.mentions"] == 1
     assert exclusions["by_surface"]["features.exa.raw_value.evidence"] == 1
+    backlog_rows = {item["contract"]: item for item in report["provider_contract_backlog"]["rows"]}
+    assert backlog_rows["exa.non_empty_text"]["implementation_status"] == "upstream_enforced"
+    assert not any(item.get("contract") == "exa.non_empty_text" for item in report["decision_queue"])
     assert "## Acquisition Contract Exclusions" in markdown
     assert "| exa.non_empty_text | 2 |" in markdown
 

@@ -1344,7 +1344,7 @@ def _decision_queue(
             }
         )
     for item in provider_acquisition_contracts:
-        if str(item.get("implementation_status") or "") == "vnext_gate_enforced":
+        if _provider_contract_is_implemented(item):
             continue
         if (
             str(item.get("contract") or "") == "social_scrape.alias_confirmation"
@@ -1433,6 +1433,10 @@ def _social_placeholder_auto_cleared_runs(projected_rows: list[dict[str, Any]]) 
         if row.get("run_id") is not None:
             runs.add(int(row["run_id"]))
     return runs
+
+
+def _provider_contract_is_implemented(item: dict[str, Any]) -> bool:
+    return str(item.get("implementation_status") or "") in {"vnext_gate_enforced", "upstream_enforced"}
 
 
 def _append_projected_reason_decision(
@@ -2374,9 +2378,9 @@ def _provider_contract_implementation(contract: str) -> dict[str, Any]:
     specs = {
         "exa.non_empty_text": {
             "enforcement_point": "exa_raw_result_normalization",
-            "implementation_status": "upstream_needed",
+            "implementation_status": "upstream_enforced",
             "implementation_lane": "collector_normalization",
-            "next_step": "Add Exa raw-result text completeness filtering before feature evidence construction.",
+            "next_step": "Keep collector and feature-level non-empty text guards for new runs; old snapshots may still report historical exclusions.",
             "acceptance_criteria": [
                 "Exa results with URL but empty title, summary, text, and markdown are excluded before feature evidence construction.",
                 "Excluded empty Exa results remain visible as diagnostic rejects, not material claims.",

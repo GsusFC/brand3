@@ -127,7 +127,7 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
     totals = report.get("totals") or {}
     material_lost_fields = int(totals.get("material_lost_fields") or 0)
     ready = (
-        readiness_status in {"ready_after_contract", "ready_after_shadow_policy"}
+        readiness_status == "ready_after_contract"
         and next_action == "candidate_after_contract"
         and material_lost_fields == 0
         and not human_required

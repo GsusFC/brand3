@@ -85,6 +85,31 @@ def test_vnext_builder_decision_blocks_human_required_contract(monkeypatch) -> N
     assert decision["human_required"] is True
 
 
+def test_vnext_builder_decision_blocks_deprecated_shadow_policy_status(monkeypatch) -> None:
+    _patch_vnext_decision_inputs(
+        monkeypatch,
+        {
+            "readiness_matrix": {
+                "rows": [
+                    {
+                        "readiness_status": "ready_after_shadow_policy",
+                        "next_action": "candidate_after_contract",
+                        "human_required": False,
+                        "remaining_reason_codes": [],
+                    }
+                ]
+            },
+            "totals": {"accepted": 4, "review_required": 0, "rejected": 2, "material_lost_fields": 0},
+        },
+    )
+
+    decision = _vnext_builder_decision({"run": {"id": 13}})
+
+    assert decision["builder"] == "graph"
+    assert decision["status"] == "not_ready"
+    assert decision["readiness_status"] == "ready_after_shadow_policy"
+
+
 def test_vnext_builder_decision_blocks_material_loss(monkeypatch) -> None:
     _patch_vnext_decision_inputs(
         monkeypatch,

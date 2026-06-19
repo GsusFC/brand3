@@ -49,6 +49,7 @@ def test_vnext_builder_decision_promotes_ready_contract(monkeypatch) -> None:
                 ]
             },
             "totals": {"accepted": 4, "review_required": 1, "rejected": 2, "material_lost_fields": 0},
+            "semantic_evidence": {"accepted_material": 3, "accepted_weak": 1},
         },
     )
 
@@ -58,6 +59,8 @@ def test_vnext_builder_decision_promotes_ready_contract(monkeypatch) -> None:
     assert decision["status"] == "ready_after_contract"
     assert decision["human_required"] is False
     assert decision["material_lost_fields"] == 0
+    assert decision["accepted_material"] == 3
+    assert decision["accepted_weak"] == 1
 
 
 def test_vnext_builder_decision_blocks_human_required_contract(monkeypatch) -> None:
@@ -75,6 +78,7 @@ def test_vnext_builder_decision_blocks_human_required_contract(monkeypatch) -> N
                 ]
             },
             "totals": {"accepted": 4, "review_required": 2, "rejected": 2, "material_lost_fields": 0},
+            "semantic_evidence": {"accepted_material": 3, "accepted_weak": 1},
         },
     )
 
@@ -100,6 +104,7 @@ def test_vnext_builder_decision_blocks_deprecated_shadow_policy_status(monkeypat
                 ]
             },
             "totals": {"accepted": 4, "review_required": 0, "rejected": 2, "material_lost_fields": 0},
+            "semantic_evidence": {"accepted_material": 3, "accepted_weak": 1},
         },
     )
 
@@ -125,6 +130,7 @@ def test_vnext_builder_decision_blocks_material_loss(monkeypatch) -> None:
                 ]
             },
             "totals": {"accepted": 4, "review_required": 0, "rejected": 2, "material_lost_fields": 1},
+            "semantic_evidence": {"accepted_material": 3, "accepted_weak": 1},
         },
     )
 
@@ -133,6 +139,34 @@ def test_vnext_builder_decision_blocks_material_loss(monkeypatch) -> None:
     assert decision["builder"] == "graph"
     assert decision["status"] == "not_ready"
     assert decision["material_lost_fields"] == 1
+
+
+def test_vnext_builder_decision_blocks_weak_evidence_dominance(monkeypatch) -> None:
+    _patch_vnext_decision_inputs(
+        monkeypatch,
+        {
+            "readiness_matrix": {
+                "rows": [
+                    {
+                        "readiness_status": "ready_after_contract",
+                        "next_action": "candidate_after_contract",
+                        "human_required": False,
+                        "remaining_reason_codes": ["no_promotion_blockers_detected"],
+                    }
+                ]
+            },
+            "totals": {"accepted": 14, "review_required": 1, "rejected": 6, "material_lost_fields": 0},
+            "semantic_evidence": {"accepted_material": 5, "accepted_weak": 9},
+        },
+    )
+
+    decision = _vnext_builder_decision({"run": {"id": 292}})
+
+    assert decision["builder"] == "graph"
+    assert decision["status"] == "not_ready"
+    assert decision["accepted_material"] == 5
+    assert decision["accepted_weak"] == 9
+    assert "weak_evidence_exceeds_material_evidence" in decision["reason_codes"]
 
 
 def test_facade_uses_legacy_when_graph_is_not_allowed(monkeypatch) -> None:

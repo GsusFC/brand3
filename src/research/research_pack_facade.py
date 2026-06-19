@@ -126,12 +126,20 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
     human_required = bool(readiness.get("human_required"))
     totals = report.get("totals") or {}
     material_lost_fields = int(totals.get("material_lost_fields") or 0)
+    semantic = report.get("semantic_evidence") if isinstance(report.get("semantic_evidence"), dict) else {}
+    accepted_material = int(semantic.get("accepted_material") or 0)
+    accepted_weak = int(semantic.get("accepted_weak") or 0)
+    semantic_quality_ready = accepted_weak <= accepted_material
     ready = (
         readiness_status == "ready_after_contract"
         and next_action == "candidate_after_contract"
         and material_lost_fields == 0
         and not human_required
+        and semantic_quality_ready
     )
+    reason_codes = list(readiness.get("remaining_reason_codes") or [])
+    if not semantic_quality_ready:
+        reason_codes.append("weak_evidence_exceeds_material_evidence")
     return {
         "version": EVIDENCE_VNEXT_PACK_DECISION_VERSION,
         "enabled": True,
@@ -140,9 +148,11 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
         "readiness_status": readiness_status,
         "next_action": next_action,
         "human_required": human_required,
-        "reason_codes": list(readiness.get("remaining_reason_codes") or []),
+        "reason_codes": reason_codes,
         "accepted": int(totals.get("accepted") or 0),
         "review_required": int(totals.get("review_required") or 0),
         "rejected": int(totals.get("rejected") or 0),
         "material_lost_fields": material_lost_fields,
+        "accepted_material": accepted_material,
+        "accepted_weak": accepted_weak,
     }

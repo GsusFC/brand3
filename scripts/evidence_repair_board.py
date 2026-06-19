@@ -202,8 +202,14 @@ def _summary(cards: list[dict[str, Any]]) -> dict[str, Any]:
         }
     )
     source_backfill_queries: list[str] = []
+    seen_queries: set[str] = set()
     for card in cards:
-        source_backfill_queries.extend(str(item) for item in card.get("source_backfill_queries") or [] if str(item))
+        for item in card.get("source_backfill_queries") or []:
+            query = str(item).strip()
+            if not query or query in seen_queries:
+                continue
+            seen_queries.add(query)
+            source_backfill_queries.append(query)
     return {
         "packet_count": len(cards),
         "action_counts": _count_dict(action_counts),

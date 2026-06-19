@@ -50,3 +50,29 @@ def test_repair_board_builds_records_and_operator_manifests() -> None:
     assert board["records"][0]["requires_recompute"] is True
     assert "source_url_attached_or_exclude_unsourced_quote" in markdown
     assert '"two-sided network" causaprima.ai' in markdown
+
+
+def test_repair_board_deduplicates_backfill_queries() -> None:
+    packets = [
+        {
+            "run_id": 283,
+            "brand_name": "causaprima.ai",
+            "action": "backfill_source_url_or_remove_material",
+            "recommended_decision": "source_url_attached_or_exclude_unsourced_quote",
+            "record": {"search_hints": ['"same quote" causaprima.ai']},
+            "requires_recompute": True,
+        },
+        {
+            "run_id": 286,
+            "brand_name": "causaprima.ai",
+            "action": "backfill_source_url_or_remove_material",
+            "recommended_decision": "source_url_attached_or_exclude_unsourced_quote",
+            "record": {"search_hints": ['"same quote" causaprima.ai']},
+            "requires_recompute": True,
+        },
+    ]
+
+    board = build_repair_board(packets)
+
+    assert board["summary"]["recompute_run_ids"] == [283, 286]
+    assert board["summary"]["source_backfill_queries"] == ['"same quote" causaprima.ai']

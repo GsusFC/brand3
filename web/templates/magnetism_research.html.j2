@@ -13,6 +13,7 @@
 <hr class="rule-thin magnetism-compact-rule">
 
 <nav aria-label="{{ model.t.research_sections }}" style="display:flex; flex-wrap:wrap; gap:8px; margin:0 0 18px;">
+  {% if model.research.evidence_vnext_summary %}<a class="source-link" href="#evidence-vnext-contract">{{ model.t.evidence_vnext_contract }}</a>{% endif %}
   <a class="source-link" href="#entity-resolution">{{ model.t.entity_resolution }}</a>
   {% if model.research.entity_boundary_warnings or model.research.entity_boundary_rejections %}<a class="source-link" href="#entity-boundary">{{ model.t.entity_boundary_warnings }}</a>{% endif %}
   <a class="source-link" href="#research-pack">{{ model.t.research_pack }}</a>
@@ -22,6 +23,86 @@
   <a class="source-link" href="#tldr-evidence">{{ model.t.tldr_evidence }}</a>
   {% if model.research.noise_rejected or model.research.evidence_gaps %}<a class="source-link" href="#rejected-gaps">{{ model.t.rejected_gaps }}</a>{% endif %}
 </nav>
+
+{% if model.research.evidence_vnext_summary %}
+{% set vnext = model.research.evidence_vnext_summary %}
+<section id="evidence-vnext-contract">
+  <div class="section-head">
+    <span class="label">{{ model.t.evidence_vnext_contract }}</span>
+    <span class="tag">// {{ model.t.evidence_vnext_contract_tag }}</span>
+  </div>
+  <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; max-width:920px; margin:10px 0 0;">
+    {{ model.t.evidence_vnext_contract_intro }}
+  </p>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap:12px; margin-top:14px;">
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.evidence_vnext_readiness }}</div>
+      <strong style="display:block; margin-top:6px; font-family:var(--font-ui); font-size:16px;">{{ vnext.readiness_status or vnext.status or "unknown" }}</strong>
+      {% if vnext.projected_promotion_status %}
+      <span class="badge badge-ready" style="margin-top:10px;">projected={{ vnext.projected_promotion_status }}</span>
+      {% endif %}
+      {% if vnext.human_required is not none %}
+      <span class="badge" style="margin-top:10px;">human_required={{ vnext.human_required }}</span>
+      {% endif %}
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.evidence_vnext_totals }}</div>
+      <div class="badge-line" style="margin-top:10px;">
+        <span class="badge badge-ready">accepted={{ vnext.accepted }}</span>
+        <span class="badge">review={{ vnext.review_required }}</span>
+        <span class="badge badge-missing">rejected={{ vnext.rejected }}</span>
+        <span class="badge">noise={{ vnext.reclassified_to_noise }}</span>
+        <span class="badge">material_lost={{ vnext.material_lost_fields }}</span>
+      </div>
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.evidence_vnext_exa_strategy }}</div>
+      <strong style="display:block; margin-top:6px; font-family:var(--font-mono); font-size:14px;">{{ vnext.exa_strategy or "unknown" }}</strong>
+      <div class="badge-line" style="margin-top:10px;">
+        {% if vnext.exa_status %}<span class="badge">{{ vnext.exa_status }}</span>{% endif %}
+        <span class="badge">competitors={{ vnext.exa_competitor_intent_enabled }}</span>
+      </div>
+      {% if vnext.exa_planned_intents %}
+      <p class="dim" style="font-family:var(--font-mono); font-size:11px; line-height:1.45; margin:8px 0 0;">{{ vnext.exa_planned_intents|join(", ") }}</p>
+      {% endif %}
+    </article>
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ model.t.evidence_vnext_next_action }}</div>
+      <strong style="display:block; margin-top:6px; font-family:var(--font-mono); font-size:14px;">{{ vnext.next_action or vnext.promotion_status or "unknown" }}</strong>
+      {% if vnext.semantic_llm_status %}
+      <p class="dim" style="font-family:var(--font-mono); font-size:11px; line-height:1.45; margin:8px 0 0;">llm={{ vnext.semantic_llm_status }}{% if vnext.semantic_llm_model %} · {{ vnext.semantic_llm_model }}{% endif %}</p>
+      {% endif %}
+      <a class="source-link" href="{{ vnext.view_href }}{{ model.lang_query }}" style="display:inline-block; margin-top:10px;">{{ model.t.evidence_vnext_open_diagnostic }}</a>
+    </article>
+  </div>
+  {% if vnext.review_reasons or vnext.rejected_reasons %}
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:12px; margin-top:12px;">
+    {% if vnext.review_reasons %}
+    <article style="border:1px solid var(--warning); background:color-mix(in srgb, var(--warning) 8%, transparent); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.evidence_vnext_review_reasons }}</strong>
+      <div class="badge-line" style="margin-top:10px;">
+        {% for reason in vnext.review_reasons %}
+        <span class="badge">{{ reason }}</span>
+        {% endfor %}
+      </div>
+    </article>
+    {% endif %}
+    {% if vnext.rejected_reasons %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <strong style="font-family:var(--font-ui); font-size:13px;">{{ model.t.evidence_vnext_rejected_reasons }}</strong>
+      <div class="badge-line" style="margin-top:10px;">
+        {% for reason in vnext.rejected_reasons %}
+        <span class="badge">{{ reason }}</span>
+        {% endfor %}
+      </div>
+    </article>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+
+<hr class="rule-thin">
+{% endif %}
 
 <section id="entity-resolution">
   <div class="section-head">

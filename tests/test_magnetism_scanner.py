@@ -458,6 +458,92 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("Publicis Media announces a global advertising collaboration.", response.text)
         self.assertIn(f"/magnetism-scanner/run/{run_id}/evidence-vnext", response.text)
 
+    def test_research_tab_renders_compact_evidence_vnext_contract(self):
+        from web.storage import insert_magnetism_scan
+
+        store = SQLiteStore(str(self.db))
+        try:
+            brand_id = store.upsert_brand("Evidence VNext Research", "https://evidence-vnext-research.test")
+            run_id = store.create_run(
+                brand_id,
+                "Evidence VNext Research",
+                "https://evidence-vnext-research.test",
+                use_llm=False,
+                use_social=False,
+            )
+            store.save_raw_input(
+                run_id,
+                "web",
+                {
+                    "url": "https://evidence-vnext-research.test",
+                    "title": "Evidence VNext Research",
+                    "markdown": (
+                        "# Evidence VNext Research\n"
+                        "Evidence VNext Research helps teams validate research evidence."
+                    ),
+                },
+            )
+            store.save_raw_input(
+                run_id,
+                "exa",
+                {
+                    "mentions": [
+                        {
+                            "url": "https://news.example.com/evidence-vnext-research",
+                            "title": "Evidence VNext Research launch",
+                            "summary": "Evidence VNext Research validates source hygiene for brand evidence.",
+                            "source_class": "external_third_party",
+                            "relation": "external_mention",
+                        }
+                    ],
+                    "competitors": [],
+                    "ai_visibility_results": [],
+                    "news": [],
+                    "diagnostics": {
+                        "strategy": "precision_vnext_v1",
+                        "status": "ok",
+                        "competitor_intent_enabled": False,
+                        "planned_intents": [
+                            "owned_confirmation",
+                            "external_mentions",
+                            "news",
+                            "ai_visibility",
+                        ],
+                    },
+                },
+            )
+            store.mark_run_status(run_id, "complete")
+        finally:
+            store.close()
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url="https://evidence-vnext-research.test",
+            manual_text="Evidence VNext Research helps teams validate research evidence.",
+            brand_name="Evidence VNext Research",
+        )
+        payload["source_run_id"] = run_id
+        payload["research_pack_source"] = "evidence_vnext_graph"
+        payload["tldr_generation_mode"] = "analyst_pass_validated"
+        scan_id = insert_magnetism_scan(
+            brand_name="Evidence VNext Research",
+            url="https://evidence-vnext-research.test",
+            magnetism_score=int(payload["magnetism_score"]),
+            coherence_score=int(payload["coherence_score"]),
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=run_id,
+        )
+
+        response = self.client.get(f"/magnetism-scanner/scan/{scan_id}/research?lang=es")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Contrato de evidencia vNext", response.text)
+        self.assertIn("precision_vnext_v1", response.text)
+        self.assertIn("competitors=False", response.text)
+        self.assertIn("accepted=", response.text)
+        self.assertIn("material_lost=", response.text)
+        self.assertIn(f"/magnetism-scanner/run/{run_id}/evidence-vnext/view?lang=es", response.text)
+
     def test_evidence_vnext_diagnostic_endpoint_404s_unknown_run(self):
         response = self.client.get("/magnetism-scanner/run/999/evidence-vnext")
 

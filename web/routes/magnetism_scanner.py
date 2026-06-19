@@ -256,6 +256,19 @@ _MAGNETISM_UI = {
         "no_quality_failures": "No gate failures.",
         "pack_source": "Pack Source",
         "tldr_mode": "TLDR Mode",
+        "evidence_vnext_contract": "vNext Evidence Contract",
+        "evidence_vnext_contract_tag": "promotion readiness and source hygiene",
+        "evidence_vnext_contract_intro": (
+            "Operational summary of the vNext evidence gate for this attached Brand Audit run. It shows "
+            "what can safely feed the Research Pack and what stayed in review or noise."
+        ),
+        "evidence_vnext_readiness": "Readiness",
+        "evidence_vnext_totals": "Evidence totals",
+        "evidence_vnext_exa_strategy": "Exa strategy",
+        "evidence_vnext_next_action": "Next action",
+        "evidence_vnext_review_reasons": "Review reasons",
+        "evidence_vnext_rejected_reasons": "Rejected reasons",
+        "evidence_vnext_open_diagnostic": "Open full diagnostic",
         "entity_resolution": "Entity Resolution",
         "entity_tag": "product and company boundaries",
         "research_pack": "Research Pack",
@@ -496,6 +509,19 @@ _MAGNETISM_UI = {
         "no_quality_failures": "No hay fallos de gate.",
         "pack_source": "Fuente del pack",
         "tldr_mode": "Modo TLDR",
+        "evidence_vnext_contract": "Contrato de evidencia vNext",
+        "evidence_vnext_contract_tag": "readiness de promoción e higiene de fuentes",
+        "evidence_vnext_contract_intro": (
+            "Resumen operativo del gate de evidencia vNext para el Brand Audit asociado. Muestra qué puede "
+            "alimentar el Research Pack y qué quedó en revisión o ruido."
+        ),
+        "evidence_vnext_readiness": "Readiness",
+        "evidence_vnext_totals": "Totales de evidencia",
+        "evidence_vnext_exa_strategy": "Estrategia Exa",
+        "evidence_vnext_next_action": "Siguiente acción",
+        "evidence_vnext_review_reasons": "Razones de revisión",
+        "evidence_vnext_rejected_reasons": "Razones de rechazo",
+        "evidence_vnext_open_diagnostic": "Abrir diagnóstico completo",
         "entity_resolution": "Resolución de entidad",
         "entity_tag": "límites entre producto y compañía",
         "research_pack": "Research Pack",
@@ -639,6 +665,68 @@ def _load_evidence_vnext_diagnostic(run_id: int) -> dict | None:
         "run_id": run_id,
         "report": report,
     }
+
+
+def _evidence_vnext_research_summary(source_run_id: object) -> dict | None:
+    """Compact vNext diagnostics for the human-facing research tab."""
+    if source_run_id is None:
+        return None
+    try:
+        run_id = int(source_run_id)
+    except (TypeError, ValueError):
+        return None
+    try:
+        diagnostic = _load_evidence_vnext_diagnostic(run_id)
+    except Exception:
+        _LOG.exception("Failed to build evidence vNext research summary for run_id=%s", run_id)
+        return None
+    if not diagnostic:
+        return None
+
+    report = diagnostic.get("report") or {}
+    totals = report.get("totals") or {}
+    row = _first_dict(report.get("rows"))
+    readiness = _first_dict((report.get("readiness_matrix") or {}).get("rows"))
+    exa = _first_dict(((report.get("acquisition_diagnostics") or {}).get("exa") or {}).get("rows"))
+    semantic_llm = _first_dict((report.get("semantic_llm") or {}).get("rows"))
+    return {
+        "run_id": run_id,
+        "json_href": f"/magnetism-scanner/run/{run_id}/evidence-vnext",
+        "view_href": f"/magnetism-scanner/run/{run_id}/evidence-vnext/view",
+        "status": row.get("status") or "",
+        "promotion_status": row.get("promotion_status") or "",
+        "readiness_status": readiness.get("readiness_status") or "",
+        "projected_promotion_status": readiness.get("projected_promotion_status") or "",
+        "next_action": readiness.get("next_action") or "",
+        "human_required": readiness.get("human_required"),
+        "accepted": totals.get("accepted") or 0,
+        "review_required": totals.get("review_required") or 0,
+        "rejected": totals.get("rejected") or 0,
+        "reclassified_to_noise": totals.get("reclassified_to_noise") or 0,
+        "changed_fields": totals.get("changed_fields") or 0,
+        "lost_fields": totals.get("lost_fields") or 0,
+        "material_lost_fields": totals.get("material_lost_fields") or 0,
+        "exa_strategy": exa.get("strategy") or "",
+        "exa_status": exa.get("status") or "",
+        "exa_competitor_intent_enabled": bool(exa.get("competitor_intent_enabled")),
+        "exa_planned_intents": exa.get("planned_intents") or [],
+        "review_reasons": _top_reason_names(report.get("top_review_reasons")),
+        "rejected_reasons": _top_reason_names(report.get("top_rejected_reasons")),
+        "semantic_llm_status": semantic_llm.get("status") or "",
+        "semantic_llm_model": semantic_llm.get("model") or "",
+    }
+
+
+def _first_dict(value: object) -> dict:
+    if isinstance(value, list) and value and isinstance(value[0], dict):
+        return value[0]
+    return {}
+
+
+def _top_reason_names(value: object, *, limit: int = 3) -> list[str]:
+    if not isinstance(value, dict):
+        return []
+    return [str(key) for key, _count in sorted(value.items(), key=lambda item: item[1], reverse=True)[:limit]]
 
 
 def _load_evidence_vnext_llm_shadow(run_id: int, *, no_cache: bool = False) -> dict | None:
@@ -1429,6 +1517,7 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
         )
     model["active_tab"] = "research"
     model["research"] = _research_evidence_model(model["payload"])
+    model["research"]["evidence_vnext_summary"] = _evidence_vnext_research_summary(model.get("source_run_id"))
     _attach_ui(model, lang)
     await _attach_sv9_link(model)
 

@@ -90,6 +90,15 @@ BRAND3_BRAND_RESEARCH_GRAPH_PACK = os.environ.get(
     "yes",
     "on",
 }
+BRAND3_BRAND_RESEARCH_VNEXT_PACK = os.environ.get(
+    "BRAND3_BRAND_RESEARCH_VNEXT_PACK",
+    "true",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT = os.environ.get(
     "BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT",
     "false",

@@ -55,6 +55,10 @@ def test_facade_uses_graph_when_promotion_allows_graph(monkeypatch) -> None:
         lambda snapshot: _Recommendation("graph"),
     )
     monkeypatch.setattr(
+        "src.research.research_pack_facade._vnext_builder_decision",
+        lambda snapshot: {"builder": "graph", "status": "not_ready"},
+    )
+    monkeypatch.setattr(
         "src.research.research_pack_facade.build_evidence_graph_from_snapshot",
         lambda snapshot: _Graph(),
     )
@@ -69,7 +73,42 @@ def test_facade_uses_graph_when_promotion_allows_graph(monkeypatch) -> None:
     assert result.builder == "graph"
     assert result.source == "evidence_graph"
     assert result.graph_summary == {"claim_count": 2, "source_count": 1}
-    assert result.recommendation == {"builder": "graph", "promotion_status": "test"}
+    assert result.recommendation == {
+        "builder": "graph",
+        "promotion_status": "test",
+        "evidence_vnext": {"builder": "graph", "status": "not_ready"},
+    }
+
+
+def test_facade_uses_vnext_graph_when_vnext_gate_is_ready(monkeypatch) -> None:
+    monkeypatch.setattr(
+        "src.research.research_pack_facade.recommend_research_pack_builder",
+        lambda snapshot: _Recommendation("graph"),
+    )
+    monkeypatch.setattr(
+        "src.research.research_pack_facade._vnext_builder_decision",
+        lambda snapshot: {"builder": "vnext_graph", "status": "ready"},
+    )
+    monkeypatch.setattr(
+        "src.research.research_pack_facade.build_vnext_evidence_graph_from_snapshot",
+        lambda snapshot: _Graph(),
+    )
+    monkeypatch.setattr(
+        "src.research.research_pack_facade.build_brand_research_pack_from_graph",
+        lambda graph: "vnext-pack",
+    )
+
+    result = build_recommended_research_pack({"run": {"id": 33}})
+
+    assert result.pack == "vnext-pack"
+    assert result.builder == "vnext_graph"
+    assert result.source == "evidence_vnext_graph"
+    assert result.graph_summary == {"claim_count": 2, "source_count": 1}
+    assert result.recommendation == {
+        "builder": "graph",
+        "promotion_status": "test",
+        "evidence_vnext": {"builder": "vnext_graph", "status": "ready"},
+    }
 
 
 def test_recommended_research_pack_metadata_payload_owns_source_fields() -> None:
@@ -80,6 +119,16 @@ def test_recommended_research_pack_metadata_payload_owns_source_fields() -> None
         recommendation={"builder": "graph", "promotion_status": "promotable"},
     )
     legacy_result = RecommendedResearchPack(pack="legacy-pack", builder="legacy")
+    vnext_result = RecommendedResearchPack(
+        pack="vnext-pack",
+        builder="vnext_graph",
+        graph_summary={"claim_count": 3},
+        recommendation={
+            "builder": "graph",
+            "promotion_status": "promotable",
+            "evidence_vnext": {"builder": "vnext_graph", "status": "ready"},
+        },
+    )
 
     assert graph_result.metadata_payload() == {
         "research_pack_source": "evidence_graph",
@@ -91,4 +140,13 @@ def test_recommended_research_pack_metadata_payload_owns_source_fields() -> None
     }
     assert legacy_result.metadata_payload() == {
         "research_pack_source": "snapshot_builder",
+    }
+    assert vnext_result.metadata_payload() == {
+        "research_pack_source": "evidence_vnext_graph",
+        "evidence_graph_summary": {"claim_count": 3},
+        "research_pack_recommendation": {
+            "builder": "graph",
+            "promotion_status": "promotable",
+            "evidence_vnext": {"builder": "vnext_graph", "status": "ready"},
+        },
     }

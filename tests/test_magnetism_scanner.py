@@ -4824,8 +4824,10 @@ class MagnetismScannerTests(unittest.TestCase):
             result = extractor.extract_from_audit_snapshot(snapshot)
 
         self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
-        self.assertEqual(result["research_pack_source"], "evidence_graph")
+        self.assertEqual(result["research_pack_source"], "evidence_vnext_graph")
         self.assertEqual(result["research_pack_recommendation"]["builder"], "graph")
+        self.assertEqual(result["research_pack_recommendation"]["evidence_vnext"]["builder"], "vnext_graph")
+        self.assertEqual(result["research_pack_recommendation"]["evidence_vnext"]["status"], "ready")
         self.assertIn("research_pack_quality", result)
         self.assertEqual(result["research_pack_quality"]["version"], "brand_research_pack_quality_v0_1")
         self.assertIn("audience", result["research_pack_quality"]["dimensions"])

@@ -192,7 +192,8 @@ def _card(packet: dict[str, Any], run: dict[str, Any]) -> dict[str, Any]:
         "projected_material_overlaps": material_overlaps,
         "changed_material_fields": changed_fields,
         "review_urls": _review_urls(review_examples, material_overlaps),
-        "affected_material_fields": _affected_material_fields(material_overlaps, changed_fields),
+        "affected_material_fields": _affected_material_fields(material_overlaps)
+        or _affected_material_fields(changed_fields),
     }
 
 

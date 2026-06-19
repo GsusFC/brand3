@@ -132,6 +132,7 @@ def _run_row(run_id: int, *, payload: dict[str, Any]) -> dict[str, Any]:
     work_orders = report.get("work_orders") if isinstance(report.get("work_orders"), list) else []
     top_review = report.get("top_review_reasons") if isinstance(report.get("top_review_reasons"), dict) else {}
     top_rejected = report.get("top_rejected_reasons") if isinstance(report.get("top_rejected_reasons"), dict) else {}
+    work_order_triage = [_work_order_triage(item) for item in work_orders if isinstance(item, dict)]
 
     return {
         "run_id": run_id,
@@ -154,6 +155,11 @@ def _run_row(run_id: int, *, payload: dict[str, Any]) -> dict[str, Any]:
         "pending_adjudications": int(adjudication.get("pending_count") or 0),
         "decision_actions": [str(item.get("action") or "") for item in decision_queue if isinstance(item, dict)],
         "work_order_tasks": [str(item.get("task") or "") for item in work_orders if isinstance(item, dict)],
+        "work_order_triage": work_order_triage,
+        "work_order_triage_lanes": [str(item.get("lane") or "") for item in work_order_triage if item.get("lane")],
+        "work_order_triage_recommendations": [
+            str(item.get("recommendation") or "") for item in work_order_triage if item.get("recommendation")
+        ],
         "review_reasons": dict(sorted((str(key), int(value or 0)) for key, value in top_review.items())),
         "rejected_reasons": dict(sorted((str(key), int(value or 0)) for key, value in top_rejected.items())),
         "remaining_reason_codes": list(readiness_row.get("remaining_reason_codes") or []),
@@ -167,6 +173,8 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     next_action_counts = Counter(str(row.get("next_action") or "") for row in rows)
     decision_counts: Counter[str] = Counter()
     work_order_counts: Counter[str] = Counter()
+    work_order_triage_lanes: Counter[str] = Counter()
+    work_order_triage_recommendations: Counter[str] = Counter()
     review_reasons: Counter[str] = Counter()
     rejected_reasons: Counter[str] = Counter()
     remaining_reasons: Counter[str] = Counter()
@@ -174,6 +182,10 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
     for row in rows:
         decision_counts.update(action for action in row.get("decision_actions") or [] if action)
         work_order_counts.update(task for task in row.get("work_order_tasks") or [] if task)
+        work_order_triage_lanes.update(lane for lane in row.get("work_order_triage_lanes") or [] if lane)
+        work_order_triage_recommendations.update(
+            recommendation for recommendation in row.get("work_order_triage_recommendations") or [] if recommendation
+        )
         review_reasons.update(row.get("review_reasons") or {})
         rejected_reasons.update(row.get("rejected_reasons") or {})
         remaining_reasons.update(reason for reason in row.get("remaining_reason_codes") or [] if reason)
@@ -192,6 +204,8 @@ def _summary(rows: list[dict[str, Any]]) -> dict[str, Any]:
         "next_action_counts": _count_dict(next_action_counts),
         "decision_action_counts": _count_dict(decision_counts),
         "work_order_task_counts": _count_dict(work_order_counts),
+        "work_order_triage_lane_counts": _count_dict(work_order_triage_lanes),
+        "work_order_triage_recommendation_counts": _count_dict(work_order_triage_recommendations),
         "top_review_reasons": _count_dict(review_reasons.most_common(10)),
         "top_rejected_reasons": _count_dict(rejected_reasons.most_common(10)),
         "remaining_reason_counts": _count_dict(remaining_reasons.most_common(10)),
@@ -225,6 +239,10 @@ def _markdown(batch: dict[str, Any]) -> str:
     _append_counts(lines, summary.get("decision_action_counts") or {})
     lines.extend(["", "## Work Order Tasks", ""])
     _append_counts(lines, summary.get("work_order_task_counts") or {})
+    lines.extend(["", "## Work Order Triage", ""])
+    _append_counts(lines, summary.get("work_order_triage_lane_counts") or {})
+    lines.extend(["", "## Work Order Recommendations", ""])
+    _append_counts(lines, summary.get("work_order_triage_recommendation_counts") or {})
     lines.extend(["", "## Top Review Reasons", ""])
     _append_counts(lines, summary.get("top_review_reasons") or {})
     lines.extend(["", "## Top Rejected Reasons", ""])
@@ -246,6 +264,27 @@ def _markdown(batch: dict[str, Any]) -> str:
                 work_order_count=row.get("work_order_count") or 0,
             )
         )
+    work_order_rows = [
+        (row, triage)
+        for row in batch.get("rows") or []
+        for triage in row.get("work_order_triage") or []
+        if isinstance(triage, dict)
+    ]
+    if work_order_rows:
+        lines.extend(["", "## Work Order Routing", ""])
+        lines.append("| Run | Brand | Task | Lane | Recommendation | Model role |")
+        lines.append("| --- | --- | --- | --- | --- | --- |")
+        for row, triage in work_order_rows:
+            lines.append(
+                "| {run_id} | {brand_name} | {task} | {lane} | {recommendation} | {model_role} |".format(
+                    run_id=row.get("run_id"),
+                    brand_name=_md_cell(row.get("brand_name") or ""),
+                    task=_md_cell(triage.get("task") or ""),
+                    lane=_md_cell(triage.get("lane") or ""),
+                    recommendation=_md_cell(triage.get("recommendation") or ""),
+                    model_role=_md_cell(triage.get("model_role") or ""),
+                )
+            )
     lines.append("")
     return "\n".join(lines)
 
@@ -256,6 +295,69 @@ def _append_counts(lines: list[str], counts: dict[str, int]) -> None:
         return
     for key, value in counts.items():
         lines.append(f"- `{key}`: `{value}`")
+
+
+def _work_order_triage(work_order: dict[str, Any]) -> dict[str, Any]:
+    next_action = str(work_order.get("next_action") or "")
+    task = str(work_order.get("task") or "")
+    context = work_order.get("context") if isinstance(work_order.get("context"), dict) else {}
+    remaining = context.get("remaining_review_examples") if isinstance(context.get("remaining_review_examples"), list) else []
+    overlaps = context.get("projected_material_overlaps") if isinstance(context.get("projected_material_overlaps"), list) else []
+    changed_fields = context.get("changed_material_fields") if isinstance(context.get("changed_material_fields"), list) else []
+    reason_codes = sorted(
+        {
+            str(item.get("classification_reason") or "")
+            for item in (*remaining, *overlaps)
+            if isinstance(item, dict) and item.get("classification_reason")
+        }
+    )
+    source_urls = sorted(
+        {
+            str(item.get("url") or "")
+            for item in (*remaining, *overlaps)
+            if isinstance(item, dict) and str(item.get("url") or "")
+        }
+    )
+    material_fields = sorted(
+        {
+            str(item.get("field") or "")
+            for item in (*overlaps, *changed_fields)
+            if isinstance(item, dict) and item.get("field")
+        }
+    )
+
+    if next_action == "add_source_url_or_remove_material_quote":
+        lane = "deterministic_source_contract"
+        recommendation = "fix_provenance_or_exclude_unsourced_material"
+        model_role = "none"
+        rationale = "A material quote without a source URL is a provenance contract failure; do not ask a model to infer the source."
+    elif next_action == "confirm_entity_alias_before_promotion":
+        lane = "llm_assisted_adjudication"
+        recommendation = "structured_entity_alias_shadow"
+        model_role = "suggest_alias_confidence_only"
+        rationale = "Entity/profile aliasing is semantic, but promotion still requires adjudication and recompute."
+    elif next_action == "manual_audit_projected_material_changes":
+        lane = "llm_structured_candidate"
+        recommendation = "structured_material_diff_review"
+        model_role = "classify_materiality_entity_fit_and_source_trust"
+        rationale = "The deterministic pipeline found material field changes; a structured model can reduce manual review by judging materiality and semantic risk."
+    else:
+        lane = "manual_review_only"
+        recommendation = "keep_human_review"
+        model_role = "none"
+        rationale = "No supported automation lane is defined for this work order action."
+
+    return {
+        "task": task,
+        "next_action": next_action,
+        "lane": lane,
+        "recommendation": recommendation,
+        "model_role": model_role,
+        "rationale": rationale,
+        "reason_codes": reason_codes,
+        "source_urls": source_urls,
+        "material_fields": material_fields,
+    }
 
 
 def _count_dict(counter: Counter[str] | list[tuple[str, int]]) -> dict[str, int]:

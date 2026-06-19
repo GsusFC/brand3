@@ -267,10 +267,19 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
         "contract_projection": contract_projection,
         "decision_queue": decision_queue,
         "decision_action_counts": _decision_action_counts(decision_queue),
+        "evidence_contract": {
+            "policy": "strict_tone_consistency_source_url",
+            "runtime_effect": False,
+            "prompt_effect": False,
+            "runs": shadow_policy_runs,
+            "next_action_counts": _shadow_policy_action_counts(shadow_policy_runs),
+        },
         "shadow_policy": {
             "policy": "strict_tone_consistency_source_url",
             "runtime_effect": False,
             "prompt_effect": False,
+            "deprecated": True,
+            "replacement": "evidence_contract",
             "runs": shadow_policy_runs,
             "next_action_counts": _shadow_policy_action_counts(shadow_policy_runs),
         },
@@ -1578,11 +1587,11 @@ def _readiness_row(shadow_run: dict[str, Any]) -> dict[str, Any]:
     human_required = bool(shadow_run.get("human_required"))
     intervention_type = _readiness_intervention_type(next_action)
     if projected_status == "candidate" and not human_required:
-        readiness_status = "ready_after_shadow_policy"
+        readiness_status = "ready_after_contract"
     elif projected_status == "audit_required":
         readiness_status = "needs_manual_audit"
     elif projected_status == "blocked":
-        readiness_status = "blocked_after_shadow_policy"
+        readiness_status = "blocked_after_contract"
     else:
         readiness_status = "needs_review"
     if not human_required and contract_effect == "removes_review_observations":

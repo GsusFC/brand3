@@ -4913,7 +4913,7 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["research_pack_source"], "evidence_vnext_graph")
         self.assertEqual(result["research_pack_recommendation"]["builder"], "graph")
         self.assertEqual(result["research_pack_recommendation"]["evidence_vnext"]["builder"], "vnext_graph")
-        self.assertEqual(result["research_pack_recommendation"]["evidence_vnext"]["status"], "ready")
+        self.assertEqual(result["research_pack_recommendation"]["evidence_vnext"]["status"], "ready_after_contract")
         self.assertIn("research_pack_quality", result)
         self.assertEqual(result["research_pack_quality"]["version"], "brand_research_pack_quality_v0_1")
         self.assertIn("audience", result["research_pack_quality"]["dimensions"])

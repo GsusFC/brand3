@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from src.research.research_pack_facade import RecommendedResearchPack, build_recommended_research_pack
+from src.research.research_pack_facade import (
+    RecommendedResearchPack,
+    _vnext_builder_decision,
+    build_recommended_research_pack,
+)
 
 
 class _Recommendation:
@@ -14,6 +18,96 @@ class _Recommendation:
 class _Graph:
     def summary(self):
         return {"claim_count": 2, "source_count": 1}
+
+
+def _patch_vnext_decision_inputs(monkeypatch, report: dict) -> None:
+    class _Comparison:
+        def to_dict(self):
+            return {}
+
+    class _Gate:
+        def to_dict(self):
+            return {}
+
+    monkeypatch.setattr("src.research.research_pack_facade.compare_evidence_vnext_from_snapshot", lambda snapshot: _Comparison())
+    monkeypatch.setattr("src.research.research_pack_facade.build_evidence_vnext_packet_from_snapshot", lambda snapshot: _Gate())
+    monkeypatch.setattr("src.research.research_pack_facade.build_batch_report", lambda rows: report)
+
+
+def test_vnext_builder_decision_promotes_ready_contract(monkeypatch) -> None:
+    _patch_vnext_decision_inputs(
+        monkeypatch,
+        {
+            "readiness_matrix": {
+                "rows": [
+                    {
+                        "readiness_status": "ready_after_contract",
+                        "next_action": "candidate_after_contract",
+                        "human_required": False,
+                        "remaining_reason_codes": ["no_promotion_blockers_detected"],
+                    }
+                ]
+            },
+            "totals": {"accepted": 4, "review_required": 1, "rejected": 2, "material_lost_fields": 0},
+        },
+    )
+
+    decision = _vnext_builder_decision({"run": {"id": 10}})
+
+    assert decision["builder"] == "vnext_graph"
+    assert decision["status"] == "ready_after_contract"
+    assert decision["human_required"] is False
+    assert decision["material_lost_fields"] == 0
+
+
+def test_vnext_builder_decision_blocks_human_required_contract(monkeypatch) -> None:
+    _patch_vnext_decision_inputs(
+        monkeypatch,
+        {
+            "readiness_matrix": {
+                "rows": [
+                    {
+                        "readiness_status": "needs_manual_audit",
+                        "next_action": "manual_audit_projected_material_changes",
+                        "human_required": True,
+                        "remaining_reason_codes": ["manual_audit_required_for_material_field_changes"],
+                    }
+                ]
+            },
+            "totals": {"accepted": 4, "review_required": 2, "rejected": 2, "material_lost_fields": 0},
+        },
+    )
+
+    decision = _vnext_builder_decision({"run": {"id": 11}})
+
+    assert decision["builder"] == "graph"
+    assert decision["status"] == "not_ready"
+    assert decision["human_required"] is True
+
+
+def test_vnext_builder_decision_blocks_material_loss(monkeypatch) -> None:
+    _patch_vnext_decision_inputs(
+        monkeypatch,
+        {
+            "readiness_matrix": {
+                "rows": [
+                    {
+                        "readiness_status": "ready_after_contract",
+                        "next_action": "candidate_after_contract",
+                        "human_required": False,
+                        "remaining_reason_codes": [],
+                    }
+                ]
+            },
+            "totals": {"accepted": 4, "review_required": 0, "rejected": 2, "material_lost_fields": 1},
+        },
+    )
+
+    decision = _vnext_builder_decision({"run": {"id": 12}})
+
+    assert decision["builder"] == "graph"
+    assert decision["status"] == "not_ready"
+    assert decision["material_lost_fields"] == 1
 
 
 def test_facade_uses_legacy_when_graph_is_not_allowed(monkeypatch) -> None:

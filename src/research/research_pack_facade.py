@@ -123,18 +123,26 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
     readiness = readiness_rows[0] if readiness_rows else {}
     readiness_status = str(readiness.get("readiness_status") or "")
     next_action = str(readiness.get("next_action") or "")
+    human_required = bool(readiness.get("human_required"))
     totals = report.get("totals") or {}
-    ready = readiness_status == "ready_after_shadow_policy" and next_action == "candidate_after_contract"
+    material_lost_fields = int(totals.get("material_lost_fields") or 0)
+    ready = (
+        readiness_status in {"ready_after_contract", "ready_after_shadow_policy"}
+        and next_action == "candidate_after_contract"
+        and material_lost_fields == 0
+        and not human_required
+    )
     return {
         "version": EVIDENCE_VNEXT_PACK_DECISION_VERSION,
         "enabled": True,
         "builder": "vnext_graph" if ready else "graph",
-        "status": "ready" if ready else "not_ready",
+        "status": "ready_after_contract" if ready else "not_ready",
         "readiness_status": readiness_status,
         "next_action": next_action,
+        "human_required": human_required,
         "reason_codes": list(readiness.get("remaining_reason_codes") or []),
         "accepted": int(totals.get("accepted") or 0),
         "review_required": int(totals.get("review_required") or 0),
         "rejected": int(totals.get("rejected") or 0),
-        "material_lost_fields": int(totals.get("material_lost_fields") or 0),
+        "material_lost_fields": material_lost_fields,
     }

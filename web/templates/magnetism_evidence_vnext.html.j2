@@ -37,7 +37,7 @@
     </div>
     <div class="magnetism-hero-metric">
       <div class="dim magnetism-hero-label">readiness</div>
-      <div class="{% if readiness.readiness_status == 'blocked_after_shadow_policy' %}hl-warn{% else %}hl-accent{% endif %} magnetism-hero-metric-value-compact">
+      <div class="{% if readiness.readiness_status in ['blocked_after_contract', 'blocked_after_shadow_policy'] %}hl-warn{% else %}hl-accent{% endif %} magnetism-hero-metric-value-compact">
         {{ readiness.readiness_status or report.recommendation.status or "unknown" }}
       </div>
       {% if readiness.next_action %}

@@ -1208,6 +1208,7 @@ def test_batch_report_keeps_external_profile_review_only_without_material_overla
     assert report["contract_projection"]["removed_review_observation_count"] == 1
     assert report["contract_projection"]["projected_promotion_counts"]["candidate"] == 1
     assert report["decision_queue"] == []
+    assert report["evidence_contract"]["runs"][0]["next_action"] == "candidate_after_contract"
     assert report["shadow_policy"]["runs"][0]["next_action"] == "candidate_after_contract"
 
 
@@ -1301,12 +1302,14 @@ def test_batch_report_distinguishes_quote_plus_alias_manual_audit() -> None:
     assert report["decision_queue"][0]["action"] == "implement_contract_recommendation"
     assert report["decision_queue"][0]["affected_runs"] == [4207]
     assert "manual_audit_projected_material_changes" not in report["decision_action_counts"]
-    assert report["shadow_policy"]["runtime_effect"] is False
-    assert report["shadow_policy"]["prompt_effect"] is False
-    assert report["shadow_policy"]["runs"][0]["contract_effect"] == "removes_review_observations"
-    assert report["shadow_policy"]["runs"][0]["next_action"] == "candidate_after_contract"
-    assert report["shadow_policy"]["next_action_counts"]["candidate_after_contract"] == 1
-    assert report["readiness_matrix"]["rows"][0]["readiness_status"] == "ready_after_shadow_policy"
+    assert report["evidence_contract"]["runtime_effect"] is False
+    assert report["evidence_contract"]["prompt_effect"] is False
+    assert report["evidence_contract"]["runs"][0]["contract_effect"] == "removes_review_observations"
+    assert report["evidence_contract"]["runs"][0]["next_action"] == "candidate_after_contract"
+    assert report["evidence_contract"]["next_action_counts"]["candidate_after_contract"] == 1
+    assert report["shadow_policy"]["deprecated"] is True
+    assert report["shadow_policy"]["replacement"] == "evidence_contract"
+    assert report["readiness_matrix"]["rows"][0]["readiness_status"] == "ready_after_contract"
     assert report["readiness_matrix"]["rows"][0]["intervention_type"] == "none"
     assert report["readiness_matrix"]["rows"][0]["automation_lane"] == "contract_can_auto_clear"
     assert report["readiness_matrix"]["counts"]["intervention:none"] == 1
@@ -1417,10 +1420,10 @@ def test_batch_report_projects_contract_effect_on_review_required_runs() -> None
     assert report["contract_projection"]["status_transitions"][0]["projected_promotion_status"] == "audit_required"
     assert report["decision_action_counts"]["implement_contract_recommendation"] == 1
     assert report["decision_action_counts"]["manual_audit_projected_material_changes"] == 1
-    assert report["shadow_policy"]["runs"][0]["status_transition"] is True
-    assert report["shadow_policy"]["runs"][0]["current_promotion_status"] == "review_required"
-    assert report["shadow_policy"]["runs"][0]["projected_promotion_status"] == "audit_required"
-    assert report["shadow_policy"]["runs"][0]["next_action"] == "manual_audit_projected_material_changes"
+    assert report["evidence_contract"]["runs"][0]["status_transition"] is True
+    assert report["evidence_contract"]["runs"][0]["current_promotion_status"] == "review_required"
+    assert report["evidence_contract"]["runs"][0]["projected_promotion_status"] == "audit_required"
+    assert report["evidence_contract"]["runs"][0]["next_action"] == "manual_audit_projected_material_changes"
     assert report["readiness_matrix"]["rows"][0]["status_transition"] is True
     assert report["readiness_matrix"]["rows"][0]["readiness_status"] == "needs_manual_audit"
     assert report["intervention_packets"][0]["promotion_after_closure"] == "candidate_if_no_new_blockers"

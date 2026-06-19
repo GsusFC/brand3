@@ -13,7 +13,7 @@ from src.collectors.competitor_collector import (
     ComparisonResult,
 )
 from src.collectors.context_collector import ContextCollector, ContextData
-from src.collectors.exa_collector import ExaCollector, ExaData, ExaResult
+from src.collectors.exa_collector import EXA_STRATEGY_VERSION, ExaCollector, ExaData, ExaResult
 from src.collectors.hyperbrowser_collector import HyperbrowserCollector, HyperbrowserFetchData
 from src.collectors.parallel_shadow_collector import ParallelShadowCollector, ParallelShadowData
 from src.collectors.social_collector import PlatformMetrics, SocialData
@@ -80,6 +80,9 @@ def from_web_payload(payload: dict | None) -> WebData | None:
 def from_exa_payload(payload: dict | None) -> ExaData | None:
     if not payload:
         return None
+    diagnostics = payload.get("diagnostics") or {}
+    if not isinstance(diagnostics, dict) or diagnostics.get("strategy") != EXA_STRATEGY_VERSION:
+        return None
     return ExaData(
         brand_name=payload.get("brand_name", ""),
         mentions=[ExaResult(**item) for item in payload.get("mentions", [])],
@@ -87,7 +90,7 @@ def from_exa_payload(payload: dict | None) -> ExaData | None:
         ai_visibility_results=[ExaResult(**item) for item in payload.get("ai_visibility_results", [])],
         news=[ExaResult(**item) for item in payload.get("news", [])],
         raw_responses=payload.get("raw_responses", {}),
-        diagnostics=payload.get("diagnostics", {}),
+        diagnostics=diagnostics,
     )
 
 

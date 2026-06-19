@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from src.collectors.exa_collector import ExaData
+from src.collectors.exa_collector import EXA_STRATEGY_VERSION, ExaData
 from src.collectors.hyperbrowser_collector import HyperbrowserFetchData
 from src.collectors.parallel_shadow_collector import ParallelShadowData, ParallelShadowIntent, ParallelShadowResult
 from src.collectors.web_collector import WebData
@@ -23,7 +23,11 @@ def test_from_exa_payload_preserves_diagnostics():
         "ai_visibility_results": [],
         "news": [],
         "raw_responses": {"search_events": []},
-        "diagnostics": {"status": "degraded", "failed_intents": ["mentions"]},
+        "diagnostics": {
+            "strategy": EXA_STRATEGY_VERSION,
+            "status": "degraded",
+            "failed_intents": ["mentions"],
+        },
     }
 
     exa = from_exa_payload(payload)
@@ -32,6 +36,20 @@ def test_from_exa_payload_preserves_diagnostics():
     assert exa is not None
     assert exa.diagnostics["status"] == "degraded"
     assert exa.diagnostics["failed_intents"] == ["mentions"]
+
+
+def test_from_exa_payload_rejects_legacy_strategy_cache():
+    payload = {
+        "brand_name": "Brand",
+        "mentions": [],
+        "competitors": [],
+        "ai_visibility_results": [],
+        "news": [],
+        "raw_responses": {"search_events": []},
+        "diagnostics": {"status": "ok", "intent_results": {"competitors": {}}},
+    }
+
+    assert from_exa_payload(payload) is None
 
 
 def test_set_acquisition_state_updates_cache_and_preserves_existing_details():
@@ -77,7 +95,12 @@ class _FakeExaCollector:
             brand_name=brand_name,
             mentions=[],
             news=[],
-            diagnostics={"status": "degraded", "failed_intents": ["mentions"], "no_result_intents": []},
+            diagnostics={
+                "strategy": EXA_STRATEGY_VERSION,
+                "status": "degraded",
+                "failed_intents": ["mentions"],
+                "no_result_intents": [],
+            },
         )
 
 

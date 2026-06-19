@@ -20,7 +20,7 @@ from urllib.parse import urlparse
 _TRANSIENT_SEARCH_ATTEMPTS = 2
 _TRANSIENT_SEARCH_DELAY_S = 1.5
 _MAX_BRAND_DATA_WORKERS = 4
-_EXA_STRATEGY_VERSION = "precision_vnext_v1"
+EXA_STRATEGY_VERSION = "precision_vnext_v1"
 
 
 @dataclass
@@ -617,7 +617,7 @@ class ExaCollector:
         failed_intents = [intent for intent, payload in by_intent.items() if payload.get("status") == "search_failed"]
         no_result_intents = [intent for intent, payload in by_intent.items() if payload.get("status") == "no_results"]
         return {
-            "strategy": _EXA_STRATEGY_VERSION,
+            "strategy": EXA_STRATEGY_VERSION,
             "strategy_notes": [
                 "owned_confirmation, external_mentions, news, and ai_visibility are default production intents.",
                 "competitors intent is opt-in via BRAND3_EXA_INCLUDE_COMPETITOR_INTENT=1.",

@@ -386,6 +386,17 @@ class MagnetismScannerTests(unittest.TestCase):
                     "competitors": [],
                     "ai_visibility_results": [],
                     "news": [],
+                    "diagnostics": {
+                        "strategy": "precision_vnext_v1",
+                        "status": "ok",
+                        "competitor_intent_enabled": False,
+                        "planned_intents": [
+                            "owned_confirmation",
+                            "external_mentions",
+                            "news",
+                            "ai_visibility",
+                        ],
+                    },
                 },
             )
             store.save_features(
@@ -421,6 +432,11 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("adjudication", response.text)
         self.assertIn("gate summary", response.text)
         self.assertIn("run decision", response.text)
+        self.assertIn("acquisition diagnostics", response.text)
+        self.assertIn("strategy and runtime contract", response.text)
+        self.assertIn("precision_vnext_v1", response.text)
+        self.assertIn("competitor_intent=False", response.text)
+        self.assertIn("owned_confirmation", response.text)
         self.assertIn("acquisition matrix", response.text)
         self.assertIn("semantic shadow", response.text)
         self.assertIn("heuristic_shadow_v0", response.text)

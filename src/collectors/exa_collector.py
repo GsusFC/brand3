@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 _TRANSIENT_SEARCH_ATTEMPTS = 2
 _TRANSIENT_SEARCH_DELAY_S = 1.5
 _MAX_BRAND_DATA_WORKERS = 4
+_EXA_STRATEGY_VERSION = "precision_vnext_v1"
 
 
 @dataclass
@@ -189,6 +190,12 @@ class ExaCollector:
             part.strip().lower()
             for part in os.environ.get("BRAND3_EXA_DEEP_REASONING_INTENTS", "").split(",")
             if part.strip()
+        }
+        self._include_competitor_intent = os.environ.get("BRAND3_EXA_INCLUDE_COMPETITOR_INTENT", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
         }
         self._mentions_start_crawl_days = self._env_int("BRAND3_EXA_MENTIONS_START_CRAWL_DAYS")
         self._enrichment_start_crawl_days = self._env_int("BRAND3_EXA_ENRICHMENT_START_CRAWL_DAYS")
@@ -528,7 +535,7 @@ class ExaCollector:
             ),
             "ai_visibility": lambda: self.probe_ai_visibility(brand_name, brand_url=brand_url),
         }
-        if domain_anchor:
+        if domain_anchor and self._include_competitor_intent:
             tasks["competitors"] = lambda: self.search(
                 f"alternatives competitors similar to {brand_name} {domain_anchor} category",
                 intent="competitors",
@@ -610,6 +617,20 @@ class ExaCollector:
         failed_intents = [intent for intent, payload in by_intent.items() if payload.get("status") == "search_failed"]
         no_result_intents = [intent for intent, payload in by_intent.items() if payload.get("status") == "no_results"]
         return {
+            "strategy": _EXA_STRATEGY_VERSION,
+            "strategy_notes": [
+                "owned_confirmation, external_mentions, news, and ai_visibility are default production intents.",
+                "competitors intent is opt-in via BRAND3_EXA_INCLUDE_COMPETITOR_INTENT=1.",
+                "Use separate CompetitorCollector for full competitive analysis.",
+            ],
+            "competitor_intent_enabled": self._include_competitor_intent,
+            "planned_intents": [
+                "owned_confirmation",
+                "external_mentions",
+                "news",
+                "ai_visibility",
+            ]
+            + (["competitors"] if self._include_competitor_intent else []),
             "status": "degraded" if failed_intents else "ok",
             "failed_intents": failed_intents,
             "no_result_intents": no_result_intents,

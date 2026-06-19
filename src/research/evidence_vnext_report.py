@@ -32,6 +32,7 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
     rejected_examples: dict[str, list[dict[str, Any]]] = {}
     acquisition_provider_rows: dict[str, dict[str, Any]] = {}
     acquisition_source_class_rows: dict[str, dict[str, Any]] = {}
+    acquisition_diagnostics_rows: list[dict[str, Any]] = []
     acquisition_contract_exclusions: dict[str, Any] = {
         "total": 0,
         "by_contract": {},
@@ -160,6 +161,14 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
             target=acquisition_contract_exclusions,
             payload=result.get("vnext_acquisition_contracts") if isinstance(result.get("vnext_acquisition_contracts"), dict) else {},
         )
+        _accumulate_acquisition_diagnostics(
+            target=acquisition_diagnostics_rows,
+            payload=result.get("vnext_acquisition_diagnostics")
+            if isinstance(result.get("vnext_acquisition_diagnostics"), dict)
+            else {},
+            run_id=comparison.get("run_id"),
+            brand_name=comparison.get("brand_name") or "",
+        )
         _accumulate_semantic_evidence(
             target=semantic_evidence,
             payload=result.get("vnext_semantic_assessment") if isinstance(result.get("vnext_semantic_assessment"), dict) else {},
@@ -208,6 +217,7 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
         provider_rows=acquisition_provider_rows,
         source_class_rows=acquisition_source_class_rows,
     )
+    acquisition_diagnostics = _finalize_acquisition_diagnostics(acquisition_diagnostics_rows)
     provider_acquisition_contracts = _provider_acquisition_contracts(acquisition_matrix)
     provider_contract_backlog = _provider_contract_backlog(provider_acquisition_contracts)
     decision_queue = _decision_queue(
@@ -242,6 +252,7 @@ def build_batch_report(results: list[dict[str, Any]], *, db_path: str = "") -> d
         "review_examples_by_reason": review_examples,
         "rejected_examples_by_reason": rejected_examples,
         "acquisition_matrix": acquisition_matrix,
+        "acquisition_diagnostics": acquisition_diagnostics,
         "acquisition_contract_exclusions": acquisition_contract_exclusions,
         "semantic_evidence": semantic_evidence,
         "semantic_llm": semantic_llm,
@@ -2060,6 +2071,50 @@ def _accumulate_acquisition_contract_exclusions(*, target: dict[str, Any], paylo
         for key, value in counts.items():
             bucket[str(key)] = int(bucket.get(str(key)) or 0) + int(value or 0)
         target[target_key] = dict(sorted(bucket.items()))
+
+
+def _accumulate_acquisition_diagnostics(
+    *,
+    target: list[dict[str, Any]],
+    payload: dict[str, Any],
+    run_id: int | None,
+    brand_name: str,
+) -> None:
+    exa = payload.get("exa") if isinstance(payload.get("exa"), dict) else {}
+    target.append(
+        {
+            "run_id": run_id,
+            "brand_name": brand_name,
+            "provider": "exa",
+            "strategy": str(exa.get("strategy") or "unknown"),
+            "status": str(exa.get("status") or "unknown"),
+            "competitor_intent_enabled": bool(exa.get("competitor_intent_enabled")),
+            "planned_intents": [str(item) for item in exa.get("planned_intents") or [] if item],
+            "failed_intents": [str(item) for item in exa.get("failed_intents") or [] if item],
+            "no_result_intents": [str(item) for item in exa.get("no_result_intents") or [] if item],
+        }
+    )
+
+
+def _finalize_acquisition_diagnostics(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    strategy_counts: dict[str, int] = {}
+    status_counts: dict[str, int] = {}
+    competitor_intent_enabled_count = 0
+    for row in rows:
+        strategy = str(row.get("strategy") or "unknown")
+        status = str(row.get("status") or "unknown")
+        strategy_counts[strategy] = strategy_counts.get(strategy, 0) + 1
+        status_counts[status] = status_counts.get(status, 0) + 1
+        if row.get("competitor_intent_enabled"):
+            competitor_intent_enabled_count += 1
+    return {
+        "exa": {
+            "strategy_counts": dict(sorted(strategy_counts.items())),
+            "status_counts": dict(sorted(status_counts.items())),
+            "competitor_intent_enabled_count": competitor_intent_enabled_count,
+            "rows": rows,
+        }
+    }
 
 
 def _accumulate_semantic_evidence(

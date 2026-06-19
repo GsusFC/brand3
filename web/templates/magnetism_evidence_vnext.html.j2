@@ -236,6 +236,35 @@
 {% if report.acquisition_matrix and (report.acquisition_matrix.provider_rows or report.acquisition_matrix.source_class_rows) %}
 <hr class="rule-thin">
 
+{% if report.acquisition_diagnostics and report.acquisition_diagnostics.exa %}
+<section>
+  <div class="section-head">
+    <span class="label">acquisition diagnostics</span>
+    <span class="tag">// strategy and runtime contract</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-top:14px;">
+    {% for item in report.acquisition_diagnostics.exa.rows %}
+    <article style="border:1px solid var(--border); background:var(--surface); padding:14px;">
+      <div class="dim" style="font-family:var(--font-mono); font-size:11px;">{{ item.provider }} strategy</div>
+      <strong class="hl-accent" style="font-family:var(--font-mono); font-size:16px;">{{ item.strategy }}</strong>
+      <p class="dim" style="font-family:var(--font-mono); font-size:12px; line-height:1.5; margin:8px 0 0;">
+        status={{ item.status }} · competitor_intent={{ item.competitor_intent_enabled }}
+      </p>
+      {% if item.planned_intents %}
+      <div class="badge-line" style="margin-top:10px;">
+        {% for intent in item.planned_intents %}
+        <span class="badge">{{ intent }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<hr class="rule-thin">
+{% endif %}
+
 <section>
   <div class="section-head">
     <span class="label">acquisition matrix</span>

@@ -493,6 +493,7 @@ def compare_legacy_current_and_vnext_from_snapshot(snapshot: dict[str, Any]) -> 
     """Return all three pack payloads for lab inspection."""
 
     acquisition_contracts = apply_evidence_vnext_acquisition_contracts(snapshot)
+    acquisition_diagnostics = _acquisition_diagnostics_from_snapshot(snapshot)
     legacy = build_brand_research_pack_from_snapshot(snapshot)
     current_graph = build_evidence_graph_from_snapshot(snapshot)
     current = build_brand_research_pack_from_graph(current_graph)
@@ -514,6 +515,7 @@ def compare_legacy_current_and_vnext_from_snapshot(snapshot: dict[str, Any]) -> 
         "vnext_semantic_assessment": semantic,
         "vnext_semantic_llm_assessment": semantic_llm,
         "vnext_acquisition_contracts": acquisition_contracts.to_dict(),
+        "vnext_acquisition_diagnostics": acquisition_diagnostics,
         "vnext_comparison": compare_evidence_vnext_from_snapshot(snapshot).to_dict(),
     }
 
@@ -559,6 +561,33 @@ def apply_evidence_vnext_acquisition_contracts(snapshot: dict[str, Any]) -> Acqu
         normalized_snapshot=normalized,
         exclusions=tuple(exclusions),
     )
+
+
+def _acquisition_diagnostics_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    exa_diagnostics: dict[str, Any] = {}
+    for raw_input in snapshot.get("raw_inputs") or []:
+        if not isinstance(raw_input, dict) or str(raw_input.get("source") or "") != "exa":
+            continue
+        payload = raw_input.get("payload")
+        if not isinstance(payload, dict):
+            continue
+        diagnostics = payload.get("diagnostics")
+        if isinstance(diagnostics, dict):
+            exa_diagnostics = diagnostics
+            break
+    planned_intents = exa_diagnostics.get("planned_intents")
+    if not isinstance(planned_intents, list):
+        planned_intents = sorted((exa_diagnostics.get("intent_results") or {}).keys())
+    return {
+        "exa": {
+            "strategy": str(exa_diagnostics.get("strategy") or "unknown"),
+            "status": str(exa_diagnostics.get("status") or "unknown"),
+            "competitor_intent_enabled": bool(exa_diagnostics.get("competitor_intent_enabled")),
+            "planned_intents": [str(item) for item in planned_intents if item],
+            "failed_intents": [str(item) for item in exa_diagnostics.get("failed_intents") or [] if item],
+            "no_result_intents": [str(item) for item in exa_diagnostics.get("no_result_intents") or [] if item],
+        }
+    }
 
 
 def _normalize_exa_raw_inputs(snapshot: dict[str, Any], exclusions: list[AcquisitionContractExclusion]) -> None:

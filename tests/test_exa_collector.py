@@ -52,7 +52,8 @@ def test_search_uses_news_profile_with_freshness_window():
     assert "start_published_date" in call["kwargs"]
 
 
-def test_collect_brand_data_emits_structured_diagnostics_for_failed_and_empty_intents():
+def test_collect_brand_data_emits_structured_diagnostics_for_failed_and_empty_intents(monkeypatch):
+    monkeypatch.setenv("BRAND3_EXA_INCLUDE_COMPETITOR_INTENT", "1")
     collector = ExaCollector(api_key="test")
     fake = _FakeExaClient()
     collector._client = fake
@@ -61,6 +62,8 @@ def test_collect_brand_data_emits_structured_diagnostics_for_failed_and_empty_in
     diagnostics = data.diagnostics
 
     assert diagnostics["status"] == "degraded"
+    assert diagnostics["strategy"] == "precision_vnext_v1"
+    assert diagnostics["competitor_intent_enabled"] is True
     assert "competitors" in diagnostics["failed_intents"]
     assert "news" in diagnostics["no_result_intents"]
     assert diagnostics["intent_results"]["competitors"]["status"] == "search_failed"
@@ -85,15 +88,40 @@ def test_collect_brand_data_uses_precision_exa_queries_in_production():
     assert any("review case study customer integration" in query for query in queries)
     assert any("announcement launch funding partnership product" in query for query in queries)
     assert any("AI recommendation alternatives best tools" in query for query in queries)
-    assert any("alternatives competitors similar to Brand brand.com category" in query for query in queries)
+    assert not any("alternatives competitors similar to Brand brand.com category" in query for query in queries)
 
     owned_call = next(call for call in fake.calls if "official website product company about" in call["query"])
     external_call = next(call for call in fake.calls if "review case study customer integration" in call["query"])
     assert owned_call["kwargs"]["include_domains"] == ["brand.com"]
     assert external_call["kwargs"]["exclude_domains"] == ["brand.com"]
     assert len(data.mentions) == 2
+    assert data.competitors == []
+    assert data.diagnostics["strategy"] == "precision_vnext_v1"
+    assert data.diagnostics["competitor_intent_enabled"] is False
+    assert data.diagnostics["planned_intents"] == [
+        "owned_confirmation",
+        "external_mentions",
+        "news",
+        "ai_visibility",
+    ]
     assert "owned_confirmation" in data.diagnostics["intent_results"]
     assert "external_mentions" in data.diagnostics["intent_results"]
+    assert "competitors" not in data.diagnostics["intent_results"]
+
+
+def test_collect_brand_data_can_opt_into_exa_competitor_intent(monkeypatch):
+    monkeypatch.setenv("BRAND3_EXA_INCLUDE_COMPETITOR_INTENT", "1")
+    collector = ExaCollector(api_key="test")
+    fake = _FakeExaClient()
+    collector._client = fake
+
+    data = collector.collect_brand_data("Brand", "https://brand.com")
+    queries = [call["query"] for call in fake.calls]
+
+    assert any("alternatives competitors similar to Brand brand.com category" in query for query in queries)
+    assert data.diagnostics["competitor_intent_enabled"] is True
+    assert "competitors" in data.diagnostics["planned_intents"]
+    assert data.diagnostics["intent_results"]["competitors"]["status"] == "search_failed"
 
 
 def test_collect_brand_data_runs_independent_intents_concurrently():

@@ -51,7 +51,9 @@ def test_intervention_board_builds_entity_alias_records() -> None:
     assert board["summary"]["recompute_run_ids"] == [288]
     assert board["summary"]["review_urls"] == ["https://www.linkedin.com/company/base44"]
     assert board["cards"][0]["affected_material_fields"] == ["competitive_context"]
+    assert board["cards"][0]["work_order_id"] == "workorder:entity_alias_confirmation:288"
     assert board["records"][0]["status"] == "pending_decision"
+    assert board["records"][0]["work_order_id"] == "workorder:entity_alias_confirmation:288"
     assert board["records"][0]["requires_recompute"] is True
     assert "entity_alias_confirmation" in markdown
     assert "https://www.linkedin.com/company/base44" in markdown

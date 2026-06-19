@@ -169,11 +169,13 @@ def _card(packet: dict[str, Any], run: dict[str, Any]) -> dict[str, Any]:
     run_id = run.get("run_id")
     intervention_type = str(packet.get("intervention_type") or "unknown")
     record_id = f"{intervention_type}_{run_id}".replace(":", "_").replace("/", "_")
+    work_order_id = f"workorder:{intervention_type}:{run_id}"
     review_examples = list(run.get("remaining_review_examples") or [])
     material_overlaps = list(run.get("projected_material_overlaps") or [])
     changed_fields = list(run.get("changed_material_fields") or [])
     return {
         "record_id": record_id,
+        "work_order_id": work_order_id,
         "packet_id": packet.get("packet_id") or "",
         "source_file": packet.get("source_file") or "",
         "run_id": run_id,
@@ -200,6 +202,7 @@ def _card(packet: dict[str, Any], run: dict[str, Any]) -> dict[str, Any]:
 def _record(card: dict[str, Any]) -> dict[str, Any]:
     return {
         "record_id": card.get("record_id") or "",
+        "work_order_id": card.get("work_order_id") or "",
         "status": "pending_decision",
         "intervention_type": card.get("intervention_type") or "",
         "recommended_action": card.get("next_action") or "",

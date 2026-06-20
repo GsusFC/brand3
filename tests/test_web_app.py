@@ -267,18 +267,34 @@ class WebAppFlowTests(unittest.TestCase):
 
         async def fake_to_thread(func, *args, **kwargs):
             calls.append((func, args, kwargs))
-            return []
+            return {
+                "rows": [],
+                "categories": {},
+                "page": 1,
+                "total": 0,
+                "total_pages": 1,
+                "has_prev": False,
+                "has_next": False,
+            }
 
         with patch("web.routes.index.asyncio.to_thread", side_effect=fake_to_thread):
             response = self.client.get("/")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(calls), 1)
-        self.assertIs(calls[0][0], index_route._recent_home_items)
+        self.assertIs(calls[0][0], index_route.build_observatory_index)
         self.assertEqual(calls[0][1], ())
         self.assertEqual(
             calls[0][2],
-            {"limit": 15, "lang": "es", "sort": "recent", "category": None},
+            {
+                "db_path": index_route.BRAND3_DB_PATH,
+                "query": None,
+                "sort": "newest",
+                "category": None,
+                "page": 1,
+                "per_page": 25,
+                "lang": "es",
+            },
         )
 
     def test_reports_list_loads_rows_via_threadpool(self):
@@ -288,18 +304,34 @@ class WebAppFlowTests(unittest.TestCase):
 
         async def fake_to_thread(func, *args, **kwargs):
             calls.append((func, args, kwargs))
-            return [], 0
+            return {
+                "rows": [],
+                "categories": {},
+                "page": 2,
+                "total": 0,
+                "total_pages": 1,
+                "has_prev": True,
+                "has_next": False,
+            }
 
         with patch("web.routes.reports_list.asyncio.to_thread", side_effect=fake_to_thread):
             response = self.client.get("/reports?q=example&sort=score_desc&page=2")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(calls), 1)
-        self.assertIs(calls[0][0], reports_list.list_public_reports)
+        self.assertIs(calls[0][0], reports_list.build_observatory_index)
         self.assertEqual(calls[0][1], ())
         self.assertEqual(
             calls[0][2],
-            {"query": "example", "sort": "score_desc", "page": 2, "per_page": 20},
+            {
+                "db_path": reports_list.BRAND3_DB_PATH,
+                "query": "example",
+                "sort": "score_desc",
+                "category": None,
+                "page": 2,
+                "per_page": 20,
+                "lang": "es",
+            },
         )
 
     def test_brand_history_loads_rows_via_threadpool(self):

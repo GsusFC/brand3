@@ -6,14 +6,15 @@ from typing import Literal
 from fastapi import APIRouter, Query, Request
 from fastapi.responses import RedirectResponse
 
-from ..presenters import enrich
-from ..storage import list_public_reports
+from src.config import BRAND3_DB_PATH
+
+from ..observatory_index import build_observatory_index
 from ..templates_env import templates
 
 router = APIRouter()
 
 _PER_PAGE = 20
-_ALLOWED_SORTS = ("newest", "score_desc", "score_asc")
+_ALLOWED_SORTS = ("newest", "score_desc", "score_asc", "scans_desc")
 
 
 @router.get("/reports")
@@ -21,32 +22,36 @@ async def reports_list(
     request: Request,
     q: str | None = Query(None),
     sort: str = Query("newest"),
+    category: str | None = Query(None),
     page: int = Query(1, ge=1),
     lang: Literal["es", "en"] = Query("es"),
 ):
     if sort not in _ALLOWED_SORTS:
         sort = "newest"
-    rows, total = await asyncio.to_thread(
-        list_public_reports,
+    observatory = await asyncio.to_thread(
+        build_observatory_index,
+        db_path=BRAND3_DB_PATH,
         query=q,
         sort=sort,
+        category=category,
         page=page,
         per_page=_PER_PAGE,
+        lang=lang,
     )
-    rows = enrich(rows)
-    total_pages = max(1, (total + _PER_PAGE - 1) // _PER_PAGE)
     return templates.TemplateResponse(
         request,
         "reports_list.html.j2",
         {
-            "rows": rows,
+            "rows": observatory["rows"],
             "query": q or "",
             "sort": sort,
-            "page": page,
-            "total_pages": total_pages,
-            "total": total,
-            "has_prev": page > 1,
-            "has_next": page < total_pages,
+            "category": category,
+            "categories": observatory["categories"],
+            "page": observatory["page"],
+            "total_pages": observatory["total_pages"],
+            "total": observatory["total"],
+            "has_prev": observatory["has_prev"],
+            "has_next": observatory["has_next"],
             "ui_lang": lang,
         },
     )

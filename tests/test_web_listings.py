@@ -400,16 +400,16 @@ class ListingsTests(unittest.TestCase):
         self._seed_ready_run("uber", composite=72.0)
         r = self.client.get("/reports?q=air")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("airbnb", r.text)
-        self.assertNotIn(">uber<", r.text)
+        self.assertIn(">Airbnb<", r.text)
+        self.assertNotIn(">Uber<", r.text)
 
     def test_reports_sort_score_desc(self):
         self._seed_ready_run("low", composite=40.0, days_ago=1)
         self._seed_ready_run("high", composite=90.0, days_ago=2)
         r = self.client.get("/reports?sort=score_desc")
         self.assertEqual(r.status_code, 200)
-        idx_high = r.text.find(">high<")
-        idx_low = r.text.find(">low<")
+        idx_high = r.text.find(">High<")
+        idx_low = r.text.find(">LOW<")
         self.assertGreater(idx_low, idx_high)  # high appears before low
 
     def test_reports_preserves_ui_language_and_links(self):
@@ -417,21 +417,34 @@ class ListingsTests(unittest.TestCase):
         r = self.client.get("/reports?lang=en")
         self.assertEqual(r.status_code, 200)
         self.assertIn('<html lang="en">', r.text)
-        self.assertIn('href="/brand/langco?lang=en"', r.text)
         self.assertIn('href="/r/tok-langco', r.text)
+        self.assertIn("?lang=en", r.text)
         self.assertIn('lang=en', r.text)
+
+    def test_reports_advanced_observatory_includes_scanners(self):
+        self._seed_ready_run("auditco", composite=66.0)
+        self._seed_ready_scan("linear", magnetism_score=83, coherence_score=72)
+
+        r = self.client.get("/reports")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("observatorio_avanzado", r.text)
+        self.assertIn(">Auditco<", r.text)
+        self.assertIn(">Linear<", r.text)
+        self.assertIn("/magnetism-scanner/scan/", r.text)
+        self.assertIn("magnetism", r.text)
 
     def test_taken_down_row_is_hidden(self):
         self._seed_ready_run("hidden", composite=50.0, takedown=1)
         r = self.client.get("/reports")
-        self.assertNotIn(">hidden<", r.text)
+        self.assertNotIn(">Hidden<", r.text)
         r2 = self.client.get("/brand/hidden")
         self.assertNotIn("view</a>", r2.text)
 
     def test_non_public_row_is_hidden(self):
         self._seed_ready_run("privateco", composite=50.0, is_public=0)
         r = self.client.get("/reports")
-        self.assertNotIn(">privateco<", r.text)
+        self.assertNotIn(">Privateco<", r.text)
 
 
 if __name__ == "__main__":

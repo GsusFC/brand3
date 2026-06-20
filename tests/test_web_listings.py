@@ -499,9 +499,11 @@ class ListingsTests(unittest.TestCase):
         r = self.client.get("/brand/profileco")
 
         self.assertEqual(r.status_code, 200)
-        self.assertIn("ficha_de_marca", r.text)
+        self.assertIn("business_model", r.text)
+        self.assertIn("sin clasificar", r.text)
         self.assertIn('href="https://profileco.com"', r.text)
         self.assertIn('src="https://profileco.com/apple-touch-icon.png"', r.text)
+        self.assertNotIn("logo=brand_profile", r.text)
         self.assertIn("LinkedIn", r.text)
         self.assertIn("capa_visual", r.text)
         self.assertIn("moodboard.js", r.text)

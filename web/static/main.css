@@ -952,6 +952,67 @@ span.brand-profile-logo-mark {
   height: clamp(260px, 34vw, 420px);
 }
 
+.brand-profile-visual-signature {
+  display: grid;
+  gap: 14px;
+}
+
+.brand-visual-signature-head {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.brand-visual-signature-head > div,
+.brand-visual-dimensions > div {
+  min-width: 0;
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
+}
+
+.brand-visual-signature-head strong {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: clamp(20px, 3vw, 34px);
+  line-height: 0.95;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.brand-visual-dimensions {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.brand-visual-dimensions span {
+  display: block;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.brand-visual-dimensions strong {
+  display: block;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.brand-visual-evidence-list li[data-polarity="positive"] {
+  border-left: 2px solid var(--accent);
+  padding-left: 8px;
+}
+
+.brand-visual-evidence-list li[data-polarity="negative"] {
+  border-left: 2px solid var(--danger, #ff4d4d);
+  padding-left: 8px;
+}
+
 .status-dot {
   display: inline-block;
   margin-left: 4px;
@@ -4536,6 +4597,11 @@ a:hover {
   }
 
   .brand-profile-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-visual-signature-head,
+  .brand-visual-dimensions {
     grid-template-columns: 1fr;
   }
 

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import pytest
 
 from src.collectors.web_collector import WebData
-from src.visual_signature import extract_visual_signature
+from src.visual_signature import build_visual_signature_scan, extract_visual_signature, run_visual_signature_scan
 from src.visual_signature.adapters.firecrawl_adapter import FirecrawlVisualSignatureAdapter
 from src.visual_signature.types import (
     VisualAcquisitionResult,
@@ -196,6 +196,129 @@ def test_extract_visual_signature_adds_dom_obstruction_evidence():
     assert obstruction["severity"] in {"moderate", "major"}
     assert obstruction["first_impression_valid"] is False
     assert "dom_keyword:cookie" in obstruction["signals"]
+
+
+def test_visual_signature_does_not_treat_customer_logos_as_brand_logo():
+    html = """
+    <html>
+      <body>
+        <header><nav><a href="/">Pleo</a></nav></header>
+        <main>
+          <img src="https://cdn.example.com/soho.svg" alt="Logotipo de Soho House">
+          <img src="https://cdn.example.com/blinkist.svg" alt="Logotipo de Blinkist">
+        </main>
+      </body>
+    </html>
+    """
+    web_data = _web_data()
+    web_data.html = html
+    web_data.images = []
+
+    result = extract_visual_signature(
+        brand_name="Pleo",
+        website_url="https://www.pleo.io/es",
+        web_data=web_data,
+    )
+
+    logo_urls = [item.get("url") for item in result["logo"]["candidates"]]
+    assert "https://cdn.example.com/soho.svg" not in logo_urls
+    assert "https://cdn.example.com/blinkist.svg" not in logo_urls
+
+
+def test_visual_signature_scan_contract_scores_and_canonicalizes_evidence():
+    payload = {
+        "brand_name": "Pleo",
+        "website_url": "https://www.pleo.io/es",
+        "analyzed_url": "https://www.pleo.io/es",
+        "interpretation_status": "interpretable",
+        "acquisition": {
+            "viewport_obstruction": {
+                "present": True,
+                "type": "newsletter_modal",
+                "severity": "blocking",
+                "coverage_ratio": 0.92,
+                "first_impression_valid": False,
+                "confidence": 1.0,
+                "signals": ["dom_keyword:cookie", "dom_keyword:privacy"],
+            }
+        },
+        "extraction_confidence": {
+            "score": 0.767,
+            "level": "high",
+            "limitations": ["screenshot_not_available"],
+        },
+        "logo": {
+            "logo_detected": True,
+            "confidence": 0.75,
+            "primary_location": "nav",
+            "favicon_detected": True,
+        },
+        "colors": {
+            "dominant_colors": ["#ffffff", "#000000", "#e0c0c0"],
+            "palette_complexity": "high",
+        },
+        "typography": {"heading_scale": "expressive"},
+        "components": {"primary_ctas": ["Empezar"]},
+        "assets": {
+            "screenshot_available": False,
+            "video_count": 2,
+            "background_image_count": 8,
+        },
+        "consistency": {"overall_consistency": 0.574},
+        "vision": {
+            "screenshot": {
+                "available": True,
+                "path": "/tmp/pleo.png",
+                "capture_type": "viewport",
+                "page_url": "https://www.pleo.io/es",
+                "quality": "usable",
+                "width": 1440,
+                "height": 1200,
+            },
+            "viewport_confidence": {"score": 0.869, "level": "high"},
+            "viewport_obstruction": {
+                "present": True,
+                "type": "newsletter_modal",
+                "severity": "blocking",
+                "coverage_ratio": 0.92,
+                "first_impression_valid": False,
+                "confidence": 1.0,
+                "signals": ["dom_keyword:cookie", "dom_keyword:privacy"],
+            },
+        },
+        "semantics": {
+            "status": "detected",
+            "fallback_used": False,
+            "data": {
+                "visual_polish_score": 9,
+                "visual_coherence": "Clean product-first expense management surface.",
+            },
+        },
+    }
+
+    scan = build_visual_signature_scan(payload)
+
+    assert scan["schema_version"] == "visual-signature-scan-v1"
+    assert scan["status"] == "review_required"
+    assert scan["score"] > 65
+    assert scan["capture"]["available"] is True
+    assert scan["capture"]["obstruction"]["type"] == "cookie_banner"
+    assert "screenshot_not_available" not in scan["limitations"]
+    assert "first_viewport_obstructed" in scan["limitations"]
+    assert scan["dimensions"]["brand_fit"]["score"] == 90.0
+
+
+def test_run_visual_signature_scan_wraps_extraction_payload():
+    result = run_visual_signature_scan(
+        brand_name="Example Brand",
+        website_url="https://example.com",
+        web_data=_web_data(),
+    )
+
+    assert result["schema_version"] == "visual-signature-scan-v1"
+    assert result["brand_name"] == "Example Brand"
+    assert result["score"] > 0
+    assert "capture_quality" in result["dimensions"]
 
 
 def test_firecrawl_adapter_successful_acquisition_uses_web_collector_result():

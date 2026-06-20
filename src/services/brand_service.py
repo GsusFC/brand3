@@ -87,7 +87,7 @@ from src.services.input_collection import collect_raw_inputs, start_analysis_run
 from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
 from src.services.scoring_pipeline import score_features
 from src.storage.sqlite_store import SQLiteStore
-from src.visual_signature import extract_visual_signature
+from src.visual_signature import build_visual_signature_scan, extract_visual_signature
 from src.visual_signature.persistence import (
     build_visual_signature_persistence_bundle,
     persist_visual_signature_bundle,
@@ -1308,10 +1308,12 @@ def _run_visual_signature_shadow(
 
     vision = payload.get("vision") if isinstance(payload.get("vision"), dict) else None
     screenshot = (vision or {}).get("screenshot") if isinstance(vision, dict) else {}
+    visual_signature_scan = build_visual_signature_scan(payload)
     bundle = build_visual_signature_persistence_bundle(
         raw_visual_signature_payload=payload,
         vision_payload=vision,
         agreement_payload=(vision or {}).get("agreement") if isinstance(vision, dict) else None,
+        visual_signature_scan=visual_signature_scan,
         run_id=run_id,
         brand_name=brand_name,
         website_url=url,
@@ -1338,6 +1340,8 @@ def _run_visual_signature_shadow(
         "persisted": persisted,
         "interpretation_status": payload.get("interpretation_status"),
         "agreement_level": ((vision or {}).get("agreement") or {}).get("agreement_level") if isinstance(vision, dict) else None,
+        "visual_signature_score": visual_signature_scan.get("score"),
+        "visual_signature_scan_status": visual_signature_scan.get("status"),
     }
 
 

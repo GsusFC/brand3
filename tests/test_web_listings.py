@@ -555,6 +555,66 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(payload.status_code, 200)
         self.assertEqual(payload.json()["profile"]["social_links"], [])
 
+    def test_brand_page_renders_visual_signature_scan_when_available(self):
+        token = self._seed_ready_run("visualco", composite=65.0)
+        with sqlite3.connect(self.db) as conn:
+            run_id = int(
+                conn.execute(
+                    "SELECT run_id FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            )
+            conn.execute(
+                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
+                (
+                    run_id,
+                    "visual_signature",
+                    json.dumps(
+                        {
+                            "schema_version": "visual-signature-persistence-1",
+                            "visual_signature_scan": {
+                                "schema_version": "visual-signature-scan-v1",
+                                "brand_name": "VisualCo",
+                                "website_url": "https://visualco.com",
+                                "status": "review_required",
+                                "score": 73.5,
+                                "dimensions": {
+                                    "capture_quality": {"score": 62.8},
+                                    "identity_clarity": {"score": 75.3},
+                                },
+                                "capture": {
+                                    "available": True,
+                                    "type": "viewport",
+                                    "obstruction": {"present": True, "type": "cookie_banner"},
+                                },
+                                "evidence": [
+                                    {
+                                        "key": "capture",
+                                        "text": "Viewport screenshot available for visual evaluation.",
+                                        "polarity": "positive",
+                                    }
+                                ],
+                                "limitations": ["first_viewport_obstructed"],
+                            },
+                        }
+                    ),
+                ),
+            )
+            conn.commit()
+
+        r = self.client.get("/brand/visualco")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("visual_signature", r.text)
+        self.assertIn("73.5", r.text)
+        self.assertIn("cookie_banner", r.text)
+
+        payload = self.client.get("/api/brands/visualco.com/profile")
+        self.assertEqual(payload.status_code, 200)
+        scan = payload.json()["profile"]["visual_signature_scan"]
+        self.assertTrue(scan["available"])
+        self.assertEqual(scan["schema_version"], "visual-signature-scan-v1")
+        self.assertEqual(scan["score"], 73.5)
+
     def test_brand_profile_cache_reuses_generated_profile(self):
         self._seed_ready_run("cacheco", composite=65.0)
         import web.observatory_index as observatory_index
@@ -583,7 +643,7 @@ class ListingsTests(unittest.TestCase):
                 ("cacheco.com",),
             ).fetchone()
         self.assertIsNotNone(row)
-        self.assertEqual(row[0], "brand-profile-cache-v3")
+        self.assertEqual(row[0], "brand-profile-cache-v4")
         self.assertIn("cacheco.com", row[1])
 
     def test_brand_profile_cache_invalidates_when_run_evidence_changes(self):

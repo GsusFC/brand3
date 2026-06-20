@@ -261,6 +261,10 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
         self.assertEqual(payload["run_metadata"]["acquisition_status"], "ok")
         self.assertTrue(payload["run_metadata"]["screenshot_available"])
         self.assertTrue(payload["run_metadata"]["full_page_available"])
+        self.assertEqual(payload["visual_signature_scan"]["schema_version"], "visual-signature-scan-v1")
+        self.assertGreaterEqual(payload["visual_signature_scan"]["score"], 0)
+        self.assertIn("visual_signature_score", result)
+        self.assertIn("visual_signature_scan_status", result)
 
     def test_run_forwards_run_input_sources_to_collect_raw_inputs(self):
         captured = {}

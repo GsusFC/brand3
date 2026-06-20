@@ -158,6 +158,56 @@
     {% endif %}
   </section>
 
+  {% set visual_scan = profile.visual_signature_scan if profile.visual_signature_scan is defined else {'available': false} %}
+  <section class="brand-profile-block brand-profile-visual-signature">
+    <div class="section-head">
+      <span class="label">visual_signature</span>
+      <span class="tag">// {{ 'scanner visual' if current_lang == 'es' else 'visual scanner' }}</span>
+    </div>
+    {% if visual_scan.available %}
+    <div class="brand-visual-signature-head">
+      <div>
+        <span class="brand-profile-terminal-key">{{ 'score_visual' if current_lang == 'es' else 'visual_score' }}</span>
+        <strong>{{ visual_scan.score }}</strong>
+      </div>
+      <div>
+        <span class="brand-profile-terminal-key">status</span>
+        <strong>{{ visual_scan.status }}</strong>
+      </div>
+      {% if visual_scan.capture %}
+      <div>
+        <span class="brand-profile-terminal-key">capture</span>
+        <strong>{{ visual_scan.capture.type or 'unknown' }}{% if visual_scan.capture.obstruction and visual_scan.capture.obstruction.present %} / {{ visual_scan.capture.obstruction.type }}{% endif %}</strong>
+      </div>
+      {% endif %}
+    </div>
+    {% if visual_scan.dimensions %}
+    <div class="brand-visual-dimensions">
+      {% for key, dimension in visual_scan.dimensions.items() %}
+      <div>
+        <span>{{ key }}</span>
+        <strong>{{ dimension.score }}</strong>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if visual_scan.evidence %}
+    <ul class="brand-profile-evidence-list brand-visual-evidence-list">
+      {% for item in visual_scan.evidence[:5] %}
+      <li data-polarity="{{ item.polarity or 'neutral' }}">{{ item.text }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    {% if visual_scan.limitations %}
+    <p class="dim" style="font-family: var(--font-mono); font-size: 10px; margin: 10px 0 0;">
+      // {{ 'límites' if current_lang == 'es' else 'limits' }}: {{ visual_scan.limitations|join(' / ') }}
+    </p>
+    {% endif %}
+    {% else %}
+    <p class="dim">{{ 'Visual Signature todavía no se ha ejecutado para esta marca.' if current_lang == 'es' else 'Visual Signature has not run for this brand yet.' }}</p>
+    {% endif %}
+  </section>
+
   <section id="market-classification" class="brand-profile-block brand-market-block">
     <div class="section-head">
       <span class="label">{{ 'clasificación_mercado' if current_lang == 'es' else 'market_classification' }}</span>

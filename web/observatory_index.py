@@ -23,7 +23,7 @@ from src.research.research_pack_facade import build_recommended_research_pack
 from src.storage.sqlite_store import SQLiteStore
 from src.sv9.ranking import domain_from_url
 
-BRAND_PROFILE_CACHE_VERSION = "brand-profile-cache-v3"
+BRAND_PROFILE_CACHE_VERSION = "brand-profile-cache-v4"
 
 
 SOURCE_PRIORITY = {"sv9": 0, "magnetism": 1, "audit": 2}
@@ -376,6 +376,7 @@ def _empty_brand_profile(brand: str) -> dict[str, Any]:
         "evidence_gaps": [],
         "confidence_notes": [],
         "moodboard": {"available": False, "images": [], "image_count": 0, "role_counts": {}},
+        "visual_signature_scan": {"available": False},
         "models": [],
         "scan_count": 0,
         "latest_date": "",
@@ -465,6 +466,7 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
     web_payloads = _web_payloads_from_snapshots(snapshots)
     logo_url, logo_source = _best_logo(snapshots, web_payloads)
     moodboard = _build_profile_moodboard(web_payloads, logo_url=logo_url)
+    visual_signature_scan = _visual_signature_scan_from_snapshots(snapshots)
     primary_pack = packs[0] if packs else {}
     official_links = _unique_links(
         [
@@ -503,6 +505,7 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
         "evidence_gaps": evidence_gaps,
         "confidence_notes": confidence_notes,
         "moodboard": moodboard,
+        "visual_signature_scan": visual_signature_scan,
         "models": sorted({source.source for source in brand.sources}),
         "scan_count": len(brand.sources),
         "latest_date": _compact_date(brand.latest_date),
@@ -1047,6 +1050,18 @@ def _build_profile_moodboard(
         "image_count": len(images),
         "role_counts": role_counts,
     }
+
+
+def _visual_signature_scan_from_snapshots(snapshots: list[dict[str, Any]]) -> dict[str, Any]:
+    for snapshot in snapshots:
+        for item in reversed(snapshot.get("raw_inputs") or []):
+            if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
+                continue
+            payload = item["payload"]
+            scan = payload.get("visual_signature_scan")
+            if isinstance(scan, dict) and scan.get("schema_version") == "visual-signature-scan-v1":
+                return {"available": True, **scan}
+    return {"available": False}
 
 
 def _social_links_from_packs(packs: list[dict[str, Any]]) -> list[str]:

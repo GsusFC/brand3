@@ -64,7 +64,7 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertIn('href="/reports"', response.text)
         self.assertIn('href="/visual-signature"', response.text)
         self.assertIn('href="/magnetism-scanner"', response.text)
-        self.assertIn("SV9 Brand Score", response.text)
+        self.assertIn("Observatorio Brand3", response.text)
 
     def test_visual_signature_routes_render_read_only_sections(self):
         expected = {

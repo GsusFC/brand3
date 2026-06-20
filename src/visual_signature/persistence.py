@@ -1,7 +1,8 @@
 """Optional persistence helpers for Visual Signature evidence.
 
-This layer stores evidence as raw inputs only. It does not influence Brand3
-scoring, rubric dimensions, or production UI behavior.
+This layer stores Visual Signature evidence as raw inputs. It does not
+influence Brand3 global scoring or rubric dimensions; product surfaces may
+read the persisted scanner contract as visual evidence.
 """
 
 from __future__ import annotations
@@ -23,6 +24,7 @@ class VisualSignaturePersistenceBundle:
     website_url: str | None = None
     run_metadata: dict[str, Any] = field(default_factory=dict)
     artifact_refs: dict[str, Any] = field(default_factory=dict)
+    visual_signature_scan: dict[str, Any] | None = None
     raw_visual_signature_payload: dict[str, Any] | None = None
     vision_payload: dict[str, Any] | None = None
     agreement_payload: dict[str, Any] | None = None
@@ -45,6 +47,7 @@ def build_visual_signature_persistence_bundle(
     manifest_path: str | Path | None = None,
     capture_type: str | None = None,
     secondary_capture_type: str | None = None,
+    visual_signature_scan: dict[str, Any] | None = None,
 ) -> VisualSignaturePersistenceBundle:
     raw = raw_visual_signature_payload or {}
     vision = vision_payload or (raw.get("vision") if isinstance(raw, dict) else None) or {}
@@ -68,6 +71,9 @@ def build_visual_signature_persistence_bundle(
         ),
         "agreement_level": str((agreement or {}).get("agreement_level") or "unknown"),
     }
+    if isinstance(visual_signature_scan, dict):
+        run_metadata["visual_signature_scan_status"] = str(visual_signature_scan.get("status") or "unknown")
+        run_metadata["visual_signature_score"] = visual_signature_scan.get("score")
     artifact_refs = {
         "screenshot_path": str(screenshot_path) if screenshot_path else None,
         "secondary_screenshot_path": str(secondary_screenshot_path) if secondary_screenshot_path else None,
@@ -82,6 +88,7 @@ def build_visual_signature_persistence_bundle(
         website_url=website_url or (raw.get("website_url") if isinstance(raw, dict) else None),
         run_metadata=run_metadata,
         artifact_refs=artifact_refs,
+        visual_signature_scan=visual_signature_scan if isinstance(visual_signature_scan, dict) else None,
         raw_visual_signature_payload=raw if isinstance(raw, dict) else None,
         vision_payload=vision if isinstance(vision, dict) else None,
         agreement_payload=agreement if isinstance(agreement, dict) else None,
@@ -124,6 +131,9 @@ def persist_visual_signature_result(
         manifest_path=result.get("visual_signature_manifest_path"),
         capture_type=(screenshot or {}).get("capture_type") if isinstance(screenshot, dict) else None,
         secondary_capture_type=(screenshot or {}).get("secondary_capture_type") if isinstance(screenshot, dict) else None,
+        visual_signature_scan=result.get("visual_signature_scan")
+        if isinstance(result.get("visual_signature_scan"), dict)
+        else None,
     )
     persist_visual_signature_bundle(store, run_id, bundle)
 

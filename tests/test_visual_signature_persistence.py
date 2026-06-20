@@ -68,6 +68,12 @@ class VisualSignaturePersistenceTests(unittest.TestCase):
             manifest_path=Path("/tmp/capture_manifest.json"),
             capture_type="viewport",
             secondary_capture_type="full_page",
+            visual_signature_scan={
+                "schema_version": "visual-signature-scan-v1",
+                "status": "ready",
+                "score": 74.5,
+                "dimensions": {},
+            },
         )
 
         payload = bundle.to_dict()
@@ -83,6 +89,8 @@ class VisualSignaturePersistenceTests(unittest.TestCase):
         self.assertTrue(payload["run_metadata"]["full_page_available"])
         self.assertEqual(payload["run_metadata"]["interpretation_status"], "interpretable")
         self.assertEqual(payload["run_metadata"]["agreement_level"], "medium")
+        self.assertEqual(payload["run_metadata"]["visual_signature_scan_status"], "ready")
+        self.assertEqual(payload["run_metadata"]["visual_signature_score"], 74.5)
         self.assertEqual(payload["artifact_refs"]["capture_type"], "viewport")
         self.assertEqual(payload["artifact_refs"]["secondary_capture_type"], "full_page")
         self.assertEqual(payload["artifact_refs"]["screenshot_path"], "/tmp/example-screenshot.png")
@@ -93,6 +101,7 @@ class VisualSignaturePersistenceTests(unittest.TestCase):
         self.assertEqual(payload["artifact_refs"]["manifest_path"], "/tmp/capture_manifest.json")
         self.assertEqual(payload["agreement_payload"]["agreement_level"], "medium")
         self.assertEqual(payload["vision_payload"]["viewport_composition"]["visual_density"], "balanced")
+        self.assertEqual(payload["visual_signature_scan"]["schema_version"], "visual-signature-scan-v1")
         self.assertEqual(payload["raw_visual_signature_payload"]["brand_name"], "Example")
 
     def test_sqlite_store_round_trips_visual_signature_raw_input(self):

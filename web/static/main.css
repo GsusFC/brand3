@@ -609,7 +609,7 @@ span.brand-profile-logo-mark {
 .brand-profile-business-model {
   display: grid;
   min-width: 0;
-  align-content: center;
+  align-content: start;
   gap: 12px;
   border-left: 1px solid var(--border);
   padding-left: 22px;
@@ -617,10 +617,10 @@ span.brand-profile-logo-mark {
 
 .brand-profile-business-model strong {
   display: block;
-  max-width: 11ch;
+  max-width: 12ch;
   color: var(--text);
   font-family: var(--font-ui);
-  font-size: clamp(26px, 3.2vw, 46px);
+  font-size: 56px;
   font-weight: 700;
   line-height: 0.95;
   overflow-wrap: anywhere;
@@ -4525,7 +4525,7 @@ a:hover {
 
   .brand-profile-business-model strong {
     max-width: 100%;
-    font-size: clamp(24px, 9vw, 40px);
+    font-size: 56px;
   }
 
   .brand-profile-sv9 {

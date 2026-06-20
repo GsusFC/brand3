@@ -3,18 +3,58 @@
 from __future__ import annotations
 
 import base64
+import hashlib
 import json
+import logging
 import mimetypes
 import os
 from pathlib import Path
 from typing import Any
 
-from src.config import BRAND3_LLM_API_KEY, LLM_BASE_URL, VISION_MODEL
+from src.config import (
+    BRAND3_LLM_API_KEY,
+    BRAND3_VISUAL_SIGNATURE_MODEL,
+    BRAND3_VISUAL_SIGNATURE_SKIP_MULTIMODAL,
+    BRAND3_VISUAL_SIGNATURE_TIMEOUT_SECONDS,
+    LLM_BASE_URL,
+)
 from src.features.llm_analyzer import LLM_CALL_TIMEOUT_SECONDS, _run_llm_http_call
+
+logger = logging.getLogger(__name__)
+
+PROMPT_VERSION = "visual-signature-multimodal-v1"
+
+SYSTEM_PREAMBLE = (
+    "You are a senior design director auditing a rendered brand website. "
+    "Evaluate only visible visual evidence. "
+)
+
+PROMPT_TEMPLATE = """Analyze the visual signature of the brand "{brand_name}" from its website screenshot.
+
+Return ONLY valid JSON with this exact shape:
+{{
+  "aesthetic_style": "primary design style, or not_detected",
+  "visual_mood": "visual mood / emotional tone, or not_detected",
+  "visual_polish_score": 1-10,
+  "visual_polish_rationale": "one short justification",
+  "visual_coherence": "how imagery/layout supports brand promises, or not_detected"
+}}
+
+Use not_detected for fields where the screenshot does not provide enough evidence.
+Do not infer facts that are not visible in the image."""
+
+
+def _effective_timeout() -> int:
+    if BRAND3_VISUAL_SIGNATURE_TIMEOUT_SECONDS > 0:
+        return BRAND3_VISUAL_SIGNATURE_TIMEOUT_SECONDS
+    return LLM_CALL_TIMEOUT_SECONDS
 
 
 def analyze_visual_semantics(screenshot_path: str | None, brand_name: str) -> dict[str, Any]:
     """Analyze a local screenshot with Gemini Vision and always return a stable contract."""
+    if BRAND3_VISUAL_SIGNATURE_SKIP_MULTIMODAL:
+        return fallback_semantics("multimodal_disabled")
+
     if not screenshot_path:
         return fallback_semantics("screenshot_path_missing")
 
@@ -47,7 +87,7 @@ def analyze_visual_semantics(screenshot_path: str | None, brand_name: str) -> di
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {BRAND3_LLM_API_KEY}",
             },
-            timeout_seconds=LLM_CALL_TIMEOUT_SECONDS,
+            timeout_seconds=_effective_timeout(),
         )
     except Exception:
         return fallback_semantics("llm_error")
@@ -70,7 +110,8 @@ def analyze_visual_semantics(screenshot_path: str | None, brand_name: str) -> di
     data = normalize_semantics_data(parsed)
     return {
         "status": "detected",
-        "model": VISION_MODEL,
+        "model": BRAND3_VISUAL_SIGNATURE_MODEL,
+        "prompt_version": PROMPT_VERSION,
         "fallback_used": False,
         "error_type": None,
         "data": data,
@@ -80,7 +121,8 @@ def analyze_visual_semantics(screenshot_path: str | None, brand_name: str) -> di
 def fallback_semantics(error_type: str | None) -> dict[str, Any]:
     return {
         "status": "unavailable",
-        "model": VISION_MODEL,
+        "model": BRAND3_VISUAL_SIGNATURE_MODEL,
+        "prompt_version": PROMPT_VERSION,
         "fallback_used": True,
         "error_type": error_type,
         "data": {
@@ -98,33 +140,17 @@ def encode_image_base64(path: Path) -> str:
 
 
 def build_multimodal_payload(*, encoded_image: str, mime_type: str, brand_name: str) -> dict[str, Any]:
-    prompt = f"""Analyze the visual signature of the brand "{brand_name}" from its website screenshot.
-
-Return ONLY valid JSON with this exact shape:
-{{
-  "aesthetic_style": "primary design style, or not_detected",
-  "visual_mood": "visual mood / emotional tone, or not_detected",
-  "visual_polish_score": 1-10,
-  "visual_polish_rationale": "one short justification",
-  "visual_coherence": "how imagery/layout supports brand promises, or not_detected"
-}}
-
-Use not_detected for fields where the screenshot does not provide enough evidence.
-Do not infer facts that are not visible in the image."""
+    prompt = PROMPT_TEMPLATE.format(brand_name=brand_name)
 
     return {
-        "model": VISION_MODEL,
+        "model": BRAND3_VISUAL_SIGNATURE_MODEL,
         "messages": [
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "text",
-                        "text": (
-                            "You are a senior design director auditing a rendered brand website. "
-                            "Evaluate only visible visual evidence. "
-                            f"{prompt}"
-                        ),
+                        "text": SYSTEM_PREAMBLE + prompt,
                     },
                     {
                         "type": "image_url",
@@ -139,6 +165,17 @@ Do not infer facts that are not visible in the image."""
         "temperature": 0.1,
         "response_format": {"type": "json_object"},
     }
+
+
+def build_cache_key(*, brand_name: str, screenshot_bytes: bytes) -> str:
+    """Stable cache key for multimodal calls. Bumps when PROMPT_VERSION changes."""
+    payload = {
+        "prompt_version": PROMPT_VERSION,
+        "model": BRAND3_VISUAL_SIGNATURE_MODEL,
+        "brand_name": brand_name,
+        "screenshot_sha256": hashlib.sha256(screenshot_bytes).hexdigest(),
+    }
+    return hashlib.sha256(json.dumps(payload, sort_keys=True).encode("utf-8")).hexdigest()
 
 
 def normalize_semantics_data(payload: dict[str, Any]) -> dict[str, Any]:

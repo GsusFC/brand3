@@ -8,6 +8,7 @@ interpretation, and extraction-confidence logic.
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
@@ -32,6 +33,8 @@ from src.visual_signature.types import (
 from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
 from src.visual_signature.vision.screenshot_quality import resolve_screenshot_path
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics, fallback_semantics
+
+logger = logging.getLogger(__name__)
 
 
 def extract_visual_signature(
@@ -99,7 +102,8 @@ def extract_visual_signature(
             screenshot_path=screenshot_for_semantics,
             brand_name=brand_name,
         )
-    except Exception:
+    except Exception as exc:
+        logger.warning("visual_semantics failed (brand=%s): %s", brand_name, exc, exc_info=True)
         semantics = fallback_semantics("vision_analysis_exception")
 
     viewport_obstruction = _viewport_obstruction_for_selected_capture(

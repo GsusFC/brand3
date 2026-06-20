@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import multiprocessing as mp
 import os
 import queue
@@ -95,6 +96,8 @@ from src.visual_signature.persistence import (
     persist_visual_signature_result,
 )
 from src.visual_signature.vision import enrich_visual_signature_with_vision
+
+logger = logging.getLogger(__name__)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -1259,10 +1262,10 @@ def _run_visual_signature_shadow(
 ) -> dict[str, object]:
     events: list[str] = []
     if not enabled:
-        print("  Visual Signature shadow: skipped")
+        logger.info("visual_signature shadow skipped (disabled)")
         return {"status": "skipped", "events": ["skipped"], "persisted": False}
 
-    print("  Visual Signature shadow: started")
+    logger.info("visual_signature shadow started (run_id=%s brand=%s)", run_id, brand_name)
     events.append("started")
     screenshot_payload = _visual_signature_shadow_screenshot_payload(
         screenshot_capture,
@@ -1287,12 +1290,12 @@ def _run_visual_signature_shadow(
             url=url,
             error=str(exc),
         )
-        print(f"  Visual Signature shadow: acquisition_failed ({exc})")
+        logger.warning("visual_signature shadow acquisition_failed (run_id=%s): %s", run_id, exc, exc_info=True)
 
     if payload.get("interpretation_status") == "not_interpretable" and "acquisition_failed" not in events:
         status = "acquisition_failed"
         events.append("acquisition_failed")
-        print("  Visual Signature shadow: acquisition_failed")
+        logger.warning("visual_signature shadow acquisition_failed (run_id=%s): interpretation not_interpretable", run_id)
 
     if screenshot_payload:
         try:
@@ -1303,7 +1306,7 @@ def _run_visual_signature_shadow(
             )
         except Exception as exc:
             events.append("vision_skipped")
-            print(f"  Visual Signature shadow: vision skipped ({exc})")
+            logger.warning("visual_signature shadow vision skipped (run_id=%s): %s", run_id, exc, exc_info=True)
     else:
         events.append("vision_skipped")
 
@@ -1328,13 +1331,13 @@ def _run_visual_signature_shadow(
         persisted = bool(store and run_id is not None)
         if persisted:
             events.append("persisted")
-            print("  Visual Signature shadow: persisted")
+            logger.info("visual_signature shadow persisted (run_id=%s)", run_id)
     except Exception as exc:
         events.append("persistence_skipped")
-        print(f"  Visual Signature shadow: persistence skipped ({exc})")
+        logger.warning("visual_signature shadow persistence skipped (run_id=%s): %s", run_id, exc, exc_info=True)
 
     events.append("completed")
-    print("  Visual Signature shadow: completed")
+    logger.info("visual_signature shadow completed (run_id=%s status=%s)", run_id, status)
     return {
         "status": status,
         "events": events,

@@ -115,7 +115,7 @@ async def visual_signature_screenshot(
 
 
 async def _render(request: Request, section: str, lang: str):
-    model = await asyncio.to_thread(build_visual_signature_model, section)
+    model = await asyncio.to_thread(build_visual_signature_model, section, lang)
     return templates.TemplateResponse(
         request,
         "visual_signature.html.j2",

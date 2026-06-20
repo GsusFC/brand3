@@ -119,20 +119,50 @@ ARTIFACTS: dict[str, dict[str, str]] = {
 
 
 SECTION_TITLES = {
-    "overview": "Visual Signature Lab",
-    "governance": "Visual Signature Lab Governance",
-    "calibration": "Visual Signature Lab Calibration",
-    "corpus": "Visual Signature Lab Corpus",
-    "reviewer": "Visual Signature Lab Reviewer",
+    "overview": {
+        "es": "Laboratorio de Visual Signature",
+        "en": "Visual Signature Lab",
+    },
+    "governance": {
+        "es": "Gobernanza del Laboratorio de Visual Signature",
+        "en": "Visual Signature Lab Governance",
+    },
+    "calibration": {
+        "es": "Calibración del Laboratorio de Visual Signature",
+        "en": "Visual Signature Lab Calibration",
+    },
+    "corpus": {
+        "es": "Corpus del Laboratorio de Visual Signature",
+        "en": "Visual Signature Lab Corpus",
+    },
+    "reviewer": {
+        "es": "Revisor del Laboratorio de Visual Signature",
+        "en": "Visual Signature Lab Reviewer",
+    },
 }
 
 
 SECTION_INTROS = {
-    "overview": "Read-only Visual Signature Lab navigation. Evidence is shown separately from Brand3 Scoring and has no scoring, rubric, report, provider, or runtime mutation impact.",
-    "governance": "Capability registry, runtime policy matrix, governance integrity, and validation planning for the lab. Read-only.",
-    "calibration": "Calibration manifests, records, reliability report, and readiness status for the lab. Read-only.",
-    "corpus": "Corpus expansion manifest, pilot metrics, queue state, and limitations for the lab. Read-only.",
-    "reviewer": "Reviewer workflow pilot, selected queue items, packet links, and local reviewer viewer entry point. Read-only.",
+    "overview": {
+        "es": "Navegación de solo lectura del Laboratorio de Visual Signature. La evidencia se muestra separada del scoring de Brand3 y no tiene impacto en scoring, rúbrica, reporte, proveedor o mutación en runtime.",
+        "en": "Read-only Visual Signature Lab navigation. Evidence is shown separately from Brand3 Scoring and has no scoring, rubric, report, provider, or runtime mutation impact.",
+    },
+    "governance": {
+        "es": "Registro de capacidades, matriz de políticas en runtime, integridad de gobernanza y planificación de validación del laboratorio. Solo lectura.",
+        "en": "Capability registry, runtime policy matrix, governance integrity, and validation planning for the lab. Read-only.",
+    },
+    "calibration": {
+        "es": "Manifiestos de calibración, registros, reporte de confiabilidad y estado de readiness del laboratorio. Solo lectura.",
+        "en": "Calibration manifests, records, reliability report, and readiness status for the lab. Read-only.",
+    },
+    "corpus": {
+        "es": "Manifiesto de expansión de corpus, métricas piloto, estado de cola y limitaciones del laboratorio. Solo lectura.",
+        "en": "Corpus expansion manifest, pilot metrics, queue state, and limitations for the lab. Read-only.",
+    },
+    "reviewer": {
+        "es": "Piloto de workflow de revisión, items seleccionados de la cola, enlaces a packets y punto de entrada local al viewer del revisor. Solo lectura.",
+        "en": "Reviewer workflow pilot, selected queue items, packet links, and local reviewer viewer entry point. Read-only.",
+    },
 }
 
 HUMAN_REVIEW_DESIGN_PATH = DEFAULT_VISUAL_SIGNATURE_ROOT / "human_review_ui_design.json"
@@ -278,15 +308,17 @@ def _related_variant_payload(variant: dict[str, Any], selected_filename: str) ->
     return payload
 
 
-def build_visual_signature_model(section: str = "overview") -> dict[str, Any]:
+def build_visual_signature_model(section: str = "overview", lang: str = "es") -> dict[str, Any]:
     if section not in SECTION_TITLES:
         section = "overview"
+    if lang not in ("es", "en"):
+        lang = "es"
     artifacts = {key: _artifact_payload(key) for key in ARTIFACTS}
     cards = _cards_for_section(section, artifacts)
     return {
         "section": section,
-        "title": SECTION_TITLES[section],
-        "intro": SECTION_INTROS[section],
+        "title": SECTION_TITLES[section][lang],
+        "intro": SECTION_INTROS[section][lang],
         "nav": [
             {"label": "Lab Overview", "href": "/visual-signature", "active": section == "overview"},
             {"label": "Governance", "href": "/visual-signature/governance", "active": section == "governance"},

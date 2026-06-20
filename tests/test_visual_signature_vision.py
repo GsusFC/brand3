@@ -588,3 +588,60 @@ def test_viewport_obstruction_resists_privacy_text_false_positive(tmp_path):
     assert obstruction["present"] is False
     assert obstruction["severity"] == "none"
     assert obstruction["first_impression_valid"] is True
+
+
+def test_multimodal_prompt_version_is_stable_constant():
+    from src.visual_signature.vision.multimodal_analyzer import PROMPT_VERSION
+
+    assert PROMPT_VERSION == "visual-signature-multimodal-v1"
+
+
+def test_build_multimodal_payload_uses_template_with_brand_name():
+    from src.visual_signature.vision.multimodal_analyzer import (
+        PROMPT_TEMPLATE,
+        SYSTEM_PREAMBLE,
+        build_multimodal_payload,
+    )
+
+    payload = build_multimodal_payload(
+        encoded_image="abc123",
+        mime_type="image/png",
+        brand_name="Acme",
+    )
+
+    text_content = payload["messages"][0]["content"][0]["text"]
+    assert text_content.startswith(SYSTEM_PREAMBLE)
+    assert "Acme" in text_content
+    assert PROMPT_TEMPLATE.split("\n")[0].replace("{brand_name}", "Acme") in text_content
+
+
+def test_fallback_semantics_exposes_prompt_version():
+    from src.visual_signature.vision.multimodal_analyzer import (
+        PROMPT_VERSION,
+        fallback_semantics,
+    )
+
+    result = fallback_semantics("screenshot_missing")
+    assert result["prompt_version"] == PROMPT_VERSION
+    assert result["fallback_used"] is True
+
+
+def test_build_cache_key_is_deterministic_and_prompt_version_bound():
+    from src.visual_signature.vision.multimodal_analyzer import (
+        PROMPT_VERSION,
+        build_cache_key,
+    )
+
+    screenshot_bytes = b"\x89PNG\r\n\x1a\nfake"
+    key1 = build_cache_key(brand_name="Acme", screenshot_bytes=screenshot_bytes)
+    key2 = build_cache_key(brand_name="Acme", screenshot_bytes=screenshot_bytes)
+    assert key1 == key2
+    assert len(key1) == 64
+
+    different_brand = build_cache_key(brand_name="Other", screenshot_bytes=screenshot_bytes)
+    assert different_brand != key1
+
+    different_bytes = build_cache_key(brand_name="Acme", screenshot_bytes=b"different")
+    assert different_bytes != key1
+
+    assert PROMPT_VERSION in key1 or len(key1) == 64

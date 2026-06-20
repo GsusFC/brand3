@@ -117,6 +117,15 @@ BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED = os.environ.get(
     "yes",
     "on",
 }
+BRAND3_VISUAL_SIGNATURE_SKIP_MULTIMODAL = os.environ.get(
+    "BRAND3_VISUAL_SIGNATURE_SKIP_MULTIMODAL",
+    "false",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT = int(
     os.environ.get("BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT", "16000")
 )
@@ -140,6 +149,17 @@ LLM_MODEL = os.environ.get("BRAND3_LLM_MODEL", DEFAULT_LLM_MODEL)
 LLM_CHEAP_MODEL = os.environ.get("BRAND3_LLM_CHEAP_MODEL", DEFAULT_LLM_CHEAP_MODEL)
 LLM_PREMIUM_MODEL = os.environ.get("BRAND3_LLM_PREMIUM_MODEL", DEFAULT_LLM_PREMIUM_MODEL)
 VISION_MODEL = os.environ.get("BRAND3_VISION_MODEL", DEFAULT_VISION_MODEL)
+
+# Visual Signature multimodal overrides. Default to the shared vision model and
+# global LLM timeout; set the env vars to route to a different model or cap the
+# per-call latency for Visual Signature specifically.
+BRAND3_VISUAL_SIGNATURE_MODEL = os.environ.get(
+    "BRAND3_VISUAL_SIGNATURE_MODEL",
+    VISION_MODEL,
+)
+BRAND3_VISUAL_SIGNATURE_TIMEOUT_SECONDS = int(
+    os.environ.get("BRAND3_VISUAL_SIGNATURE_TIMEOUT_SECONDS", "0")
+)
 
 # SV9 baldosas v3.1 model routing (deploy brief section 2.6): the 8 base
 # components run on the Flash tier; Magnetism and Coherencia run on the

@@ -141,7 +141,7 @@ Use `.env.example` as the source for local setup placeholders.
 Recommended local macOS command:
 
 ```bash
-scripts/run_web_dev_macos.sh
+make web
 ```
 
 Generic command:
@@ -203,21 +203,21 @@ Render a report:
 Run tests with the project virtual environment:
 
 ```bash
-./.venv/bin/python -m pytest
+make test
 ```
 
-Full suite:
+Local CI gate:
 
 ```bash
-./.venv/bin/python -m pytest
+make ci
 ```
 
 Focused checks:
 
 ```bash
-./.venv/bin/python -m pytest tests/test_scoring_engine.py tests/test_reports_derivation.py tests/test_reports_renderer.py -q
-./.venv/bin/python -m pytest tests/test_web_app.py tests/test_web_health.py tests/test_web_listings.py -q
-./.venv/bin/python -m pytest tests/test_visual_signature*.py -q
+make test-scoring
+make test-web
+make test-visual
 ```
 
 ## Visual Signature Scripts

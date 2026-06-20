@@ -24,10 +24,11 @@ from .json_payloads import (
     safe_json_loads as _safe_json_loads,
     to_jsonable as _to_jsonable,
 )
+from .raw_inputs import RawInputsStoreMixin
 from .time_utils import duration_seconds as _duration_seconds
 
 
-class SQLiteStore(AnalysisJobsStoreMixin):
+class SQLiteStore(AnalysisJobsStoreMixin, RawInputsStoreMixin):
     """Persists runs, raw collector inputs, features, and scores in SQLite."""
 
     _schema_init_lock = threading.Lock()
@@ -575,43 +576,6 @@ class SQLiteStore(AnalysisJobsStoreMixin):
         )
         self.conn.commit()
 
-    def save_raw_input(self, run_id: int, source: str, payload: Any) -> None:
-        self.conn.execute(
-            """
-            INSERT INTO raw_inputs (run_id, source, payload_json, created_at)
-            VALUES (?, ?, ?, ?)
-            """,
-            (run_id, source, _json_dumps(_to_jsonable(payload)), datetime.now().isoformat()),
-        )
-        self.conn.commit()
-
-    def save_report_translation(self, run_id: int, target_lang: str, payload: Any) -> None:
-        stored = dict(payload) if isinstance(payload, dict) else {"payload": payload}
-        stored["target_lang"] = target_lang
-        self.save_raw_input(run_id, "report_translation", stored)
-
-    def get_report_translation(self, run_id: int, target_lang: str) -> dict[str, Any] | None:
-        rows = self.conn.execute(
-            """
-            SELECT payload_json
-            FROM raw_inputs
-            WHERE run_id = ? AND source = 'report_translation'
-            ORDER BY created_at DESC
-            """,
-            (run_id,),
-        ).fetchall()
-        for row in rows:
-            try:
-                payload = json.loads(row["payload_json"])
-            except json.JSONDecodeError:
-                continue
-            if isinstance(payload, dict) and payload.get("target_lang") == target_lang:
-                return payload
-        return None
-
-    def save_visual_signature_evidence(self, run_id: int, payload: Any) -> None:
-        self.save_raw_input(run_id, "visual_signature", payload)
-
     def update_run_classification(
         self,
         run_id: int,
@@ -643,56 +607,6 @@ class SQLiteStore(AnalysisJobsStoreMixin):
             ),
         )
         self.conn.commit()
-
-    def get_latest_raw_input(
-        self,
-        brand_name: str,
-        url: str,
-        source: str,
-        max_age_hours: int = 24,
-    ) -> Any | None:
-        cutoff = datetime.now().timestamp() - (max_age_hours * 3600)
-        cutoff_iso = datetime.fromtimestamp(cutoff).isoformat()
-        rows = self.conn.execute(
-            """
-            SELECT raw_inputs.payload_json
-            FROM raw_inputs
-            JOIN runs ON runs.id = raw_inputs.run_id
-            WHERE runs.brand_name = ?
-              AND runs.url = ?
-              AND raw_inputs.source = ?
-              AND raw_inputs.created_at >= ?
-            ORDER BY raw_inputs.created_at DESC
-            """,
-            (brand_name, url, source, cutoff_iso),
-        ).fetchall()
-        for row in rows:
-            payload, error = _safe_json_loads(
-                row["payload_json"],
-                field="raw_inputs.payload_json",
-                fallback=None,
-            )
-            if error:
-                return _MalformedJSONPayload(
-                    field=error["field"],
-                    raw_json=str(error["raw_json"]),
-                    error=error["error"],
-                )
-            # Derived re-saves (payload["derived"]) are run-scoped evidence,
-            # never a cross-run cache source — fall through to the capture
-            # they were derived from.
-            if isinstance(payload, dict) and payload.get("derived"):
-                continue
-            return payload
-        return None
-
-    def get_latest_visual_signature_evidence(
-        self,
-        brand_name: str,
-        url: str,
-        max_age_hours: int = 24,
-    ) -> Any | None:
-        return self.get_latest_raw_input(brand_name, url, "visual_signature", max_age_hours=max_age_hours)
 
     def save_evidence_items(self, run_id: int, items: list[dict[str, Any]]) -> None:
         if not items:

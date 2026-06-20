@@ -265,7 +265,7 @@ class SQLiteStoreTests(unittest.TestCase):
             payload = store.get_latest_raw_input("Example", "https://example.com", "web", max_age_hours=24)
             self.assertEqual(payload["title"], "Fresh")
 
-            with patch("src.storage.sqlite_store.datetime") as mock_datetime:
+            with patch("src.storage.raw_inputs.datetime") as mock_datetime:
                 from datetime import datetime as real_datetime
                 mock_datetime.now.return_value = real_datetime(2030, 1, 1, 0, 0, 0)
                 mock_datetime.fromtimestamp.side_effect = real_datetime.fromtimestamp

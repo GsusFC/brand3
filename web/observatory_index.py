@@ -16,6 +16,7 @@ from datetime import datetime
 from typing import Any
 from urllib.parse import quote, urlparse
 
+from src.classification.market_classifier import classify_market_heuristic
 from src.classification.market_taxonomy import GROUPS, canonical_tag, tags_for_group
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.moodboard import MAX_MOODBOARD_IMAGES, extract_moodboard_images
@@ -358,6 +359,63 @@ def save_brand_market_classification(
     return brand_key
 
 
+def propose_brand_market_classification(
+    brand: str,
+    *,
+    db_path: str = BRAND3_DB_PATH,
+) -> str:
+    """Persist reviewable market classification proposals from existing evidence."""
+    brands = _load_brand_sources(db_path=db_path, lang="es")
+    _attach_classifications(brands, db_path=db_path)
+    _attach_profile_overrides(brands, db_path=db_path)
+    match = _find_brand(brands, brand)
+    if match is None:
+        raise ValueError(f"Unknown brand: {brand}")
+
+    profile = _cached_or_build_brand_profile(match, db_path=db_path)
+    evidence = _market_classification_evidence(match, profile, db_path=db_path)
+    classification = classify_market_heuristic(
+        brand_key=match.brand_key,
+        domain=match.domain,
+        evidence=evidence,
+    )
+    existing = match.market_classification or {}
+    payload = _proposed_market_classification_payload(
+        brand_key=match.brand_key,
+        generated=classification.to_dict(),
+        existing=existing,
+    )
+    now = datetime.now().isoformat()
+    store = SQLiteStore(db_path)
+    try:
+        store.conn.execute(
+            """
+            INSERT INTO brand_market_classifications (
+                brand_key, classification_json, confidence, source,
+                requires_human_review, updated_at
+            )
+            VALUES (?, ?, ?, 'model_proposed', ?, ?)
+            ON CONFLICT(brand_key) DO UPDATE SET
+                classification_json=excluded.classification_json,
+                confidence=excluded.confidence,
+                source=excluded.source,
+                requires_human_review=excluded.requires_human_review,
+                updated_at=excluded.updated_at
+            """,
+            (
+                match.brand_key,
+                json.dumps(payload, ensure_ascii=True, sort_keys=True),
+                _classification_confidence(payload),
+                1 if payload.get("requires_human_review") else 0,
+                now,
+            ),
+        )
+        store.conn.commit()
+    finally:
+        store.close()
+    return match.brand_key
+
+
 def _empty_brand_profile(brand: str) -> dict[str, Any]:
     return {
         "name": _display_name(brand, brand),
@@ -415,6 +473,148 @@ def _market_classification_payload(brand: ObservatoryBrand) -> dict[str, Any]:
         "groups": list(GROUPS),
         "options": {group: list(tags_for_group(group)) for group in GROUPS},
     }
+
+
+def _market_classification_evidence(
+    brand: ObservatoryBrand,
+    profile: dict[str, Any],
+    *,
+    db_path: str,
+) -> list[dict[str, str]]:
+    snippets: list[dict[str, str]] = []
+    for key in ("summary", "offer", "audience", "outcome", "category"):
+        text = str(profile.get(key) or "").strip()
+        if text:
+            official_links = profile.get("official_links") or []
+            snippets.append(
+                {
+                    "text": text,
+                    "url": official_links[0] if official_links else "",
+                    "source_type": "profile",
+                }
+            )
+    for item in profile.get("proof_points") or []:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or "").strip()
+        if text:
+            snippets.append(
+                {
+                    "text": text,
+                    "url": str(item.get("source_url") or ""),
+                    "source_type": "proof_point",
+                }
+            )
+    snapshots = _snapshots_for_brand(brand, db_path=db_path)
+    for snapshot in snapshots[:3]:
+        pack = _research_pack_from_snapshot(snapshot)
+        for key in (
+            "product_summary",
+            "company_summary",
+            "declared_purpose",
+            "offer",
+            "audience",
+            "outcome",
+            "category",
+        ):
+            text = _first_text(pack.get(key))
+            if text:
+                snippets.append({"text": text, "url": "", "source_type": "research_pack"})
+        for item in pack.get("proof_points") or []:
+            if isinstance(item, dict) and item.get("text"):
+                snippets.append(
+                    {
+                        "text": str(item.get("text") or ""),
+                        "url": str(item.get("source_url") or ""),
+                        "source_type": "research_pack",
+                    }
+                )
+    return _dedupe_evidence_snippets(snippets, limit=40)
+
+
+def _proposed_market_classification_payload(
+    *,
+    brand_key: str,
+    generated: dict[str, Any],
+    existing: dict[str, Any],
+) -> dict[str, Any]:
+    existing_accepted = existing.get("accepted") if isinstance(existing.get("accepted"), dict) else {}
+    accepted = {group: list(existing_accepted.get(group) or []) for group in GROUPS}
+    accepted_pairs = {
+        (group, tag)
+        for group, values in accepted.items()
+        for tag in values
+    }
+    proposed = {group: [] for group in GROUPS}
+    tags = []
+    for item in generated.get("tags") or []:
+        if not isinstance(item, dict):
+            continue
+        group = str(item.get("group") or "")
+        tag = canonical_tag(group, str(item.get("tag") or ""))
+        if tag is None or (group, tag) in accepted_pairs or tag in proposed.get(group, []):
+            continue
+        proposed[group].append(tag)
+        clean = dict(item)
+        clean["group"] = group
+        clean["tag"] = tag
+        clean["status"] = "proposed"
+        clean["classifier"] = "heuristic"
+        tags.append(clean)
+
+    primary_category = _first_market_category(accepted) or _first_market_category(proposed)
+    return {
+        "version": "brand3_market_classification_v0_1",
+        "brand_key": brand_key,
+        "requires_human_review": any(proposed.values()),
+        "primary_category": primary_category,
+        "accepted": accepted,
+        "proposed": proposed,
+        "tags": tags,
+        "source": "model_proposed",
+        "updated_by": "brand3_auto_classifier",
+    }
+
+
+def _classification_confidence(payload: dict[str, Any]) -> str:
+    tags = payload.get("tags") if isinstance(payload.get("tags"), list) else []
+    confidences = {str(item.get("confidence") or "") for item in tags if isinstance(item, dict)}
+    if "high" in confidences:
+        return "high"
+    if "medium" in confidences:
+        return "medium"
+    return "low"
+
+
+def _first_market_category(grouped: dict[str, list[str]]) -> str:
+    for group in ("sector_industry", "technology_capability", "business_model"):
+        values = grouped.get(group) or []
+        if values:
+            return str(values[0])
+    return ""
+
+
+def _dedupe_evidence_snippets(snippets: list[dict[str, str]], *, limit: int) -> list[dict[str, str]]:
+    out = []
+    seen = set()
+    for item in snippets:
+        text = _clean_profile_text(item.get("text"), limit=360)
+        if not text:
+            continue
+        key = text.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(
+            {
+                "text": text,
+                "url": str(item.get("url") or item.get("source_url") or "").strip(),
+                "source_type": str(item.get("source_type") or item.get("source") or "").strip(),
+            }
+        )
+        if len(out) >= limit:
+            break
+    return out
 
 
 def _empty_sv9_status() -> dict[str, Any]:
@@ -898,7 +1098,8 @@ def _attach_classifications(brands: dict[str, ObservatoryBrand], *, db_path: str
             if isinstance(group_tags, list):
                 tags.extend(str(tag) for tag in group_tags)
         brand.classification_tags = tags
-        brand.category_label = str(payload.get("primary_category") or "") or (
+        primary_category = str(payload.get("primary_category") or "")
+        brand.category_label = primary_category if primary_category in tags else (
             tags[0] if tags else None
         )
         brand.category = _slug(brand.category_label) if brand.category_label else None

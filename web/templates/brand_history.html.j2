@@ -134,12 +134,15 @@
   </section>
 
   {% set market = history.market_classification if history.market_classification is defined else {'available': false, 'accepted': {}, 'proposed': {}, 'primary_category': '', 'groups': []} %}
-  <section class="brand-profile-block brand-market-block">
+  <section id="market-classification" class="brand-profile-block brand-market-block">
     <div class="section-head">
       <span class="label">{{ 'clasificación_mercado' if current_lang == 'es' else 'market_classification' }}</span>
       <span class="tag">// {{ market.primary_category or ('sin categoría' if current_lang == 'es' else 'uncategorized') }}</span>
       {% if can_edit_brand_profile %}
       <a class="source-link" href="/brand/{{ domain }}/edit?lang={{ current_lang }}#market-classification">{{ 'editar' if current_lang == 'es' else 'edit' }}</a>
+      <form method="post" action="/brand/{{ domain }}/market-classification/propose?lang={{ current_lang }}" style="margin:0;">
+        <button class="source-link source-link-button" type="submit">{{ 'proponer tags' if current_lang == 'es' else 'propose tags' }}</button>
+      </form>
       {% endif %}
     </div>
     {% if market.available %}

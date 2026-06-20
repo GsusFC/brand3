@@ -105,6 +105,10 @@
       <fieldset class="brand-market-fieldset">
         <legend>{{ group }}</legend>
         {% set accepted = market_classification.accepted.get(group, []) %}
+        {% set proposed = market_classification.proposed.get(group, []) %}
+        {% if proposed %}
+        <p class="small dim block-note">propuesto: {{ proposed|join(', ') }}</p>
+        {% endif %}
         {% for tag in market_classification.options.get(group, []) %}
         <label class="brand-market-checkbox">
           <input type="checkbox" name="{{ group }}" value="{{ tag }}" {% if tag in accepted %}checked{% endif %}>

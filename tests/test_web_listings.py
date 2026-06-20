@@ -696,6 +696,59 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(payload["accepted"]["technology_capability"], ["API"])
         self.assertFalse(payload["requires_human_review"])
 
+    def test_brand_market_classification_propose_creates_reviewable_noncanonical_tags(self):
+        self._seed_ready_run("proposeco", composite=65.0)
+        unlocked = self.client.get(
+            "/team/unlock", params={"token": "team"}, follow_redirects=False
+        )
+        self.assertEqual(unlocked.status_code, 303)
+        self.client.post(
+            "/brand/proposeco.com/edit",
+            data={
+                "name": "ProposeCo",
+                "domain": "proposeco.com",
+                "canonical_url": "https://proposeco.com",
+                "summary": "A SaaS platform for teams using generative AI.",
+                "offer": "Generate content with generative AI workflows.",
+                "audience": "Marketing teams and companies.",
+                "outcome": "Automates creative workflow production.",
+            },
+            follow_redirects=False,
+        )
+
+        proposed = self.client.post(
+            "/brand/proposeco.com/market-classification/propose",
+            follow_redirects=False,
+        )
+
+        self.assertEqual(proposed.status_code, 303)
+        self.assertEqual(
+            proposed.headers["location"],
+            "/brand/proposeco.com?lang=es#market-classification",
+        )
+        page = self.client.get("/brand/proposeco.com")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("generative AI", page.text)
+        self.assertIn("brand-market-tag-proposed", page.text)
+
+        index = self.client.get("/")
+        filtered = self.client.get("/?tag=generative-ai")
+        self.assertEqual(index.status_code, 200)
+        self.assertNotIn('<option value="generative-ai">generative AI</option>', index.text)
+        self.assertEqual(filtered.status_code, 200)
+        self.assertNotIn(">ProposeCo<", filtered.text)
+
+        with sqlite3.connect(self.db) as conn:
+            payload = json.loads(
+                conn.execute(
+                    "SELECT classification_json FROM brand_market_classifications WHERE brand_key = ?",
+                    ("proposeco.com",),
+                ).fetchone()[0]
+            )
+        self.assertTrue(payload["requires_human_review"])
+        self.assertEqual(payload["accepted"]["technology_capability"], [])
+        self.assertIn("generative AI", payload["proposed"]["technology_capability"])
+
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)
         self._seed_ready_run("uber", composite=72.0)

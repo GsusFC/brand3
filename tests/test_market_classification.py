@@ -77,3 +77,19 @@ def test_heuristic_classifier_accepts_only_obvious_signals_and_proposes_inferred
     assert accepted["corporate_status"] == ["active"]
     assert proposed["technology_capability"] == ["image generation", "generative AI"]
     assert classification.requires_human_review is True
+
+
+def test_heuristic_classifier_does_not_match_api_inside_words():
+    classification = classify_market_heuristic(
+        brand_key="mafer",
+        domain="mafer.test",
+        evidence=[
+            {
+                "text": "Private investment and holding capital group.",
+                "url": "https://mafer.test",
+                "source_type": "owned",
+            }
+        ],
+    )
+
+    assert "API" not in classification.tags_by_group(status="accepted")["technology_capability"]

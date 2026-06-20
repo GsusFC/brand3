@@ -7,6 +7,7 @@ the same schemas without changing the score pipeline.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
@@ -200,13 +201,13 @@ def _active_url(domain: str | None, snippets: list[EvidenceSnippet]) -> str:
 
 
 def _has_any(text: str, needles: tuple[str, ...]) -> bool:
-    return any(needle in text for needle in needles)
+    return any(_has_needle(text, needle) for needle in needles)
 
 
 def _match_line(snippets: list[EvidenceSnippet], needles: tuple[str, ...]) -> str:
     for snippet in snippets:
         lower = snippet.text.lower()
-        if any(needle in lower for needle in needles):
+        if any(_has_needle(lower, needle) for needle in needles):
             return snippet.text[:260]
     return ""
 
@@ -214,6 +215,15 @@ def _match_line(snippets: list[EvidenceSnippet], needles: tuple[str, ...]) -> st
 def _match_url(snippets: list[EvidenceSnippet], needles: tuple[str, ...]) -> str:
     for snippet in snippets:
         lower = snippet.text.lower()
-        if any(needle in lower for needle in needles):
+        if any(_has_needle(lower, needle) for needle in needles):
             return snippet.source_url
     return ""
+
+
+def _has_needle(text: str, needle: str) -> bool:
+    normalized = str(needle or "").lower().strip()
+    if not normalized:
+        return False
+    if len(normalized) <= 3 and normalized.replace(" ", "").isalnum():
+        return re.search(rf"(?<![a-z0-9]){re.escape(normalized)}(?![a-z0-9])", text) is not None
+    return normalized in text

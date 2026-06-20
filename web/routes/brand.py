@@ -13,6 +13,7 @@ from ..config import settings
 from ..middleware.team_cookie import create_serializer, is_team_request
 from ..observatory_index import (
     build_observatory_brand_history,
+    propose_brand_market_classification,
     save_brand_market_classification,
     save_brand_profile_overrides,
 )
@@ -138,6 +139,27 @@ async def brand_market_classification_submit(
         updated_by=updated_by,
     )
     return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
+
+
+@router.post("/brand/{domain}/market-classification/propose")
+async def brand_market_classification_propose(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    try:
+        brand_key = await asyncio.to_thread(
+            propose_brand_market_classification,
+            domain,
+            db_path=BRAND3_DB_PATH,
+        )
+    except ValueError:
+        raise HTTPException(status_code=404, detail="brand not found") from None
+    return RedirectResponse(
+        f"/brand/{quote(brand_key)}?lang={lang}#market-classification",
+        status_code=303,
+    )
 
 
 def _ensure_brand_history_defaults(history: dict, domain: str) -> None:

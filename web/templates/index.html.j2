@@ -91,14 +91,17 @@
     </tbody>
   </table>
   </div>
-  <div class="lab-review-nav" style="margin-top: 14px;">
-    {% if observatory.has_prev %}
-    <a class="source-link" href="/?lang={{ current_lang }}&page={{ observatory.page - 1 }}{% if observatory.sort != 'newest' %}&sort={{ observatory.sort }}{% endif %}{% if observatory.query %}&q={{ observatory.query }}{% endif %}{% if observatory.category %}&category={{ observatory.category }}{% endif %}">{{ 'anterior' if current_lang == 'es' else 'prev' }}</a>
-    {% endif %}
-    {% if observatory.has_next %}
-    <a class="source-link" href="/?lang={{ current_lang }}&page={{ observatory.page + 1 }}{% if observatory.sort != 'newest' %}&sort={{ observatory.sort }}{% endif %}{% if observatory.query %}&q={{ observatory.query }}{% endif %}{% if observatory.category %}&category={{ observatory.category }}{% endif %}">{{ 'siguiente' if current_lang == 'es' else 'next' }}</a>
-    {% endif %}
-  </div>
+  {% set pager = {
+    "base_path": "/",
+    "page": observatory.page,
+    "total_pages": observatory.total_pages,
+    "has_prev": observatory.has_prev,
+    "has_next": observatory.has_next,
+    "query": observatory.query,
+    "sort": observatory.sort,
+    "category": observatory.category
+  } %}
+  {% include "observatory_pager.html.j2" %}
   {% else %}
   <div class="empty">// {% if current_lang == 'es' %}todavía no hay análisis — ejecuta un scanner de marca.{% else %}no analyses yet — run a brand scanner.{% endif %}</div>
   {% endif %}

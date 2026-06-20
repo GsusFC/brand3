@@ -72,10 +72,16 @@
   <div class="empty">// {% if current_lang == 'es' %}ningún análisis coincide con este filtro.{% else %}no analyses match this filter.{% endif %}</div>
   {% endif %}
 
-  <nav class="pager small">
-    {% if has_prev %}<a href="/reports?page={{ page - 1 }}&q={{ query }}&sort={{ sort }}{% if category %}&category={{ category }}{% endif %}{{ lang_query }}">{{ '← anterior' if current_lang == 'es' else '← prev' }}</a>{% endif %}
-    <span class="dim">{{ 'página' if current_lang == 'es' else 'page' }} {{ page }} {{ 'de' if current_lang == 'es' else 'of' }} {{ total_pages }}</span>
-    {% if has_next %}<a href="/reports?page={{ page + 1 }}&q={{ query }}&sort={{ sort }}{% if category %}&category={{ category }}{% endif %}{{ lang_query }}">{{ 'siguiente →' if current_lang == 'es' else 'next →' }}</a>{% endif %}
-  </nav>
+  {% set pager = {
+    "base_path": "/reports",
+    "page": page,
+    "total_pages": total_pages,
+    "has_prev": has_prev,
+    "has_next": has_next,
+    "query": query,
+    "sort": sort,
+    "category": category
+  } %}
+  {% include "observatory_pager.html.j2" %}
 </section>
 {% endblock %}

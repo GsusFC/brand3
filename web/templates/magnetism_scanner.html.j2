@@ -74,11 +74,17 @@
     </tbody>
   </table>
   </div>
-  <nav class="pager small">
-    {% if model.observatory.has_prev %}<a href="/magnetism-scanner?page={{ model.observatory.page - 1 }}&q={{ model.observatory.query }}&sort={{ model.observatory.sort }}{% if model.observatory.category %}&category={{ model.observatory.category }}{% endif %}{{ model.lang_query }}">{{ '← anterior' if current_lang == 'es' else '← prev' }}</a>{% endif %}
-    <span class="dim">{{ 'página' if current_lang == 'es' else 'page' }} {{ model.observatory.page }} {{ 'de' if current_lang == 'es' else 'of' }} {{ model.observatory.total_pages }}</span>
-    {% if model.observatory.has_next %}<a href="/magnetism-scanner?page={{ model.observatory.page + 1 }}&q={{ model.observatory.query }}&sort={{ model.observatory.sort }}{% if model.observatory.category %}&category={{ model.observatory.category }}{% endif %}{{ model.lang_query }}">{{ 'siguiente →' if current_lang == 'es' else 'next →' }}</a>{% endif %}
-  </nav>
+  {% set pager = {
+    "base_path": "/magnetism-scanner",
+    "page": model.observatory.page,
+    "total_pages": model.observatory.total_pages,
+    "has_prev": model.observatory.has_prev,
+    "has_next": model.observatory.has_next,
+    "query": model.observatory.query,
+    "sort": model.observatory.sort,
+    "category": model.observatory.category
+  } %}
+  {% include "observatory_pager.html.j2" %}
   {% else %}
   <div class="empty">{{ model.t.no_scans }}</div>
   {% endif %}

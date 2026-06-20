@@ -451,6 +451,9 @@ class ListingsTests(unittest.TestCase):
         self.assertIn("ficha_de_marca", r.text)
         self.assertIn('src="https://profileco.com/apple-touch-icon.png"', r.text)
         self.assertIn("LinkedIn", r.text)
+        self.assertIn("capa_visual", r.text)
+        self.assertIn("moodboard.js", r.text)
+        self.assertIn("https://profileco.com/apple-touch-icon.png", r.text)
         self.assertIn(f"/sv9/scan/{sv9_id}?lang=es", r.text)
         self.assertIn("ver SV9", r.text)
 

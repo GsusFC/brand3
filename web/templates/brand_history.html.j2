@@ -100,6 +100,34 @@
     </section>
   </div>
 
+  {% set moodboard = profile.moodboard if profile.moodboard is defined else {'available': false, 'images': [], 'image_count': 0, 'role_counts': {}} %}
+  <section class="brand-profile-block brand-profile-moodboard">
+    <div class="section-head">
+      <span class="label">{{ 'capa_visual' if current_lang == 'es' else 'visual_layer' }}</span>
+      <span class="tag">// {{ moodboard.image_count }} {{ 'assets publicados' if current_lang == 'es' else 'published assets' }}</span>
+      {% if moodboard.available %}
+      <button class="source-link source-link-button moodboard-shuffle" type="button" data-moodboard-shuffle>{{ 'reordenar' if current_lang == 'es' else 'shuffle' }}</button>
+      {% endif %}
+    </div>
+    {% if moodboard.available %}
+    <div class="scan-loader-stage cloud-stage brand-profile-cloud-stage" data-moodboard-stage aria-label="{{ 'Capa visual de marca' if current_lang == 'es' else 'Brand visual layer' }}">
+      <div class="cloud-layer" data-cloud-layer></div>
+      <canvas class="scan-loader-grain" data-moodboard-grain></canvas>
+      <div class="scan-loader-vignette"></div>
+    </div>
+    <p class="dim" style="font-family: var(--font-mono); font-size: 10px; margin: 8px 0 0;">
+      {{ 'Imágenes detectadas en superficies propias o assets publicados por la marca.' if current_lang == 'es' else 'Images detected from owned surfaces or assets published by the brand.' }}
+    </p>
+    <script type="application/json" data-moodboard-items>{{ moodboard.images | tojson }}</script>
+    <script src="/static/brand3_cloud.js?v={{ static_asset_version }}" defer></script>
+    <script src="/static/moodboard.js?v={{ static_asset_version }}" defer></script>
+    {% else %}
+    <div class="moodboard-empty">
+      <p class="dim" style="font-family: var(--font-mono); font-size: 12px; margin: 0;">// {{ 'No se capturaron imágenes representativas para esta marca.' if current_lang == 'es' else 'No representative images were captured for this brand.' }}</p>
+    </div>
+    {% endif %}
+  </section>
+
   <div class="brand-profile-grid">
     <section class="brand-profile-block">
       <div class="section-head">

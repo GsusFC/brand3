@@ -630,6 +630,15 @@ th.num {
   font-size: 11px;
 }
 
+.brand-profile-moodboard {
+  display: grid;
+  gap: 12px;
+}
+
+.cloud-stage.brand-profile-cloud-stage {
+  height: clamp(260px, 34vw, 420px);
+}
+
 .status-dot {
   display: inline-block;
   margin-left: 4px;
@@ -4182,6 +4191,10 @@ a:hover {
 
   .brand-profile-kv {
     grid-template-columns: 1fr;
+  }
+
+  .cloud-stage.brand-profile-cloud-stage {
+    height: 340px;
   }
 
   .cloud-stage { height: 420px; }

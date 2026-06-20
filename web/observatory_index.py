@@ -17,7 +17,7 @@ from typing import Any
 from urllib.parse import quote, urlparse
 
 from src.config import BRAND3_DB_PATH
-from src.features.magnetism.moodboard import extract_moodboard_images
+from src.features.magnetism.moodboard import MAX_MOODBOARD_IMAGES, extract_moodboard_images
 from src.research.research_pack_facade import build_recommended_research_pack
 from src.storage.sqlite_store import SQLiteStore
 from src.sv9.ranking import domain_from_url
@@ -216,6 +216,7 @@ def _empty_brand_profile(brand: str) -> dict[str, Any]:
         "proof_points": [],
         "evidence_gaps": [],
         "confidence_notes": [],
+        "moodboard": {"available": False, "images": [], "image_count": 0, "role_counts": {}},
         "models": [],
         "scan_count": 0,
         "latest_date": "",
@@ -242,6 +243,7 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
     packs = [pack for pack in packs if pack]
     web_payloads = _web_payloads_from_snapshots(snapshots)
     logo_url, logo_source = _best_logo(snapshots, web_payloads)
+    moodboard = _build_profile_moodboard(web_payloads, logo_url=logo_url)
     primary_pack = packs[0] if packs else {}
     official_links = _unique_links(
         [
@@ -281,6 +283,7 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
         "proof_points": proof_points,
         "evidence_gaps": evidence_gaps,
         "confidence_notes": confidence_notes,
+        "moodboard": moodboard,
         "models": sorted({source.source for source in brand.sources}),
         "scan_count": len(brand.sources),
         "latest_date": _compact_date(brand.latest_date),
@@ -534,6 +537,40 @@ def _best_logo(
             if image.get("role") == "logo" and image.get("url"):
                 return str(image["url"]), "owned_html"
     return "", ""
+
+
+def _build_profile_moodboard(
+    web_payloads: list[dict[str, Any]],
+    *,
+    logo_url: str = "",
+) -> dict[str, Any]:
+    images = []
+    seen = set()
+    if logo_url:
+        parsed = urlparse(logo_url)
+        images.append({"url": logo_url, "role": "logo", "alt": "", "host": parsed.netloc})
+        seen.add(logo_url)
+    for payload in web_payloads:
+        for image in extract_moodboard_images(payload):
+            url = str(image.get("url") or "")
+            if not url or url in seen:
+                continue
+            seen.add(url)
+            images.append(image)
+            if len(images) >= MAX_MOODBOARD_IMAGES:
+                break
+        if len(images) >= MAX_MOODBOARD_IMAGES:
+            break
+    role_counts: dict[str, int] = {}
+    for image in images:
+        role = str(image.get("role") or "content")
+        role_counts[role] = role_counts.get(role, 0) + 1
+    return {
+        "available": bool(images),
+        "images": images,
+        "image_count": len(images),
+        "role_counts": role_counts,
+    }
 
 
 def _social_links_from_packs(packs: list[dict[str, Any]]) -> list[str]:

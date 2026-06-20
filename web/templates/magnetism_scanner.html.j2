@@ -11,8 +11,27 @@
 <section>
   <div class="section-head">
     <span class="label">{{ model.t.recent_scans }}</span>
-    <span class="tag">// {{ model.t.latest_runs }} {{ model.scans|length }}</span>
+    <span class="tag">// {{ model.t.latest_runs }} {{ model.observatory.total }} · {{ 'página' if current_lang == 'es' else 'page' }} {{ model.observatory.page }}/{{ model.observatory.total_pages }}</span>
   </div>
+  <form method="get" action="/magnetism-scanner" class="form-row reports-filter">
+    {% if model.lang == 'en' %}
+    <input type="hidden" name="lang" value="en">
+    {% endif %}
+    <input type="text" name="q" value="{{ model.observatory.query }}" placeholder="{{ 'buscar marca, dominio o categoría ...' if current_lang == 'es' else 'search brand, domain, or category ...' }}">
+    <select name="sort">
+      <option value="newest" {% if model.observatory.sort == "newest" %}selected{% endif %}>{{ 'más recientes' if current_lang == 'es' else 'newest' }}</option>
+      <option value="score_desc" {% if model.observatory.sort == "score_desc" %}selected{% endif %}>{{ 'puntuación ↓' if current_lang == 'es' else 'score ↓' }}</option>
+      <option value="score_asc" {% if model.observatory.sort == "score_asc" %}selected{% endif %}>{{ 'puntuación ↑' if current_lang == 'es' else 'score ↑' }}</option>
+      <option value="scans_desc" {% if model.observatory.sort == "scans_desc" %}selected{% endif %}>{{ 'más scans' if current_lang == 'es' else 'most scans' }}</option>
+    </select>
+    <select name="category">
+      <option value="">{{ 'todas las categorías' if current_lang == 'es' else 'all categories' }}</option>
+      {% for key, spec in model.observatory.categories.items() %}
+      <option value="{{ key }}"{% if model.observatory.category == key %} selected{% endif %}>{{ spec["label"] }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">{{ 'filtrar' if current_lang == 'es' else 'filter' }}</button>
+  </form>
   {% if model.scans %}
   <div class="table-wrap">
       <table class="scanner-recent-table">
@@ -20,26 +39,46 @@
           <tr>
             <th class="col-date">{{ model.t.date }}</th>
             <th class="col-brand">{{ model.t.brand }}</th>
-            <th class="num col-score">magnetism</th>
-            <th class="num col-score">{{ model.t.coherence }}</th>
+            <th class="num col-score">score</th>
+            <th>{{ 'modelo' if current_lang == 'es' else 'model' }}</th>
             <th class="col-band-wide">{{ model.t.quadrant }}</th>
+            <th>{{ 'categoría' if current_lang == 'es' else 'category' }}</th>
+            <th class="num">{{ 'scans' if current_lang == 'es' else 'scans' }}</th>
             <th class="col-action"></th>
           </tr>
         </thead>
         <tbody>
     {% for scan in model.scans %}
       <tr>
-        <td class="col-date">{{ scan.formatted_date }}</td>
-        <td class="col-brand"><strong>{{ scan.display_name or scan.brand_name }}</strong></td>
-        <td class="num num-inline hl-accent col-score" style="font-weight: 600;">{{ scan.magnetism_score }}</td>
-        <td class="num num-inline hl-ok col-score" style="font-weight: 600;">{{ scan.coherence_score }}</td>
-        <td class="dim col-band-wide">{{ scan.quadrant }}</td>
-        <td class="action-cell col-action"><a href="{{ scan.primary_href or '/magnetism-scanner/scan/' ~ scan.id ~ model.lang_query }}">{{ model.t.view_sheet }}</a></td>
+        <td class="col-date">{{ scan.compact_date }}</td>
+        <td class="col-brand">
+          <strong>{{ scan.display_name }}</strong>
+          {% if scan.domain %}<span class="dim" style="display:block; font-size:11px;">{{ scan.domain }}</span>{% endif %}
+        </td>
+        <td class="num num-inline hl-accent col-score" style="font-weight: 600;">{{ scan.score_compact }}</td>
+        <td><span class="badge-ready">{{ scan.score_model }}</span></td>
+        <td class="dim col-band-wide">{{ scan.quadrant or '-' }}</td>
+        <td class="dim">{{ scan.category_label or '-' }}</td>
+        <td class="num">{{ scan.scan_count }}</td>
+        <td class="action-cell col-action">
+          {% if scan.sv9_generate_scan_id %}
+          <form method="post" action="/magnetism-scanner/scan/{{ scan.sv9_generate_scan_id }}/generate-sv9?lang={{ model.lang }}" style="margin:0;">
+            <button type="submit" style="padding: 6px 10px; font-size: 11px;">SV9</button>
+          </form>
+          {% else %}
+          <a href="{{ scan.primary_href }}">{{ model.t.view_sheet }}</a>
+          {% endif %}
+        </td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
+  <nav class="pager small">
+    {% if model.observatory.has_prev %}<a href="/magnetism-scanner?page={{ model.observatory.page - 1 }}&q={{ model.observatory.query }}&sort={{ model.observatory.sort }}{% if model.observatory.category %}&category={{ model.observatory.category }}{% endif %}{{ model.lang_query }}">{{ '← anterior' if current_lang == 'es' else '← prev' }}</a>{% endif %}
+    <span class="dim">{{ 'página' if current_lang == 'es' else 'page' }} {{ model.observatory.page }} {{ 'de' if current_lang == 'es' else 'of' }} {{ model.observatory.total_pages }}</span>
+    {% if model.observatory.has_next %}<a href="/magnetism-scanner?page={{ model.observatory.page + 1 }}&q={{ model.observatory.query }}&sort={{ model.observatory.sort }}{% if model.observatory.category %}&category={{ model.observatory.category }}{% endif %}{{ model.lang_query }}">{{ 'siguiente →' if current_lang == 'es' else 'next →' }}</a>{% endif %}
+  </nav>
   {% else %}
   <div class="empty">{{ model.t.no_scans }}</div>
   {% endif %}

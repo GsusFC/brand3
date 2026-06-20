@@ -377,7 +377,6 @@ class ListingsTests(unittest.TestCase):
         r = self.client.get("/magnetism-scanner")
         self.assertEqual(r.status_code, 200)
         self.assertIn("64", r.text)
-        self.assertIn("74", r.text)
         self.assertIn("Canonical quadrant", r.text)
 
     def test_brand_page_shows_all_history(self):

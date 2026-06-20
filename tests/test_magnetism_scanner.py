@@ -164,7 +164,16 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(len(calls), 1)
         self.assertIs(calls[0][0], magnetism_scanner._load_magnetism_index_data)
         self.assertEqual(calls[0][1], ())
-        self.assertEqual(calls[0][2], {})
+        self.assertEqual(
+            calls[0][2],
+            {
+                "query": None,
+                "sort": "newest",
+                "category": None,
+                "page": 1,
+                "lang": "es",
+            },
+        )
 
     def test_magnetism_from_run_loads_summary_via_threadpool(self):
         from web.routes import magnetism_scanner

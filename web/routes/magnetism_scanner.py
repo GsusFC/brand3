@@ -33,6 +33,7 @@ from src.services.magnetism_service import ensure_sv9_scan_for_source_run
 from src.storage.sqlite_store import SQLiteStore
 
 from ..i18n import magnetism_landing_copy
+from ..observatory_index import build_observatory_index
 from ..storage import (
     get_magnetism_scan,
     get_magnetism_scan_by_token,
@@ -41,7 +42,6 @@ from ..storage import (
     insert_magnetism_job,
     insert_magnetism_scan,
     insert_sv9_generation_job,
-    list_magnetism_scans,
     update_sv9_generation_job,
 )
 from ..templates_env import templates
@@ -56,7 +56,7 @@ from ..scanner_api.models import (
     scan_model_from_payload as _scan_model_from_payload,
     scanner_result_metadata_model as _scanner_result_metadata,
 )
-from ..scan_links import attach_primary_scan_hrefs, sv9_scan_id_for_run
+from ..scan_links import sv9_scan_id_for_run
 
 router = APIRouter()
 
@@ -629,14 +629,29 @@ def _with_lang(path: str, lang: _Lang) -> str:
     return f"{path}{_lang_q(lang)}"
 
 
-def _load_magnetism_index_data() -> tuple[list[dict], list[dict]]:
-    scans = list_magnetism_scans(limit=25)
+def _load_magnetism_index_data(
+    *,
+    query: str | None = None,
+    sort: str = "newest",
+    category: str | None = None,
+    page: int = 1,
+    lang: _Lang = "es",
+) -> dict:
+    observatory = build_observatory_index(
+        db_path=BRAND3_DB_PATH,
+        query=query,
+        sort=sort,
+        category=category,
+        page=page,
+        per_page=25,
+        lang=lang,
+    )
     store = SQLiteStore(BRAND3_DB_PATH)
     try:
         audit_runs = store.list_runs(limit=12)
     finally:
         store.close()
-    return scans, audit_runs
+    return {"observatory": observatory, "audit_runs": audit_runs}
 
 
 def _load_run_summary(run_id: int) -> dict | None:
@@ -837,22 +852,30 @@ def _evidence_llm_shadow_disagreements(heuristic: dict, llm: dict, *, packet=Non
 
 
 @router.get("/magnetism-scanner")
-async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
+async def magnetism_scanner_index(
+    request: Request,
+    lang: _Lang = Query("es"),
+    q: str | None = Query(None),
+    sort: str = Query("newest"),
+    category: str | None = Query(None),
+    page: int = Query(1, ge=1),
+):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
-    scans, audit_runs = await asyncio.to_thread(_load_magnetism_index_data)
+    sort = {"recent": "newest", "score": "score_desc"}.get(sort, sort)
+    if sort not in {"newest", "score_desc", "score_asc", "scans_desc"}:
+        sort = "newest"
+    index_data = await asyncio.to_thread(
+        _load_magnetism_index_data,
+        query=q,
+        sort=sort,
+        category=category,
+        page=page,
+        lang=lang,
+    )
+    observatory = index_data["observatory"]
+    scans = observatory["rows"]
+    audit_runs = index_data["audit_runs"]
 
-    # Format dates nicely for template listing
-    scans = attach_primary_scan_hrefs(scans, db_path=BRAND3_DB_PATH, lang=lang)
-    for scan in scans:
-        scan["display_name"] = _magnetism_display_name(
-            str(scan.get("brand_name") or ""),
-            str(scan.get("url") or ""),
-        )
-        try:
-            dt = datetime.fromisoformat(scan["created_at"].replace("Z", "+00:00"))
-            scan["formatted_date"] = dt.strftime("%y/%m/%d")
-        except Exception:
-            scan["formatted_date"] = scan["created_at"]
     for run in audit_runs:
         run["display_name"] = _magnetism_display_name(
             str(run.get("brand_name") or ""),
@@ -870,6 +893,17 @@ async def magnetism_scanner_index(request: Request, lang: _Lang = Query("es")):
             "model": {
                 "scans": scans,
                 "audit_runs": audit_runs,
+                "observatory": {
+                    "query": q or "",
+                    "sort": sort,
+                    "category": category,
+                    "categories": observatory["categories"],
+                    "page": observatory["page"],
+                    "total": observatory["total"],
+                    "total_pages": observatory["total_pages"],
+                    "has_prev": observatory["has_prev"],
+                    "has_next": observatory["has_next"],
+                },
                 "lang": lang,
                 "other_lang": "en" if lang == "es" else "es",
                 "lang_query": _lang_q(lang),

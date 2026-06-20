@@ -620,11 +620,6 @@ th.num {
   font-size: 11px;
 }
 
-.brand-market-tag-proposed {
-  border-style: dashed;
-  color: var(--text-muted);
-}
-
 .brand-market-checkbox {
   display: flex !important;
   grid-template-columns: none !important;

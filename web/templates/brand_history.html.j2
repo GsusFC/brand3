@@ -140,26 +140,18 @@
       <span class="tag">// {{ market.primary_category or ('sin categoría' if current_lang == 'es' else 'uncategorized') }}</span>
       {% if can_edit_brand_profile %}
       <a class="source-link" href="/brand/{{ domain }}/edit?lang={{ current_lang }}#market-classification">{{ 'editar' if current_lang == 'es' else 'edit' }}</a>
-      <a class="source-link" href="/brand/{{ domain }}/market-classification/debug?lang={{ current_lang }}">{{ 'debug evidencia' if current_lang == 'es' else 'debug evidence' }}</a>
-      <form method="post" action="/brand/{{ domain }}/market-classification/propose?lang={{ current_lang }}" style="margin:0;">
-        <button class="source-link source-link-button" type="submit">{{ 'proponer tags' if current_lang == 'es' else 'propose tags' }}</button>
-      </form>
       {% endif %}
     </div>
     {% if market.available %}
     <div class="brand-market-groups">
       {% for group in market.groups %}
       {% set accepted = market.accepted.get(group, []) %}
-      {% set proposed = market.proposed.get(group, []) %}
-      {% if accepted or proposed %}
+      {% if accepted %}
       <div class="brand-market-group">
         <strong>{{ group }}</strong>
         <div class="brand-market-tags">
           {% for tag in accepted %}
           <span class="brand-market-tag">{{ tag }}</span>
-          {% endfor %}
-          {% for tag in proposed %}
-          <span class="brand-market-tag brand-market-tag-proposed">{{ tag }}</span>
           {% endfor %}
         </div>
       </div>

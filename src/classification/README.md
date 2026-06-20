@@ -17,19 +17,17 @@ Each tag carries:
 
 - `confidence`: `high`, `medium`, or `low`
 - `status`: `proposed`, `accepted`, `rejected`, or `stale`
-- `classifier`: `heuristic`, `llm`, or `manual`
+- `classifier`: `manual` for current writes; legacy rows may contain
+  `heuristic` or `llm`
 - `evidence_text`
 - `source_url`
 - `reason_codes`
 
 Only `accepted` tags should feed public filters, benchmarking cohorts, and
-company-profile category summaries. `proposed` tags belong in review surfaces.
+company-profile category summaries.
 
-## Automation Rule
+## Editing Rule
 
-Heuristics may auto-accept only narrow, explicit signals such as active domain,
-B2B wording, SaaS wording, subscription pricing, or API/docs language.
-
-LLM output should enter as `proposed` unless a separate product decision creates
-a deterministic acceptance rule. The model suggests context; it does not define
-canonical company truth.
+Market classification is a controlled human-editable profile field. The
+platform validates submitted tags against the Brand3 taxonomy and persists only
+accepted tags for public filtering and profile summaries.

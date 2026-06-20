@@ -4,17 +4,18 @@ import asyncio
 from typing import Literal
 from urllib.parse import quote
 
+import secrets
+
 from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
+from pydantic import BaseModel
 
 from src.config import BRAND3_DB_PATH
 
 from ..config import settings
 from ..middleware.team_cookie import create_serializer, is_team_request
 from ..observatory_index import (
-    build_brand_market_classification_debug,
     build_observatory_brand_history,
-    propose_brand_market_classification,
     save_brand_market_classification,
     save_brand_profile_overrides,
 )
@@ -23,10 +24,51 @@ from ..templates_env import templates
 router = APIRouter()
 
 
-def _require_team_write(request: Request) -> None:
+class BrandProfileUpdate(BaseModel):
+    name: str | None = None
+    domain: str | None = None
+    canonical_url: str | None = None
+    logo_url: str | None = None
+    summary: str | None = None
+    offer: str | None = None
+    audience: str | None = None
+    outcome: str | None = None
+    category: str | None = None
+    official_links: list[str] | str | None = None
+    social_links: list[str] | str | None = None
+    updated_by: str | None = None
+
+
+PROFILE_EDIT_FIELDS = (
+    "name",
+    "domain",
+    "canonical_url",
+    "logo_url",
+    "summary",
+    "offer",
+    "audience",
+    "outcome",
+    "category",
+    "official_links",
+    "social_links",
+)
+
+
+def _has_team_write_access(request: Request) -> bool:
     if not settings.team_token:
-        return
-    if not is_team_request(request, create_serializer(settings.cookie_secret)):
+        return True
+    if is_team_request(request, create_serializer(settings.cookie_secret)):
+        return True
+    supplied = request.headers.get("x-brand3-team-token", "").strip()
+    if not supplied:
+        scheme, _, value = request.headers.get("authorization", "").partition(" ")
+        if scheme.lower() == "bearer":
+            supplied = value.strip()
+    return bool(supplied and secrets.compare_digest(supplied, settings.team_token))
+
+
+def _require_team_write(request: Request) -> None:
+    if not _has_team_write_access(request):
         raise HTTPException(status_code=403, detail="team access required")
 
 
@@ -51,32 +93,6 @@ async def brand_history(request: Request, domain: str, lang: Literal["es", "en"]
             "history": history,
             "analyses": history["rows"],
             "can_edit_brand_profile": can_edit,
-            "ui_lang": lang,
-        },
-    )
-
-
-@router.get("/brand/{domain}/market-classification/debug")
-async def brand_market_classification_debug(
-    request: Request,
-    domain: str,
-    lang: Literal["es", "en"] = Query("es"),
-):
-    _require_team_write(request)
-    try:
-        debug = await asyncio.to_thread(
-            build_brand_market_classification_debug,
-            domain,
-            db_path=BRAND3_DB_PATH,
-        )
-    except ValueError:
-        raise HTTPException(status_code=404, detail="brand not found") from None
-    return templates.TemplateResponse(
-        request,
-        "brand_market_classification_debug.html.j2",
-        {
-            "domain": domain,
-            "debug": debug,
             "ui_lang": lang,
         },
     )
@@ -141,6 +157,50 @@ async def brand_profile_edit_submit(
     return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
 
 
+@router.patch("/api/brands/{domain}/profile")
+@router.patch("/api/brand/{domain}/profile")
+async def brand_profile_api_update(
+    request: Request,
+    domain: str,
+    payload: BrandProfileUpdate,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    if not history.get("rows") and not history.get("profile"):
+        raise HTTPException(status_code=404, detail="brand not found")
+    current = history.get("profile") or {}
+    updates = payload.model_dump(exclude_unset=True)
+    updated_by = str(updates.pop("updated_by", "") or "").strip()
+    overrides = {field: current.get(field, "") for field in PROFILE_EDIT_FIELDS}
+    for field in PROFILE_EDIT_FIELDS:
+        if field in updates:
+            overrides[field] = updates[field]
+    brand_key = await asyncio.to_thread(
+        save_brand_profile_overrides,
+        domain,
+        overrides,
+        db_path=BRAND3_DB_PATH,
+        updated_by=updated_by,
+    )
+    updated = await asyncio.to_thread(
+        build_observatory_brand_history,
+        brand_key,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(updated, brand_key)
+    return {
+        "brand_key": brand_key,
+        "profile": updated["profile"],
+    }
+
+
 @router.post("/brand/{domain}/market-classification")
 async def brand_market_classification_submit(
     request: Request,
@@ -166,27 +226,6 @@ async def brand_market_classification_submit(
         updated_by=updated_by,
     )
     return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
-
-
-@router.post("/brand/{domain}/market-classification/propose")
-async def brand_market_classification_propose(
-    request: Request,
-    domain: str,
-    lang: Literal["es", "en"] = Query("es"),
-):
-    _require_team_write(request)
-    try:
-        brand_key = await asyncio.to_thread(
-            propose_brand_market_classification,
-            domain,
-            db_path=BRAND3_DB_PATH,
-        )
-    except ValueError:
-        raise HTTPException(status_code=404, detail="brand not found") from None
-    return RedirectResponse(
-        f"/brand/{quote(brand_key)}?lang={lang}#market-classification",
-        status_code=303,
-    )
 
 
 def _ensure_brand_history_defaults(history: dict, domain: str) -> None:

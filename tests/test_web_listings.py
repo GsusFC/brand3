@@ -304,7 +304,7 @@ class ListingsTests(unittest.TestCase):
         self.assertIn("clasificación_mercado", response.text)
         self.assertIn("project management", response.text)
         self.assertIn("SaaS", response.text)
-        self.assertIn("automation", response.text)
+        self.assertNotIn("automation", response.text)
         self.assertIn("No modifica el score", response.text)
 
     def test_index_merges_scanners_and_audits(self):
@@ -649,6 +649,39 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(row[1], "https://editco.com/logo.png")
         self.assertIn("Ficha corregida manualmente.", row[2])
 
+    def test_brand_profile_api_patch_requires_team_and_applies_partial_overrides(self):
+        self._seed_ready_run("apieditco", composite=65.0)
+
+        locked = self.client.patch(
+            "/api/brands/apieditco.com/profile",
+            json={"summary": "No deberia guardarse."},
+        )
+        self.assertEqual(locked.status_code, 403)
+
+        saved = self.client.patch(
+            "/api/brands/apieditco.com/profile",
+            headers={"x-brand3-team-token": "team"},
+            json={
+                "name": "API EditCo",
+                "summary": "Ficha editada desde API.",
+                "logo_url": "https://apieditco.com/logo.png",
+                "official_links": ["https://apieditco.com", "https://apieditco.com/pricing"],
+                "updated_by": "api",
+            },
+        )
+        self.assertEqual(saved.status_code, 200)
+        payload = saved.json()
+        self.assertEqual(payload["brand_key"], "apieditco.com")
+        self.assertEqual(payload["profile"]["name"], "API EditCo")
+        self.assertEqual(payload["profile"]["summary"], "Ficha editada desde API.")
+        self.assertEqual(payload["profile"]["logo_url"], "https://apieditco.com/logo.png")
+        self.assertIn("https://apieditco.com/pricing", payload["profile"]["official_links"])
+
+        page = self.client.get("/brand/apieditco.com")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("API EditCo", page.text)
+        self.assertIn("Ficha editada desde API.", page.text)
+
     def test_brand_market_classification_edit_persists_controlled_tags(self):
         self._seed_ready_run("taxoco", composite=65.0)
         unlocked = self.client.get(
@@ -695,143 +728,6 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(payload["accepted"]["business_model"], ["B2B", "SaaS"])
         self.assertEqual(payload["accepted"]["technology_capability"], ["API"])
         self.assertFalse(payload["requires_human_review"])
-
-    def test_brand_market_classification_propose_creates_reviewable_noncanonical_tags(self):
-        self._seed_ready_run("proposeco", composite=65.0)
-        unlocked = self.client.get(
-            "/team/unlock", params={"token": "team"}, follow_redirects=False
-        )
-        self.assertEqual(unlocked.status_code, 303)
-        self.client.post(
-            "/brand/proposeco.com/edit",
-            data={
-                "name": "ProposeCo",
-                "domain": "proposeco.com",
-                "canonical_url": "https://proposeco.com",
-                "summary": "A SaaS platform for teams using generative AI.",
-                "offer": "Generate content with generative AI workflows.",
-                "audience": "Marketing teams and companies.",
-                "outcome": "Automates creative workflow production.",
-            },
-            follow_redirects=False,
-        )
-        import web.observatory_index as observatory_index
-
-        from src.classification.schemas import ClassificationTag, MarketClassification
-
-        original_llm_analyzer = observatory_index.LLMAnalyzer
-        original_classify_market_llm = observatory_index.classify_market_llm
-
-        class FakeAnalyzer:
-            api_key = "test"
-
-            def __init__(self, *args, **kwargs):
-                pass
-
-        def fake_classify_market_llm(**kwargs):
-            return MarketClassification(
-                brand_key=kwargs["brand_key"],
-                tags=[
-                    ClassificationTag(
-                        group="sector_industry",
-                        tag="artificial intelligence",
-                        confidence="medium",
-                        status="proposed",
-                        evidence_text="Semantic LLM category proposal.",
-                        classifier="llm",
-                    ),
-                    ClassificationTag(
-                        group="technology_capability",
-                        tag="generative AI",
-                        confidence="medium",
-                        status="proposed",
-                        evidence_text="Semantic LLM capability proposal.",
-                        classifier="llm",
-                    ),
-                ],
-            )
-
-        observatory_index.LLMAnalyzer = FakeAnalyzer
-        observatory_index.classify_market_llm = fake_classify_market_llm
-
-        try:
-            proposed = self.client.post(
-                "/brand/proposeco.com/market-classification/propose",
-                follow_redirects=False,
-            )
-        finally:
-            observatory_index.LLMAnalyzer = original_llm_analyzer
-            observatory_index.classify_market_llm = original_classify_market_llm
-
-        self.assertEqual(proposed.status_code, 303)
-        self.assertEqual(
-            proposed.headers["location"],
-            "/brand/proposeco.com?lang=es#market-classification",
-        )
-        page = self.client.get("/brand/proposeco.com")
-        self.assertEqual(page.status_code, 200)
-        self.assertIn("generative AI", page.text)
-        self.assertIn("brand-market-tag-proposed", page.text)
-
-        index = self.client.get("/")
-        filtered = self.client.get("/?tag=generative-ai")
-        self.assertEqual(index.status_code, 200)
-        self.assertNotIn('<option value="generative-ai">generative AI</option>', index.text)
-        self.assertEqual(filtered.status_code, 200)
-        self.assertNotIn(">ProposeCo<", filtered.text)
-
-        with sqlite3.connect(self.db) as conn:
-            payload = json.loads(
-                conn.execute(
-                    "SELECT classification_json FROM brand_market_classifications WHERE brand_key = ?",
-                    ("proposeco.com",),
-                ).fetchone()[0]
-            )
-        self.assertTrue(payload["requires_human_review"])
-        self.assertEqual(payload["accepted"]["technology_capability"], [])
-        self.assertIn("artificial intelligence", payload["proposed"]["sector_industry"])
-        self.assertIn("generative AI", payload["proposed"]["technology_capability"])
-
-    def test_brand_market_classification_debug_shows_classifier_evidence(self):
-        token = self._seed_ready_run("debugco", composite=65.0)
-        with sqlite3.connect(self.db) as conn:
-            run_id = int(
-                conn.execute(
-                    "SELECT run_id FROM web_requests WHERE token = ?",
-                    (token,),
-                ).fetchone()[0]
-            )
-            conn.execute(
-                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
-                (
-                    run_id,
-                    "web",
-                    json.dumps(
-                        {
-                            "url": "https://debugco.com",
-                            "title": "DebugCo AI workflow platform",
-                            "meta_description": "AI agents for marketing teams.",
-                            "markdown_content": "DebugCo helps teams generate campaign content with AI agents.",
-                        }
-                    ),
-                ),
-            )
-            conn.commit()
-
-        locked = self.client.get("/brand/debugco.com/market-classification/debug")
-        self.assertEqual(locked.status_code, 403)
-        unlocked = self.client.get(
-            "/team/unlock", params={"token": "team"}, follow_redirects=False
-        )
-        self.assertEqual(unlocked.status_code, 303)
-
-        response = self.client.get("/brand/debugco.com/market-classification/debug")
-
-        self.assertEqual(response.status_code, 200)
-        self.assertIn("debug_clasificación_mercado", response.text)
-        self.assertIn("DebugCo AI workflow platform", response.text)
-        self.assertIn("AI agents for marketing teams", response.text)
-        self.assertIn("web_meta", response.text)
 
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)

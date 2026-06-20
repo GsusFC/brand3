@@ -86,7 +86,6 @@
     <div class="section-head">
       <span class="label">clasificación_mercado</span>
       <span class="tag">// tags controlados</span>
-      <a class="source-link" href="/brand/{{ domain }}/market-classification/debug?lang={{ current_lang }}">debug evidencia</a>
     </div>
     <p class="small dim block-note">
       Contexto para filtros y benchmarking. No modifica el score.
@@ -106,10 +105,6 @@
       <fieldset class="brand-market-fieldset">
         <legend>{{ group }}</legend>
         {% set accepted = market_classification.accepted.get(group, []) %}
-        {% set proposed = market_classification.proposed.get(group, []) %}
-        {% if proposed %}
-        <p class="small dim block-note">propuesto: {{ proposed|join(', ') }}</p>
-        {% endif %}
         {% for tag in market_classification.options.get(group, []) %}
         <label class="brand-market-checkbox">
           <input type="checkbox" name="{{ group }}" value="{{ tag }}" {% if tag in accepted %}checked{% endif %}>

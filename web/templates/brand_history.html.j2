@@ -1,14 +1,151 @@
 {% extends "base.html.j2" %}
 {% block title %}brand3 :: {{ history.display_name or domain }}{% endblock %}
 {% block content %}
+{% set profile = history.profile %}
+{% set sv9 = history.sv9_status %}
+<section class="brand-profile-hero">
+  <div class="brand-profile-identity">
+    <div class="brand-profile-logo" aria-hidden="true">
+      {% if profile.logo_url %}
+      <img src="{{ profile.logo_url }}" alt="">
+      {% else %}
+      <span>{{ (history.display_name or domain)[:1] }}</span>
+      {% endif %}
+    </div>
+    <div>
+      <div class="section-head">
+        <span class="label">{{ 'ficha_de_marca' if current_lang == 'es' else 'brand_profile' }}</span>
+        <span class="tag">// {{ profile.scan_count }} {{ 'ejecuciones' if current_lang == 'es' else 'runs' }}</span>
+      </div>
+      <h1 class="page-title brand-profile-title">{{ history.display_name or domain }}</h1>
+      <p class="small dim block-note">
+        {{ profile.domain or domain }}{% if profile.category %} · {{ profile.category }}{% endif %}
+        {% if profile.logo_source %} · logo={{ profile.logo_source }}{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <aside class="brand-profile-sv9">
+    <span class="label">SV9</span>
+    {% if sv9.available %}
+    <strong class="brand-profile-score">{{ sv9.score_compact }}</strong>
+    <span class="dim">{{ 'disponible' if current_lang == 'es' else 'available' }}{% if sv9.date %} · {{ sv9.date }}{% endif %}</span>
+    <a class="source-link" href="{{ sv9.href }}">{{ 'ver SV9' if current_lang == 'es' else 'view SV9' }}</a>
+    {% elif sv9.generate_scan_id %}
+    <strong class="brand-profile-score">-</strong>
+    <span class="dim">{{ 'pendiente' if current_lang == 'es' else 'pending' }}</span>
+    <form method="post" action="/magnetism-scanner/scan/{{ sv9.generate_scan_id }}/generate-sv9?lang={{ current_lang }}" style="margin:0;">
+      <button type="submit">{{ 'generar SV9' if current_lang == 'es' else 'generate SV9' }}</button>
+    </form>
+    {% else %}
+    <strong class="brand-profile-score">-</strong>
+    <span class="dim">{{ 'sin evidencia suficiente' if current_lang == 'es' else 'not enough evidence' }}</span>
+    {% endif %}
+  </aside>
+</section>
+
+<section class="brand-profile-summary">
+  <div class="brand-profile-metrics" aria-label="{{ 'Resumen de actividad' if current_lang == 'es' else 'Activity summary' }}">
+    <div><span class="dim">{{ 'scans' if current_lang == 'es' else 'scans' }}</span><strong>{{ profile.scan_count }}</strong></div>
+    <div><span class="dim">{{ 'último' if current_lang == 'es' else 'latest' }}</span><strong>{{ profile.latest_date or '-' }}</strong></div>
+    <div><span class="dim">{{ 'mejor score' if current_lang == 'es' else 'best score' }}</span><strong>{{ profile.best_score_compact }}</strong></div>
+    <div><span class="dim">{{ 'modelos' if current_lang == 'es' else 'models' }}</span><strong>{{ profile.models|join(', ') if profile.models else '-' }}</strong></div>
+  </div>
+
+  <div class="brand-profile-grid">
+    <section class="brand-profile-block">
+      <div class="section-head">
+        <span class="label">{{ 'qué_hace' if current_lang == 'es' else 'what_it_does' }}</span>
+        <span class="tag">// {{ 'desde evidencia' if current_lang == 'es' else 'from evidence' }}</span>
+      </div>
+      {% if profile.summary or profile.offer or profile.audience or profile.outcome %}
+      {% if profile.summary %}<p class="prose">{{ profile.summary }}</p>{% endif %}
+      <dl class="brand-profile-kv">
+        {% if profile.offer %}<dt>{{ 'productos/servicios' if current_lang == 'es' else 'products/services' }}</dt><dd>{{ profile.offer }}</dd>{% endif %}
+        {% if profile.audience %}<dt>{{ 'audiencia' if current_lang == 'es' else 'audience' }}</dt><dd>{{ profile.audience }}</dd>{% endif %}
+        {% if profile.outcome %}<dt>{{ 'resultado' if current_lang == 'es' else 'outcome' }}</dt><dd>{{ profile.outcome }}</dd>{% endif %}
+      </dl>
+      {% else %}
+      <p class="dim">{{ 'No hay suficiente evidencia estructurada para resumir la actividad.' if current_lang == 'es' else 'Not enough structured evidence to summarize activity.' }}</p>
+      {% endif %}
+    </section>
+
+    <section class="brand-profile-block">
+      <div class="section-head">
+        <span class="label">{{ 'links_detectados' if current_lang == 'es' else 'detected_links' }}</span>
+        <span class="tag">// {{ 'oficiales y sociales' if current_lang == 'es' else 'official and social' }}</span>
+      </div>
+      <div class="brand-profile-link-groups">
+        <div>
+          <strong>{{ 'oficiales' if current_lang == 'es' else 'official' }}</strong>
+          {% if profile.official_links %}
+          <ul>
+            {% for url in profile.official_links %}
+            <li><a href="{{ url }}" rel="nofollow noopener">{{ url|truncate(72, true) }}</a></li>
+            {% endfor %}
+          </ul>
+          {% else %}<p class="dim">-</p>{% endif %}
+        </div>
+        <div>
+          <strong>{{ 'redes' if current_lang == 'es' else 'social' }}</strong>
+          {% if profile.social_links %}
+          <ul>
+            {% for item in profile.social_links %}
+            <li><a href="{{ item.url }}" rel="nofollow noopener">{{ item.label }}</a></li>
+            {% endfor %}
+          </ul>
+          {% else %}<p class="dim">{{ 'sin perfiles oficiales detectados' if current_lang == 'es' else 'no official profiles detected' }}</p>{% endif %}
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="brand-profile-grid">
+    <section class="brand-profile-block">
+      <div class="section-head">
+        <span class="label">{{ 'pruebas' if current_lang == 'es' else 'proof' }}</span>
+        <span class="tag">// {{ 'señales capturadas' if current_lang == 'es' else 'captured signals' }}</span>
+      </div>
+      {% if profile.proof_points %}
+      <ul class="brand-profile-evidence-list">
+        {% for item in profile.proof_points %}
+        <li>
+          <span>{{ item.text }}</span>
+          {% if item.source_url %}<a href="{{ item.source_url }}" rel="nofollow noopener">{{ 'fuente' if current_lang == 'es' else 'source' }}</a>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dim">{{ 'No hay pruebas estructuradas destacadas en el perfil generado.' if current_lang == 'es' else 'No highlighted structured proof in the generated profile.' }}</p>
+      {% endif %}
+    </section>
+
+    <section class="brand-profile-block">
+      <div class="section-head">
+        <span class="label">{{ 'límites' if current_lang == 'es' else 'limits' }}</span>
+        <span class="tag">// {{ 'confianza' if current_lang == 'es' else 'confidence' }}</span>
+      </div>
+      {% if profile.evidence_gaps or profile.confidence_notes %}
+      <ul class="brand-profile-evidence-list">
+        {% for item in profile.evidence_gaps %}
+        <li>{{ item }}</li>
+        {% endfor %}
+        {% for item in profile.confidence_notes %}
+        <li>{{ item }}</li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <p class="dim">{{ 'Sin límites destacados en el perfil generado.' if current_lang == 'es' else 'No highlighted limits in the generated profile.' }}</p>
+      {% endif %}
+    </section>
+  </div>
+</section>
+
 <section>
   <div class="section-head">
-    <span class="label">{{ 'historial_de_marca' if current_lang == 'es' else 'brand_history' }} · {{ history.display_name or domain }}</span>
+    <span class="label">{{ 'historial_de_scans' if current_lang == 'es' else 'scan_history' }}</span>
     <span class="tag">// {{ analyses|length }} {{ 'ejecuciones' if current_lang == 'es' else 'runs' }}</span>
   </div>
-  {% if history.domain %}
-  <p class="small dim block-note">{{ history.domain }}{% if history.category_label %} · {{ history.category_label }}{% endif %}</p>
-  {% endif %}
 
   {% if analyses %}
   <div class="table-wrap">

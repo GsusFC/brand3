@@ -8,13 +8,18 @@ and links; this module does not mutate scans or scores.
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
+from html.parser import HTMLParser
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 from urllib.parse import quote, urlparse
 
 from src.config import BRAND3_DB_PATH
+from src.features.magnetism.moodboard import extract_moodboard_images
+from src.research.research_pack_facade import build_recommended_research_pack
+from src.storage.sqlite_store import SQLiteStore
 from src.sv9.ranking import domain_from_url
 
 
@@ -179,6 +184,8 @@ def build_observatory_brand_history(
             "display_name": _display_name(brand, brand),
             "domain": brand,
             "category_label": None,
+            "profile": _empty_brand_profile(brand),
+            "sv9_status": _empty_sv9_status(),
             "rows": [],
         }
     return {
@@ -186,7 +193,129 @@ def build_observatory_brand_history(
         "display_name": match.display_name,
         "domain": match.domain,
         "category_label": match.category_label,
+        "profile": _build_brand_profile(match, db_path=db_path),
+        "sv9_status": _build_sv9_status(match),
         "rows": match.to_history_rows(),
+    }
+
+
+def _empty_brand_profile(brand: str) -> dict[str, Any]:
+    return {
+        "name": _display_name(brand, brand),
+        "domain": brand,
+        "logo_url": "",
+        "logo_source": "",
+        "summary": "",
+        "offer": "",
+        "audience": "",
+        "outcome": "",
+        "category": "",
+        "official_links": [],
+        "analyzed_links": [],
+        "social_links": [],
+        "proof_points": [],
+        "evidence_gaps": [],
+        "confidence_notes": [],
+        "models": [],
+        "scan_count": 0,
+        "latest_date": "",
+        "best_score": None,
+        "best_score_compact": "-",
+    }
+
+
+def _empty_sv9_status() -> dict[str, Any]:
+    return {
+        "available": False,
+        "score": None,
+        "score_compact": "-",
+        "href": "",
+        "date": "",
+        "generate_scan_id": None,
+        "source_run_id": None,
+    }
+
+
+def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, Any]:
+    snapshots = _snapshots_for_brand(brand, db_path=db_path)
+    packs = [_research_pack_from_snapshot(snapshot) for snapshot in snapshots]
+    packs = [pack for pack in packs if pack]
+    web_payloads = _web_payloads_from_snapshots(snapshots)
+    logo_url, logo_source = _best_logo(snapshots, web_payloads)
+    primary_pack = packs[0] if packs else {}
+    official_links = _unique_links(
+        [
+            brand.domain and f"https://{brand.domain}",
+            *(primary_pack.get("official_urls") or []),
+        ]
+    )
+    analyzed_links = _unique_links(primary_pack.get("analyzed_urls") or [])
+    social_links = _unique_social_links(
+        [
+            *_social_links_from_packs(packs),
+            *_social_links_from_web_payloads(web_payloads),
+        ]
+    )
+    proof_points = _profile_evidence_items(primary_pack.get("proof_points"), limit=3)
+    evidence_gaps = _str_list(primary_pack.get("evidence_gaps"), limit=4)
+    confidence_notes = _str_list(primary_pack.get("confidence_notes"), limit=4)
+    scores = [source.score for source in brand.sources if source.score is not None]
+    best_score = max(scores) if scores else None
+    return {
+        "name": brand.display_name,
+        "domain": brand.domain,
+        "logo_url": logo_url,
+        "logo_source": logo_source,
+        "summary": _first_text(
+            primary_pack.get("product_summary"),
+            primary_pack.get("company_summary"),
+            primary_pack.get("declared_purpose"),
+        ),
+        "offer": _first_text(primary_pack.get("offer")),
+        "audience": _first_text(primary_pack.get("audience")),
+        "outcome": _first_text(primary_pack.get("outcome")),
+        "category": brand.category_label or _first_text(primary_pack.get("category")),
+        "official_links": official_links[:6],
+        "analyzed_links": analyzed_links[:6],
+        "social_links": social_links[:8],
+        "proof_points": proof_points,
+        "evidence_gaps": evidence_gaps,
+        "confidence_notes": confidence_notes,
+        "models": sorted({source.source for source in brand.sources}),
+        "scan_count": len(brand.sources),
+        "latest_date": _compact_date(brand.latest_date),
+        "best_score": best_score,
+        "best_score_compact": _score_compact(best_score),
+    }
+
+
+def _build_sv9_status(brand: ObservatoryBrand) -> dict[str, Any]:
+    sv9_sources = [source for source in brand.sources if source.source == "sv9"]
+    if sv9_sources:
+        source = sorted(sv9_sources, key=lambda item: _timestamp(item.created_at), reverse=True)[0]
+        return {
+            "available": True,
+            "score": source.score,
+            "score_compact": _score_compact(source.score),
+            "href": source.href,
+            "date": _compact_date(source.created_at),
+            "generate_scan_id": None,
+            "source_run_id": source.source_run_id,
+        }
+    generate_scan_id = _sv9_generate_scan_id(brand.sources)
+    source_run_id = None
+    for source in brand.sources:
+        if source.magnetism_scan_id == generate_scan_id:
+            source_run_id = source.source_run_id
+            break
+    return {
+        "available": False,
+        "score": None,
+        "score_compact": "-",
+        "href": "",
+        "date": "",
+        "generate_scan_id": generate_scan_id,
+        "source_run_id": source_run_id,
     }
 
 
@@ -343,6 +472,243 @@ def _attach_classifications(brands: dict[str, ObservatoryBrand], *, db_path: str
             tags[0] if tags else None
         )
         brand.category = _slug(brand.category_label) if brand.category_label else None
+
+
+def _snapshots_for_brand(brand: ObservatoryBrand, *, db_path: str) -> list[dict[str, Any]]:
+    run_ids = []
+    seen_ids = set()
+    for source in sorted(brand.sources, key=lambda item: _timestamp(item.created_at), reverse=True):
+        if not source.source_run_id or source.source_run_id in seen_ids:
+            continue
+        seen_ids.add(source.source_run_id)
+        run_ids.append(source.source_run_id)
+    if not run_ids:
+        return []
+    store = SQLiteStore(db_path)
+    try:
+        snapshots = []
+        for run_id in run_ids[:5]:
+            snapshot = store.get_run_snapshot(run_id)
+            if snapshot:
+                snapshots.append(snapshot)
+        return snapshots
+    finally:
+        store.close()
+
+
+def _research_pack_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
+    try:
+        pack = build_recommended_research_pack(snapshot).pack
+    except Exception:
+        return {}
+    if hasattr(pack, "to_dict") and callable(pack.to_dict):
+        payload = pack.to_dict()
+        return payload if isinstance(payload, dict) else {}
+    return pack if isinstance(pack, dict) else {}
+
+
+def _web_payloads_from_snapshots(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    payloads = []
+    for snapshot in snapshots:
+        for item in reversed(snapshot.get("raw_inputs") or []):
+            if item.get("source") == "web" and isinstance(item.get("payload"), dict):
+                payloads.append(item["payload"])
+                break
+    return payloads
+
+
+def _best_logo(
+    snapshots: list[dict[str, Any]],
+    web_payloads: list[dict[str, Any]],
+) -> tuple[str, str]:
+    for snapshot in snapshots:
+        profile = ((snapshot.get("run") or {}).get("brand_profile") or {})
+        logo_url = str(profile.get("logo_url") or "").strip()
+        if logo_url:
+            return logo_url, "brand_profile"
+        logo_url = str((snapshot.get("run") or {}).get("brand_logo_url") or "").strip()
+        if logo_url:
+            return logo_url, "run"
+    for payload in web_payloads:
+        for image in extract_moodboard_images(payload):
+            if image.get("role") == "logo" and image.get("url"):
+                return str(image["url"]), "owned_html"
+    return "", ""
+
+
+def _social_links_from_packs(packs: list[dict[str, Any]]) -> list[str]:
+    urls = []
+    for pack in packs:
+        urls.extend(pack.get("official_urls") or [])
+        urls.extend(pack.get("analyzed_urls") or [])
+        source_map = pack.get("source_map") if isinstance(pack.get("source_map"), dict) else {}
+        for source in source_map.values():
+            if isinstance(source, dict):
+                urls.append(str(source.get("url") or ""))
+    return [url for url in urls if _is_social_url(url)]
+
+
+def _social_links_from_web_payloads(payloads: list[dict[str, Any]]) -> list[str]:
+    urls = []
+    for payload in payloads:
+        html = str(payload.get("html") or "")
+        if html:
+            parser = _SocialLinkParser()
+            try:
+                parser.feed(html)
+            except Exception:
+                pass
+            urls.extend(parser.urls)
+        markdown = str(payload.get("markdown_content") or "")
+        urls.extend(_urls_from_text(markdown))
+    return [url for url in urls if _is_social_url(url)]
+
+
+class _SocialLinkParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.urls: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag != "a":
+            return
+        attr_map = {name: (value or "") for name, value in attrs}
+        href = attr_map.get("href", "")
+        if href:
+            self.urls.append(href)
+
+
+def _urls_from_text(text: str) -> list[str]:
+    out = []
+    for raw in str(text or "").replace(")", " ").replace("]", " ").split():
+        if raw.startswith(("http://", "https://")):
+            out.append(raw.strip(".,;\"'"))
+    return out
+
+
+def _is_social_url(url: str) -> bool:
+    host = urlparse(str(url or "")).netloc.lower()
+    host = host.removeprefix("www.")
+    social_hosts = (
+        "linkedin.com",
+        "x.com",
+        "twitter.com",
+        "instagram.com",
+        "youtube.com",
+        "tiktok.com",
+        "github.com",
+        "facebook.com",
+        "threads.net",
+    )
+    return any(host == marker or host.endswith(f".{marker}") for marker in social_hosts)
+
+
+def _unique_social_links(urls: list[str]) -> list[dict[str, str]]:
+    out = []
+    seen = set()
+    for url in _unique_links(urls):
+        parsed = urlparse(url)
+        host = parsed.netloc.lower().removeprefix("www.")
+        if not host or host in seen:
+            continue
+        seen.add(host)
+        out.append({"label": _social_label(host), "url": url, "host": host})
+    return out
+
+
+def _social_label(host: str) -> str:
+    if "linkedin.com" in host:
+        return "LinkedIn"
+    if host == "x.com" or "twitter.com" in host:
+        return "X"
+    if "instagram.com" in host:
+        return "Instagram"
+    if "youtube.com" in host:
+        return "YouTube"
+    if "tiktok.com" in host:
+        return "TikTok"
+    if "github.com" in host:
+        return "GitHub"
+    if "facebook.com" in host:
+        return "Facebook"
+    if "threads.net" in host:
+        return "Threads"
+    return host
+
+
+def _unique_links(values: list[Any]) -> list[str]:
+    out = []
+    seen = set()
+    for value in values:
+        url = str(value or "").strip()
+        if not url:
+            continue
+        parsed = urlparse(url)
+        if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+            continue
+        normalized = url.split("#", 1)[0]
+        if normalized in seen:
+            continue
+        seen.add(normalized)
+        out.append(normalized)
+    return out
+
+
+def _profile_evidence_items(raw: Any, *, limit: int) -> list[dict[str, str]]:
+    out = []
+    if not isinstance(raw, list):
+        return out
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        text = str(item.get("text") or "").strip()
+        if not text:
+            continue
+        out.append(
+            {
+                "text": text[:220],
+                "source_url": str(item.get("source_url") or "").strip(),
+                "confidence": str(item.get("confidence") or "").strip(),
+            }
+        )
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _str_list(raw: Any, *, limit: int) -> list[str]:
+    if not isinstance(raw, list):
+        return []
+    out = []
+    for value in raw:
+        text = str(value or "").strip()
+        if text:
+            out.append(text[:180])
+        if len(out) >= limit:
+            break
+    return out
+
+
+def _first_text(*values: Any) -> str:
+    for value in values:
+        text = _clean_profile_text(value)
+        if text:
+            return text
+    return ""
+
+
+def _clean_profile_text(value: Any, *, limit: int = 420) -> str:
+    text = str(value or "").strip()
+    if not text:
+        return ""
+    text = re.sub(r"Source:\s*https?://\S+\s*#\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) <= limit:
+        return text
+    boundary = max(text.rfind(". ", 0, limit), text.rfind(" — ", 0, limit), text.rfind(" - ", 0, limit))
+    if boundary < 160:
+        boundary = limit
+    return text[:boundary].rstrip(" .,-—") + "..."
 
 
 def _brand_for_source(

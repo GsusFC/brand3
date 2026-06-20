@@ -417,6 +417,43 @@ class ListingsTests(unittest.TestCase):
         self.assertIn("/magnetism-scanner/scan/", r.text)
         self.assertIn("/r/tok-histco", r.text)
 
+    def test_brand_page_renders_generated_profile_from_evidence(self):
+        token = self._seed_ready_run("profileco", composite=65.0)
+        with sqlite3.connect(self.db) as conn:
+            run_id = int(
+                conn.execute(
+                    "SELECT run_id FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            )
+            conn.execute(
+                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
+                (
+                    run_id,
+                    "web",
+                    json.dumps(
+                        {
+                            "url": "https://profileco.com",
+                            "html": (
+                                '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'
+                                '<a href="https://www.linkedin.com/company/profileco">LinkedIn</a>'
+                            ),
+                        }
+                    ),
+                ),
+            )
+            conn.commit()
+        sv9_id = self._seed_sv9_scan(run_id, "profileco")
+
+        r = self.client.get("/brand/profileco")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("ficha_de_marca", r.text)
+        self.assertIn('src="https://profileco.com/apple-touch-icon.png"', r.text)
+        self.assertIn("LinkedIn", r.text)
+        self.assertIn(f"/sv9/scan/{sv9_id}?lang=es", r.text)
+        self.assertIn("ver SV9", r.text)
+
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)
         self._seed_ready_run("uber", composite=72.0)

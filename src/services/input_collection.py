@@ -326,7 +326,7 @@ def load_cached(
         )
         return None
     try:
-        return decoder(payload)
+        decoded = decoder(payload)
     except Exception as e:
         _record_acquisition(
             acquisition_steps,
@@ -338,6 +338,18 @@ def load_cached(
         )
         logger.warning("raw input cache decoder failed", extra={"source": source, "error": str(e)})
         return None
+    if decoded is None:
+        _record_acquisition(
+            acquisition_steps,
+            source=source,
+            status="cache_invalid",
+            cache_status="invalid",
+            eligible=True,
+            details={"cache_error": "cached payload was not accepted by decoder"},
+        )
+        logger.warning("raw input cache rejected by decoder", extra={"source": source})
+        return None
+    return decoded
 
 
 def store_safely(

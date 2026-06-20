@@ -13,6 +13,7 @@ from src.services.input_collection import (
     _set_acquisition_state,
     from_exa_payload,
 )
+from src.storage.sqlite_store import _MalformedJSONPayload
 
 
 def test_from_exa_payload_preserves_diagnostics():
@@ -87,10 +88,13 @@ def test_set_acquisition_state_updates_cache_and_preserves_existing_details():
 
 
 class _FakeExaCollector:
+    calls = 0
+
     def __init__(self, api_key=None):
         self.api_key = api_key
 
     def collect_brand_data(self, brand_name: str, brand_url: str):
+        type(self).calls += 1
         return ExaData(
             brand_name=brand_name,
             mentions=[],
@@ -112,6 +116,28 @@ class _FailingCacheStore:
 class _InvalidCacheStore:
     def get_latest_raw_input(self, **_kwargs):
         return {"unexpected": "payload"}
+
+
+class _LegacyExaCacheStore:
+    def get_latest_raw_input(self, **_kwargs):
+        return {
+            "brand_name": "Brand",
+            "mentions": [],
+            "competitors": [],
+            "ai_visibility_results": [],
+            "news": [],
+            "raw_responses": {"search_events": []},
+            "diagnostics": {"status": "ok"},
+        }
+
+
+class _MalformedCacheStore:
+    def get_latest_raw_input(self, **_kwargs):
+        return _MalformedJSONPayload(
+            field="raw_inputs.payload_json",
+            raw_json="{not-json",
+            error="Expecting property name enclosed in double quotes",
+        )
 
 
 class _FakeWebCollector:
@@ -238,6 +264,7 @@ def test_collect_web_input_preserves_invalid_cache_payload_in_acquisition_detail
 
 
 def test_collect_exa_input_marks_partial_when_failed_intents_exist():
+    _FakeExaCollector.calls = 0
     raw_input_cache: dict[str, str] = {}
     acquisition_steps: dict[str, object] = {}
 
@@ -256,6 +283,101 @@ def test_collect_exa_input_marks_partial_when_failed_intents_exist():
     assert exa_data.diagnostics["status"] == "degraded"
     assert acquisition_steps["exa"].status == "partial"
     assert acquisition_steps["exa"].eligible is True
+    assert _FakeExaCollector.calls == 1
+
+
+def test_collect_exa_input_reuses_current_strategy_cache_without_collecting():
+    _FakeExaCollector.calls = 0
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+    cached_payload = {
+        "brand_name": "Brand",
+        "mentions": [],
+        "competitors": [],
+        "ai_visibility_results": [],
+        "news": [],
+        "raw_responses": {"search_events": []},
+        "diagnostics": {"strategy": EXA_STRATEGY_VERSION, "status": "ok"},
+    }
+
+    exa_data, _collector = _collect_exa_input(
+        store=None,
+        run_id=None,
+        brand_name="Brand",
+        effective_brand_url="https://brand.com",
+        cache_read=lambda *_args, **_kwargs: from_exa_payload(cached_payload),
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        exa_collector_cls=_FakeExaCollector,
+    )
+
+    assert isinstance(exa_data, ExaData)
+    assert exa_data.diagnostics["strategy"] == EXA_STRATEGY_VERSION
+    assert raw_input_cache["exa"] == "hit"
+    assert acquisition_steps["exa"].status == "hit"
+    assert acquisition_steps["exa"].details["mentions"] == 0
+    assert _FakeExaCollector.calls == 0
+
+
+def test_collect_exa_input_invalidates_legacy_strategy_cache_and_collects_fresh():
+    _FakeExaCollector.calls = 0
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+    cache_read = _cache_reader(
+        store=_LegacyExaCacheStore(),
+        brand_name="Brand",
+        url="https://brand.com",
+        refresh=False,
+        acquisition_steps=acquisition_steps,
+    )
+
+    exa_data, _collector = _collect_exa_input(
+        store=None,
+        run_id=None,
+        brand_name="Brand",
+        effective_brand_url="https://brand.com",
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        exa_collector_cls=_FakeExaCollector,
+    )
+
+    assert raw_input_cache["exa"] == "partial"
+    assert exa_data.diagnostics["strategy"] == EXA_STRATEGY_VERSION
+    assert acquisition_steps["exa"].status == "partial"
+    assert acquisition_steps["exa"].details["cache_error"] == "cached payload was not accepted by decoder"
+    assert _FakeExaCollector.calls == 1
+
+
+def test_collect_exa_input_records_malformed_cache_payload_and_collects_fresh():
+    _FakeExaCollector.calls = 0
+    raw_input_cache: dict[str, str] = {}
+    acquisition_steps: dict[str, object] = {}
+    cache_read = _cache_reader(
+        store=_MalformedCacheStore(),
+        brand_name="Brand",
+        url="https://brand.com",
+        refresh=False,
+        acquisition_steps=acquisition_steps,
+    )
+
+    exa_data, _collector = _collect_exa_input(
+        store=None,
+        run_id=None,
+        brand_name="Brand",
+        effective_brand_url="https://brand.com",
+        cache_read=cache_read,
+        raw_input_cache=raw_input_cache,
+        acquisition_steps=acquisition_steps,
+        exa_collector_cls=_FakeExaCollector,
+    )
+
+    assert raw_input_cache["exa"] == "partial"
+    assert exa_data.diagnostics["strategy"] == EXA_STRATEGY_VERSION
+    assert acquisition_steps["exa"].status == "partial"
+    assert acquisition_steps["exa"].details["payload_field"] == "raw_inputs.payload_json"
+    assert acquisition_steps["exa"].details["raw_json"] == "{not-json"
+    assert _FakeExaCollector.calls == 1
 
 
 class _FakeParallelShadowCollector:

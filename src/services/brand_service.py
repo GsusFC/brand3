@@ -13,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from statistics import mean
 from time import perf_counter
+from typing import Any
 from urllib.parse import unquote, urlparse, urlunparse
 
 from src.collectors.competitor_collector import (

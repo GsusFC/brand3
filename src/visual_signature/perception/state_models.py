@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from src.visual_signature.perception.mutation_audit import MutationAuditRecord
 
 
 PerceptualState = Literal[

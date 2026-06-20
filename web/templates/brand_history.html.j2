@@ -3,6 +3,8 @@
 {% block content %}
 {% set profile = history.profile %}
 {% set sv9 = history.sv9_status %}
+{% set profile_domain = profile.domain or domain %}
+{% set profile_domain_href = profile.official_links[0] if profile.official_links else 'https://' ~ profile_domain %}
 <section class="brand-profile-hero">
   <div class="brand-profile-identity">
     <div class="brand-profile-logo" aria-hidden="true">
@@ -19,7 +21,7 @@
       </div>
       <h1 class="page-title brand-profile-title">{{ history.display_name or domain }}</h1>
       <p class="small dim block-note">
-        {{ profile.domain or domain }}{% if profile.category %} · {{ profile.category }}{% endif %}
+        <a class="brand-profile-domain-link" href="{{ profile_domain_href }}" rel="nofollow noopener">{{ profile_domain }}</a>{% if profile.category %} · {{ profile.category }}{% endif %}
         {% if profile.logo_source %} · logo={{ profile.logo_source }}{% endif %}
       </p>
     </div>

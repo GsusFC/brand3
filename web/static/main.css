@@ -531,6 +531,12 @@ th.num {
   margin-bottom: 8px;
 }
 
+.brand-profile-domain-link {
+  color: inherit;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
 .brand-profile-sv9 {
   display: grid;
   min-width: min(220px, 100%);

@@ -449,6 +449,7 @@ class ListingsTests(unittest.TestCase):
 
         self.assertEqual(r.status_code, 200)
         self.assertIn("ficha_de_marca", r.text)
+        self.assertIn('href="https://profileco.com"', r.text)
         self.assertIn('src="https://profileco.com/apple-touch-icon.png"', r.text)
         self.assertIn("LinkedIn", r.text)
         self.assertIn("capa_visual", r.text)

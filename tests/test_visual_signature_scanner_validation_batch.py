@@ -38,6 +38,52 @@ def test_evaluate_scan_marks_batch_capture_failure_for_review():
     assert quality["validation_capture_status"] == "timeout"
 
 
+def test_evaluate_scan_marks_failed_dismissal_as_limitation():
+    quality = evaluate_scan(
+        {
+            "status": "ready",
+            "score": 70.0,
+            "capture": {"available": True, "obstruction": {"present": False}},
+            "dimensions": {"identity_clarity": {"score": 75.0}},
+        },
+        validation_capture={
+            "attempted": True,
+            "success": True,
+            "status": "captured_raw",
+            "dismissal_attempted": True,
+            "dismissal_successful": False,
+        },
+    )
+
+    assert quality["verdict"] == "usable_with_limitations"
+    assert "dismissal_attempt_failed" in quality["flags"]
+    assert quality["dismissal_attempted"] is True
+    assert quality["dismissal_successful"] is False
+
+
+def test_evaluate_scan_does_not_flag_minor_valid_unknown_overlay():
+    quality = evaluate_scan(
+        {
+            "status": "ready",
+            "score": 77.6,
+            "capture": {
+                "available": True,
+                "obstruction": {
+                    "present": True,
+                    "type": "unknown_overlay",
+                    "severity": "minor",
+                    "first_impression_valid": True,
+                },
+            },
+            "dimensions": {"identity_clarity": {"score": 75.0}},
+        },
+        validation_capture={"attempted": True, "success": True, "status": "captured_clean_attempt"},
+    )
+
+    assert quality["verdict"] == "usable"
+    assert quality["flags"] == []
+
+
 def test_markdown_report_lists_targets_and_flags():
     markdown = markdown_report(
         {
@@ -49,6 +95,8 @@ def test_markdown_report_lists_targets_and_flags():
                         "score": 57.3,
                         "status": "partial",
                         "validation_capture_status": "captured",
+                        "dismissal_attempted": False,
+                        "dismissal_successful": False,
                         "verdict": "needs_review",
                         "flags": ["missing_screenshot"],
                     },
@@ -58,4 +106,4 @@ def test_markdown_report_lists_targets_and_flags():
     )
 
     assert "# Visual Signature Scanner Validation Batch" in markdown
-    assert "| Pleo | fintech_saas | 57.3 | partial | captured | needs_review | missing_screenshot |" in markdown
+    assert "| Pleo | fintech_saas | 57.3 | partial | captured | - | needs_review | missing_screenshot |" in markdown

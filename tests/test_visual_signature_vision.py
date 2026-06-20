@@ -288,6 +288,58 @@ def test_viewport_obstruction_detects_bottom_cookie_bar(tmp_path):
     assert "dom_keyword:cookie" in obstruction["page_level_signals"]
 
 
+def test_clean_attempt_obstruction_metadata_overrides_raw_dom_cookie_signals(tmp_path):
+    width, height = 80, 60
+    screenshot = tmp_path / "clean.png"
+    _write_png(screenshot, width, height, _solid(width, height, (255, 255, 255)))
+    payload = _payload()
+    payload["acquisition"] = {
+        "rendered_html": """
+        <div role="dialog" style="position: fixed; inset: 0; z-index: 9999">
+          Cookie privacy overlay
+        </div>
+        """,
+        "viewport_obstruction": {
+            "present": True,
+            "type": "cookie_modal",
+            "severity": "blocking",
+            "coverage_ratio": 0.92,
+            "first_impression_valid": False,
+            "confidence": 1.0,
+            "signals": ["dom_keyword:cookie", "dom_overlay_term:dialog"],
+            "limitations": [],
+        },
+    }
+
+    enriched = enrich_visual_signature_with_vision(
+        visual_signature_payload=payload,
+        screenshot_path=str(screenshot),
+        screenshot_payload={
+            "capture_type": "viewport",
+            "viewport_width": width,
+            "viewport_height": height,
+            "selected_capture_variant": "clean_attempt",
+            "viewport_obstruction": {
+                "present": True,
+                "type": "unknown_overlay",
+                "severity": "minor",
+                "coverage_ratio": 0.107,
+                "first_impression_valid": True,
+                "confidence": 0.62,
+                "signals": ["viewport_minor_sticky_footer_pattern"],
+                "visual_signals": ["viewport_minor_sticky_footer_pattern"],
+                "limitations": [],
+            },
+        },
+    )
+
+    obstruction = enriched["vision"]["viewport_obstruction"]
+    assert obstruction["type"] == "unknown_overlay"
+    assert obstruction["severity"] == "minor"
+    assert obstruction["first_impression_valid"] is True
+    assert "dom_keyword:cookie" not in obstruction["signals"]
+
+
 def test_viewport_obstruction_detects_centered_modal(tmp_path):
     width, height = 90, 70
     pixels = _solid(width, height, (22, 22, 22))

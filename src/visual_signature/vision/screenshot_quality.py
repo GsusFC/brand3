@@ -67,6 +67,14 @@ def resolve_screenshot_metadata(
         "height",
         "file_size_bytes",
         "fileSizeBytes",
+        "selected_capture_variant",
+        "viewport_obstruction",
+        "dismissal_attempted",
+        "dismissal_successful",
+        "dismissal_method",
+        "dismissal_eligibility",
+        "dismissal_block_reason",
+        "evidence_integrity_notes",
     ):
         if key in screenshot_payload and screenshot_payload.get(key) not in (None, ""):
             metadata[key] = screenshot_payload.get(key)

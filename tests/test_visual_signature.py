@@ -198,6 +198,45 @@ def test_extract_visual_signature_adds_dom_obstruction_evidence():
     assert "dom_keyword:cookie" in obstruction["signals"]
 
 
+def test_extract_visual_signature_uses_clean_attempt_obstruction_over_raw_dom():
+    html = """
+    <html><body>
+      <main><h1>Example Brand</h1></main>
+      <div role="dialog" class="cookie-consent fixed inset-0 z-50" style="position: fixed; inset: 0; z-index: 9999;">
+        We use cookies. Manage privacy preferences.
+      </div>
+    </body></html>
+    """
+    web_data = _web_data()
+    web_data.html = html
+
+    result = extract_visual_signature(
+        brand_name="Example Brand",
+        website_url="https://example.com",
+        web_data=web_data,
+        screenshot_payload={
+            "selected_capture_variant": "clean_attempt",
+            "viewport_obstruction": {
+                "present": True,
+                "type": "unknown_overlay",
+                "severity": "minor",
+                "coverage_ratio": 0.107,
+                "first_impression_valid": True,
+                "confidence": 0.62,
+                "signals": ["viewport_minor_sticky_footer_pattern"],
+                "visual_signals": ["viewport_minor_sticky_footer_pattern"],
+                "limitations": [],
+            },
+        },
+    )
+
+    obstruction = result["acquisition"]["viewport_obstruction"]
+    assert obstruction["type"] == "unknown_overlay"
+    assert obstruction["severity"] == "minor"
+    assert obstruction["first_impression_valid"] is True
+    assert "dom_keyword:cookie" not in obstruction["signals"]
+
+
 def test_visual_signature_does_not_treat_customer_logos_as_brand_logo():
     html = """
     <html>

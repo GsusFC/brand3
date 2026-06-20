@@ -63,8 +63,12 @@ def enrich_visual_signature_with_vision(
     )
     agreement = compare_dom_and_viewport(payload, composition, viewport_composition, palette, viewport_palette)
     acquisition = payload.get("acquisition") if isinstance(payload.get("acquisition"), dict) else {}
-    existing_obstruction = acquisition.get("viewport_obstruction") if isinstance(acquisition, dict) else None
-    dom_html = str(acquisition.get("rendered_html") or acquisition.get("raw_html") or "") if isinstance(acquisition, dict) else ""
+    payload_obstruction = metadata.get("viewport_obstruction") if isinstance(metadata.get("viewport_obstruction"), dict) else None
+    selected_variant = str(metadata.get("selected_capture_variant") or "")
+    existing_obstruction = payload_obstruction or (acquisition.get("viewport_obstruction") if isinstance(acquisition, dict) else None)
+    dom_html = "" if payload_obstruction and selected_variant == "clean_attempt" else (
+        str(acquisition.get("rendered_html") or acquisition.get("raw_html") or "") if isinstance(acquisition, dict) else ""
+    )
     viewport_obstruction = analyze_viewport_obstruction(
         dom_html=dom_html,
         viewport_image=viewport_image,

@@ -102,9 +102,10 @@ def extract_visual_signature(
     except Exception:
         semantics = fallback_semantics("vision_analysis_exception")
 
-    viewport_obstruction = analyze_viewport_obstruction(
-        dom_html="\n".join([acquisition.rendered_html or "", acquisition.raw_html or ""]),
-    ).to_dict()
+    viewport_obstruction = _viewport_obstruction_for_selected_capture(
+        acquisition=acquisition,
+        screenshot_payload=screenshot_payload,
+    )
     signature = VisualSignature(
         brand_name=brand_name,
         website_url=website_url,
@@ -135,6 +136,28 @@ def _interpretation_status(acquisition: Any) -> str:
     if acquisition.errors:
         return "not_interpretable"
     return "interpretable"
+
+
+def _viewport_obstruction_for_selected_capture(
+    *,
+    acquisition: Any,
+    screenshot_payload: dict[str, Any] | None,
+) -> dict[str, Any]:
+    payload_obstruction = (
+        screenshot_payload.get("viewport_obstruction")
+        if isinstance(screenshot_payload, dict) and isinstance(screenshot_payload.get("viewport_obstruction"), dict)
+        else None
+    )
+    selected_variant = str((screenshot_payload or {}).get("selected_capture_variant") or "")
+    if payload_obstruction and selected_variant == "clean_attempt":
+        return analyze_viewport_obstruction(
+            dom_html="",
+            existing_obstruction=payload_obstruction,
+        ).to_dict()
+    return analyze_viewport_obstruction(
+        dom_html="\n".join([acquisition.rendered_html or "", acquisition.raw_html or ""]),
+        existing_obstruction=payload_obstruction if isinstance(payload_obstruction, dict) else None,
+    ).to_dict()
 
 
 def _validate_input(input_data: VisualSignatureInput) -> None:

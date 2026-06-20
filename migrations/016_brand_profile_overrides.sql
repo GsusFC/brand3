@@ -1,0 +1,4 @@
+-- Human-editable profile overrides.
+-- Generated profile cache stays separate in brand_profile_cache.
+-- Columns are added through SQLiteStore._ensure_file_migration_columns because
+-- SQLite lacks portable ADD COLUMN IF NOT EXISTS support.

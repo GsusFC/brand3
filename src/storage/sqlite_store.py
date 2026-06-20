@@ -287,6 +287,16 @@ class SQLiteStore:
                 },
             )
             self.conn.commit()
+        if "brand_profiles" in tables:
+            self._ensure_columns(
+                "brand_profiles",
+                {
+                    "logo_url": "TEXT",
+                    "profile_overrides_json": "TEXT NOT NULL DEFAULT '{}'",
+                    "updated_by": "TEXT",
+                },
+            )
+            self.conn.commit()
 
     def close(self) -> None:
         self.conn.close()

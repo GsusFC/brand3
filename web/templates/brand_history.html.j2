@@ -18,6 +18,9 @@
       <div class="section-head">
         <span class="label">{{ 'ficha_de_marca' if current_lang == 'es' else 'brand_profile' }}</span>
         <span class="tag">// {{ profile.scan_count }} {{ 'ejecuciones' if current_lang == 'es' else 'runs' }}</span>
+        {% if can_edit_brand_profile %}
+        <a class="source-link" href="/brand/{{ domain }}/edit?lang={{ current_lang }}">{{ 'editar' if current_lang == 'es' else 'edit' }}</a>
+        {% endif %}
       </div>
       <h1 class="page-title brand-profile-title">{{ history.display_name or domain }}</h1>
       <p class="small dim block-note">

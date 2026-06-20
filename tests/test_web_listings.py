@@ -541,6 +541,63 @@ class ListingsTests(unittest.TestCase):
             ).fetchone()[0]
         self.assertNotEqual(before, after)
 
+    def test_brand_profile_edit_requires_team_and_applies_overrides(self):
+        self._seed_ready_run("editco", composite=65.0)
+
+        locked = self.client.get("/brand/editco.com/edit")
+        self.assertEqual(locked.status_code, 403)
+        public_before = self.client.get("/brand/editco.com")
+        self.assertEqual(public_before.status_code, 200)
+        self.assertNotIn("editar</a>", public_before.text)
+
+        unlocked = self.client.get(
+            "/team/unlock", params={"token": "team"}, follow_redirects=False
+        )
+        self.assertEqual(unlocked.status_code, 303)
+        form = self.client.get("/brand/editco.com/edit")
+        self.assertEqual(form.status_code, 200)
+        self.assertIn("edición_ficha", form.text)
+
+        saved = self.client.post(
+            "/brand/editco.com/edit",
+            data={
+                "name": "EditCo Manual",
+                "domain": "editco.com",
+                "canonical_url": "https://editco.com",
+                "logo_url": "https://editco.com/logo.png",
+                "category": "Fintech",
+                "summary": "Ficha corregida manualmente.",
+                "offer": "Plataforma financiera para equipos.",
+                "audience": "Finance teams",
+                "outcome": "Mejor control de tesorería.",
+                "official_links": "https://editco.com\nhttps://editco.com/pricing",
+                "social_links": "https://linkedin.com/company/editco",
+                "updated_by": "sergio",
+            },
+            follow_redirects=False,
+        )
+        self.assertEqual(saved.status_code, 303)
+        self.assertEqual(saved.headers["location"], "/brand/editco.com?lang=es")
+
+        page = self.client.get("/brand/editco.com")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("EditCo Manual", page.text)
+        self.assertIn("Ficha corregida manualmente.", page.text)
+        self.assertIn('src="https://editco.com/logo.png"', page.text)
+        self.assertIn("Fintech", page.text)
+        self.assertIn("https://editco.com/pricing", page.text)
+        self.assertIn("LinkedIn", page.text)
+        self.assertIn("editar</a>", page.text)
+
+        with sqlite3.connect(self.db) as conn:
+            row = conn.execute(
+                "SELECT display_name, logo_url, profile_overrides_json FROM brand_profiles WHERE brand_key = ?",
+                ("editco.com",),
+            ).fetchone()
+        self.assertEqual(row[0], "EditCo Manual")
+        self.assertEqual(row[1], "https://editco.com/logo.png")
+        self.assertIn("Ficha corregida manualmente.", row[2])
+
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)
         self._seed_ready_run("uber", composite=72.0)

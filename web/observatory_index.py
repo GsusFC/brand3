@@ -55,6 +55,7 @@ class ObservatoryBrand:
     category: str | None = None
     category_label: str | None = None
     classification_tags: list[str] = field(default_factory=list)
+    profile_overrides: dict[str, Any] = field(default_factory=dict)
 
     @property
     def latest_date(self) -> str:
@@ -144,6 +145,7 @@ def build_observatory_index(
 
     brands = _load_brand_sources(db_path=db_path, lang=lang)
     _attach_classifications(brands, db_path=db_path)
+    _attach_profile_overrides(brands, db_path=db_path)
     rows = [brand.to_row(lang=lang) for brand in brands.values() if brand.sources]
     rows = _filter_rows(rows, query=query)
     categories = _category_options(rows)
@@ -179,6 +181,7 @@ def build_observatory_brand_history(
     """Build unified history for one brand/domain."""
     brands = _load_brand_sources(db_path=db_path, lang=lang)
     _attach_classifications(brands, db_path=db_path)
+    _attach_profile_overrides(brands, db_path=db_path)
     match = _find_brand(brands, brand)
     if match is None:
         return {
@@ -199,6 +202,63 @@ def build_observatory_brand_history(
         "sv9_status": _build_sv9_status(match),
         "rows": match.to_history_rows(),
     }
+
+
+def save_brand_profile_overrides(
+    brand: str,
+    overrides: dict[str, Any],
+    *,
+    db_path: str = BRAND3_DB_PATH,
+    updated_by: str = "",
+) -> str:
+    """Persist human overrides for a brand profile and return its brand key."""
+    brands = _load_brand_sources(db_path=db_path, lang="es")
+    _attach_profile_overrides(brands, db_path=db_path)
+    match = _find_brand(brands, brand)
+    brand_key = match.brand_key if match is not None else _slug(brand.lower()) or brand.lower()
+    display_name = _first_text(overrides.get("name"), match.display_name if match else _display_name(brand, brand))
+    domain = _first_text(overrides.get("domain"), match.domain if match else brand)
+    canonical_url = _first_text(
+        overrides.get("canonical_url"),
+        (overrides.get("official_links") or [""])[0] if isinstance(overrides.get("official_links"), list) else "",
+        f"https://{domain}" if domain else "",
+    )
+    cleaned = _clean_profile_overrides(overrides)
+    now = datetime.now().isoformat()
+    store = SQLiteStore(db_path)
+    try:
+        store.conn.execute(
+            """
+            INSERT INTO brand_profiles (
+                brand_key, display_name, domain, canonical_url, logo_url,
+                profile_overrides_json, updated_by, created_at, updated_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(brand_key) DO UPDATE SET
+                display_name=excluded.display_name,
+                domain=excluded.domain,
+                canonical_url=excluded.canonical_url,
+                logo_url=excluded.logo_url,
+                profile_overrides_json=excluded.profile_overrides_json,
+                updated_by=excluded.updated_by,
+                updated_at=excluded.updated_at
+            """,
+            (
+                brand_key,
+                display_name,
+                domain,
+                canonical_url,
+                cleaned.get("logo_url") or None,
+                json.dumps(cleaned, ensure_ascii=True, sort_keys=True),
+                updated_by or None,
+                now,
+                now,
+            ),
+        )
+        store.conn.commit()
+    finally:
+        store.close()
+    return brand_key
 
 
 def _empty_brand_profile(brand: str) -> dict[str, Any]:
@@ -237,6 +297,35 @@ def _empty_sv9_status() -> dict[str, Any]:
         "generate_scan_id": None,
         "source_run_id": None,
     }
+
+
+def _clean_profile_overrides(overrides: dict[str, Any]) -> dict[str, Any]:
+    cleaned: dict[str, Any] = {}
+    for key in (
+        "name",
+        "domain",
+        "canonical_url",
+        "logo_url",
+        "summary",
+        "offer",
+        "audience",
+        "outcome",
+        "category",
+    ):
+        value = str(overrides.get(key) or "").strip()
+        if value:
+            cleaned[key] = value
+    for key in ("official_links", "social_links"):
+        value = overrides.get(key)
+        if isinstance(value, str):
+            items = _split_lines(value)
+        elif isinstance(value, list):
+            items = [str(item).strip() for item in value if str(item).strip()]
+        else:
+            items = []
+        if items:
+            cleaned[key] = items
+    return cleaned
 
 
 def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, Any]:
@@ -294,6 +383,38 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
     }
 
 
+def _apply_profile_overrides(profile: dict[str, Any], overrides: dict[str, Any]) -> dict[str, Any]:
+    if not overrides:
+        return profile
+    out = dict(profile)
+    for key in (
+        "name",
+        "domain",
+        "logo_url",
+        "summary",
+        "offer",
+        "audience",
+        "outcome",
+        "category",
+    ):
+        value = overrides.get(key)
+        if isinstance(value, str) and value.strip():
+            out[key] = value.strip()
+    for key in ("official_links", "social_links"):
+        value = overrides.get(key)
+        if isinstance(value, list):
+            cleaned = [str(item).strip() for item in value if str(item).strip()]
+            if cleaned:
+                out[key] = cleaned
+    if isinstance(out.get("social_links"), list):
+        out["social_links"] = _unique_social_links(out["social_links"])
+    if isinstance(out.get("official_links"), list):
+        out["official_links"] = _unique_links(out["official_links"])
+    if overrides:
+        out["manual_override"] = True
+    return out
+
+
 def _cached_or_build_brand_profile(
     brand: ObservatoryBrand,
     *,
@@ -308,6 +429,7 @@ def _cached_or_build_brand_profile(
     if cached is not None:
         return cached
     profile = _build_brand_profile(brand, db_path=db_path)
+    profile = _apply_profile_overrides(profile, brand.profile_overrides)
     _save_cached_brand_profile(
         brand.brand_key,
         profile,
@@ -334,6 +456,7 @@ def _brand_profile_source_fingerprint(brand: ObservatoryBrand, *, db_path: str) 
         "category": brand.category,
         "category_label": brand.category_label,
         "classification_tags": sorted(brand.classification_tags),
+        "profile_overrides": brand.profile_overrides,
         "sources": [
             {
                 "source": source.source,
@@ -642,6 +765,56 @@ def _attach_classifications(brands: dict[str, ObservatoryBrand], *, db_path: str
         brand.category = _slug(brand.category_label) if brand.category_label else None
 
 
+def _attach_profile_overrides(brands: dict[str, ObservatoryBrand], *, db_path: str) -> None:
+    with _connect(db_path) as conn:
+        if not _table_exists(conn, "brand_profiles"):
+            return
+        columns = {
+            row["name"]
+            for row in conn.execute("PRAGMA table_info(brand_profiles)").fetchall()
+        }
+        logo_expr = "logo_url" if "logo_url" in columns else "NULL AS logo_url"
+        overrides_expr = (
+            "profile_overrides_json"
+            if "profile_overrides_json" in columns
+            else "'{}' AS profile_overrides_json"
+        )
+        updated_by_expr = "updated_by" if "updated_by" in columns else "NULL AS updated_by"
+        rows = conn.execute(
+            f"""
+            SELECT brand_key, display_name, domain, canonical_url, {logo_expr},
+                   {overrides_expr}, {updated_by_expr}, updated_at
+            FROM brand_profiles
+            """
+        ).fetchall()
+    for row in rows:
+        brand_key = str(row["brand_key"] or "").lower()
+        brand = brands.get(brand_key)
+        if brand is None and row["domain"]:
+            brand = brands.get(str(row["domain"]).lower())
+        if brand is None:
+            continue
+        overrides = _json_dict(row["profile_overrides_json"])
+        if row["display_name"]:
+            brand.display_name = str(row["display_name"])
+            overrides.setdefault("name", str(row["display_name"]))
+        if row["domain"]:
+            brand.domain = str(row["domain"]).lower()
+            overrides.setdefault("domain", brand.domain)
+        if row["canonical_url"]:
+            overrides.setdefault("canonical_url", str(row["canonical_url"]))
+            overrides.setdefault("official_links", [str(row["canonical_url"])])
+        if row["logo_url"]:
+            overrides.setdefault("logo_url", str(row["logo_url"]))
+        if overrides.get("category"):
+            brand.category_label = str(overrides["category"])
+            brand.category = _slug(brand.category_label) if brand.category_label else None
+        if overrides:
+            overrides["updated_at"] = row["updated_at"] or ""
+            overrides["updated_by"] = row["updated_by"] or ""
+        brand.profile_overrides = overrides
+
+
 def _snapshots_for_brand(brand: ObservatoryBrand, *, db_path: str) -> list[dict[str, Any]]:
     run_ids = []
     seen_ids = set()
@@ -889,6 +1062,14 @@ def _str_list(raw: Any, *, limit: int) -> list[str]:
         if len(out) >= limit:
             break
     return out
+
+
+def _split_lines(value: str) -> list[str]:
+    return [
+        line.strip()
+        for line in str(value or "").replace(",", "\n").splitlines()
+        if line.strip()
+    ]
 
 
 def _first_text(*values: Any) -> str:

@@ -2,15 +2,26 @@
 
 import asyncio
 from typing import Literal
+from urllib.parse import quote
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import RedirectResponse
 
 from src.config import BRAND3_DB_PATH
 
-from ..observatory_index import build_observatory_brand_history
+from ..config import settings
+from ..middleware.team_cookie import create_serializer, is_team_request
+from ..observatory_index import build_observatory_brand_history, save_brand_profile_overrides
 from ..templates_env import templates
 
 router = APIRouter()
+
+
+def _require_team_write(request: Request) -> None:
+    if not settings.team_token:
+        return
+    if not is_team_request(request, create_serializer(settings.cookie_secret)):
+        raise HTTPException(status_code=403, detail="team access required")
 
 
 @router.get("/brand/{domain}")
@@ -22,6 +33,10 @@ async def brand_history(request: Request, domain: str, lang: Literal["es", "en"]
         lang=lang,
     )
     _ensure_brand_history_defaults(history, domain)
+    can_edit = (
+        not settings.team_token
+        or is_team_request(request, create_serializer(settings.cookie_secret))
+    )
     return templates.TemplateResponse(
         request,
         "brand_history.html.j2",
@@ -29,9 +44,68 @@ async def brand_history(request: Request, domain: str, lang: Literal["es", "en"]
             "domain": domain,
             "history": history,
             "analyses": history["rows"],
+            "can_edit_brand_profile": can_edit,
             "ui_lang": lang,
         },
     )
+
+
+@router.get("/brand/{domain}/edit")
+async def brand_profile_edit(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(history, domain)
+    return templates.TemplateResponse(
+        request,
+        "brand_profile_edit.html.j2",
+        {
+            "domain": domain,
+            "history": history,
+            "profile": history["profile"],
+            "ui_lang": lang,
+        },
+    )
+
+
+@router.post("/brand/{domain}/edit")
+async def brand_profile_edit_submit(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    form = await request.form()
+    overrides = {
+        "name": str(form.get("name") or ""),
+        "domain": str(form.get("domain") or ""),
+        "canonical_url": str(form.get("canonical_url") or ""),
+        "logo_url": str(form.get("logo_url") or ""),
+        "summary": str(form.get("summary") or ""),
+        "offer": str(form.get("offer") or ""),
+        "audience": str(form.get("audience") or ""),
+        "outcome": str(form.get("outcome") or ""),
+        "category": str(form.get("category") or ""),
+        "official_links": str(form.get("official_links") or ""),
+        "social_links": str(form.get("social_links") or ""),
+    }
+    updated_by = str(form.get("updated_by") or "").strip()
+    brand_key = await asyncio.to_thread(
+        save_brand_profile_overrides,
+        domain,
+        overrides,
+        db_path=BRAND3_DB_PATH,
+        updated_by=updated_by,
+    )
+    return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
 
 
 def _ensure_brand_history_defaults(history: dict, domain: str) -> None:

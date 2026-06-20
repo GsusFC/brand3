@@ -18,6 +18,7 @@ from .brand_profiles import (
     build_brand_profile as _build_brand_profile,
     extract_domain as _extract_domain,
 )
+from .evidence_items import EvidenceItemsStoreMixin
 from .json_payloads import (
     MalformedJSONPayload as _MalformedJSONPayload,
     json_dumps as _json_dumps,
@@ -28,7 +29,7 @@ from .raw_inputs import RawInputsStoreMixin
 from .time_utils import duration_seconds as _duration_seconds
 
 
-class SQLiteStore(AnalysisJobsStoreMixin, RawInputsStoreMixin):
+class SQLiteStore(AnalysisJobsStoreMixin, RawInputsStoreMixin, EvidenceItemsStoreMixin):
     """Persists runs, raw collector inputs, features, and scores in SQLite."""
 
     _schema_init_lock = threading.Lock()
@@ -607,63 +608,6 @@ class SQLiteStore(AnalysisJobsStoreMixin, RawInputsStoreMixin):
             ),
         )
         self.conn.commit()
-
-    def save_evidence_items(self, run_id: int, items: list[dict[str, Any]]) -> None:
-        if not items:
-            return
-        now = datetime.now().isoformat()
-        rows = [
-            (
-                run_id,
-                item.get("source") or "",
-                item.get("url"),
-                item.get("quote"),
-                item.get("feature_name"),
-                item.get("dimension_name"),
-                float(item.get("confidence") or 0.0),
-                item.get("freshness_days"),
-                item.get("created_at") or now,
-            )
-            for item in items
-        ]
-        self.conn.executemany(
-            """
-            INSERT INTO evidence_items (
-                run_id, source, url, quote, feature_name, dimension_name,
-                confidence, freshness_days, created_at
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """,
-            rows,
-        )
-        self.conn.commit()
-
-    def get_run_evidence(
-        self,
-        run_id: int,
-        *,
-        dimension_name: str | None = None,
-        source: str | None = None,
-    ) -> list[dict[str, Any]]:
-        filters = ["run_id = ?"]
-        params: list[Any] = [run_id]
-        if dimension_name:
-            filters.append("dimension_name = ?")
-            params.append(dimension_name)
-        if source:
-            filters.append("source = ?")
-            params.append(source)
-        rows = self.conn.execute(
-            f"""
-            SELECT id, run_id, source, url, quote, feature_name, dimension_name,
-                   confidence, freshness_days, created_at
-            FROM evidence_items
-            WHERE {" AND ".join(filters)}
-            ORDER BY id ASC
-            """,
-            params,
-        ).fetchall()
-        return [dict(row) for row in rows]
 
     def get_llm_cache(self, cache_key: str) -> dict[str, Any] | None:
         row = self.conn.execute(

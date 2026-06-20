@@ -6,31 +6,23 @@ import json
 import sqlite3
 import threading
 import time
-from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
 
 from ..dimensions import DIMENSIONS
 from ..models.brand import BrandScore, FeatureValue
-
-
-def _json_dumps(value: Any) -> str:
-    return json.dumps(value, ensure_ascii=True, sort_keys=True)
-
-
-def _safe_json_loads(value: Any, *, field: str, fallback: Any) -> tuple[Any, dict[str, Any] | None]:
-    if value is None:
-        return fallback, None
-    try:
-        return json.loads(value), None
-    except (TypeError, json.JSONDecodeError) as exc:
-        return fallback, {
-            "field": field,
-            "raw_json": value,
-            "error": str(exc),
-        }
+from .brand_profiles import (
+    brand_profile_from_record as _brand_profile_from_record,
+    build_brand_profile as _build_brand_profile,
+    extract_domain as _extract_domain,
+)
+from .json_payloads import (
+    MalformedJSONPayload as _MalformedJSONPayload,
+    json_dumps as _json_dumps,
+    safe_json_loads as _safe_json_loads,
+    to_jsonable as _to_jsonable,
+)
 
 
 def _parse_iso(value: str | None) -> datetime | None:
@@ -48,92 +40,6 @@ def _duration_seconds(start: str | None, end: str | None) -> float | None:
     if not start_dt or not end_dt:
         return None
     return round((end_dt - start_dt).total_seconds(), 3)
-
-
-def _to_jsonable(value: Any) -> Any:
-    if value is None:
-        return None
-    if is_dataclass(value):
-        return asdict(value)
-    if isinstance(value, dict):
-        return {str(k): _to_jsonable(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [_to_jsonable(v) for v in value]
-    if isinstance(value, Path):
-        return str(value)
-    return value
-
-
-def _extract_domain(url: str | None) -> str | None:
-    if not url:
-        return None
-    parsed = urlparse(url if "://" in url else f"https://{url}")
-    host = (parsed.netloc or parsed.path or "").strip().lower()
-    if host.startswith("www."):
-        host = host[4:]
-    return host or None
-
-
-def _slugify(value: str | None) -> str | None:
-    if not value:
-        return None
-    cleaned = "".join(ch.lower() if ch.isalnum() else "-" for ch in value)
-    slug = "-".join(part for part in cleaned.split("-") if part)
-    return slug or None
-
-
-def _infer_logo_key(brand_name: str | None, domain: str | None) -> str | None:
-    brand_slug = _slugify(brand_name)
-    if brand_slug:
-        return brand_slug
-    if not domain:
-        return None
-    root = domain.split(".")[0]
-    return _slugify(root)
-
-
-def _build_brand_profile(
-    brand_name: str | None,
-    url: str | None,
-    logo_url: str | None = None,
-) -> dict[str, Any]:
-    domain = _extract_domain(url)
-    return {
-        "name": brand_name,
-        "domain": domain,
-        "logo_key": _infer_logo_key(brand_name, domain),
-        "logo_url": logo_url,
-    }
-
-
-def _brand_profile_from_record(
-    record: dict[str, Any],
-    *,
-    name_field: str = "brand_name",
-    url_field: str = "url",
-    domain_field: str = "brand_domain",
-    logo_key_field: str = "brand_logo_key",
-    logo_url_field: str = "brand_logo_url",
-) -> dict[str, Any]:
-    profile = _build_brand_profile(
-        record.get(name_field),
-        record.get(url_field),
-        record.get(logo_url_field),
-    )
-    if record.get(domain_field):
-        profile["domain"] = record[domain_field]
-    if record.get(logo_key_field):
-        profile["logo_key"] = record[logo_key_field]
-    if record.get(logo_url_field):
-        profile["logo_url"] = record[logo_url_field]
-    return profile
-
-
-class _MalformedJSONPayload:
-    def __init__(self, *, field: str, raw_json: str, error: str):
-        self.field = field
-        self.raw_json = raw_json
-        self.error = error
 
 
 class SQLiteStore:

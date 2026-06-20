@@ -377,6 +377,7 @@ def _empty_brand_profile(brand: str) -> dict[str, Any]:
         "confidence_notes": [],
         "moodboard": {"available": False, "images": [], "image_count": 0, "role_counts": {}},
         "visual_signature_scan": {"available": False},
+        "visual_signature_history": [],
         "models": [],
         "scan_count": 0,
         "latest_date": "",
@@ -466,7 +467,8 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
     web_payloads = _web_payloads_from_snapshots(snapshots)
     logo_url, logo_source = _best_logo(snapshots, web_payloads)
     moodboard = _build_profile_moodboard(web_payloads, logo_url=logo_url)
-    visual_signature_scan = _visual_signature_scan_from_snapshots(snapshots)
+    visual_signature_history = _visual_signature_history_from_snapshots(snapshots)
+    visual_signature_scan = visual_signature_history[0] if visual_signature_history else {"available": False}
     primary_pack = packs[0] if packs else {}
     official_links = _unique_links(
         [
@@ -506,6 +508,7 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
         "confidence_notes": confidence_notes,
         "moodboard": moodboard,
         "visual_signature_scan": visual_signature_scan,
+        "visual_signature_history": visual_signature_history,
         "models": sorted({source.source for source in brand.sources}),
         "scan_count": len(brand.sources),
         "latest_date": _compact_date(brand.latest_date),
@@ -1053,15 +1056,33 @@ def _build_profile_moodboard(
 
 
 def _visual_signature_scan_from_snapshots(snapshots: list[dict[str, Any]]) -> dict[str, Any]:
+    history = _visual_signature_history_from_snapshots(snapshots)
+    return history[0] if history else {"available": False}
+
+
+def _visual_signature_history_from_snapshots(snapshots: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    history: list[dict[str, Any]] = []
     for snapshot in snapshots:
+        run = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
+        run_id = _int_or_none(run.get("id"))
         for item in reversed(snapshot.get("raw_inputs") or []):
             if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
                 continue
             payload = item["payload"]
             scan = payload.get("visual_signature_scan")
-            if isinstance(scan, dict) and scan.get("schema_version") == "visual-signature-scan-v1":
-                return {"available": True, **scan}
-    return {"available": False}
+            if not isinstance(scan, dict) or scan.get("schema_version") != "visual-signature-scan-v1":
+                continue
+            history.append(
+                {
+                    "available": True,
+                    "run_id": run_id,
+                    "created_at": item.get("created_at") or run.get("completed_at") or "",
+                    "date": _compact_date(item.get("created_at") or run.get("completed_at") or ""),
+                    **scan,
+                }
+            )
+    history.sort(key=lambda item: _timestamp(str(item.get("created_at") or "")), reverse=True)
+    return history
 
 
 def _social_links_from_packs(packs: list[dict[str, Any]]) -> list[str]:

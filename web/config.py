@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     max_concurrent_analyses: int = 2
     analysis_timeout_seconds: int = 600
     requeue_in_flight_on_startup: bool = True
+    visual_signature_scan_enabled: bool = True
 
     # Deployment
     base_url: str = "http://localhost:8000"

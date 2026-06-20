@@ -14,13 +14,17 @@ from typing import Any
 
 from src.config import (
     BRAND3_DB_PATH,
+    BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED,
     MAGNETISM_ANALYST_MODEL,
     MAGNETISM_EXTRACTOR_MODEL,
     MAGNETISM_SYSTEM_READING_MODEL,
 )
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.extractor import MagnetismExtractor
-from src.services.brand_service import run as run_brand_audit
+from src.services.brand_service import (
+    ensure_visual_signature_for_existing_run,
+    run as run_brand_audit,
+)
 from src.storage.sqlite_store import SQLiteStore
 
 log = logging.getLogger(__name__)
@@ -69,8 +73,23 @@ def run_magnetism_from_audit_run(
     db_path: str = BRAND3_DB_PATH,
 ) -> dict[str, Any]:
     """Run Magnetism from an existing Brand Audit run snapshot."""
+    if BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED:
+        ensure_visual_signature_for_audit_run(run_id, db_path=db_path)
     snapshot = load_brand_audit_snapshot(run_id, db_path=db_path)
     return run_magnetism_from_audit_snapshot(snapshot, llm=llm)
+
+
+def ensure_visual_signature_for_audit_run(
+    run_id: int,
+    *,
+    db_path: str = BRAND3_DB_PATH,
+) -> dict[str, object]:
+    """Ensure Visual Signature evidence exists before scanner interpretation."""
+    store = SQLiteStore(db_path)
+    try:
+        return ensure_visual_signature_for_existing_run(store=store, run_id=int(run_id))
+    finally:
+        store.close()
 
 
 def run_magnetism_from_audit_snapshot(
@@ -193,13 +212,18 @@ def _run_audit_with_progress(
     if "progress_cb" not in signature.parameters:
         return audit_runner(url)
     if "run_input_sources" in signature.parameters:
-        return audit_runner(
-            url,
-            run_input_sources=run_input_sources,
-            progress_cb=audit_progress_cb,
-        )
+        kwargs: dict[str, Any] = {
+            "run_input_sources": run_input_sources,
+            "progress_cb": audit_progress_cb,
+        }
+        if "enable_visual_signature_shadow_run" in signature.parameters:
+            kwargs["enable_visual_signature_shadow_run"] = BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED
+        return audit_runner(url, **kwargs)
 
-    return audit_runner(url, progress_cb=audit_progress_cb)
+    kwargs = {"progress_cb": audit_progress_cb}
+    if "enable_visual_signature_shadow_run" in signature.parameters:
+        kwargs["enable_visual_signature_shadow_run"] = BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED
+    return audit_runner(url, **kwargs)
 
 
 def _emit_progress(progress_cb: Callable[[str], None] | None, phase: str) -> None:

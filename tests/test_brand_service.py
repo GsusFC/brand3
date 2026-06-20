@@ -37,6 +37,7 @@ from src.services.brand_service import (
     _llm_provider_payload,
     _public_presence_inventory_summary,
     _persist_report_readiness,
+    ensure_visual_signature_for_existing_run,
     run_visual_signature_for_existing_run,
     _recover_owned_web_content,
     _run_visual_signature_shadow,
@@ -344,6 +345,39 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
                     visual_inputs[0]["payload"]["visual_signature_scan"]["schema_version"],
                     "visual-signature-scan-v1",
                 )
+            finally:
+                store.close()
+
+    def test_ensure_visual_signature_for_existing_run_skips_existing_scan(self):
+        with TemporaryDirectory() as tmp:
+            db_path = str(Path(tmp) / "brand3.sqlite3")
+            store = SQLiteStore(db_path)
+            try:
+                brand_id = store.upsert_brand("Existing", "https://existing.com")
+                run_id = store.create_run(brand_id, "Existing", "https://existing.com", True, True)
+                store.save_raw_input(
+                    run_id,
+                    "visual_signature",
+                    {
+                        "visual_signature_scan": {
+                            "schema_version": "visual-signature-scan-v1",
+                            "score": 70,
+                        }
+                    },
+                )
+
+                result = ensure_visual_signature_for_existing_run(
+                    store=store,
+                    run_id=run_id,
+                    extractor=lambda **_kwargs: self.fail("extractor should not run"),
+                )
+
+                self.assertEqual(result["status"], "already_available")
+                snapshot = store.get_run_snapshot(run_id)
+                visual_inputs = [
+                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
+                ]
+                self.assertEqual(len(visual_inputs), 1)
             finally:
                 store.close()
 

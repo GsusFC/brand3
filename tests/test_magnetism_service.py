@@ -3,7 +3,11 @@ from __future__ import annotations
 from pathlib import Path
 
 from src.features.magnetism.extractor import MagnetismExtractor
-from src.services.magnetism_service import run_magnetism_from_audit_snapshot, run_magnetism_from_url
+from src.services.magnetism_service import (
+    run_magnetism_from_audit_run,
+    run_magnetism_from_audit_snapshot,
+    run_magnetism_from_url,
+)
 from src.storage.sqlite_store import SQLiteStore
 
 
@@ -134,6 +138,61 @@ def test_run_magnetism_from_url_forwards_run_input_sources_to_audit_runner(monke
     assert captured["run_input_sources"] == {"hyperbrowser", "context"}
     assert result["source_run_id"] == 200
     assert "interpreting" in phases
+
+
+def test_run_magnetism_from_url_enables_visual_signature_when_supported(monkeypatch) -> None:
+    captured = {}
+
+    def fake_audit_runner(
+        url: str,
+        *,
+        progress_cb=None,
+        run_input_sources=None,
+        enable_visual_signature_shadow_run=False,
+    ) -> dict[str, int]:
+        captured["url"] = url
+        captured["enable_visual_signature_shadow_run"] = enable_visual_signature_shadow_run
+        return {"run_id": 201}
+
+    def fake_magnetism_from_run(run_id: int, *, llm=None, db_path=None):
+        assert run_id == 201
+        return {"source": "brand_audit_snapshot", "source_run_id": run_id}
+
+    monkeypatch.setattr(
+        "src.services.magnetism_service.run_magnetism_from_audit_run",
+        fake_magnetism_from_run,
+    )
+    monkeypatch.setattr("src.services.magnetism_service.BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED", True)
+
+    result = run_magnetism_from_url("https://service.test", audit_runner=fake_audit_runner)
+
+    assert captured["url"] == "https://service.test"
+    assert captured["enable_visual_signature_shadow_run"] is True
+    assert result["source_run_id"] == 201
+
+
+def test_run_magnetism_from_audit_run_ensures_visual_signature(monkeypatch) -> None:
+    calls = []
+
+    def fake_ensure(run_id, *, db_path=None):
+        calls.append((run_id, db_path))
+        return {"status": "already_available"}
+
+    monkeypatch.setattr("src.services.magnetism_service.BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED", True)
+    monkeypatch.setattr("src.services.magnetism_service.ensure_visual_signature_for_audit_run", fake_ensure)
+    monkeypatch.setattr(
+        "src.services.magnetism_service.load_brand_audit_snapshot",
+        lambda run_id, *, db_path=None: {"run": {"id": run_id}},
+    )
+    monkeypatch.setattr(
+        "src.services.magnetism_service.run_magnetism_from_audit_snapshot",
+        lambda snapshot, *, llm=None: {"source_run_id": snapshot["run"]["id"]},
+    )
+
+    result = run_magnetism_from_audit_run(77, db_path="test.sqlite3")
+
+    assert result["source_run_id"] == 77
+    assert calls == [(77, "test.sqlite3")]
 
 
 def test_run_magnetism_from_audit_snapshot_builds_default_llm_when_available(monkeypatch) -> None:

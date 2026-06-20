@@ -22,8 +22,14 @@ class MainExperimentTests(unittest.TestCase):
             True,
             True,
             refresh=True,
-            enable_visual_signature_shadow_run=False,
+            enable_visual_signature_shadow_run=True,
         )
+
+    def test_analyze_can_disable_visual_signature_scan(self):
+        with patch.object(main, "run", return_value={}) as run_mock:
+            main.main(["brand3", "analyze", "https://claude.ai", "Claude", "--no-visual-signature-scan"])
+
+        self.assertFalse(run_mock.call_args.kwargs["enable_visual_signature_shadow_run"])
 
     def test_render_report_without_diagnostic_flag_uses_existing_render_path(self):
         stdout = io.StringIO()

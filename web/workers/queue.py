@@ -60,6 +60,7 @@ def _call_engine(url: str, progress_cb=None) -> dict:
         url,
         use_social=True,
         use_llm=True,
+        enable_visual_signature_shadow_run=settings.visual_signature_scan_enabled,
         progress_cb=progress_cb,
     )
 

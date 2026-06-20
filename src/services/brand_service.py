@@ -1386,6 +1386,40 @@ def run_visual_signature_for_existing_run(
     )
 
 
+def ensure_visual_signature_for_existing_run(
+    *,
+    store: SQLiteStore,
+    run_id: int,
+    extractor=extract_visual_signature,
+    vision_enricher=enrich_visual_signature_with_vision,
+    persistence_fn=persist_visual_signature_bundle,
+) -> dict[str, object]:
+    """Ensure a run has Visual Signature scanner evidence, without duplicates."""
+
+    snapshot = store.get_run_snapshot(run_id)
+    if not snapshot:
+        raise ValueError(f"run {run_id} not found")
+    if _snapshot_has_visual_signature_scan(snapshot):
+        return {"status": "already_available", "persisted": False, "run_id": run_id}
+    return run_visual_signature_for_existing_run(
+        store=store,
+        run_id=run_id,
+        extractor=extractor,
+        vision_enricher=vision_enricher,
+        persistence_fn=persistence_fn,
+    )
+
+
+def _snapshot_has_visual_signature_scan(snapshot: dict[str, Any]) -> bool:
+    for item in snapshot.get("raw_inputs") or []:
+        if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
+            continue
+        scan = item["payload"].get("visual_signature_scan")
+        if isinstance(scan, dict) and scan.get("schema_version") == "visual-signature-scan-v1":
+            return True
+    return False
+
+
 def _web_data_from_snapshot(snapshot: dict[str, Any], *, fallback_url: str) -> WebData:
     selected: WebData | None = None
     for item in snapshot.get("raw_inputs") or []:

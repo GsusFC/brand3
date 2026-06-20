@@ -566,6 +566,29 @@ class ListingsTests(unittest.TestCase):
                 ).fetchone()[0]
             )
             conn.execute(
+                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now', '-1 day'))",
+                (
+                    run_id,
+                    "visual_signature",
+                    json.dumps(
+                        {
+                            "schema_version": "visual-signature-persistence-1",
+                            "visual_signature_scan": {
+                                "schema_version": "visual-signature-scan-v1",
+                                "brand_name": "VisualCo",
+                                "website_url": "https://visualco.com",
+                                "status": "partial",
+                                "score": 61.0,
+                                "dimensions": {"capture_quality": {"score": 45.0}},
+                                "capture": {"available": False, "type": "unknown"},
+                                "evidence": [],
+                                "limitations": ["screenshot_not_available"],
+                            },
+                        }
+                    ),
+                ),
+            )
+            conn.execute(
                 "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
                 (
                     run_id,
@@ -607,6 +630,7 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertIn("visual_signature", r.text)
         self.assertIn("73.5", r.text)
+        self.assertIn("historial_visual", r.text)
         self.assertIn("cookie_banner", r.text)
 
         payload = self.client.get("/api/brands/visualco.com/profile")
@@ -615,6 +639,8 @@ class ListingsTests(unittest.TestCase):
         self.assertTrue(scan["available"])
         self.assertEqual(scan["schema_version"], "visual-signature-scan-v1")
         self.assertEqual(scan["score"], 73.5)
+        history = payload.json()["profile"]["visual_signature_history"]
+        self.assertEqual([item["score"] for item in history[:2]], [73.5, 61.0])
 
     def test_brand_page_can_trigger_visual_signature_scan_for_latest_run(self):
         token = self._seed_ready_run("visualscan", composite=65.0)

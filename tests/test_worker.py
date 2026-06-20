@@ -240,6 +240,22 @@ class MagnetismWorkerRoutingTests(unittest.TestCase):
     def tearDown(self):
         web_queue.set_run_magnetism_override(None)
 
+    def test_call_engine_enables_visual_signature_scan_from_settings(self):
+        captured = {}
+
+        def fake_run(url, **kwargs):
+            captured["url"] = url
+            captured.update(kwargs)
+            return {"run_id": 1}
+
+        with patch("src.services.brand_service.run", side_effect=fake_run):
+            with patch.object(web_queue.settings, "visual_signature_scan_enabled", True):
+                result = web_queue._call_engine("https://example.com")
+
+        self.assertEqual(result, {"run_id": 1})
+        self.assertEqual(captured["url"], "https://example.com")
+        self.assertTrue(captured["enable_visual_signature_shadow_run"])
+
     def test_url_magnetism_uses_service_role_router_without_injected_llm(self):
         captured = {}
         phases = []

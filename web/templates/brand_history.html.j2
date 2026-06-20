@@ -159,6 +159,7 @@
   </section>
 
   {% set visual_scan = profile.visual_signature_scan if profile.visual_signature_scan is defined else {'available': false} %}
+  {% set visual_history = profile.visual_signature_history if profile.visual_signature_history is defined else [] %}
   <section class="brand-profile-block brand-profile-visual-signature">
     <div class="section-head">
       <span class="label">visual_signature</span>
@@ -202,6 +203,18 @@
     <p class="dim" style="font-family: var(--font-mono); font-size: 10px; margin: 10px 0 0;">
       // {{ 'límites' if current_lang == 'es' else 'limits' }}: {{ visual_scan.limitations|join(' / ') }}
     </p>
+    {% endif %}
+    {% if visual_history|length > 1 %}
+    <div class="brand-visual-history">
+      <span class="brand-profile-terminal-key">{{ 'historial_visual' if current_lang == 'es' else 'visual_history' }}</span>
+      <ul class="brand-profile-evidence-list">
+        {% for item in visual_history[:5] %}
+        <li>
+          {{ item.date or item.created_at or 'scan' }}{% if item.run_id %} / run #{{ item.run_id }}{% endif %}: {{ item.score }} · {{ item.status }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
     {% endif %}
     {% else %}
     <p class="dim">{{ 'Visual Signature todavía no se ha ejecutado para esta marca.' if current_lang == 'es' else 'Visual Signature has not run for this brand yet.' }}</p>

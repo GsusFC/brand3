@@ -1013,6 +1013,11 @@ span.brand-profile-logo-mark {
   padding-left: 8px;
 }
 
+.brand-visual-history {
+  display: grid;
+  gap: 8px;
+}
+
 .status-dot {
   display: inline-block;
   margin-left: 4px;

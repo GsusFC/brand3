@@ -460,6 +460,8 @@ def _ensure_brand_history_defaults(history: dict, domain: str) -> None:
     profile.setdefault("evidence_gaps", [])
     profile.setdefault("confidence_notes", [])
     profile.setdefault("moodboard", {"available": False, "images": [], "image_count": 0, "role_counts": {}})
+    profile.setdefault("visual_signature_scan", {"available": False})
+    profile.setdefault("visual_signature_history", [])
     profile.setdefault("models", sorted({str(row.get("score_model")) for row in rows if row.get("score_model")}))
     profile.setdefault("scan_count", len(rows))
     profile.setdefault("latest_date", rows[0].get("date") if rows else "")

@@ -19,6 +19,7 @@ from src.config import (
     BRAND3_DB_PATH,
     BRAND3_PROMOTION_MAX_COMPOSITE_DROP,
     BRAND3_PROMOTION_MAX_DIMENSION_DROPS,
+    BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED,
 )
 
 
@@ -61,7 +62,7 @@ def run(
     use_llm: bool = True,
     use_social: bool = True,
     use_competitors: bool = True,
-    enable_visual_signature_shadow_run: bool = False,
+    enable_visual_signature_shadow_run: bool = BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED,
     refresh: bool = False,
 ) -> dict:
     return _delegate(
@@ -260,13 +261,18 @@ def retry_analysis_job(*args, **kwargs):
 
 
 def _cmd_analyze(a: argparse.Namespace) -> None:
+    visual_signature_enabled = (
+        a.enable_visual_signature_shadow_run
+        if a.enable_visual_signature_shadow_run is not None
+        else BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED
+    )
     run(
         a.url,
         a.brand_name,
         a.use_llm,
         a.use_social,
         refresh=a.refresh,
-        enable_visual_signature_shadow_run=a.enable_visual_signature_shadow_run,
+        enable_visual_signature_shadow_run=visual_signature_enabled,
     )
 
 
@@ -642,7 +648,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument("brand_name", nargs="?", default=None)
     p.add_argument("--no-llm", dest="use_llm", action="store_false")
     p.add_argument("--no-social", dest="use_social", action="store_false")
-    p.add_argument("--visual-signature-shadow-run", dest="enable_visual_signature_shadow_run", action="store_true")
+    p.add_argument("--visual-signature-shadow-run", dest="enable_visual_signature_shadow_run", action="store_true", default=None)
+    p.add_argument("--no-visual-signature-scan", dest="enable_visual_signature_shadow_run", action="store_false")
     p.add_argument("--refresh", action="store_true")
     p.set_defaults(func=_cmd_analyze)
 

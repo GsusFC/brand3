@@ -175,10 +175,12 @@ Useful variants:
 ./.venv/bin/python main.py analyze https://stripe.com Stripe --no-social
 ```
 
-Run the Visual Signature shadow path only when intentionally reviewing that boundary:
+Visual Signature scan evidence runs with scanner executions by default. It is
+persisted as evidence and does not modify Brand3 scores. Disable it only when
+debugging scanner runtime or isolating provider/capture issues:
 
 ```bash
-./.venv/bin/python main.py analyze https://stripe.com Stripe --visual-signature-shadow-run
+./.venv/bin/python main.py analyze https://stripe.com Stripe --no-visual-signature-scan
 ```
 
 Inspect scoring runs:
@@ -242,6 +244,7 @@ Calibration:
 Capture, corpus, reviewer:
 
 ```bash
+./.venv/bin/python scripts/visual_signature_scanner_validation_batch.py --limit 10
 ./.venv/bin/python scripts/visual_signature_capture_screenshots.py
 ./.venv/bin/python scripts/visual_signature_corpus_pass.py
 ./.venv/bin/python scripts/visual_signature_corpus_expansion.py

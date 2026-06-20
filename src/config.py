@@ -108,6 +108,15 @@ BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT = os.environ.get(
     "yes",
     "on",
 }
+BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED = os.environ.get(
+    "BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED",
+    "true",
+).strip().lower() in {
+    "1",
+    "true",
+    "yes",
+    "on",
+}
 BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT = int(
     os.environ.get("BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT", "16000")
 )

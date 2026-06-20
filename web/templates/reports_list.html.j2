@@ -47,13 +47,13 @@
     {% for row in rows %}
       <tr>
         <td class="col-date">{{ row.compact_date }}</td>
-        <td class="col-brand"><a href="{{ row.primary_href }}">{{ row.display_name }}</a></td>
+        <td class="col-brand"><a href="{{ row.brand_href }}">{{ row.display_name }}</a></td>
         <td class="dim">{{ row.domain or '-' }}</td>
         <td class="num num-inline col-score"><span class="score-compact">{{ row.score_compact }}</span></td>
         <td><span class="badge-ready">{{ row.score_model }}</span></td>
         <td class="dim">{{ row.quadrant or '-' }}</td>
         <td class="dim">{{ row.category_label or '-' }}</td>
-        <td class="num">{{ row.scan_count }}</td>
+        <td class="num"><a href="{{ row.brand_href }}">{{ row.scan_count }}</a></td>
         <td class="action-cell col-action">
           {% if row.sv9_generate_scan_id %}
           <form method="post" action="/magnetism-scanner/scan/{{ row.sv9_generate_scan_id }}/generate-sv9?lang={{ current_lang }}" style="margin:0;">

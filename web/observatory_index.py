@@ -12,7 +12,7 @@ import sqlite3
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 from src.config import BRAND3_DB_PATH
 from src.sv9.ranking import domain_from_url
@@ -63,13 +63,15 @@ class ObservatoryBrand:
             ),
         )[0]
 
-    def to_row(self) -> dict[str, Any]:
+    def to_row(self, *, lang: str = "es") -> dict[str, Any]:
         primary = self.primary
         needs_sv9 = primary.source != "sv9"
+        brand_ref = self.domain or self.brand_key
         return {
             "brand_key": self.brand_key,
             "display_name": self.display_name,
             "domain": self.domain,
+            "brand_href": f"/brand/{quote(brand_ref, safe='')}?lang={lang}",
             "latest_date": self.latest_date,
             "compact_date": _compact_date(self.latest_date),
             "score": primary.score,
@@ -135,7 +137,7 @@ def build_observatory_index(
 
     brands = _load_brand_sources(db_path=db_path, lang=lang)
     _attach_classifications(brands, db_path=db_path)
-    rows = [brand.to_row() for brand in brands.values() if brand.sources]
+    rows = [brand.to_row(lang=lang) for brand in brands.values() if brand.sources]
     rows = _filter_rows(rows, query=query)
     categories = _category_options(rows)
     rows = _filter_rows(rows, category=category)

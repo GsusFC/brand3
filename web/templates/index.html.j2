@@ -67,7 +67,7 @@
       <tr>
         <td class="dim col-date">{{ row.compact_date }}</td>
         <td class="col-brand">
-          <a href="{{ row.primary_href }}">{{ row.display_name }}</a>
+          <a href="{{ row.brand_href }}">{{ row.display_name }}</a>
           {% if row.domain %}<span class="dim" style="display:block; font-size:11px;">{{ row.domain }}</span>{% endif %}
         </td>
         <td class="num num-inline col-score">
@@ -76,7 +76,7 @@
         </td>
         <td class="dim col-band-wide">{{ row.quadrant or '-' }}</td>
         <td class="dim col-category">{{ row.category_label or '-' }}</td>
-        <td class="num col-score">{{ row.scan_count }}</td>
+        <td class="num col-score"><a href="{{ row.brand_href }}">{{ row.scan_count }}</a></td>
         <td class="action-cell col-action">
           {% if row.sv9_generate_scan_id %}
           <form method="post" action="/magnetism-scanner/scan/{{ row.sv9_generate_scan_id }}/generate-sv9?lang={{ current_lang }}" style="margin:0;">

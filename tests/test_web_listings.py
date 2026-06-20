@@ -456,6 +456,16 @@ class ListingsTests(unittest.TestCase):
         self.assertIn("/magnetism-scanner/scan/", r.text)
         self.assertIn("magnetism", r.text)
 
+    def test_grouped_listing_links_brand_to_full_history(self):
+        self._seed_ready_run("histco", composite=66.0)
+        self._seed_ready_scan("histco", magnetism_score=83, coherence_score=72)
+
+        r = self.client.get("/reports")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('href="/brand/histco.com?lang=es">Histco</a>', r.text)
+        self.assertIn('href="/brand/histco.com?lang=es">2</a>', r.text)
+
     def test_taken_down_row_is_hidden(self):
         self._seed_ready_run("hidden", composite=50.0, takedown=1)
         r = self.client.get("/reports")

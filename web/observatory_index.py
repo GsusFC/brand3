@@ -91,6 +91,9 @@ class ObservatoryBrand:
             "category": self.category,
             "category_label": self.category_label,
             "classification_tags": list(self.classification_tags),
+            "classification_tag_keys": sorted(
+                {_slug(tag) for tag in self.classification_tags if _slug(tag)}
+            ),
             "scan_count": len(self.sources),
             "primary_href": primary.href,
             "needs_sv9": needs_sv9,
@@ -136,6 +139,7 @@ def build_observatory_index(
     query: str | None = None,
     sort: str = "newest",
     category: str | None = None,
+    tag: str | None = None,
     page: int = 1,
     per_page: int = 25,
     lang: str = "es",
@@ -151,7 +155,8 @@ def build_observatory_index(
     rows = [brand.to_row(lang=lang) for brand in brands.values() if brand.sources]
     rows = _filter_rows(rows, query=query)
     categories = _category_options(rows)
-    rows = _filter_rows(rows, category=category)
+    tags = _tag_options(rows)
+    rows = _filter_rows(rows, category=category, tag=_slug(tag or ""))
     rows = _sort_rows(rows, sort=sort)
 
     total = len(rows)
@@ -170,7 +175,9 @@ def build_observatory_index(
         "query": query or "",
         "sort": sort,
         "category": category,
+        "tag": _slug(tag or ""),
         "categories": categories,
+        "tags": tags,
     }
 
 
@@ -1247,6 +1254,7 @@ def _filter_rows(
     *,
     query: str | None = None,
     category: str | None = None,
+    tag: str | None = None,
 ) -> list[dict[str, Any]]:
     out = rows
     q = (query or "").strip().lower()
@@ -1267,6 +1275,8 @@ def _filter_rows(
         ]
     if category:
         out = [row for row in out if row.get("category") == category]
+    if tag:
+        out = [row for row in out if tag in (row.get("classification_tag_keys") or [])]
     return out
 
 
@@ -1277,6 +1287,19 @@ def _category_options(rows: list[dict[str, Any]]) -> dict[str, dict[str, str]]:
         label = row.get("category_label")
         if key and label:
             options[str(key)] = {"label": str(label)}
+    return dict(sorted(options.items(), key=lambda item: item[1]["label"].lower()))
+
+
+def _tag_options(rows: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    options: dict[str, dict[str, Any]] = {}
+    for row in rows:
+        labels = row.get("classification_tags") or []
+        for label in labels:
+            key = _slug(str(label))
+            if not key or not label:
+                continue
+            item = options.setdefault(str(key), {"label": str(label), "count": 0})
+            item["count"] = int(item["count"]) + 1
     return dict(sorted(options.items(), key=lambda item: item[1]["label"].lower()))
 
 

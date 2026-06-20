@@ -11,7 +11,7 @@
     {% if ui_lang == 'en' %}
     <input type="hidden" name="lang" value="en">
     {% endif %}
-    <input type="text" name="q" value="{{ query }}" placeholder="{{ 'buscar marca, dominio o categoría ...' if current_lang == 'es' else 'search brand, domain, or category ...' }}">
+    <input type="text" name="q" value="{{ query }}" placeholder="{{ 'buscar marca, dominio, categoría o tag ...' if current_lang == 'es' else 'search brand, domain, category, or tag ...' }}">
     <select name="sort">
       <option value="newest" {% if sort == "newest" %}selected{% endif %}>{{ 'más recientes' if current_lang == 'es' else 'newest' }}</option>
       <option value="score_desc" {% if sort == "score_desc" %}selected{% endif %}>{{ 'puntuación ↓' if current_lang == 'es' else 'score ↓' }}</option>
@@ -22,6 +22,12 @@
       <option value="">{{ 'todas las categorías' if current_lang == 'es' else 'all categories' }}</option>
       {% for key, spec in categories.items() %}
       <option value="{{ key }}"{% if category == key %} selected{% endif %}>{{ spec["label"] }}</option>
+      {% endfor %}
+    </select>
+    <select name="tag" aria-label="Tag">
+      <option value="">{{ 'todos los tags' if current_lang == 'es' else 'all tags' }}</option>
+      {% for key, spec in tags.items() %}
+      <option value="{{ key }}"{% if tag == key %} selected{% endif %}>{{ spec["label"] }}</option>
       {% endfor %}
     </select>
     <button type="submit">{{ 'filtrar' if current_lang == 'es' else 'filter' }}</button>
@@ -80,7 +86,8 @@
     "has_next": has_next,
     "query": query,
     "sort": sort,
-    "category": category
+    "category": category,
+    "tag": tag
   } %}
   {% include "observatory_pager.html.j2" %}
 </section>

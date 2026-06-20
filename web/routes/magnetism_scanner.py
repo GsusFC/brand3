@@ -634,6 +634,7 @@ def _load_magnetism_index_data(
     query: str | None = None,
     sort: str = "newest",
     category: str | None = None,
+    tag: str | None = None,
     page: int = 1,
     lang: _Lang = "es",
 ) -> dict:
@@ -642,6 +643,7 @@ def _load_magnetism_index_data(
         query=query,
         sort=sort,
         category=category,
+        tag=tag,
         page=page,
         per_page=25,
         lang=lang,
@@ -858,6 +860,7 @@ async def magnetism_scanner_index(
     q: str | None = Query(None),
     sort: str = Query("newest"),
     category: str | None = Query(None),
+    tag: str | None = Query(None),
     page: int = Query(1, ge=1),
 ):
     """Render index page of Magnetism Scanner showing past analyses and inputs."""
@@ -869,6 +872,7 @@ async def magnetism_scanner_index(
         query=q,
         sort=sort,
         category=category,
+        tag=tag,
         page=page,
         lang=lang,
     )
@@ -897,7 +901,9 @@ async def magnetism_scanner_index(
                     "query": q or "",
                     "sort": sort,
                     "category": category,
+                    "tag": observatory["tag"],
                     "categories": observatory["categories"],
+                    "tags": observatory["tags"],
                     "page": observatory["page"],
                     "total": observatory["total"],
                     "total_pages": observatory["total_pages"],

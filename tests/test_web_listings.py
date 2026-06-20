@@ -249,12 +249,26 @@ class ListingsTests(unittest.TestCase):
 
         all_rows = self.client.get("/")
         filtered = self.client.get("/?category=saas")
+        tagged = self.client.get("/?tag=project-management")
+        reports_tagged = self.client.get("/reports?tag=project-management")
+        scanner_tagged = self.client.get("/magnetism-scanner?tag=project-management")
 
         self.assertEqual(all_rows.status_code, 200)
         self.assertIn('<option value="saas">SaaS</option>', all_rows.text)
+        self.assertIn('name="tag"', all_rows.text)
+        self.assertIn('<option value="project-management">project management</option>', all_rows.text)
         self.assertEqual(filtered.status_code, 200)
         self.assertIn(">Linear<", filtered.text)
         self.assertNotIn(">Airbnb<", filtered.text)
+        self.assertEqual(tagged.status_code, 200)
+        self.assertIn(">Linear<", tagged.text)
+        self.assertNotIn(">Airbnb<", tagged.text)
+        self.assertEqual(reports_tagged.status_code, 200)
+        self.assertIn(">Linear<", reports_tagged.text)
+        self.assertNotIn(">Airbnb<", reports_tagged.text)
+        self.assertEqual(scanner_tagged.status_code, 200)
+        self.assertIn(">Linear<", scanner_tagged.text)
+        self.assertNotIn(">Airbnb<", scanner_tagged.text)
 
     def test_brand_page_renders_market_classification_context(self):
         self._seed_ready_scan("linear", magnetism_score=83, coherence_score=72)

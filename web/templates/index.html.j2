@@ -28,7 +28,7 @@
   <form method="get" action="/" class="form-row observatory-filter" aria-label="{{ 'Controles del observatorio' if current_lang == 'es' else 'Observatory controls' }}">
     <input type="hidden" name="lang" value="{{ current_lang }}">
     <label class="sr-only" for="observatory-query">{{ 'Buscar' if current_lang == 'es' else 'Search' }}</label>
-    <input id="observatory-query" type="text" name="q" value="{{ observatory.query }}" placeholder="{{ 'buscar marca, dominio o categoría ...' if current_lang == 'es' else 'search brand, domain, or category ...' }}" spellcheck="false" autocomplete="off">
+    <input id="observatory-query" type="text" name="q" value="{{ observatory.query }}" placeholder="{{ 'buscar marca, dominio, categoría o tag ...' if current_lang == 'es' else 'search brand, domain, category, or tag ...' }}" spellcheck="false" autocomplete="off">
     <label class="sr-only" for="observatory-sort">{{ 'Orden' if current_lang == 'es' else 'Sort' }}</label>
     <select id="observatory-sort" name="sort" aria-label="{{ 'Orden' if current_lang == 'es' else 'Sort' }}">
       <option value="newest" {% if observatory.sort == "newest" %}selected{% endif %}>{{ 'más recientes' if current_lang == 'es' else 'newest' }}</option>
@@ -41,6 +41,13 @@
       <option value="">{{ 'todas las categorías' if current_lang == 'es' else 'all categories' }}</option>
     {% for key, spec in observatory.categories.items() %}
       <option value="{{ key }}"{% if observatory.category == key %} selected{% endif %}>{{ spec["label"] }}</option>
+    {% endfor %}
+    </select>
+    <label class="sr-only" for="observatory-tag">Tag</label>
+    <select id="observatory-tag" name="tag" aria-label="Tag">
+      <option value="">{{ 'todos los tags' if current_lang == 'es' else 'all tags' }}</option>
+    {% for key, spec in observatory.tags.items() %}
+      <option value="{{ key }}"{% if observatory.tag == key %} selected{% endif %}>{{ spec["label"] }}</option>
     {% endfor %}
     </select>
     <button type="submit">{{ 'filtrar' if current_lang == 'es' else 'filter' }}</button>
@@ -99,7 +106,8 @@
     "has_next": observatory.has_next,
     "query": observatory.query,
     "sort": observatory.sort,
-    "category": observatory.category
+    "category": observatory.category,
+    "tag": observatory.tag
   } %}
   {% include "observatory_pager.html.j2" %}
   {% else %}

@@ -20,6 +20,7 @@ async def index(
     lang: Literal["es", "en"] = Query("es"),
     sort: str = Query("newest"),
     category: str | None = Query(None),
+    tag: str | None = Query(None),
     q: str | None = Query(None),
     page: int = Query(1, ge=1),
 ):
@@ -31,6 +32,7 @@ async def index(
         query=q,
         sort=sort,
         category=category,
+        tag=tag,
         page=page,
         per_page=25,
         lang=ui_lang,
@@ -45,8 +47,10 @@ async def index(
             "observatory": {
                 "sort": sort,
                 "category": category,
+                "tag": observatory["tag"],
                 "query": q or "",
                 "categories": observatory["categories"],
+                "tags": observatory["tags"],
                 "page": observatory["page"],
                 "total": observatory["total"],
                 "total_pages": observatory["total_pages"],

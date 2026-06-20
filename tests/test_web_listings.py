@@ -11,6 +11,7 @@ import tempfile
 import time
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 
 def _install_env(db_path: Path) -> None:
@@ -614,6 +615,64 @@ class ListingsTests(unittest.TestCase):
         self.assertTrue(scan["available"])
         self.assertEqual(scan["schema_version"], "visual-signature-scan-v1")
         self.assertEqual(scan["score"], 73.5)
+
+    def test_brand_page_can_trigger_visual_signature_scan_for_latest_run(self):
+        token = self._seed_ready_run("visualscan", composite=65.0)
+        with sqlite3.connect(self.db) as conn:
+            run_id = int(
+                conn.execute(
+                    "SELECT run_id FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            )
+
+        unlocked = self.client.get(
+            "/team/unlock", params={"token": "team"}, follow_redirects=False
+        )
+        self.assertEqual(unlocked.status_code, 303)
+        r = self.client.get("/brand/visualscan")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("/brand/visualscan/visual-signature-scan", r.text)
+
+        def fake_run_visual_signature(run_id_arg: int) -> dict:
+            self.assertEqual(run_id_arg, run_id)
+            with sqlite3.connect(self.db) as conn:
+                conn.execute(
+                    "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
+                    (
+                        run_id,
+                        "visual_signature",
+                        json.dumps(
+                            {
+                                "schema_version": "visual-signature-persistence-1",
+                                "visual_signature_scan": {
+                                    "schema_version": "visual-signature-scan-v1",
+                                    "brand_name": "visualscan",
+                                    "website_url": "https://visualscan.com",
+                                    "status": "ready",
+                                    "score": 81.2,
+                                    "dimensions": {"capture_quality": {"score": 80.0}},
+                                    "capture": {"available": True, "type": "viewport"},
+                                    "evidence": [],
+                                    "limitations": [],
+                                },
+                            }
+                        ),
+                    ),
+                )
+                conn.commit()
+            return {"status": "completed", "visual_signature_score": 81.2}
+
+        with patch("web.routes.brand._run_visual_signature_scan_for_run_id", fake_run_visual_signature):
+            response = self.client.post(
+                "/api/brands/visualscan.com/visual-signature-scan",
+                headers={"x-brand3-team-token": "team"},
+            )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload["run_id"], run_id)
+        self.assertEqual(payload["profile"]["visual_signature_scan"]["score"], 81.2)
 
     def test_brand_profile_cache_reuses_generated_profile(self):
         self._seed_ready_run("cacheco", composite=65.0)

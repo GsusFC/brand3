@@ -37,6 +37,7 @@ from src.services.brand_service import (
     _llm_provider_payload,
     _public_presence_inventory_summary,
     _persist_report_readiness,
+    run_visual_signature_for_existing_run,
     _recover_owned_web_content,
     _run_visual_signature_shadow,
     _screenshot_capture_diagnostic,
@@ -265,6 +266,86 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
         self.assertGreaterEqual(payload["visual_signature_scan"]["score"], 0)
         self.assertIn("visual_signature_score", result)
         self.assertIn("visual_signature_scan_status", result)
+
+    def test_run_visual_signature_for_existing_run_reuses_persisted_inputs(self):
+        with TemporaryDirectory() as tmp:
+            db_path = str(Path(tmp) / "brand3.sqlite3")
+            store = SQLiteStore(db_path)
+            try:
+                brand_id = store.upsert_brand("Existing", "https://existing.com")
+                run_id = store.create_run(brand_id, "Existing", "https://existing.com", True, True)
+                store.save_raw_input(
+                    run_id,
+                    "web",
+                    {
+                        "url": "https://existing.com",
+                        "title": "Existing",
+                        "markdown_content": "Existing brand homepage evidence.",
+                        "html": "<header><a>Existing</a></header>",
+                        "images": [],
+                    },
+                )
+                store.save_raw_input(
+                    run_id,
+                    "screenshot_capture",
+                    {
+                        "capture": {
+                            "success": True,
+                            "source": "playwright",
+                            "screenshot_url": "file:///tmp/existing.png",
+                            "width": 1440,
+                            "height": 900,
+                        }
+                    },
+                )
+
+                def extractor(**kwargs):
+                    self.assertEqual(kwargs["web_data"].title, "Existing")
+                    self.assertEqual(kwargs["screenshot_payload"]["path"], "/tmp/existing.png")
+                    return {
+                        "brand_name": kwargs["brand_name"],
+                        "website_url": kwargs["website_url"],
+                        "analyzed_url": kwargs["website_url"],
+                        "interpretation_status": "interpretable",
+                        "acquisition": {"status": "ok"},
+                        "extraction_confidence": {"score": 0.8, "limitations": []},
+                        "logo": {"logo_detected": True, "confidence": 0.8, "primary_location": "header"},
+                        "consistency": {"overall_consistency": 0.7},
+                        "assets": {},
+                    }
+
+                def enricher(**kwargs):
+                    payload = dict(kwargs["visual_signature_payload"])
+                    payload["vision"] = {
+                        "screenshot": {
+                            "available": True,
+                            "path": kwargs["screenshot_path"],
+                            "capture_type": "viewport",
+                            "quality": "usable",
+                        },
+                        "viewport_confidence": {"score": 0.8},
+                    }
+                    return payload
+
+                result = run_visual_signature_for_existing_run(
+                    store=store,
+                    run_id=run_id,
+                    extractor=extractor,
+                    vision_enricher=enricher,
+                )
+
+                self.assertEqual(result["status"], "completed")
+                snapshot = store.get_run_snapshot(run_id)
+                visual_inputs = [
+                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
+                ]
+                self.assertEqual(len(visual_inputs), 1)
+                self.assertEqual(
+                    visual_inputs[0]["payload"]["visual_signature_scan"]["schema_version"],
+                    "visual-signature-scan-v1",
+                )
+            finally:
+                store.close()
 
     def test_run_forwards_run_input_sources_to_collect_raw_inputs(self):
         captured = {}

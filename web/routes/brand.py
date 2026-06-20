@@ -12,6 +12,8 @@ from pydantic import BaseModel
 
 from src.classification.market_taxonomy import GROUPS, tag_definition, tags_for_group
 from src.config import BRAND3_DB_PATH
+from src.services.brand_service import run_visual_signature_for_existing_run
+from src.storage.sqlite_store import SQLiteStore
 
 from ..config import settings
 from ..middleware.team_cookie import create_serializer, is_team_request
@@ -326,6 +328,67 @@ async def brand_market_classification_api_update(
     }
 
 
+@router.post("/brand/{domain}/visual-signature-scan")
+async def brand_visual_signature_scan_submit(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(history, domain)
+    if _brand_not_found(history):
+        raise HTTPException(status_code=404, detail="brand not found")
+    run_id = _latest_source_run_id(history)
+    if run_id is None:
+        raise HTTPException(status_code=409, detail="brand has no source run")
+    result = await asyncio.to_thread(_run_visual_signature_scan_for_run_id, run_id)
+    if result.get("status") not in {"completed", "acquisition_failed"}:
+        raise HTTPException(status_code=500, detail="visual signature scan did not complete")
+    return RedirectResponse(f"/brand/{quote(history.get('brand_key') or domain)}?lang={lang}", status_code=303)
+
+
+@router.post("/api/brands/{domain}/visual-signature-scan")
+@router.post("/api/brand/{domain}/visual-signature-scan")
+async def brand_visual_signature_scan_api(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(history, domain)
+    if _brand_not_found(history):
+        raise HTTPException(status_code=404, detail="brand not found")
+    run_id = _latest_source_run_id(history)
+    if run_id is None:
+        raise HTTPException(status_code=409, detail="brand has no source run")
+    result = await asyncio.to_thread(_run_visual_signature_scan_for_run_id, run_id)
+    updated = await asyncio.to_thread(
+        build_observatory_brand_history,
+        history.get("brand_key") or domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(updated, history.get("brand_key") or domain)
+    return {
+        "brand_key": updated.get("brand_key"),
+        "run_id": run_id,
+        "visual_signature": result,
+        "profile": updated.get("profile") or {},
+    }
+
+
 @router.post("/brand/{domain}/market-classification")
 async def brand_market_classification_submit(
     request: Request,
@@ -351,6 +414,29 @@ async def brand_market_classification_submit(
         updated_by=updated_by,
     )
     return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
+
+
+def _latest_source_run_id(history: dict) -> int | None:
+    rows = history.get("rows") or []
+    for row in rows:
+        value = row.get("source_run_id") or row.get("run_id")
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            continue
+    sv9_status = history.get("sv9_status") or {}
+    try:
+        return int(sv9_status.get("source_run_id"))
+    except (TypeError, ValueError):
+        return None
+
+
+def _run_visual_signature_scan_for_run_id(run_id: int) -> dict[str, object]:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        return run_visual_signature_for_existing_run(store=store, run_id=run_id)
+    finally:
+        store.close()
 
 
 def _ensure_brand_history_defaults(history: dict, domain: str) -> None:

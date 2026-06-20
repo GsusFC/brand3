@@ -1345,6 +1345,85 @@ def _run_visual_signature_shadow(
     }
 
 
+def run_visual_signature_for_existing_run(
+    *,
+    store: SQLiteStore,
+    run_id: int,
+    extractor=extract_visual_signature,
+    vision_enricher=enrich_visual_signature_with_vision,
+    persistence_fn=persist_visual_signature_bundle,
+) -> dict[str, object]:
+    """Generate and persist a Visual Signature scan for an existing Brand3 run.
+
+    This is a product-facing evidence refresh path. It reads already persisted
+    run inputs and writes a new raw_inputs:visual_signature record; it does not
+    modify global Brand3 scoring.
+    """
+
+    snapshot = store.get_run_snapshot(run_id)
+    if not snapshot:
+        raise ValueError(f"run {run_id} not found")
+    run_payload = snapshot.get("run") or {}
+    brand_name = str(run_payload.get("brand_name") or "")
+    url = str(run_payload.get("url") or "")
+    if not url:
+        raise ValueError(f"run {run_id} has no url")
+    web_data = _web_data_from_snapshot(snapshot, fallback_url=url)
+    content_web = _content_web_from_snapshot(snapshot, fallback=web_data)
+    screenshot_capture = _screenshot_capture_from_snapshot(snapshot)
+    return _run_visual_signature_shadow(
+        enabled=True,
+        store=store,
+        run_id=run_id,
+        brand_name=brand_name or url,
+        url=url,
+        web_data=web_data,
+        content_web=content_web,
+        screenshot_capture=screenshot_capture,
+        extractor=extractor,
+        vision_enricher=vision_enricher,
+        persistence_fn=persistence_fn,
+    )
+
+
+def _web_data_from_snapshot(snapshot: dict[str, Any], *, fallback_url: str) -> WebData:
+    selected: WebData | None = None
+    for item in snapshot.get("raw_inputs") or []:
+        if item.get("source") != "web" or not isinstance(item.get("payload"), dict):
+            continue
+        try:
+            selected = WebData(**item["payload"])
+        except TypeError:
+            continue
+    return selected or WebData(url=fallback_url)
+
+
+def _content_web_from_snapshot(snapshot: dict[str, Any], *, fallback: WebData) -> WebData:
+    selected: WebData | None = None
+    for item in snapshot.get("raw_inputs") or []:
+        payload = item.get("payload")
+        if item.get("source") != "web" or not isinstance(payload, dict):
+            continue
+        if payload.get("derived") != "discovery_enrichment":
+            continue
+        try:
+            selected = WebData(**{key: value for key, value in payload.items() if key != "derived"})
+        except TypeError:
+            continue
+    return selected or fallback
+
+
+def _screenshot_capture_from_snapshot(snapshot: dict[str, Any]) -> dict[str, object] | None:
+    selected: dict[str, object] | None = None
+    for item in snapshot.get("raw_inputs") or []:
+        if item.get("source") != "screenshot_capture" or not isinstance(item.get("payload"), dict):
+            continue
+        capture = item["payload"].get("capture")
+        if isinstance(capture, dict):
+            selected = capture
+    return selected
+
+
 def _emit_progress(progress_cb, phase: str) -> None:
     if progress_cb is None:
         return

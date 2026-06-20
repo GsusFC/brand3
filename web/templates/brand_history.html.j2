@@ -205,6 +205,11 @@
     {% endif %}
     {% else %}
     <p class="dim">{{ 'Visual Signature todavía no se ha ejecutado para esta marca.' if current_lang == 'es' else 'Visual Signature has not run for this brand yet.' }}</p>
+    {% if can_edit_brand_profile %}
+    <form method="post" action="/brand/{{ domain }}/visual-signature-scan?lang={{ current_lang }}" style="margin: 0;">
+      <button type="submit">{{ 'generar evidencia visual' if current_lang == 'es' else 'generate visual evidence' }}</button>
+    </form>
+    {% endif %}
     {% endif %}
   </section>
 

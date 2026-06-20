@@ -7,7 +7,7 @@
     <span class="tag">// {{ total }} {{ 'total' if current_lang == 'es' else 'total' }} · {{ 'página' if current_lang == 'es' else 'page' }} {{ page }}/{{ total_pages }}</span>
   </div>
 
-  <form method="get" action="/reports" class="form-row reports-filter">
+  <form method="get" action="/reports" class="form-row observatory-filter">
     {% if ui_lang == 'en' %}
     <input type="hidden" name="lang" value="en">
     {% endif %}
@@ -49,7 +49,7 @@
         <td class="col-date">{{ row.compact_date }}</td>
         <td class="col-brand"><a href="{{ row.primary_href }}">{{ row.display_name }}</a></td>
         <td class="dim">{{ row.domain or '-' }}</td>
-        <td class="num num-inline col-score">{{ row.score_compact }}</td>
+        <td class="num num-inline col-score"><span class="score-compact">{{ row.score_compact }}</span></td>
         <td><span class="badge-ready">{{ row.score_model }}</span></td>
         <td class="dim">{{ row.quadrant or '-' }}</td>
         <td class="dim">{{ row.category_label or '-' }}</td>

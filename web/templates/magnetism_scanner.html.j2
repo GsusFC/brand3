@@ -13,7 +13,7 @@
     <span class="label">{{ model.t.recent_scans }}</span>
     <span class="tag">// {{ model.t.latest_runs }} {{ model.observatory.total }} · {{ 'página' if current_lang == 'es' else 'page' }} {{ model.observatory.page }}/{{ model.observatory.total_pages }}</span>
   </div>
-  <form method="get" action="/magnetism-scanner" class="form-row reports-filter">
+  <form method="get" action="/magnetism-scanner" class="form-row observatory-filter">
     {% if model.lang == 'en' %}
     <input type="hidden" name="lang" value="en">
     {% endif %}
@@ -55,7 +55,7 @@
           <strong>{{ scan.display_name }}</strong>
           {% if scan.domain %}<span class="dim" style="display:block; font-size:11px;">{{ scan.domain }}</span>{% endif %}
         </td>
-        <td class="num num-inline hl-accent col-score" style="font-weight: 600;">{{ scan.score_compact }}</td>
+        <td class="num num-inline col-score"><span class="score-compact">{{ scan.score_compact }}</span></td>
         <td><span class="badge-ready">{{ scan.score_model }}</span></td>
         <td class="dim col-band-wide">{{ scan.quadrant or '-' }}</td>
         <td class="dim">{{ scan.category_label or '-' }}</td>

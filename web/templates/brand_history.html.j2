@@ -28,7 +28,7 @@
       <tr>
         <td class="col-date">{{ row.date }}</td>
         <td><span class="badge-ready">{{ row.score_model }}</span></td>
-        <td class="num num-inline col-score">{{ row.score_compact }}</td>
+        <td class="num num-inline col-score"><span class="score-compact">{{ row.score_compact }}</span></td>
         <td class="dim col-band-wide">{{ row.quadrant or '-' }}</td>
         <td class="dim">{% if row.source_run_id %}#{{ row.source_run_id }}{% else %}-{% endif %}</td>
         <td class="action-cell col-action"><a href="{{ row.href }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>

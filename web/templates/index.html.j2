@@ -25,41 +25,26 @@
     <span class="label">{{ 'observatorio_brand3' if current_lang == 'es' else 'brand3_observatory' }}</span>
     <span class="tag">// {{ 'marcas analizadas' if current_lang == 'es' else 'analyzed brands' }}</span>
   </div>
-  <div class="observatory-controls" aria-label="{{ 'Controles del observatorio' if current_lang == 'es' else 'Observatory controls' }}">
-    <form class="observatory-category-form" method="get" action="/">
-      <input type="hidden" name="lang" value="{{ current_lang }}">
-      <label class="sr-only" for="observatory-query">{{ 'Buscar' if current_lang == 'es' else 'Search' }}</label>
-      <input id="observatory-query" name="q" value="{{ observatory.query }}" placeholder="{{ 'Buscar marca, dominio o categoría' if current_lang == 'es' else 'Search brand, domain, or category' }}" spellcheck="false" autocomplete="off">
-      <button class="source-link source-link-button" type="submit" aria-label="{{ 'Buscar' if current_lang == 'es' else 'Search' }}">&rarr;</button>
-    </form>
-    <div class="segmented-links">
-      <a class="source-link{% if observatory.sort == 'newest' %} badge-ready{% endif %}"
-         href="/?lang={{ current_lang }}{% if observatory.query %}&q={{ observatory.query }}{% endif %}{% if observatory.category %}&category={{ observatory.category }}{% endif %}">
-        {{ 'Recientes' if current_lang == 'es' else 'Recent' }}
-      </a>
-      <a class="source-link{% if observatory.sort == 'score_desc' %} badge-ready{% endif %}"
-         href="/?lang={{ current_lang }}&sort=score_desc{% if observatory.query %}&q={{ observatory.query }}{% endif %}{% if observatory.category %}&category={{ observatory.category }}{% endif %}">
-        {{ 'Mejor puntuadas' if current_lang == 'es' else 'Top scored' }}
-      </a>
-      <a class="source-link{% if observatory.sort == 'scans_desc' %} badge-ready{% endif %}"
-         href="/?lang={{ current_lang }}&sort=scans_desc{% if observatory.query %}&q={{ observatory.query }}{% endif %}{% if observatory.category %}&category={{ observatory.category }}{% endif %}">
-        {{ 'Más scans' if current_lang == 'es' else 'Most scans' }}
-      </a>
-    </div>
-    <form class="observatory-category-form" method="get" action="/">
-      <input type="hidden" name="lang" value="{{ current_lang }}">
-      {% if observatory.sort != 'newest' %}<input type="hidden" name="sort" value="{{ observatory.sort }}">{% endif %}
-      {% if observatory.query %}<input type="hidden" name="q" value="{{ observatory.query }}">{% endif %}
-      <label class="sr-only" for="observatory-category">{{ 'Categoría' if current_lang == 'es' else 'Category' }}</label>
-      <select id="observatory-category" name="category" aria-label="{{ 'Categoría' if current_lang == 'es' else 'Category' }}">
-        <option value="">{{ 'Todas' if current_lang == 'es' else 'All' }}</option>
-      {% for key, spec in observatory.categories.items() %}
-        <option value="{{ key }}"{% if observatory.category == key %} selected{% endif %}>{{ spec["label"] }}</option>
-      {% endfor %}
-      </select>
-      <button class="source-link source-link-button" type="submit" aria-label="{{ 'Aplicar categoría' if current_lang == 'es' else 'Apply category' }}">&rarr;</button>
-    </form>
-  </div>
+  <form method="get" action="/" class="form-row observatory-filter" aria-label="{{ 'Controles del observatorio' if current_lang == 'es' else 'Observatory controls' }}">
+    <input type="hidden" name="lang" value="{{ current_lang }}">
+    <label class="sr-only" for="observatory-query">{{ 'Buscar' if current_lang == 'es' else 'Search' }}</label>
+    <input id="observatory-query" type="text" name="q" value="{{ observatory.query }}" placeholder="{{ 'buscar marca, dominio o categoría ...' if current_lang == 'es' else 'search brand, domain, or category ...' }}" spellcheck="false" autocomplete="off">
+    <label class="sr-only" for="observatory-sort">{{ 'Orden' if current_lang == 'es' else 'Sort' }}</label>
+    <select id="observatory-sort" name="sort" aria-label="{{ 'Orden' if current_lang == 'es' else 'Sort' }}">
+      <option value="newest" {% if observatory.sort == "newest" %}selected{% endif %}>{{ 'más recientes' if current_lang == 'es' else 'newest' }}</option>
+      <option value="score_desc" {% if observatory.sort == "score_desc" %}selected{% endif %}>{{ 'puntuación ↓' if current_lang == 'es' else 'score ↓' }}</option>
+      <option value="score_asc" {% if observatory.sort == "score_asc" %}selected{% endif %}>{{ 'puntuación ↑' if current_lang == 'es' else 'score ↑' }}</option>
+      <option value="scans_desc" {% if observatory.sort == "scans_desc" %}selected{% endif %}>{{ 'más scans' if current_lang == 'es' else 'most scans' }}</option>
+    </select>
+    <label class="sr-only" for="observatory-category">{{ 'Categoría' if current_lang == 'es' else 'Category' }}</label>
+    <select id="observatory-category" name="category" aria-label="{{ 'Categoría' if current_lang == 'es' else 'Category' }}">
+      <option value="">{{ 'todas las categorías' if current_lang == 'es' else 'all categories' }}</option>
+    {% for key, spec in observatory.categories.items() %}
+      <option value="{{ key }}"{% if observatory.category == key %} selected{% endif %}>{{ spec["label"] }}</option>
+    {% endfor %}
+    </select>
+    <button type="submit">{{ 'filtrar' if current_lang == 'es' else 'filter' }}</button>
+  </form>
   <p class="dim" style="font-family: var(--font-mono); font-size: 11px; margin: 8px 0 12px;">
     {{ observatory.total }} {{ 'marca' if observatory.total == 1 else 'marcas' }} · page {{ observatory.page }}/{{ observatory.total_pages }}
   </p>

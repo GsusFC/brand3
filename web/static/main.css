@@ -391,6 +391,7 @@ th {
   background: var(--table-head-bg);
   color: var(--text);
   font-weight: 700;
+  white-space: nowrap;
 }
 
 tbody tr {
@@ -458,29 +459,26 @@ th.num {
   white-space: nowrap;
 }
 
-.observatory-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 14px;
-  justify-content: space-between;
+.observatory-filter {
+  align-items: stretch;
   margin: 0 0 14px;
 }
 
-.segmented-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+.observatory-filter input[type="text"],
+.observatory-filter select {
+  background: transparent;
 }
 
-.observatory-category-form {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
+.observatory-filter input[type="text"] {
+  flex: 1 1 320px;
 }
 
-.observatory-category-form select {
-  max-width: min(220px, 52vw);
-  min-height: 32px;
+.observatory-filter select {
+  flex: 0 1 190px;
+}
+
+.observatory-filter button {
+  flex: 0 0 auto;
 }
 
 .score-compact {
@@ -601,10 +599,6 @@ td.action-cell form {
 a:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-}
-
-.reports-filter {
-  margin-bottom: 16px;
 }
 
 .form-note,

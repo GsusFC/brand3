@@ -170,6 +170,7 @@ class MagnetismScannerTests(unittest.TestCase):
                 "query": None,
                 "sort": "newest",
                 "category": None,
+                "tag": None,
                 "page": 1,
                 "lang": "es",
             },

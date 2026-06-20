@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   quality-gate:
-    name: Focal tests and strategic benchmark
+    name: Full tests and strategic benchmark
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -27,16 +27,9 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -e . pytest
 
-      - name: Run focal tests
+      - name: Run full test suite
         run: |
-          python -m pytest \
-            tests/test_tldr_brand3_research_pack_dataset.py \
-            tests/test_research_pack_contract.py \
-            tests/test_research_evidence_graph.py \
-            tests/test_magnetism_analyst_tldr.py \
-            tests/test_magnetism_tldr_guardrails.py \
-            tests/test_tldr_brand3_research_pack_evaluation.py \
-            tests/test_tldr_brand3_strategic_quality.py
+          python -m pytest -q
 
       # Informative until calibrated (2026-06-11): the benchmark fixtures fail
       # evidence_traceability on every block (missing_traceable_source), which

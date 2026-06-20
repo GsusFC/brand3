@@ -270,6 +270,8 @@ class WebAppFlowTests(unittest.TestCase):
             return {
                 "rows": [],
                 "categories": {},
+                "tags": {},
+                "tag": None,
                 "page": 1,
                 "total": 0,
                 "total_pages": 1,
@@ -291,6 +293,7 @@ class WebAppFlowTests(unittest.TestCase):
                 "query": None,
                 "sort": "newest",
                 "category": None,
+                "tag": None,
                 "page": 1,
                 "per_page": 25,
                 "lang": "es",
@@ -307,6 +310,8 @@ class WebAppFlowTests(unittest.TestCase):
             return {
                 "rows": [],
                 "categories": {},
+                "tags": {},
+                "tag": None,
                 "page": 2,
                 "total": 0,
                 "total_pages": 1,
@@ -328,6 +333,7 @@ class WebAppFlowTests(unittest.TestCase):
                 "query": "example",
                 "sort": "score_desc",
                 "category": None,
+                "tag": None,
                 "page": 2,
                 "per_page": 20,
                 "lang": "es",

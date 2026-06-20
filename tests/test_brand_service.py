@@ -5,7 +5,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 from src.collectors.context_collector import ContextData
-from src.collectors.exa_collector import ExaData, ExaResult
+from src.collectors.exa_collector import EXA_STRATEGY_VERSION, ExaData, ExaResult
 from src.collectors.social_collector import PlatformMetrics, SocialData
 from src.collectors.web_collector import WebData
 from src.services import brand_service
@@ -1752,6 +1752,7 @@ class BrandServiceContentFallbackTests(unittest.TestCase):
                     ExaResult(url=f"https://source{i}.com", title="Example mention", text="Example brand mention.")
                     for i in range(5)
                 ],
+                diagnostics={"strategy": EXA_STRATEGY_VERSION},
             )
 
             with patch.object(brand_service, "BRAND3_DB_PATH", str(db_path)):

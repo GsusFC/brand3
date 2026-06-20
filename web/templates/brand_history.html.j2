@@ -1,11 +1,14 @@
 {% extends "base.html.j2" %}
-{% block title %}brand3 :: {{ domain }}{% endblock %}
+{% block title %}brand3 :: {{ history.display_name or domain }}{% endblock %}
 {% block content %}
 <section>
   <div class="section-head">
-    <span class="label">{{ 'historial_de_marca' if current_lang == 'es' else 'brand_history' }} · {{ domain }}</span>
+    <span class="label">{{ 'historial_de_marca' if current_lang == 'es' else 'brand_history' }} · {{ history.display_name or domain }}</span>
     <span class="tag">// {{ analyses|length }} {{ 'ejecuciones' if current_lang == 'es' else 'runs' }}</span>
   </div>
+  {% if history.domain %}
+  <p class="small dim block-note">{{ history.domain }}{% if history.category_label %} · {{ history.category_label }}{% endif %}</p>
+  {% endif %}
 
   {% if analyses %}
   <div class="table-wrap">
@@ -13,27 +16,29 @@
     <thead>
       <tr>
         <th class="col-date">{{ 'fecha' if current_lang == 'es' else 'date' }}</th>
-        <th class="num col-score">{{ 'puntuación' if current_lang == 'es' else 'score' }}</th>
-        <th class="col-bar-wide">bar</th>
-        <th class="col-band-wide">band</th>
-        <th></th>
+        <th>{{ 'fuente' if current_lang == 'es' else 'source' }}</th>
+        <th class="num col-score">score</th>
+        <th class="col-band-wide">{{ 'cuadrante' if current_lang == 'es' else 'quadrant' }}</th>
+        <th>{{ 'run' if current_lang == 'es' else 'run' }}</th>
+        <th class="col-action"></th>
       </tr>
     </thead>
     <tbody>
     {% for row in analyses %}
       <tr>
         <td class="col-date">{{ row.date }}</td>
-        <td class="num num-inline col-score">{{ row.score_display }}</td>
-        <td class="bar col-bar-wide">{{ row.bar }}</td>
-        <td class="dim col-band-wide">{{ row.band }}</td>
-        <td class="action-cell col-action"><a href="/r/{{ row.token }}{{ lang_suffix }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>
+        <td><span class="badge-ready">{{ row.score_model }}</span></td>
+        <td class="num num-inline col-score">{{ row.score_compact }}</td>
+        <td class="dim col-band-wide">{{ row.quadrant or '-' }}</td>
+        <td class="dim">{% if row.source_run_id %}#{{ row.source_run_id }}{% else %}-{% endif %}</td>
+        <td class="action-cell col-action"><a href="{{ row.href }}">{{ 'ver' if current_lang == 'es' else 'view' }}</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
   </div>
   {% if analyses|length > 1 %}
-  <p class="small dim block-note">// {% if current_lang == 'es' %}evolución: las ejecuciones más antiguas → las más nuevas se leen de arriba abajo{% else %}evolution: older runs → newer runs read top-down{% endif %}</p>
+  <p class="small dim block-note">// {% if current_lang == 'es' %}histórico: las ejecuciones más recientes aparecen primero{% else %}history: newest runs appear first{% endif %}</p>
   {% endif %}
   <p class="small dim block-note">
     {% if current_lang == 'es' %}

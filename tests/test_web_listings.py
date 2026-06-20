@@ -384,7 +384,7 @@ class ListingsTests(unittest.TestCase):
             self._seed_ready_run("a16z", composite=60.0 + i, days_ago=i)
         r = self.client.get("/brand/a16z")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("a16z", r.text)
+        self.assertIn("A16z", r.text)
         # Header + 3 rows = 4 <tr>
         self.assertEqual(r.text.count("<tr>"), 4)
 
@@ -392,7 +392,30 @@ class ListingsTests(unittest.TestCase):
         self._seed_ready_run("a16z", composite=70.0)
         r = self.client.get("/brand/a16z.com")
         self.assertEqual(r.status_code, 200)
-        self.assertIn("a16z", r.text)
+        self.assertIn("A16z", r.text)
+
+    def test_brand_page_shows_unified_scan_history(self):
+        source_run_id = 789
+        self._seed_ready_run("histco", composite=65.0, days_ago=2)
+        self._seed_ready_scan(
+            "histco",
+            magnetism_score=83,
+            coherence_score=72,
+            days_ago=1,
+            source_run_id=source_run_id,
+        )
+        sv9_id = self._seed_sv9_scan(source_run_id, "histco")
+
+        r = self.client.get("/brand/histco")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("Histco", r.text)
+        self.assertIn("audit", r.text)
+        self.assertIn("magnetism", r.text)
+        self.assertIn("sv9", r.text)
+        self.assertIn(f"/sv9/scan/{sv9_id}?lang=es", r.text)
+        self.assertIn("/magnetism-scanner/scan/", r.text)
+        self.assertIn("/r/tok-histco", r.text)
 
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)

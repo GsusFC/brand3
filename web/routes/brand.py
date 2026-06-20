@@ -5,8 +5,9 @@ from typing import Literal
 
 from fastapi import APIRouter, Query, Request
 
-from ..presenters import enrich
-from ..storage import list_brand_history
+from src.config import BRAND3_DB_PATH
+
+from ..observatory_index import build_observatory_brand_history
 from ..templates_env import templates
 
 router = APIRouter()
@@ -14,13 +15,19 @@ router = APIRouter()
 
 @router.get("/brand/{domain}")
 async def brand_history(request: Request, domain: str, lang: Literal["es", "en"] = Query("es")):
-    analyses = enrich(await asyncio.to_thread(list_brand_history, domain))
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
     return templates.TemplateResponse(
         request,
         "brand_history.html.j2",
         {
             "domain": domain,
-            "analyses": analyses,
+            "history": history,
+            "analyses": history["rows"],
             "ui_lang": lang,
         },
     )

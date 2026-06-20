@@ -86,6 +86,37 @@ class ObservatoryBrand:
             "legacy_source_run_id": primary.source_run_id if needs_sv9 else None,
         }
 
+    def to_history_rows(self) -> list[dict[str, Any]]:
+        rows = []
+        for source in sorted(
+            self.sources,
+            key=lambda item: _timestamp(item.created_at),
+            reverse=True,
+        ):
+            rows.append(
+                {
+                    "brand_key": self.brand_key,
+                    "display_name": self.display_name,
+                    "domain": self.domain,
+                    "date": _compact_date(source.created_at),
+                    "created_at": source.created_at,
+                    "score": source.score,
+                    "score_compact": _score_compact(source.score),
+                    "score_model": source.source,
+                    "quadrant": source.quadrant or "",
+                    "category": self.category,
+                    "category_label": self.category_label,
+                    "href": source.href,
+                    "source_run_id": source.source_run_id,
+                    "sv9_scan_id": source.sv9_scan_id,
+                    "magnetism_scan_id": source.magnetism_scan_id,
+                    "audit_token": source.audit_token,
+                    "status": source.status,
+                    "canonical_status": source.canonical_status,
+                }
+            )
+        return rows
+
 
 def build_observatory_index(
     *,
@@ -127,6 +158,33 @@ def build_observatory_index(
         "sort": sort,
         "category": category,
         "categories": categories,
+    }
+
+
+def build_observatory_brand_history(
+    brand: str,
+    *,
+    db_path: str = BRAND3_DB_PATH,
+    lang: str = "es",
+) -> dict[str, Any]:
+    """Build unified history for one brand/domain."""
+    brands = _load_brand_sources(db_path=db_path, lang=lang)
+    _attach_classifications(brands, db_path=db_path)
+    match = _find_brand(brands, brand)
+    if match is None:
+        return {
+            "brand_key": brand,
+            "display_name": _display_name(brand, brand),
+            "domain": brand,
+            "category_label": None,
+            "rows": [],
+        }
+    return {
+        "brand_key": match.brand_key,
+        "display_name": match.display_name,
+        "domain": match.domain,
+        "category_label": match.category_label,
+        "rows": match.to_history_rows(),
     }
 
 
@@ -376,6 +434,38 @@ def _brand_key(url: str, name: str) -> str:
         if maybe_domain:
             return maybe_domain
     return _slug(text) or "unknown"
+
+
+def _find_brand(
+    brands: dict[str, ObservatoryBrand],
+    value: str,
+) -> ObservatoryBrand | None:
+    raw = (value or "").strip().lower()
+    if not raw:
+        return None
+    candidates = {raw}
+    domain = domain_from_url(raw)
+    if domain:
+        candidates.add(domain)
+        candidates.add(domain.split(".", 1)[0])
+    if "." in raw:
+        parts = raw.split(".")
+        if len(parts) >= 2:
+            candidates.add(parts[-2])
+    slug = _slug(raw)
+    if slug:
+        candidates.add(slug)
+
+    for candidate in candidates:
+        if candidate in brands:
+            return brands[candidate]
+    for brand in brands.values():
+        domain_root = brand.domain.split(".", 1)[0] if brand.domain else ""
+        if brand.brand_key in candidates or domain_root in candidates:
+            return brand
+        if _slug(brand.display_name) in candidates:
+            return brand
+    return None
 
 
 def _display_name(name: str, url: str) -> str:

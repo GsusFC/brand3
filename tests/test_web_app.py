@@ -341,16 +341,19 @@ class WebAppFlowTests(unittest.TestCase):
 
         async def fake_to_thread(func, *args, **kwargs):
             calls.append((func, args, kwargs))
-            return []
+            return {"display_name": "Example", "domain": "example.com", "rows": []}
 
         with patch("web.routes.brand.asyncio.to_thread", side_effect=fake_to_thread):
             response = self.client.get("/brand/example")
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(calls), 1)
-        self.assertIs(calls[0][0], brand.list_brand_history)
+        self.assertIs(calls[0][0], brand.build_observatory_brand_history)
         self.assertEqual(calls[0][1], ("example",))
-        self.assertEqual(calls[0][2], {})
+        self.assertEqual(
+            calls[0][2],
+            {"db_path": brand.BRAND3_DB_PATH, "lang": "es"},
+        )
 
     def test_brand3_lab_surface_is_removed(self):
         for path in (

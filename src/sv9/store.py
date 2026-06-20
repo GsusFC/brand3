@@ -22,6 +22,7 @@ _MIGRATION_PATHS = [
     _MIGRATIONS_DIR / "010_sv9_ranking.sql",
     _MIGRATIONS_DIR / "011_sv9_editorial_decisions.sql",
     _MIGRATIONS_DIR / "012_baldosas_v31.sql",
+    _MIGRATIONS_DIR / "013_sv9_reliability.sql",
 ]
 
 
@@ -50,6 +51,8 @@ class Sv9Store:
             "ALTER TABLE sv9_scans ADD COLUMN executive_reading TEXT",
             # Baldosas v3.1 (migration 012): model label and tile-level data.
             "ALTER TABLE sv9_scans ADD COLUMN model TEXT",
+            "ALTER TABLE sv9_scans ADD COLUMN reliability_status TEXT",
+            "ALTER TABLE sv9_scans ADD COLUMN reliability_reason_codes_json TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN tile_profile_json TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN confidence TEXT",
             "ALTER TABLE sv9_component_scores ADD COLUMN veredicto TEXT",
@@ -79,8 +82,8 @@ class Sv9Store:
                 brand_name, url, source_run_id, rubric_version, brand3_score,
                 base_average, magnetism_capped, immediate_margin,
                 most_painful_gap, needs_review, is_complete, evaluator_model,
-                model, created_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                model, reliability_status, reliability_reason_codes_json, created_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 result.brand_name,
@@ -96,6 +99,8 @@ class Sv9Store:
                 int(result.is_complete),
                 result.evaluator_model,
                 result.model,
+                result.reliability_status,
+                json.dumps(result.reliability_reason_codes, ensure_ascii=False),
                 now,
             ),
         )
@@ -154,7 +159,7 @@ class Sv9Store:
             "SELECT * FROM sv9_component_scores WHERE scan_id = ? ORDER BY id ASC",
             (scan_id,),
         ).fetchall()
-        payload = dict(scan)
+        payload = self._scan_row_to_dict(scan)
         payload["components"] = [self._component_row_to_dict(row) for row in components]
         return payload
 
@@ -185,7 +190,17 @@ class Sv9Store:
             "SELECT * FROM sv9_scans ORDER BY created_at DESC, id DESC LIMIT ?",
             (limit,),
         ).fetchall()
-        return [dict(row) for row in rows]
+        return [self._scan_row_to_dict(row) for row in rows]
+
+    @staticmethod
+    def _scan_row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
+        payload = dict(row)
+        raw = payload.get("reliability_reason_codes_json")
+        try:
+            payload["reliability_reason_codes"] = json.loads(raw) if raw else []
+        except json.JSONDecodeError:
+            payload["reliability_reason_codes"] = []
+        return payload
 
     @staticmethod
     def _component_row_to_dict(row: sqlite3.Row) -> dict[str, Any]:

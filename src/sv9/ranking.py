@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from typing import Any
 from urllib.parse import urlparse
+import json
 
 from src.sv9.categories import (
     CATEGORIES,
@@ -54,7 +55,7 @@ def build_ranking(
     scans = store.conn.execute(
         """
         SELECT id, brand_name, url, source_run_id, brand3_score, created_at,
-               rubric_version
+               rubric_version, needs_review, reliability_status, reliability_reason_codes_json
         FROM sv9_scans
         WHERE is_complete = 1
         ORDER BY created_at DESC, id DESC
@@ -76,6 +77,26 @@ def build_ranking(
         suggested = suggest_category(niche_by_run.get(scan["source_run_id"]))
         primary = confirmed or suggested
         is_current = scan["rubric_version"] == rubric_version
+        try:
+            reliability_reason_codes = json.loads(scan["reliability_reason_codes_json"] or "[]")
+        except json.JSONDecodeError:
+            reliability_reason_codes = []
+        canonical_status = (
+            "canonical"
+            if scan["reliability_status"] == "reliable" and not scan["needs_review"]
+            else ("non_canonical" if scan["reliability_status"] in {"usable", "shadow"} else "invalid")
+        )
+        canonical_reason_codes = list(reliability_reason_codes)
+        if canonical_status != "canonical":
+            if not scan["needs_review"] and scan["reliability_status"] == "reliable":
+                canonical_reason_codes.append("invalid_scan_state")
+            elif scan["reliability_status"] == "usable":
+                canonical_reason_codes.append("usable_not_canonical")
+            elif scan["reliability_status"] == "shadow":
+                canonical_reason_codes.append("shadow_not_canonical")
+            else:
+                canonical_reason_codes.append("invalid_scan_state")
+        canonical_reason_codes = list(dict.fromkeys(canonical_reason_codes))
         entries_by_domain[domain] = {
             "domain": domain,
             "scan_id": scan["id"],
@@ -90,6 +111,11 @@ def build_ranking(
             "category_label": category_label(primary),
             "category_source": "confirmada" if confirmed else ("sugerida" if suggested else None),
             "secondary": assignment.get("secondary") or [],
+            "reliability_status": scan["reliability_status"] or "shadow",
+            "reliability_reason_codes": reliability_reason_codes,
+            "canonical_status": canonical_status,
+            "canonical_reason_codes": canonical_reason_codes,
+            "is_canonical": canonical_status == "canonical",
         }
 
     entries = sorted(

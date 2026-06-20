@@ -59,6 +59,17 @@ class CategorySuggestionTests(unittest.TestCase):
         self.assertIsNone(suggest_category(None))
 
 
+class StoreMigrationTests(unittest.TestCase):
+    def test_sv9_store_migrations_are_rerunnable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            db_path = str(Path(tmp) / "r.sqlite3")
+            first = Sv9Store(db_path)
+            first.close()
+
+            second = Sv9Store(db_path)
+            second.close()
+
+
 class RankingTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -78,6 +89,8 @@ class RankingTests(unittest.TestCase):
         self.assertEqual(ranking["entries"][0]["position"], 1)
         acme = ranking["entries"][1]
         self.assertGreater(acme["brand3_score"], 40)
+        self.assertIn(acme["reliability_status"], {"reliable", "usable", "shadow", "broken"})
+        self.assertIn(acme["canonical_status"], {"canonical", "non_canonical", "invalid"})
 
     def test_legacy_rubric_scans_stay_labelled_v2_until_rescan(self):
         legacy_id = make_scan(self.store, brand="Old", url="https://old.test", score_level=3)
@@ -95,6 +108,7 @@ class RankingTests(unittest.TestCase):
         self.assertEqual(by_domain["old.test"]["model"], "v2")
         self.assertTrue(by_domain["old.test"]["needs_rescan"])
         self.assertIsNone(by_domain["old.test"]["percentile"])
+        self.assertEqual(by_domain["old.test"]["canonical_status"], "non_canonical")
         self.assertEqual(by_domain["new.test"]["model"], "v3.1")
         self.assertFalse(by_domain["new.test"]["needs_rescan"])
         self.assertEqual(ranking["legacy_count"], 1)

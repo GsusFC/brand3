@@ -195,6 +195,72 @@ class Sv9ScanResult:
     def total_blind_spots(self) -> int:
         return sum(c.blind_spot_count for c in self.components.values())
 
+    @property
+    def reliability_status(self) -> str:
+        """Product-facing reliability gate for the scan as a whole."""
+        if not self.is_complete:
+            return "broken"
+        if self.needs_review:
+            return "shadow"
+        if self.not_detected:
+            return "shadow"
+        if self.total_blind_spots == 0:
+            return "reliable"
+        if self.total_blind_spots <= 2:
+            return "usable"
+        return "shadow"
+
+    @property
+    def reliability_reason_codes(self) -> list[str]:
+        reasons: list[str] = []
+        if not self.is_complete:
+            reasons.append("scan_not_complete")
+        if self.needs_review:
+            reasons.append("coherencia_needs_review")
+        if self.not_detected:
+            reasons.append("components_not_detected")
+        if self.total_blind_spots > 2:
+            reasons.append("blind_spots_above_usable_threshold")
+        elif self.total_blind_spots > 0:
+            reasons.append("blind_spots_present")
+        return reasons
+
+    @property
+    def is_reliable(self) -> bool:
+        return self.reliability_status == "reliable"
+
+    @property
+    def canonical_status(self) -> str:
+        """Product-facing canonicity gate for downstream reuse."""
+        if not self.is_complete:
+            return "invalid"
+        if self.reliability_status == "reliable" and not self.needs_review:
+            return "canonical"
+        if self.reliability_status in {"usable", "shadow"}:
+            return "non_canonical"
+        return "invalid"
+
+    @property
+    def canonical_reason_codes(self) -> list[str]:
+        if self.canonical_status == "canonical":
+            return []
+        reasons = list(self.reliability_reason_codes)
+        if not self.is_complete:
+            reasons.append("scan_not_complete")
+        elif self.needs_review:
+            reasons.append("needs_review")
+        elif self.reliability_status == "usable":
+            reasons.append("usable_not_canonical")
+        elif self.reliability_status == "shadow":
+            reasons.append("shadow_not_canonical")
+        else:
+            reasons.append("invalid_scan_state")
+        return list(dict.fromkeys(reasons))
+
+    @property
+    def is_canonical(self) -> bool:
+        return self.canonical_status == "canonical"
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "brand_name": self.brand_name,
@@ -211,6 +277,12 @@ class Sv9ScanResult:
             "needs_review": self.needs_review,
             "is_complete": self.is_complete,
             "total_blind_spots": self.total_blind_spots,
+            "reliability_status": self.reliability_status,
+            "reliability_reason_codes": self.reliability_reason_codes,
+            "is_reliable": self.is_reliable,
+            "canonical_status": self.canonical_status,
+            "canonical_reason_codes": self.canonical_reason_codes,
+            "is_canonical": self.is_canonical,
             "not_detected": self.not_detected,
             "not_evaluated": self.not_evaluated,
             "components": {k: c.to_dict() for k, c in self.components.items()},

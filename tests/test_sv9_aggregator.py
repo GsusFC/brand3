@@ -150,6 +150,9 @@ class AggregateTests(unittest.TestCase):
         self.assertIsNone(result.most_painful_gap)
         self.assertEqual(result.immediate_margin, 0)
         self.assertFalse(result.needs_review)
+        self.assertEqual(result.reliability_status, "reliable")
+        self.assertTrue(result.is_reliable)
+        self.assertEqual(result.reliability_reason_codes, [])
 
     def test_pair_halves_score_alone_and_never_average(self):
         result = aggregate(
@@ -207,6 +210,20 @@ class AggregateTests(unittest.TestCase):
             url="https://acme.test",
         )
         self.assertEqual(result.total_blind_spots, 3)
+        self.assertEqual(result.reliability_status, "shadow")
+        self.assertFalse(result.is_reliable)
+        self.assertIn("blind_spots_above_usable_threshold", result.reliability_reason_codes)
+
+    def test_reliability_status_allows_small_blind_spots_as_usable(self):
+        result = aggregate(
+            full_components(attributes=scored("attributes", 2, blind=1)),
+            brand_name="Acme",
+            url="https://acme.test",
+        )
+        self.assertEqual(result.total_blind_spots, 1)
+        self.assertEqual(result.reliability_status, "usable")
+        self.assertFalse(result.is_reliable)
+        self.assertIn("blind_spots_present", result.reliability_reason_codes)
 
     def test_aggregate_requires_every_component(self):
         components = full_components()

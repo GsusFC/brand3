@@ -51,6 +51,16 @@ def build_scan_markdown(scan: dict[str, Any]) -> str:
         lines.append(f"- URL: {url}")
     lines.append(f"- Brand3 Score: **{scan.get('brand3_score', 0)}/100**")
     lines.append(f"- Modelo: {model}")
+    if scan.get("reliability_status"):
+        lines.append(f"- Confiabilidad: **{scan.get('reliability_status')}**")
+        reason_codes = scan.get("reliability_reason_codes") or []
+        if reason_codes:
+            lines.append(f"- Razones de confiabilidad: {', '.join(reason_codes)}")
+    if scan.get("canonical_status"):
+        lines.append(f"- Canonicidad: **{scan.get('canonical_status')}**")
+        reason_codes = scan.get("canonical_reason_codes") or []
+        if reason_codes:
+            lines.append(f"- Razones de canonicidad: {', '.join(reason_codes)}")
     if scan.get("magnetism_capped"):
         lines.append("- Tope de Magnetism aplicado: sí")
     reading = scan.get("executive_reading")

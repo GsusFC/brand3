@@ -186,6 +186,7 @@ def _load_scan_for_export(scan_id: int) -> dict | None:
         scan = store.get_scan(scan_id)
         if scan is not None:
             _attach_display_identity(store, scan)
+            _attach_reliability_identity(scan)
         return scan
     finally:
         store.close()
@@ -202,6 +203,7 @@ def _load_scan_view_data(scan_id: int) -> tuple[dict | None, dict, dict[str, dic
         v2_blocks = _v2_reference_blocks(store, source_run_id)
         magnetism_scan_id = _magnetism_scan_id(store, source_run_id)
         _attach_display_identity(store, scan)
+        _attach_reliability_identity(scan)
         return scan, editorial_decisions, v2_blocks, magnetism_scan_id
     finally:
         store.close()
@@ -220,6 +222,55 @@ def _attach_display_identity(store: Sv9Store, scan: dict) -> None:
     display_name = next((c for c in candidates if _is_company_name(c, url)), "")
     scan["display_name"] = display_name or _domain_label(url) or raw_name or "Brand"
     scan["display_url"] = url
+
+
+def _attach_reliability_identity(scan: dict) -> None:
+    status = str(scan.get("reliability_status") or "").strip()
+    label_map = {
+        "reliable": "confiable",
+        "usable": "usable",
+        "shadow": "sombra",
+        "broken": "rota",
+    }
+    scan["reliability_label"] = label_map.get(status, "desconocido")
+    scan["reliability_reason_codes"] = list(scan.get("reliability_reason_codes") or [])
+    scan["canonical_status"] = _canonical_status(scan)
+    scan["canonical_label"] = {
+        "canonical": "canónico",
+        "non_canonical": "no canónico",
+        "invalid": "inválido",
+    }.get(scan["canonical_status"], "desconocido")
+    scan["canonical_reason_codes"] = _canonical_reason_codes(scan)
+
+
+def _canonical_status(scan: dict) -> str:
+    if not bool(scan.get("is_complete")):
+        return "invalid"
+    if str(scan.get("reliability_status") or "") == "reliable" and not bool(
+        scan.get("needs_review")
+    ):
+        return "canonical"
+    if str(scan.get("reliability_status") or "") in {"usable", "shadow"}:
+        return "non_canonical"
+    return "invalid"
+
+
+def _canonical_reason_codes(scan: dict) -> list[str]:
+    status = _canonical_status(scan)
+    reasons = list(scan.get("reliability_reason_codes") or [])
+    if status == "canonical":
+        return []
+    if not bool(scan.get("is_complete")):
+        reasons.append("scan_not_complete")
+    elif bool(scan.get("needs_review")):
+        reasons.append("needs_review")
+    elif str(scan.get("reliability_status") or "") == "usable":
+        reasons.append("usable_not_canonical")
+    elif str(scan.get("reliability_status") or "") == "shadow":
+        reasons.append("shadow_not_canonical")
+    else:
+        reasons.append("invalid_scan_state")
+    return list(dict.fromkeys(reasons))
 
 
 def _identity_candidates_for_run(store: Sv9Store, source_run_id: object) -> list[str]:

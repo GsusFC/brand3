@@ -157,6 +157,12 @@ def test_vnext_builder_decision_blocks_weak_evidence_dominance(monkeypatch) -> N
             },
             "totals": {"accepted": 14, "review_required": 1, "rejected": 6, "material_lost_fields": 0},
             "semantic_evidence": {"accepted_material": 5, "accepted_weak": 9},
+            "manual_audit_queue": [
+                {
+                    "audit_verdict": "alias_confirmation_review",
+                    "audit_reason_codes": ["external_profile_alias_review_present"],
+                }
+            ],
         },
     )
 
@@ -166,7 +172,9 @@ def test_vnext_builder_decision_blocks_weak_evidence_dominance(monkeypatch) -> N
     assert decision["status"] == "not_ready"
     assert decision["accepted_material"] == 5
     assert decision["accepted_weak"] == 9
+    assert decision["alias_review_present"] is True
     assert "weak_evidence_exceeds_material_evidence" in decision["reason_codes"]
+    assert "promotion_gate_alias_review_with_weak_evidence_dominance" in decision["reason_codes"]
 
 
 def test_facade_uses_legacy_when_graph_is_not_allowed(monkeypatch) -> None:

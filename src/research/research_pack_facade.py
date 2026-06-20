@@ -129,6 +129,15 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
     semantic = report.get("semantic_evidence") if isinstance(report.get("semantic_evidence"), dict) else {}
     accepted_material = int(semantic.get("accepted_material") or 0)
     accepted_weak = int(semantic.get("accepted_weak") or 0)
+    manual_audit_queue = report.get("manual_audit_queue") if isinstance(report.get("manual_audit_queue"), list) else []
+    alias_review_present = any(
+        isinstance(item, dict)
+        and (
+            str(item.get("audit_verdict") or "") == "alias_confirmation_review"
+            or "external_profile_alias_review_present" in set(item.get("audit_reason_codes") or [])
+        )
+        for item in manual_audit_queue
+    )
     semantic_quality_ready = accepted_weak <= accepted_material
     ready = (
         readiness_status == "ready_after_contract"
@@ -140,6 +149,8 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
     reason_codes = list(readiness.get("remaining_reason_codes") or [])
     if not semantic_quality_ready:
         reason_codes.append("weak_evidence_exceeds_material_evidence")
+    if alias_review_present and not semantic_quality_ready:
+        reason_codes.append("promotion_gate_alias_review_with_weak_evidence_dominance")
     return {
         "version": EVIDENCE_VNEXT_PACK_DECISION_VERSION,
         "enabled": True,
@@ -155,4 +166,5 @@ def _vnext_builder_decision(snapshot: dict[str, Any]) -> dict[str, Any]:
         "material_lost_fields": material_lost_fields,
         "accepted_material": accepted_material,
         "accepted_weak": accepted_weak,
+        "alias_review_present": alias_review_present,
     }

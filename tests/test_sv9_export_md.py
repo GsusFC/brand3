@@ -53,6 +53,8 @@ class ExportMarkdownTests(unittest.TestCase):
         self.assertIn("# Brand3 Scanner — Acme", md)
         self.assertIn("Brand3 Score", md)
         self.assertIn("Modelo: v3.1", md)
+        self.assertIn("Confiabilidad:", md)
+        self.assertIn("Canonicidad:", md)
 
     def test_header_prefers_display_name(self):
         scan = self._scan()

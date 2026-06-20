@@ -10,6 +10,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
+from src.classification.market_taxonomy import GROUPS, tag_definition, tags_for_group
 from src.config import BRAND3_DB_PATH
 
 from ..config import settings
@@ -36,6 +37,16 @@ class BrandProfileUpdate(BaseModel):
     category: str | None = None
     official_links: list[str] | str | None = None
     social_links: list[str] | str | None = None
+    updated_by: str | None = None
+
+
+class BrandMarketClassificationUpdate(BaseModel):
+    business_model: list[str] | None = None
+    sector_industry: list[str] | None = None
+    technology_capability: list[str] | None = None
+    market_signals: list[str] | None = None
+    corporate_status: list[str] | None = None
+    primary_category: str | None = None
     updated_by: str | None = None
 
 
@@ -72,6 +83,23 @@ def _require_team_write(request: Request) -> None:
         raise HTTPException(status_code=403, detail="team access required")
 
 
+def _brand_not_found(history: dict) -> bool:
+    return not history.get("rows")
+
+
+def _brand_api_payload(history: dict) -> dict:
+    return {
+        "brand_key": history.get("brand_key"),
+        "display_name": history.get("display_name"),
+        "domain": history.get("domain"),
+        "category_label": history.get("category_label"),
+        "profile": history.get("profile") or {},
+        "market_classification": history.get("market_classification") or {},
+        "sv9_status": history.get("sv9_status") or {},
+        "scans": history.get("rows") or [],
+    }
+
+
 @router.get("/brand/{domain}")
 async def brand_history(request: Request, domain: str, lang: Literal["es", "en"] = Query("es")):
     history = await asyncio.to_thread(
@@ -96,6 +124,47 @@ async def brand_history(request: Request, domain: str, lang: Literal["es", "en"]
             "ui_lang": lang,
         },
     )
+
+
+@router.get("/api/brands/market-taxonomy")
+async def brand_market_taxonomy_api() -> dict:
+    groups = {}
+    for group in GROUPS:
+        tags = []
+        for tag in tags_for_group(group):
+            definition = tag_definition(group, tag)
+            tags.append(
+                {
+                    "tag": definition.tag,
+                    "definition": definition.definition,
+                    "aliases": list(definition.aliases),
+                }
+            )
+        groups[group] = tags
+    return {
+        "version": "brand3_market_classification_v0_1",
+        "groups": groups,
+        "write_policy": "manual_or_external_agent_selection_from_controlled_taxonomy",
+        "score_policy": "classification_context_only_does_not_change_scores",
+    }
+
+
+@router.get("/api/brands/{domain}/profile")
+@router.get("/api/brand/{domain}/profile")
+async def brand_profile_api_get(
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(history, domain)
+    if _brand_not_found(history):
+        raise HTTPException(status_code=404, detail="brand not found")
+    return _brand_api_payload(history)
 
 
 @router.get("/brand/{domain}/edit")
@@ -172,7 +241,8 @@ async def brand_profile_api_update(
         db_path=BRAND3_DB_PATH,
         lang=lang,
     )
-    if not history.get("rows") and not history.get("profile"):
+    _ensure_brand_history_defaults(history, domain)
+    if _brand_not_found(history):
         raise HTTPException(status_code=404, detail="brand not found")
     current = history.get("profile") or {}
     updates = payload.model_dump(exclude_unset=True)
@@ -198,6 +268,61 @@ async def brand_profile_api_update(
     return {
         "brand_key": brand_key,
         "profile": updated["profile"],
+        "brand": _brand_api_payload(updated),
+    }
+
+
+@router.patch("/api/brands/{domain}/market-classification")
+@router.patch("/api/brand/{domain}/market-classification")
+async def brand_market_classification_api_update(
+    request: Request,
+    domain: str,
+    payload: BrandMarketClassificationUpdate,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    history = await asyncio.to_thread(
+        build_observatory_brand_history,
+        domain,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(history, domain)
+    if _brand_not_found(history):
+        raise HTTPException(status_code=404, detail="brand not found")
+    values = payload.model_dump(exclude_unset=True)
+    updated_by = str(values.pop("updated_by", "") or "").strip()
+    current_market = history.get("market_classification") or {}
+    current_accepted = (
+        current_market.get("accepted") if isinstance(current_market.get("accepted"), dict) else {}
+    )
+    form_values = {
+        group: values[group] if group in values else list(current_accepted.get(group) or [])
+        for group in GROUPS
+    }
+    form_values["primary_category"] = str(
+        values.get("primary_category")
+        if "primary_category" in values
+        else current_market.get("primary_category") or ""
+    )
+    brand_key = await asyncio.to_thread(
+        save_brand_market_classification,
+        domain,
+        form_values,
+        db_path=BRAND3_DB_PATH,
+        updated_by=updated_by,
+    )
+    updated = await asyncio.to_thread(
+        build_observatory_brand_history,
+        brand_key,
+        db_path=BRAND3_DB_PATH,
+        lang=lang,
+    )
+    _ensure_brand_history_defaults(updated, brand_key)
+    return {
+        "brand_key": brand_key,
+        "market_classification": updated["market_classification"],
+        "brand": _brand_api_payload(updated),
     }
 
 

@@ -652,6 +652,12 @@ class ListingsTests(unittest.TestCase):
     def test_brand_profile_api_patch_requires_team_and_applies_partial_overrides(self):
         self._seed_ready_run("apieditco", composite=65.0)
 
+        profile = self.client.get("/api/brands/apieditco.com/profile")
+        self.assertEqual(profile.status_code, 200)
+        self.assertEqual(profile.json()["brand_key"], "apieditco.com")
+        self.assertIn("profile", profile.json())
+        self.assertIn("scans", profile.json())
+
         locked = self.client.patch(
             "/api/brands/apieditco.com/profile",
             json={"summary": "No deberia guardarse."},
@@ -681,6 +687,62 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertIn("API EditCo", page.text)
         self.assertIn("Ficha editada desde API.", page.text)
+
+    def test_brand_market_classification_api_exposes_taxonomy_and_persists_controlled_tags(self):
+        self._seed_ready_run("apitaxoco", composite=65.0)
+
+        taxonomy = self.client.get("/api/brands/market-taxonomy")
+        self.assertEqual(taxonomy.status_code, 200)
+        self.assertIn("business_model", taxonomy.json()["groups"])
+        self.assertTrue(
+            any(
+                item["tag"] == "SaaS"
+                for item in taxonomy.json()["groups"]["business_model"]
+            )
+        )
+
+        locked = self.client.patch(
+            "/api/brands/apitaxoco.com/market-classification",
+            json={"business_model": ["B2B"]},
+        )
+        self.assertEqual(locked.status_code, 403)
+
+        saved = self.client.patch(
+            "/api/brands/apitaxoco.com/market-classification",
+            headers={"authorization": "Bearer team"},
+            json={
+                "business_model": ["B2B", "SaaS"],
+                "sector_industry": ["fintech"],
+                "technology_capability": ["API", "not controlled"],
+                "primary_category": "fintech",
+                "updated_by": "api",
+            },
+        )
+        self.assertEqual(saved.status_code, 200)
+        market = saved.json()["market_classification"]
+        self.assertEqual(market["primary_category"], "fintech")
+        self.assertEqual(market["accepted"]["business_model"], ["B2B", "SaaS"])
+        self.assertEqual(market["accepted"]["technology_capability"], ["API"])
+        self.assertNotIn("not controlled", market["accepted"]["technology_capability"])
+
+        partial = self.client.patch(
+            "/api/brands/apitaxoco.com/market-classification",
+            headers={"x-brand3-team-token": "team"},
+            json={"market_signals": ["public customer logos"]},
+        )
+        self.assertEqual(partial.status_code, 200)
+        partial_market = partial.json()["market_classification"]
+        self.assertEqual(partial_market["accepted"]["business_model"], ["B2B", "SaaS"])
+        self.assertEqual(partial_market["accepted"]["market_signals"], ["public customer logos"])
+
+    def test_llm_openapi_exposes_scanner_and_brand_tools(self):
+        response = self.client.get("/api/llm/openapi.json")
+        self.assertEqual(response.status_code, 200)
+        paths = response.json()["paths"]
+        self.assertIn("/api/v1/scanner", paths)
+        self.assertIn("/api/v1/scanner/{scan_id}/evidence", paths)
+        self.assertIn("/api/brands/{domain}/profile", paths)
+        self.assertIn("/api/brands/{domain}/market-classification", paths)
 
     def test_brand_market_classification_edit_persists_controlled_tags(self):
         self._seed_ready_run("taxoco", composite=65.0)

@@ -12,6 +12,7 @@ from src.config import BRAND3_DB_PATH
 from ..config import settings
 from ..middleware.team_cookie import create_serializer, is_team_request
 from ..observatory_index import (
+    build_brand_market_classification_debug,
     build_observatory_brand_history,
     propose_brand_market_classification,
     save_brand_market_classification,
@@ -50,6 +51,32 @@ async def brand_history(request: Request, domain: str, lang: Literal["es", "en"]
             "history": history,
             "analyses": history["rows"],
             "can_edit_brand_profile": can_edit,
+            "ui_lang": lang,
+        },
+    )
+
+
+@router.get("/brand/{domain}/market-classification/debug")
+async def brand_market_classification_debug(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    try:
+        debug = await asyncio.to_thread(
+            build_brand_market_classification_debug,
+            domain,
+            db_path=BRAND3_DB_PATH,
+        )
+    except ValueError:
+        raise HTTPException(status_code=404, detail="brand not found") from None
+    return templates.TemplateResponse(
+        request,
+        "brand_market_classification_debug.html.j2",
+        {
+            "domain": domain,
+            "debug": debug,
             "ui_lang": lang,
         },
     )

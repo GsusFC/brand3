@@ -422,6 +422,49 @@ def propose_brand_market_classification(
     return match.brand_key
 
 
+def build_brand_market_classification_debug(
+    brand: str,
+    *,
+    db_path: str = BRAND3_DB_PATH,
+) -> dict[str, Any]:
+    """Return the exact evidence packet used by market classification."""
+    brands = _load_brand_sources(db_path=db_path, lang="es")
+    _attach_classifications(brands, db_path=db_path)
+    _attach_profile_overrides(brands, db_path=db_path)
+    match = _find_brand(brands, brand)
+    if match is None:
+        raise ValueError(f"Unknown brand: {brand}")
+    profile = _cached_or_build_brand_profile(match, db_path=db_path)
+    evidence = _market_classification_evidence(match, profile, db_path=db_path)
+    heuristic = classify_market_heuristic(
+        brand_key=match.brand_key,
+        domain=match.domain,
+        evidence=evidence,
+    )
+    source_counts: dict[str, int] = {}
+    for item in evidence:
+        source_type = str(item.get("source_type") or "unknown")
+        source_counts[source_type] = source_counts.get(source_type, 0) + 1
+    return {
+        "brand_key": match.brand_key,
+        "display_name": match.display_name,
+        "domain": match.domain,
+        "profile": {
+            "summary": profile.get("summary") or "",
+            "offer": profile.get("offer") or "",
+            "audience": profile.get("audience") or "",
+            "outcome": profile.get("outcome") or "",
+            "category": profile.get("category") or "",
+        },
+        "evidence": evidence,
+        "evidence_count": len(evidence),
+        "source_counts": dict(sorted(source_counts.items())),
+        "heuristic_tags": [tag.to_dict() for tag in heuristic.tags],
+        "current_classification": _market_classification_payload(match),
+        "llm_available": bool(getattr(LLMAnalyzer(model=BRAND3_EVIDENCE_LLM_MODEL), "api_key", None)),
+    }
+
+
 def _try_llm_market_classification(
     brand: ObservatoryBrand,
     evidence: list[dict[str, str]],
@@ -553,6 +596,8 @@ def _market_classification_evidence(
                         "source_type": "research_pack",
                     }
                 )
+    web_payloads = _web_payloads_from_snapshots(snapshots)
+    snippets.extend(_web_text_evidence_from_payloads(web_payloads, limit=12))
     return _dedupe_evidence_snippets(snippets, limit=40)
 
 
@@ -639,6 +684,96 @@ def _dedupe_evidence_snippets(snippets: list[dict[str, str]], *, limit: int) -> 
         if len(out) >= limit:
             break
     return out
+
+
+def _web_text_evidence_from_payloads(
+    payloads: list[dict[str, Any]],
+    *,
+    limit: int,
+) -> list[dict[str, str]]:
+    snippets = []
+    for payload in payloads:
+        url = str(payload.get("url") or payload.get("final_url") or "").strip()
+        for key, source_type in (
+            ("title", "web_title"),
+            ("meta_description", "web_meta"),
+            ("markdown_content", "web_markdown"),
+            ("text", "web_text"),
+        ):
+            for text in _chunk_web_text(payload.get(key), max_chunks=3):
+                snippets.append({"text": text, "url": url, "source_type": source_type})
+                if len(snippets) >= limit:
+                    return snippets
+        html = str(payload.get("html") or "")
+        if html:
+            parser = _HTMLTextSnippetParser()
+            try:
+                parser.feed(html)
+            except Exception:
+                pass
+            for text in parser.snippets[:4]:
+                snippets.append({"text": text, "url": url, "source_type": "web_html"})
+                if len(snippets) >= limit:
+                    return snippets
+    return snippets
+
+
+def _chunk_web_text(value: Any, *, max_chunks: int) -> list[str]:
+    text = _clean_profile_text(value, limit=1200)
+    if not text:
+        return []
+    sentences = re.split(r"(?<=[.!?])\s+|[\n\r]+", text)
+    chunks = []
+    current = ""
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if not sentence:
+            continue
+        if len(current) + len(sentence) > 360 and current:
+            chunks.append(current)
+            current = sentence
+        else:
+            current = f"{current} {sentence}".strip()
+        if len(chunks) >= max_chunks:
+            return chunks
+    if current and len(chunks) < max_chunks:
+        chunks.append(current)
+    return chunks
+
+
+class _HTMLTextSnippetParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._capture_depth = 0
+        self._parts: list[str] = []
+        self.snippets: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in {"title", "h1", "h2", "h3", "p", "li"}:
+            self._capture_depth += 1
+            self._parts = []
+        if tag == "meta":
+            attr_map = {name.lower(): (value or "") for name, value in attrs}
+            name = (attr_map.get("name") or attr_map.get("property") or "").lower()
+            if name in {"description", "og:description", "twitter:description"}:
+                self._add_snippet(attr_map.get("content", ""))
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag not in {"title", "h1", "h2", "h3", "p", "li"} or self._capture_depth <= 0:
+            return
+        self._capture_depth -= 1
+        if self._capture_depth == 0:
+            self._add_snippet(" ".join(self._parts))
+            self._parts = []
+
+    def handle_data(self, data: str) -> None:
+        if self._capture_depth > 0:
+            self._parts.append(data)
+
+    def _add_snippet(self, value: str) -> None:
+        text = _clean_profile_text(value, limit=360)
+        if text and text not in self.snippets:
+            self.snippets.append(text)
 
 
 def _empty_sv9_status() -> dict[str, Any]:

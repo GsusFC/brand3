@@ -792,6 +792,47 @@ class ListingsTests(unittest.TestCase):
         self.assertIn("artificial intelligence", payload["proposed"]["sector_industry"])
         self.assertIn("generative AI", payload["proposed"]["technology_capability"])
 
+    def test_brand_market_classification_debug_shows_classifier_evidence(self):
+        token = self._seed_ready_run("debugco", composite=65.0)
+        with sqlite3.connect(self.db) as conn:
+            run_id = int(
+                conn.execute(
+                    "SELECT run_id FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            )
+            conn.execute(
+                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
+                (
+                    run_id,
+                    "web",
+                    json.dumps(
+                        {
+                            "url": "https://debugco.com",
+                            "title": "DebugCo AI workflow platform",
+                            "meta_description": "AI agents for marketing teams.",
+                            "markdown_content": "DebugCo helps teams generate campaign content with AI agents.",
+                        }
+                    ),
+                ),
+            )
+            conn.commit()
+
+        locked = self.client.get("/brand/debugco.com/market-classification/debug")
+        self.assertEqual(locked.status_code, 403)
+        unlocked = self.client.get(
+            "/team/unlock", params={"token": "team"}, follow_redirects=False
+        )
+        self.assertEqual(unlocked.status_code, 303)
+
+        response = self.client.get("/brand/debugco.com/market-classification/debug")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("debug_clasificación_mercado", response.text)
+        self.assertIn("DebugCo AI workflow platform", response.text)
+        self.assertIn("AI agents for marketing teams", response.text)
+        self.assertIn("web_meta", response.text)
+
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)
         self._seed_ready_run("uber", composite=72.0)

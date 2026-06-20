@@ -16,6 +16,7 @@ from datetime import datetime
 from typing import Any
 from urllib.parse import quote, urlparse
 
+from src.classification.market_taxonomy import GROUPS, canonical_tag, tags_for_group
 from src.config import BRAND3_DB_PATH
 from src.features.magnetism.moodboard import MAX_MOODBOARD_IMAGES, extract_moodboard_images
 from src.research.research_pack_facade import build_recommended_research_pack
@@ -55,6 +56,7 @@ class ObservatoryBrand:
     category: str | None = None
     category_label: str | None = None
     classification_tags: list[str] = field(default_factory=list)
+    market_classification: dict[str, Any] = field(default_factory=dict)
     profile_overrides: dict[str, Any] = field(default_factory=dict)
 
     @property
@@ -190,6 +192,7 @@ def build_observatory_brand_history(
             "domain": brand,
             "category_label": None,
             "profile": _empty_brand_profile(brand),
+            "market_classification": _empty_market_classification(brand),
             "sv9_status": _empty_sv9_status(),
             "rows": [],
         }
@@ -199,6 +202,7 @@ def build_observatory_brand_history(
         "domain": match.domain,
         "category_label": match.category_label,
         "profile": _cached_or_build_brand_profile(match, db_path=db_path),
+        "market_classification": _market_classification_payload(match),
         "sv9_status": _build_sv9_status(match),
         "rows": match.to_history_rows(),
     }
@@ -261,6 +265,92 @@ def save_brand_profile_overrides(
     return brand_key
 
 
+def save_brand_market_classification(
+    brand: str,
+    form_values: dict[str, Any],
+    *,
+    db_path: str = BRAND3_DB_PATH,
+    updated_by: str = "",
+) -> str:
+    """Persist manually accepted market classification tags for a brand."""
+    brands = _load_brand_sources(db_path=db_path, lang="es")
+    match = _find_brand(brands, brand)
+    brand_key = match.brand_key if match is not None else _slug(brand.lower()) or brand.lower()
+    accepted = {}
+    tags = []
+    for group in GROUPS:
+        raw_values = form_values.get(group)
+        values = raw_values if isinstance(raw_values, list) else _split_lines(str(raw_values or ""))
+        group_tags = []
+        for value in values:
+            canonical = canonical_tag(group, value)
+            if canonical is None or canonical in group_tags:
+                continue
+            group_tags.append(canonical)
+            tags.append(
+                {
+                    "group": group,
+                    "tag": canonical,
+                    "confidence": "high",
+                    "status": "accepted",
+                    "evidence_text": "Manual Brand3 review.",
+                    "source_url": "",
+                    "classifier": "manual",
+                    "reason_codes": ["manual_review"],
+                }
+            )
+        accepted[group] = group_tags
+    primary_category = str(form_values.get("primary_category") or "").strip()
+    if primary_category and not any(
+        primary_category in group_tags for group_tags in accepted.values()
+    ):
+        primary_category = ""
+    if not primary_category:
+        for group in ("sector_industry", "technology_capability", "business_model"):
+            if accepted.get(group):
+                primary_category = accepted[group][0]
+                break
+    payload = {
+        "version": "brand3_market_classification_v0_1",
+        "brand_key": brand_key,
+        "requires_human_review": False,
+        "primary_category": primary_category,
+        "accepted": accepted,
+        "proposed": {group: [] for group in GROUPS},
+        "tags": tags,
+        "updated_by": updated_by,
+    }
+    confidence = "high" if tags else "low"
+    now = datetime.now().isoformat()
+    store = SQLiteStore(db_path)
+    try:
+        store.conn.execute(
+            """
+            INSERT INTO brand_market_classifications (
+                brand_key, classification_json, confidence, source,
+                requires_human_review, updated_at
+            )
+            VALUES (?, ?, ?, 'manual_review', 0, ?)
+            ON CONFLICT(brand_key) DO UPDATE SET
+                classification_json=excluded.classification_json,
+                confidence=excluded.confidence,
+                source=excluded.source,
+                requires_human_review=excluded.requires_human_review,
+                updated_at=excluded.updated_at
+            """,
+            (
+                brand_key,
+                json.dumps(payload, ensure_ascii=True, sort_keys=True),
+                confidence,
+                now,
+            ),
+        )
+        store.conn.commit()
+    finally:
+        store.close()
+    return brand_key
+
+
 def _empty_brand_profile(brand: str) -> dict[str, Any]:
     return {
         "name": _display_name(brand, brand),
@@ -284,6 +374,39 @@ def _empty_brand_profile(brand: str) -> dict[str, Any]:
         "latest_date": "",
         "best_score": None,
         "best_score_compact": "-",
+    }
+
+
+def _empty_market_classification(brand: str) -> dict[str, Any]:
+    return {
+        "brand_key": brand,
+        "available": False,
+        "accepted": {group: [] for group in GROUPS},
+        "proposed": {group: [] for group in GROUPS},
+        "primary_category": "",
+        "requires_human_review": False,
+        "source": "",
+        "updated_at": "",
+        "groups": list(GROUPS),
+        "options": {group: list(tags_for_group(group)) for group in GROUPS},
+    }
+
+
+def _market_classification_payload(brand: ObservatoryBrand) -> dict[str, Any]:
+    payload = dict(brand.market_classification or {})
+    accepted = payload.get("accepted") if isinstance(payload.get("accepted"), dict) else {}
+    proposed = payload.get("proposed") if isinstance(payload.get("proposed"), dict) else {}
+    return {
+        "brand_key": brand.brand_key,
+        "available": bool(payload),
+        "accepted": {group: list(accepted.get(group) or []) for group in GROUPS},
+        "proposed": {group: list(proposed.get(group) or []) for group in GROUPS},
+        "primary_category": str(payload.get("primary_category") or ""),
+        "requires_human_review": bool(payload.get("requires_human_review")),
+        "source": str(payload.get("source") or ""),
+        "updated_at": str(payload.get("updated_at") or ""),
+        "groups": list(GROUPS),
+        "options": {group: list(tags_for_group(group)) for group in GROUPS},
     }
 
 
@@ -746,13 +869,22 @@ def _attach_classifications(brands: dict[str, ObservatoryBrand], *, db_path: str
         if not _table_exists(conn, "brand_market_classifications"):
             return
         rows = conn.execute(
-            "SELECT brand_key, classification_json FROM brand_market_classifications"
+            """
+            SELECT brand_key, classification_json, source, requires_human_review, updated_at
+            FROM brand_market_classifications
+            """
         ).fetchall()
     for row in rows:
         brand = brands.get(str(row["brand_key"] or "").lower())
         if brand is None:
             continue
         payload = _json_dict(row["classification_json"])
+        payload["source"] = row["source"] or ""
+        payload["requires_human_review"] = bool(row["requires_human_review"])
+        payload["updated_at"] = row["updated_at"] or ""
+        payload.setdefault("accepted", {group: [] for group in GROUPS})
+        payload.setdefault("proposed", {group: [] for group in GROUPS})
+        brand.market_classification = payload
         accepted = payload.get("accepted") if isinstance(payload.get("accepted"), dict) else {}
         tags = []
         for group_tags in accepted.values():

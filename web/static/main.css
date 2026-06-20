@@ -558,7 +558,8 @@ th.num {
 }
 
 .brand-profile-edit-form input,
-.brand-profile-edit-form textarea {
+.brand-profile-edit-form textarea,
+.brand-profile-edit-form select {
   width: 100%;
   border: 1px solid var(--border);
   background: var(--surface);
@@ -576,6 +577,70 @@ th.num {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.brand-market-block {
+  display: grid;
+  gap: 12px;
+}
+
+.brand-market-groups,
+.brand-market-edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.brand-market-group,
+.brand-market-fieldset {
+  border: 1px solid var(--border);
+  padding: 12px;
+  background: var(--surface);
+}
+
+.brand-market-group strong,
+.brand-market-fieldset legend {
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.brand-market-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.brand-market-tag {
+  border: 1px solid var(--border-strong);
+  padding: 4px 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.brand-market-tag-proposed {
+  border-style: dashed;
+  color: var(--text-muted);
+}
+
+.brand-market-checkbox {
+  display: flex !important;
+  grid-template-columns: none !important;
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: center;
+  gap: 8px !important;
+  margin-top: 8px;
+  color: var(--text) !important;
+  text-transform: none !important;
+}
+
+.brand-market-checkbox input {
+  width: 14px;
+  height: 14px;
+  padding: 0;
 }
 
 .brand-profile-sv9 {
@@ -4237,6 +4302,11 @@ a:hover {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand-market-groups,
+  .brand-market-edit-grid {
     grid-template-columns: 1fr;
   }
 

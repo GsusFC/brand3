@@ -256,6 +256,43 @@ class ListingsTests(unittest.TestCase):
         self.assertIn(">Linear<", filtered.text)
         self.assertNotIn(">Airbnb<", filtered.text)
 
+    def test_brand_page_renders_market_classification_context(self):
+        self._seed_ready_scan("linear", magnetism_score=83, coherence_score=72)
+        with sqlite3.connect(self.db) as conn:
+            conn.execute(
+                """
+                INSERT INTO brand_market_classifications
+                  (brand_key, classification_json, confidence, source,
+                   requires_human_review, updated_at)
+                VALUES (?, ?, 'high', 'manual_review', 0, datetime('now'))
+                """,
+                (
+                    "linear.com",
+                    json.dumps(
+                        {
+                            "accepted": {
+                                "business_model": ["SaaS"],
+                                "sector_industry": ["project management"],
+                            },
+                            "proposed": {
+                                "technology_capability": ["automation"],
+                            },
+                            "primary_category": "project management",
+                        }
+                    ),
+                ),
+            )
+            conn.commit()
+
+        response = self.client.get("/brand/linear.com")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("clasificación_mercado", response.text)
+        self.assertIn("project management", response.text)
+        self.assertIn("SaaS", response.text)
+        self.assertIn("automation", response.text)
+        self.assertIn("No modifica el score", response.text)
+
     def test_index_merges_scanners_and_audits(self):
         self._seed_ready_run("auditco", composite=66.0, days_ago=1)
         self._seed_ready_scan("scanco", magnetism_score=83, coherence_score=72, days_ago=0)
@@ -597,6 +634,53 @@ class ListingsTests(unittest.TestCase):
         self.assertEqual(row[0], "EditCo Manual")
         self.assertEqual(row[1], "https://editco.com/logo.png")
         self.assertIn("Ficha corregida manualmente.", row[2])
+
+    def test_brand_market_classification_edit_persists_controlled_tags(self):
+        self._seed_ready_run("taxoco", composite=65.0)
+        unlocked = self.client.get(
+            "/team/unlock", params={"token": "team"}, follow_redirects=False
+        )
+        self.assertEqual(unlocked.status_code, 303)
+
+        form = self.client.get("/brand/taxoco.com/edit")
+        self.assertEqual(form.status_code, 200)
+        self.assertIn("business_model", form.text)
+        self.assertIn("technology_capability", form.text)
+
+        saved = self.client.post(
+            "/brand/taxoco.com/market-classification",
+            data={
+                "business_model": ["B2B", "SaaS"],
+                "sector_industry": ["fintech"],
+                "technology_capability": ["API", "not a controlled tag"],
+                "primary_category": "fintech",
+                "updated_by": "sergio",
+            },
+            follow_redirects=False,
+        )
+        self.assertEqual(saved.status_code, 303)
+        self.assertEqual(saved.headers["location"], "/brand/taxoco.com?lang=es")
+
+        page = self.client.get("/brand/taxoco.com")
+        self.assertEqual(page.status_code, 200)
+        self.assertIn("clasificación_mercado", page.text)
+        self.assertIn("fintech", page.text)
+        self.assertIn("B2B", page.text)
+        self.assertIn("SaaS", page.text)
+        self.assertIn("API", page.text)
+        self.assertNotIn("not a controlled tag", page.text)
+
+        with sqlite3.connect(self.db) as conn:
+            payload = json.loads(
+                conn.execute(
+                    "SELECT classification_json FROM brand_market_classifications WHERE brand_key = ?",
+                    ("taxoco.com",),
+                ).fetchone()[0]
+            )
+        self.assertEqual(payload["primary_category"], "fintech")
+        self.assertEqual(payload["accepted"]["business_model"], ["B2B", "SaaS"])
+        self.assertEqual(payload["accepted"]["technology_capability"], ["API"])
+        self.assertFalse(payload["requires_human_review"])
 
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)

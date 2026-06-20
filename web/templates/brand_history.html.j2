@@ -133,6 +133,43 @@
     {% endif %}
   </section>
 
+  {% set market = history.market_classification if history.market_classification is defined else {'available': false, 'accepted': {}, 'proposed': {}, 'primary_category': '', 'groups': []} %}
+  <section class="brand-profile-block brand-market-block">
+    <div class="section-head">
+      <span class="label">{{ 'clasificación_mercado' if current_lang == 'es' else 'market_classification' }}</span>
+      <span class="tag">// {{ market.primary_category or ('sin categoría' if current_lang == 'es' else 'uncategorized') }}</span>
+      {% if can_edit_brand_profile %}
+      <a class="source-link" href="/brand/{{ domain }}/edit?lang={{ current_lang }}#market-classification">{{ 'editar' if current_lang == 'es' else 'edit' }}</a>
+      {% endif %}
+    </div>
+    {% if market.available %}
+    <div class="brand-market-groups">
+      {% for group in market.groups %}
+      {% set accepted = market.accepted.get(group, []) %}
+      {% set proposed = market.proposed.get(group, []) %}
+      {% if accepted or proposed %}
+      <div class="brand-market-group">
+        <strong>{{ group }}</strong>
+        <div class="brand-market-tags">
+          {% for tag in accepted %}
+          <span class="brand-market-tag">{{ tag }}</span>
+          {% endfor %}
+          {% for tag in proposed %}
+          <span class="brand-market-tag brand-market-tag-proposed">{{ tag }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </div>
+    <p class="dim" style="font-family: var(--font-mono); font-size: 10px; margin: 8px 0 0;">
+      {{ 'Contexto para filtros y benchmarking. No modifica el score.' if current_lang == 'es' else 'Context for filtering and benchmarking. It does not change the score.' }}
+    </p>
+    {% else %}
+    <p class="dim">{{ 'Sin clasificación de mercado aceptada todavía.' if current_lang == 'es' else 'No accepted market classification yet.' }}</p>
+    {% endif %}
+  </section>
+
   <div class="brand-profile-grid">
     <section class="brand-profile-block">
       <div class="section-head">

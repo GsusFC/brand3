@@ -11,7 +11,11 @@ from src.config import BRAND3_DB_PATH
 
 from ..config import settings
 from ..middleware.team_cookie import create_serializer, is_team_request
-from ..observatory_index import build_observatory_brand_history, save_brand_profile_overrides
+from ..observatory_index import (
+    build_observatory_brand_history,
+    save_brand_market_classification,
+    save_brand_profile_overrides,
+)
 from ..templates_env import templates
 
 router = APIRouter()
@@ -71,6 +75,7 @@ async def brand_profile_edit(
             "domain": domain,
             "history": history,
             "profile": history["profile"],
+            "market_classification": history["market_classification"],
             "ui_lang": lang,
         },
     )
@@ -108,6 +113,33 @@ async def brand_profile_edit_submit(
     return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
 
 
+@router.post("/brand/{domain}/market-classification")
+async def brand_market_classification_submit(
+    request: Request,
+    domain: str,
+    lang: Literal["es", "en"] = Query("es"),
+):
+    _require_team_write(request)
+    form = await request.form()
+    values = {
+        "business_model": form.getlist("business_model"),
+        "sector_industry": form.getlist("sector_industry"),
+        "technology_capability": form.getlist("technology_capability"),
+        "market_signals": form.getlist("market_signals"),
+        "corporate_status": form.getlist("corporate_status"),
+        "primary_category": str(form.get("primary_category") or ""),
+    }
+    updated_by = str(form.get("updated_by") or "").strip()
+    brand_key = await asyncio.to_thread(
+        save_brand_market_classification,
+        domain,
+        values,
+        db_path=BRAND3_DB_PATH,
+        updated_by=updated_by,
+    )
+    return RedirectResponse(f"/brand/{quote(brand_key)}?lang={lang}", status_code=303)
+
+
 def _ensure_brand_history_defaults(history: dict, domain: str) -> None:
     rows = history.get("rows") or []
     scores = [row.get("score") for row in rows if row.get("score") is not None]
@@ -134,6 +166,18 @@ def _ensure_brand_history_defaults(history: dict, domain: str) -> None:
     profile.setdefault("latest_date", rows[0].get("date") if rows else "")
     profile.setdefault("best_score", best_score)
     profile.setdefault("best_score_compact", str(round(best_score)) if best_score is not None else "-")
+    history.setdefault(
+        "market_classification",
+        {
+            "available": False,
+            "accepted": {},
+            "proposed": {},
+            "primary_category": "",
+            "requires_human_review": False,
+            "groups": [],
+            "options": {},
+        },
+    )
     history.setdefault(
         "sv9_status",
         {

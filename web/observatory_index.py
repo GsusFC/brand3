@@ -17,8 +17,10 @@ from typing import Any
 from urllib.parse import quote, urlparse
 
 from src.classification.market_classifier import classify_market_heuristic
+from src.classification.market_llm_classifier import classify_market_llm
 from src.classification.market_taxonomy import GROUPS, canonical_tag, tags_for_group
-from src.config import BRAND3_DB_PATH
+from src.config import BRAND3_DB_PATH, BRAND3_EVIDENCE_LLM_MODEL
+from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.moodboard import MAX_MOODBOARD_IMAGES, extract_moodboard_images
 from src.research.research_pack_facade import build_recommended_research_pack
 from src.storage.sqlite_store import SQLiteStore
@@ -379,10 +381,14 @@ def propose_brand_market_classification(
         domain=match.domain,
         evidence=evidence,
     )
+    llm_classification = _try_llm_market_classification(match, evidence)
+    generated_tags = [tag.to_dict() for tag in classification.tags]
+    if llm_classification is not None:
+        generated_tags.extend(tag.to_dict() for tag in llm_classification.tags)
     existing = match.market_classification or {}
     payload = _proposed_market_classification_payload(
         brand_key=match.brand_key,
-        generated=classification.to_dict(),
+        generated={"tags": generated_tags},
         existing=existing,
     )
     now = datetime.now().isoformat()
@@ -414,6 +420,24 @@ def propose_brand_market_classification(
     finally:
         store.close()
     return match.brand_key
+
+
+def _try_llm_market_classification(
+    brand: ObservatoryBrand,
+    evidence: list[dict[str, str]],
+) -> Any | None:
+    analyzer = LLMAnalyzer(model=BRAND3_EVIDENCE_LLM_MODEL)
+    if not getattr(analyzer, "api_key", None):
+        return None
+    try:
+        return classify_market_llm(
+            brand_key=brand.brand_key,
+            domain=brand.domain,
+            evidence=evidence,
+            llm=analyzer,
+        )
+    except Exception:
+        return None
 
 
 def _empty_brand_profile(brand: str) -> dict[str, Any]:
@@ -559,7 +583,7 @@ def _proposed_market_classification_payload(
         clean["group"] = group
         clean["tag"] = tag
         clean["status"] = "proposed"
-        clean["classifier"] = "heuristic"
+        clean["classifier"] = str(item.get("classifier") or "heuristic")
         tags.append(clean)
 
     primary_category = _first_market_category(accepted) or _first_market_category(proposed)

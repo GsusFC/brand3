@@ -1,6 +1,7 @@
 import pytest
 
 from src.classification.market_classifier import classify_market_heuristic
+from src.classification.market_llm_classifier import classify_market_llm, market_llm_response_schema
 from src.classification.market_taxonomy import canonical_tag, tag_definition, tags_for_group
 from src.classification.schemas import ClassificationTag, MarketClassification
 
@@ -93,3 +94,68 @@ def test_heuristic_classifier_does_not_match_api_inside_words():
     )
 
     assert "API" not in classification.tags_by_group(status="accepted")["technology_capability"]
+
+
+def test_llm_market_classifier_uses_structured_taxonomy_schema():
+    class FakeLLM:
+        api_key = "test"
+        model = "gemini-3.5-flash"
+        base_url = "https://example.test/openai"
+
+        def __init__(self):
+            self.calls = []
+
+        def _call_json(self, system, user, max_tokens=8000, **kwargs):
+            self.calls.append(
+                {
+                    "system": system,
+                    "user": user,
+                    "max_tokens": max_tokens,
+                    **kwargs,
+                }
+            )
+            return {
+                "items": [
+                    {
+                        "group": "sector_industry",
+                        "tag": "artificial intelligence",
+                        "confidence": "medium",
+                        "evidence_text": "The product automates workflows with AI agents.",
+                        "source_url": "https://acme.test",
+                        "reason_codes": ["semantic_product_category"],
+                    },
+                    {
+                        "group": "technology_capability",
+                        "tag": "generative AI",
+                        "confidence": "medium",
+                        "evidence_text": "The product generates campaign content.",
+                        "source_url": "https://acme.test",
+                        "reason_codes": ["semantic_capability"],
+                    },
+                ]
+            }
+
+    llm = FakeLLM()
+
+    classification = classify_market_llm(
+        brand_key="acme",
+        domain="acme.test",
+        evidence=[
+            {
+                "text": "AI agents that generate campaign content for marketing teams.",
+                "url": "https://acme.test",
+                "source_type": "profile",
+            }
+        ],
+        llm=llm,
+    )
+
+    assert classification is not None
+    assert classification.tags_by_group(status="proposed")["sector_industry"] == [
+        "artificial intelligence"
+    ]
+    assert classification.tags_by_group(status="proposed")["technology_capability"] == [
+        "generative AI"
+    ]
+    assert llm.calls[0]["json_schema"] == market_llm_response_schema()
+    assert llm.calls[0]["strict_schema"] is True

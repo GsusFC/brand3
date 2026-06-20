@@ -715,11 +715,53 @@ class ListingsTests(unittest.TestCase):
             },
             follow_redirects=False,
         )
+        import web.observatory_index as observatory_index
 
-        proposed = self.client.post(
-            "/brand/proposeco.com/market-classification/propose",
-            follow_redirects=False,
-        )
+        from src.classification.schemas import ClassificationTag, MarketClassification
+
+        original_llm_analyzer = observatory_index.LLMAnalyzer
+        original_classify_market_llm = observatory_index.classify_market_llm
+
+        class FakeAnalyzer:
+            api_key = "test"
+
+            def __init__(self, *args, **kwargs):
+                pass
+
+        def fake_classify_market_llm(**kwargs):
+            return MarketClassification(
+                brand_key=kwargs["brand_key"],
+                tags=[
+                    ClassificationTag(
+                        group="sector_industry",
+                        tag="artificial intelligence",
+                        confidence="medium",
+                        status="proposed",
+                        evidence_text="Semantic LLM category proposal.",
+                        classifier="llm",
+                    ),
+                    ClassificationTag(
+                        group="technology_capability",
+                        tag="generative AI",
+                        confidence="medium",
+                        status="proposed",
+                        evidence_text="Semantic LLM capability proposal.",
+                        classifier="llm",
+                    ),
+                ],
+            )
+
+        observatory_index.LLMAnalyzer = FakeAnalyzer
+        observatory_index.classify_market_llm = fake_classify_market_llm
+
+        try:
+            proposed = self.client.post(
+                "/brand/proposeco.com/market-classification/propose",
+                follow_redirects=False,
+            )
+        finally:
+            observatory_index.LLMAnalyzer = original_llm_analyzer
+            observatory_index.classify_market_llm = original_classify_market_llm
 
         self.assertEqual(proposed.status_code, 303)
         self.assertEqual(
@@ -747,6 +789,7 @@ class ListingsTests(unittest.TestCase):
             )
         self.assertTrue(payload["requires_human_review"])
         self.assertEqual(payload["accepted"]["technology_capability"], [])
+        self.assertIn("artificial intelligence", payload["proposed"]["sector_industry"])
         self.assertIn("generative AI", payload["proposed"]["technology_capability"])
 
     def test_reports_filter_by_query(self):

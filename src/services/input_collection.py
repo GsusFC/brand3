@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
+import logging
 import os
 from time import perf_counter
 
@@ -26,6 +27,8 @@ from src.config import (
     FIRECRAWL_API_KEY,
 )
 from src.storage.sqlite_store import SQLiteStore, _MalformedJSONPayload
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass
@@ -269,7 +272,7 @@ def _raw_payload_ref(run_id: int, source: str) -> dict[str, object]:
 
 def _log_timing(label: str, started: float) -> float:
     now = perf_counter()
-    print(f"[timing] {label}: {(now - started):.2f}s")
+    logger.info("raw input timing", extra={"label": label, "duration_s": round(now - started, 2)})
     return now
 
 
@@ -300,7 +303,7 @@ def load_cached(
             eligible=True,
             details={"cache_error": str(e)},
         )
-        print(f"  Cache {source}: skipped ({e})")
+        logger.warning("raw input cache skipped", extra={"source": source, "error": str(e)})
         return None
     if not payload:
         return None
@@ -317,7 +320,10 @@ def load_cached(
                 "raw_json": payload.raw_json,
             },
         )
-        print(f"  Cache {source}: invalid payload ({payload.error})")
+        logger.warning(
+            "raw input cache invalid payload",
+            extra={"source": source, "error": payload.error, "payload_field": payload.field},
+        )
         return None
     try:
         return decoder(payload)
@@ -330,7 +336,7 @@ def load_cached(
             eligible=True,
             details={"cache_error": str(e)},
         )
-        print(f"  Cache {source}: invalid payload ({e})")
+        logger.warning("raw input cache decoder failed", extra={"source": source, "error": str(e)})
         return None
 
 
@@ -353,7 +359,10 @@ def store_safely(
             action=action,
             error=str(e),
         )
-        print(f"  Storage {action}: skipped ({e})")
+        logger.warning(
+            "raw input storage action skipped",
+            extra={"source": source, "action": action, "error": str(e)},
+        )
         return False
     return True
 
@@ -408,7 +417,7 @@ def _use_cached_input(
         details=details,
     )
     if message:
-        print(message)
+        logger.info("raw input cache hit", extra={"source": source, "detail": message.strip()})
     if run_id:
         _save_raw_input_safely(
             store,
@@ -435,7 +444,7 @@ def start_analysis_run(
         run_id = store.create_run(brand_id, brand_name, url, use_llm, use_social)
         return RunStorage(store=store, run_id=run_id)
     except Exception as e:
-        print(f"  Storage: disabled ({e})")
+        logger.warning("raw input storage disabled", extra={"error": str(e)})
         return RunStorage(store=None, run_id=None)
 
 
@@ -507,11 +516,14 @@ def _collect_context_input(
         eligible=True,
     )
     context_data = context_collector_cls().scan(url)
-    print(
-        "  Context:"
-        f" score={context_data.context_score:.0f}"
-        f" coverage={context_data.coverage:.2f}"
-        f" confidence={context_data.confidence:.2f}"
+    logger.info(
+        "context input collected",
+        extra={
+            "source": "context",
+            "score": round(context_data.context_score, 2),
+            "coverage": round(context_data.coverage, 2),
+            "confidence": round(context_data.confidence, 2),
+        },
     )
     if run_id:
         _save_raw_input_safely(
@@ -568,7 +580,7 @@ def _collect_web_input(
         eligible=True,
     )
     web_data = web_collector.scrape(url)
-    print(f"  Web: {len(web_data.markdown_content)} chars scraped")
+    logger.info("web input collected", extra={"source": "web", "chars": len(web_data.markdown_content)})
     if getattr(web_data, "capture_obstruction", ""):
         _set_acquisition_state(
             raw_input_cache,
@@ -580,7 +592,10 @@ def _collect_web_input(
             eligible=False,
             details={"capture_obstruction": web_data.capture_obstruction},
         )
-        print(f"  Web: obstructed ({web_data.capture_obstruction})")
+        logger.warning(
+            "web input obstructed",
+            extra={"source": "web", "capture_obstruction": web_data.capture_obstruction},
+        )
     if run_id:
         _save_raw_input_safely(
             store,
@@ -647,9 +662,14 @@ def _collect_exa_input(
             eligible=True,
             details={"failed_intents": list(failed_intents)},
         )
-        print(
-            f"  Exa: partial ({len(exa_data.mentions)} mentions, {len(exa_data.news)} news)"
-            f" failed_intents={','.join(failed_intents)}"
+        logger.warning(
+            "exa input partially collected",
+            extra={
+                "source": "exa",
+                "mentions": len(exa_data.mentions),
+                "news": len(exa_data.news),
+                "failed_intents": list(failed_intents),
+            },
         )
     elif no_result_intents:
         _set_acquisition_state(
@@ -662,9 +682,14 @@ def _collect_exa_input(
             eligible=True,
             details={"no_result_intents": list(no_result_intents)},
         )
-        print(
-            f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news"
-            f" no_results={','.join(no_result_intents)}"
+        logger.info(
+            "exa input collected with empty intents",
+            extra={
+                "source": "exa",
+                "mentions": len(exa_data.mentions),
+                "news": len(exa_data.news),
+                "no_result_intents": list(no_result_intents),
+            },
         )
     else:
         _set_acquisition_state(
@@ -676,7 +701,10 @@ def _collect_exa_input(
             cache_status="miss",
             eligible=True,
         )
-        print(f"  Exa: {len(exa_data.mentions)} mentions, {len(exa_data.news)} news")
+        logger.info(
+            "exa input collected",
+            extra={"source": "exa", "mentions": len(exa_data.mentions), "news": len(exa_data.news)},
+        )
     if run_id:
         _save_raw_input_safely(
             store,
@@ -744,11 +772,14 @@ def _collect_parallel_shadow_input(
         details=shadow_data.summary(),
     )
     summary = shadow_data.summary()
-    print(
-        "  Parallel shadow:"
-        f" status={shadow_data.status}"
-        f" results={summary['result_total']}"
-        f" domains={summary['unique_domain_count']}"
+    logger.info(
+        "parallel shadow input collected",
+        extra={
+            "source": "parallel_shadow",
+            "status": shadow_data.status,
+            "results": summary["result_total"],
+            "domains": summary["unique_domain_count"],
+        },
     )
     if run_id:
         _save_raw_input_safely(
@@ -852,11 +883,9 @@ def _collect_hyperbrowser_input(
             "chars": data.text_chars,
         },
     )
-    print(
-        "  Hyperbrowser:"
-        f" status={status}"
-        f" chars={data.text_chars}"
-        f" links={len(data.links)}"
+    logger.info(
+        "hyperbrowser input collected",
+        extra={"source": "hyperbrowser", "status": status, "chars": data.text_chars, "links": len(data.links)},
     )
     if run_id:
         _save_raw_input_safely(
@@ -927,7 +956,10 @@ def _collect_social_input(
                 eligible=True,
                 details={"platforms": len(social_data.platforms)},
             )
-            print(f"  Social: {social_limitation} - continuing without blocking analysis")
+            logger.warning(
+                "social input limitation",
+                extra={"source": "social", "status": social_limitation, "platforms": len(social_data.platforms)},
+            )
         else:
             _set_acquisition_state(
                 raw_input_cache,
@@ -939,7 +971,10 @@ def _collect_social_input(
                 eligible=True,
                 details={"platforms": len(social_data.platforms), "followers": social_data.total_followers},
             )
-            print(f"  Social: {platforms_count} platforms, {social_data.total_followers:,} total followers")
+            logger.info(
+                "social input collected",
+                extra={"source": "social", "platforms": platforms_count, "followers": social_data.total_followers},
+            )
         if run_id:
             _save_raw_input_safely(
                 store,
@@ -961,7 +996,7 @@ def _collect_social_input(
             eligible=False,
             error=str(e),
         )
-        print(f"  Social: error - {e}")
+        logger.warning("social input failed", extra={"source": "social", "error": str(e)})
         social_data = SocialData(brand_name=brand_name, error=str(e))
         if run_id:
             _save_raw_input_safely(
@@ -1000,7 +1035,7 @@ def _collect_competitor_input(
             cache_status="skipped",
             eligible=False,
         )
-        print("  Competitors: skipped (--fast mode)")
+        logger.info("competitor input skipped", extra={"source": "competitors", "reason": "fast_mode"})
         return None
 
     competitor_collector = CompetitorCollector(

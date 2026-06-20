@@ -185,15 +185,76 @@ class ListingsTests(unittest.TestCase):
         self.assertIn("todavía no hay análisis", r.text)
         self.assertIn("scanner de marca", r.text)
 
-    def test_index_limits_to_ten(self):
+    def test_index_lists_first_paginated_page(self):
         for i in range(20):
             self._seed_ready_run(f"brand{i:02d}", composite=50.0 + i, days_ago=i)
         r = self.client.get("/")
         self.assertEqual(r.status_code, 200)
         rendered = r.text.count("<tr>")
-        self.assertEqual(rendered, 16)  # header + 15 rows
+        self.assertEqual(rendered, 21)  # header + 20 rows
         self.assertIn("brand00", r.text)  # newest
-        self.assertNotIn("brand15", r.text)  # 16th excluded
+        self.assertIn("brand19", r.text)
+
+    def test_index_paginates_all_brands(self):
+        for i in range(30):
+            self._seed_ready_run(f"brand{i:02d}", composite=50.0 + i, days_ago=i)
+
+        first = self.client.get("/")
+        second = self.client.get("/?page=2")
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertIn("30 marcas", first.text)
+        self.assertIn("page 1/2", first.text)
+        self.assertIn("brand00", first.text)
+        self.assertNotIn("brand25", first.text)
+        self.assertIn("page 2/2", second.text)
+        self.assertIn("brand25", second.text)
+
+    def test_index_searches_unified_observatory(self):
+        self._seed_ready_run("airbnb", composite=65.0)
+        self._seed_ready_scan("linear", magnetism_score=83, coherence_score=72)
+
+        r = self.client.get("/?q=line")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(">Linear<", r.text)
+        self.assertNotIn(">Airbnb<", r.text)
+
+    def test_index_filters_by_accepted_market_classification(self):
+        self._seed_ready_run("airbnb", composite=65.0)
+        self._seed_ready_scan("linear", magnetism_score=83, coherence_score=72)
+        with sqlite3.connect(self.db) as conn:
+            conn.execute(
+                """
+                INSERT INTO brand_market_classifications
+                  (brand_key, classification_json, confidence, source,
+                   requires_human_review, updated_at)
+                VALUES (?, ?, 'high', 'manual_review', 0, datetime('now'))
+                """,
+                (
+                    "linear.com",
+                    json.dumps(
+                        {
+                            "accepted": {
+                                "business_model": ["SaaS"],
+                                "sector_industry": ["project management"],
+                            },
+                            "primary_category": "SaaS",
+                        }
+                    ),
+                ),
+            )
+            conn.commit()
+
+        all_rows = self.client.get("/")
+        filtered = self.client.get("/?category=saas")
+
+        self.assertEqual(all_rows.status_code, 200)
+        self.assertIn('<option value="saas">SaaS</option>', all_rows.text)
+        self.assertEqual(filtered.status_code, 200)
+        self.assertIn(">Linear<", filtered.text)
+        self.assertNotIn(">Airbnb<", filtered.text)
 
     def test_index_merges_scanners_and_audits(self):
         self._seed_ready_run("auditco", composite=66.0, days_ago=1)
@@ -240,6 +301,7 @@ class ListingsTests(unittest.TestCase):
 
         self.assertEqual(r.status_code, 200)
         self.assertIn(f'href="/sv9/scan/{sv9_id}?lang=es"', r.text)
+        self.assertIn('<span class="score-compact">71</span>', r.text)
 
     def test_scanner_recent_list_prefers_sv9_when_available(self):
         source_run_id = 322

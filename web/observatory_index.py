@@ -14,7 +14,7 @@ from html.parser import HTMLParser
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
-from urllib.parse import quote, urlparse
+from urllib.parse import parse_qs, quote, urlparse
 
 from src.classification.market_taxonomy import GROUPS, canonical_tag, tags_for_group
 from src.config import BRAND3_DB_PATH
@@ -23,7 +23,7 @@ from src.research.research_pack_facade import build_recommended_research_pack
 from src.storage.sqlite_store import SQLiteStore
 from src.sv9.ranking import domain_from_url
 
-BRAND_PROFILE_CACHE_VERSION = "brand-profile-cache-v1"
+BRAND_PROFILE_CACHE_VERSION = "brand-profile-cache-v3"
 
 
 SOURCE_PRIORITY = {"sv9": 0, "magnetism": 1, "audit": 2}
@@ -473,12 +473,10 @@ def _build_brand_profile(brand: ObservatoryBrand, *, db_path: str) -> dict[str, 
         ]
     )
     analyzed_links = _unique_links(primary_pack.get("analyzed_urls") or [])
-    social_links = _unique_social_links(
-        [
-            *_social_links_from_packs(packs),
-            *_social_links_from_web_payloads(web_payloads),
-        ]
-    )
+    # Only owned-page anchors are reliable enough for public profile social links.
+    # Research packs/search results frequently include unresolved or name-collision
+    # social candidates; those belong in evidence review, not in the brand ficha.
+    social_links = _unique_social_links(_social_links_from_web_payloads(web_payloads))
     proof_points = _profile_evidence_items(primary_pack.get("proof_points"), limit=3)
     evidence_gaps = _str_list(primary_pack.get("evidence_gaps"), limit=4)
     confidence_notes = _str_list(primary_pack.get("confidence_notes"), limit=4)
@@ -1074,9 +1072,11 @@ def _social_links_from_web_payloads(payloads: list[dict[str, Any]]) -> list[str]
             except Exception:
                 pass
             urls.extend(parser.urls)
-        markdown = str(payload.get("markdown_content") or "")
-        urls.extend(_urls_from_text(markdown))
-    return [url for url in urls if _is_social_url(url)]
+    return [
+        canonical
+        for canonical in (_canonical_social_profile_url(url) for url in urls)
+        if canonical
+    ]
 
 
 class _SocialLinkParser(HTMLParser):
@@ -1118,10 +1118,93 @@ def _is_social_url(url: str) -> bool:
     return any(host == marker or host.endswith(f".{marker}") for marker in social_hosts)
 
 
+def _canonical_social_profile_url(url: str) -> str | None:
+    raw = str(url or "").strip()
+    parsed = urlparse(raw)
+    host = parsed.netloc.lower().removeprefix("www.")
+    if not host or not _is_social_url(raw):
+        return None
+    segments = [segment for segment in parsed.path.strip("/").split("/") if segment]
+    lower = [segment.lower() for segment in segments]
+
+    if "linkedin.com" in host:
+        if len(lower) >= 2 and lower[0] in {"company", "school", "showcase"}:
+            return raw
+        return None
+
+    if host == "x.com" or host.endswith(".x.com") or "twitter.com" in host:
+        if lower[:2] == ["intent", "user"] or lower[:2] == ["intent", "follow"]:
+            screen_name = (parse_qs(parsed.query).get("screen_name") or [""])[0].strip()
+            if screen_name:
+                return f"https://x.com/{screen_name.lstrip('@')}"
+        if len(lower) == 1 and lower[0] not in {"home", "intent", "i", "share", "search"}:
+            return raw
+        return None
+
+    if "instagram.com" in host or "threads.net" in host:
+        if len(lower) == 1 and lower[0] not in {
+            "about",
+            "explore",
+            "p",
+            "reel",
+            "stories",
+            "tv",
+        }:
+            return raw
+        return None
+
+    if "youtube.com" in host:
+        if len(segments) == 1 and segments[0].startswith("@"):
+            return raw
+        if len(lower) >= 2 and lower[0] in {"channel", "c", "user"}:
+            return raw
+        return None
+
+    if "tiktok.com" in host:
+        if len(segments) == 1 and segments[0].startswith("@"):
+            return raw
+        return None
+
+    if "github.com" in host:
+        if len(lower) == 1 and lower[0] not in {
+            "about",
+            "collections",
+            "events",
+            "features",
+            "login",
+            "marketplace",
+            "pricing",
+            "topics",
+        }:
+            return raw
+        return None
+
+    if "facebook.com" in host:
+        if len(lower) == 1 and lower[0] not in {
+            "events",
+            "groups",
+            "login",
+            "marketplace",
+            "pages",
+            "plugins",
+            "share",
+            "sharer",
+            "watch",
+        }:
+            return raw
+        return None
+
+    return None
+
+
 def _unique_social_links(urls: list[str]) -> list[dict[str, str]]:
     out = []
     seen = set()
     for url in _unique_links(urls):
+        canonical = _canonical_social_profile_url(url)
+        if not canonical:
+            continue
+        url = canonical
         parsed = urlparse(url)
         host = parsed.netloc.lower().removeprefix("www.")
         if not host or host in seen:

@@ -488,6 +488,7 @@ class ListingsTests(unittest.TestCase):
                             "html": (
                                 '<link rel="apple-touch-icon" href="/apple-touch-icon.png">'
                                 '<a href="https://www.linkedin.com/company/profileco">LinkedIn</a>'
+                                '<a href="https://x.com/intent/user?screen_name=profileco">X</a>'
                             ),
                         }
                     ),
@@ -505,11 +506,54 @@ class ListingsTests(unittest.TestCase):
         self.assertIn('src="https://profileco.com/apple-touch-icon.png"', r.text)
         self.assertNotIn("logo=brand_profile", r.text)
         self.assertIn("LinkedIn", r.text)
+        self.assertIn('href="https://x.com/profileco"', r.text)
         self.assertIn("capa_visual", r.text)
         self.assertIn("moodboard.js", r.text)
         self.assertIn("https://profileco.com/apple-touch-icon.png", r.text)
         self.assertIn(f"/sv9/scan/{sv9_id}?lang=es", r.text)
         self.assertIn("ver SV9", r.text)
+
+    def test_brand_page_ignores_social_links_not_found_in_owned_html(self):
+        token = self._seed_ready_run("wronglinks", composite=65.0)
+        with sqlite3.connect(self.db) as conn:
+            run_id = int(
+                conn.execute(
+                    "SELECT run_id FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            )
+            conn.execute(
+                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
+                (
+                    run_id,
+                    "web",
+                    json.dumps(
+                        {
+                            "url": "https://wronglinks.com",
+                            "html": (
+                                "<main>"
+                                '<a href="https://www.linkedin.com/posts/unrelatedco-launch">Post</a>'
+                                '<a href="https://www.instagram.com/reel/abc123">Reel</a>'
+                                "</main>"
+                            ),
+                            "markdown_content": (
+                                "Search candidate: https://linkedin.com/company/unrelatedco "
+                                "and generated handle https://x.com/wwwwronglinkscom"
+                            ),
+                        }
+                    ),
+                ),
+            )
+            conn.commit()
+
+        r = self.client.get("/brand/wronglinks")
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("sin perfiles oficiales detectados", r.text)
+
+        payload = self.client.get("/api/brands/wronglinks.com/profile")
+        self.assertEqual(payload.status_code, 200)
+        self.assertEqual(payload.json()["profile"]["social_links"], [])
 
     def test_brand_profile_cache_reuses_generated_profile(self):
         self._seed_ready_run("cacheco", composite=65.0)
@@ -539,7 +583,7 @@ class ListingsTests(unittest.TestCase):
                 ("cacheco.com",),
             ).fetchone()
         self.assertIsNotNone(row)
-        self.assertEqual(row[0], "brand-profile-cache-v1")
+        self.assertEqual(row[0], "brand-profile-cache-v3")
         self.assertIn("cacheco.com", row[1])
 
     def test_brand_profile_cache_invalidates_when_run_evidence_changes(self):

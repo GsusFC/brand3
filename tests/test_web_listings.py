@@ -458,6 +458,89 @@ class ListingsTests(unittest.TestCase):
         self.assertIn(f"/sv9/scan/{sv9_id}?lang=es", r.text)
         self.assertIn("ver SV9", r.text)
 
+    def test_brand_profile_cache_reuses_generated_profile(self):
+        self._seed_ready_run("cacheco", composite=65.0)
+        import web.observatory_index as observatory_index
+
+        original = observatory_index.build_recommended_research_pack
+        calls = 0
+
+        def counting_builder(snapshot):
+            nonlocal calls
+            calls += 1
+            return original(snapshot)
+
+        observatory_index.build_recommended_research_pack = counting_builder
+        try:
+            first = self.client.get("/brand/cacheco")
+            second = self.client.get("/brand/cacheco")
+        finally:
+            observatory_index.build_recommended_research_pack = original
+
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(calls, 1)
+        with sqlite3.connect(self.db) as conn:
+            row = conn.execute(
+                "SELECT schema_version, profile_json FROM brand_profile_cache WHERE brand_key = ?",
+                ("cacheco.com",),
+            ).fetchone()
+        self.assertIsNotNone(row)
+        self.assertEqual(row[0], "brand-profile-cache-v1")
+        self.assertIn("cacheco.com", row[1])
+
+    def test_brand_profile_cache_invalidates_when_run_evidence_changes(self):
+        token = self._seed_ready_run("cachechange", composite=65.0)
+        with sqlite3.connect(self.db) as conn:
+            run_id = int(
+                conn.execute(
+                    "SELECT run_id FROM web_requests WHERE token = ?",
+                    (token,),
+                ).fetchone()[0]
+            )
+
+        first = self.client.get("/brand/cachechange")
+        self.assertEqual(first.status_code, 200)
+        with sqlite3.connect(self.db) as conn:
+            before = conn.execute(
+                "SELECT source_fingerprint FROM brand_profile_cache WHERE brand_key = ?",
+                ("cachechange.com",),
+            ).fetchone()[0]
+            conn.execute(
+                "INSERT INTO raw_inputs (run_id, source, payload_json, created_at) VALUES (?, ?, ?, datetime('now'))",
+                (
+                    run_id,
+                    "web",
+                    json.dumps({"url": "https://cachechange.com", "html": "changed evidence"}),
+                ),
+            )
+            conn.commit()
+
+        import web.observatory_index as observatory_index
+
+        original = observatory_index.build_recommended_research_pack
+        calls = 0
+
+        def counting_builder(snapshot):
+            nonlocal calls
+            calls += 1
+            return original(snapshot)
+
+        observatory_index.build_recommended_research_pack = counting_builder
+        try:
+            second = self.client.get("/brand/cachechange")
+        finally:
+            observatory_index.build_recommended_research_pack = original
+
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(calls, 1)
+        with sqlite3.connect(self.db) as conn:
+            after = conn.execute(
+                "SELECT source_fingerprint FROM brand_profile_cache WHERE brand_key = ?",
+                ("cachechange.com",),
+            ).fetchone()[0]
+        self.assertNotEqual(before, after)
+
     def test_reports_filter_by_query(self):
         self._seed_ready_run("airbnb", composite=65.0)
         self._seed_ready_run("uber", composite=72.0)

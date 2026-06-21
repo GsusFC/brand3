@@ -87,6 +87,11 @@ from src.scoring.engine import ScoringEngine
 from src.services.brand_profiles import _build_brand_profile, _slugify
 from src.services.feature_pipeline import run_feature_pipeline
 from src.services.input_collection import collect_raw_inputs, start_analysis_run, store_safely as _store_safely
+from src.services.output_files import (
+    _save_benchmark_comparison_result,
+    _save_benchmark_result,
+    _save_result,
+)
 from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
 from src.services.scoring_pipeline import score_features
 from src.storage.sqlite_store import SQLiteStore
@@ -229,40 +234,6 @@ def _log_timing(label: str, started: float) -> float:
     now = perf_counter()
     print(f"[timing] {label}: {(now - started):.2f}s")
     return now
-
-
-def _save_result(result: dict) -> Path:
-    output_dir = PROJECT_ROOT / "output"
-    output_dir.mkdir(exist_ok=True)
-
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    filename = f"{_slugify(result['brand'])}-{timestamp}.json"
-    output_path = output_dir / filename
-    output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    return output_path
-
-
-def _save_benchmark_result(result: dict) -> Path:
-    output_dir = PROJECT_ROOT / "output" / "benchmarks"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    spec_name = _slugify(result.get("benchmark_name", "benchmark"))
-    output_path = output_dir / f"{spec_name}-{timestamp}.json"
-    output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    return output_path
-
-
-def _save_benchmark_comparison_result(result: dict) -> Path:
-    output_dir = PROJECT_ROOT / "output" / "benchmarks"
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-    before_name = _slugify(result.get("before_benchmark", "before"))
-    after_name = _slugify(result.get("after_benchmark", "after"))
-    output_path = output_dir / f"{after_name}-vs-{before_name}-{timestamp}.json"
-    output_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    return output_path
 
 
 def _effective_brand_url(original_url: str, web_data: WebData | None) -> str:

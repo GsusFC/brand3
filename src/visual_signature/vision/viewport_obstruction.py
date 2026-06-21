@@ -224,7 +224,7 @@ def _dom_obstruction(html: str) -> ViewportObstructionEvidence:
 
 
 def _viewport_obstruction(image: RasterImage | None) -> ViewportObstructionEvidence:
-    if image is None or not image.pixels or image.width <= 0 or image.height <= 0:
+    if image is None or image.width <= 0 or image.height <= 0 or not image.sample_pixels(1):
         return ViewportObstructionEvidence(
             present=False,
             confidence=0.0,
@@ -323,7 +323,7 @@ def _centered_modal_score(image: RasterImage) -> float:
 
 
 def _fullscreen_overlay_score(image: RasterImage) -> float:
-    sample = _sample_pixels(image, limit=8000)
+    sample = image.sample_pixels(8000)
     if not sample:
         return 0.0
     dark_ratio = sum(1 for pixel in sample if _brightness(pixel) <= 38) / len(sample)
@@ -363,27 +363,38 @@ def _region_stats(image: RasterImage, x0: float, y0: float, x1: float, y1: float
     right = max(left + 1, min(image.width, int(image.width * x1)))
     top = max(0, min(image.height - 1, int(image.height * y0)))
     bottom = max(top + 1, min(image.height, int(image.height * y1)))
-    pixels = []
-    x_step = max(1, (right - left) // 80)
-    y_step = max(1, (bottom - top) // 60)
-    for y in range(top, bottom, y_step):
-        offset = y * image.width
-        for x in range(left, right, x_step):
-            pixels.append(image.pixels[offset + x])
-    return _pixel_stats(pixels)
+    return _pixel_stats(image.sample_grid(max_width=80, max_height=60, left=left, top=top, right=right, bottom=bottom))
 
 
 def _outer_region_stats(image: RasterImage, border_ratio: float) -> dict[str, float]:
     border_x = max(1, int(image.width * border_ratio))
     border_y = max(1, int(image.height * border_ratio))
     pixels = []
-    x_step = max(1, image.width // 100)
-    y_step = max(1, image.height // 80)
-    for y in range(0, image.height, y_step):
-        offset = y * image.width
-        for x in range(0, image.width, x_step):
-            if x < border_x or x >= image.width - border_x or y < border_y or y >= image.height - border_y:
-                pixels.append(image.pixels[offset + x])
+    pixels.extend(image.sample_grid(max_width=100, max_height=20, left=0, top=0, right=image.width, bottom=border_y))
+    pixels.extend(
+        image.sample_grid(
+            max_width=100,
+            max_height=20,
+            left=0,
+            top=max(0, image.height - border_y),
+            right=image.width,
+            bottom=image.height,
+        )
+    )
+    middle_top = border_y
+    middle_bottom = max(border_y, image.height - border_y)
+    if middle_top < middle_bottom:
+        pixels.extend(image.sample_grid(max_width=20, max_height=60, left=0, top=middle_top, right=border_x, bottom=middle_bottom))
+        pixels.extend(
+            image.sample_grid(
+                max_width=20,
+                max_height=60,
+                left=max(0, image.width - border_x),
+                top=middle_top,
+                right=image.width,
+                bottom=middle_bottom,
+            )
+        )
     return _pixel_stats(pixels)
 
 
@@ -398,14 +409,8 @@ def _pixel_stats(pixels: list[tuple[int, int, int]]) -> dict[str, float]:
     }
 
 
-def _sample_pixels(image: RasterImage, *, limit: int) -> list[tuple[int, int, int]]:
-    step = max(1, len(image.pixels) // limit)
-    return image.pixels[::step][:limit]
-
-
 def _row_average(image: RasterImage, y: int) -> tuple[int, int, int]:
-    y = max(0, min(image.height - 1, y))
-    row = image.pixels[y * image.width:(y + 1) * image.width]
+    row = image.row_pixels(y)
     if not row:
         return (0, 0, 0)
     return tuple(int(sum(pixel[channel] for pixel in row) / len(row)) for channel in range(3))  # type: ignore[return-value]
@@ -533,5 +538,3 @@ def _valid_severity(value: Any) -> ObstructionSeverity:
     text = str(value or "none")
     allowed = {"minor", "moderate", "major", "blocking", "none"}
     return text if text in allowed else "none"  # type: ignore[return-value]
-
-

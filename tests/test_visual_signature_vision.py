@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import sys
 import struct
 import zlib
 from pathlib import Path
 
 from src.visual_signature.vision import enrich_visual_signature_with_vision
+from src.visual_signature.vision.screenshot_quality import load_raster_image
 
 
 def _payload() -> dict:
@@ -40,6 +42,34 @@ def _write_png(path: Path, width: int, height: int, pixels: list[tuple[int, int,
 
 def _solid(width: int, height: int, color: tuple[int, int, int]) -> list[tuple[int, int, int]]:
     return [color for _ in range(width * height)]
+
+
+def test_load_raster_image_uses_pillow_and_exposes_raw_bytes(tmp_path):
+    screenshot = tmp_path / "pillow.png"
+    _write_png(screenshot, 2, 2, [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255)])
+
+    image = load_raster_image(str(screenshot))
+
+    assert image.width == 2
+    assert image.height == 2
+    assert image.raw_bytes is not None
+    assert image.pixels is None
+    assert image.sample_pixels(4) == [(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 255)]
+
+
+def test_load_raster_image_falls_back_to_stdlib_png_decoder(monkeypatch, tmp_path):
+    screenshot = tmp_path / "fallback.png"
+    _write_png(screenshot, 2, 2, [(12, 34, 56), (78, 90, 12), (34, 56, 78), (90, 12, 34)])
+
+    monkeypatch.setitem(sys.modules, "PIL", None)
+    monkeypatch.setitem(sys.modules, "PIL.Image", None)
+
+    image = load_raster_image(str(screenshot))
+
+    assert image.width == 2
+    assert image.height == 2
+    assert image.raw_bytes is not None
+    assert image.sample_pixels(4) == [(12, 34, 56), (78, 90, 12), (34, 56, 78), (90, 12, 34)]
 
 
 def test_vision_enrichment_handles_missing_screenshot_without_mutating_payload():

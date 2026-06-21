@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 import struct
 import zlib
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -83,13 +84,26 @@ def resolve_screenshot_metadata(
 
 
 def load_raster_image(path: str) -> RasterImage:
-    """Load a local PNG or PPM screenshot using only stdlib parsers."""
+    """Load a local screenshot with Pillow when available and stdlib fallback."""
     data = Path(path).read_bytes()
-    if data.startswith(PNG_SIGNATURE):
-        return _load_png(data, source_path=path)
-    if data.startswith((b"P6", b"P3")):
-        return _load_ppm(data, source_path=path)
-    raise ValueError("unsupported image format; expected PNG or PPM")
+    try:
+        from PIL import Image
+
+        with Image.open(BytesIO(data)) as image:
+            rgb = image.convert("RGB")
+            return RasterImage(
+                width=rgb.width,
+                height=rgb.height,
+                source_path=path,
+                raw_bytes=rgb.tobytes(),
+                channels=3,
+            )
+    except Exception:
+        if data.startswith(PNG_SIGNATURE):
+            return _load_png(data, source_path=path)
+        if data.startswith((b"P6", b"P3")):
+            return _load_ppm(data, source_path=path)
+        raise ValueError("unsupported image format; expected PNG or PPM")
 
 
 def screenshot_evidence_for_path(
@@ -161,10 +175,10 @@ def screenshot_evidence_for_path(
 
 
 def classify_screenshot_quality(image: RasterImage) -> tuple[str, list[str]]:
-    if image.width <= 0 or image.height <= 0 or not image.pixels:
+    if image.width <= 0 or image.height <= 0 or not image.sample_pixels(1):
         return "unreadable", ["screenshot_has_no_pixels"]
 
-    unique_sample = len(set(_sample_pixels(image.pixels, limit=5000)))
+    unique_sample = len(set(image.sample_pixels(5000)))
     if unique_sample <= 1:
         return "blank", ["screenshot_has_single_color"]
     if unique_sample < 8:
@@ -219,11 +233,15 @@ def _load_png(data: bytes, *, source_path: str) -> RasterImage:
         rows.append(row)
         previous = row
 
-    pixels: list[tuple[int, int, int]] = []
+    raw = bytearray(width * height * 3)
+    out = 0
     for row in rows:
         for idx in range(0, len(row), channels):
-            pixels.append((row[idx], row[idx + 1], row[idx + 2]))
-    return RasterImage(width=width, height=height, pixels=pixels, source_path=source_path)
+            raw[out] = row[idx]
+            raw[out + 1] = row[idx + 1]
+            raw[out + 2] = row[idx + 2]
+            out += 3
+    return RasterImage(width=width, height=height, source_path=source_path, raw_bytes=bytes(raw), channels=3)
 
 
 def _unfilter_png_row(row: bytearray, previous: bytearray, filter_type: int, channels: int) -> bytearray:
@@ -267,14 +285,18 @@ def _load_ppm(data: bytes, *, source_path: str) -> RasterImage:
     max_value = int(next(tokens))
     if max_value <= 0:
         raise ValueError("invalid ppm max value")
-    pixels = []
+    raw = bytearray(width * height * 3)
+    out = 0
     if magic == b"P3":
         for _ in range(width * height):
             r = _scale_ppm_value(int(next(tokens)), max_value)
             g = _scale_ppm_value(int(next(tokens)), max_value)
             b = _scale_ppm_value(int(next(tokens)), max_value)
-            pixels.append((r, g, b))
-        return RasterImage(width=width, height=height, pixels=pixels, source_path=source_path)
+            raw[out] = r
+            raw[out + 1] = g
+            raw[out + 2] = b
+            out += 3
+        return RasterImage(width=width, height=height, source_path=source_path, raw_bytes=bytes(raw), channels=3)
     if magic != b"P6":
         raise ValueError("unsupported ppm format")
 
@@ -284,14 +306,11 @@ def _load_ppm(data: bytes, *, source_path: str) -> RasterImage:
     if len(pixel_data) < expected:
         raise ValueError("truncated ppm pixels")
     for idx in range(0, expected, 3):
-        pixels.append(
-            (
-                _scale_ppm_value(pixel_data[idx], max_value),
-                _scale_ppm_value(pixel_data[idx + 1], max_value),
-                _scale_ppm_value(pixel_data[idx + 2], max_value),
-            )
-        )
-    return RasterImage(width=width, height=height, pixels=pixels, source_path=source_path)
+        raw[out] = _scale_ppm_value(pixel_data[idx], max_value)
+        raw[out + 1] = _scale_ppm_value(pixel_data[idx + 1], max_value)
+        raw[out + 2] = _scale_ppm_value(pixel_data[idx + 2], max_value)
+        out += 3
+    return RasterImage(width=width, height=height, source_path=source_path, raw_bytes=bytes(raw), channels=3)
 
 
 def _ppm_tokens(data: bytes):
@@ -342,12 +361,5 @@ def _scale_ppm_value(value: int, max_value: int) -> int:
     if max_value == 255:
         return value
     return max(0, min(255, round(value * 255 / max_value)))
-
-
-def _sample_pixels(pixels: list[tuple[int, int, int]], *, limit: int) -> list[tuple[int, int, int]]:
-    if len(pixels) <= limit:
-        return pixels
-    step = max(1, len(pixels) // limit)
-    return pixels[::step][:limit]
 
 

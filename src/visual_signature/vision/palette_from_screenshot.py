@@ -9,10 +9,10 @@ from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def extract_palette_from_screenshot(image: RasterImage | None, *, max_colors: int = 8) -> VisionPaletteEvidence:
-    if image is None or not image.pixels:
+    if image is None or not image.sample_pixels(1):
         return VisionPaletteEvidence(confidence=0.0)
 
-    sampled = _sample_pixels(image.pixels, limit=20_000)
+    sampled = image.sample_pixels(20_000)
     buckets = Counter(_bucket_color(pixel) for pixel in sampled)
     total = sum(buckets.values()) or 1
     dominant = [
@@ -38,12 +38,3 @@ def _bucket_color(pixel: tuple[int, int, int]) -> tuple[int, int, int]:
 
 def _hex_color(pixel: tuple[int, int, int]) -> str:
     return "#{:02x}{:02x}{:02x}".format(*pixel)
-
-
-def _sample_pixels(pixels: list[tuple[int, int, int]], *, limit: int) -> list[tuple[int, int, int]]:
-    if len(pixels) <= limit:
-        return pixels
-    step = max(1, len(pixels) // limit)
-    return pixels[::step][:limit]
-
-

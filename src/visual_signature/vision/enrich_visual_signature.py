@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Any
 
 from src.visual_signature.vision.composition import analyze_composition
@@ -29,7 +28,7 @@ def enrich_visual_signature_with_vision(
     This function does not call multimodal models, does not influence scoring,
     and does not mutate the input payload.
     """
-    payload = deepcopy(visual_signature_payload)
+    payload = dict(visual_signature_payload)
     metadata = resolve_screenshot_metadata(screenshot_payload=screenshot_payload)
     resolved_path = resolve_screenshot_path(
         screenshot_path=screenshot_path,
@@ -109,17 +108,7 @@ def _viewport_image(image: RasterImage | None, screenshot: Any) -> RasterImage |
     viewport_height = max(1, min(image.height, viewport_height))
     if viewport_width == image.width and viewport_height == image.height:
         return image
-
-    pixels: list[tuple[int, int, int]] = []
-    for y in range(viewport_height):
-        row_offset = y * image.width
-        pixels.extend(image.pixels[row_offset:row_offset + viewport_width])
-    return RasterImage(
-        width=viewport_width,
-        height=viewport_height,
-        pixels=pixels,
-        source_path=image.source_path,
-    )
+    return image.crop(width=viewport_width, height=viewport_height)
 
 
 def _normalize_capture_type(value: Any) -> str:
@@ -280,5 +269,4 @@ def _density_rank(value: Any) -> int:
     if density == "sparse":
         return 0
     return 1
-
 

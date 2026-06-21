@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from typing import Any
 
 from src.visual_signature.annotations.confidence import (
@@ -41,7 +40,7 @@ def annotate_visual_signature(
     This function is offline-only by default. It uses the mock provider unless a
     caller injects another provider explicitly.
     """
-    payload = deepcopy(visual_signature_payload)
+    payload = dict(visual_signature_payload)
     request = AnnotationRequest(
         brand_name=str(payload.get("brand_name") or ""),
         website_url=str(payload.get("website_url") or payload.get("analyzed_url") or ""),

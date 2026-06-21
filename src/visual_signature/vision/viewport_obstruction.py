@@ -410,6 +410,24 @@ def _pixel_stats(pixels: list[tuple[int, int, int]]) -> dict[str, float]:
 
 
 def _row_average(image: RasterImage, y: int) -> tuple[int, int, int]:
+    if image.raw_bytes is not None:
+        row_width = image.width
+        if row_width <= 0:
+            return (0, 0, 0)
+        channels = image.channels
+        offset = max(0, min(image.height - 1, y)) * row_width * channels
+        view = memoryview(image.raw_bytes)
+        total_r = total_g = total_b = 0
+        for index in range(offset, offset + row_width * channels, channels):
+            total_r += view[index]
+            total_g += view[index + 1]
+            total_b += view[index + 2]
+        return (
+            int(total_r / row_width),
+            int(total_g / row_width),
+            int(total_b / row_width),
+        )
+
     row = image.row_pixels(y)
     if not row:
         return (0, 0, 0)

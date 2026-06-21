@@ -39,7 +39,7 @@ def annotate_visual_signature(
     This function is offline-only by default. It uses the mock provider unless a
     caller injects another provider explicitly.
     """
-    payload = dict(visual_signature_payload)
+    payload = visual_signature_payload.copy()
     request = AnnotationRequest(
         brand_name=str(payload.get("brand_name") or ""),
         website_url=str(payload.get("website_url") or payload.get("analyzed_url") or ""),

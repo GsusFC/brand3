@@ -28,7 +28,7 @@ def enrich_visual_signature_with_vision(
     This function does not call multimodal models, does not influence scoring,
     and does not mutate the input payload.
     """
-    payload = dict(visual_signature_payload)
+    payload = visual_signature_payload.copy()
     metadata = resolve_screenshot_metadata(screenshot_payload=screenshot_payload)
     resolved_path = resolve_screenshot_path(
         screenshot_path=screenshot_path,
@@ -269,4 +269,3 @@ def _density_rank(value: Any) -> int:
     if density == "sparse":
         return 0
     return 1
-

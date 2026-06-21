@@ -7,8 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from src.visual_signature.corpus_expansion.corpus_expansion_models import (
 from src.visual_signature.versions import REVIEWER_WORKFLOW_PILOT_SCHEMA_VERSION
+from src.visual_signature.corpus_expansion.corpus_expansion_models import (
     CORPUS_EXPANSION_REVIEW_QUEUE_SCHEMA_VERSION,
     CorpusExpansionQueueState,
 )

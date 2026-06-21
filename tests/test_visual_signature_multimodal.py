@@ -33,7 +33,7 @@ def test_analyze_visual_semantics_missing_screenshot_returns_stable_fallback():
     )
 
     assert result == multimodal_analyzer.fallback_semantics("screenshot_file_not_found")
-    assert set(result) == {"status", "model", "fallback_used", "error_type", "data"}
+    assert set(result) == {"status", "model", "prompt_version", "fallback_used", "error_type", "data"}
     assert result["data"]["aesthetic_style"] == "not_detected"
     assert result["data"]["visual_polish_score"] is None
 
@@ -46,7 +46,7 @@ def test_build_multimodal_payload_uses_openai_compatible_image_url_block():
     )
 
     content = payload["messages"][0]["content"]
-    assert payload["model"] == multimodal_analyzer.VISION_MODEL
+    assert payload["model"] == multimodal_analyzer.BRAND3_VISUAL_SIGNATURE_MODEL
     assert content[0]["type"] == "text"
     assert content[1] == {
         "type": "image_url",

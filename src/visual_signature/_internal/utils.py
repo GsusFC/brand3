@@ -64,8 +64,9 @@ def json_default(value: Any) -> str:
     return str(value)
 
 
-def write_json(path: Path, payload: dict[str, Any]) -> None:
+def write_json(path: str | Path, payload: dict[str, Any]) -> None:
     """Write pretty JSON with sorted keys, creating parent dirs."""
+    path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(payload, indent=2, sort_keys=True, default=json_default) + "\n",

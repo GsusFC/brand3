@@ -38,13 +38,13 @@ from src.config import (
     LLM_CHEAP_MODEL,
     SCREENSHOT_PROVIDER,
 )
-from src.discovery.entity_discovery import discover_entity
 from src.discovery.enrichment import build_discovery_enrichment
 from src.discovery.evidence_preview import build_discovery_evidence_preview
 from src.discovery.calibration import apply_discovery_calibration_hint, build_discovery_calibration_hint
-from src.discovery.search_plan import build_discovery_search_plan
+from src.discovery.entity_discovery import discover_entity
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
+from src.discovery.search_plan import build_discovery_search_plan
 from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
 from src.reports.entity_research_packet import build_entity_research_packet
 from src.research.research_pack_facade import build_recommended_research_pack
@@ -87,6 +87,7 @@ from src.services.content_web import (
     _web_content_changed,
 )
 from src.services.diagnostics import _log_timing, _print_feature_details
+from src.services.discovery_payloads import _annotate_content_source
 from src.services.feature_pipeline import run_feature_pipeline
 from src.services.input_collection import collect_raw_inputs, start_analysis_run, store_safely as _store_safely
 from src.services.job_orchestration import (
@@ -219,30 +220,6 @@ def _discovery_search_plan_payload(
             ],
             "owned_urls": [url] if url else [],
         }
-
-
-def _annotate_content_source(features_by_dim: dict[str, dict], content_source: str) -> None:
-    feature_names = {
-        "coherencia": {
-            "visual_consistency",
-            "messaging_consistency",
-            "tone_consistency",
-            "cross_channel_coherence",
-        },
-        "diferenciacion": {
-            "positioning_clarity",
-            "uniqueness",
-            "content_authenticity",
-            "brand_personality",
-        },
-    }
-    for dim_name, names in feature_names.items():
-        for feature_name, feature in features_by_dim.get(dim_name, {}).items():
-            if feature_name not in names:
-                continue
-            if not isinstance(feature.raw_value, dict):
-                continue
-            feature.raw_value["content_source"] = content_source
 
 
 def _compute_data_quality(exa_data: ExaData | None, content_source: str) -> str:

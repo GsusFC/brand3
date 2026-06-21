@@ -306,14 +306,6 @@ def _row_pixels_from_bytes(
     ]
 
 
-def _pixel_from_bytes(raw_bytes: bytes, *, index: int | None = None, offset: int | None = None, channels: int) -> tuple[int, int, int]:
-    if offset is None:
-        if index is None:
-            raise ValueError("index or offset required")
-        offset = index * channels
-    return (raw_bytes[offset], raw_bytes[offset + 1], raw_bytes[offset + 2])
-
-
 def _crop_bytes(
     raw_bytes: bytes,
     *,
@@ -327,10 +319,11 @@ def _crop_bytes(
     if crop_width <= 0 or crop_height <= 0:
         return b""
     output = bytearray(crop_width * crop_height * channels)
+    view = memoryview(raw_bytes)
     out_offset = 0
     row_bytes = crop_width * channels
     for y in range(top, top + crop_height):
         in_offset = (y * width + left) * channels
-        output[out_offset:out_offset + row_bytes] = raw_bytes[in_offset:in_offset + row_bytes]
+        output[out_offset:out_offset + row_bytes] = view[in_offset:in_offset + row_bytes]
         out_offset += row_bytes
     return bytes(output)

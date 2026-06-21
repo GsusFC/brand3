@@ -29,9 +29,9 @@ from scripts.visual_signature_calibrate import (  # noqa: E402
 )
 from scripts.visual_signature_capture_screenshots import (  # noqa: E402
     CaptureBrand,
-    _capture_with_playwright,
     capture_screenshots,
 )
+from src.visual_signature.capture.playwright_capture_runtime import capture_with_playwright as _capture_with_playwright  # noqa: E402
 from src.visual_signature.corpus import baseline_eligibility  # noqa: E402
 
 

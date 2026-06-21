@@ -232,18 +232,18 @@ def _sample_pixels_from_bytes(raw_bytes: bytes, *, width: int, height: int, chan
     total = width * height
     if total <= 0:
         return []
+    view = memoryview(raw_bytes)
     if total <= limit:
         return [
-            _pixel_from_bytes(raw_bytes, index=index, channels=channels)
-            for index in range(total)
+            (view[offset], view[offset + 1], view[offset + 2])
+            for offset in range(0, total * channels, channels)
         ]
     step = max(1, total // limit)
-    sampled: list[tuple[int, int, int]] = []
-    for index in range(0, total, step):
-        sampled.append(_pixel_from_bytes(raw_bytes, index=index, channels=channels))
-        if len(sampled) >= limit:
-            break
-    return sampled
+    sampled = [
+        (view[offset], view[offset + 1], view[offset + 2])
+        for offset in range(0, total * channels, step * channels)
+    ]
+    return sampled[:limit]
 
 
 def _sample_grid_from_tuples(
@@ -277,12 +277,13 @@ def _sample_grid_from_bytes(
     x_step: int,
     y_step: int,
 ) -> list[tuple[int, int, int]]:
+    view = memoryview(raw_bytes)
+    row_width = right - left
     sampled: list[tuple[int, int, int]] = []
     for y in range(top, bottom, y_step):
         row_offset = (y * width + left) * channels
-        row_width = right - left
-        for x in range(0, row_width, x_step):
-            sampled.append(_pixel_from_bytes(raw_bytes, offset=row_offset + x * channels, channels=channels))
+        for x in range(0, row_width * channels, x_step * channels):
+            sampled.append((view[row_offset + x], view[row_offset + x + 1], view[row_offset + x + 2]))
     return sampled
 
 
@@ -298,10 +299,11 @@ def _row_pixels_from_bytes(
 ) -> list[tuple[int, int, int]]:
     row_offset = (y * width + left) * channels
     row_width = right - left
-    sampled: list[tuple[int, int, int]] = []
-    for x in range(0, row_width, step):
-        sampled.append(_pixel_from_bytes(raw_bytes, offset=row_offset + x * channels, channels=channels))
-    return sampled
+    view = memoryview(raw_bytes)
+    return [
+        (view[row_offset + x], view[row_offset + x + 1], view[row_offset + x + 2])
+        for x in range(0, row_width * channels, step * channels)
+    ]
 
 
 def _pixel_from_bytes(raw_bytes: bytes, *, index: int | None = None, offset: int | None = None, channels: int) -> tuple[int, int, int]:

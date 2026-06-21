@@ -13,7 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from src.config import BRAND3_LLM_API_KEY, VISION_MODEL
-from src.visual_interpretation.models import VisualEvidencePack, VisualInterpretation
+from src.visual_signature.interpretation.models import VisualEvidencePack, VisualInterpretation
 
 
 DEFAULT_GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"

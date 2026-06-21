@@ -12,6 +12,7 @@ from typing import Any, Iterable
 
 from src.visual_signature.baselines.build_category_baseline import NUMERIC_METRICS
 from src.visual_signature.baselines.types import VisualSignatureMetricRow
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
 
 
 def build_metric_audit(rows: Iterable[VisualSignatureMetricRow]) -> dict[str, Any]:
@@ -227,13 +228,6 @@ def _percentile(numbers: list[float], percentile: float) -> float:
 
 def _get(row: VisualSignatureMetricRow, metric: str) -> Any:
     return getattr(row, metric, None)
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _num(value: Any) -> str:

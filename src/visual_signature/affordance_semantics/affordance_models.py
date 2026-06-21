@@ -1,14 +1,12 @@
 """Dataclasses for the Visual Signature affordance semantics scaffold."""
 
 from __future__ import annotations
+from src.visual_signature.versions import AFFORDANCE_SEMANTICS_SCHEMA_VERSION, AFFORDANCE_EXPORT_SCHEMA_VERSION
 
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-
-AFFORDANCE_SEMANTICS_SCHEMA_VERSION = "visual-signature-affordance-semantics-1"
-AFFORDANCE_EXPORT_SCHEMA_VERSION = "visual-signature-affordance-export-1"
 
 AffordanceCategory = Literal[
     "close_control",
@@ -34,7 +32,6 @@ EvidenceSource = Literal[
     "overlay_context",
 ]
 ConfidenceLevel = Literal["low", "medium", "high"]
-
 
 @dataclass(slots=True)
 class AffordanceEvidence:
@@ -65,7 +62,6 @@ class AffordanceEvidence:
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
-
 @dataclass(slots=True)
 class AffordancePolicyDecision:
     category: AffordanceCategory
@@ -77,7 +73,6 @@ class AffordancePolicyDecision:
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
-
 
 @dataclass(slots=True)
 class AffordanceClassification:
@@ -101,7 +96,6 @@ class AffordanceClassification:
         payload["created_at"] = self.created_at.isoformat().replace("+00:00", "Z")
         return payload
 
-
 @dataclass(slots=True)
 class AffordanceExport:
     schema_version: Literal[AFFORDANCE_EXPORT_SCHEMA_VERSION]
@@ -124,7 +118,6 @@ class AffordanceExport:
             "policy_counts": dict(sorted(self.policy_counts.items())),
             "category_counts": dict(sorted(self.category_counts.items())),
         }
-
 
 def _string_list(value: Any) -> list[str]:
     if value is None:

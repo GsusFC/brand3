@@ -29,6 +29,7 @@ from src.visual_signature.corpus_expansion.corpus_review_queue import (
     write_review_queue,
 )
 from src.visual_signature.corpus_expansion.corpus_sampling import build_default_corpus_expansion_seed
+from src.visual_signature._internal.utils import write_json as _write_json
 
 
 DEFAULT_OUTPUT_ROOT = Path(__file__).resolve().parents[3] / "examples" / "visual_signature" / "corpus_expansion"
@@ -317,10 +318,6 @@ def validate_corpus_expansion_review_queue_item(payload: dict[str, Any]) -> list
     from src.visual_signature.corpus_expansion.corpus_expansion_models import validate_corpus_expansion_queue_item
 
     return validate_corpus_expansion_queue_item(payload)
-
-
-def _write_json(path: str | Path, payload: Any) -> None:
-    Path(path).write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def _load_json(path: str | Path) -> Any:

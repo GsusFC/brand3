@@ -6,6 +6,7 @@ scripts, and TypeScript interfaces.
 """
 
 from __future__ import annotations
+from src.visual_signature.versions import PHASE_ZERO_TAXONOMY_VERSION, OBSERVATION_REGISTRY_SCHEMA_VERSION, STATE_REGISTRY_SCHEMA_VERSION, TRANSITION_REGISTRY_SCHEMA_VERSION, SCORING_REGISTRY_SCHEMA_VERSION, UNCERTAINTY_POLICY_SCHEMA_VERSION, UNCERTAINTY_PROFILE_SCHEMA_VERSION, REASONING_TRACE_SCHEMA_VERSION, OBSERVATION_RECORD_SCHEMA_VERSION, STATE_RECORD_SCHEMA_VERSION, TRANSITION_RECORD_SCHEMA_VERSION, MUTATION_AUDIT_SCHEMA_VERSION, DATASET_ELIGIBILITY_SCHEMA_VERSION, REVIEW_RECORD_SCHEMA_VERSION
 
 from datetime import datetime, timezone
 from typing import Annotated, Any, Literal
@@ -13,31 +14,12 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 
-PHASE_ZERO_TAXONOMY_VERSION = "phase-zero-taxonomy-1"
-
-OBSERVATION_REGISTRY_SCHEMA_VERSION = "phase-zero-observation-registry-1"
-STATE_REGISTRY_SCHEMA_VERSION = "phase-zero-state-registry-1"
-TRANSITION_REGISTRY_SCHEMA_VERSION = "phase-zero-transition-registry-1"
-SCORING_REGISTRY_SCHEMA_VERSION = "phase-zero-scoring-registry-1"
-UNCERTAINTY_POLICY_SCHEMA_VERSION = "phase-zero-uncertainty-policy-1"
-UNCERTAINTY_PROFILE_SCHEMA_VERSION = "phase-zero-uncertainty-profile-1"
-REASONING_TRACE_SCHEMA_VERSION = "phase-zero-reasoning-trace-1"
-OBSERVATION_RECORD_SCHEMA_VERSION = "phase-zero-perceptual-observation-1"
-STATE_RECORD_SCHEMA_VERSION = "phase-zero-perceptual-state-1"
-TRANSITION_RECORD_SCHEMA_VERSION = "phase-zero-transition-record-1"
-MUTATION_AUDIT_SCHEMA_VERSION = "phase-zero-mutation-audit-1"
-DATASET_ELIGIBILITY_SCHEMA_VERSION = "phase-zero-dataset-eligibility-1"
-REVIEW_RECORD_SCHEMA_VERSION = "phase-zero-review-record-1"
-
-
 class PhaseZeroModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
 
 ConfidenceScore = Annotated[float, Field(ge=0.0, le=1.0)]
 SchemaVersion = Annotated[str, Field(min_length=1)]
 NonEmptyString = Annotated[str, Field(min_length=1)]
-
 
 class ObservationDefinition(PhaseZeroModel):
     key: NonEmptyString
@@ -46,13 +28,11 @@ class ObservationDefinition(PhaseZeroModel):
     value_type: Literal["categorical", "numeric", "boolean", "text"]
     notes: list[str] = Field(default_factory=list)
 
-
 class ObservationRegistry(PhaseZeroModel):
     schema_version: Literal[OBSERVATION_REGISTRY_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
     registry_type: Literal["observation_registry"]
     items: list[ObservationDefinition]
-
 
 class StateDefinition(PhaseZeroModel):
     key: NonEmptyString
@@ -61,13 +41,11 @@ class StateDefinition(PhaseZeroModel):
     review_required: bool = False
     mutation_allowed: bool = False
 
-
 class StateRegistry(PhaseZeroModel):
     schema_version: Literal[STATE_REGISTRY_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
     registry_type: Literal["state_registry"]
     items: list[StateDefinition]
-
 
 class TransitionDefinition(PhaseZeroModel):
     key: NonEmptyString
@@ -77,13 +55,11 @@ class TransitionDefinition(PhaseZeroModel):
     requires_lineage: bool = True
     requires_evidence: bool = True
 
-
 class TransitionRegistry(PhaseZeroModel):
     schema_version: Literal[TRANSITION_REGISTRY_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
     registry_type: Literal["transition_registry"]
     items: list[TransitionDefinition]
-
 
 class ScoreDefinition(PhaseZeroModel):
     key: NonEmptyString
@@ -92,13 +68,11 @@ class ScoreDefinition(PhaseZeroModel):
     enabled: bool = False
     boundary_note: NonEmptyString
 
-
 class ScoringRegistry(PhaseZeroModel):
     schema_version: Literal[SCORING_REGISTRY_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
     registry_type: Literal["scoring_registry"]
     items: list[ScoreDefinition]
-
 
 class UncertaintyPolicy(PhaseZeroModel):
     schema_version: Literal[UNCERTAINTY_POLICY_SCHEMA_VERSION]
@@ -109,7 +83,6 @@ class UncertaintyPolicy(PhaseZeroModel):
     known_unknown_labels: list[NonEmptyString]
     uncertainty_reasons: list[NonEmptyString]
     reviewer_required_labels: list[NonEmptyString]
-
 
 class UncertaintyProfile(PhaseZeroModel):
     schema_version: Literal[UNCERTAINTY_PROFILE_SCHEMA_VERSION]
@@ -122,13 +95,11 @@ class UncertaintyProfile(PhaseZeroModel):
     reviewer_required: bool = False
     unsupported_inference: bool = False
 
-
 class ReasoningStatement(PhaseZeroModel):
     statement: NonEmptyString
     confidence: ConfidenceScore
     evidence_refs: list[NonEmptyString] = Field(default_factory=list)
     warnings: list[NonEmptyString] = Field(default_factory=list)
-
 
 class ReasoningTrace(PhaseZeroModel):
     schema_version: Literal[REASONING_TRACE_SCHEMA_VERSION]
@@ -141,7 +112,6 @@ class ReasoningTrace(PhaseZeroModel):
     unsupported_inference_warnings: list[NonEmptyString] = Field(default_factory=list)
     review_required: bool = False
     lineage_refs: list[NonEmptyString] = Field(default_factory=list)
-
 
 class PerceptualObservationRecord(PhaseZeroModel):
     schema_version: Literal[OBSERVATION_RECORD_SCHEMA_VERSION]
@@ -161,7 +131,6 @@ class PerceptualObservationRecord(PhaseZeroModel):
     reasoning_trace: ReasoningTrace
     lineage_refs: list[NonEmptyString] = Field(default_factory=list)
 
-
 class TransitionRecord(PhaseZeroModel):
     schema_version: Literal[TRANSITION_RECORD_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
@@ -178,7 +147,6 @@ class TransitionRecord(PhaseZeroModel):
     mutation_ref: str | None = None
     notes: list[NonEmptyString] = Field(default_factory=list)
 
-
 class PerceptualStateRecord(PhaseZeroModel):
     schema_version: Literal[STATE_RECORD_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
@@ -194,7 +162,6 @@ class PerceptualStateRecord(PhaseZeroModel):
     transitions: list[TransitionRecord]
     reasoning_trace: ReasoningTrace
     lineage_refs: list[NonEmptyString] = Field(default_factory=list)
-
 
 class MutationAuditRecord(PhaseZeroModel):
     schema_version: Literal[MUTATION_AUDIT_SCHEMA_VERSION]
@@ -219,7 +186,6 @@ class MutationAuditRecord(PhaseZeroModel):
     lineage_refs: list[NonEmptyString] = Field(default_factory=list)
     integrity_notes: list[NonEmptyString] = Field(default_factory=list)
 
-
 class ReviewRecord(PhaseZeroModel):
     schema_version: Literal[REVIEW_RECORD_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
@@ -233,7 +199,6 @@ class ReviewRecord(PhaseZeroModel):
     unsupported_inference_present: bool
     uncertainty_accepted: bool
     notes: list[NonEmptyString] = Field(default_factory=list)
-
 
 class DatasetEligibilityRecord(PhaseZeroModel):
     schema_version: Literal[DATASET_ELIGIBILITY_SCHEMA_VERSION]

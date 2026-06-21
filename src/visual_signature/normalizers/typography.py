@@ -7,6 +7,7 @@ import re
 from collections import OrderedDict
 
 from src.visual_signature.types import NormalizedTypographySignals, TypographySignal, VisualAcquisitionResult
+from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 FONT_FAMILY = re.compile(r"font-family\s*:\s*([^;\"'}]+)", re.I)
@@ -150,5 +151,3 @@ def _infer_metadata_fonts(metadata: dict) -> list[str]:
     return [item.strip() for item in matches if item.strip()]
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

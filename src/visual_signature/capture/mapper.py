@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.visual_diagnosis.models import (
+from src.visual_signature.capture.models import (
     VisualDiagnosis,
     VisualDiagnosisCapture,
     VisualDiagnosisRead,

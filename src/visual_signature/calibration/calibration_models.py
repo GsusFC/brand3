@@ -9,15 +9,8 @@ from typing import Any, Annotated, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.visual_signature.phase_zero.models import PHASE_ZERO_TAXONOMY_VERSION
+from src.visual_signature.versions import CALIBRATION_CLAIM_SCHEMA_VERSION, CALIBRATION_GENERATED_FILE_SCHEMA_VERSION, CALIBRATION_REVIEW_OUTCOME_SCHEMA_VERSION, CALIBRATION_RECORD_SCHEMA_VERSION, CALIBRATION_RECORDS_FILE_SCHEMA_VERSION, CALIBRATION_MANIFEST_SCHEMA_VERSION, CALIBRATION_SUMMARY_SCHEMA_VERSION
 
-
-CALIBRATION_CLAIM_SCHEMA_VERSION = "visual-signature-calibration-claim-1"
-CALIBRATION_GENERATED_FILE_SCHEMA_VERSION = "visual-signature-calibration-generated-file-1"
-CALIBRATION_REVIEW_OUTCOME_SCHEMA_VERSION = "visual-signature-calibration-review-outcome-1"
-CALIBRATION_RECORD_SCHEMA_VERSION = "visual-signature-calibration-record-1"
-CALIBRATION_RECORDS_FILE_SCHEMA_VERSION = "visual-signature-calibration-records-1"
-CALIBRATION_MANIFEST_SCHEMA_VERSION = "visual-signature-calibration-manifest-1"
-CALIBRATION_SUMMARY_SCHEMA_VERSION = "visual-signature-calibration-summary-1"
 
 AgreementState = Literal["confirmed", "contradicted", "unresolved", "insufficient_review"]
 ConfidenceBucket = Literal["low", "medium", "high", "unknown"]
@@ -28,10 +21,8 @@ VisuallySupported = Literal["yes", "partial", "no"]
 ConfidenceScore = Annotated[float, Field(ge=0.0, le=1.0)]
 NonEmptyString = Annotated[str, Field(min_length=1)]
 
-
 class CalibrationModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
 
 class PerceptionClaim(CalibrationModel):
     schema_version: Literal[CALIBRATION_CLAIM_SCHEMA_VERSION]
@@ -46,7 +37,6 @@ class PerceptionClaim(CalibrationModel):
     lineage_refs: list[NonEmptyString] = Field(default_factory=list)
     notes: list[NonEmptyString] = Field(default_factory=list)
 
-
 class ReviewOutcome(CalibrationModel):
     schema_version: Literal[CALIBRATION_REVIEW_OUTCOME_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
@@ -60,7 +50,6 @@ class ReviewOutcome(CalibrationModel):
     unsupported_inference_present: bool
     uncertainty_accepted: bool
     notes: list[NonEmptyString] = Field(default_factory=list)
-
 
 class CalibrationRecord(CalibrationModel):
     schema_version: Literal[CALIBRATION_RECORD_SCHEMA_VERSION]
@@ -82,7 +71,6 @@ class CalibrationRecord(CalibrationModel):
     diagnostics: dict[str, Any] = Field(default_factory=dict)
     notes: list[NonEmptyString] = Field(default_factory=list)
 
-
 class CalibrationRecordsFile(CalibrationModel):
     schema_version: Literal[CALIBRATION_RECORDS_FILE_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
@@ -99,7 +87,6 @@ class CalibrationRecordsFile(CalibrationModel):
     record_count: int
     schema_versions: dict[NonEmptyString, NonEmptyString] = Field(default_factory=dict)
     records: list[CalibrationRecord]
-
 
 class CalibrationSummary(CalibrationModel):
     schema_version: Literal[CALIBRATION_SUMMARY_SCHEMA_VERSION]
@@ -139,7 +126,6 @@ class CalibrationSummary(CalibrationModel):
     review_status_distribution: dict[str, int] = Field(default_factory=dict)
     notes: list[NonEmptyString] = Field(default_factory=list)
 
-
 class GeneratedFile(CalibrationModel):
     schema_version: Literal[CALIBRATION_GENERATED_FILE_SCHEMA_VERSION]
     taxonomy_version: Literal[PHASE_ZERO_TAXONOMY_VERSION]
@@ -147,7 +133,6 @@ class GeneratedFile(CalibrationModel):
     path: NonEmptyString
     sha256: NonEmptyString
     size_bytes: int
-
 
 class CalibrationManifest(CalibrationModel):
     schema_version: Literal[CALIBRATION_MANIFEST_SCHEMA_VERSION]
@@ -170,7 +155,6 @@ class CalibrationManifest(CalibrationModel):
     validation_errors: list[NonEmptyString] = Field(default_factory=list)
     notes: list[NonEmptyString] = Field(default_factory=list)
 
-
 def confidence_bucket_for_score(score: float | None) -> ConfidenceBucket:
     if score is None:
         return "unknown"
@@ -182,14 +166,12 @@ def confidence_bucket_for_score(score: float | None) -> ConfidenceBucket:
         return "low"
     return "low"
 
-
 def validate_calibration_record(record: dict[str, Any]) -> list[str]:
     try:
         CalibrationRecord.model_validate(record)
     except Exception as exc:  # noqa: BLE001
         return [str(exc)]
     return []
-
 
 def validate_calibration_summary(summary: dict[str, Any]) -> list[str]:
     try:
@@ -198,7 +180,6 @@ def validate_calibration_summary(summary: dict[str, Any]) -> list[str]:
         return [str(exc)]
     return []
 
-
 def validate_calibration_manifest(manifest: dict[str, Any]) -> list[str]:
     try:
         CalibrationManifest.model_validate(manifest)
@@ -206,10 +187,8 @@ def validate_calibration_manifest(manifest: dict[str, Any]) -> list[str]:
         return [str(exc)]
     return []
 
-
 def is_positive_claim_value(value: str) -> bool:
     return value in {"RAW_STATE", "ELIGIBLE_FOR_SAFE_INTERVENTION", "MINIMALLY_MUTATED_STATE"}
-
 
 def agreement_distribution(records: list[CalibrationRecord]) -> dict[str, int]:
     return dict(sorted(Counter(record.agreement_state for record in records).items()))

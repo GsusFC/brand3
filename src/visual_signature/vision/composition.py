@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from src.visual_signature.vision.types import RasterImage, VisionCompositionEvidence
+from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def analyze_composition(image: RasterImage | None) -> VisionCompositionEvidence:
@@ -95,5 +96,3 @@ def _distance(left: tuple[int, int, int], right: tuple[int, int, int]) -> float:
     return sum(abs(left[idx] - right[idx]) for idx in range(3)) / 3
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

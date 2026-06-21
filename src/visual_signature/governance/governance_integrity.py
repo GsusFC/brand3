@@ -10,9 +10,9 @@ from typing import Any
 from src.visual_signature.calibration.readiness_models import ReadinessScope
 from src.visual_signature.governance.capability_models import validate_capability_registry
 from src.visual_signature.governance.runtime_policy_models import validate_runtime_policy_matrix_payload
+from src.visual_signature.versions import GOVERNANCE_INTEGRITY_SCHEMA_VERSION
 
 
-GOVERNANCE_INTEGRITY_SCHEMA_VERSION = "visual-signature-governance-integrity-1"
 GOVERNANCE_SCOPE = "visual_signature"
 
 VALID_READINESS_SCOPES: tuple[ReadinessScope, ...] = (
@@ -23,7 +23,6 @@ VALID_READINESS_SCOPES: tuple[ReadinessScope, ...] = (
     "scoring_integration",
     "model_training",
 )
-
 
 def check_governance_integrity(
     *,
@@ -109,7 +108,6 @@ def check_governance_integrity(
         ],
     }
 
-
 def write_governance_integrity_report(
     *,
     output_root: str | Path | None = None,
@@ -138,7 +136,6 @@ def write_governance_integrity_report(
         "governance_integrity_report_json": str(json_path),
         "governance_integrity_report_md": str(md_path),
     }
-
 
 def governance_integrity_report_markdown(report: dict[str, Any]) -> str:
     lines = [
@@ -199,7 +196,6 @@ def governance_integrity_report_markdown(report: dict[str, Any]) -> str:
     )
     return "\n".join(lines).rstrip()
 
-
 def _check_registry_consistency(
     capability_payload: dict[str, Any],
     runtime_policy_payload: dict[str, Any],
@@ -230,7 +226,6 @@ def _check_registry_consistency(
             if scope_policies.get(scope) == "allowed":
                 errors.append(f"runtime policy allows prohibited scope: {capability_id}:{scope}")
 
-
 def _check_readiness_scope_alignment(
     calibration_readiness_payload: dict[str, Any],
     runtime_policy_payload: dict[str, Any],
@@ -242,7 +237,6 @@ def _check_readiness_scope_alignment(
         runtime_scopes.update(entry.get("scope_policies", {}).keys())
     if readiness_scope not in runtime_scopes:
         errors.append(f"readiness scope not represented in runtime policy scopes: {readiness_scope!r}")
-
 
 def _check_doc_references(
     calibration_governance_checkpoint_text: str,
@@ -271,7 +265,6 @@ def _check_doc_references(
     if not _contains_any(calibration_governance_checkpoint_text, ("governance metadata only", "governance metadata")):
         warnings.append("calibration_governance_checkpoint missing governance metadata language")
 
-
 def _check_doc_language(
     calibration_governance_checkpoint_text: str,
     technical_checkpoint_text: str,
@@ -285,11 +278,9 @@ def _check_doc_language(
     if not _contains_any(reliable_visual_perception_text, ("capability existence does not imply runtime approval", "existence does not imply runtime approval")):
         warnings.append("reliable_visual_perception missing runtime approval disclaimer")
 
-
 def _contains_any(text: str, phrases: tuple[str, ...]) -> bool:
     lowered = " ".join(text.lower().split())
     return any(phrase in lowered for phrase in phrases)
-
 
 def _load_json(path: str | Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))

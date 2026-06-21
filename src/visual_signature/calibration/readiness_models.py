@@ -8,9 +8,8 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from src.visual_signature.phase_zero.models import PHASE_ZERO_TAXONOMY_VERSION
+from src.visual_signature.versions import CALIBRATION_READINESS_SCHEMA_VERSION
 
-
-CALIBRATION_READINESS_SCHEMA_VERSION = "visual-signature-calibration-readiness-1"
 
 ReadinessStatus = Literal["ready", "not_ready"]
 ReadinessScope = Literal[
@@ -24,10 +23,8 @@ ReadinessScope = Literal[
 
 NonEmptyString = Annotated[str, Field(min_length=1)]
 
-
 class ReadinessModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
 
 class ReadinessThresholds(ReadinessModel):
     minimum_total_claims: int
@@ -39,14 +36,12 @@ class ReadinessThresholds(ReadinessModel):
     maximum_high_confidence_contradictions: int
     maximum_unresolved_rate: float
 
-
 class CoverageStats(ReadinessModel):
     count: int
     share: float
     meets_minimum: bool
     minimum_required: int
     reviewed_count: int = 0
-
 
 class ReadinessResult(ReadinessModel):
     schema_version: Literal[CALIBRATION_READINESS_SCHEMA_VERSION]
@@ -72,7 +67,6 @@ class ReadinessResult(ReadinessModel):
     minimum_thresholds_used: ReadinessThresholds
     recommendation: NonEmptyString
     notes: list[NonEmptyString] = Field(default_factory=list)
-
 
 def validate_readiness_result(payload: dict[str, Any]) -> list[str]:
     try:

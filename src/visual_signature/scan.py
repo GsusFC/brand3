@@ -11,9 +11,8 @@ from typing import Any
 
 from src.visual_signature.extract_visual_signature import extract_visual_signature
 from src.visual_signature.vision.enrich_visual_signature import enrich_visual_signature_with_vision
-
-
-VISUAL_SIGNATURE_SCAN_VERSION = "visual-signature-scan-v1"
+from src.visual_signature._internal.utils import int_or_none as _int_or_none, unique as _unique
+from src.visual_signature.versions import VISUAL_SIGNATURE_SCAN_VERSION
 
 
 def run_visual_signature_scan(
@@ -45,7 +44,6 @@ def run_visual_signature_scan(
         )
     return build_visual_signature_scan(payload)
 
-
 def build_visual_signature_scan(visual_signature_payload: dict[str, Any]) -> dict[str, Any]:
     """Build a deterministic visual scanner result from a Visual Signature payload."""
 
@@ -71,7 +69,6 @@ def build_visual_signature_scan(visual_signature_payload: dict[str, Any]) -> dic
         "raw_refs": ["raw_inputs:visual_signature"],
     }
 
-
 def _capture_summary(payload: dict[str, Any]) -> dict[str, Any]:
     vision = _dict(payload.get("vision"))
     vision_screenshot = _dict(vision.get("screenshot"))
@@ -95,7 +92,6 @@ def _capture_summary(payload: dict[str, Any]) -> dict[str, Any]:
         "height": _int_or_none(vision_screenshot.get("height")),
         "obstruction": obstruction,
     }
-
 
 def _dimension_scores(payload: dict[str, Any], capture: dict[str, Any]) -> dict[str, dict[str, Any]]:
     extraction = _dict(payload.get("extraction_confidence"))
@@ -130,10 +126,8 @@ def _dimension_scores(payload: dict[str, Any], capture: dict[str, Any]) -> dict[
         "brand_fit": _dimension("brand_fit", brand_fit, "Alignment between visible design and brand promise/category."),
     }
 
-
 def _dimension(key: str, score: float, rationale: str) -> dict[str, Any]:
     return {"key": key, "score": round(score, 1), "label": _score_label(score), "rationale": rationale}
-
 
 def _weighted_score(dimensions: dict[str, dict[str, Any]]) -> float:
     weights = {
@@ -145,7 +139,6 @@ def _weighted_score(dimensions: dict[str, dict[str, Any]]) -> float:
     }
     total = sum(float(dimensions[key]["score"]) * weight for key, weight in weights.items())
     return round(_clamp100(total), 1)
-
 
 def _evidence_items(
     payload: dict[str, Any],
@@ -191,10 +184,8 @@ def _evidence_items(
         items.append(_evidence(weakest["key"], f"Weakest visual dimension: {weakest['key']} at {weakest['score']}.", "negative"))
     return items[:8]
 
-
 def _evidence(key: str, text: str, polarity: str) -> dict[str, Any]:
     return {"key": key, "text": text, "polarity": polarity, "source": "visual_signature"}
-
 
 def _limitations(payload: dict[str, Any], capture: dict[str, Any]) -> list[str]:
     limitations: list[str] = []
@@ -212,7 +203,6 @@ def _limitations(payload: dict[str, Any], capture: dict[str, Any]) -> list[str]:
         limitations.append("semantic_visual_model_fallback")
     return _unique(limitations)
 
-
 def _status(payload: dict[str, Any], capture: dict[str, Any], score: float) -> str:
     if payload.get("interpretation_status") == "not_interpretable":
         return "not_evaluable"
@@ -224,7 +214,6 @@ def _status(payload: dict[str, Any], capture: dict[str, Any], score: float) -> s
     if score < 45:
         return "weak"
     return "ready"
-
 
 def _canonical_obstruction(obstruction: dict[str, Any]) -> dict[str, Any]:
     if not obstruction:
@@ -247,7 +236,6 @@ def _canonical_obstruction(obstruction: dict[str, Any]) -> dict[str, Any]:
         "signals": signals[:12],
     }
 
-
 def _obstruction_penalty(capture: dict[str, Any]) -> float:
     obstruction = _dict(capture.get("obstruction"))
     if not obstruction.get("present"):
@@ -260,7 +248,6 @@ def _obstruction_penalty(capture: dict[str, Any]) -> float:
     if severity == "moderate":
         return 10.0
     return 5.0
-
 
 def _distinctiveness_score(payload: dict[str, Any], assets: dict[str, Any]) -> float:
     colors = _dict(payload.get("colors"))
@@ -284,7 +271,6 @@ def _distinctiveness_score(payload: dict[str, Any], assets: dict[str, Any]) -> f
         score += 5
     return _clamp100(score)
 
-
 def _brand_fit_score(semantics: dict[str, Any], semantic_data: dict[str, Any], consistency: dict[str, Any]) -> float:
     polish = semantic_data.get("visual_polish_score")
     if polish is not None:
@@ -296,7 +282,6 @@ def _brand_fit_score(semantics: dict[str, Any], semantic_data: dict[str, Any], c
         return _clamp100(45 + _score01(consistency.get("overall_consistency")) * 35)
     return _clamp100(50 + _score01(consistency.get("overall_consistency")) * 40)
 
-
 def _score_label(score: float) -> str:
     if score >= 80:
         return "strong"
@@ -306,10 +291,8 @@ def _score_label(score: float) -> str:
         return "mixed"
     return "weak"
 
-
 def _dict(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
-
 
 def _score01(value: Any) -> float:
     try:
@@ -320,28 +303,12 @@ def _score01(value: Any) -> float:
         number = number / 100
     return max(0.0, min(1.0, number))
 
-
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
-
-
 def _float_or_none(value: Any) -> float | None:
     try:
         return round(float(value), 3)
     except (TypeError, ValueError):
         return None
 
-
 def _clamp100(value: float) -> float:
     return max(0.0, min(100.0, float(value)))
 
-
-def _unique(values: list[str]) -> list[str]:
-    out: list[str] = []
-    for value in values:
-        if value and value not in out:
-            out.append(value)
-    return out

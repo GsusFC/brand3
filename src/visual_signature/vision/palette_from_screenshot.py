@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections import Counter
 
 from src.visual_signature.vision.types import RasterImage, VisionColor, VisionPaletteEvidence
+from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def extract_palette_from_screenshot(image: RasterImage | None, *, max_colors: int = 8) -> VisionPaletteEvidence:
@@ -46,5 +47,3 @@ def _sample_pixels(pixels: list[tuple[int, int, int]], *, limit: int) -> list[tu
     return pixels[::step][:limit]
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

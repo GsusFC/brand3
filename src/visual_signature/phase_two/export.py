@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from src.visual_signature.phase_two.types import PhaseTwoCaptureBundle, PhaseTwoExportManifest
+from src.visual_signature._internal.utils import utc_now as _utc_now, json_default as _json_default, write_json as _write_json
 
 
 def export_phase_two_bundle(
@@ -98,11 +99,6 @@ def export_phase_two_bundle(
     return manifest
 
 
-def _write_json(path: Path, payload: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=_json_default) + "\n", encoding="utf-8")
-
-
 def _slug(value: str) -> str:
     value = value.lower().strip()
     out = []
@@ -114,15 +110,3 @@ def _slug(value: str) -> str:
     return "".join(out).strip("-") or "capture"
 
 
-def _utc_now() -> str:
-    from datetime import datetime, timezone
-
-    return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
-def _json_default(value: Any) -> str:
-    from datetime import datetime
-
-    if isinstance(value, datetime):
-        return value.isoformat().replace("+00:00", "Z")
-    return str(value)

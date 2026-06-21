@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
+from src.visual_signature.versions import ANNOTATION_PROMPT_VERSION as PROMPT_VERSION
 from src.visual_signature.annotations.types import ANNOTATION_TARGETS, AnnotationRequest
-
-
-PROMPT_VERSION = "visual-signature-annotation-prompt-1"
 
 
 def build_annotation_prompt(request: AnnotationRequest) -> str:

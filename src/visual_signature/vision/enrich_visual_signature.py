@@ -15,6 +15,7 @@ from src.visual_signature.vision.screenshot_quality import (
 )
 from src.visual_signature.vision.types import RasterImage, VisionEvidence
 from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
+from src.visual_signature._internal.utils import int_or_none as _int_or_none, float_or_none as _float_or_none
 
 
 def enrich_visual_signature_with_vision(
@@ -126,13 +127,6 @@ def _normalize_capture_type(value: Any) -> str:
     if capture_type in {"viewport", "full_page"}:
         return capture_type
     return "unknown"
-
-
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def compare_dom_and_viewport(
@@ -288,8 +282,3 @@ def _density_rank(value: Any) -> int:
     return 1
 
 
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None

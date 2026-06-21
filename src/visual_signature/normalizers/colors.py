@@ -6,6 +6,7 @@ import re
 from collections import OrderedDict
 
 from src.visual_signature.types import ColorSignal, NormalizedColorSignals, VisualAcquisitionResult
+from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 HEX_COLOR = re.compile(r"#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b")
@@ -150,5 +151,3 @@ def _saturation(hex_value: str) -> float:
     return 0 if max_value == 0 else (max_value - min_value) / max_value
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

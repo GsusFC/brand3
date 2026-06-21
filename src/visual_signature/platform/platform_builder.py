@@ -12,9 +12,9 @@ from typing import Any
 from src.visual_signature.platform.platform_models import PlatformArtifact
 from src.visual_signature.platform.platform_models import PlatformBundle
 from src.visual_signature.platform.platform_models import PlatformSection
+from src.visual_signature.versions import VISUAL_SIGNATURE_PLATFORM_SCHEMA_VERSION
 
 
-VISUAL_SIGNATURE_PLATFORM_SCHEMA_VERSION = "brand3-platform-1"
 VISUAL_SIGNATURE_PLATFORM_RECORD_TYPE = "brand3_platform_bundle"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_VISUAL_SIGNATURE_ROOT = PROJECT_ROOT / "examples" / "visual_signature"
@@ -36,7 +36,6 @@ GUARDRAILS = [
     "JSON remains source of truth",
     "Markdown remains audit/export",
 ]
-
 
 VISUAL_SIGNATURE_ARTIFACT_SPECS = [
     ("capture_manifest", "Capture manifest", "screenshots/capture_manifest.json", "json", True),
@@ -70,7 +69,6 @@ SCORING_ARTIFACT_SPECS = [
     ("brand3_legacy_db", "Brand3 legacy DB", "data/brand3.db", "sqlite", False),
     ("scoring_dimensions_source", "Scoring rubric dimensions source", "src/dimensions.py", "python", False),
 ]
-
 
 def build_platform_bundle(
     *,
@@ -135,7 +133,6 @@ def build_platform_bundle(
     )
     return bundle.to_dict()
 
-
 def validate_platform_bundle(
     *,
     platform_root: str | Path,
@@ -167,7 +164,6 @@ def validate_platform_bundle(
             errors.append(f"missing section: {title}")
     return errors
 
-
 def write_platform_bundle(
     *,
     output_root: str | Path | None = None,
@@ -190,7 +186,6 @@ def write_platform_bundle(
         "platform_css": str(platform_root / "platform.css"),
         "platform_js": str(platform_root / "platform.js"),
     }
-
 
 def _build_artifacts(*, output_root: Path, visual_signature_root: Path, scoring_output_root: Path) -> list[PlatformArtifact]:
     artifacts: list[PlatformArtifact] = []
@@ -244,7 +239,6 @@ def _build_artifacts(*, output_root: Path, visual_signature_root: Path, scoring_
         )
     return artifacts
 
-
 def _brand3_overview_section(
     artifact_map: dict[str, PlatformArtifact],
     json_map: dict[str, dict[str, Any] | None],
@@ -281,7 +275,6 @@ def _brand3_overview_section(
         ],
     )
 
-
 def _initial_scoring_section(artifact_map: dict[str, PlatformArtifact], scoring_summary: dict[str, Any]) -> PlatformSection:
     has_outputs = bool(scoring_summary.get("output_count") or scoring_summary.get("report_count"))
     dimensions = _scoring_dimensions_summary()
@@ -311,7 +304,6 @@ def _initial_scoring_section(artifact_map: dict[str, PlatformArtifact], scoring_
             "Regenerate scoring artifacts only through existing scoring scripts when that is explicitly intended.",
         ],
     )
-
 
 def _visual_signature_section(artifact_map: dict[str, PlatformArtifact], json_map: dict[str, dict[str, Any] | None]) -> PlatformSection:
     visual_artifact_keys = {key for key, *_rest in VISUAL_SIGNATURE_ARTIFACT_SPECS}
@@ -346,7 +338,6 @@ def _visual_signature_section(artifact_map: dict[str, PlatformArtifact], json_ma
             "Open Governance before considering any broader validation work.",
         ],
     )
-
 
 def _captures_section(
     artifact_map: dict[str, PlatformArtifact],
@@ -405,7 +396,6 @@ def _captures_section(
         next_steps=["Review full-page screenshots first, then compare raw vs clean attempts where present."],
     )
 
-
 def _reviewer_section(
     artifact_map: dict[str, PlatformArtifact],
     json_map: dict[str, dict[str, Any] | None],
@@ -452,7 +442,6 @@ def _reviewer_section(
         next_steps=["Open the embedded reviewer viewer for item-level review, then record real review outputs only through the approved workflow."],
     )
 
-
 def _calibration_section(artifact_map: dict[str, PlatformArtifact], json_map: dict[str, dict[str, Any] | None]) -> PlatformSection:
     manifest = json_map.get("calibration_manifest") or {}
     summary = json_map.get("calibration_summary") or {}
@@ -489,7 +478,6 @@ def _calibration_section(artifact_map: dict[str, PlatformArtifact], json_map: di
         items=items,
         next_steps=["Address readiness block reasons before treating calibration as broader-corpus ready."],
     )
-
 
 def _governance_section(artifact_map: dict[str, PlatformArtifact], json_map: dict[str, dict[str, Any] | None]) -> PlatformSection:
     registry = json_map.get("capability_registry") or {}
@@ -528,7 +516,6 @@ def _governance_section(artifact_map: dict[str, PlatformArtifact], json_map: dic
         items=items,
         next_steps=["Keep production_enabled false for every capability until separate governance changes explicitly approve otherwise."],
     )
-
 
 def _corpus_expansion_section(
     artifact_map: dict[str, PlatformArtifact],
@@ -575,7 +562,6 @@ def _corpus_expansion_section(
         next_steps=["Increase category depth and reviewed captures before using this as anything beyond a pilot scaffold."],
     )
 
-
 def _build_scoring_summary(*, scoring_output_root: Path, output_root: Path) -> dict[str, Any]:
     json_files = sorted(scoring_output_root.glob("*.json"), key=lambda path: path.stat().st_mtime if path.exists() else 0, reverse=True) if scoring_output_root.exists() else []
     report_files = _discover_scoring_reports(scoring_output_root=scoring_output_root, output_root=output_root)
@@ -598,7 +584,6 @@ def _build_scoring_summary(*, scoring_output_root: Path, output_root: Path) -> d
         "score_items": score_items[:12],
     }
 
-
 def _score_item_from_payload(payload: dict[str, Any], *, path: Path, output_root: Path) -> dict[str, Any]:
     dimensions = payload.get("dimensions") if isinstance(payload.get("dimensions"), dict) else {}
     composite_score = payload.get("composite_score", payload.get("score"))
@@ -612,7 +597,6 @@ def _score_item_from_payload(payload: dict[str, Any], *, path: Path, output_root
         "dimension_scores": dimensions,
         "source_path": _to_output_relative_path(path, output_root=output_root),
     }
-
 
 def _discover_scoring_reports(*, scoring_output_root: Path, output_root: Path) -> list[dict[str, Any]]:
     reports_root = scoring_output_root / "reports"
@@ -634,7 +618,6 @@ def _discover_scoring_reports(*, scoring_output_root: Path, output_root: Path) -
         )
     return reports
 
-
 def _scoring_dimensions_summary() -> list[dict[str, Any]]:
     try:
         from src.dimensions import DIMENSIONS
@@ -654,7 +637,6 @@ def _scoring_dimensions_summary() -> list[dict[str, Any]]:
         )
     return rows
 
-
 def _filesystem_summary(path: Path, *, artifact_type: str) -> dict[str, Any]:
     if not path.exists():
         return {}
@@ -667,7 +649,6 @@ def _filesystem_summary(path: Path, *, artifact_type: str) -> dict[str, Any]:
         "artifact_type": artifact_type,
         "size_bytes": path.stat().st_size,
     }
-
 
 def _artifact_summary(payload: dict[str, Any] | None) -> dict[str, Any]:
     if not isinstance(payload, dict):
@@ -694,7 +675,6 @@ def _artifact_summary(payload: dict[str, Any] | None) -> dict[str, Any]:
     )
     return {key: payload[key] for key in keys if key in payload}
 
-
 def _obstruction_summary(entry: dict[str, Any]) -> dict[str, Any]:
     obstruction = entry.get("after_obstruction") or entry.get("obstruction") or {}
     if not isinstance(obstruction, dict):
@@ -706,7 +686,6 @@ def _obstruction_summary(entry: dict[str, Any]) -> dict[str, Any]:
         "confidence": obstruction.get("confidence"),
     }
 
-
 def _capture_path(value: Any, *, output_root: Path, visual_signature_root: Path) -> str | None:
     if not value:
         return None
@@ -715,11 +694,9 @@ def _capture_path(value: Any, *, output_root: Path, visual_signature_root: Path)
         path = PROJECT_ROOT / path
     return _to_output_relative_path(path, output_root=output_root) if path.exists() else None
 
-
 def _full_page_path(capture_id: str, *, output_root: Path, visual_signature_root: Path) -> str | None:
     path = visual_signature_root / "screenshots" / f"{capture_id}.full-page.png"
     return _to_output_relative_path(path, output_root=output_root) if path.exists() else None
-
 
 def _latest_existing_artifact(keys: list[str], artifact_map: dict[str, PlatformArtifact]) -> str | None:
     for key in keys:
@@ -727,7 +704,6 @@ def _latest_existing_artifact(keys: list[str], artifact_map: dict[str, PlatformA
         if artifact and artifact.exists:
             return artifact.path
     return None
-
 
 def _absolute_artifact_path(artifact: PlatformArtifact, visual_signature_root: Path, scoring_output_root: Path) -> Path:
     if artifact.key == "scoring_output_root":
@@ -741,7 +717,6 @@ def _absolute_artifact_path(artifact: PlatformArtifact, visual_signature_root: P
         if key == artifact.key:
             return visual_signature_root / relative_path
     return visual_signature_root / artifact.path
-
 
 def _render_index_html(payload: dict[str, Any]) -> str:
     embedded = html.escape(json.dumps(payload, ensure_ascii=False), quote=False).replace("</", "<\\/")
@@ -768,7 +743,6 @@ def _render_index_html(payload: dict[str, Any]) -> str:
 </body>
 </html>
 """
-
 
 def _platform_css() -> str:
     return """
@@ -994,7 +968,6 @@ pre.raw-json {
 }
 """.strip()
 
-
 def _platform_js() -> str:
     return """
 (function () {
@@ -1173,7 +1146,6 @@ def _platform_js() -> str:
 })();
 """.strip()
 
-
 def _load_json_if_exists(path: Path) -> dict[str, Any] | None:
     if not path.exists():
         return None
@@ -1183,11 +1155,9 @@ def _load_json_if_exists(path: Path) -> dict[str, Any] | None:
         return None
     return payload if isinstance(payload, dict) else {"items": payload}
 
-
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
-
 
 def _to_output_relative_path(path: str | Path, *, output_root: str | Path) -> str:
     output_root = Path(output_root)
@@ -1196,14 +1166,11 @@ def _to_output_relative_path(path: str | Path, *, output_root: str | Path) -> st
         candidate = PROJECT_ROOT / candidate
     return os.path.relpath(candidate.resolve(), output_root)
 
-
 def _safe_get(payload: dict[str, Any] | None, key: str) -> Any:
     return payload.get(key) if isinstance(payload, dict) else None
 
-
 def _as_list(value: Any) -> list[Any]:
     return value if isinstance(value, list) else []
-
 
 def _slugify(value: str) -> str:
     cleaned = "".join(ch.lower() if ch.isalnum() else "-" for ch in value)

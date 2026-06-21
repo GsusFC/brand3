@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from src.visual_signature.types import ComponentSignal, NormalizedComponentSignals, VisualAcquisitionResult
+from src.visual_signature._internal.utils import clamp_01 as _clamp, unique as _unique
 
 
 def normalize_component_signals(acquisition: VisualAcquisitionResult) -> NormalizedComponentSignals:
@@ -100,19 +101,7 @@ def _clean_text(value: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", value or "")).strip()[:80]
 
 
-def _unique(values: list[str]) -> list[str]:
-    seen: set[str] = set()
-    result: list[str] = []
-    for value in values:
-        if value and value not in seen:
-            seen.add(value)
-            result.append(value)
-    return result
-
-
 def _count(pattern: str, value: str) -> int:
     return len(re.findall(pattern, value or "", flags=re.I))
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

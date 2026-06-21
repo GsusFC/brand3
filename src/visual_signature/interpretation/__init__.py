@@ -1,13 +1,13 @@
 """Lab-only visual interpretation contracts and Gemini runner helpers."""
 
-from src.visual_interpretation.gemini import GeminiVisionClient
-from src.visual_interpretation.models import (
+from src.visual_signature.interpretation.gemini import GeminiVisionClient
+from src.visual_signature.interpretation.models import (
     VISUAL_EVIDENCE_PACK_SCHEMA_VERSION,
     VISUAL_INTERPRETATION_SCHEMA_VERSION,
     VisualEvidencePack,
     VisualInterpretation,
 )
-from src.visual_interpretation.validation import InterpretationValidation, validate_visual_interpretation
+from src.visual_signature.interpretation.validation import InterpretationValidation, validate_visual_interpretation
 
 __all__ = [
     "GeminiVisionClient",

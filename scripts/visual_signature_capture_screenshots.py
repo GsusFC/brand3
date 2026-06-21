@@ -17,7 +17,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.visual_signature.vision.composition import analyze_composition  # noqa: E402
-from src.visual_diagnosis.clean_capture import clean_attempt_quality  # noqa: E402
+from src.visual_signature.capture.clean_capture import clean_attempt_quality  # noqa: E402
 from src.visual_signature.affordance_semantics import classify_affordance, classify_affordance_owner  # noqa: E402
 from src.visual_signature.vision.palette_from_screenshot import extract_palette_from_screenshot  # noqa: E402
 from src.visual_signature.vision.screenshot_quality import load_raster_image  # noqa: E402

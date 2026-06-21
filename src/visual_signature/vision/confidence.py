@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from src.visual_signature._internal.utils import clamp_01 as _clamp, unique as _unique
 from src.visual_signature.vision.types import (
     VisionCompositionEvidence,
     VisionConfidence,
@@ -53,13 +54,3 @@ def _screenshot_factor(screenshot: VisionScreenshotEvidence) -> float:
     return 0.1
 
 
-def _unique(values: list[str]) -> list[str]:
-    result = []
-    for value in values:
-        if value and value not in result:
-            result.append(value)
-    return result
-
-
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

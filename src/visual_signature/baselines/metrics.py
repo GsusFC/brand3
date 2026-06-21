@@ -6,6 +6,7 @@ import math
 from typing import Any
 
 from src.visual_signature.baselines.types import VisualSignatureMetricRow
+from src.visual_signature._internal.utils import int_or_none as _int_or_none, float_or_none as _float_or_none
 
 
 _SIGNAL_KEYS = ("colors", "typography", "logo", "layout", "components", "assets", "consistency")
@@ -370,15 +371,3 @@ def _typed_agreement_score_from_flags(agreement: dict[str, Any], key: str) -> fl
     return round(max(0.0, 1.0 - penalty), 3)
 
 
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None

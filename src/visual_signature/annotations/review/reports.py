@@ -9,6 +9,7 @@ from typing import Any
 
 from src.visual_signature.annotations.review.persistence import load_review_records, validate_review_record
 from src.visual_signature.annotations.review.types import ReviewRecord
+from src.visual_signature._internal.utils import write_json as _write_json
 
 
 def build_review_reports(records: list[ReviewRecord]) -> dict[str, Any]:
@@ -177,10 +178,6 @@ def _report_markdown(title: str, payload: dict[str, Any]) -> str:
             else:
                 lines.append(f"- `{key}`: {value}")
     return "\n".join(lines).rstrip()
-
-
-def _write_json(path: Path, payload: Any) -> None:
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
 def _rate(numerator: int, denominator: int) -> float:

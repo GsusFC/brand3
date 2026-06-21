@@ -4,9 +4,9 @@ import json
 from pathlib import Path
 
 from scripts.visual_interpretation_lab import build_visual_evidence_pack, run_lab
-from src.visual_interpretation.gemini import GeminiVisionClient
-from src.visual_interpretation.models import VisualInterpretation
-from src.visual_interpretation.validation import validate_visual_interpretation
+from src.visual_signature.interpretation.gemini import GeminiVisionClient
+from src.visual_signature.interpretation.models import VisualInterpretation
+from src.visual_signature.interpretation.validation import validate_visual_interpretation
 
 
 def test_visual_evidence_pack_requires_real_screenshot(tmp_path: Path):

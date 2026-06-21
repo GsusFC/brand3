@@ -8,12 +8,12 @@ from pathlib import Path
 from typing import Any
 
 from src.visual_signature.corpus_expansion.corpus_expansion_models import (
+from src.visual_signature.versions import REVIEWER_WORKFLOW_PILOT_SCHEMA_VERSION
     CORPUS_EXPANSION_REVIEW_QUEUE_SCHEMA_VERSION,
     CorpusExpansionQueueState,
 )
 
 
-REVIEWER_WORKFLOW_PILOT_SCHEMA_VERSION = "visual-signature-reviewer-workflow-pilot-1"
 REVIEWER_WORKFLOW_PILOT_RECORD_TYPE = "reviewer_workflow_pilot"
 REVIEWER_WORKFLOW_SCOPE = "human_review_scaling"
 PENDING_QUEUE_STATES: tuple[CorpusExpansionQueueState, ...] = (
@@ -31,7 +31,6 @@ DEFAULT_OUTPUT_ROOT = Path(__file__).resolve().parents[3] / "examples" / "visual
 DEFAULT_REVIEW_QUEUE_PATH = DEFAULT_OUTPUT_ROOT / "review_queue.json"
 DEFAULT_PILOT_METRICS_PATH = DEFAULT_OUTPUT_ROOT / "pilot_metrics.json"
 DEFAULT_CORPUS_EXPANSION_MANIFEST_PATH = DEFAULT_OUTPUT_ROOT / "corpus_expansion_manifest.json"
-
 
 def build_reviewer_workflow_pilot(
     *,
@@ -145,7 +144,6 @@ def build_reviewer_workflow_pilot(
 
     return payload
 
-
 def validate_reviewer_workflow_pilot_payload(payload: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if payload.get("schema_version") != REVIEWER_WORKFLOW_PILOT_SCHEMA_VERSION:
@@ -188,7 +186,6 @@ def validate_reviewer_workflow_pilot_payload(payload: dict[str, Any]) -> list[st
     if payload.get("queue_state_distribution", {}).get("queued", 0) + payload.get("queue_state_distribution", {}).get("needs_additional_evidence", 0) != len(selected_items):
         errors.append("queue_state_distribution must reflect selected pending items only")
     return errors
-
 
 def reviewer_workflow_pilot_markdown(payload: dict[str, Any]) -> str:
     lines = [
@@ -312,7 +309,6 @@ def reviewer_workflow_pilot_markdown(payload: dict[str, Any]) -> str:
     )
     return "\n".join(lines).rstrip()
 
-
 def write_reviewer_workflow_pilot(
     *,
     output_root: str | Path | None = None,
@@ -340,7 +336,6 @@ def write_reviewer_workflow_pilot(
         "reviewer_workflow_pilot_md": str(md_path),
     }
 
-
 def _select_pending_queue_items(queue_items: list[dict[str, Any]]) -> list[dict[str, Any]]:
     selected: list[dict[str, Any]] = []
     for item in queue_items:
@@ -360,10 +355,8 @@ def _select_pending_queue_items(queue_items: list[dict[str, Any]]) -> list[dict[
             )
     return selected
 
-
 def _load_json(path: str | Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
-
 
 def _count_distribution(values) -> dict[str, int]:
     counts: dict[str, int] = {}

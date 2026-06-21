@@ -14,9 +14,8 @@ from src.visual_signature.governance.capability_models import (
     MutationRisk,
 )
 from src.visual_signature.governance.capability_registry import build_capability_registry
+from src.visual_signature.versions import RUNTIME_POLICY_MATRIX_SCHEMA_VERSION
 
-
-RUNTIME_POLICY_MATRIX_SCHEMA_VERSION = "visual-signature-runtime-policy-matrix-1"
 
 RuntimePolicy = Literal["allowed", "blocked", "review_only", "experimental_only"]
 GovernanceScope = Literal["visual_signature"]
@@ -26,10 +25,8 @@ NonEmptyString = Annotated[str, Field(min_length=1)]
 
 VALID_RUNTIME_POLICIES: tuple[RuntimePolicy, ...] = ("allowed", "blocked", "review_only", "experimental_only")
 
-
 class RuntimePolicyModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
 
 class RuntimePolicyEntry(RuntimePolicyModel):
     capability_id: NonEmptyString
@@ -68,7 +65,6 @@ class RuntimePolicyEntry(RuntimePolicyModel):
             raise ValueError("production_enabled must be false for all runtime policy entries")
         return self
 
-
 class RuntimeMutationPolicy(RuntimePolicyModel):
     scope_policies: dict[ReadinessScope, RuntimePolicy] = Field(default_factory=dict)
 
@@ -89,7 +85,6 @@ class RuntimeMutationPolicy(RuntimePolicyModel):
             invalid = sorted({policy for policy in self.scope_policies.values() if policy not in VALID_RUNTIME_POLICIES})
             raise ValueError(f"invalid runtime policies: {invalid}")
         return self
-
 
 class RuntimePolicyMatrix(RuntimePolicyModel):
     schema_version: Literal[RUNTIME_POLICY_MATRIX_SCHEMA_VERSION]
@@ -125,7 +120,6 @@ class RuntimePolicyMatrix(RuntimePolicyModel):
             raise ValueError("runtime mutation must be blocked in production_runtime")
         return self
 
-
 ALL_READINESS_SCOPES: tuple[ReadinessScope, ...] = (
     "broader_corpus_use",
     "provider_pilot_use",
@@ -134,7 +128,6 @@ ALL_READINESS_SCOPES: tuple[ReadinessScope, ...] = (
     "scoring_integration",
     "model_training",
 )
-
 
 KNOWN_CAPABILITY_IDS: tuple[str, ...] = (
     "viewport_obstruction_detection",
@@ -147,7 +140,6 @@ KNOWN_CAPABILITY_IDS: tuple[str, ...] = (
     "calibration_reliability_reporting",
     "calibration_readiness_gate",
 )
-
 
 def validate_runtime_policy_matrix_payload(payload: dict[str, Any]) -> list[str]:
     try:

@@ -11,9 +11,9 @@ from typing import Any
 
 from src.visual_signature.corpus_expansion.reviewer_packets import build_reviewer_packets
 from src.visual_signature.corpus_expansion.reviewer_packets import validate_reviewer_packets
+from src.visual_signature.versions import REVIEWER_VIEWER_SCHEMA_VERSION
 
 
-REVIEWER_VIEWER_SCHEMA_VERSION = "visual-signature-reviewer-viewer-1"
 REVIEWER_VIEWER_RECORD_TYPE = "reviewer_viewer_bundle"
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUTPUT_ROOT = PROJECT_ROOT / "examples" / "visual_signature" / "corpus_expansion" / "reviewer_viewer"
@@ -22,7 +22,6 @@ DEFAULT_REVIEW_QUEUE_PATH = PROJECT_ROOT / "examples" / "visual_signature" / "co
 DEFAULT_CAPTURE_MANIFEST_PATH = PROJECT_ROOT / "examples" / "visual_signature" / "screenshots" / "capture_manifest.json"
 DEFAULT_DISMISSAL_AUDIT_PATH = PROJECT_ROOT / "examples" / "visual_signature" / "screenshots" / "dismissal_audit.json"
 DEFAULT_PACKETS_ROOT = PROJECT_ROOT / "examples" / "visual_signature" / "corpus_expansion" / "reviewer_packets"
-
 
 def build_reviewer_viewer_bundle(
     *,
@@ -134,7 +133,6 @@ def build_reviewer_viewer_bundle(
     }
     return payload
 
-
 def validate_reviewer_viewer_bundle(
     *,
     viewer_root: str | Path,
@@ -186,7 +184,6 @@ def validate_reviewer_viewer_bundle(
             errors.append(f"packet missing screenshot paths: {packet['queue_id']}")
     return errors
 
-
 def write_reviewer_viewer_bundle(
     *,
     output_root: str | Path | None = None,
@@ -222,7 +219,6 @@ def write_reviewer_viewer_bundle(
         "viewer_js": str(viewer_root / "viewer.js"),
     }
 
-
 def _render_index_html(payload: dict[str, Any]) -> str:
     embedded = html.escape(json.dumps(payload, ensure_ascii=False), quote=False).replace("</", "<\\/")
     return f"""<!doctype html>
@@ -252,7 +248,6 @@ def _render_index_html(payload: dict[str, Any]) -> str:
 </body>
 </html>
 """
-
 
 def _viewer_css() -> str:
     return """
@@ -697,7 +692,6 @@ button, input, select, textarea { font: inherit; }
   .summary-grid, .two-col { grid-template-columns: 1fr; }
 }
 """.strip()
-
 
 def _viewer_js() -> str:
     return """
@@ -1191,7 +1185,6 @@ def _viewer_js() -> str:
 })();
 """.strip()
 
-
 def _summarize_capture_entry(entry: dict[str, Any] | None, *, viewer_root: str | Path) -> dict[str, Any]:
     if not entry:
         return {}
@@ -1222,7 +1215,6 @@ def _summarize_capture_entry(entry: dict[str, Any] | None, *, viewer_root: str |
                 mutation_audit[key] = _to_viewer_relative_path(mutation_audit[key], viewer_root=viewer_root)
     return summary
 
-
 def _summarize_click_targets(targets: Any) -> list[dict[str, Any]]:
     if not isinstance(targets, list):
         return []
@@ -1244,7 +1236,6 @@ def _summarize_click_targets(targets: Any) -> list[dict[str, Any]]:
         )
     return compact_targets
 
-
 def _summarize_dismissal_entry(entry: dict[str, Any] | None) -> dict[str, Any]:
     if not entry:
         return {}
@@ -1259,19 +1250,15 @@ def _summarize_dismissal_entry(entry: dict[str, Any] | None) -> dict[str, Any]:
         "affordance_owner_distribution": entry.get("affordance_owner_distribution", {}),
     }
 
-
 def _load_json(path: str | Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
-
 
 def _read_text(path: str | Path) -> str:
     return Path(path).read_text(encoding="utf-8")
 
-
 def _write_text(path: Path, content: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(content, encoding="utf-8")
-
 
 def _to_viewer_relative_path(path: str | Path, *, viewer_root: str | Path) -> str:
     viewer_root = Path(viewer_root)

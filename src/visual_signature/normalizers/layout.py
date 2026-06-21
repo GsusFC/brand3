@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from src.visual_signature.types import NormalizedLayoutSignals, VisualAcquisitionResult
+from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def normalize_layout_signals(acquisition: VisualAcquisitionResult) -> NormalizedLayoutSignals:
@@ -66,5 +67,3 @@ def _count(pattern: str, value: str) -> int:
     return len(re.findall(pattern, value or "", flags=re.I))
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

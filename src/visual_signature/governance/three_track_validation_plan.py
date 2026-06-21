@@ -8,9 +8,9 @@ from pathlib import Path
 from typing import Any
 
 from src.visual_signature.calibration.readiness_models import ReadinessScope
+from src.visual_signature.versions import THREE_TRACK_VALIDATION_PLAN_SCHEMA_VERSION
 
 
-THREE_TRACK_VALIDATION_PLAN_SCHEMA_VERSION = "visual-signature-three-track-validation-plan-1"
 GOVERNANCE_SCOPE = "visual_signature"
 
 VALID_TRACK_IDS: tuple[str, ...] = (
@@ -30,7 +30,6 @@ RECOMMENDED_ORDER: tuple[str, ...] = (
     "corpus_real_validation",
     "provider_pilot_validation",
 )
-
 
 def build_three_track_validation_plan() -> dict[str, Any]:
     generated_at = datetime.now(timezone.utc).isoformat()
@@ -241,7 +240,6 @@ def build_three_track_validation_plan() -> dict[str, Any]:
         ],
     }
 
-
 def validate_three_track_validation_plan_payload(payload: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     try:
@@ -270,7 +268,6 @@ def validate_three_track_validation_plan_payload(payload: dict[str, Any]) -> lis
         errors.append(str(exc))
     return errors
 
-
 def write_three_track_validation_plan(
     *,
     output_root: str | Path | None = None,
@@ -290,7 +287,6 @@ def write_three_track_validation_plan(
         "three_track_validation_plan_json": str(json_path),
         "three_track_validation_plan_md": str(md_path),
     }
-
 
 def three_track_validation_plan_markdown(payload: dict[str, Any]) -> str:
     lines = [

@@ -22,7 +22,7 @@ from src.features.llm_analyzer import LLM_CALL_TIMEOUT_SECONDS, _run_llm_http_ca
 
 logger = logging.getLogger(__name__)
 
-PROMPT_VERSION = "visual-signature-multimodal-v1"
+from src.visual_signature.versions import MULTIMODAL_PROMPT_VERSION as PROMPT_VERSION
 
 SYSTEM_PREAMBLE = (
     "You are a senior design director auditing a rendered brand website. "

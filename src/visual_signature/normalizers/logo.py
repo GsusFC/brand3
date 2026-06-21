@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 
 from src.visual_signature.types import LogoCandidate, NormalizedLogoSignals, VisualAcquisitionResult, VisualAssetCandidate
+from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def normalize_logo_signals(acquisition: VisualAcquisitionResult, brand_name: str) -> NormalizedLogoSignals:
@@ -200,5 +201,3 @@ def _normalize_token(value: str) -> str:
     return re.sub(r"[^a-z0-9]", "", (value or "").lower())
 
 
-def _clamp(value: float) -> float:
-    return max(0.0, min(1.0, round(value, 3)))

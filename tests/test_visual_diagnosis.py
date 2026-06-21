@@ -10,14 +10,14 @@ from scripts.visual_diagnosis_lab import (
     extract_coherence_breakdown,
     run_lab,
 )
-from src.visual_diagnosis import (
+from src.visual_signature.capture import (
     build_clean_capture_decision,
     build_visual_diagnosis,
     clean_attempt_quality,
     computed_style_snapshot_to_visual_signature,
     enrich_visual_signature_with_local_screenshot,
 )
-from src.visual_diagnosis.evidence import build_visual_evidence_from_local_inputs
+from src.visual_signature.capture.evidence import build_visual_evidence_from_local_inputs
 
 
 def _visual_signature_payload() -> dict:

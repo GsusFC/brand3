@@ -8,9 +8,8 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from src.visual_signature.calibration.readiness_models import ReadinessScope
+from src.visual_signature.versions import CAPABILITY_REGISTRY_SCHEMA_VERSION
 
-
-CAPABILITY_REGISTRY_SCHEMA_VERSION = "visual-signature-capability-registry-1"
 
 CapabilityMaturityState = Literal["experimental", "constrained", "governed", "production_candidate"]
 CapabilityEvidenceStatus = Literal["validated", "evidence_only"]
@@ -19,10 +18,8 @@ GovernanceScope = Literal["visual_signature"]
 
 NonEmptyString = Annotated[str, Field(min_length=1)]
 
-
 class CapabilityRegistryModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
 
 class CapabilityEntry(CapabilityRegistryModel):
     capability_id: NonEmptyString
@@ -54,7 +51,6 @@ class CapabilityEntry(CapabilityRegistryModel):
             raise ValueError("prohibited_scopes must not be empty")
         return self
 
-
 class CapabilityRegistry(CapabilityRegistryModel):
     schema_version: Literal[CAPABILITY_REGISTRY_SCHEMA_VERSION]
     registry_version: Literal[CAPABILITY_REGISTRY_SCHEMA_VERSION]
@@ -81,7 +77,6 @@ class CapabilityRegistry(CapabilityRegistryModel):
         if any(capability.runtime_mutation for capability in self.capabilities):
             raise ValueError("runtime_mutation must be false for all capabilities in this registry")
         return self
-
 
 def validate_capability_registry(payload: dict[str, Any]) -> list[str]:
     try:

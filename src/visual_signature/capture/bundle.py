@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any
 
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
+
 
 @dataclass
 class VisualEvidenceSource:
@@ -175,13 +177,6 @@ def _merge_confidence(primary: Any, secondary: Any) -> dict[str, Any]:
         "level": "medium" if score >= 0.55 else "low",
         "limitations": limitations,
     }
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _dedupe(items: list[Any]) -> list[str]:

@@ -10,6 +10,7 @@ from typing import Any
 from urllib.parse import unquote, urlparse
 
 from src.visual_signature.vision.types import RasterImage, VisionScreenshotEvidence
+from src.visual_signature._internal.utils import int_or_none as _int_or_none
 
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
@@ -350,8 +351,3 @@ def _sample_pixels(pixels: list[tuple[int, int, int]], *, limit: int) -> list[tu
     return pixels[::step][:limit]
 
 
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None

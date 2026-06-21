@@ -1,6 +1,7 @@
 """Evidence-only eligibility gates for the Visual Signature calibration corpus."""
 
 from __future__ import annotations
+from src.visual_signature._internal.utils import int_or_none as _int_or_none, float_or_none as _float_or_none
 
 from typing import Any
 
@@ -127,15 +128,3 @@ def _signal_coverage(payload: dict[str, Any]) -> float:
     return round(covered / len(keys), 3)
 
 
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None

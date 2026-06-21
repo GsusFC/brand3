@@ -1,6 +1,7 @@
 """Local web viewer for Visual Signature annotation review."""
 
 from __future__ import annotations
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
 
 import asyncio
 import json
@@ -657,13 +658,6 @@ def _load_json(path: Path) -> dict[str, Any]:
 def _validate_choice(value: str, allowed: set[str], field: str) -> None:
     if value not in allowed:
         raise ValueError(f"{field} must be one of {sorted(allowed)}")
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _num(value: Any) -> str:

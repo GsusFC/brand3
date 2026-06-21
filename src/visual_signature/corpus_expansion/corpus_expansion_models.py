@@ -8,13 +8,8 @@ from typing import Annotated, Any, Literal
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from src.visual_signature.calibration.readiness_models import ReadinessScope
+from src.visual_signature.versions import CORPUS_EXPANSION_QUEUE_ITEM_SCHEMA_VERSION, CORPUS_EXPANSION_REVIEW_QUEUE_SCHEMA_VERSION, CORPUS_EXPANSION_METRICS_SCHEMA_VERSION, CORPUS_EXPANSION_MANIFEST_SCHEMA_VERSION, CORPUS_EXPANSION_READINESS_SCHEMA_VERSION
 
-
-CORPUS_EXPANSION_QUEUE_ITEM_SCHEMA_VERSION = "visual-signature-corpus-expansion-queue-item-1"
-CORPUS_EXPANSION_REVIEW_QUEUE_SCHEMA_VERSION = "visual-signature-corpus-expansion-review-queue-1"
-CORPUS_EXPANSION_METRICS_SCHEMA_VERSION = "visual-signature-corpus-expansion-metrics-1"
-CORPUS_EXPANSION_MANIFEST_SCHEMA_VERSION = "visual-signature-corpus-expansion-manifest-1"
-CORPUS_EXPANSION_READINESS_SCHEMA_VERSION = "visual-signature-corpus-expansion-readiness-1"
 
 CorpusExpansionQueueState = Literal["queued", "reviewed", "unresolved", "needs_additional_evidence"]
 CorpusExpansionReviewOutcome = Literal["confirmed", "contradicted", "unresolved", "insufficient_review"]
@@ -24,10 +19,8 @@ ConfidenceBucket = Literal["low", "medium", "high", "unknown"]
 NonEmptyString = Annotated[str, Field(min_length=1)]
 Percentage = Annotated[float, Field(ge=0.0, le=1.0)]
 
-
 class CorpusExpansionModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
-
 
 class CorpusExpansionQueueItem(CorpusExpansionModel):
     schema_version: Literal[CORPUS_EXPANSION_QUEUE_ITEM_SCHEMA_VERSION]
@@ -65,7 +58,6 @@ class CorpusExpansionQueueItem(CorpusExpansionModel):
                 raise ValueError("needs_additional_evidence items cannot be confirmed or contradicted")
         return self
 
-
 class CorpusExpansionReviewQueue(CorpusExpansionModel):
     schema_version: Literal[CORPUS_EXPANSION_REVIEW_QUEUE_SCHEMA_VERSION]
     record_type: Literal["corpus_expansion_review_queue"]
@@ -92,7 +84,6 @@ class CorpusExpansionReviewQueue(CorpusExpansionModel):
         _validate_distribution("confidence_distribution", self.confidence_distribution, self.current_capture_count)
         _validate_distribution("queue_state_distribution", self.queue_state_distribution, self.current_capture_count)
         return self
-
 
 class CorpusExpansionMetrics(CorpusExpansionModel):
     schema_version: Literal[CORPUS_EXPANSION_METRICS_SCHEMA_VERSION]
@@ -133,7 +124,6 @@ class CorpusExpansionMetrics(CorpusExpansionModel):
         _validate_rate("reviewer_coverage", self.reviewer_coverage)
         return self
 
-
 class CorpusExpansionManifest(CorpusExpansionModel):
     schema_version: Literal[CORPUS_EXPANSION_MANIFEST_SCHEMA_VERSION]
     record_type: Literal["corpus_expansion_manifest"]
@@ -167,7 +157,6 @@ class CorpusExpansionManifest(CorpusExpansionModel):
         _validate_rate("reviewer_coverage", self.reviewer_coverage)
         return self
 
-
 class CorpusExpansionReadinessAssessment(CorpusExpansionModel):
     schema_version: Literal[CORPUS_EXPANSION_READINESS_SCHEMA_VERSION]
     record_type: Literal["corpus_expansion_readiness"]
@@ -186,12 +175,10 @@ class CorpusExpansionReadinessAssessment(CorpusExpansionModel):
     unresolved_rate: Percentage = 0.0
     reviewer_coverage: Percentage = 0.0
 
-
 class ValidationResult(CorpusExpansionModel):
     valid: bool
     errors: list[str] = Field(default_factory=list)
     warnings: list[str] = Field(default_factory=list)
-
 
 def validate_corpus_expansion_queue_item(payload: dict[str, Any]) -> list[str]:
     try:
@@ -200,14 +187,12 @@ def validate_corpus_expansion_queue_item(payload: dict[str, Any]) -> list[str]:
         return [str(exc)]
     return []
 
-
 def validate_corpus_expansion_review_queue_payload(payload: dict[str, Any]) -> list[str]:
     try:
         CorpusExpansionReviewQueue.model_validate(payload)
     except Exception as exc:  # noqa: BLE001
         return [str(exc)]
     return []
-
 
 def validate_corpus_expansion_metrics_payload(payload: dict[str, Any]) -> list[str]:
     try:
@@ -216,14 +201,12 @@ def validate_corpus_expansion_metrics_payload(payload: dict[str, Any]) -> list[s
         return [str(exc)]
     return []
 
-
 def validate_corpus_expansion_manifest_payload(payload: dict[str, Any]) -> list[str]:
     try:
         CorpusExpansionManifest.model_validate(payload)
     except Exception as exc:  # noqa: BLE001
         return [str(exc)]
     return []
-
 
 def validate_corpus_expansion_readiness_payload(payload: dict[str, Any]) -> list[str]:
     try:
@@ -232,13 +215,11 @@ def validate_corpus_expansion_readiness_payload(payload: dict[str, Any]) -> list
         return [str(exc)]
     return []
 
-
 def _validate_distribution(label: str, distribution: dict[str, int], expected_total: int) -> None:
     if any(count < 0 for count in distribution.values()):
         raise ValueError(f"{label} cannot contain negative counts")
     if distribution and sum(distribution.values()) != expected_total:
         raise ValueError(f"{label} must sum to {expected_total}")
-
 
 def _validate_rate(label: str, value: float) -> None:
     if not 0.0 <= value <= 1.0:

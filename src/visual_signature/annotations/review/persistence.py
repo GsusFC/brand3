@@ -7,6 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from src.visual_signature._internal.utils import float_or_none as _float_or_none, write_json as _write_json
 from src.visual_signature.annotations.review.types import (
     ReviewBatch,
     ReviewRecord,
@@ -116,13 +117,3 @@ def _load_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _write_json(path: Path, payload: Any) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None

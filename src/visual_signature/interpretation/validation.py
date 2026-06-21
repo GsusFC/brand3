@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
 
-from src.visual_interpretation.models import VisualEvidencePack, VisualInterpretation
+from src.visual_signature.interpretation.models import VisualEvidencePack, VisualInterpretation
 
 
 @dataclass

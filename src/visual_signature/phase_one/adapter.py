@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 from src.visual_signature.phase_one.types import PhaseOneSourceCapture
+from src.visual_signature._internal.utils import int_or_none as _int_or_none
 
 
 def load_phase_one_sources(
@@ -98,13 +99,6 @@ def _list_of_dicts(value: Any) -> list[dict[str, Any]]:
     if not isinstance(value, list):
         return []
     return [item for item in value if isinstance(item, dict)]
-
-
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _load_json(path: Path) -> dict[str, Any]:

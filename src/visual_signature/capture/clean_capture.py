@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
+
 
 def build_clean_capture_decision(payload: dict[str, Any] | None) -> dict[str, Any]:
     if not isinstance(payload, dict):
@@ -146,13 +148,6 @@ def clean_capture_metrics_delta(before: dict[str, Any], after: dict[str, Any]) -
         "whitespace_delta": whitespace_delta,
         "palette_color_count_delta": palette_delta,
     }
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _severity_rank(value: str) -> int:

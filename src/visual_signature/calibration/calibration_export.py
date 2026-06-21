@@ -7,6 +7,7 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
+from src.visual_signature._internal.utils import json_default as _json_default, write_json as _write_json
 from src.visual_signature.calibration.calibration_metrics import calibration_summary_markdown
 from src.visual_signature.calibration.calibration_models import (
     CalibrationManifest,
@@ -241,21 +242,9 @@ def build_schema_versions() -> dict[str, str]:
     return _schema_versions()
 
 
-def _write_json(path: Path, payload: Any) -> None:
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True, default=_json_default) + "\n", encoding="utf-8")
-
-
 def _load_json(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
     return payload if isinstance(payload, dict) else {}
-
-
-def _json_default(value: Any) -> str:
-    from datetime import datetime
-
-    if isinstance(value, datetime):
-        return value.isoformat().replace("+00:00", "Z")
-    return str(value)
 
 
 def _schema_versions() -> dict[str, str]:

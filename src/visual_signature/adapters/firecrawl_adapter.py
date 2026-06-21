@@ -12,6 +12,7 @@ from typing import Any
 
 from src.collectors.web_collector import WebCollector, WebData
 from src.config import FIRECRAWL_API_KEY
+from src.visual_signature._internal.utils import int_or_none as _int_or_none
 from src.visual_signature.types import (
     ScreenshotSignal,
     VisualAcquisitionResult,
@@ -137,13 +138,6 @@ def _role_hint_from_text(value: str) -> str:
     if any(token in lowered for token in ("background", "hero")):
         return "background"
     return "unknown"
-
-
-def _int_or_none(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _get(value: Any, field_name: str) -> Any:

@@ -13,10 +13,10 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from src.visual_interpretation import GeminiVisionClient
-from src.visual_interpretation.gemini import DEFAULT_VISUAL_ADJUDICATOR_MODEL, DEFAULT_VISUAL_INTERPRETATION_MODEL
-from src.visual_interpretation.models import EvidenceUse, VisualEvidencePack, VisualInterpretation
-from src.visual_interpretation.validation import validate_visual_interpretation
+from src.visual_signature.interpretation import GeminiVisionClient
+from src.visual_signature.interpretation.gemini import DEFAULT_VISUAL_ADJUDICATOR_MODEL, DEFAULT_VISUAL_INTERPRETATION_MODEL
+from src.visual_signature.interpretation.models import EvidenceUse, VisualEvidencePack, VisualInterpretation
+from src.visual_signature.interpretation.validation import validate_visual_interpretation
 
 
 DEFAULT_OUTPUT_ROOT = Path("out") / "visual_interpretation_lab"

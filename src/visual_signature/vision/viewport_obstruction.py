@@ -12,6 +12,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
 from src.visual_signature.vision.types import RasterImage
+from src.visual_signature._internal.utils import float_or_none as _float_or_none, unique as _unique
 
 
 ObstructionType = Literal[
@@ -514,13 +515,6 @@ def _distance(left: tuple[int, int, int], right: tuple[int, int, int]) -> float:
     return sum(abs(left[idx] - right[idx]) for idx in range(3)) / 3
 
 
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
 def _valid_type(value: Any) -> ObstructionType:
     text = str(value or "none")
     allowed = {
@@ -541,11 +535,3 @@ def _valid_severity(value: Any) -> ObstructionSeverity:
     return text if text in allowed else "none"  # type: ignore[return-value]
 
 
-def _unique(values: list[str]) -> list[str]:
-    seen: set[str] = set()
-    result: list[str] = []
-    for value in values:
-        if value and value not in seen:
-            seen.add(value)
-            result.append(value)
-    return result

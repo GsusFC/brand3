@@ -9,7 +9,6 @@ import multiprocessing as mp
 import os
 import queue
 import tempfile
-from dataclasses import asdict, is_dataclass
 from datetime import datetime
 from pathlib import Path
 from statistics import mean
@@ -93,6 +92,7 @@ from src.services.output_files import (
     _save_result,
 )
 from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
+from src.services.serialization import _to_jsonable
 from src.services.scoring_pipeline import score_features
 from src.storage.sqlite_store import SQLiteStore
 from src.visual_signature import build_visual_signature_scan, extract_visual_signature
@@ -147,18 +147,6 @@ _PARTIAL_DIMENSIONS = ("coherencia", "diferenciacion")
 
 class AnalysisJobCancelled(Exception):
     """Raised when a background analysis job is cancelled."""
-
-
-def _to_jsonable(value):
-    if value is None:
-        return None
-    if is_dataclass(value):
-        return asdict(value)
-    if isinstance(value, dict):
-        return {str(k): _to_jsonable(v) for k, v in value.items()}
-    if isinstance(value, (list, tuple)):
-        return [_to_jsonable(v) for v in value]
-    return value
 
 
 def _entity_discovery_payload(

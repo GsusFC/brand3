@@ -57,6 +57,20 @@ def shallow_copy_dict(payload: dict[str, Any]) -> dict[str, Any]:
     return payload.copy()
 
 
+def copy_dict_items(values: Any) -> list[dict[str, Any]]:
+    """Return a shallow-copied list of dict items from an iterable."""
+    if not isinstance(values, list):
+        return []
+    return [dict(item) for item in values if isinstance(item, dict)]
+
+
+def copy_dict_mapping(values: Any) -> dict[str, dict[str, Any]]:
+    """Return a shallow-copied mapping of dict values keyed by string."""
+    if not isinstance(values, dict):
+        return {}
+    return {str(key): dict(value) for key, value in values.items() if isinstance(value, dict)}
+
+
 def utc_now() -> str:
     """ISO 8601 UTC timestamp with 'Z' suffix."""
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")

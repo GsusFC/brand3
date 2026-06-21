@@ -1,7 +1,6 @@
 """Local web viewer for Visual Signature annotation review."""
 
 from __future__ import annotations
-from src.visual_signature._internal.utils import float_or_none as _float_or_none
 
 import asyncio
 import json
@@ -13,6 +12,10 @@ from typing import Any
 from fastapi import FastAPI, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
+from src.visual_signature._internal.utils import (
+    copy_dict_mapping as _copy_dict_mapping,
+    float_or_none as _float_or_none,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[4]
@@ -347,7 +350,7 @@ def load_review_cases(sample_path: str | Path) -> list[ReviewViewerCase]:
                     if isinstance(annotations.get("overall_confidence"), dict)
                     else item.get("annotation_confidence")
                 ),
-                targets={str(key): dict(value) for key, value in targets.items() if isinstance(value, dict)},
+                targets=_copy_dict_mapping(targets),
             )
         )
     return cases

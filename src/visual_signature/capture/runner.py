@@ -26,6 +26,7 @@ from src.visual_signature.capture._capture_screenshots import normalize_capture_
 from src.visual_signature.capture._capture_screenshots import rate as _rate_module
 from src.visual_signature.capture._capture_screenshots import write_json as _write_json_module
 from src.visual_signature.capture import _capture_screenshots as capture_helpers
+from src.visual_signature._internal.utils import copy_dict_items as _copy_dict_items
 from src.visual_signature.perception import PerceptualStateMachine
 from src.visual_signature.vision.composition import analyze_composition
 from src.visual_signature.vision.palette_from_screenshot import extract_palette_from_screenshot
@@ -179,8 +180,8 @@ def capture_screenshots(
                     clicked_text=str(metadata.get("clicked_text") or "") or None,
                     dismissal_eligibility=str(metadata.get("dismissal_eligibility") or "") or None,
                     dismissal_block_reason=str(metadata.get("dismissal_block_reason") or "") or None,
-                    candidate_click_targets=[dict(item) for item in metadata.get("candidate_click_targets") or [] if isinstance(item, dict)],
-                    rejected_click_targets=[dict(item) for item in metadata.get("rejected_click_targets") or [] if isinstance(item, dict)],
+                    candidate_click_targets=_copy_dict_items(metadata.get("candidate_click_targets")),
+                    rejected_click_targets=_copy_dict_items(metadata.get("rejected_click_targets")),
                     before_obstruction=_coerce_dict_or_none(metadata.get("before_obstruction"), field_name="before_obstruction"),
                     after_obstruction=_coerce_dict_or_none(metadata.get("after_obstruction"), field_name="after_obstruction"),
                     evidence_integrity_notes=[str(item) for item in metadata.get("evidence_integrity_notes") or []],

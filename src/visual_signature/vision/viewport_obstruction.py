@@ -224,7 +224,7 @@ def _dom_obstruction(html: str) -> ViewportObstructionEvidence:
 
 
 def _viewport_obstruction(image: RasterImage | None) -> ViewportObstructionEvidence:
-    if image is None or image.width <= 0 or image.height <= 0 or not image.sample_pixels(1):
+    if image is None or image.width <= 0 or image.height <= 0:
         return ViewportObstructionEvidence(
             present=False,
             confidence=0.0,

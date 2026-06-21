@@ -9,10 +9,13 @@ from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def extract_palette_from_screenshot(image: RasterImage | None, *, max_colors: int = 8) -> VisionPaletteEvidence:
-    if image is None or not image.sample_pixels(1):
+    if image is None:
         return VisionPaletteEvidence(confidence=0.0)
 
     sampled = image.sample_pixels(20_000)
+    if not sampled:
+        return VisionPaletteEvidence(confidence=0.0)
+
     buckets = Counter(_bucket_color(pixel) for pixel in sampled)
     total = sum(buckets.values()) or 1
     dominant = [

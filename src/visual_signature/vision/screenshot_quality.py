@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 import struct
 import zlib
-from io import BytesIO
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlparse
@@ -85,11 +84,10 @@ def resolve_screenshot_metadata(
 
 def load_raster_image(path: str) -> RasterImage:
     """Load a local screenshot with Pillow when available and stdlib fallback."""
-    data = Path(path).read_bytes()
     try:
         from PIL import Image
 
-        with Image.open(BytesIO(data)) as image:
+        with Image.open(path) as image:
             rgb = image.convert("RGB")
             return RasterImage(
                 width=rgb.width,
@@ -99,6 +97,7 @@ def load_raster_image(path: str) -> RasterImage:
                 channels=3,
             )
     except Exception:
+        data = Path(path).read_bytes()
         if data.startswith(PNG_SIGNATURE):
             return _load_png(data, source_path=path)
         if data.startswith((b"P6", b"P3")):
@@ -175,10 +174,14 @@ def screenshot_evidence_for_path(
 
 
 def classify_screenshot_quality(image: RasterImage) -> tuple[str, list[str]]:
-    if image.width <= 0 or image.height <= 0 or not image.sample_pixels(1):
+    if image.width <= 0 or image.height <= 0:
         return "unreadable", ["screenshot_has_no_pixels"]
 
-    unique_sample = len(set(image.sample_pixels(5000)))
+    sampled = image.sample_pixels(5000)
+    if not sampled:
+        return "unreadable", ["screenshot_has_no_pixels"]
+
+    unique_sample = len(set(sampled))
     if unique_sample <= 1:
         return "blank", ["screenshot_has_single_color"]
     if unique_sample < 8:
@@ -361,5 +364,3 @@ def _scale_ppm_value(value: int, max_value: int) -> int:
     if max_value == 255:
         return value
     return max(0, min(255, round(value * 255 / max_value)))
-
-

@@ -7,10 +7,13 @@ from src.visual_signature._internal.utils import clamp_01 as _clamp
 
 
 def analyze_composition(image: RasterImage | None) -> VisionCompositionEvidence:
-    if image is None or not image.sample_grid(max_width=1, max_height=1):
+    if image is None:
         return VisionCompositionEvidence(confidence=0.0)
 
     sampled = image.sample_grid(max_width=180, max_height=120)
+    if not sampled:
+        return VisionCompositionEvidence(confidence=0.0)
+
     whitespace_ratio = _whitespace_ratio(sampled)
     edge_density = _edge_density(sampled)
     color_variance = _color_variance(sampled)

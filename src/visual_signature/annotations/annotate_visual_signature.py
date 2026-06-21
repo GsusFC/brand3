@@ -17,6 +17,7 @@ from src.visual_signature.annotations.types import (
     AnnotationTarget,
     ProviderInfo,
 )
+from src.visual_signature._internal.utils import shallow_copy_dict as _shallow_copy_dict
 
 
 VERSION = "visual-signature-annotations-mvp-1"
@@ -39,7 +40,7 @@ def annotate_visual_signature(
     This function is offline-only by default. It uses the mock provider unless a
     caller injects another provider explicitly.
     """
-    payload = visual_signature_payload.copy()
+    payload = _shallow_copy_dict(visual_signature_payload)
     request = AnnotationRequest(
         brand_name=str(payload.get("brand_name") or ""),
         website_url=str(payload.get("website_url") or payload.get("analyzed_url") or ""),

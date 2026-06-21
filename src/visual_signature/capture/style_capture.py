@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.visual_signature._internal.utils import shallow_copy_dict as _shallow_copy_dict
+
 
 DEFAULT_SELECTORS = [
     "body",
@@ -186,7 +188,7 @@ def _normalize_snapshot(payload: Any) -> dict[str, Any]:
             "colors": [],
             "limitations": ["computed_style_snapshot_invalid"],
         }
-    payload = payload.copy()
+    payload = _shallow_copy_dict(payload)
     payload["schema_version"] = str(payload.get("schema_version") or "computed-style-snapshot-v1")
     elements = payload.get("elements")
     payload["elements"] = [item for item in elements if isinstance(item, dict)] if isinstance(elements, list) else []

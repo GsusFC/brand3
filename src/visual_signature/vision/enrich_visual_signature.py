@@ -14,7 +14,11 @@ from src.visual_signature.vision.screenshot_quality import (
 )
 from src.visual_signature.vision.types import RasterImage, VisionEvidence
 from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
-from src.visual_signature._internal.utils import int_or_none as _int_or_none, float_or_none as _float_or_none
+from src.visual_signature._internal.utils import (
+    float_or_none as _float_or_none,
+    int_or_none as _int_or_none,
+    shallow_copy_dict as _shallow_copy_dict,
+)
 
 
 def enrich_visual_signature_with_vision(
@@ -28,7 +32,7 @@ def enrich_visual_signature_with_vision(
     This function does not call multimodal models, does not influence scoring,
     and does not mutate the input payload.
     """
-    payload = visual_signature_payload.copy()
+    payload = _shallow_copy_dict(visual_signature_payload)
     metadata = resolve_screenshot_metadata(screenshot_payload=screenshot_payload)
     resolved_path = resolve_screenshot_path(
         screenshot_path=screenshot_path,

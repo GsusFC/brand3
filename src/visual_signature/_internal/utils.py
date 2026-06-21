@@ -52,6 +52,11 @@ def unique(values: list[str]) -> list[str]:
     return out
 
 
+def shallow_copy_dict(payload: dict[str, Any]) -> dict[str, Any]:
+    """Return a shallow copy of a dict payload."""
+    return payload.copy()
+
+
 def utc_now() -> str:
     """ISO 8601 UTC timestamp with 'Z' suffix."""
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")

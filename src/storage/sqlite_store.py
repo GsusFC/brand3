@@ -5,9 +5,7 @@ from __future__ import annotations
 import sqlite3
 import threading
 import time
-from datetime import datetime
 from pathlib import Path
-from typing import Any
 
 from .analysis_jobs import AnalysisJobsStoreMixin
 from .annotations_reports import AnnotationsReportsStoreMixin
@@ -17,15 +15,11 @@ from .calibration_versions import CalibrationVersionsStoreMixin
 from .evidence_items import EvidenceItemsStoreMixin
 from .experiments import ExperimentsStoreMixin
 from .features_scores import FeaturesScoresStoreMixin
-from .json_payloads import (
-    MalformedJSONPayload as _MalformedJSONPayload,
-    json_dumps as _json_dumps,
-    safe_json_loads as _safe_json_loads,
-    to_jsonable as _to_jsonable,
-)
+from .json_payloads import MalformedJSONPayload as _MalformedJSONPayload
 from .llm_cache import LLMCacheStoreMixin
 from .raw_inputs import RawInputsStoreMixin
 from .reviewed_scores import ReviewedScoresStoreMixin
+from .run_audits import RunAuditsStoreMixin
 from .run_snapshots import RunSnapshotsStoreMixin
 
 
@@ -40,6 +34,7 @@ class SQLiteStore(
     CalibrationVersionsStoreMixin,
     FeaturesScoresStoreMixin,
     BrandRunsStoreMixin,
+    RunAuditsStoreMixin,
     RunSnapshotsStoreMixin,
     AnnotationsReportsStoreMixin,
 ):
@@ -518,23 +513,3 @@ class SQLiteStore(
             self.conn.execute(
                 f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
             )
-
-    def save_run_audit(self, run_id: int, audit: dict[str, Any]) -> None:
-        fingerprint = str(audit["scoring_state_fingerprint"])
-        self.conn.execute(
-            """
-            INSERT INTO run_audits (run_id, scoring_state_fingerprint, audit_json, created_at)
-            VALUES (?, ?, ?, ?)
-            ON CONFLICT(run_id) DO UPDATE SET
-                scoring_state_fingerprint=excluded.scoring_state_fingerprint,
-                audit_json=excluded.audit_json,
-                created_at=excluded.created_at
-            """,
-            (
-                run_id,
-                fingerprint,
-                _json_dumps(audit),
-                datetime.now().isoformat(),
-            ),
-        )
-        self.conn.commit()

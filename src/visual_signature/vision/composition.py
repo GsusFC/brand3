@@ -10,7 +10,7 @@ def analyze_composition(image: RasterImage | None) -> VisionCompositionEvidence:
     if image is None or not image.sample_grid(max_width=1, max_height=1):
         return VisionCompositionEvidence(confidence=0.0)
 
-    sampled = _sample_grid(image, max_width=180, max_height=120)
+    sampled = image.sample_grid(max_width=180, max_height=120)
     whitespace_ratio = _whitespace_ratio(sampled)
     edge_density = _edge_density(sampled)
     color_variance = _color_variance(sampled)
@@ -25,10 +25,6 @@ def analyze_composition(image: RasterImage | None) -> VisionCompositionEvidence:
         color_variance=round(color_variance, 3),
         confidence=confidence,
     )
-
-
-def _sample_grid(image: RasterImage, *, max_width: int, max_height: int) -> list[tuple[int, int, int]]:
-    return image.sample_grid(max_width=max_width, max_height=max_height)
 
 
 def _whitespace_ratio(pixels: list[tuple[int, int, int]]) -> float:
@@ -87,4 +83,3 @@ def _is_whitespace(pixel: tuple[int, int, int]) -> bool:
 
 def _distance(left: tuple[int, int, int], right: tuple[int, int, int]) -> float:
     return sum(abs(left[idx] - right[idx]) for idx in range(3)) / 3
-

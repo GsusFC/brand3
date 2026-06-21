@@ -8,7 +8,6 @@ from src.visual_signature.annotations.confidence import (
     calculate_annotation_confidence,
     normalize_confidence,
 )
-from src.visual_signature.annotations.providers.base import MultimodalAnnotationProvider
 from src.visual_signature.annotations.providers.mock_provider import MockMultimodalAnnotationProvider
 from src.visual_signature.annotations.types import (
     ANNOTATION_TARGETS,
@@ -28,7 +27,7 @@ VALID_SOURCES = {"viewport_screenshot", "full_page_screenshot", "visual_signatur
 def annotate_visual_signature(
     *,
     visual_signature_payload: dict[str, Any],
-    provider: MultimodalAnnotationProvider | None = None,
+    provider: Any | None = None,
     expected_category: str | None = None,
     viewport_screenshot_path: str | None = None,
     full_page_screenshot_path: str | None = None,
@@ -105,7 +104,7 @@ def validate_annotation_overlay(overlay: dict[str, Any]) -> dict[str, Any]:
 
 def _provider_overlay(
     request: AnnotationRequest,
-    provider: MultimodalAnnotationProvider,
+    provider: Any,
     payload: dict[str, Any],
 ) -> AnnotationOverlay:
     try:
@@ -136,7 +135,7 @@ def _provider_overlay(
 
 def _not_interpretable_overlay(
     request: AnnotationRequest,
-    provider: MultimodalAnnotationProvider,
+    provider: Any,
 ) -> AnnotationOverlay:
     status: AnnotationStatus = "not_interpretable"
     return AnnotationOverlay(

@@ -26,7 +26,6 @@ from src.visual_signature.normalizers.logo import normalize_logo_signals
 from src.visual_signature.normalizers.typography import normalize_typography
 from src.visual_signature.scoring.extraction_confidence import calculate_extraction_confidence
 from src.visual_signature.types import (
-    VisualAcquisitionAdapter,
     VisualSignature,
     VisualSignatureInput,
 )
@@ -44,7 +43,7 @@ def extract_visual_signature(
     web_data: Any | None = None,
     content_web: Any | None = None,
     screenshot_payload: dict[str, Any] | None = None,
-    adapter: VisualAcquisitionAdapter | None = None,
+    adapter: Any | None = None,
 ) -> dict[str, Any]:
     """Extract structured visual behavior signals as a JSON-serializable dict.
 

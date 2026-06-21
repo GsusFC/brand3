@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Literal, Protocol
+from typing import Any, Literal
 
 
 VisualSignatureAdapterName = Literal[
@@ -65,13 +65,6 @@ class VisualAcquisitionResult:
     raw_html: str = ""
     markdown: str = ""
     screenshot: ScreenshotSignal | None = None
-
-
-class VisualAcquisitionAdapter(Protocol):
-    name: VisualSignatureAdapterName
-
-    def acquire(self, input_data: VisualSignatureInput) -> VisualAcquisitionResult:
-        ...
 
 
 @dataclass

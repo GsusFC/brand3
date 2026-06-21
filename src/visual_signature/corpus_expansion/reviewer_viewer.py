@@ -9,6 +9,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
+from jinja2 import select_autoescape
+
 from src.visual_signature.corpus_expansion.reviewer_packets import build_reviewer_packets
 from src.visual_signature.corpus_expansion.reviewer_packets import validate_reviewer_packets
 from src.visual_signature.versions import REVIEWER_VIEWER_SCHEMA_VERSION
@@ -22,6 +26,7 @@ DEFAULT_REVIEW_QUEUE_PATH = PROJECT_ROOT / "examples" / "visual_signature" / "co
 DEFAULT_CAPTURE_MANIFEST_PATH = PROJECT_ROOT / "examples" / "visual_signature" / "screenshots" / "capture_manifest.json"
 DEFAULT_DISMISSAL_AUDIT_PATH = PROJECT_ROOT / "examples" / "visual_signature" / "screenshots" / "dismissal_audit.json"
 DEFAULT_PACKETS_ROOT = PROJECT_ROOT / "examples" / "visual_signature" / "corpus_expansion" / "reviewer_packets"
+TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
 def build_reviewer_viewer_bundle(
     *,
@@ -220,34 +225,17 @@ def write_reviewer_viewer_bundle(
     }
 
 def _render_index_html(payload: dict[str, Any]) -> str:
-    embedded = html.escape(json.dumps(payload, ensure_ascii=False), quote=False).replace("</", "<\\/")
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Visual Signature Reviewer Viewer</title>
-  <link rel="stylesheet" href="./viewer.css">
-</head>
-<body>
-  <div id="app" class="page">
-    <pre class="term-head"><span class="prompt">❯</span> visual-signature-reviewer <span class="hl-accent">--scope</span> {html.escape(str(payload.get("readiness_scope", "human_review_scaling")))} <span class="dim">· offline evidence-only</span></pre>
-    <hr class="rule">
-    <section class="fallback-main static-skeleton">
-      <div class="card">
-        <h1>Visual Signature Reviewer Viewer</h1>
-        <div class="viewer-fallback">
-          <strong>Loading reviewer packet bundle…</strong>
-          <div class="muted">Visible fallback panel. If JavaScript fails, this static local-only state remains readable.</div>
-        </div>
-      </div>
-    </section>
-    <script id="viewer-data" type="application/json">{embedded}</script>
-  </div>
-  <script src="./viewer.js" defer></script>
-</body>
-</html>
-"""
+    return _render_template("reviewer_viewer_index.html.j2", payload=payload)
+
+
+def _render_template(name: str, **context: Any) -> str:
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=select_autoescape(("html", "xml")),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    return env.get_template(name).render(**context)
 
 def _viewer_css() -> str:
     return """
@@ -694,7 +682,7 @@ button, input, select, textarea { font: inherit; }
 """.strip()
 
 def _viewer_js() -> str:
-    return """
+    return r"""
 (function () {
   function escapeHtml(value) {
     return String(value)

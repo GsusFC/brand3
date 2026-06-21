@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brand3 Platform</title>
+  <link rel="stylesheet" href="./platform.css">
+</head>
+<body>
+  <div id="app" class="page">
+    <pre class="term-head"><span class="prompt">❯</span> brand3-platform <span class="hl-accent">--mode</span> local <span class="dim">· read-only · separated layers</span></pre>
+    <hr class="rule">
+    <section class="static-skeleton">
+      <h1 class="page-title">Brand3 Platform</h1>
+      <p class="intro-copy">Loading local Brand3 scoring and Visual Signature artifacts. This static shell stays readable if JavaScript fails.</p>
+      <div class="guardrail-banner">Read-only local navigation surface. No scoring changes, rubric changes, production UI changes, provider calls, or runtime mutation enablement.</div>
+    </section>
+    <script id="platform-data" type="application/json">{{ payload | tojson }}</script>
+  </div>
+  <script src="./platform.js" defer></script>
+</body>
+</html>

@@ -2,12 +2,15 @@
 
 from __future__ import annotations
 
-import html
 import json
 import os
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+
+from jinja2 import Environment
+from jinja2 import FileSystemLoader
+from jinja2 import select_autoescape
 
 from src.visual_signature.platform.platform_models import PlatformArtifact
 from src.visual_signature.platform.platform_models import PlatformBundle
@@ -20,6 +23,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_VISUAL_SIGNATURE_ROOT = PROJECT_ROOT / "examples" / "visual_signature"
 DEFAULT_SCORING_OUTPUT_ROOT = PROJECT_ROOT / "output"
 DEFAULT_OUTPUT_ROOT = DEFAULT_VISUAL_SIGNATURE_ROOT / "platform"
+TEMPLATES_DIR = Path(__file__).resolve().parent / "templates"
 
 GUARDRAILS = [
     "read-only local navigation surface",
@@ -719,30 +723,17 @@ def _absolute_artifact_path(artifact: PlatformArtifact, visual_signature_root: P
     return visual_signature_root / artifact.path
 
 def _render_index_html(payload: dict[str, Any]) -> str:
-    embedded = html.escape(json.dumps(payload, ensure_ascii=False), quote=False).replace("</", "<\\/")
-    return f"""<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Brand3 Platform</title>
-  <link rel="stylesheet" href="./platform.css">
-</head>
-<body>
-  <div id="app" class="page">
-    <pre class="term-head"><span class="prompt">❯</span> brand3-platform <span class="hl-accent">--mode</span> local <span class="dim">· read-only · separated layers</span></pre>
-    <hr class="rule">
-    <section class="static-skeleton">
-      <h1 class="page-title">Brand3 Platform</h1>
-      <p class="intro-copy">Loading local Brand3 scoring and Visual Signature artifacts. This static shell stays readable if JavaScript fails.</p>
-      <div class="guardrail-banner">Read-only local navigation surface. No scoring changes, rubric changes, production UI changes, provider calls, or runtime mutation enablement.</div>
-    </section>
-    <script id="platform-data" type="application/json">{embedded}</script>
-  </div>
-  <script src="./platform.js" defer></script>
-</body>
-</html>
-"""
+    return _render_template("platform_index.html.j2", payload=payload)
+
+
+def _render_template(name: str, **context: Any) -> str:
+    env = Environment(
+        loader=FileSystemLoader(str(TEMPLATES_DIR)),
+        autoescape=select_autoescape(("html", "xml")),
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+    return env.get_template(name).render(**context)
 
 def _platform_css() -> str:
     return """

@@ -11,7 +11,7 @@ from fastapi.responses import FileResponse
 from ..templates_env import templates
 from ..visual_signature_data import artifact_file_response_payload
 from ..visual_signature_data import build_human_review_model
-from ..visual_signature_data import build_screenshot_preview_model
+from ..visual_signature_data import build_screenshot_preview_model_for_lang
 from ..visual_signature_data import build_visual_signature_model
 from ..visual_signature_data import screenshot_file_response_payload
 
@@ -81,7 +81,7 @@ async def visual_signature_screenshot_preview(
     filename: str,
     lang: Literal["es", "en"] = Query("es"),
 ):
-    model = await asyncio.to_thread(build_screenshot_preview_model, filename)
+    model = await asyncio.to_thread(build_screenshot_preview_model_for_lang, filename, lang)
     if model is None:
         return templates.TemplateResponse(
             request,
@@ -124,7 +124,7 @@ async def _render(request: Request, section: str, lang: str):
 
 
 async def _render_human_review(request: Request, brand: str | None, lang: str):
-    model = await asyncio.to_thread(build_human_review_model, brand)
+    model = await asyncio.to_thread(build_human_review_model, brand, lang)
     if model is None:
         return templates.TemplateResponse(
             request,

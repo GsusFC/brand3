@@ -1,7 +1,7 @@
 {% extends "base.html.j2" %}
 {% block title %}brand3 :: {{ model.title }}{% endblock %}
 {% block extra_head %}
-<script src="/static/visual_signature_human_review.js?v=brand3-human-review-draft-20260514" defer></script>
+<script src="/static/visual_signature_human_review.js?v={{ model.script_version }}" defer></script>
 {% endblock %}
 {% block content %}
 <section>

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import os
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -167,10 +168,66 @@ SECTION_INTROS = {
 
 HUMAN_REVIEW_DESIGN_PATH = DEFAULT_VISUAL_SIGNATURE_ROOT / "human_review_ui_design.json"
 REVIEW_SEMANTICS_PATH = DEFAULT_VISUAL_SIGNATURE_ROOT / "review_semantics.json"
+HUMAN_REVIEW_SCRIPT_PATH = Path(__file__).resolve().parent / "static" / "visual_signature_human_review.js"
+
+SECTION_NAV_LABELS = {
+    "overview": {"es": "Resumen", "en": "Lab Overview"},
+    "governance": {"es": "Gobernanza", "en": "Governance"},
+    "calibration": {"es": "Calibración", "en": "Calibration"},
+    "corpus": {"es": "Corpus", "en": "Corpus"},
+    "reviewer": {"es": "Revisor", "en": "Reviewer"},
+}
+
+HUMAN_REVIEW_TITLE = {
+    "es": "Revisión humana del Laboratorio de Visual Signature",
+    "en": "Visual Signature Lab Human Review",
+}
+
+HUMAN_REVIEW_INTRO = {
+    "es": "Revisión humana guiada por evidencia para el Laboratorio de Visual Signature. Los borradores son solo locales en esta fase y no crean registros de revisión completos.",
+    "en": "Evidence-first human review for the Visual Signature Lab. Draft answers are local-only in this phase and do not create completed review records.",
+}
+
+HUMAN_REVIEW_GUARDRAILS = {
+    "es": [
+        "solo evidencia",
+        "sin impacto en scoring",
+        "sin persistencia",
+        "sin llamadas a proveedores",
+        "sin mutación en runtime",
+        "sin registros de revisión completos",
+    ],
+    "en": [
+        "evidence-only",
+        "no scoring impact",
+        "no persistence",
+        "no provider calls",
+        "no runtime mutation",
+        "no completed review records",
+    ],
+}
+
+HUMAN_REVIEW_BANNER = {
+    "es": {
+        "title": "Usa solo evidencia visible.",
+        "copy": "Esta pantalla no escribe registros de revisión, no afecta a Brand3 Scoring y no llama a proveedores.",
+    },
+    "en": {
+        "title": "Use visible evidence only.",
+        "copy": "This screen does not write review records, does not affect Brand3 Scoring, and does not call providers.",
+    },
+}
 
 
 def visual_signature_root() -> Path:
     return Path(os.environ.get("BRAND3_VISUAL_SIGNATURE_ROOT", str(DEFAULT_VISUAL_SIGNATURE_ROOT)))
+
+
+def visual_signature_human_review_script_version() -> str:
+    try:
+        return sha256(HUMAN_REVIEW_SCRIPT_PATH.read_bytes()).hexdigest()[:12]
+    except OSError:
+        return "dev"
 
 
 def artifact_path(key: str, *, root: Path | None = None) -> Path | None:
@@ -210,6 +267,10 @@ def screenshot_file_response_payload(filename: str) -> tuple[Path, str] | None:
 
 
 def build_screenshot_preview_model(filename: str) -> dict[str, Any] | None:
+    return build_screenshot_preview_model_for_lang(filename, "es")
+
+
+def build_screenshot_preview_model_for_lang(filename: str, lang: str = "es") -> dict[str, Any] | None:
     payload = screenshot_file_response_payload(filename)
     if payload is None:
         return None
@@ -264,7 +325,7 @@ def build_screenshot_preview_model(filename: str) -> dict[str, Any] | None:
     next_variant = available_related[current_index + 1] if 0 <= current_index < len(available_related) - 1 else None
 
     return {
-        "title": f"{selected_item['brand_name']} screenshot preview",
+        "title": f"{selected_item['brand_name']} {'vista previa de captura' if lang == 'es' else 'screenshot preview'}",
         "brand_name": selected_item["brand_name"],
         "capture_id": selected_item["capture_id"],
         "website_url": selected_item.get("website_url") or "",
@@ -292,13 +353,7 @@ def build_screenshot_preview_model(filename: str) -> dict[str, Any] | None:
                 "raw_json": _pretty_json(dismissal_entry) if dismissal_entry else "",
             },
         ],
-        "nav": [
-            {"label": "Overview", "href": "/visual-signature", "active": False},
-            {"label": "Governance", "href": "/visual-signature/governance", "active": False},
-            {"label": "Calibration", "href": "/visual-signature/calibration", "active": False},
-            {"label": "Corpus", "href": "/visual-signature/corpus", "active": False},
-            {"label": "Reviewer", "href": "/visual-signature/reviewer", "active": False},
-        ],
+        "nav": _visual_signature_nav(lang, active_section="overview"),
     }
 
 
@@ -319,27 +374,13 @@ def build_visual_signature_model(section: str = "overview", lang: str = "es") ->
         "section": section,
         "title": SECTION_TITLES[section][lang],
         "intro": SECTION_INTROS[section][lang],
-        "nav": [
-            {"label": "Lab Overview", "href": "/visual-signature", "active": section == "overview"},
-            {"label": "Governance", "href": "/visual-signature/governance", "active": section == "governance"},
-            {"label": "Calibration", "href": "/visual-signature/calibration", "active": section == "calibration"},
-            {"label": "Corpus", "href": "/visual-signature/corpus", "active": section == "corpus"},
-            {"label": "Reviewer", "href": "/visual-signature/reviewer", "active": section == "reviewer"},
-        ],
-        "guardrails": [
-            "evidence-only",
-            "no scoring impact",
-            "no rubric impact",
-            "no production report impact",
-            "no provider calls",
-            "no runtime mutation",
-            "read-only source artifact navigation",
-        ],
+        "nav": _visual_signature_nav(lang, active_section=section),
+        "guardrails": _visual_signature_guardrails(lang),
         "cards": cards,
         "artifacts": _artifacts_for_section(section, artifacts),
         "visual_evidence": _visual_evidence_model() if section == "overview" else {"items": [], "summary": {}},
         "records": _items_for_section(section, artifacts),
-        "next_steps": _next_steps(section),
+        "next_steps": _next_steps(section, lang),
         "initial_scoring": {
             "href": "/",
             "reports_href": "/reports",
@@ -348,7 +389,9 @@ def build_visual_signature_model(section: str = "overview", lang: str = "es") ->
     }
 
 
-def build_human_review_model(brand: str | None = None) -> dict[str, Any] | None:
+def build_human_review_model(brand: str | None = None, lang: str = "es") -> dict[str, Any] | None:
+    if lang not in ("es", "en"):
+        lang = "es"
     root = visual_signature_root()
     review_queue = _load_json(root / "corpus_expansion" / "review_queue.json") or {}
     pilot = _load_json(root / "corpus_expansion" / "reviewer_workflow_pilot.json") or {}
@@ -425,23 +468,11 @@ def build_human_review_model(brand: str | None = None) -> dict[str, Any] | None:
     case_design = first_cases.get(active_capture["capture_id"], {}) if isinstance(first_cases, dict) else {}
 
     return {
-        "title": "Visual Signature Lab Human Review",
-        "intro": "Evidence-first human review for the Visual Signature Lab. Draft answers are local-only in this phase and do not create completed review records.",
-        "nav": [
-            {"label": "Lab Overview", "href": "/visual-signature", "active": False},
-            {"label": "Governance", "href": "/visual-signature/governance", "active": False},
-            {"label": "Calibration", "href": "/visual-signature/calibration", "active": False},
-            {"label": "Corpus", "href": "/visual-signature/corpus", "active": False},
-            {"label": "Lab Reviewer", "href": "/visual-signature/reviewer", "active": True},
-        ],
-        "guardrails": [
-            "evidence-only",
-            "no scoring impact",
-            "no persistence",
-            "no provider calls",
-            "no runtime mutation",
-            "no completed review records",
-        ],
+        "title": HUMAN_REVIEW_TITLE[lang],
+        "intro": HUMAN_REVIEW_INTRO[lang],
+        "nav": _visual_signature_nav(lang, active_section="reviewer"),
+        "guardrails": HUMAN_REVIEW_GUARDRAILS[lang],
+        "banner": HUMAN_REVIEW_BANNER[lang],
         "queue": {
             "items": queue_items,
             "summary": {
@@ -472,6 +503,7 @@ def build_human_review_model(brand: str | None = None) -> dict[str, Any] | None:
             "evidence_refs",
         ],
         "source_artifacts": _human_review_source_artifacts(root, active_capture),
+        "script_version": visual_signature_human_review_script_version(),
     }
 
 
@@ -1050,21 +1082,81 @@ def _items_for_section(section: str, artifacts: dict[str, dict[str, Any]]) -> li
     return []
 
 
-def _next_steps(section: str) -> list[str]:
-    if section == "overview":
+def _visual_signature_nav(lang: str, *, active_section: str) -> list[dict[str, Any]]:
+    if lang not in ("es", "en"):
+        lang = "es"
+    return [
+        {"label": SECTION_NAV_LABELS["overview"][lang], "href": "/visual-signature", "active": active_section == "overview"},
+        {"label": SECTION_NAV_LABELS["governance"][lang], "href": "/visual-signature/governance", "active": active_section == "governance"},
+        {"label": SECTION_NAV_LABELS["calibration"][lang], "href": "/visual-signature/calibration", "active": active_section == "calibration"},
+        {"label": SECTION_NAV_LABELS["corpus"][lang], "href": "/visual-signature/corpus", "active": active_section == "corpus"},
+        {"label": SECTION_NAV_LABELS["reviewer"][lang], "href": "/visual-signature/reviewer", "active": active_section == "reviewer"},
+    ]
+
+
+def _visual_signature_guardrails(lang: str) -> list[str]:
+    if lang not in ("es", "en"):
+        lang = "es"
+    if lang == "en":
         return [
-            "Use Brand3 Scoring through the existing scan form and report routes.",
-            "Use Visual Signature pages only to inspect source artifacts and readiness.",
-            "Keep scoring and Visual Signature decisions separate.",
+            "evidence-only",
+            "no scoring impact",
+            "no rubric impact",
+            "no production report impact",
+            "no provider calls",
+            "no runtime mutation",
+            "read-only source artifact navigation",
+        ]
+    return [
+        "solo evidencia",
+        "sin impacto en scoring",
+        "sin impacto en rúbrica",
+        "sin impacto en reportes de producción",
+        "sin llamadas a proveedores",
+        "sin mutación en runtime",
+        "navegación de artefactos fuente en solo lectura",
+    ]
+
+
+def _next_steps(section: str, lang: str) -> list[str]:
+    if lang not in ("es", "en"):
+        lang = "es"
+    if section == "overview":
+        if lang == "en":
+            return [
+                "Use Brand3 Scoring through the existing scan form and report routes.",
+                "Use Visual Signature pages only to inspect source artifacts and readiness.",
+                "Keep scoring and Visual Signature decisions separate.",
+            ]
+        return [
+            "Usa Brand3 Scoring a través del formulario de escaneo y las rutas de reporte existentes.",
+            "Usa las páginas de Visual Signature solo para inspeccionar artefactos fuente y readiness.",
+            "Mantén separadas las decisiones de scoring y Visual Signature.",
         ]
     if section == "governance":
-        return ["Resolve governance integrity errors in source artifacts before expanding runtime scope."]
+        return [
+            "Resolve governance integrity errors in source artifacts before expanding runtime scope."
+            if lang == "en"
+            else "Resuelve los errores de integridad de gobernanza en los artefactos fuente antes de ampliar el alcance en runtime."
+        ]
     if section == "calibration":
-        return ["Use calibration readiness block reasons to decide the next evidence target."]
+        return [
+            "Use calibration readiness block reasons to decide the next evidence target."
+            if lang == "en"
+            else "Usa los motivos de bloqueo de calibration readiness para decidir el siguiente objetivo de evidencia."
+        ]
     if section == "corpus":
-        return ["Review pilot metrics and queue state before broadening corpus expansion."]
+        return [
+            "Review pilot metrics and queue state before broadening corpus expansion."
+            if lang == "en"
+            else "Revisa las métricas del piloto y el estado de la cola antes de ampliar corpus."
+        ]
     if section == "reviewer":
-        return ["Open reviewer packets/viewer for human review, but do not persist decisions through this platform."]
+        return [
+            "Open reviewer packets/viewer for human review, but do not persist decisions through this platform."
+            if lang == "en"
+            else "Abre los packets/viewer del revisor para la revisión humana, pero no persistas decisiones a través de esta plataforma."
+        ]
     return []
 
 

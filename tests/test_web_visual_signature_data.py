@@ -255,7 +255,7 @@ class VisualSignatureDataBuilderTests(unittest.TestCase):
     def test_build_human_review_model_default_brand(self):
         model = self.data.build_human_review_model()
         self.assertIsNotNone(model)
-        self.assertEqual(model["title"], "Visual Signature Lab Human Review")
+        self.assertEqual(model["title"], "Revisión humana del Laboratorio de Visual Signature")
         self.assertGreater(len(model["queue"]["items"]), 0)
         active = [item for item in model["queue"]["items"] if item["active"]]
         self.assertEqual(len(active), 1)
@@ -272,6 +272,15 @@ class VisualSignatureDataBuilderTests(unittest.TestCase):
         self.assertIsNotNone(model)
         active = [item for item in model["queue"]["items"] if item["active"]]
         self.assertEqual(len(active), 1)
+
+    def test_build_human_review_model_english_variant(self):
+        model = self.data.build_human_review_model("allbirds", lang="en")
+        self.assertEqual(model["title"], "Visual Signature Lab Human Review")
+        self.assertIn("evidence-only", model["guardrails"])
+
+    def test_visual_signature_human_review_script_version_is_hash(self):
+        version = self.data.visual_signature_human_review_script_version()
+        self.assertRegex(version, r"^[0-9a-f]{12}$")
 
     def test_artifact_file_response_payload_json(self):
         payload = self.data.artifact_file_response_payload("governance_integrity_report")

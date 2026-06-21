@@ -172,9 +172,9 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(review_records_path.read_text(encoding="utf-8"), before)
-        self.assertIn("Visual Signature Lab Human Review", response.text)
+        self.assertIn("Revisión humana del Laboratorio de Visual Signature", response.text)
         self.assertIn("Headspace", response.text)
-        self.assertIn("screenshot first", response.text)
+        self.assertIn("solo evidencia", response.text)
         self.assertIn("No clean attempt available", response.text)
         self.assertIn("Is a login/protected wall visibly present?", response.text)
         self.assertIn("Semantic guidance", response.text)
@@ -192,6 +192,14 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertIn("Preview only. No review record is persisted", response.text)
         self.assertIn("advanced_metadata", response.text)
         self.assertNotIn('class="raw-json"', response.text)
+        self.assertIn("/static/visual_signature_human_review.js?v=", response.text)
+
+    def test_visual_signature_human_review_renders_english_variant(self):
+        response = self.client.get("/visual-signature/reviewer/human-review/headspace?lang=en")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Visual Signature Lab Human Review", response.text)
+        self.assertIn("evidence-only", response.text)
 
     def test_visual_signature_human_review_renders_allbirds_case(self):
         response = self.client.get("/visual-signature/reviewer/human-review/allbirds")
@@ -209,7 +217,7 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertIn("Export draft review JSON", response.text)
         self.assertIn("data-export-draft-review", response.text)
         self.assertIn("needs_additional_evidence", response.text)
-        self.assertIn("no completed review records", response.text)
+        self.assertIn("sin registros de revisión completos", response.text)
         self.assertNotIn('class="raw-json"', response.text)
 
     def test_visual_signature_human_review_draft_export_script_is_static_only(self):

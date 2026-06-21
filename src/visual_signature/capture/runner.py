@@ -322,9 +322,10 @@ def _capture_with_playwright(
                 machine = perceptual_context["machine"]
                 discovery = perceptual_context["discovery"] or {"eligible": False, "candidate_click_targets": [], "rejected_click_targets": [], "block_reason": None, "dismissal_eligibility": None}
                 eligibility = perceptual_context["eligibility"]
-                result["perceptual_state_data"] = machine.to_dict()
+                machine_data = machine.to_dict()
+                result["perceptual_state_data"] = machine_data
                 result["perceptual_state"] = machine.current_state
-                result["perceptual_transitions"] = machine.to_dict().get("transitions") or []
+                result["perceptual_transitions"] = machine_data.get("transitions") or []
                 result["mutation_audit"] = None
 
                 if discovery.get("eligible") and discovery.get("selected_candidate") is not None:
@@ -395,9 +396,10 @@ def _capture_with_playwright(
                         ],
                         risk_level="low",
                     )
-                    result["perceptual_state_data"] = machine.to_dict()
+                    machine_data = machine.to_dict()
+                    result["perceptual_state_data"] = machine_data
                     result["perceptual_state"] = machine.current_state
-                    result["perceptual_transitions"] = machine.to_dict().get("transitions") or []
+                    result["perceptual_transitions"] = machine_data.get("transitions") or []
                     result["mutation_audit"] = mutation.mutation_audit.to_dict()
                     result["dismissal_successful"] = mutation.state == "MINIMALLY_MUTATED_STATE"
                     result["evidence_integrity_notes"].append(
@@ -411,9 +413,10 @@ def _capture_with_playwright(
                     result["evidence_integrity_notes"].append(dismissal.get("note") or "dismissal_not_attempted")
                     result["after_obstruction"] = raw_snapshot["obstruction"]
                     result["clean_attempt_metrics"] = raw_snapshot["metrics"]
-                    result["perceptual_state_data"] = machine.to_dict()
+                    machine_data = machine.to_dict()
+                    result["perceptual_state_data"] = machine_data
                     result["perceptual_state"] = machine.current_state
-                    result["perceptual_transitions"] = machine.to_dict().get("transitions") or []
+                    result["perceptual_transitions"] = machine_data.get("transitions") or []
                     result["mutation_audit"] = None
 
         context.close()

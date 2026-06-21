@@ -48,24 +48,18 @@ from src.discovery.search_plan import build_discovery_search_plan
 from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
 from src.reports.entity_research_packet import build_entity_research_packet
 from src.research.research_pack_facade import build_recommended_research_pack
-from src.niche import classify_brand_niche, list_calibration_profiles, select_calibration_profile
+from src.niche import classify_brand_niche, select_calibration_profile
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.percepcion import PercepcionExtractor
 from src.features.coherencia import CoherenciaExtractor
 from src.features.diferenciacion import DiferenciacionExtractor
 from src.features.presencia import PresenciaExtractor
 from src.features.vitalidad import VitalidadExtractor
-from src.learning.calibration import CalibrationAnalyzer
-from src.quality.dimension_confidence import dimension_confidence_from_features, dimension_confidence_from_snapshot
-from src.quality.evidence_summary import summarize_evidence_from_features, summarize_evidence_records
-from src.quality.trust import quality_label
+from src.quality.dimension_confidence import dimension_confidence_from_features
+from src.quality.evidence_summary import summarize_evidence_from_features
 from src.scoring.engine import ScoringEngine
 from src.services.calibration_state import _build_experiment_summary
-from src.services.analysis_reporting import (
-    benchmark_profiles as _benchmark_profiles_impl,
-    brand_report as _brand_report_impl,
-    compare_benchmarks as _compare_benchmarks_impl,
-)
+from src.services.analysis_reporting import brand_report as _brand_report_impl
 from src.services.acquisition_audit import (
     _acquisition_audit_payload,
     _acquisition_provenance_summary,
@@ -135,6 +129,20 @@ from src.services.report_summaries import (
     _llm_model_roles_payload,
     _persist_report_readiness,
     _trust_summary_payload,
+)
+from src.services.reporting_queries import (
+    _context_readiness_from_snapshot as _context_readiness_from_snapshot_impl,
+    benchmark_profiles as _benchmark_profiles_impl,
+    compare_benchmarks as _compare_benchmarks_impl,
+    learn as _learn_impl,
+    list_brands as _list_brands_impl,
+    list_feedback as _list_feedback_impl,
+    list_profiles as _list_profiles_impl,
+    list_runs as _list_runs_impl,
+    run_dimension_confidence as _run_dimension_confidence_impl,
+    run_evidence_summary as _run_evidence_summary_impl,
+    run_trust_summary as _run_trust_summary_impl,
+    show_run as _show_run_impl,
 )
 from src.services.runtime_helpers import (
     _compute_data_quality as _compute_data_quality_impl,
@@ -803,57 +811,19 @@ def add_feedback(
 
 
 def learn(run_id: int | None = None, brand_name: str | None = None, url: str | None = None) -> list[dict]:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        target_run_id = run_id or store.get_latest_run_id(brand_name=brand_name, url=url)
-        if not target_run_id:
-            raise ValueError("No matching run found for learning analysis")
-
-        snapshot = store.get_run_snapshot(target_run_id)
-        analyzer = CalibrationAnalyzer()
-        recommendations = analyzer.analyze_snapshot(snapshot)
-        recommendations.extend(analyzer.analyze_annotations(store.list_annotations(brand_name=brand_name)))
-
-        payload = [
-            {
-                "scope": rec.scope,
-                "target": rec.target,
-                "severity": rec.severity,
-                "message": rec.message,
-                "evidence": rec.evidence,
-            }
-            for rec in recommendations
-        ]
-        print(json.dumps(payload, indent=2))
-        return payload
-    finally:
-        store.close()
+    return _learn_impl(run_id=run_id, brand_name=brand_name, url=url, db_path=BRAND3_DB_PATH)
 
 
 def list_runs(brand_name: str | None = None, url: str | None = None, limit: int = 20) -> list[dict]:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        runs = store.list_runs(brand_name=brand_name, url=url, limit=limit)
-        print(json.dumps(runs, indent=2))
-        return runs
-    finally:
-        store.close()
+    return _list_runs_impl(brand_name=brand_name, url=url, limit=limit, db_path=BRAND3_DB_PATH)
 
 
 def list_brands(limit: int = 50) -> list[dict]:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        brands = store.list_brands(limit=limit)
-        print(json.dumps(brands, indent=2))
-        return brands
-    finally:
-        store.close()
+    return _list_brands_impl(limit=limit, db_path=BRAND3_DB_PATH)
 
 
 def list_profiles() -> list[dict]:
-    payload = list_calibration_profiles()
-    print(json.dumps(payload, indent=2))
-    return payload
+    return _list_profiles_impl()
 
 
 def benchmark_profiles(
@@ -880,121 +850,27 @@ def compare_benchmarks(before_path: str, after_path: str) -> dict:
 
 
 def list_feedback(brand_name: str | None = None) -> list[dict]:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        annotations = store.list_annotations(brand_name=brand_name)
-        print(json.dumps(annotations, indent=2))
-        return annotations
-    finally:
-        store.close()
+    return _list_feedback_impl(brand_name=brand_name, db_path=BRAND3_DB_PATH)
 
 
 def show_run(run_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(run_id)
-        if not snapshot:
-            raise ValueError(f"Run {run_id} not found")
-        print(json.dumps(snapshot, indent=2))
-        return snapshot
-    finally:
-        store.close()
+    return _show_run_impl(run_id, db_path=BRAND3_DB_PATH)
 
 
 def run_evidence_summary(run_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(run_id)
-        if not snapshot:
-            raise ValueError(f"Run {run_id} not found")
-        summary = summarize_evidence_records(
-            snapshot.get("features") or [],
-            evidence_items=snapshot.get("evidence_items") or [],
-        )
-        print(json.dumps(summary, indent=2))
-        return summary
-    finally:
-        store.close()
+    return _run_evidence_summary_impl(run_id, db_path=BRAND3_DB_PATH)
 
 
 def run_dimension_confidence(run_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(run_id)
-        if not snapshot:
-            raise ValueError(f"Run {run_id} not found")
-        summary = dimension_confidence_from_snapshot(snapshot)
-        print(json.dumps(summary, indent=2))
-        return summary
-    finally:
-        store.close()
+    return _run_dimension_confidence_impl(run_id, db_path=BRAND3_DB_PATH)
 
 
 def run_trust_summary(run_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        snapshot = store.get_run_snapshot(run_id)
-        if not snapshot:
-            raise ValueError(f"Run {run_id} not found")
-        run_payload = snapshot.get("run") or {}
-        context_summary = _context_readiness_from_snapshot(snapshot)
-        evidence_summary = summarize_evidence_records(
-            snapshot.get("features") or [],
-            evidence_items=snapshot.get("evidence_items") or [],
-        )
-        dimension_confidence = dimension_confidence_from_snapshot(snapshot)
-        trust_summary = _trust_summary_payload(
-            data_quality=run_payload.get("data_quality") or "unknown",
-            context_summary=context_summary,
-            evidence_summary=evidence_summary,
-            dimension_confidence=dimension_confidence,
-        )
-        payload = {
-            "run_id": run_id,
-            **trust_summary,
-            "trust_summary": trust_summary,
-            "context_readiness": context_summary,
-            "evidence_summary": evidence_summary,
-            "dimension_confidence": dimension_confidence,
-        }
-        print(json.dumps(payload, indent=2))
-        return payload
-    finally:
-        store.close()
+    return _run_trust_summary_impl(run_id, db_path=BRAND3_DB_PATH)
 
 
 def _context_readiness_from_snapshot(snapshot: dict) -> dict:
-    for item in reversed(snapshot.get("raw_inputs") or []):
-        if item.get("source") != "context" or not isinstance(item.get("payload"), dict):
-            continue
-        payload = item["payload"]
-        coverage = float(payload.get("coverage") or 0.0)
-        confidence = float(payload.get("confidence") or 0.0)
-        if coverage < 0.3:
-            status = "insufficient_data"
-        elif confidence < 0.6:
-            status = "degraded"
-        else:
-            status = "good"
-        return {
-            "available": True,
-            "coverage": coverage,
-            "confidence": confidence,
-            "coverage_label": quality_label(coverage),
-            "confidence_label": quality_label(confidence),
-            "status": status,
-            "confidence_reason": payload.get("confidence_reason") or [],
-            "context_score": payload.get("context_score"),
-        }
-    return {
-        "available": False,
-        "coverage": 0.0,
-        "confidence": 0.0,
-        "coverage_label": "baja",
-        "confidence_label": "baja",
-        "status": "insufficient_data",
-        "confidence_reason": ["context_scan_unavailable"],
-    }
+    return _context_readiness_from_snapshot_impl(snapshot)
 
 
 def brand_report(brand_name: str, limit: int = 10) -> dict:

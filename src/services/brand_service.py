@@ -36,10 +36,7 @@ from src.config import (
     EXA_API_KEY,
     FIRECRAWL_API_KEY,
     LLM_CHEAP_MODEL,
-    LLM_MODEL,
-    LLM_PREMIUM_MODEL,
     SCREENSHOT_PROVIDER,
-    VISION_MODEL,
 )
 from src.discovery.entity_discovery import discover_entity
 from src.discovery.enrichment import build_discovery_enrichment
@@ -49,7 +46,6 @@ from src.discovery.search_plan import build_discovery_search_plan
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
 from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
-from src.reports.derivation import build_report_readiness_from_snapshot
 from src.reports.entity_research_packet import build_entity_research_packet
 from src.research.research_pack_facade import build_recommended_research_pack
 from src.niche import classify_brand_niche, list_calibration_profiles, select_calibration_profile
@@ -63,14 +59,7 @@ from src.learning.applier import CandidateApplyError, apply_candidate
 from src.learning.calibration import CalibrationAnalyzer
 from src.quality.dimension_confidence import dimension_confidence_from_features, dimension_confidence_from_snapshot
 from src.quality.evidence_summary import summarize_evidence_from_features, summarize_evidence_records
-from src.quality.publication_readiness import attach_report_publication_decision
-from src.quality.trust import (
-    build_trust_interpretation,
-    build_trust_summary,
-    dimension_status_counts_from_confidence,
-    limited_dimensions_from_confidence,
-    quality_label,
-)
+from src.quality.trust import quality_label
 from src.scoring.engine import ScoringEngine
 from src.services.acquisition_audit import (
     _acquisition_audit_payload,
@@ -115,8 +104,14 @@ from src.services.llm_policy import (
     _cost_policy_summary,
     _infer_llm_provider,
     _llm_cache_summary,
-    _llm_model_roles_payload as _build_llm_model_roles_payload,
     _llm_provider_payload,
+)
+from src.services.report_summaries import (
+    _context_confidence_summary,
+    _dimension_confidence_summary,
+    _llm_model_roles_payload,
+    _persist_report_readiness,
+    _trust_summary_payload,
 )
 from src.services.output_files import (
     _save_benchmark_comparison_result,
@@ -127,6 +122,14 @@ from src.services.public_presence import (
     _context_effective_readiness,
     _context_enrichment_summary,
     _public_presence_inventory_summary,
+)
+from src.services.report_summaries import (
+    _audit_analyst_llm,
+    _context_confidence_summary,
+    _dimension_confidence_summary,
+    _llm_model_roles_payload,
+    _persist_report_readiness,
+    _trust_summary_payload,
 )
 from src.services.run_payloads import _build_run_audit_payload, _build_run_data_sources_payload
 from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
@@ -853,87 +856,11 @@ def _check_cancel(cancel_check) -> None:
         raise AnalysisJobCancelled("Cancelled by user")
 
 
-def _confidence_status(context_data: ContextData | None) -> str:
-    if not context_data or context_data.coverage < 0.3:
-        return "insufficient_data"
-    if context_data.confidence < 0.6:
-        return "degraded"
-    return "good"
-
-
-def _context_confidence_summary(context_data: ContextData | None) -> dict[str, object]:
-    if not context_data:
-        return {
-            "coverage": 0.0,
-            "confidence": 0.0,
-            "confidence_reason": ["context_scan_unavailable"],
-            "status": "insufficient_data",
-        }
-    return {
-        "coverage": context_data.coverage,
-        "confidence": context_data.confidence,
-        "confidence_reason": list(context_data.confidence_reason or []),
-        "status": _confidence_status(context_data),
-    }
-
-
-def _dimension_confidence_summary(
-    features_by_dim: dict[str, dict],
-    *,
-    evidence_items: list[dict[str, object]] | None = None,
-    data_quality: str | None = None,
-    context_data: ContextData | None = None,
-) -> dict[str, dict[str, object]]:
-    return dimension_confidence_from_features(
-        features_by_dim,
-        evidence_items=evidence_items,
-        data_quality=data_quality,
-        context_summary=_context_confidence_summary(context_data),
-    )
-
-
-def _trust_summary_payload(
-    *,
-    data_quality: str,
-    context_summary: dict[str, object],
-    evidence_summary: dict[str, object],
-    dimension_confidence: dict[str, dict[str, object]],
-    context_enrichment_summary: dict[str, object] | None = None,
-    context_effective_readiness: dict[str, object] | None = None,
-) -> dict[str, object]:
-    dimension_status_counts = dimension_status_counts_from_confidence(dimension_confidence)
-    effective_applied = bool(context_effective_readiness and context_effective_readiness.get("applied"))
-    summary = build_trust_summary(
-        data_quality=data_quality,
-        context_summary=context_effective_readiness if effective_applied else context_summary,
-        evidence_summary=evidence_summary,
-        dimension_status_counts=dimension_status_counts,
-        limited_dimensions=limited_dimensions_from_confidence(dimension_confidence),
-    )
-    if effective_applied:
-        summary["context"] = context_summary
-        summary["effective_context"] = context_effective_readiness
-    if context_enrichment_summary and context_enrichment_summary.get("applied"):
-        summary["context_enrichment"] = context_enrichment_summary
-    interpretation = build_trust_interpretation(
-        trust_summary=summary,
-        raw_context_summary=context_summary,
-        effective_context_summary=context_effective_readiness,
-        evidence_summary=evidence_summary,
-    )
-    if interpretation:
-        summary["interpretation"] = interpretation
-        summary["user_facing_summary"] = interpretation["user_message"]
-    return summary
-
-
-def _llm_model_roles_payload() -> dict[str, str]:
-    return _build_llm_model_roles_payload(
-        default_model=LLM_MODEL,
-        cheap_model=LLM_CHEAP_MODEL,
-        premium_model=LLM_PREMIUM_MODEL,
-        audit_analyst_model=AUDIT_ANALYST_MODEL,
-        vision_model=VISION_MODEL,
+def _load_gate_config(store: SQLiteStore | None = None) -> dict:
+    return _load_gate_config_from_db(
+        store,
+        db_path=BRAND3_DB_PATH,
+        default_gate_config=_default_gate_config,
     )
 
 
@@ -942,14 +869,6 @@ def _audit_analyst_llm(feature_llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
         feature_llm,
         analyzer_cls=LLMAnalyzer,
         audit_analyst_model=AUDIT_ANALYST_MODEL,
-    )
-
-
-def _load_gate_config(store: SQLiteStore | None = None) -> dict:
-    return _load_gate_config_from_db(
-        store,
-        db_path=BRAND3_DB_PATH,
-        default_gate_config=_default_gate_config,
     )
 
 
@@ -1003,22 +922,6 @@ def _build_run_audit_context(
         calibration_profile=calibration_profile,
         niche_classification=niche_classification,
     )
-
-
-def _persist_report_readiness(
-    store: SQLiteStore,
-    run_id: int,
-    audit: dict[str, Any],
-) -> dict[str, Any] | None:
-    snapshot = store.get_run_snapshot(run_id)
-    if not snapshot:
-        return None
-    readiness = build_report_readiness_from_snapshot(snapshot)
-    if not readiness:
-        return None
-    attach_report_publication_decision(audit, readiness)
-    store.save_run_audit(run_id, audit)
-    return readiness
 
 
 def run(

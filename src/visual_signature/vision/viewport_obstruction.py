@@ -363,49 +363,125 @@ def _region_stats(image: RasterImage, x0: float, y0: float, x1: float, y1: float
     right = max(left + 1, min(image.width, int(image.width * x1)))
     top = max(0, min(image.height - 1, int(image.height * y0)))
     bottom = max(top + 1, min(image.height, int(image.height * y1)))
-    return _pixel_stats(image.sample_grid(max_width=80, max_height=60, left=left, top=top, right=right, bottom=bottom))
+    stats = _pixel_stats_accumulator()
+    _accumulate_pixel_stats(
+        stats,
+        image,
+        left=left,
+        top=top,
+        right=right,
+        bottom=bottom,
+        max_width=80,
+        max_height=60,
+    )
+    return _pixel_stats_finalize(stats)
 
 
 def _outer_region_stats(image: RasterImage, border_ratio: float) -> dict[str, float]:
     border_x = max(1, int(image.width * border_ratio))
     border_y = max(1, int(image.height * border_ratio))
-    pixels = []
-    pixels.extend(image.sample_grid(max_width=100, max_height=20, left=0, top=0, right=image.width, bottom=border_y))
-    pixels.extend(
-        image.sample_grid(
-            max_width=100,
-            max_height=20,
-            left=0,
-            top=max(0, image.height - border_y),
-            right=image.width,
-            bottom=image.height,
-        )
+    stats = _pixel_stats_accumulator()
+    _accumulate_pixel_stats(
+        stats,
+        image,
+        left=0,
+        top=0,
+        right=image.width,
+        bottom=border_y,
+        max_width=100,
+        max_height=20,
+    )
+    _accumulate_pixel_stats(
+        stats,
+        image,
+        left=0,
+        top=max(0, image.height - border_y),
+        right=image.width,
+        bottom=image.height,
+        max_width=100,
+        max_height=20,
     )
     middle_top = border_y
     middle_bottom = max(border_y, image.height - border_y)
     if middle_top < middle_bottom:
-        pixels.extend(image.sample_grid(max_width=20, max_height=60, left=0, top=middle_top, right=border_x, bottom=middle_bottom))
-        pixels.extend(
-            image.sample_grid(
-                max_width=20,
-                max_height=60,
-                left=max(0, image.width - border_x),
-                top=middle_top,
-                right=image.width,
-                bottom=middle_bottom,
-            )
+        _accumulate_pixel_stats(
+            stats,
+            image,
+            left=0,
+            top=middle_top,
+            right=border_x,
+            bottom=middle_bottom,
+            max_width=20,
+            max_height=60,
         )
-    return _pixel_stats(pixels)
+        _accumulate_pixel_stats(
+            stats,
+            image,
+            left=max(0, image.width - border_x),
+            top=middle_top,
+            right=image.width,
+            bottom=middle_bottom,
+            max_width=20,
+            max_height=60,
+        )
+    return _pixel_stats_finalize(stats)
 
 
-def _pixel_stats(pixels: list[tuple[int, int, int]]) -> dict[str, float]:
-    if not pixels:
+def _pixel_stats_accumulator() -> dict[str, float]:
+    return {"count": 0.0, "brightness": 0.0, "dark": 0.0, "light": 0.0}
+
+
+def _accumulate_pixel_stats(
+    stats: dict[str, float],
+    image: RasterImage,
+    *,
+    left: int,
+    top: int,
+    right: int,
+    bottom: int,
+    max_width: int,
+    max_height: int,
+) -> None:
+    if left >= right or top >= bottom:
+        return
+    x_step = max(1, (right - left) // max_width)
+    y_step = max(1, (bottom - top) // max_height)
+    if image.raw_bytes is not None:
+        view = memoryview(image.raw_bytes)
+        channels = image.channels
+        for y in range(top, bottom, y_step):
+            row_offset = (y * image.width + left) * channels
+            for x in range(0, (right - left) * channels, x_step * channels):
+                brightness = _brightness((view[row_offset + x], view[row_offset + x + 1], view[row_offset + x + 2]))
+                stats["count"] += 1
+                stats["brightness"] += brightness
+                stats["dark"] += 1 if brightness <= 70 else 0
+                stats["light"] += 1 if brightness >= 210 else 0
+        return
+
+    for pixel in image.sample_grid(
+        max_width=max_width,
+        max_height=max_height,
+        left=left,
+        top=top,
+        right=right,
+        bottom=bottom,
+    ):
+        brightness = _brightness(pixel)
+        stats["count"] += 1
+        stats["brightness"] += brightness
+        stats["dark"] += 1 if brightness <= 70 else 0
+        stats["light"] += 1 if brightness >= 210 else 0
+
+
+def _pixel_stats_finalize(stats: dict[str, float]) -> dict[str, float]:
+    count = stats["count"]
+    if count <= 0:
         return {}
-    brightness_values = [_brightness(pixel) for pixel in pixels]
     return {
-        "brightness": sum(brightness_values) / len(brightness_values),
-        "dark_ratio": sum(1 for value in brightness_values if value <= 70) / len(brightness_values),
-        "light_ratio": sum(1 for value in brightness_values if value >= 210) / len(brightness_values),
+        "brightness": stats["brightness"] / count,
+        "dark_ratio": stats["dark"] / count,
+        "light_ratio": stats["light"] / count,
     }
 
 

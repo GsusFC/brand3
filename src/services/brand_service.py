@@ -84,6 +84,7 @@ from src.quality.trust import (
 )
 from src.scoring.engine import ScoringEngine
 from src.services.brand_profiles import _build_brand_profile, _slugify
+from src.services.diagnostics import _log_timing, _print_feature_details
 from src.services.feature_pipeline import run_feature_pipeline
 from src.services.input_collection import collect_raw_inputs, start_analysis_run, store_safely as _store_safely
 from src.services.output_files import (
@@ -199,29 +200,6 @@ def _discovery_search_plan_payload(
             ],
             "owned_urls": [url] if url else [],
         }
-
-
-def _print_feature_details(brand_score) -> None:
-    print("\n--- Feature Details ---")
-    for dim_name, dim_score in brand_score.dimensions.items():
-        print(f"\n[{dim_name}]")
-        if dim_score.score is None:
-            print("  score unavailable  reason=insufficient_data")
-            continue
-        for feat_name, feat in dim_score.features.items():
-            conf = f"(conf: {feat.confidence:.0%})" if feat.confidence < 1 else ""
-            src = f"src={feat.source}"
-            print(f"  {feat_name:30s} {feat.value:6.1f}  {conf}  {src}")
-            if feat.raw_value:
-                raw_str = str(feat.raw_value)
-                raw = raw_str[:120] + "..." if len(raw_str) > 120 else raw_str
-                print(f"    raw: {raw}")
-
-
-def _log_timing(label: str, started: float) -> float:
-    now = perf_counter()
-    print(f"[timing] {label}: {(now - started):.2f}s")
-    return now
 
 
 def _effective_brand_url(original_url: str, web_data: WebData | None) -> str:

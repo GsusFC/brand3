@@ -186,7 +186,7 @@ def _normalize_snapshot(payload: Any) -> dict[str, Any]:
             "colors": [],
             "limitations": ["computed_style_snapshot_invalid"],
         }
-    payload = dict(payload)
+    payload = payload.copy()
     payload["schema_version"] = str(payload.get("schema_version") or "computed-style-snapshot-v1")
     elements = payload.get("elements")
     payload["elements"] = [item for item in elements if isinstance(item, dict)] if isinstance(elements, list) else []

@@ -250,27 +250,23 @@ def _load_png(data: bytes, *, source_path: str) -> RasterImage:
     channels = 4 if color_type == 6 else 3
     raw = zlib.decompress(bytes(idat))
     stride = width * channels
-    rows: list[bytearray] = []
     offset = 0
     previous = bytearray(stride)
+    out = 0
+    output = bytearray(width * height * 3)
     for _ in range(height):
         filter_type = raw[offset]
         offset += 1
         row = bytearray(raw[offset:offset + stride])
         offset += stride
         row = _unfilter_png_row(row, previous, filter_type, channels)
-        rows.append(row)
         previous = row
-
-    raw = bytearray(width * height * 3)
-    out = 0
-    for row in rows:
         for idx in range(0, len(row), channels):
-            raw[out] = row[idx]
-            raw[out + 1] = row[idx + 1]
-            raw[out + 2] = row[idx + 2]
+            output[out] = row[idx]
+            output[out + 1] = row[idx + 1]
+            output[out + 2] = row[idx + 2]
             out += 3
-    return RasterImage(width=width, height=height, source_path=source_path, raw_bytes=bytes(raw), channels=3)
+    return RasterImage(width=width, height=height, source_path=source_path, raw_bytes=bytes(output), channels=3)
 
 
 def _unfilter_png_row(row: bytearray, previous: bytearray, filter_type: int, channels: int) -> bytearray:

@@ -131,6 +131,10 @@ from src.services.report_summaries import (
     _persist_report_readiness,
     _trust_summary_payload,
 )
+from src.services.runtime_helpers import (
+    _compute_data_quality as _compute_data_quality_impl,
+    _should_skip_llm_for_low_context as _should_skip_llm_for_low_context_impl,
+)
 from src.services.run_payloads import _build_run_audit_payload, _build_run_data_sources_payload
 from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
 from src.services.serialization import _to_jsonable
@@ -242,12 +246,7 @@ def _annotate_content_source(features_by_dim: dict[str, dict], content_source: s
 
 
 def _compute_data_quality(exa_data: ExaData | None, content_source: str) -> str:
-    mentions_count = len(exa_data.mentions) if exa_data else 0
-    if content_source in ("firecrawl", "browser_fallback", "owned_fallback") and mentions_count >= 5:
-        return "good"
-    if content_source == "exa_fallback" and mentions_count >= 3:
-        return "degraded"
-    return "insufficient"
+    return _compute_data_quality_impl(exa_data, content_source)
 
 
 def _has_effective_owned_content_for_llm(
@@ -265,9 +264,7 @@ def _should_skip_llm_for_low_context(
     content_web: WebData | None,
     content_source: str,
 ) -> bool:
-    if _has_effective_owned_content_for_llm(content_web, content_source):
-        return False
-    return bool(context_data and context_data.coverage < 0.3)
+    return _should_skip_llm_for_low_context_impl(context_data, content_web, content_source)
 
 
 def _social_collect_worker(
@@ -1299,13 +1296,13 @@ def run(
         step_started = _log_timing("phase 4e result assembly", step_started)
         result["audit"].update(
             _build_run_audit_payload(
-            acquisition_provenance=acquisition_provenance,
-            acquisition_steps=acquisition_steps,
-            raw_input_cache=raw_input_cache,
-            screenshot_capture=screenshot_capture,
-            data_quality=data_quality,
-            content_source=content_source,
-            discovery_calibration_decision=discovery_calibration_decision,
+                acquisition_provenance=acquisition_provenance,
+                acquisition_steps=acquisition_steps,
+                raw_input_cache=raw_input_cache,
+                screenshot_capture=screenshot_capture,
+                data_quality=data_quality,
+                content_source=content_source,
+                discovery_calibration_decision=discovery_calibration_decision,
             )
         )
         if run_id:

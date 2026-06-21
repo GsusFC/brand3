@@ -11,7 +11,7 @@ from typing import Any
 
 from src.visual_signature.extract_visual_signature import extract_visual_signature
 from src.visual_signature.vision.enrich_visual_signature import enrich_visual_signature_with_vision
-from src.visual_signature._internal.utils import int_or_none as _int_or_none, unique as _unique
+from src.visual_signature._internal.utils import dict_or_empty as _dict, int_or_none as _int_or_none, unique as _unique
 from src.visual_signature.versions import VISUAL_SIGNATURE_SCAN_VERSION
 
 
@@ -291,9 +291,6 @@ def _score_label(score: float) -> str:
         return "mixed"
     return "weak"
 
-def _dict(value: Any) -> dict[str, Any]:
-    return value if isinstance(value, dict) else {}
-
 def _score01(value: Any) -> float:
     try:
         number = float(value)
@@ -311,4 +308,3 @@ def _float_or_none(value: Any) -> float | None:
 
 def _clamp100(value: float) -> float:
     return max(0.0, min(100.0, float(value)))
-

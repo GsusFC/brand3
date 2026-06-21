@@ -71,6 +71,11 @@ def copy_dict_mapping(values: Any) -> dict[str, dict[str, Any]]:
     return {str(key): dict(value) for key, value in values.items() if isinstance(value, dict)}
 
 
+def dict_or_empty(value: Any) -> dict[str, Any]:
+    """Return a dict value or an empty dict."""
+    return value if isinstance(value, dict) else {}
+
+
 def utc_now() -> str:
     """ISO 8601 UTC timestamp with 'Z' suffix."""
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")

@@ -7,11 +7,37 @@ rendering, scoring, or runtime integration.
 
 from __future__ import annotations
 
-import ast
 import json
 from collections import defaultdict
 from typing import Any
 from urllib.parse import urlparse
+
+from src.reports.evidence_packet_analysis import (
+    _apply_exa_metadata_hints as _apply_exa_metadata_hints_impl,
+    _build_exa_url_metadata as _build_exa_url_metadata_impl,
+    _classify_candidate as _classify_candidate_impl,
+    _map_exa_source_class_to_packet as _map_exa_source_class_to_packet_impl,
+)
+from src.reports.evidence_packet_readiness import (
+    _add_entity_ambiguity as _add_entity_ambiguity_impl,
+    _add_missing as _add_missing_impl,
+    _add_review as _add_review_impl,
+    _allows_ambiguity_competitor_override as _allows_ambiguity_competitor_override_impl,
+    _base_readiness_reason_codes as _base_readiness_reason_codes_impl,
+    _blocked_or_review_status as _blocked_or_review_status_impl,
+    _cross_dimension_evidence as _cross_dimension_evidence_impl,
+    _dedupe_strings as _dedupe_strings_impl,
+    _dimension_readiness as _dimension_readiness_impl,
+    _entity_resolution as _entity_resolution_impl,
+    _has_differentiation_basis as _has_differentiation_basis_impl,
+    _has_temporal_activity_signal as _has_temporal_activity_signal_impl,
+    _merge_related_surfaces as _merge_related_surfaces_impl,
+    _public_related_evidence as _public_related_evidence_impl,
+    _readiness_decision as _readiness_decision_impl,
+    _related_surfaces as _related_surfaces_impl,
+)
+from src.reports.evidence_packet_inventory import build_source_inventory as _source_inventory
+from src.reports.evidence_packet_candidates import build_evidence_candidates as _evidence_candidates
 
 
 VERSION = 0
@@ -141,7 +167,7 @@ def build_evidence_packet_v0(snapshot: dict) -> dict:
     audit_host = _host(audit_url)
     audit_root = _root_domain(audit_host)
     case_id = _case_id(run, audit_host)
-    exa_url_metadata = _build_exa_url_metadata(snapshot)
+    exa_url_metadata = _build_exa_url_metadata_impl(snapshot)
 
     packet = _empty_packet(case_id=case_id, audit_url=audit_url, audit_host=audit_host, audit_root=audit_root)
 
@@ -155,7 +181,7 @@ def build_evidence_packet_v0(snapshot: dict) -> dict:
     seen_eligible: set[tuple[str, str]] = set()
 
     for candidate in candidates:
-        classified = _classify_candidate(
+        classified = _classify_candidate_impl(
             candidate,
             audit_host=audit_host,
             audit_root=audit_root,
@@ -182,7 +208,7 @@ def build_evidence_packet_v0(snapshot: dict) -> dict:
             packet["technical_signals"].append(entry)
         elif source_class == "trust_security":
             packet["trust_or_security_signals"].append(entry)
-            _add_review(packet, classified, seen_reviews, "trust_or_security_signal_requires_review")
+            _add_review_impl(packet, classified, seen_reviews, "trust_or_security_signal_requires_review")
         elif source_class == "visual_internal_metric":
             packet["visual_or_internal_signals"].append(entry)
         elif source_class == "noise":
@@ -191,7 +217,7 @@ def build_evidence_packet_v0(snapshot: dict) -> dict:
             packet["external_evidence"].append(entry)
 
         if not classified.get("url"):
-            _add_missing(packet, classified, seen_missing)
+            _add_missing_impl(packet, classified, seen_missing)
 
         if eligibility == "eligible_for_narrative_finding":
             key = (entry.get("text", ""), entry.get("url", ""))
@@ -221,10 +247,10 @@ def build_evidence_packet_v0(snapshot: dict) -> dict:
     ):
         packet[field] = _dedupe(packet[field])
 
-    packet["entity_resolution"] = _entity_resolution(packet)
+    packet["entity_resolution"] = _entity_resolution_impl(packet)
     packet["source_inventory"] = _source_inventory(snapshot, classified_candidates)
-    packet["dimension_readiness"] = _dimension_readiness(packet, classified_candidates)
-    packet["cross_dimension_evidence"] = _cross_dimension_evidence(packet, classified_candidates)
+    packet["dimension_readiness"] = _dimension_readiness_impl(packet, classified_candidates)
+    packet["cross_dimension_evidence"] = _cross_dimension_evidence_impl(packet, classified_candidates)
     packet["metadata"]["counts"] = {
         field: len(packet[field])
         for field in OUTPUT_FIELDS
@@ -295,453 +321,6 @@ def _case_id(run: dict, audit_host: str) -> str:
     brand = str(run.get("brand_name") or audit_host or "brand").strip()
     cleaned = "".join(ch.lower() if ch.isalnum() else "_" for ch in brand)
     return "_".join(part for part in cleaned.split("_") if part) or "brand"
-
-
-def _source_inventory(snapshot: dict, classified_candidates: list[dict]) -> list[dict]:
-    inventory: list[dict] = []
-    seen_urls: set[str] = set()
-
-    for item in classified_candidates:
-        url = str(item.get("url") or "").strip()
-        if not url or url in seen_urls:
-            continue
-        seen_urls.add(url)
-        inventory.append(
-            {
-                "url": url,
-                "source_type": _inventory_source_type(item),
-                "source_quality": _source_quality(item),
-                "role": _source_role(item),
-                "notes": item.get("classification_reason") or "",
-            }
-        )
-
-    for item in snapshot.get("raw_inputs") or []:
-        payload = item.get("payload")
-        source_url = _first_url(payload)
-        inventory.append(
-            {
-                "url": source_url,
-                "source_type": str(item.get("source") or "unknown"),
-                "source_quality": "unknown",
-                "role": "raw_input",
-                "notes": f"available={payload is not None}; payload_type={type(payload).__name__ if payload is not None else 'none'}",
-            }
-        )
-    feature_sources: dict[str, int] = defaultdict(int)
-    for feature in snapshot.get("features") or []:
-        feature_sources[str(feature.get("source") or "unknown")] += 1
-    for source, count in sorted(feature_sources.items()):
-        inventory.append(
-            {
-                "url": "",
-                "source_type": f"features:{source}",
-                "source_quality": "unknown",
-                "role": "feature_source_summary",
-                "notes": f"count={count}",
-            }
-        )
-    if snapshot.get("evidence_items"):
-        inventory.append(
-            {
-                "url": "",
-                "source_type": "evidence_items",
-                "source_quality": "unknown",
-                "role": "evidence_item_summary",
-                "notes": f"count={len(snapshot['evidence_items'])}",
-            }
-        )
-    return _dedupe(inventory)
-
-
-def _evidence_candidates(snapshot: dict) -> list[dict]:
-    candidates: list[dict] = []
-    for feature in snapshot.get("features") or []:
-        raw = _parse_raw_value(feature.get("raw_value"))
-        base = {
-            "origin": "feature",
-            "dimension": feature.get("dimension_name") or "",
-            "feature_name": feature.get("feature_name") or "",
-            "feature_source": feature.get("source") or "",
-            "feature_confidence": feature.get("confidence"),
-        }
-        candidates.extend(_candidates_from_raw(raw, base))
-
-    for item in snapshot.get("evidence_items") or []:
-        candidates.append(
-            {
-                "origin": "evidence_item",
-                "dimension": item.get("dimension_name") or "",
-                "feature_name": item.get("feature_name") or "",
-                "feature_source": item.get("source") or "",
-                "feature_confidence": item.get("confidence"),
-                "text": str(item.get("quote") or "").strip(),
-                "url": str(item.get("url") or "").strip(),
-                "raw_key": "evidence_item",
-            }
-        )
-    return [candidate for candidate in candidates if candidate.get("text") or candidate.get("url")]
-
-
-def _candidates_from_raw(raw: Any, base: dict) -> list[dict]:
-    if not isinstance(raw, dict):
-        return []
-    if (
-        str(base.get("dimension") or "") == "diferenciacion"
-        and str(base.get("feature_source") or "") == "competitor_web_comparison"
-    ):
-        return _competitor_comparison_candidates(raw, base)
-
-    out: list[dict] = []
-
-    def add(*, text: str = "", url: str = "", raw_key: str, extra: dict | None = None) -> None:
-        text = " ".join(str(text or "").split())
-        url = str(url or "").strip()
-        if text or url:
-            out.append({**base, "text": text, "url": url, "raw_key": raw_key, "extra": extra or {}})
-
-    for key in ("evidence", "quotes", "examples", "messaging_gaps", "tone_examples"):
-        items = raw.get(key)
-        if not isinstance(items, list):
-            continue
-        for item in items:
-            if isinstance(item, dict):
-                text = item.get("quote") or item.get("snippet") or item.get("text") or item.get("example") or item.get("title") or ""
-                source_value = item.get("source") or ""
-                source_url = source_value if _is_http_url(source_value) else ""
-                url = item.get("source_url") or item.get("url") or source_url
-                add(text=text, url=url, raw_key=key, extra={k: v for k, v in item.items() if k not in {"quote", "snippet", "text", "example", "title", "source_url", "url", "source"}})
-            elif isinstance(item, str):
-                add(text=item, raw_key=key)
-
-    for gap in raw.get("gaps") or []:
-        if not isinstance(gap, dict):
-            continue
-        self_says = str(gap.get("self_says") or "").strip()
-        third_party = str(gap.get("third_party_says") or "").strip()
-        url = str(gap.get("source_url") or gap.get("url") or "").strip()
-        if self_says:
-            add(text=self_says, raw_key="gap_self_says", extra={"gap_url": url})
-        if third_party or url:
-            add(text=third_party, url=url, raw_key="gap_third_party_says")
-
-    evidence_url = raw.get("evidence_url")
-    evidence_snippet = raw.get("evidence_snippet")
-    if isinstance(evidence_url, str) and isinstance(evidence_snippet, str):
-        add(text=evidence_snippet, url=evidence_url, raw_key="evidence_snippet")
-    elif isinstance(evidence_url, str):
-        add(url=evidence_url, raw_key="evidence_url")
-    elif isinstance(evidence_snippet, str):
-        add(text=evidence_snippet, raw_key="evidence_snippet")
-    for snippet in raw.get("evidence_snippets") or []:
-        if isinstance(snippet, str):
-            add(text=snippet, raw_key="evidence_snippets")
-    for insight in raw.get("evidence_insights") or []:
-        if isinstance(insight, str):
-            add(text=insight, raw_key="evidence_insights")
-
-    for platform in raw.get("platforms") or []:
-        if isinstance(platform, dict):
-            add(
-                text=f"{platform.get('name') or 'social'} profile candidate",
-                url=platform.get("url") or "",
-                raw_key="platforms",
-                extra={"verified": platform.get("verified"), "followers": platform.get("followers")},
-            )
-    return out
-
-
-def _competitor_comparison_candidates(raw: dict, base: dict) -> list[dict]:
-    candidates: list[dict] = []
-    avg_distance = raw.get("avg_distance")
-    competitors_analyzed = raw.get("competitors_analyzed")
-    source_url = "snapshot://feature/competitor_web_comparison"
-
-    def add(label: str, payload: dict, relation: str) -> None:
-        name = str(payload.get("name") or "").strip()
-        distance = payload.get("distance")
-        if not name or distance is None:
-            return
-        text = (
-            f"Existing Brand3 competitor comparison identifies {name} as the audited brand's {label} "
-            f"with measured distance {distance}; avg_distance={avg_distance}; "
-            f"competitors_analyzed={competitors_analyzed}."
-        )
-        candidates.append(
-            {
-                **base,
-                "text": text,
-                "url": source_url,
-                "raw_key": f"competitor_{relation}",
-                "extra": {
-                    "competitor_name": name,
-                    "distance": distance,
-                    "avg_distance": avg_distance,
-                    "competitors_analyzed": competitors_analyzed,
-                    "limits": (
-                        "Snapshot comparison can support relative positioning distance only; "
-                        "it does not prove superiority, product quality, adoption, customer choice, "
-                        "durable defensibility, or planning direction."
-                    ),
-                },
-            }
-        )
-
-    closest = raw.get("closest_competitor")
-    if isinstance(closest, dict):
-        add("closest measured competitor", closest, "closest")
-    most_different = raw.get("most_different")
-    if isinstance(most_different, dict):
-        add("most different measured competitor", most_different, "most_different")
-    return candidates
-
-
-def _classify_candidate(
-    candidate: dict,
-    *,
-    audit_host: str,
-    audit_root: str,
-    exa_url_metadata: dict[str, dict] | None = None,
-) -> dict:
-    url = str(candidate.get("url") or "").strip()
-    text = str(candidate.get("text") or "").strip()
-    host = _host(url)
-    root = _root_domain(host)
-    feature_name = str(candidate.get("feature_name") or "").lower()
-    feature_source = str(candidate.get("feature_source") or "").lower()
-    raw_key = str(candidate.get("raw_key") or "").lower()
-    haystack = " ".join([text, url, feature_name, feature_source, raw_key]).lower()
-
-    source_class = "external_third_party"
-    eligibility = "eligible_for_narrative_finding"
-    reason = "source_classified_external_candidate"
-
-    if feature_source == "competitor_web_comparison" and raw_key.startswith("competitor_"):
-        source_class = "competitor_comparison"
-        eligibility = "eligible_for_narrative_finding"
-        reason = "bounded_competitor_comparison_snapshot"
-    elif _is_visual_internal(feature_name, feature_source, raw_key, haystack):
-        source_class = "visual_internal_metric"
-        eligibility = "technical_only"
-        reason = "visual_or_internal_analysis_not_market_evidence"
-    elif _is_technical(feature_name, feature_source, raw_key, haystack, url):
-        source_class = "technical_internal"
-        eligibility = "technical_only"
-        reason = "technical_context_not_brand_narrative_evidence"
-    elif _is_trust_security(host, haystack):
-        source_class = "trust_security"
-        eligibility = "trust_security_review_only"
-        reason = "trust_or_security_source_requires_review"
-    elif _is_repository(host):
-        source_class = "repository"
-        eligibility = "observation_only"
-        reason = "repository_activity_not_adoption"
-    elif _is_marketplace(host):
-        source_class = "marketplace_listing"
-        eligibility = "requires_human_review"
-        reason = "marketplace_listing_not_automatic_external_validation"
-    elif _is_noise(haystack):
-        source_class = "noise"
-        eligibility = "reject_noise"
-        reason = "off_topic_or_broad_market_noise"
-    elif _is_same_name_external_profile(text, url, audit_host, audit_root):
-        source_class = "related_unresolved"
-        eligibility = "requires_human_review"
-        reason = "same_name_external_profile_not_alias"
-    elif raw_key == "platforms" or "social" in feature_name or "social" in feature_source:
-        source_class = "external_third_party"
-        eligibility = "observation_only"
-        reason = "social_profile_candidate_not_external_validation"
-    elif host and host == audit_host:
-        source_class = "audited_surface"
-        eligibility = "observation_only" if _looks_like_owned_claim(candidate) else "eligible_for_narrative_finding"
-        reason = "audited_surface_evidence"
-    elif host and root and root == audit_root:
-        source_class = "owned_surface"
-        eligibility = "observation_only"
-        reason = "same_root_or_subdomain_not_external_validation"
-    elif _is_same_name_different_root(host, audit_host, root, audit_root):
-        source_class = "related_unresolved"
-        eligibility = "requires_human_review"
-        reason = "same_name_different_root_not_alias"
-    elif not url and _looks_like_owned_claim(candidate):
-        source_class = "owned_surface"
-        eligibility = "observation_only"
-        reason = "owned_claim_without_url"
-    elif not url:
-        source_class = "external_third_party"
-        eligibility = "requires_human_review"
-        reason = "missing_evidence_url"
-
-    if not url and eligibility == "eligible_for_narrative_finding":
-        eligibility = "requires_human_review"
-        reason = "missing_evidence_url"
-    if not text and eligibility == "eligible_for_narrative_finding":
-        eligibility = "blocked_empty_text"
-        reason = "empty_text_evidence_blocked"
-    if _is_usage_or_traction_claim(haystack) and source_class in {"audited_surface", "owned_surface"}:
-        eligibility = "observation_only"
-        reason = "owned_usage_or_traction_claim_requires_independent_support"
-
-    exa_meta = (exa_url_metadata or {}).get(url) if url else None
-    source_class, eligibility, reason = _apply_exa_metadata_hints(
-        source_class=source_class,
-        eligibility=eligibility,
-        reason=reason,
-        exa_meta=exa_meta,
-        host=host,
-        root=root,
-        audit_host=audit_host,
-        audit_root=audit_root,
-    )
-
-    return {
-        **candidate,
-        "host": host,
-        "root_domain": root,
-        "source_class": source_class,
-        "eligibility": eligibility,
-        "classification_reason": reason,
-    }
-
-
-def _apply_exa_metadata_hints(
-    *,
-    source_class: str,
-    eligibility: str,
-    reason: str,
-    exa_meta: dict | None,
-    host: str,
-    root: str,
-    audit_host: str,
-    audit_root: str,
-) -> tuple[str, str, str]:
-    if not exa_meta:
-        return source_class, eligibility, reason
-
-    mapped_class = _map_exa_source_class_to_packet(
-        exa_source_class=str(exa_meta.get("source_class") or ""),
-        exa_relation=str(exa_meta.get("relation") or ""),
-        host=host,
-        root=root,
-        audit_host=audit_host,
-        audit_root=audit_root,
-    )
-    mapped_review = bool(exa_meta.get("requires_human_review"))
-    mapped_reason = str(exa_meta.get("classification_reason") or "").strip()
-
-    if mapped_class in {"noise", "technical_internal", "marketplace_listing", "related_unresolved"}:
-        source_class = mapped_class
-    elif mapped_class in {"audited_surface", "owned_surface"} and source_class not in {
-        "trust_security",
-        "technical_internal",
-        "visual_internal_metric",
-        "noise",
-        "related_unresolved",
-        "marketplace_listing",
-    }:
-        source_class = mapped_class
-    elif mapped_class == "external_third_party" and source_class in {"external_third_party", "repository"}:
-        source_class = mapped_class
-
-    if mapped_class == "related_unresolved":
-        eligibility = "requires_human_review"
-        reason = mapped_reason or "exa_related_surface_unresolved"
-    elif mapped_class == "marketplace_listing":
-        eligibility = "requires_human_review"
-        reason = mapped_reason or "exa_marketplace_listing_review_gated"
-    elif mapped_class == "technical_internal":
-        eligibility = "technical_only"
-        reason = mapped_reason or "exa_technical_internal_signal"
-    elif mapped_class == "noise":
-        eligibility = "reject_noise"
-        reason = mapped_reason or "exa_noise_source"
-    elif mapped_review and eligibility == "eligible_for_narrative_finding":
-        eligibility = "requires_human_review"
-        reason = mapped_reason or "exa_requires_human_review"
-
-    return source_class, eligibility, reason
-
-
-def _map_exa_source_class_to_packet(
-    *,
-    exa_source_class: str,
-    exa_relation: str,
-    host: str,
-    root: str,
-    audit_host: str,
-    audit_root: str,
-) -> str:
-    base = exa_source_class.strip().lower()
-    relation = exa_relation.strip().lower()
-
-    if base == "owned":
-        if relation == "audited_surface" or host == audit_host:
-            return "audited_surface"
-        if relation == "same_root_surface" or (root and root == audit_root):
-            return "owned_surface"
-        return "owned_surface"
-    if base == "external":
-        return "external_third_party"
-    if base == "related_unresolved":
-        return "related_unresolved"
-    if base == "marketplace_listing":
-        return "marketplace_listing"
-    if base == "technical_internal":
-        return "technical_internal"
-    if base == "noise":
-        return "noise"
-    return ""
-
-
-def _build_exa_url_metadata(snapshot: dict) -> dict[str, dict]:
-    metadata: dict[str, dict] = {}
-    for item in snapshot.get("raw_inputs") or []:
-        if str(item.get("source") or "") != "exa":
-            continue
-        payload = item.get("payload") if isinstance(item, dict) else None
-        if not isinstance(payload, dict):
-            continue
-        for field in ("mentions", "news", "competitors", "ai_visibility_results"):
-            entries = payload.get(field)
-            if not isinstance(entries, list):
-                continue
-            for entry in entries:
-                if not isinstance(entry, dict):
-                    continue
-                url = str(entry.get("url") or "").strip()
-                if not url:
-                    continue
-                existing = metadata.get(url)
-                candidate = {
-                    "source_class": str(entry.get("source_class") or ""),
-                    "relation": str(entry.get("relation") or ""),
-                    "classification_reason": str(entry.get("classification_reason") or ""),
-                    "requires_human_review": bool(entry.get("requires_human_review")),
-                }
-                if not existing:
-                    metadata[url] = candidate
-                    continue
-                if _exa_meta_priority(candidate) > _exa_meta_priority(existing):
-                    metadata[url] = candidate
-    return metadata
-
-
-def _exa_meta_priority(meta: dict) -> int:
-    source_class = str(meta.get("source_class") or "")
-    if source_class == "noise":
-        return 100
-    if source_class == "related_unresolved":
-        return 90
-    if source_class == "marketplace_listing":
-        return 80
-    if source_class == "technical_internal":
-        return 70
-    if source_class == "owned":
-        return 50
-    if source_class == "external":
-        return 40
-    return 10
 
 
 def _public_entry(item: dict) -> dict:
@@ -1410,22 +989,6 @@ def _dedupe(items: list[dict]) -> list[dict]:
     return out
 
 
-def _parse_raw_value(raw: Any) -> Any:
-    if raw is None or raw == "":
-        return None
-    if not isinstance(raw, str):
-        return raw
-    stripped = raw.strip()
-    try:
-        return ast.literal_eval(stripped)
-    except (ValueError, SyntaxError, MemoryError):
-        pass
-    try:
-        return json.loads(stripped)
-    except (ValueError, TypeError):
-        return raw
-
-
 def _host(url: str | None) -> str:
     candidate = (url or "").strip()
     if not candidate:
@@ -1433,11 +996,6 @@ def _host(url: str | None) -> str:
     parsed = urlparse(candidate if "://" in candidate else f"https://{candidate}")
     host = (parsed.netloc or parsed.path).split("@")[-1].split(":")[0].lower()
     return host[4:] if host.startswith("www.") else host
-
-
-def _is_http_url(value: Any) -> bool:
-    candidate = str(value or "").strip()
-    return candidate.startswith("http://") or candidate.startswith("https://")
 
 
 def _root_domain(host: str | None) -> str:
@@ -1448,68 +1006,3 @@ def _root_domain(host: str | None) -> str:
     if len(parts) <= 2:
         return host
     return ".".join(parts[-2:])
-
-
-def _first_url(value: Any) -> str:
-    if isinstance(value, str):
-        return value if _is_http_url(value) else ""
-    if isinstance(value, dict):
-        for key in ("url", "source_url", "homepage", "target_url"):
-            found = value.get(key)
-            if _is_http_url(found):
-                return str(found)
-        for item in value.values():
-            found = _first_url(item)
-            if found:
-                return found
-    if isinstance(value, list):
-        for item in value:
-            found = _first_url(item)
-            if found:
-                return found
-    return ""
-
-
-def _inventory_source_type(item: dict) -> str:
-    source_class = item.get("source_class") or "unknown"
-    return {
-        "audited_surface": "owned",
-        "owned_surface": "owned",
-        "external_third_party": "external",
-        "related_unresolved": "unknown",
-        "technical_internal": "technical",
-        "trust_security": "trust_security",
-        "visual_internal_metric": "technical",
-        "competitor_comparison": "comparison",
-        "repository": "repository",
-        "marketplace_listing": "marketplace",
-        "noise": "unknown",
-    }.get(source_class, "unknown")
-
-
-def _source_quality(item: dict) -> str:
-    source_class = item.get("source_class") or ""
-    if source_class in {"audited_surface", "owned_surface", "repository"}:
-        return "high"
-    if source_class in {"external_third_party", "marketplace_listing", "trust_security", "competitor_comparison"}:
-        return "medium"
-    if source_class in {"related_unresolved", "noise"}:
-        return "low"
-    return "unknown"
-
-
-def _source_role(item: dict) -> str:
-    source_class = item.get("source_class") or ""
-    return {
-        "audited_surface": "audited_surface",
-        "owned_surface": "same_root_or_subdomain_surface",
-        "external_third_party": "external_evidence_candidate",
-        "related_unresolved": "related_surface_unresolved",
-        "technical_internal": "technical_signal",
-        "trust_security": "trust_or_security_signal",
-        "visual_internal_metric": "visual_or_internal_signal",
-        "competitor_comparison": "bounded_competitor_comparison",
-        "repository": "repository_or_developer_surface",
-        "marketplace_listing": "marketplace_or_directory_listing",
-        "noise": "excluded_noise_candidate",
-    }.get(source_class, "unknown")

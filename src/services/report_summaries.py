@@ -9,14 +9,12 @@ from src.config import AUDIT_ANALYST_MODEL, LLM_CHEAP_MODEL, LLM_MODEL, LLM_PREM
 from src.features.llm_analyzer import LLMAnalyzer
 from src.learning.calibration import CalibrationAnalyzer
 from src.quality.dimension_confidence import dimension_confidence_from_features
-from src.quality.publication_readiness import attach_report_publication_decision
 from src.quality.trust import (
     build_trust_interpretation,
     build_trust_summary,
     dimension_status_counts_from_confidence,
     limited_dimensions_from_confidence,
 )
-from src.reports.derivation import build_report_readiness_from_snapshot
 from src.services.llm_policy import _audit_analyst_llm as _build_audit_analyst_llm
 from src.services.llm_policy import _llm_model_roles_payload as _build_llm_model_roles_payload
 
@@ -111,19 +109,3 @@ def _audit_analyst_llm(feature_llm: LLMAnalyzer | None) -> LLMAnalyzer | None:
         analyzer_cls=LLMAnalyzer,
         audit_analyst_model=AUDIT_ANALYST_MODEL,
     )
-
-
-def _persist_report_readiness(
-    store,
-    run_id: int,
-    audit: dict[str, Any],
-) -> dict[str, Any] | None:
-    snapshot = store.get_run_snapshot(run_id)
-    if not snapshot:
-        return None
-    readiness = build_report_readiness_from_snapshot(snapshot)
-    if not readiness:
-        return None
-    attach_report_publication_decision(audit, readiness)
-    store.save_run_audit(run_id, audit)
-    return readiness

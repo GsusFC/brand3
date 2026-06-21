@@ -37,10 +37,7 @@ from src.discovery.calibration import apply_discovery_calibration_hint, build_di
 from src.discovery.entity_discovery import discover_entity
 from src.discovery.summary import format_discovery_summary
 from src.discovery.trust_basis import build_discovery_trust_basis
-from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
-from src.reports.entity_research_packet import build_entity_research_packet
 from src.services.context_snapshot import _context_readiness_from_snapshot as _context_readiness_from_snapshot_impl
-from src.research.research_pack_facade import build_recommended_research_pack
 from src.niche import classify_brand_niche, list_calibration_profiles as _list_calibration_profiles_niche, select_calibration_profile
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.percepcion import PercepcionExtractor
@@ -249,11 +246,7 @@ def _build_research_pack_for_feature_prompts(
     store: SQLiteStore | None,
     run_id: int | None,
 ):
-    return _build_research_pack_for_feature_prompts_impl(
-        store=store,
-        run_id=run_id,
-        build_recommended_research_pack_fn=build_recommended_research_pack,
-    )
+    return _build_research_pack_for_feature_prompts_impl(store=store, run_id=run_id)
 
 
 def _audit_analyst_llm(feature_llm: LLMAnalyzer | None) -> LLMAnalyzer | None:

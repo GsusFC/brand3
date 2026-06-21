@@ -1,4 +1,4 @@
-"""Benchmarking and reporting helpers for Brand3."""
+"""Benchmark and comparison helpers for Brand3 reporting."""
 
 from __future__ import annotations
 
@@ -7,10 +7,8 @@ from datetime import datetime
 from pathlib import Path
 from statistics import mean
 
-from src.config import BRAND3_DB_PATH
 from src.niche import list_calibration_profiles
 from src.services.output_files import _save_benchmark_comparison_result, _save_benchmark_result
-from src.storage.sqlite_store import SQLiteStore
 
 
 def benchmark_profiles(
@@ -243,106 +241,53 @@ def compare_benchmarks(before_path: str, after_path: str) -> dict:
                         "niche_match": after_niche_match,
                         "subtype_match": after_subtype_match,
                     },
-                    "composite_delta": delta,
+                    "delta": delta,
                     "dimension_deltas": dimension_deltas,
                 }
             )
 
         brand_results.append(
             {
-                "brand_name": after_brand.get("brand_name"),
-                "url": after_brand.get("url"),
-                "variant_comparisons": comparisons,
+                "brand_name": before_brand.get("brand_name") or after_brand.get("brand_name"),
+                "url": before_brand.get("url") or after_brand.get("url"),
+                "comparisons": comparisons,
             }
         )
 
-    summary = {
+    payload = {
+        "before_path": str(before_file),
+        "after_path": str(after_file),
         "shared_brands": len(shared_keys),
         "added_brands": len(added_keys),
         "removed_brands": len(removed_keys),
         "variant_deltas": {
             variant: {
+                "average_delta": round(mean(deltas), 1) if deltas else None,
                 "count": len(deltas),
-                "average_composite_delta": round(mean(deltas), 1) if deltas else None,
-                **variant_match_changes.get(variant, {}),
             }
             for variant, deltas in variant_deltas.items()
         },
-    }
-
-    payload = {
-        "before_benchmark": before_payload.get("benchmark_name") or before_file.stem,
-        "after_benchmark": after_payload.get("benchmark_name") or after_file.stem,
-        "before_path": str(before_file),
-        "after_path": str(after_file),
-        "generated_at": datetime.now().isoformat(),
-        "summary": summary,
+        "variant_match_changes": variant_match_changes,
         "brands": brand_results,
-        "added_brand_keys": [{"brand_name": key[0], "url": key[1]} for key in added_keys],
-        "removed_brand_keys": [{"brand_name": key[0], "url": key[1]} for key in removed_keys],
+    }
+    payload["summary"] = {
+        "shared_brands": payload["shared_brands"],
+        "added_brands": payload["added_brands"],
+        "removed_brands": payload["removed_brands"],
+        "variant_deltas": {
+            variant: {
+                "average_composite_delta": stats.get("average_delta"),
+                "count": stats.get("count"),
+                "niche_match_improved": payload["variant_match_changes"].get(variant, {}).get("niche_match_improved", 0),
+                "niche_match_worsened": payload["variant_match_changes"].get(variant, {}).get("niche_match_worsened", 0),
+                "subtype_match_improved": payload["variant_match_changes"].get(variant, {}).get("subtype_match_improved", 0),
+                "subtype_match_worsened": payload["variant_match_changes"].get(variant, {}).get("subtype_match_worsened", 0),
+            }
+            for variant, stats in payload["variant_deltas"].items()
+        },
+        "variant_match_changes": payload["variant_match_changes"],
     }
     output_path = _save_benchmark_comparison_result(payload)
     payload["output_path"] = str(output_path)
     print(json.dumps(payload, indent=2))
     return payload
-
-
-def brand_report(brand_name: str, limit: int = 10, *, db_path: str = BRAND3_DB_PATH) -> dict:
-    store = SQLiteStore(db_path)
-    try:
-        report = store.get_brand_report(brand_name, limit=limit)
-        runs = report["runs"]
-        if not runs:
-            print(json.dumps(report, indent=2))
-            return report
-
-        composites = [run["composite_score"] for run in runs if run["composite_score"] is not None]
-        newest = composites[0] if composites else None
-        oldest = composites[-1] if composites else None
-        trend = None
-        if newest is not None and oldest is not None and len(composites) >= 2:
-            trend = round(newest - oldest, 1)
-
-        dimensions_summary = {}
-        for dimension_name, series in report["dimension_series"].items():
-            values = [item["score"] for item in series]
-            dimensions_summary[dimension_name] = {
-                "latest": values[0],
-                "average": round(mean(values), 1),
-                "trend": round(values[0] - values[-1], 1) if len(values) >= 2 else 0.0,
-                "samples": len(values),
-            }
-
-        feedback_summary = {
-            "count": len(report["annotations"]),
-            "dimensions": {},
-        }
-        for annotation in report["annotations"]:
-            dim = annotation.get("dimension_name") or "general"
-            feedback_summary["dimensions"][dim] = feedback_summary["dimensions"].get(dim, 0) + 1
-
-        payload = {
-            "brand_name": brand_name,
-            "brand_profile": report.get("brand_profile"),
-            "run_count": len(runs),
-            "latest_composite": newest,
-            "average_composite": round(mean(composites), 1) if composites else None,
-            "composite_trend": trend,
-            "latest_scoring_state_fingerprint": runs[0].get("scoring_state_fingerprint"),
-            "latest_predicted_niche": runs[0].get("predicted_niche"),
-            "latest_predicted_subtype": runs[0].get("predicted_subtype"),
-            "latest_niche_confidence": runs[0].get("niche_confidence"),
-            "latest_calibration_profile": runs[0].get("calibration_profile"),
-            "scoring_states": {},
-            "dimensions": dimensions_summary,
-            "feedback": feedback_summary,
-            "recent_runs": runs,
-        }
-        for run_item in runs:
-            fingerprint = run_item.get("scoring_state_fingerprint")
-            if fingerprint:
-                payload["scoring_states"][fingerprint] = payload["scoring_states"].get(fingerprint, 0) + 1
-        print(json.dumps(payload, indent=2))
-        return payload
-    finally:
-        store.close()

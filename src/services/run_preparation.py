@@ -8,6 +8,16 @@ from src.collectors.competitor_collector import CompetitorData
 from src.collectors.context_collector import ContextData
 from src.collectors.exa_collector import ExaData
 from src.collectors.web_collector import WebCollector, WebData
+from src.services.run_preparation_discovery import (
+    DiscoveryArtifacts,
+    DiscoveryCalibration,
+    DiscoveryPreparation,
+    _build_competitor_names,
+    _build_niche_exa_texts,
+    build_discovery_artifacts,
+    build_discovery_calibration,
+    build_discovery_preparation,
+)
 
 
 @dataclass
@@ -31,8 +41,6 @@ class LlmSetup:
     llm: object | None
     provider: dict[str, object] | None
     skipped_reason: str | None
-
-
 def select_niche_profile(
     *,
     brand_name: str,
@@ -45,25 +53,8 @@ def select_niche_profile(
     classify_brand_niche,
     select_calibration_profile,
 ) -> NicheSelection:
-    exa_texts = []
-    if exa_data:
-        # Keep niche classification high-precision: full mention bodies are noisy
-        # and regularly include unrelated keywords from long-form pages.
-        exa_texts.extend([item.title for item in exa_data.mentions if item.title])
-        exa_texts.extend([item.summary for item in exa_data.mentions if item.summary])
-        for item in exa_data.mentions:
-            if not item.highlights:
-                continue
-            exa_texts.extend(
-                str(highlight).strip()
-                for highlight in item.highlights[:2]
-                if str(highlight).strip()
-            )
-        exa_texts.extend([item.title for item in exa_data.news if item.title])
-
-    competitor_names = []
-    if competitor_data:
-        competitor_names = [item.name for item in competitor_data.competitors if item.name]
+    exa_texts = _build_niche_exa_texts(exa_data)
+    competitor_names = _build_competitor_names(competitor_data)
 
     classification = classify_brand_niche(
         brand_name,
@@ -142,6 +133,23 @@ def plan_content(
     )
 
 
+def _build_llm_setup_result(
+    *,
+    llm_cls,
+    cheap_model: str,
+    provider_payload_builder,
+    skipped_reason: str | None,
+    ) -> LlmSetup:
+    llm = llm_cls(model=cheap_model)
+    provider = provider_payload_builder(llm)
+    if skipped_reason is None and llm.api_key:
+        return LlmSetup(llm=llm, provider=provider, skipped_reason=None)
+    if skipped_reason is None:
+        print("  LLM: disabled (no key found)")
+        skipped_reason = "missing_api_key"
+    return LlmSetup(llm=None, provider=provider, skipped_reason=skipped_reason)
+
+
 def setup_llm(
     *,
     use_llm: bool,
@@ -160,11 +168,12 @@ def setup_llm(
         print("  LLM: skipped (insufficient context coverage)")
         return LlmSetup(llm=None, provider=None, skipped_reason="insufficient_context_coverage")
 
-    llm = llm_cls(model=cheap_model)
-    provider = provider_payload_builder(llm)
-    if llm.api_key:
-        print(f"  LLM: {llm.model} via {provider['provider']}")
-        return LlmSetup(llm=llm, provider=provider, skipped_reason=None)
-
-    print("  LLM: disabled (no key found)")
-    return LlmSetup(llm=None, provider=provider, skipped_reason="missing_api_key")
+    setup = _build_llm_setup_result(
+        llm_cls=llm_cls,
+        cheap_model=cheap_model,
+        provider_payload_builder=provider_payload_builder,
+        skipped_reason=None,
+    )
+    if setup.llm is not None:
+        print(f"  LLM: {setup.llm.model} via {setup.provider['provider']}")
+    return setup

@@ -12,6 +12,14 @@ def _store(db_path: str) -> SQLiteStore:
     return SQLiteStore(db_path)
 
 
+def _with_store(db_path: str, action):
+    store = _store(db_path)
+    try:
+        return action(store)
+    finally:
+        store.close()
+
+
 def enqueue_analysis_job(
     db_path: str,
     url: str,
@@ -19,8 +27,7 @@ def enqueue_analysis_job(
     use_llm: bool = True,
     use_social: bool = True,
 ) -> dict:
-    store = _store(db_path)
-    try:
+    def _action(store: SQLiteStore) -> dict:
         job_id = store.create_analysis_job(
             url=url,
             brand_name=brand_name,
@@ -30,20 +37,19 @@ def enqueue_analysis_job(
         payload = store.get_analysis_job(job_id)
         print(json.dumps(payload, indent=2))
         return payload
-    finally:
-        store.close()
+
+    return _with_store(db_path, _action)
 
 
 def get_analysis_job(db_path: str, job_id: int) -> dict:
-    store = _store(db_path)
-    try:
+    def _action(store: SQLiteStore) -> dict:
         job = store.get_analysis_job(job_id)
         if not job:
             raise ValueError(f"Analysis job {job_id} not found")
         print(json.dumps(job, indent=2))
         return job
-    finally:
-        store.close()
+
+    return _with_store(db_path, _action)
 
 
 def list_analysis_jobs(
@@ -52,13 +58,12 @@ def list_analysis_jobs(
     status: str | None = None,
     limit: int = 50,
 ) -> list[dict]:
-    store = _store(db_path)
-    try:
+    def _action(store: SQLiteStore) -> list[dict]:
         jobs = store.list_analysis_jobs(brand_name=brand_name, status=status, limit=limit)
         print(json.dumps(jobs, indent=2))
         return jobs
-    finally:
-        store.close()
+
+    return _with_store(db_path, _action)
 
 
 def execute_analysis_job(
@@ -68,8 +73,7 @@ def execute_analysis_job(
     cancel_exc: Type[Exception],
 ) -> dict:
     """Atomically claim a queued job by id and run it to completion."""
-    store = _store(db_path)
-    try:
+    def _action(store: SQLiteStore):
         existing = store.get_analysis_job(job_id)
         if not existing:
             raise ValueError(f"Analysis job {job_id} not found")
@@ -83,9 +87,11 @@ def execute_analysis_job(
         claimed = store.claim_pending_job(job_id=job_id)
         if not claimed:
             return store.get_analysis_job(job_id)
-    finally:
-        store.close()
+        return claimed
 
+    claimed = _with_store(db_path, _action)
+    if not claimed:
+        return claimed
     return run_claimed_job(db_path, claimed, run_fn=run_fn, cancel_exc=cancel_exc)
 
 
@@ -122,46 +128,35 @@ def run_claimed_job(
             progress_cb=progress_cb,
             cancel_check=cancel_check,
         )
-        store = _store(db_path)
-        try:
+        def _complete(store: SQLiteStore) -> dict:
             store.complete_analysis_job(job_id, result.get("run_id"), result)
             completed = store.get_analysis_job(job_id)
             print(json.dumps(completed, indent=2))
             return completed
-        finally:
-            store.close()
+        return _with_store(db_path, _complete)
     except cancel_exc as exc:
-        store = _store(db_path)
-        try:
-            store.cancel_analysis_job(job_id, str(exc))
+        def _cancel(store: SQLiteStore, reason: str = str(exc)) -> dict:
+            store.cancel_analysis_job(job_id, reason)
             cancelled = store.get_analysis_job(job_id)
             print(json.dumps(cancelled, indent=2))
             return cancelled
-        finally:
-            store.close()
+        return _with_store(db_path, _cancel)
     except Exception as exc:
-        store = _store(db_path)
-        try:
-            store.fail_analysis_job(job_id, str(exc))
+        def _fail(store: SQLiteStore, reason: str = str(exc)) -> dict:
+            store.fail_analysis_job(job_id, reason)
             failed = store.get_analysis_job(job_id)
             print(json.dumps(failed, indent=2))
             return failed
-        finally:
-            store.close()
+        return _with_store(db_path, _fail)
 
 
 def claim_next_job(db_path: str, worker_id: str | None = None) -> dict | None:
     """Claim the oldest queued job for a worker. Returns None if nothing pending."""
-    store = _store(db_path)
-    try:
-        return store.claim_pending_job(worker_id=worker_id)
-    finally:
-        store.close()
+    return _with_store(db_path, lambda store: store.claim_pending_job(worker_id=worker_id))
 
 
 def cancel_analysis_job(db_path: str, job_id: int) -> dict:
-    store = _store(db_path)
-    try:
+    def _action(store: SQLiteStore) -> dict:
         job = store.get_analysis_job(job_id)
         if not job:
             raise ValueError(f"Analysis job {job_id} not found")
@@ -172,13 +167,12 @@ def cancel_analysis_job(db_path: str, job_id: int) -> dict:
         updated = store.get_analysis_job(job_id)
         print(json.dumps(updated, indent=2))
         return updated
-    finally:
-        store.close()
+
+    return _with_store(db_path, _action)
 
 
 def retry_analysis_job(db_path: str, job_id: int) -> dict:
-    store = _store(db_path)
-    try:
+    def _action(store: SQLiteStore) -> dict:
         job = store.get_analysis_job(job_id)
         if not job:
             raise ValueError(f"Analysis job {job_id} not found")
@@ -188,5 +182,5 @@ def retry_analysis_job(db_path: str, job_id: int) -> dict:
         queued = store.get_analysis_job(job_id)
         print(json.dumps(queued, indent=2))
         return queued
-    finally:
-        store.close()
+
+    return _with_store(db_path, _action)

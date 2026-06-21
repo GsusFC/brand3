@@ -128,6 +128,7 @@ from src.services.public_presence import (
     _context_enrichment_summary,
     _public_presence_inventory_summary,
 )
+from src.services.run_payloads import _build_run_audit_payload, _build_run_data_sources_payload
 from src.services.run_preparation import plan_content, select_niche_profile, setup_llm
 from src.services.serialization import _to_jsonable
 from src.services.scoring_pipeline import score_features
@@ -1352,18 +1353,18 @@ def run(
             "calibration_profile": calibration_profile,
             "profile_source": profile_source,
             "data_quality": data_quality,
-            "data_sources": {
-                **data_sources,
-                "acquisition_provenance": acquisition_provenance,
-                "acquisition_steps": {name: step.to_payload() for name, step in acquisition_steps.items()},
-                "public_presence_inventory": public_presence_inventory,
-                "screenshot_capture": screenshot_capture,
-                "social_limitation": social_limitation,
-                "raw_input_cache": raw_input_cache,
-                "llm_provider": llm_provider,
-                "llm_model_roles": _llm_model_roles_payload(),
-                "llm_cache": llm_cache,
-                "cost_policy": _cost_policy_summary(
+            "data_sources": _build_run_data_sources_payload(
+                base_data_sources=data_sources,
+                acquisition_provenance=acquisition_provenance,
+                acquisition_steps=acquisition_steps,
+                public_presence_inventory=public_presence_inventory,
+                screenshot_capture=screenshot_capture,
+                social_limitation=social_limitation,
+                raw_input_cache=raw_input_cache,
+                llm_provider=llm_provider,
+                llm_model_roles=_llm_model_roles_payload(),
+                llm_cache=llm_cache,
+                cost_policy=_cost_policy_summary(
                     raw_input_cache=raw_input_cache,
                     llm_cache=llm_cache,
                     use_llm=use_llm,
@@ -1374,7 +1375,7 @@ def run(
                     context_data=context_data,
                     data_quality=data_quality,
                 ),
-            },
+            ),
             "context_readiness": _to_jsonable(context_data),
             "context_enrichment_summary": context_enrichment_summary,
             "context_effective_readiness": context_effective_readiness,
@@ -1393,14 +1394,16 @@ def run(
             "timestamp": datetime.now().isoformat(),
         }
         step_started = _log_timing("phase 4e result assembly", step_started)
-        result["audit"]["discovery_calibration_decision"] = discovery_calibration_decision
-        result["audit"]["acquisition"] = _acquisition_audit_payload(
+        result["audit"].update(
+            _build_run_audit_payload(
             acquisition_provenance=acquisition_provenance,
             acquisition_steps=acquisition_steps,
             raw_input_cache=raw_input_cache,
             screenshot_capture=screenshot_capture,
             data_quality=data_quality,
             content_source=content_source,
+            discovery_calibration_decision=discovery_calibration_decision,
+            )
         )
         if run_id:
             _store_safely(store, "run audit save", lambda: store.save_run_audit(run_id, result["audit"]))

@@ -100,6 +100,16 @@ from src.services.content_web import (
 from src.services.diagnostics import _log_timing, _print_feature_details
 from src.services.feature_pipeline import run_feature_pipeline
 from src.services.input_collection import collect_raw_inputs, start_analysis_run, store_safely as _store_safely
+from src.services.job_orchestration import (
+    cancel_analysis_job as _cancel_analysis_job,
+    claim_next_job as _claim_next_job,
+    enqueue_analysis_job as _enqueue_analysis_job,
+    execute_analysis_job as _execute_analysis_job,
+    get_analysis_job as _get_analysis_job,
+    list_analysis_jobs as _list_analysis_jobs,
+    run_claimed_job as _run_claimed_job,
+    retry_analysis_job as _retry_analysis_job,
+)
 from src.services.llm_policy import (
     _audit_analyst_llm as _build_audit_analyst_llm,
     _cost_policy_summary,
@@ -2358,31 +2368,17 @@ def enqueue_analysis_job(
     use_llm: bool = True,
     use_social: bool = True,
 ) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        job_id = store.create_analysis_job(
-            url=url,
-            brand_name=brand_name,
-            use_llm=use_llm,
-            use_social=use_social,
-        )
-        payload = store.get_analysis_job(job_id)
-        print(json.dumps(payload, indent=2))
-        return payload
-    finally:
-        store.close()
+    return _enqueue_analysis_job(
+        BRAND3_DB_PATH,
+        url,
+        brand_name=brand_name,
+        use_llm=use_llm,
+        use_social=use_social,
+    )
 
 
 def get_analysis_job(job_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        job = store.get_analysis_job(job_id)
-        if not job:
-            raise ValueError(f"Analysis job {job_id} not found")
-        print(json.dumps(job, indent=2))
-        return job
-    finally:
-        store.close()
+    return _get_analysis_job(BRAND3_DB_PATH, job_id)
 
 
 def list_analysis_jobs(
@@ -2390,36 +2386,11 @@ def list_analysis_jobs(
     status: str | None = None,
     limit: int = 50,
 ) -> list[dict]:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        jobs = store.list_analysis_jobs(brand_name=brand_name, status=status, limit=limit)
-        print(json.dumps(jobs, indent=2))
-        return jobs
-    finally:
-        store.close()
+    return _list_analysis_jobs(BRAND3_DB_PATH, brand_name=brand_name, status=status, limit=limit)
 
 
 def execute_analysis_job(job_id: int) -> dict:
-    """Atomically claim a queued job by id and run it to completion."""
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        existing = store.get_analysis_job(job_id)
-        if not existing:
-            raise ValueError(f"Analysis job {job_id} not found")
-        if existing["status"] != "queued":
-            return existing
-        if existing.get("cancel_requested"):
-            store.cancel_analysis_job(job_id)
-            cancelled = store.get_analysis_job(job_id)
-            print(json.dumps(cancelled, indent=2))
-            return cancelled
-        claimed = store.claim_pending_job(job_id=job_id)
-        if not claimed:
-            return store.get_analysis_job(job_id)
-    finally:
-        store.close()
-
-    return run_claimed_job(claimed)
+    return _execute_analysis_job(BRAND3_DB_PATH, job_id, run_fn=run, cancel_exc=AnalysisJobCancelled)
 
 
 def run_claimed_job(job: dict) -> dict:
@@ -2429,97 +2400,16 @@ def run_claimed_job(job: dict) -> dict:
     job, which is then passed here. Callers with a specific job id should use
     `execute_analysis_job(job_id)` instead — it handles the claim.
     """
-    job_id = int(job["id"])
-
-    def progress_cb(phase: str) -> None:
-        progress_store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            progress_store.update_analysis_job_phase(job_id, phase)
-        finally:
-            progress_store.close()
-
-    def cancel_check() -> bool:
-        progress_store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            current = progress_store.get_analysis_job(job_id)
-            return bool(current and (current.get("cancel_requested") or current.get("status") == "cancelled"))
-        finally:
-            progress_store.close()
-
-    try:
-        result = run(
-            job["url"],
-            brand_name=job.get("brand_name"),
-            use_llm=bool(job.get("use_llm")),
-            use_social=bool(job.get("use_social")),
-            progress_cb=progress_cb,
-            cancel_check=cancel_check,
-        )
-        store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            store.complete_analysis_job(job_id, result.get("run_id"), result)
-            completed = store.get_analysis_job(job_id)
-            print(json.dumps(completed, indent=2))
-            return completed
-        finally:
-            store.close()
-    except AnalysisJobCancelled as exc:
-        store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            store.cancel_analysis_job(job_id, str(exc))
-            cancelled = store.get_analysis_job(job_id)
-            print(json.dumps(cancelled, indent=2))
-            return cancelled
-        finally:
-            store.close()
-    except Exception as exc:
-        store = SQLiteStore(BRAND3_DB_PATH)
-        try:
-            store.fail_analysis_job(job_id, str(exc))
-            failed = store.get_analysis_job(job_id)
-            print(json.dumps(failed, indent=2))
-            return failed
-        finally:
-            store.close()
+    return _run_claimed_job(BRAND3_DB_PATH, job, run_fn=run, cancel_exc=AnalysisJobCancelled)
 
 
 def claim_next_job(worker_id: str | None = None) -> dict | None:
-    """Claim the oldest queued job for a worker. Returns None if nothing pending."""
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        return store.claim_pending_job(worker_id=worker_id)
-    finally:
-        store.close()
+    return _claim_next_job(BRAND3_DB_PATH, worker_id=worker_id)
 
 
 def cancel_analysis_job(job_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        job = store.get_analysis_job(job_id)
-        if not job:
-            raise ValueError(f"Analysis job {job_id} not found")
-        if job["status"] in {"done", "failed", "cancelled"}:
-            print(json.dumps(job, indent=2))
-            return job
-        store.request_analysis_job_cancel(job_id)
-        updated = store.get_analysis_job(job_id)
-        print(json.dumps(updated, indent=2))
-        return updated
-    finally:
-        store.close()
+    return _cancel_analysis_job(BRAND3_DB_PATH, job_id)
 
 
 def retry_analysis_job(job_id: int) -> dict:
-    store = SQLiteStore(BRAND3_DB_PATH)
-    try:
-        job = store.get_analysis_job(job_id)
-        if not job:
-            raise ValueError(f"Analysis job {job_id} not found")
-        if job["status"] not in {"failed", "cancelled"}:
-            raise ValueError(f"Analysis job {job_id} is not retryable from status {job['status']}")
-        store.requeue_analysis_job(job_id)
-        queued = store.get_analysis_job(job_id)
-        print(json.dumps(queued, indent=2))
-        return queued
-    finally:
-        store.close()
+    return _retry_analysis_job(BRAND3_DB_PATH, job_id)

@@ -177,16 +177,42 @@ def classify_screenshot_quality(image: RasterImage) -> tuple[str, list[str]]:
     if image.width <= 0 or image.height <= 0:
         return "unreadable", ["screenshot_has_no_pixels"]
 
-    sampled = image.sample_pixels(5000)
-    if not sampled:
+    unique_sample = _unique_sample_count(image, limit=5000, max_distinct=8)
+    if unique_sample <= 0:
         return "unreadable", ["screenshot_has_no_pixels"]
-
-    unique_sample = len(set(sampled))
     if unique_sample <= 1:
         return "blank", ["screenshot_has_single_color"]
     if unique_sample < 8:
         return "low_detail", ["screenshot_has_low_color_detail"]
     return "usable", []
+
+
+def _unique_sample_count(image: RasterImage, *, limit: int, max_distinct: int) -> int:
+    if limit <= 0:
+        return 0
+    if image.raw_bytes is not None:
+        total = image.width * image.height
+        if total <= 0:
+            return 0
+        channels = image.channels
+        view = memoryview(image.raw_bytes)
+        step = 1 if total <= limit else max(1, total // limit)
+        distinct: set[tuple[int, int, int]] = set()
+        for offset in range(0, total * channels, step * channels):
+            distinct.add((view[offset], view[offset + 1], view[offset + 2]))
+            if len(distinct) >= max_distinct:
+                return len(distinct)
+        return len(distinct)
+
+    sampled = image.sample_pixels(limit)
+    if not sampled:
+        return 0
+    distinct: set[tuple[int, int, int]] = set()
+    for pixel in sampled:
+        distinct.add(pixel)
+        if len(distinct) >= max_distinct:
+            return len(distinct)
+    return len(distinct)
 
 
 def _load_png(data: bytes, *, source_path: str) -> RasterImage:

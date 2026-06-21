@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.visual_signature._internal.utils import first_dict as _first_dict
 from src.visual_signature.capture.models import (
     VisualDiagnosis,
     VisualDiagnosisCapture,
@@ -534,13 +535,6 @@ def _palette_has_ai_gradient_like_colors(colors: dict[str, Any]) -> bool:
         if item
     ]
     return any(color.startswith(("#6", "#7", "#8", "#9", "#a", "#b")) for color in candidates)
-
-
-def _first_dict(*items: Any) -> dict[str, Any]:
-    for item in items:
-        if isinstance(item, dict):
-            return item
-    return {}
 
 
 def _as_float(value: Any, *, default: float = 0.0) -> float:

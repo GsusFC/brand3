@@ -76,6 +76,14 @@ def dict_or_empty(value: Any) -> dict[str, Any]:
     return value if isinstance(value, dict) else {}
 
 
+def first_dict(*items: Any) -> dict[str, Any]:
+    """Return the first dict-like item from the provided values."""
+    for item in items:
+        if isinstance(item, dict):
+            return item
+    return {}
+
+
 def utc_now() -> str:
     """ISO 8601 UTC timestamp with 'Z' suffix."""
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")

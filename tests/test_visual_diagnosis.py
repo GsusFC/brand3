@@ -17,7 +17,7 @@ from src.visual_signature.capture import (
     computed_style_snapshot_to_visual_signature,
     enrich_visual_signature_with_local_screenshot,
 )
-from src.visual_signature.capture.evidence import build_visual_evidence_from_local_inputs
+from src.visual_signature.capture.visual_evidence import build_visual_evidence_from_local_inputs
 
 
 def _visual_signature_payload() -> dict:

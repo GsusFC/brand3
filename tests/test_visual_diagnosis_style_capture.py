@@ -5,7 +5,7 @@ import json
 import sys
 from pathlib import Path
 
-from src.visual_signature.capture.style_capture import extract_computed_style_snapshot_from_page
+from src.visual_signature.capture.computed_style import extract_computed_style_snapshot_from_page
 
 
 SCRIPT_PATH = Path(__file__).resolve().parents[1] / "scripts" / "visual_diagnosis_capture_computed_styles.py"

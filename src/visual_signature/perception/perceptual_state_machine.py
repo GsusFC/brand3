@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass, field
 from typing import Any
 
 from src.visual_signature.perception.state_models import (
@@ -11,8 +11,6 @@ from src.visual_signature.perception.state_models import (
     PerceptualStateSnapshot,
     StateEvaluation,
     TransitionRecord,
-)
-from src.visual_signature.perception.transition_policy import (
     classify_mutation_result,
     classify_obstruction_state,
     evaluate_intervention_eligibility,

@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from src.visual_signature._internal.utils import float_or_none as _float_or_none
+from src.visual_signature.versions import VISUAL_DIAGNOSIS_CLEAN_CAPTURE_DECISION_SCHEMA_VERSION
 
 
 def build_clean_capture_decision(payload: dict[str, Any] | None) -> dict[str, Any]:
@@ -62,7 +63,7 @@ def build_clean_capture_decision(payload: dict[str, Any] | None) -> dict[str, An
         reason = str(payload.get("dismissal_block_reason"))
 
     return {
-        "schema_version": "visual-diagnosis-clean-capture-decision-1",
+        "schema_version": VISUAL_DIAGNOSIS_CLEAN_CAPTURE_DECISION_SCHEMA_VERSION,
         "selected_variant": selected_variant,
         "decision": decision,
         "reason": reason,

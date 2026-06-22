@@ -10,6 +10,13 @@ from src.visual_signature._internal.utils import (
     utc_now,
     write_json,
 )
+from src.visual_signature._internal.multimodal_client import (
+    MultimodalRequestExecutor,
+    effective_timeout,
+    run_multimodal_http_call,
+    run_multimodal_request,
+)
+from src.visual_signature._internal.multimodal_normalizer import normalize_semantics_data
 
 __all__ = [
     "clamp_01",
@@ -20,4 +27,9 @@ __all__ = [
     "unique",
     "utc_now",
     "write_json",
+    "normalize_semantics_data",
+    "MultimodalRequestExecutor",
+    "effective_timeout",
+    "run_multimodal_http_call",
+    "run_multimodal_request",
 ]

@@ -8,10 +8,7 @@ from __future__ import annotations
 
 import json
 import os
-import re
-from datetime import datetime, timezone
 from typing import Any
-from urllib.parse import urlparse
 
 from src.collectors.web_collector import WebCollector
 from src.config import (
@@ -34,15 +31,13 @@ from src.features.magnetism.analyst_tldr import (
     maybe_build_system_reading,
     run_analyst_tldr_pass,
 )
+from src.features.magnetism.extractor_heuristics import (
+    extract_via_heuristic as _heuristic_extract_via_heuristic,
+)
 from src.reports.derivation import collect_evidences
 from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
-from src.reports.vertical_signals import (
-    vertical_layer_keywords,
-    vertical_preferred_terms,
-    vertical_terms_for_text,
-)
 from src.features.magnetism.extractor_tail import (
     brand_audit_evidence_text as _tail_brand_audit_evidence_text,
     has_tldr_v03_contract as _tail_has_tldr_v03_contract,
@@ -61,6 +56,7 @@ from src.features.magnetism.extractor_scoring import (
     earned_magnetism_adjustment as _scoring_earned_magnetism_adjustment,
     magnetism_phrase_breakdown as _scoring_magnetism_phrase_breakdown,
 )
+from src.features.magnetism.extractor_system_reading import derive_system_reading as _system_reading_derive_system_reading
 from src.features.magnetism.extractor_tldr import (
     derive_tldr as _tldr_derive_tldr,
     empty_tldr_block as _tldr_empty_tldr_block,
@@ -93,207 +89,23 @@ from src.research.contextdev_research_pack_dry_run import build_contextdev_resea
 from src.research.research_pack_facade import RecommendedResearchPack, build_recommended_research_pack
 from src.research.research_pack_quality import evaluate_research_pack_quality, evaluate_research_pack_quality_gate
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics
-
-LAYER_KEYS = [
-    "mindspace",
-    "aetherspace",
-    "gamespace",
-    "envispace",
-    "netspace",
-    "tactispace",
-    "ambientspace",
-]
-
-LAYER_DEFINITIONS = {
-    "mindspace": {
-        "question": "Which",
-        "description": "central emotion, mantra, war cry, or magnetic phrase",
-        "tldr": ["magnetism"],
-    },
-    "aetherspace": {
-        "question": "Why",
-        "description": "purpose beyond the product",
-        "tldr": ["core_purpose"],
-    },
-    "gamespace": {
-        "question": "Who",
-        "description": "brand personality and archetype",
-        "tldr": ["personality"],
-    },
-    "envispace": {
-        "question": "How",
-        "description": "visual and conceptual brand idea",
-        "tldr": ["brand_idea"],
-    },
-    "netspace": {
-        "question": "When",
-        "description": "concrete value proposition and exchange of value",
-        "tldr": ["value_proposition"],
-    },
-    "tactispace": {
-        "question": "Where",
-        "description": "mission and vision signals",
-        "tldr": ["mission", "vision"],
-    },
-    "ambientspace": {
-        "question": "What",
-        "description": "values and attributes demonstrated in context",
-        "tldr": ["attributes", "values"],
-    },
-}
-
-TLDR_KEYS = [
-    "core_purpose",
-    "magnetism",
-    "value_proposition",
-    "personality",
-    "brand_idea",
-    "attributes",
-    "values",
-    "mission",
-    "vision",
-]
-
-LAYER_TO_TLDR = {
-    "aetherspace": ["core_purpose"],
-    "mindspace": ["magnetism"],
-    "netspace": ["value_proposition"],
-    "gamespace": ["personality"],
-    "envispace": ["brand_idea"],
-    "ambientspace": ["attributes", "values"],
-    "tactispace": ["mission", "vision"],
-}
-
-TLDR_TO_LAYER = {
-    block: layer for layer, blocks in LAYER_TO_TLDR.items() for block in blocks
-}
-
-CANONICAL_EXTRACTION_MODE = "canonical_snapshot"
-LEGACY_DIRECT_EXTRACTION_MODE = "legacy_direct"
-LEGACY_DIRECT_SOURCE = "direct_magnetism_legacy"
-LEGACY_DIRECT_DEPRECATION = {
-    "status": "deprecated",
-    "replacement": "extract_from_audit_snapshot",
-    "reason": (
-        "Brand Audit owns acquisition; Magnetism should interpret "
-        "CanonicalBrandEvidence from a persisted snapshot."
-    ),
-}
-
-TLDR_BLOCK_CONTRACT = {
-    "core_purpose": {
-        "question": "Why does this brand appear to exist beyond the product?",
-        "evidence_scope": ["aetherspace", "mindspace", "ambientspace"],
-        "source_signal": "Essence",
-        "source_signal_path": "Essence → Core Purpose",
-        "source_layer": "aetherspace",
-    },
-    "magnetism": {
-        "question": "What phrase or tension best concentrates the brand's magnetic energy?",
-        "evidence_scope": ["mindspace", "netspace", "aetherspace"],
-        "source_signal": "Emotions",
-        "source_signal_path": "Emotions → Magnetism",
-        "source_layer": "mindspace",
-    },
-    "value_proposition": {
-        "question": "What does the brand offer, to whom, and what changes for that audience?",
-        "evidence_scope": ["netspace", "tactispace", "ambientspace"],
-        "source_signal": "Exchange",
-        "source_signal_path": "Exchange → Value Proposition",
-        "source_layer": "netspace",
-    },
-    "personality": {
-        "question": "What personality does the brand perform through tone, vocabulary, behavior, and visual expression?",
-        "evidence_scope": ["gamespace", "mindspace", "netspace", "ambientspace"],
-        "source_signal": "Voice",
-        "source_signal_path": "Voice → Personality",
-        "source_layer": "gamespace",
-    },
-    "brand_idea": {
-        "question": "What conceptual idea connects strategy, category, and expression?",
-        "evidence_scope": ["envispace", "mindspace", "aetherspace", "netspace"],
-        "source_signal": "Expression",
-        "source_signal_path": "Expression → Brand Idea",
-        "source_layer": "envispace",
-    },
-    "attributes": {
-        "question": "Which three attributes does the brand describe or demonstrate consistently?",
-        "evidence_scope": ["ambientspace", "netspace", "mindspace"],
-        "source_signal": "Context / Beliefs",
-        "source_signal_path": "Context / Beliefs → Attributes",
-        "source_layer": "ambientspace",
-    },
-    "values": {
-        "question": "Which three values does the brand appear to defend through what it says and does?",
-        "evidence_scope": ["ambientspace", "aetherspace", "tactispace"],
-        "source_signal": "Context / Beliefs",
-        "source_signal_path": "Context / Beliefs → Values",
-        "source_layer": "ambientspace",
-    },
-    "mission": {
-        "question": "What does the brand concretely do today?",
-        "evidence_scope": ["tactispace", "netspace", "aetherspace"],
-        "source_signal": "Action / Direction",
-        "source_signal_path": "Action / Direction → Mission",
-        "source_layer": "tactispace",
-    },
-    "vision": {
-        "question": "What future or category change does the brand appear to be building toward?",
-        "evidence_scope": ["tactispace", "aetherspace", "mindspace"],
-        "source_signal": "Action / Direction",
-        "source_signal_path": "Action / Direction → Vision",
-        "source_layer": "tactispace",
-    },
-}
-
-STRATEGIC_TLDR_BLOCKS = {"core_purpose", "personality", "brand_idea", "values", "vision"}
-PERFORMED_TLDR_BLOCKS = {"personality", "attributes", "values"}
-DECLARATIVE_TLDR_BLOCKS = {"core_purpose", "magnetism", "value_proposition", "mission"}
-
-GENERIC_MAGNETISM_TERMS = {
-    "empower",
-    "empowering",
-    "future",
-    "innovation",
-    "innovative",
-    "transform",
-    "transforming",
-    "leverage",
-    "leading",
-    "platform",
-    "solution",
-    "seamless",
-    "unlock",
-    "elevate",
-}
-
-SPECIFICITY_TERMS = {
-    "api",
-    "ai",
-    "athlete",
-    "athletes",
-    "wealth",
-    "banking",
-    "developer",
-    "protocol",
-    "capital",
-    "data",
-    "security",
-    "compliance",
-    "automation",
-    "workflow",
-    "infrastructure",
-    "advisors",
-    "founders",
-    "teams",
-    "marathon",
-    "maraton",
-    "performance",
-    "sport",
-    "sports",
-    "training",
-}
-
+from src.features.magnetism.extractor_constants import (
+    CANONICAL_EXTRACTION_MODE,
+    DECLARATIVE_TLDR_BLOCKS,
+    GENERIC_MAGNETISM_TERMS,
+    LAYER_DEFINITIONS,
+    LAYER_KEYS,
+    LAYER_TO_TLDR,
+    LEGACY_DIRECT_DEPRECATION,
+    LEGACY_DIRECT_EXTRACTION_MODE,
+    LEGACY_DIRECT_SOURCE,
+    PERFORMED_TLDR_BLOCKS,
+    SPECIFICITY_TERMS,
+    STRATEGIC_TLDR_BLOCKS,
+    TLDR_BLOCK_CONTRACT,
+    TLDR_KEYS,
+    TLDR_TO_LAYER,
+)
 
 class MagnetismExtractor:
     """Extract Magenta Circle signals and derive Brand3 TLDR outputs."""
@@ -844,66 +656,20 @@ Return exactly this JSON shape:
         strategic_evidence_packet: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Fallback extractor that marks only directly matched signals as detected."""
-        sentences = self._sentences(web_markdown)
-
-        keyword_signals = {
-            "mindspace": ["just do it", "mantra", "belief", "earn", "fight", "inspire", "proprietary", "framework", "paradigm", "new model", "new paradigm", "únete", "unete", "nuevo modelo"],
-            "aetherspace": ["mission", "purpose", "why", "founded", "exists", "values", "manifesto", "inspirar", "inspire", "regenerativo", "circular", "medio ambiente", "sostenible"],
-            "gamespace": ["voice", "tone", "playful", "bold", "rebel", "sage", "creator", "trusted"],
-            "envispace": ["design", "visual", "aesthetic", "palette", "typography", "minimal", "brutalist"],
-            "netspace": ["value", "api", "developer", "automation", "platform", "infrastructure", "financial services", "servicios financieros", "accept payments", "aceptar pagos", "billing", "facturación", "product development", "planning and building", "teams and agents", "integration", "sdk", "innovadores", "productos innovadores", "soluciones", "ingredientes activos", "materias primas", "servicios ambientales", *vertical_layer_keywords("netspace")],
-            "tactispace": ["creamos", "we create", "we build", "we provide", "mission", "vision", "roadmap", "future", "new model", "new paradigm", "misión", "vision", "visión", "futuro", "nuevo modelo"],
-            "ambientspace": ["values", "trusted", "secure", "simple", "transparent", "offline", "event", "support", "performance", "custom agents", "ai agents", "prioritization", "okr planning", "growth tracking", "maratón", "maraton", "atletas", "athletes", "regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo", *vertical_layer_keywords("ambientspace")],
-        }
-
-        layers: dict[str, Any] = {}
-        for layer, keywords in keyword_signals.items():
-            evidence = self._first_matching_sentence(sentences, keywords)
-            finding = None
-            detected = evidence is not None
-            confidence = "medium" if detected else "insufficient"
-
-            if layer == "tactispace" and evidence and self._is_testimonial_evidence(evidence):
-                evidence = None
-                detected = False
-                confidence = "insufficient"
-
-            if detected:
-                finding = self._heuristic_finding(layer, evidence or "")
-
-            if layer == "envispace" and isinstance(visual_semantics, dict):
-                sem = visual_semantics.get("data") or {}
-                style = sem.get("aesthetic_style")
-                mood = sem.get("visual_mood")
-                if style and not detected:
-                    evidence = f"Visual style: {style}"
-                    finding = f"Visual signature detected as {style}."
-                    detected = True
-                    confidence = "low"
-                elif style and mood and detected:
-                    finding = f"{finding} Visual analysis also reports {style} with a {mood} mood."
-
-            layers[layer] = {
-                "finding": finding,
-                "evidence": evidence,
-                "detected": detected,
-                "confidence": confidence,
-            }
-
-        payload = {
-            "brand_name": brand_name,
-            "url": url,
-            "magenta_circle": layers,
-            "fallback_used": True,
-        }
-        if content_distillation_summary:
-            payload["content_distillation_summary"] = content_distillation_summary
-        if strategic_evidence_packet:
-            payload["strategic_evidence_packet"] = strategic_evidence_packet
-        normalized = self._normalize_analysis(payload)
-        if collector_error:
-            normalized["limitations"].append(f"Web collection fallback: {collector_error}")
-        return normalized
+        return _heuristic_extract_via_heuristic(
+            web_markdown=web_markdown,
+            visual_semantics=visual_semantics,
+            brand_name=brand_name,
+            url=url,
+            collector_error=collector_error,
+            content_distillation_summary=content_distillation_summary,
+            strategic_evidence_packet=strategic_evidence_packet,
+            sentences_fn=self._sentences,
+            first_matching_sentence_fn=self._first_matching_sentence,
+            heuristic_finding_fn=self._heuristic_finding,
+            is_testimonial_evidence_fn=self._is_testimonial_evidence,
+            normalize_analysis_fn=self._normalize_analysis,
+        )
 
     def _normalize_analysis(self, raw: dict[str, Any]) -> dict[str, Any]:
         return _norm_normalize_analysis(
@@ -1249,99 +1015,14 @@ Return exactly this JSON shape:
         url: str = "",
         brand_name: str = "Unknown Brand",
     ) -> dict[str, Any]:
-        """Derive concise reverse-engineering outputs inside TLDR instead of a parallel report."""
-        def detected(block_name: str) -> bool:
-            block = tldr.get(block_name) or {}
-            return bool(block.get("detected") or block.get("answer") or block.get("content"))
-
-        tensions: list[str] = []
-        questions: list[str] = []
-
-        value_detected = detected("value_proposition")
-        magnetism_score = int(metrics.get("magnetism_score") or 0)
-        weak_layers = [key for key, layer in layers.items() if isinstance(layer, dict) and not layer.get("detected")]
-        detected_block_count = sum(1 for key in TLDR_KEYS if detected(key))
-        limited_evidence_coverage = len(weak_layers) >= 2 or detected_block_count <= 7
-
-        if value_detected and not detected("personality"):
-            tensions.append(
-                "The offer is functionally visible, but the brand voice/personality is not yet observable from the evidence."
-            )
-            questions.append(
-                "Should the buyer remember operational utility, trust, ambition, or a sharper point of view?"
-            )
-
-        if value_detected and not detected("brand_idea"):
-            tensions.append(
-                "The product logic is clearer than the larger brand idea connecting category, expression, and point of view."
-            )
-            questions.append(
-                "What category belief or metaphor should make the offer easier to recognize and repeat?"
-            )
-
-        if value_detected and not detected("mission") and not detected("vision"):
-            tensions.append(
-                "The current offer is clearer than the brand's operating mission or future direction."
-            )
-            questions.append(
-                "What does the company explicitly do today, and what future change is it building toward?"
-            )
-
-        if value_detected and magnetism_score and magnetism_score < 70:
-            tensions.append(
-                "The offer has usable evidence, but the magnetic hook may not yet create strong first-screen memory."
-            )
-            questions.append(
-                "Which phrase or tension should a buyer retain after the first visit?"
-            )
-
-        if limited_evidence_coverage:
-            tensions.insert(
-                0,
-                "Some score pressure comes from limited public evidence coverage, not necessarily from strategic weakness in the brand itself."
-            )
-            questions.insert(
-                0,
-                "Which missing internal or public evidence should be supplied before treating the score as a strategic verdict?"
-            )
-
-        if not tensions:
-            if len(weak_layers) >= 4:
-                tensions.append(
-                    "The scan has limited observable signal coverage, so strategic conclusions should stay provisional."
-                )
-                questions.append(
-                    "Which missing signals should be supplied by internal materials before using this as strategy?"
-                )
-
-        proof_support = (
-            evidence_packet_summary.get("proof_support")
-            if isinstance(evidence_packet_summary, dict)
-            and isinstance(evidence_packet_summary.get("proof_support"), dict)
-            else None
+        return _system_reading_derive_system_reading(
+            tldr=tldr,
+            layers=layers,
+            metrics=metrics,
+            evidence_packet_summary=evidence_packet_summary,
+            url=url,
+            brand_name=brand_name,
         )
-        if proof_support and proof_support.get("status") == "observed":
-            credibility_support = {
-                "status": "observed",
-                "count": int(proof_support.get("count") or 0),
-                "evidence": proof_support.get("evidence") or [],
-                "reading": proof_support.get("reading")
-                or "Observed public proof signals support credibility without defining the brand strategy.",
-            }
-        else:
-            credibility_support = {
-                "status": "not_detected",
-                "count": 0,
-                "evidence": [],
-                "reading": "No public proof signals were available for a separate credibility reading.",
-            }
-
-        return {
-            "strategic_tensions": tensions[:3],
-            "validation_questions": questions[:3],
-            "credibility_support": credibility_support,
-            "derived_from": "TLDR Brand3 blocks and Magenta signal coverage",
-        }
 
     def _add_legacy_fields(self, payload: dict[str, Any]) -> None:
         """Keep current storage/routes/templates working while the UI migrates."""

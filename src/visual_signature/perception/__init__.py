@@ -9,24 +9,14 @@ production reports, or production UI.
 from src.visual_signature._internal.lazy import make_lazy_dir, make_lazy_getattr
 
 __all__ = [
-    "MutationAuditRecord",
-    "MutationClassification",
     "PerceptualStateMachine",
-    "PerceptualStateSnapshot",
-    "StateEvaluation",
-    "TransitionRecord",
     "classify_mutation_result",
     "classify_obstruction_state",
     "evaluate_intervention_eligibility",
 ]
 
 _EXPORTS = {
-    "MutationAuditRecord": ("src.visual_signature.perception.mutation_audit", "MutationAuditRecord"),
-    "MutationClassification": ("src.visual_signature.perception.state_models", "MutationClassification"),
     "PerceptualStateMachine": ("src.visual_signature.perception.perceptual_state_machine", "PerceptualStateMachine"),
-    "PerceptualStateSnapshot": ("src.visual_signature.perception.state_models", "PerceptualStateSnapshot"),
-    "StateEvaluation": ("src.visual_signature.perception.state_models", "StateEvaluation"),
-    "TransitionRecord": ("src.visual_signature.perception.state_models", "TransitionRecord"),
     "classify_mutation_result": ("src.visual_signature.perception.transition_policy", "classify_mutation_result"),
     "classify_obstruction_state": ("src.visual_signature.perception.transition_policy", "classify_obstruction_state"),
     "evaluate_intervention_eligibility": (

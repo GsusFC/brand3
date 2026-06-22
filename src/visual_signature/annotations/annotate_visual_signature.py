@@ -8,7 +8,7 @@ from src.visual_signature.annotations.confidence import (
     calculate_annotation_confidence,
     normalize_confidence,
 )
-from src.visual_signature.annotations.providers.mock_provider import MockMultimodalAnnotationProvider
+from src.visual_signature.annotations.providers import MockMultimodalAnnotationProvider
 from src.visual_signature.annotations.types import (
     ANNOTATION_TARGETS,
     AnnotationOverlay,

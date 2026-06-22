@@ -1,4 +1,4 @@
-"""Prompt scaffolding for future Visual Signature multimodal annotations."""
+"""Prompt scaffold for mock-only Visual Signature multimodal annotations."""
 
 from __future__ import annotations
 
@@ -7,11 +7,7 @@ from src.visual_signature.annotations.types import ANNOTATION_TARGETS, Annotatio
 
 
 def build_annotation_prompt(request: AnnotationRequest) -> str:
-    """Build the future multimodal prompt text.
-
-    The mock provider does not call an LLM. This prompt is stored so future real
-    providers share a constrained, evidence-only contract.
-    """
+    """Build the constrained evidence-only prompt text used by the mock path."""
     category = request.expected_category or "unknown"
     targets = ", ".join(ANNOTATION_TARGETS)
     return "\n".join(

@@ -8,7 +8,7 @@ from pathlib import Path
 from src.visual_signature.annotations import annotate_visual_signature, build_annotation_audit
 from src.visual_signature.annotations.annotate_visual_signature import validate_annotation_overlay
 from src.visual_signature.annotations.prompts import build_annotation_prompt
-from src.visual_signature.annotations.providers.mock_provider import MockMultimodalAnnotationProvider
+from src.visual_signature.annotations.providers import MockMultimodalAnnotationProvider
 from src.visual_signature.annotations.types import ANNOTATION_TARGETS
 
 

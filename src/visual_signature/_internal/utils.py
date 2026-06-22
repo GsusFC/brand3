@@ -10,7 +10,9 @@ from __future__ import annotations
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, TypeVar
+
+T = TypeVar("T")
 
 
 def slug(value: str, *, default: str = "capture") -> str:
@@ -31,11 +33,37 @@ def int_or_none(value: Any) -> int | None:
         return None
 
 
-def float_or_none(value: Any) -> float | None:
+def float_or_none(value: Any, *, digits: int | None = None) -> float | None:
     try:
-        return float(value)
+        number = float(value)
     except (TypeError, ValueError):
         return None
+    if digits is None:
+        return number
+    return round(number, digits)
+
+
+def dict_or_empty(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def first_dict(*items: Any) -> dict[str, Any]:
+    for item in items:
+        if isinstance(item, dict):
+            return item
+    return {}
+
+
+def unique_by_key(values: list[T], key: Callable[[T], Any]) -> list[T]:
+    seen: set[str] = set()
+    out: list[T] = []
+    for value in values:
+        marker = str(key(value)).strip()
+        if not marker or marker in seen:
+            continue
+        seen.add(marker)
+        out.append(value)
+    return out
 
 
 def clamp_01(value: float) -> float:
@@ -50,6 +78,26 @@ def unique(values: list[str]) -> list[str]:
         if value and value not in out:
             out.append(value)
     return out
+
+
+def unique_text(values: list[Any]) -> list[str]:
+    """Return normalized non-empty text values, preserving order."""
+    seen: set[str] = set()
+    out: list[str] = []
+    for value in values:
+        text = str(value).strip()
+        if not text or text in seen:
+            continue
+        seen.add(text)
+        out.append(text)
+    return out
+
+
+def normalize_capture_type(value: Any, *, default: str = "unknown") -> str:
+    capture_type = str(value or "").strip().lower()
+    if capture_type in {"viewport", "full_page"}:
+        return capture_type
+    return default
 
 
 def utc_now() -> str:

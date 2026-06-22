@@ -7,6 +7,8 @@ from typing import Any, Callable
 
 from src.visual_signature.affordance_semantics import classify_affordance
 from src.visual_signature.affordance_semantics import classify_affordance_owner
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
+from src.visual_signature._internal.utils import normalize_capture_type as _normalize_capture_type
 from src.visual_signature.capture.clean_capture import clean_attempt_quality
 from src.visual_signature.capture.screenshot_capture_models import CaptureResult
 from src.visual_signature.perception import PerceptualStateMachine
@@ -1010,20 +1012,6 @@ def _coerce_transition_list(value: Any) -> list[dict[str, Any]]:
         if isinstance(item, dict):
             rows.append(item)
     return rows
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _normalize_capture_type(value: Any) -> str:
-    capture_type = str(value or "").strip().lower()
-    if capture_type in {"viewport", "full_page"}:
-        return capture_type
-    return "viewport"
 
 
 def _derived_capture_path(path: Path, capture_type: str) -> Path:

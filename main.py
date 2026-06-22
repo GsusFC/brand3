@@ -21,6 +21,7 @@ from src.config import (
     BRAND3_PROMOTION_MAX_DIMENSION_DROPS,
     BRAND3_VISUAL_SIGNATURE_SCAN_ENABLED,
 )
+from src.services.experiment_workflow import run_experiment as _run_experiment_impl
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent
@@ -135,73 +136,17 @@ def apply_candidates(*args, **kwargs):
 
 def run_experiment(*args, **kwargs):
     _sync_service_config()
-    service = _brand_service()
     brand_name = kwargs.get("brand_name")
     candidate_ids = kwargs.get("candidate_ids")
     if args:
         brand_name = args[0]
-    store = service.SQLiteStore(BRAND3_DB_PATH)
-    try:
-        before_run_id = store.get_latest_run_id(brand_name=brand_name)
-        if not before_run_id:
-            raise ValueError(f"No runs found for brand {brand_name}")
-        before_snapshot = store.get_run_snapshot(before_run_id)
-        if not before_snapshot:
-            raise ValueError(f"Run {before_run_id} not found")
-        baseline = before_snapshot["run"]
-    finally:
-        store.close()
-
-    applied_results = apply_candidates(candidate_ids=candidate_ids, brand_name=brand_name)
-    applied_candidate_ids = [item["candidate_id"] for item in applied_results if item.get("applied")]
-    if not applied_candidate_ids:
-        raise ValueError("No approved candidates were applied; experiment aborted")
-    applied_version_before_id = next(
-        (item["version_before_id"] for item in applied_results if item.get("applied") and item.get("version_before_id")),
-        None,
+    return _run_experiment_impl(
+        brand_name,
+        candidate_ids=candidate_ids,
+        db_path=BRAND3_DB_PATH,
+        run_fn=run,
+        apply_candidates_fn=apply_candidates,
     )
-    applied_version_after_id = None
-    for item in applied_results:
-        if item.get("applied") and item.get("version_after_id"):
-            applied_version_after_id = item["version_after_id"]
-
-    rerun_result = run(
-        baseline["url"],
-        brand_name=baseline["brand_name"],
-        use_llm=bool(baseline["use_llm"]),
-        use_social=bool(baseline["use_social"]),
-    )
-    after_run_id = rerun_result.get("run_id")
-    if not after_run_id:
-        raise ValueError("Rerun did not produce a persisted run_id")
-
-    store = service.SQLiteStore(BRAND3_DB_PATH)
-    try:
-        after_snapshot = store.get_run_snapshot(after_run_id)
-        if not after_snapshot:
-            raise ValueError(f"Run {after_run_id} not found after rerun")
-        summary = service._build_experiment_summary(before_snapshot, after_snapshot, applied_results)
-        experiment_id = store.save_experiment(
-            brand_name=baseline["brand_name"],
-            url=baseline["url"],
-            before_run_id=before_run_id,
-            after_run_id=after_run_id,
-            candidate_ids=applied_candidate_ids,
-            summary=summary,
-            version_before_id=applied_version_before_id,
-            version_after_id=applied_version_after_id,
-            before_scoring_state_fingerprint=before_snapshot["run"].get("scoring_state_fingerprint"),
-            after_scoring_state_fingerprint=after_snapshot["run"].get("scoring_state_fingerprint"),
-        )
-        payload = {
-            "experiment_id": experiment_id,
-            "apply_results": applied_results,
-            "summary": summary,
-        }
-        print(json.dumps(payload, indent=2))
-        return payload
-    finally:
-        store.close()
 
 
 def list_experiments(*args, **kwargs):

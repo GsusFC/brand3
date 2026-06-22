@@ -6,6 +6,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from src.visual_signature._internal.utils import float_or_none as _float_or_none
+from src.visual_signature._internal.utils import unique_text as _unique_text
 
 
 @dataclass
@@ -117,10 +118,10 @@ def _merge_colors(primary: Any, secondary: Any) -> dict[str, Any]:
     return {
         **right,
         **left,
-        "dominant_colors": _dedupe(
+        "dominant_colors": _unique_text(
             [*(left.get("dominant_colors") or []), *(right.get("dominant_colors") or [])]
         )[:10],
-        "accent_candidates": _dedupe(
+        "accent_candidates": _unique_text(
             [*(left.get("accent_candidates") or []), *(right.get("accent_candidates") or [])]
         )[:6],
     }
@@ -132,7 +133,7 @@ def _merge_components(primary: Any, secondary: Any) -> dict[str, Any]:
     return {
         **right,
         **left,
-        "primary_ctas": _dedupe([*(left.get("primary_ctas") or []), *(right.get("primary_ctas") or [])])[:8],
+        "primary_ctas": _unique_text([*(left.get("primary_ctas") or []), *(right.get("primary_ctas") or [])])[:8],
         "components": _merge_component_counts(left.get("components") or [], right.get("components") or []),
     }
 
@@ -169,7 +170,7 @@ def _merge_confidence(primary: Any, secondary: Any) -> dict[str, Any]:
     left = primary if isinstance(primary, dict) else {}
     right = secondary if isinstance(secondary, dict) else {}
     score = max(_float_or_none(left.get("score")) or 0.0, _float_or_none(right.get("score")) or 0.0)
-    limitations = _dedupe([*(left.get("limitations") or []), *(right.get("limitations") or [])])
+    limitations = _unique_text([*(left.get("limitations") or []), *(right.get("limitations") or [])])
     return {
         **right,
         **left,
@@ -177,15 +178,3 @@ def _merge_confidence(primary: Any, secondary: Any) -> dict[str, Any]:
         "level": "medium" if score >= 0.55 else "low",
         "limitations": limitations,
     }
-
-
-def _dedupe(items: list[Any]) -> list[str]:
-    seen = set()
-    result = []
-    for item in items:
-        text = str(item).strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
-        result.append(text)
-    return result

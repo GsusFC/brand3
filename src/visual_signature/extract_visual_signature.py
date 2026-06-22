@@ -13,25 +13,12 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from src.visual_signature.adapters.firecrawl_adapter import (
-    FirecrawlVisualSignatureAdapter,
-    acquisition_from_web_data,
-)
-from src.visual_signature.normalizers.assets import normalize_asset_signals
-from src.visual_signature.normalizers.colors import normalize_colors
-from src.visual_signature.normalizers.components import normalize_component_signals
-from src.visual_signature.normalizers.consistency import normalize_consistency_signals
-from src.visual_signature.normalizers.layout import normalize_layout_signals
-from src.visual_signature.normalizers.logo import normalize_logo_signals
-from src.visual_signature.normalizers.typography import normalize_typography
-from src.visual_signature.scoring.extraction_confidence import calculate_extraction_confidence
 from src.visual_signature.types import (
     VisualSignature,
     VisualSignatureInput,
 )
-from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
-from src.visual_signature.vision.screenshot_quality import resolve_screenshot_path
 from src.visual_signature.vision.multimodal_analyzer import analyze_visual_semantics, fallback_semantics
+from src.visual_signature.vision.screenshot_quality import resolve_screenshot_path
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +38,17 @@ def extract_visual_signature(
     Firecrawl calls during the main analysis pipeline. The adapter is used only
     when no existing web payload is provided.
     """
+    from src.visual_signature.adapters.firecrawl_adapter import acquisition_from_web_data
+    from src.visual_signature.normalizers.assets import normalize_asset_signals
+    from src.visual_signature.normalizers.colors import normalize_colors
+    from src.visual_signature.normalizers.components import normalize_component_signals
+    from src.visual_signature.normalizers.consistency import normalize_consistency_signals
+    from src.visual_signature.normalizers.layout import normalize_layout_signals
+    from src.visual_signature.normalizers.logo import normalize_logo_signals
+    from src.visual_signature.normalizers.typography import normalize_typography
+    from src.visual_signature.scoring.extraction_confidence import calculate_extraction_confidence
+    from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
+
     input_data = VisualSignatureInput(brand_name=brand_name, website_url=website_url)
     _validate_input(input_data)
     source_web = content_web or web_data
@@ -65,6 +63,8 @@ def extract_visual_signature(
         if not acquisition.final_url:
             acquisition.final_url = website_url
     else:
+        from src.visual_signature.adapters.firecrawl_adapter import FirecrawlVisualSignatureAdapter
+
         acquisition_adapter = adapter or FirecrawlVisualSignatureAdapter()
         acquisition = acquisition_adapter.acquire(input_data)
 
@@ -146,6 +146,8 @@ def _viewport_obstruction_for_selected_capture(
     acquisition: Any,
     screenshot_payload: dict[str, Any] | None,
 ) -> dict[str, Any]:
+    from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
+
     payload_obstruction = (
         screenshot_payload.get("viewport_obstruction")
         if isinstance(screenshot_payload, dict) and isinstance(screenshot_payload.get("viewport_obstruction"), dict)

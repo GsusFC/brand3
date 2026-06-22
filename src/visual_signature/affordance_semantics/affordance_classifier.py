@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
+from src.visual_signature._internal.utils import unique as _unique
 from src.visual_signature.affordance_semantics.affordance_models import (
     AFFORDANCE_SEMANTICS_SCHEMA_VERSION,
     AffordanceClassification,
@@ -26,7 +27,7 @@ def classify_affordance(evidence: dict[str, Any], *, affordance_id: str | None =
         evidence=model,
         evidence_sources=_evidence_sources(model),
         matched_signals=signals,
-        limitations=_dedupe([*limitations, *policy.limitations]),
+        limitations=_unique([*limitations, *policy.limitations]),
         review_required=policy.review_required,
         notes=policy.notes,
     )
@@ -281,18 +282,6 @@ def _slug(value: str) -> str:
         elif out and out[-1] != "-":
             out.append("-")
     return "".join(out).strip("-") or "affordance"
-
-
-def _dedupe(values: list[str]) -> list[str]:
-    seen: set[str] = set()
-    out: list[str] = []
-    for value in values:
-        if value in seen:
-            continue
-        seen.add(value)
-        out.append(value)
-    return out
-
 
 def _normalize(value: str) -> str:
     return " ".join(

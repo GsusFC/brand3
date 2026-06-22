@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import re
 
+from src.visual_signature._internal.utils import unique_by_key as _unique_by_key
 from src.visual_signature.types import LogoCandidate, NormalizedLogoSignals, VisualAcquisitionResult, VisualAssetCandidate
 from src.visual_signature._internal.utils import clamp_01 as _clamp
 
@@ -71,7 +72,7 @@ def normalize_logo_signals(acquisition: VisualAcquisitionResult, brand_name: str
             )
         )
 
-    unique = _dedupe(candidates)
+    unique = _unique_by_key(candidates, lambda candidate: candidate.url or candidate.text or candidate.alt or "")
     unique.sort(key=lambda item: item.confidence, reverse=True)
     favicon_detected = bool(metadata_icon or re.search(r"rel=[\"'](?:shortcut )?icon[\"']", html, re.I))
     confidence = _clamp(
@@ -185,19 +186,5 @@ def _has_textual_brand_mark(html: str, metadata: dict, brand_name: str) -> bool:
     return bool(meta_match and brand_token and brand_token in _normalize_token(meta_match.group(1)))
 
 
-def _dedupe(candidates: list[LogoCandidate]) -> list[LogoCandidate]:
-    seen: set[str] = set()
-    result: list[LogoCandidate] = []
-    for candidate in candidates:
-        key = candidate.url or candidate.text or candidate.alt or ""
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        result.append(candidate)
-    return result
-
-
 def _normalize_token(value: str) -> str:
     return re.sub(r"[^a-z0-9]", "", (value or "").lower())
-
-

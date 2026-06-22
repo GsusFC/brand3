@@ -43,6 +43,52 @@ from src.reports.vertical_signals import (
     vertical_preferred_terms,
     vertical_terms_for_text,
 )
+from src.features.magnetism.extractor_tail import (
+    brand_audit_evidence_text as _tail_brand_audit_evidence_text,
+    has_tldr_v03_contract as _tail_has_tldr_v03_contract,
+    is_unusable_audit_quote as _tail_is_unusable_audit_quote,
+    default_counter_evidence as _tail_default_counter_evidence,
+    infer_claim_type as _tail_infer_claim_type,
+    observations_for_block as _tail_observations_for_block,
+    normalized_tldr_confidence as _tail_normalized_tldr_confidence,
+    should_recommend_human_review as _tail_should_recommend_human_review,
+    snapshot_limitations as _tail_snapshot_limitations,
+    visual_semantics_from_snapshot as _tail_visual_semantics_from_snapshot,
+)
+from src.features.magnetism.extractor_scoring import (
+    derive_diagnosis as _scoring_derive_diagnosis,
+    derive_metrics as _scoring_derive_metrics,
+    earned_magnetism_adjustment as _scoring_earned_magnetism_adjustment,
+    magnetism_phrase_breakdown as _scoring_magnetism_phrase_breakdown,
+)
+from src.features.magnetism.extractor_tldr import (
+    derive_tldr as _tldr_derive_tldr,
+    empty_tldr_block as _tldr_empty_tldr_block,
+    interpret_tldr_block_from_spec as _tldr_interpret_tldr_block_from_spec,
+    tldr_content_from_layer as _tldr_content_from_layer,
+    with_tldr_contract as _tldr_with_tldr_contract,
+)
+from src.features.magnetism.extractor_normalization import (
+    clean_evidence_phrase as _norm_clean_evidence_phrase,
+    clean_optional_string as _norm_clean_optional_string,
+    contains_keyword as _norm_contains_keyword,
+    enrich_layers_from_legacy_text as _norm_enrich_layers_from_legacy_text,
+    enrich_layers_from_strategic_packet as _norm_enrich_layers_from_strategic_packet,
+    extract_three_terms as _norm_extract_three_terms,
+    first_accepted_tactispace_packet_evidence as _norm_first_accepted_tactispace_packet_evidence,
+    first_packet_item as _norm_first_packet_item,
+    first_matching_sentence as _norm_first_matching_sentence,
+    heuristic_finding as _norm_heuristic_finding,
+    infer_brand_name as _norm_infer_brand_name,
+    is_navigation_noise as _norm_is_navigation_noise,
+    normalize_analysis as _norm_normalize_analysis,
+    normalize_evidence as _norm_normalize_evidence,
+    normalize_layers as _norm_normalize_layers,
+    packet_layer_confidence as _norm_packet_layer_confidence,
+    sentences_from_text as _norm_sentences_from_text,
+    set_layer_from_packet as _norm_set_layer_from_packet,
+    trim_evidence as _norm_trim_evidence,
+)
 from src.research.contextdev_research_pack_dry_run import build_contextdev_research_pack_dry_run
 from src.research.research_pack_facade import RecommendedResearchPack, build_recommended_research_pack
 from src.research.research_pack_quality import evaluate_research_pack_quality, evaluate_research_pack_quality_gate
@@ -860,77 +906,18 @@ Return exactly this JSON shape:
         return normalized
 
     def _normalize_analysis(self, raw: dict[str, Any]) -> dict[str, Any]:
-        """Normalize old and new extractor outputs into the canonical scanner schema."""
-        normalized: dict[str, Any] = {
-            "brand_name": str(raw.get("brand_name") or "Unknown Brand"),
-            "url": str(raw.get("url") or ""),
-            "analyzed_at": str(raw.get("analyzed_at") or datetime.now(timezone.utc).isoformat()),
-            "fallback_used": bool(raw.get("fallback_used", False)),
-            "limitations": [],
-        }
-
-        normalized["magenta_circle"] = self._normalize_layers(raw.get("magenta_circle") or raw.get("layers") or {})
-        self._enrich_layers_from_legacy_text(raw, normalized["magenta_circle"])
-        strategic_packet = raw.get("strategic_evidence_packet") if isinstance(raw.get("strategic_evidence_packet"), dict) else None
-        if strategic_packet:
-            self._enrich_layers_from_strategic_packet(normalized["magenta_circle"], strategic_packet)
-        brand_context_brief = raw.get("brand_context_brief") if isinstance(raw.get("brand_context_brief"), dict) else None
-        if not brand_context_brief:
-            brand_context_brief = build_brand_context_brief(
-                brand_name=normalized["brand_name"],
-                url=normalized["url"],
-                layers=normalized["magenta_circle"],
-                strategic_packet=strategic_packet,
-            ).to_dict()
-        normalized["brand_context_brief"] = brand_context_brief
-        normalized["tldr_brand3"] = self._derive_tldr(normalized["magenta_circle"], strategic_packet, brand_context_brief)
-        if strategic_packet:
-            normalized["strategic_evidence_packet"] = strategic_packet
-        for key in (
-            "research_pack",
-            "analyst_tldr_raw",
-            "analyst_tldr_validated",
-            "analyst_tldr_analysis_error",
-            "tldr_generation_mode",
-            "legacy_tldr_brand3",
-            "tldr_strategy",
-        ):
-            if key in raw:
-                normalized[key] = raw[key]
-        normalized["metrics"] = self._derive_metrics(
-            normalized["magenta_circle"],
-            normalized["tldr_brand3"],
-            scoring_context=(
-                normalized.get("analyst_tldr_validated", {}).get("scoring_context")
-                if isinstance(normalized.get("analyst_tldr_validated"), dict)
-                else None
-            ),
+        return _norm_normalize_analysis(
+            raw,
+            normalize_layers_fn=self._normalize_layers,
+            enrich_layers_from_legacy_text_fn=self._enrich_layers_from_legacy_text,
+            enrich_layers_from_strategic_packet_fn=self._enrich_layers_from_strategic_packet,
+            derive_tldr_fn=self._derive_tldr,
+            derive_metrics_fn=self._derive_metrics,
+            derive_diagnosis_fn=self._derive_diagnosis,
+            derive_evidence_packet_summary_fn=self._derive_evidence_packet_summary,
+            derive_system_reading_fn=self._derive_system_reading,
+            add_legacy_fields_fn=self._add_legacy_fields,
         )
-        normalized["diagnosis"] = self._derive_diagnosis(normalized["magenta_circle"], normalized["metrics"])
-        if isinstance(raw.get("content_distillation_summary"), dict):
-            normalized["content_distillation_summary"] = raw["content_distillation_summary"]
-        normalized["evidence_packet_summary"] = self._derive_evidence_packet_summary(normalized)
-        if "system_reading" in raw and isinstance(raw["system_reading"], dict):
-            normalized["system_reading"] = raw["system_reading"]
-        elif normalized.get("fallback_used"):
-            normalized["system_reading"] = self._build_system_reading(
-                tldr=normalized["tldr_brand3"],
-                layers=normalized["magenta_circle"],
-                metrics=normalized["metrics"],
-                url=normalized["url"],
-                brand_name=normalized["brand_name"],
-                evidence_packet_summary=normalized.get("evidence_packet_summary"),
-            )
-        else:
-            normalized["system_reading"] = self._derive_system_reading(
-                tldr=normalized["tldr_brand3"],
-                layers=normalized["magenta_circle"],
-                metrics=normalized["metrics"],
-                evidence_packet_summary=normalized.get("evidence_packet_summary"),
-            )
-
-        self._add_legacy_fields(normalized)
-        return normalized
 
     def ensure_tldr_v03_contract(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Upgrade persisted scans that already have metrics/TLDR but predate the v0.3 block contract."""
@@ -1007,65 +994,10 @@ Return exactly this JSON shape:
 
     @staticmethod
     def _has_tldr_v03_contract(block: dict[str, Any]) -> bool:
-        required = {
-            "block",
-            "question",
-            "evidence_scope",
-            "source_signal",
-            "source_signal_path",
-            "source_layer",
-            "observations",
-            "answer",
-            "claim_type",
-            "reasoning",
-            "evidence_used",
-            "counter_evidence",
-            "human_review_recommended",
-        }
-        return required.issubset(block.keys())
+        return _tail_has_tldr_v03_contract(block)
 
     def _normalize_layers(self, raw_layers: dict[str, Any]) -> dict[str, Any]:
-        layers: dict[str, Any] = {}
-        for layer in LAYER_KEYS:
-            raw_layer = raw_layers.get(layer) or {}
-
-            old_evidence = raw_layer.get("evidence")
-            evidence = self._normalize_evidence(old_evidence)
-            finding = raw_layer.get("finding")
-            if finding is None:
-                finding = raw_layer.get("findings")
-            finding = self._clean_optional_string(finding)
-
-            detected_raw = raw_layer.get("detected")
-            status_raw = str(raw_layer.get("status") or "").strip().lower()
-            detected = bool(detected_raw) if isinstance(detected_raw, bool) else status_raw == "detected"
-            if not detected and (finding or evidence):
-                detected = status_raw != "not_detected"
-
-            if not detected:
-                finding = None
-                evidence = None
-
-            if layer == "tactispace" and finding and "cta" in finding.lower():
-                finding = None
-                evidence = None
-                detected = False
-
-            confidence = str(raw_layer.get("confidence") or "").strip().lower()
-            if confidence not in {"high", "medium", "low", "insufficient"}:
-                confidence = "medium" if detected else "insufficient"
-
-            layers[layer] = {
-                "finding": finding,
-                "evidence": evidence,
-                "detected": detected,
-                "confidence": confidence,
-                # Compatibility fields used by existing templates/tests.
-                "status": "detected" if detected else "not_detected",
-                "findings": finding or "No clear signal detected in the provided sources.",
-                "evidence_list": [evidence] if evidence else [],
-            }
-        return layers
+        return _norm_normalize_layers(raw_layers)
 
     def _enrich_layers_from_strategic_packet(
         self,
@@ -1073,75 +1005,17 @@ Return exactly this JSON shape:
         strategic_packet: dict[str, Any],
         replace_detected_ambientspace: bool = False,
     ) -> None:
-        """Project normalized Brand Audit evidence groups onto Magenta layers.
-
-        Brand Audit owns collection and normalization. This step keeps the
-        Magenta Circle aligned with the same evidence packet used by TLDR blocks
-        instead of relying only on keyword hits over serialized text.
-        """
-        groups = strategic_packet.get("groups") if isinstance(strategic_packet, dict) else {}
-        if not isinstance(groups, dict):
-            return
-
-        layer_group_map = {
-            "mindspace": ["hero_claims"],
-            "netspace": ["product_offer", "outcome", "audience"],
-            "gamespace": ["personality_tone"],
-            "ambientspace": ["values_language"],
-        }
-        for layer_key, group_names in layer_group_map.items():
-            item = self._first_packet_item(groups, group_names)
-            if not item:
-                continue
-            if layers.get(layer_key, {}).get("detected") and not (
-                replace_detected_ambientspace and layer_key == "ambientspace"
-            ):
-                continue
-            evidence = item["text"]
-            confidence = self._packet_layer_confidence(layer_key, groups, item.get("group"))
-            self._set_layer_from_packet(layers, layer_key, evidence, confidence)
-
-        if not layers.get("tactispace", {}).get("detected"):
-            tactispace_evidence = self._first_accepted_tactispace_packet_evidence(strategic_packet)
-            if tactispace_evidence:
-                self._set_layer_from_packet(layers, "tactispace", tactispace_evidence, "medium")
+        _norm_enrich_layers_from_strategic_packet(layers, strategic_packet, replace_detected_ambientspace)
 
     @staticmethod
     def _first_packet_item(
         groups: dict[str, Any],
         group_names: list[str],
     ) -> dict[str, str] | None:
-        candidates: list[dict[str, str]] = []
-        for group in group_names:
-            for item in groups.get(group) or []:
-                if not isinstance(item, dict):
-                    continue
-                text = MagnetismExtractor._clean_evidence_phrase(str(item.get("text") or ""))
-                if not text or MagnetismExtractor._is_navigation_noise(text):
-                    continue
-                candidates.append({
-                    "text": text,
-                    "group": group,
-                    "source_type": str(item.get("source_type") or ""),
-                    "feature_name": str(item.get("feature_name") or ""),
-                })
-        if not candidates:
-            return None
-        return sorted(candidates, key=strategic_packet_candidate_priority)[0]
+        return _norm_first_packet_item(groups, group_names)
 
     def _first_accepted_tactispace_packet_evidence(self, strategic_packet: dict[str, Any]) -> str | None:
-        for key in ("mission", "vision"):
-            spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-            candidates = strategic_packet_candidates(
-                key,
-                spec,
-                strategic_packet,
-                str(TLDR_TO_LAYER.get(key, "netspace")),
-            )
-            accepted = accepted_block_evidence(key, spec, candidates)
-            if accepted:
-                return accepted[0]["text"]
-        return None
+        return _norm_first_accepted_tactispace_packet_evidence(strategic_packet)
 
     @staticmethod
     def _packet_layer_confidence(
@@ -1149,15 +1023,7 @@ Return exactly this JSON shape:
         groups: dict[str, Any],
         primary_group: str | None,
     ) -> str:
-        if layer_key == "netspace":
-            has_offer = bool(groups.get("product_offer"))
-            has_outcome = bool(groups.get("outcome"))
-            if has_offer and has_outcome:
-                return "high"
-            if has_offer or primary_group in {"outcome", "audience"}:
-                return "medium"
-            return "low"
-        return "medium"
+        return _norm_packet_layer_confidence(layer_key, groups, primary_group)
 
     def _set_layer_from_packet(
         self,
@@ -1166,16 +1032,7 @@ Return exactly this JSON shape:
         evidence: str,
         confidence: str,
     ) -> None:
-        finding = self._heuristic_finding(layer_key, evidence)
-        layers[layer_key] = {
-            "finding": finding,
-            "evidence": evidence,
-            "detected": True,
-            "confidence": confidence,
-            "status": "detected",
-            "findings": finding,
-            "evidence_list": [evidence],
-        }
+        _norm_set_layer_from_packet(layers, layer_key, evidence, confidence)
 
     def _derive_tldr(
         self,
@@ -1183,59 +1040,13 @@ Return exactly this JSON shape:
         strategic_packet: dict[str, Any] | None = None,
         brand_context_brief: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        tldr: dict[str, Any] = {}
-        for key in TLDR_KEYS:
-            layer_key = TLDR_TO_LAYER[key]
-            layer = layers[layer_key]
-
-            if key in TLDR_BLOCK_INTERPRETER_SPECS:
-                interpreted = self._interpret_tldr_block_from_spec(key, layers, strategic_packet, brand_context_brief)
-                tldr[key] = self._with_tldr_contract(key, interpreted or self._empty_tldr_block(key, layer_key), layers)
-                continue
-
-            content: Any = self._tldr_content_from_layer(layer) if layer["detected"] else None
-            evidence = self._evidence_list(layer.get("evidence")) if layer["detected"] else []
-            confidence = layer.get("confidence") if layer["detected"] else "insufficient"
-            mode = self._default_tldr_mode(key, layer)
-            rationale = self._default_tldr_rationale(key, mode)
-            if content and evidence:
-                content, mode, rationale = self._apply_block_specific_content_rules(
-                    key, content, evidence, mode, rationale
-                )
-
-            if key == "personality" and not content:
-                personality = self._derive_personality_block(layers)
-                if personality:
-                    tldr[key] = self._with_tldr_contract(key, personality, layers)
-                    continue
-
-            if key == "brand_idea" and not content:
-                brand_idea = self._derive_brand_idea_block(layers)
-                if brand_idea:
-                    tldr[key] = self._with_tldr_contract(key, brand_idea, layers)
-                    continue
-
-            if key in {"attributes", "values"} and (content or evidence or layer["detected"]):
-                attribute_text = self._joined_layer_evidence(
-                    layers, ["ambientspace", "aetherspace", "netspace", "mindspace"]
-                )
-                seed_content = "" if content is None else str(content)
-                content = self._extract_three_terms(" ".join([attribute_text, seed_content, *evidence]), key)
-                if not content:
-                    content = None
-
-            block = {
-                "content": content,
-                "detected": bool(content),
-                "mode": mode if content else "not_detected",
-                "confidence": confidence if content else "insufficient",
-                "evidence": evidence if content else [],
-                "rationale": rationale if content else "Insufficient evidence to articulate this block responsibly.",
-                "source_layers": [layer_key],
-                "human_review_recommended": False,
-            }
-            tldr[key] = self._with_tldr_contract(key, block, layers)
-        return tldr
+        return _tldr_derive_tldr(
+            layers,
+            strategic_packet=strategic_packet,
+            brand_context_brief=brand_context_brief,
+            personality_block_fn=self._derive_personality_block,
+            brand_idea_block_fn=self._derive_brand_idea_block,
+        )
 
     def _interpret_tldr_block_from_spec(
         self,
@@ -1244,21 +1055,11 @@ Return exactly this JSON shape:
         strategic_packet: dict[str, Any] | None = None,
         brand_context_brief: dict[str, Any] | None = None,
     ) -> dict[str, Any] | None:
-        spec = TLDR_BLOCK_INTERPRETER_SPECS[key]
-        candidates = block_evidence_candidates(
+        return _tldr_interpret_tldr_block_from_spec(
             key,
-            spec,
             layers,
-            strategic_packet,
-            TLDR_TO_LAYER[key],
-            brand_context_brief,
-        )
-        return interpret_tldr_block(
-            key,
-            spec,
-            candidates,
-            layers,
-            TLDR_TO_LAYER[key],
+            strategic_packet=strategic_packet,
+            brand_context_brief=brand_context_brief,
         )
 
     @staticmethod
@@ -1268,16 +1069,7 @@ Return exactly this JSON shape:
 
     @staticmethod
     def _empty_tldr_block(key: str, layer_key: str) -> dict[str, Any]:
-        return {
-            "content": None,
-            "detected": False,
-            "mode": "not_detected",
-            "confidence": "insufficient",
-            "evidence": [],
-            "rationale": "Insufficient evidence to articulate this block responsibly.",
-            "source_layers": [layer_key],
-            "human_review_recommended": False,
-        }
+        return _tldr_empty_tldr_block(key, layer_key)
 
     def _with_tldr_contract(
         self,
@@ -1285,87 +1077,19 @@ Return exactly this JSON shape:
         block: dict[str, Any],
         layers: dict[str, Any],
     ) -> dict[str, Any]:
-        """Upgrade a TLDR block to the v0.3 epistemic contract while preserving legacy keys."""
-        contract = TLDR_BLOCK_CONTRACT[key]
-        detected = bool(block.get("detected"))
-        evidence_used = self._evidence_list(block.get("evidence") or block.get("evidence_used"))
-        confidence = self._normalize_tldr_confidence(block.get("confidence"), detected)
-        mode = str(block.get("mode") or ("not_detected" if not detected else "interpreted_from_discourse"))
-        if not detected:
-            mode = "not_detected"
-
-        claim_type = str(block.get("claim_type") or self._infer_claim_type(key, mode, detected))
-        observations = block.get("observations")
-        if not isinstance(observations, list) or not observations:
-            observations = self._observations_for_block(key, evidence_used, block.get("content"))
-
-        counter_evidence = block.get("counter_evidence")
-        if not isinstance(counter_evidence, list):
-            counter_evidence = []
-        if not counter_evidence:
-            counter_evidence = self._default_counter_evidence(key, claim_type, detected, layers)
-
-        human_review = bool(block.get("human_review_recommended"))
-        if self._should_recommend_human_review(key, claim_type, mode, confidence, detected, evidence_used):
-            human_review = True
-
-        answer = block.get("answer")
-        if answer is None:
-            answer = block.get("content")
-
-        upgraded = dict(block)
-        upgraded.update(
-            {
-                "block": key,
-                "question": contract["question"],
-                "evidence_scope": contract["evidence_scope"],
-                "source_signal": contract["source_signal"],
-                "source_signal_path": contract["source_signal_path"],
-                "source_layer": contract["source_layer"],
-                "observations": observations,
-                "answer": answer,
-                "claim_type": claim_type,
-                "mode": mode,
-                "confidence": confidence,
-                "reasoning": block.get("reasoning") or block.get("rationale"),
-                "evidence_used": evidence_used,
-                "counter_evidence": counter_evidence,
-                "human_review_recommended": human_review,
-                # Compatibility aliases used by current templates/tests.
-                "content": block.get("content"),
-                "evidence": evidence_used,
-                "rationale": block.get("rationale") or block.get("reasoning"),
-            }
-        )
-        return upgraded
+        return _tldr_with_tldr_contract(key, block, layers)
 
     @staticmethod
     def _normalize_tldr_confidence(value: Any, detected: bool) -> str:
-        confidence = str(value or "").strip().lower()
-        if confidence in {"high", "medium", "low"}:
-            return confidence
-        return "low" if not detected else "medium"
+        return _tail_normalized_tldr_confidence(value, detected)
 
     @staticmethod
     def _infer_claim_type(key: str, mode: str, detected: bool) -> str:
-        if not detected:
-            return "absent"
-        if mode in {"literal", "compressed"} and key in DECLARATIVE_TLDR_BLOCKS:
-            return "declared"
-        if key in PERFORMED_TLDR_BLOCKS:
-            return "performed"
-        return "inferred"
+        return _tail_infer_claim_type(key, mode, detected)
 
     @staticmethod
     def _observations_for_block(key: str, evidence_used: list[str], content: Any) -> list[str]:
-        observations: list[str] = []
-        if evidence_used:
-            observations.append(f"Uses {len(evidence_used)} traceable evidence item(s) selected for {key}.")
-        if content:
-            observations.append("Produces a bounded Brand3 articulation from the selected evidence.")
-        if not observations:
-            observations.append("No sufficient public evidence was selected for this block.")
-        return observations
+        return _tail_observations_for_block(key, evidence_used, content)
 
     @staticmethod
     def _default_counter_evidence(
@@ -1374,13 +1098,7 @@ Return exactly this JSON shape:
         detected: bool,
         layers: dict[str, Any],
     ) -> list[str]:
-        if not detected:
-            return ["No sufficient public evidence was found for this TLDR block."]
-        if claim_type == "inferred":
-            return ["The brand does not explicitly declare this exact Brand3 articulation in the available evidence."]
-        if key in STRATEGIC_TLDR_BLOCKS and not layers.get(TLDR_TO_LAYER[key], {}).get("detected"):
-            return ["The primary Magenta Circle layer for this block is weak or absent."]
-        return []
+        return _tail_default_counter_evidence(key, claim_type, detected, layers)
 
     @staticmethod
     def _should_recommend_human_review(
@@ -1391,13 +1109,7 @@ Return exactly this JSON shape:
         detected: bool,
         evidence_used: list[str],
     ) -> bool:
-        if not detected:
-            return False
-        if mode == "needs_human_review":
-            return True
-        if key in STRATEGIC_TLDR_BLOCKS and claim_type == "inferred":
-            return confidence == "low" or len(evidence_used) < 2
-        return False
+        return _tail_should_recommend_human_review(key, claim_type, mode, confidence, detected, evidence_used)
 
     def _derive_metrics(
         self,
@@ -1406,139 +1118,34 @@ Return exactly this JSON shape:
         *,
         scoring_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
-        magnetism_text = tldr["magnetism"].get("content") or ""
-        magnetism_breakdown = self._magnetism_phrase_breakdown(str(magnetism_text))
-        phrase_score = self._weighted_score(
-            magnetism_breakdown,
-            {
-                "originality": 0.30,
-                "specificity": 0.25,
-                "memorability": 0.25,
-                "verifiable_promise": 0.20,
-            },
+        return _scoring_derive_metrics(
+            layers,
+            tldr,
+            scoring_context=scoring_context,
+            int_between_fn=self._int_between,
+            earned_magnetism_adjustment_fn=self._earned_magnetism_adjustment,
+            semantic_alignment_score_fn=self._semantic_alignment_score,
+            absence_of_contradiction_score_fn=self._absence_of_contradiction_score,
+            weighted_score_fn=self._weighted_score,
         )
-        internal_layers = ["mindspace", "aetherspace", "envispace"]
-        internal_detected = {
-            "mindspace": layers["mindspace"]["detected"],
-            "aetherspace": layers["aetherspace"]["detected"],
-            "envispace": layers["envispace"]["detected"] or bool(tldr["brand_idea"].get("detected")),
-        }
-        internal_score = round(
-            sum(100 if internal_detected[layer] else 0 for layer in internal_layers)
-            / len(internal_layers)
-        )
-        expressive_magnetism_score = round((phrase_score * 0.55) + (internal_score * 0.45))
-        earned_magnetism = self._earned_magnetism_adjustment(
-            expressive_magnetism_score,
-            scoring_context,
-        )
-        magnetism_score = earned_magnetism["score"]
-
-        completeness = round(
-            sum(1 for block in tldr.values() if block.get("detected")) / len(TLDR_KEYS) * 100
-        )
-        semantic_alignment = self._semantic_alignment_score(layers)
-        absence_of_contradiction = self._absence_of_contradiction_score(tldr)
-        coherence_score = round(
-            (completeness * 0.40)
-            + (semantic_alignment * 0.40)
-            + (absence_of_contradiction * 0.20)
-        )
-        evidence_duty_penalty = int(earned_magnetism.get("coherence_penalty") or 0)
-        coherence_score = self._clamp(coherence_score - evidence_duty_penalty)
-
-        quadrant = self._quadrant(magnetism_score, coherence_score)
-        return {
-            "magnetism_score": self._clamp(magnetism_score),
-            "magnetism_tier": self._magnetism_tier(magnetism_score),
-            "magnetism_breakdown": magnetism_breakdown,
-            "magnetism_scoring_context": {
-                "expressive_magnetism_score": self._clamp(expressive_magnetism_score),
-                "earned_magnetism_score": self._clamp(magnetism_score),
-                "promise_requires_evidence": earned_magnetism["promise_requires_evidence"],
-                "evidence_duty_status": earned_magnetism["evidence_duty_status"],
-                "reasoning": earned_magnetism["reasoning"],
-                "evidence_gaps": earned_magnetism["evidence_gaps"],
-                "source": earned_magnetism["source"],
-            },
-            "coherence_score": self._clamp(coherence_score),
-            "coherence_tier": self._coherence_tier(coherence_score),
-            "coherence_breakdown": {
-                "completeness": self._clamp(completeness),
-                "semantic_alignment": self._clamp(semantic_alignment),
-                "absence_of_contradiction": self._clamp(absence_of_contradiction),
-                "evidence_duty_penalty": evidence_duty_penalty,
-            },
-            "quadrant": quadrant,
-        }
 
     def _derive_diagnosis(self, layers: dict[str, Any], metrics: dict[str, Any]) -> dict[str, Any]:
-        detected = [layer for layer, value in layers.items() if value["detected"]]
-        missing = [layer for layer, value in layers.items() if not value["detected"]]
-        detected_count = len(detected)
-
-        headline = (
-            f"Marca con {detected_count}/7 capas detectadas: magnetismo {metrics['magnetism_tier'].lower()} "
-            f"y coherencia {metrics['coherence_tier'].lower()}."
-        )
-        observations = [
-            f"Capas detectadas: {', '.join(detected) if detected else 'ninguna'}.",
-            f"Capas sin evidencia suficiente: {', '.join(missing) if missing else 'ninguna'}.",
-            "El diagnostico se limita a senales observables; no incluye recomendaciones estrategicas no validadas.",
-        ]
-        if detected_count <= 5:
-            observations.append(
-                "Si el score baja, puede deberse a cobertura insuficiente de evidencia publica, no necesariamente a debilidad estrategica de la marca."
-            )
-        return {"headline": headline, "key_observations": observations}
+        return _scoring_derive_diagnosis(layers, metrics)
 
     @staticmethod
     def _earned_magnetism_adjustment(
         expressive_score: int,
         scoring_context: dict[str, Any] | None,
+        *,
+        clamp_fn=None,
+        int_between_fn=None,
     ) -> dict[str, Any]:
-        if not isinstance(scoring_context, dict) or not scoring_context:
-            return {
-                "score": MagnetismExtractor._clamp(expressive_score),
-                "coherence_penalty": 0,
-                "promise_requires_evidence": False,
-                "evidence_duty_status": "not_evaluated",
-                "reasoning": "",
-                "evidence_gaps": [],
-                "source": "code_expressive_score",
-            }
-
-        status = str(scoring_context.get("evidence_duty_status") or "not_required").strip().lower()
-        if status not in {"not_required", "satisfied", "partial", "weak"}:
-            status = "not_required"
-        requires_evidence = bool(scoring_context.get("promise_requires_evidence")) or status in {"partial", "weak"}
-        earned = MagnetismExtractor._int_between(scoring_context.get("earned_magnetism_score"), 0, 100)
-        if earned is None:
-            earned = expressive_score
-        penalty = MagnetismExtractor._int_between(scoring_context.get("coherence_evidence_duty_penalty"), 0, 25) or 0
-
-        if not requires_evidence or status in {"not_required", "satisfied"}:
-            score = expressive_score
-            penalty = 0
-        else:
-            # The LLM decides whether the promise creates a duty of proof and
-            # how well that duty is met. Code only enforces the consequence:
-            # strong promises with partial/weak proof cannot keep a purely
-            # expressive magnetism score.
-            score = min(expressive_score, earned)
-
-        gaps = scoring_context.get("evidence_gaps")
-        if not isinstance(gaps, list):
-            gaps = []
-        return {
-            "score": MagnetismExtractor._clamp(score),
-            "coherence_penalty": penalty,
-            "promise_requires_evidence": bool(requires_evidence),
-            "evidence_duty_status": status,
-            "reasoning": str(scoring_context.get("reasoning") or ""),
-            "evidence_gaps": [str(item) for item in gaps if str(item).strip()][:5],
-            "source": "analyst_scoring_context",
-        }
+        return _scoring_earned_magnetism_adjustment(
+            expressive_score,
+            scoring_context,
+            clamp_fn=clamp_fn or MagnetismExtractor._clamp,
+            int_between_fn=int_between_fn or MagnetismExtractor._int_between,
+        )
 
     def _derive_evidence_packet_summary(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Summarize the shared evidence basis without embedding a second report."""
@@ -1639,6 +1246,8 @@ Return exactly this JSON shape:
         layers: dict[str, Any],
         metrics: dict[str, Any],
         evidence_packet_summary: dict[str, Any] | None = None,
+        url: str = "",
+        brand_name: str = "Unknown Brand",
     ) -> dict[str, Any]:
         """Derive concise reverse-engineering outputs inside TLDR instead of a parallel report."""
         def detected(block_name: str) -> bool:
@@ -1776,77 +1385,19 @@ Return exactly this JSON shape:
 
     @staticmethod
     def _brand_audit_evidence_text(snapshot: dict[str, Any]) -> str:
-        evidences = collect_evidences(snapshot)
-        preferred = [
-            ev for ev in evidences
-            if str(ev.source_type) in {"owned", "social"}
-        ]
-        evidence_source = preferred or evidences
-
-        lines: list[str] = []
-        seen: set[str] = set()
-        for ev in evidence_source:
-            quote = MagnetismExtractor._clean_evidence_phrase(str(ev.quote or ""))
-            if not quote or MagnetismExtractor._is_unusable_audit_quote(quote):
-                continue
-            key = quote.lower()
-            if key in seen:
-                continue
-            seen.add(key)
-            lines.append(f"- {quote}")
-            if len(lines) >= 80:
-                break
-
-        if lines:
-            return '\n'.join(lines)
-
-        # Last-resort fallback: owned web raw input often contains markdown.
-        for raw_input in reversed(snapshot.get("raw_inputs") or []):
-            if raw_input.get("source") != "web":
-                continue
-            payload = raw_input.get("payload") or {}
-            markdown = payload.get("markdown_content") or payload.get("content") or ""
-            if markdown:
-                return str(markdown)[:8000]
-        return ""
+        return _tail_brand_audit_evidence_text(snapshot)
 
     @staticmethod
     def _is_unusable_audit_quote(value: str) -> bool:
-        low = value.lower().strip()
-        if low.startswith(("http://", "https://")):
-            return True
-        if len(value) < 6:
-            return True
-        if any(marker in low for marker in ("; evidence=", "source_type=", "dimension=", "feature=")):
-            return True
-        if any(marker in low for marker in ("/news/", "graphql api", "product roadmap", "__next_data__")):
-            return True
-        return False
+        return _tail_is_unusable_audit_quote(value)
 
     @staticmethod
     def _visual_semantics_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
-        for raw_input in reversed(snapshot.get("raw_inputs") or []):
-            if raw_input.get("source") != "visual_signature":
-                continue
-            payload = raw_input.get("payload") or {}
-            semantics = payload.get("semantics")
-            if semantics:
-                return {"status": "detected", "data": semantics}
-            if payload.get("signature", {}).get("semantics"):
-                return {"status": "detected", "data": payload["signature"]["semantics"]}
-        return {"status": "not_detected", "data": {}}
+        return _tail_visual_semantics_from_snapshot(snapshot)
 
     @staticmethod
     def _snapshot_limitations(snapshot: dict[str, Any]) -> list[str]:
-        limitations: list[str] = []
-        run = snapshot.get("run") or {}
-        audit = run.get("audit") or {}
-        data_quality = audit.get("data_quality") or run.get("data_quality")
-        if data_quality:
-            limitations.append(f"Brand Audit data quality: {data_quality}")
-        if not snapshot.get("evidence_items") and not snapshot.get("features"):
-            limitations.append("Brand Audit snapshot has no persisted feature evidence.")
-        return limitations
+        return _tail_snapshot_limitations(snapshot)
 
     @staticmethod
     def _evidence_list(value: Any) -> list[str]:
@@ -2031,310 +1582,62 @@ Return exactly this JSON shape:
         return evidence
 
     def _enrich_layers_from_legacy_text(self, raw: dict[str, Any], layers: dict[str, Any]) -> None:
-        if raw.get("metrics") or raw.get("tldr_brand3"):
-            return
-
-        text_parts: list[str] = []
-        for layer in (raw.get("magenta_circle") or {}).values():
-            evidence = layer.get("evidence") if isinstance(layer, dict) else None
-            if isinstance(evidence, list):
-                text_parts.extend(str(item) for item in evidence if item)
-            elif evidence:
-                text_parts.append(str(evidence))
-        for value in (raw.get("tldr_grid") or {}).values():
-            if value:
-                text_parts.append(str(value))
-
-        text = "\n".join(text_parts)
-        if not text.strip():
-            return
-
-        sentences = self._sentences(text)
-        keyword_signals = {
-            "mindspace": ["únete", "unete", "nuevo modelo", "new model", "new paradigm", "mantra", "proprietary", "framework", "paradigm"],
-            "aetherspace": ["regenerativo", "circular", "medio ambiente", "sostenible", "purpose", "mission", "manifesto"],
-            "netspace": ["soluciones", "ingredientes activos", "materias primas", "servicios ambientales", "cosmética", "nutracéutica", "biorremediación", "api", "infrastructure", "financial services", "servicios financieros", "product development", "planning and building", "teams and agents"],
-            "ambientspace": ["regenerativo", "circular", "sostenible", "sostenibles", "medio ambiente", "mediterráneo", "transparent", "secure"],
-        }
-        for layer, keywords in keyword_signals.items():
-            if layers[layer]["detected"]:
-                continue
-            evidence = self._first_matching_sentence(sentences, keywords)
-            if not evidence:
-                continue
-            finding = self._heuristic_finding(layer, evidence)
-            layers[layer].update(
-                {
-                    "finding": finding,
-                    "evidence": evidence,
-                    "detected": True,
-                    "confidence": "low",
-                    "status": "detected",
-                    "findings": finding,
-                    "evidence_list": [evidence],
-                }
-            )
+        _norm_enrich_layers_from_legacy_text(raw, layers)
 
     @staticmethod
     def _infer_brand_name(url_str: str) -> str:
-        if not url_str:
-            return "Manual Upload Brand"
-        parsed = urlparse(url_str if "://" in url_str else f"https://{url_str}")
-        host = parsed.netloc or parsed.path
-        if host.startswith("www."):
-            host = host[4:]
-        return host.split(".")[0].capitalize()
+        return _norm_infer_brand_name(url_str)
 
     @staticmethod
     def _sentences(text: str) -> list[str]:
-        raw_segments = [s.strip() for s in re.split(r"[.!?\n]+", text or "") if len(s.strip()) > 5]
-        segments: list[str] = []
-        for segment in raw_segments:
-            if len(segment) <= 320:
-                segments.append(segment)
-                continue
-            cuts = re.split(
-                r"(?=\b(?:Macroalgas|Soluciones|Únete|Unete|Ingredientes|Creamos|Servicios|Nuestras)\b)",
-                segment,
-            )
-            segments.extend(cut.strip() for cut in cuts if len(cut.strip()) > 10)
-        return segments
+        return _norm_sentences_from_text(text)
 
     @staticmethod
     def _first_matching_sentence(sentences: list[str], keywords: list[str]) -> str | None:
-        for keyword in keywords:
-            for sentence in sentences:
-                if MagnetismExtractor._is_navigation_noise(sentence):
-                    continue
-                low = sentence.lower()
-                if MagnetismExtractor._contains_keyword(low, keyword):
-                    return MagnetismExtractor._trim_evidence(sentence, keyword)
-        return None
+        return _norm_first_matching_sentence(sentences, keywords)
 
     @staticmethod
     def _heuristic_finding(layer: str, evidence: str) -> str:
-        description = LAYER_DEFINITIONS[layer]["description"]
-        return f"Detected {description}: {evidence[:180]}"
+        return _norm_heuristic_finding(layer, evidence)
 
     @staticmethod
     def _tldr_content_from_layer(layer: dict[str, Any]) -> str | None:
-        finding = MagnetismExtractor._clean_optional_string(layer.get("finding"))
-        evidence = MagnetismExtractor._clean_optional_string(layer.get("evidence"))
-        if finding and not finding.startswith("Detected "):
-            return finding
-        return evidence or finding
+        return _tldr_content_from_layer(layer)
 
     @staticmethod
     def _contains_keyword(text: str, keyword: str) -> bool:
-        escaped = re.escape(keyword.lower())
-        if " " in keyword:
-            return re.search(escaped, text, flags=re.IGNORECASE) is not None
-        return re.search(rf"(?<![A-Za-zÀ-ÿ0-9]){escaped}(?![A-Za-zÀ-ÿ0-9])", text, flags=re.IGNORECASE) is not None
+        return _norm_contains_keyword(text, keyword)
 
     @staticmethod
     def _trim_evidence(sentence: str, keyword: str, max_chars: int = 260) -> str:
-        sentence = " ".join(sentence.split())
-        if len(sentence) <= max_chars:
-            return MagnetismExtractor._clean_evidence_phrase(sentence)
-        match = re.search(re.escape(keyword), sentence, flags=re.IGNORECASE)
-        if not match:
-            return MagnetismExtractor._clean_evidence_phrase(sentence[:max_chars].rstrip())
-        start = max(0, match.start() - 80)
-        end = min(len(sentence), start + max_chars)
-        trimmed = sentence[start:end].strip()
-        if start > 0:
-            trimmed = f"...{trimmed}"
-        if end < len(sentence):
-            trimmed = f"{trimmed}..."
-        return MagnetismExtractor._clean_evidence_phrase(trimmed)
+        return _norm_trim_evidence(sentence, keyword, max_chars)
 
     @staticmethod
     def _clean_evidence_phrase(value: str) -> str:
-        cleaned = " ".join(value.split()).strip(" -•*	")
-        for marker in (" Contáctanos", " Contacto", " Nuestras soluciones", " Main Menu"):
-            idx = cleaned.find(marker)
-            if idx > 40:
-                cleaned = cleaned[:idx].strip()
-        return cleaned
+        return _norm_clean_evidence_phrase(value)
 
     @staticmethod
     def _is_navigation_noise(value: str) -> bool:
-        low = value.lower().strip()
-        if low.startswith("main menu"):
-            return True
-        nav_tokens = ("contacto", "contáctanos", "menu", "menú", "alternar menú")
-        return len(value) < 120 and sum(1 for token in nav_tokens if token in low) >= 2
+        return _norm_is_navigation_noise(value)
 
     @staticmethod
     def _normalize_evidence(value: Any) -> str | None:
-        if isinstance(value, list):
-            for item in value:
-                cleaned = MagnetismExtractor._clean_optional_string(item)
-                if cleaned:
-                    return cleaned
-            return None
-        return MagnetismExtractor._clean_optional_string(value)
+        return _norm_normalize_evidence(value)
 
     @staticmethod
     def _clean_optional_string(value: Any) -> str | None:
-        if value is None:
-            return None
-        cleaned = str(value).strip()
-        if not cleaned or cleaned.lower() in {"none", "null", "no clear signal detected in the provided sources."}:
-            return None
-        return cleaned
+        return _norm_clean_optional_string(value)
 
     @staticmethod
     def _extract_three_terms(text: str, key: str) -> list[str] | None:
-        preferred = {
-            "attributes": [
-                "regenerativo",
-                "circular",
-                "sostenible",
-                "medio ambiente",
-                "mediterráneo",
-                "funcional",
-                "transparente",
-                "trust",
-                "security",
-                "seguro",
-                "real-time control",
-                "centralised",
-                "centralized",
-                "performance",
-                "innovative",
-                "athletic",
-                "action-oriented",
-                "developer-first",
-                "secure",
-                "pragmatic",
-                "ai-native",
-                "practical",
-                "editorial",
-                "experimental",
-                *vertical_preferred_terms("attributes"),
-            ],
-            "values": [
-                "regenerativo",
-                "circular",
-                "sostenibilidad",
-                "medio ambiente",
-                "transparencia",
-                "claridad",
-                "confianza",
-                "trust",
-                "security",
-                "inspiration",
-                "inspiración",
-                "inclusivity",
-                "innovation",
-                "innovación",
-                "fairness",
-                "transparency",
-                "customer empathy",
-                "developer empathy",
-                *vertical_preferred_terms("values"),
-            ],
-        }
-        found: list[str] = []
-        low = text.lower()
-        if key == "attributes":
-            if any(term in low for term in ("maratón", "maraton", "athlete", "athletes", "atletas")):
-                found.extend(["performance", "athletic"])
-            if any(term in low for term in ("devs", "developers", "builders", "ship", "deploy", "run any code")):
-                found.append("developer-first")
-            if any(term in low for term in ("security", "secure", "sandboxes", "isolated", "isolation", "private networking", "encryption", "untrusted code")):
-                found.append("secure")
-            if any(term in low for term in ("pay only", "actual usage", "based on usage", "down to the second", "waive", "refund", "unintended charges")):
-                found.append("pragmatic")
-            if any(term in low for term in ("custom agents", "ai agents", "artificial intelligence", "edge of ai")):
-                found.extend(["ai-native", "practical"])
-            if any(term in low for term in ("newsletter", "write for you", "media company", "question")):
-                found.append("editorial")
-            if any(term in low for term in ("incubate", "foundry", "experiment", "what comes next")):
-                found.append("experimental")
-            if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
-                found.append("innovative")
-            found.extend(vertical_terms_for_text(text, "attributes"))
-        if key == "values":
-            if any(term in low for term in ("inspirar", "inspire", "inspiration")):
-                found.append("inspiration")
-            if any(term in low for term in ("todo tipo de atletas", "all types of athletes")):
-                found.append("inclusivity")
-            if any(term in low for term in ("waive", "refund", "unintended charges", "unexpected", "weird on your bill")):
-                found.append("fairness")
-            if any(term in low for term in ("based on usage", "pay only", "actual cpu", "actual usage", "billing", "down to the second")):
-                found.append("transparency")
-            if any(term in low for term in ("tell us", "we would love to work with you", "we have engineers", "support customers", "devs", "developers")):
-                found.append("developer empathy")
-            if any(term in low for term in ("innovadores", "innovative", "innovación", "innovation")):
-                found.append("innovation")
-            found.extend(vertical_terms_for_text(text, "values"))
-        found = list(dict.fromkeys(found))
-        if len(found) >= 3:
-            return found[:3]
-        for term in preferred.get(key, []):
-            if term in low and term not in found:
-                found.append(term)
-            if len(found) == 3:
-                return found
-
-        if key in {"attributes", "values"}:
-            return found[:3] if found else None
-
-        candidates = re.split(r"[,;/]| and | y ", text)
-        terms: list[str] = []
-        for candidate in candidates:
-            cleaned = re.sub(r"[^A-Za-zÀ-ÿ0-9 -]", "", candidate).strip().lower()
-            words = [w for w in cleaned.split() if len(w) > 2]
-            if not words:
-                continue
-            term = words[-1]
-            if term not in terms:
-                terms.append(term)
-            if len(terms) == 3:
-                break
-        if len(terms) < 3 and key == "attributes":
-            terms.extend([term for term in ["specific", "observable", "grounded"] if term not in terms])
-        if len(terms) < 3 and key == "values":
-            terms.extend([term for term in ["clarity", "proof", "consistency"] if term not in terms])
-        return terms[:3] if terms else None
+        return _norm_extract_three_terms(text, key)
 
     @staticmethod
     def _magnetism_phrase_breakdown(text: str) -> dict[str, int]:
-        if not text:
-            return {
-                "originality": 0,
-                "specificity": 0,
-                "memorability": 0,
-                "verifiable_promise": 0,
-            }
-
-        words = re.findall(r"[A-Za-z0-9]+", text.lower())
-        word_count = len(words)
-        generic_hits = sum(1 for word in words if word in GENERIC_MAGNETISM_TERMS)
-        specific_hits = sum(1 for word in words if word in SPECIFICITY_TERMS)
-        has_number = bool(re.search(r"\d", text))
-        has_action = bool(re.search(r"\b(build|do|earn|save|ship|reduce|automate|protect|find|create|launch|inspire)\b", text.lower()))
-        is_short_imperative = 2 <= word_count <= 4 and has_action
-
-        originality = 92 if is_short_imperative else 85 - (generic_hits * 14)
-        specificity = 35 + min(specific_hits * 18, 55) + (10 if has_number else 0)
-        if is_short_imperative:
-            specificity = max(specificity, 62)
-        memorability = 95 if is_short_imperative else 80 if 2 <= word_count <= 8 else 58 if word_count <= 14 else 35
-        verifiable = 45 + (25 if has_action else 0) + (20 if has_number or specific_hits >= 2 else 0)
-        if is_short_imperative:
-            verifiable = max(verifiable, 75)
-        return {
-            "originality": MagnetismExtractor._clamp(originality),
-            "specificity": MagnetismExtractor._clamp(specificity),
-            "memorability": MagnetismExtractor._clamp(memorability),
-            "verifiable_promise": MagnetismExtractor._clamp(verifiable),
-        }
+        return _scoring_magnetism_phrase_breakdown(text)
 
     @staticmethod
-    def _semantic_alignment_score(layers: dict[str, Any]) -> int:
+    def _semantic_alignment_score(layers: dict[str, Any], *, clamp_fn=None) -> int:
         pairs = [
             ("mindspace", "gamespace"),
             ("aetherspace", "tactispace"),
@@ -2352,10 +1655,11 @@ Return exactly this JSON shape:
                 scores.append(55)
 
         envispace_bonus = 10 if layers["envispace"]["detected"] else -10
-        return MagnetismExtractor._clamp(round(sum(scores) / len(scores)) + envispace_bonus)
+        clamp = clamp_fn or MagnetismExtractor._clamp
+        return clamp(round(sum(scores) / len(scores)) + envispace_bonus)
 
     @staticmethod
-    def _absence_of_contradiction_score(tldr: dict[str, Any]) -> int:
+    def _absence_of_contradiction_score(tldr: dict[str, Any], *, clamp_fn=None) -> int:
         values_text = " ".join(
             str(block.get("content") or "") for block in tldr.values() if block.get("content")
         ).lower()
@@ -2366,7 +1670,8 @@ Return exactly this JSON shape:
             ("premium", "cheap"),
         ]
         penalties = sum(1 for a, b in contradiction_pairs if a in values_text and b in values_text)
-        return MagnetismExtractor._clamp(92 - penalties * 18)
+        clamp = clamp_fn or MagnetismExtractor._clamp
+        return clamp(92 - penalties * 18)
 
     @staticmethod
     def _weighted_score(scores: dict[str, int], weights: dict[str, float]) -> int:

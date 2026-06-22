@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from src.visual_signature._internal.utils import unique as _unique
 from src.visual_signature.calibration.calibration_export import validate_calibration_output_root
 from src.visual_signature.calibration.calibration_models import (
     CalibrationManifest,
@@ -438,18 +439,6 @@ def _thresholds_for_scope(scope: ReadinessScope, thresholds: ReadinessThresholds
     if scope != DEFAULT_READINESS_SCOPE:
         return thresholds
     return thresholds
-
-
-def _unique(values: list[str]) -> list[str]:
-    seen: set[str] = set()
-    out: list[str] = []
-    for value in values:
-        if value in seen:
-            continue
-        seen.add(value)
-        out.append(value)
-    return out
-
 
 def _display_path(path: Path) -> str:
     project_root = Path(__file__).resolve().parents[3]

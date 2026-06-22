@@ -57,6 +57,21 @@ OVERLAY_TERMS = (
     "role='dialog",
 )
 
+FIXED_LIKE_RE = re.compile(r"position\s*:\s*fixed|\bfixed\b|inset-0|fixed-bottom|bottom-0|sticky")
+BOTTOM_LIKE_RE = re.compile(r"bottom\s*:\s*0|bottom-0|fixed-bottom|cookie[-_\s]?bar|consent[-_\s]?bar")
+FULL_LIKE_RE = re.compile(r"inset\s*:\s*0|inset-0|height\s*:\s*100(?:vh|%)|min-height\s*:\s*100vh|w-screen|h-screen")
+HIGH_Z_RE = re.compile(r"z-index\s*:\s*(?:[9]\d{2,}|\d{4,})|z-\[?\d{3,}\]?|z-50")
+OVERLAY_CUES_RE = re.compile(
+    r"modal|dialog|overlay|backdrop|popup|pop-up|popover|aria-modal|role=['\"]?dialog|"
+    r"position\s*:\s*fixed|fixed-bottom|bottom-0|inset-0|z-\[?\d{3,}\]?|z-50|sticky"
+)
+PAGE_CUES_RE = re.compile(
+    r"<(header|nav|footer)\b|site-header|site-nav|navbar|topbar|masthead|breadcrumb|menu|"
+    r"utility-nav|primary-nav|secondary-nav|header__|nav__"
+)
+HEIGHT_VH_RE = re.compile(r"height\s*:\s*(\d+(?:\.\d+)?)(vh|%)")
+HEIGHT_PX_RE = re.compile(r"height\s*:\s*(\d+(?:\.\d+)?)px")
+
 
 @dataclass
 class ViewportObstructionEvidence:
@@ -153,10 +168,10 @@ def _dom_obstruction(html: str) -> ViewportObstructionEvidence:
     login_page_hits, login_overlay_hits = _split_term_signals(text, LOGIN_TERMS, signal_prefix="dom_keyword")
     promo_page_hits, promo_overlay_hits = _split_term_signals(text, PROMO_TERMS, signal_prefix="dom_keyword")
     overlay_page_hits, overlay_overlay_hits = _split_term_signals(text, OVERLAY_TERMS, signal_prefix="dom_overlay_term")
-    fixed_like = bool(re.search(r"position\s*:\s*fixed|\bfixed\b|inset-0|fixed-bottom|bottom-0|sticky", text))
-    bottom_like = bool(re.search(r"bottom\s*:\s*0|bottom-0|fixed-bottom|cookie[-_\s]?bar|consent[-_\s]?bar", text))
-    full_like = bool(re.search(r"inset\s*:\s*0|inset-0|height\s*:\s*100(?:vh|%)|min-height\s*:\s*100vh|w-screen|h-screen", text))
-    high_z = bool(re.search(r"z-index\s*:\s*(?:[9]\d{2,}|\d{4,})|z-\[?\d{3,}\]?|z-50", text))
+    fixed_like = bool(FIXED_LIKE_RE.search(text))
+    bottom_like = bool(BOTTOM_LIKE_RE.search(text))
+    full_like = bool(FULL_LIKE_RE.search(text))
+    high_z = bool(HIGH_Z_RE.search(text))
 
     page_level_signals.extend(cookie_page_hits[:4])
     page_level_signals.extend(newsletter_page_hits[:3])
@@ -298,11 +313,11 @@ def _dom_coverage(text: str, obstruction_type: str, *, bottom_like: bool, full_l
     if overlay:
         return 0.55
     if bottom_like:
-        height_match = re.search(r"height\s*:\s*(\d+(?:\.\d+)?)(vh|%)", text)
+        height_match = HEIGHT_VH_RE.search(text)
         if height_match:
             value = float(height_match.group(1))
             return min(0.45, max(0.06, value / 100))
-        px_match = re.search(r"height\s*:\s*(\d+(?:\.\d+)?)px", text)
+        px_match = HEIGHT_PX_RE.search(text)
         if px_match:
             return min(0.35, max(0.04, float(px_match.group(1)) / 900))
         return 0.18 if obstruction_type == "cookie_banner" else 0.07
@@ -447,19 +462,11 @@ def _term_contexts(text: str, term: str, *, window: int = 220, limit: int = 3) -
 
 
 def _context_has_overlay_cues(context: str) -> bool:
-    overlay_pattern = (
-        r"modal|dialog|overlay|backdrop|popup|pop-up|popover|aria-modal|role=['\"]?dialog|"
-        r"position\s*:\s*fixed|fixed-bottom|bottom-0|inset-0|z-\[?\d{3,}\]?|z-50|sticky"
-    )
-    return bool(re.search(overlay_pattern, context))
+    return bool(OVERLAY_CUES_RE.search(context))
 
 
 def _context_has_page_level_cues(context: str) -> bool:
-    page_pattern = (
-        r"<(header|nav|footer)\b|site-header|site-nav|navbar|topbar|masthead|breadcrumb|menu|"
-        r"utility-nav|primary-nav|secondary-nav|header__|nav__"
-    )
-    return bool(re.search(page_pattern, context))
+    return bool(PAGE_CUES_RE.search(context))
 
 
 def _choose_type(*values: str) -> ObstructionType:

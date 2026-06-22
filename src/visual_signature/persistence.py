@@ -12,6 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Literal
 
+from src.visual_signature._internal.utils import normalize_capture_type as _normalize_capture_type
+
 
 PersistenceSchemaVersion = Literal["visual-signature-persistence-1"]
 
@@ -150,13 +152,6 @@ def _acquisition_status(acquisition: Any) -> str:
     if status_code is not None:
         return "unknown" if status_code == 0 else "ok"
     return "ok" if acquisition else "unknown"
-
-
-def _normalize_capture_type(value: Any) -> str:
-    capture_type = str(value or "").strip().lower()
-    if capture_type in {"viewport", "full_page"}:
-        return capture_type
-    return "unknown"
 
 
 def _to_jsonable(value: Any) -> Any:

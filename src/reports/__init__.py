@@ -1,6 +1,6 @@
-"""HTML report generation for Brand3 analysis runs."""
+"""Report generation package for Brand3 analysis runs.
 
-from .dossier import build_brand_dossier
-from .renderer import ReportRenderer, render_latest, render_run
-
-__all__ = ["ReportRenderer", "build_brand_dossier", "render_latest", "render_run"]
+Keep import-time side effects out of this package initializer. Import concrete
+submodules directly where needed so lightweight report/research helpers can be
+used without pulling the HTML renderer into every process.
+"""

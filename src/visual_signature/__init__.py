@@ -9,6 +9,15 @@ review without changing the global Brand3 score.
 """
 
 from src.visual_signature.extract_visual_signature import extract_visual_signature
-from src.visual_signature.scan import build_visual_signature_scan, run_visual_signature_scan
+from src.visual_signature._internal.lazy import make_lazy_dir, make_lazy_getattr
 
 __all__ = ["build_visual_signature_scan", "extract_visual_signature", "run_visual_signature_scan"]
+
+_EXPORTS = {
+    "build_visual_signature_scan": ("src.visual_signature.scan", "build_visual_signature_scan"),
+    "extract_visual_signature": ("src.visual_signature.extract_visual_signature", "extract_visual_signature"),
+    "run_visual_signature_scan": ("src.visual_signature.scan", "run_visual_signature_scan"),
+}
+
+__getattr__ = make_lazy_getattr(globals(), _EXPORTS)
+__dir__ = make_lazy_dir(globals(), _EXPORTS)

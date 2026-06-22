@@ -9,9 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.visual_signature._internal.utils import dict_or_empty as _dict
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
+from src.visual_signature._internal.utils import int_or_none as _int_or_none
+from src.visual_signature._internal.utils import unique as _unique
 from src.visual_signature.extract_visual_signature import extract_visual_signature
 from src.visual_signature.vision.enrich_visual_signature import enrich_visual_signature_with_vision
-from src.visual_signature._internal.utils import int_or_none as _int_or_none, unique as _unique
 from src.visual_signature.versions import VISUAL_SIGNATURE_SCAN_VERSION
 
 
@@ -230,9 +233,9 @@ def _canonical_obstruction(obstruction: dict[str, Any]) -> dict[str, Any]:
         "present": bool(obstruction.get("present")),
         "type": kind,
         "severity": severity,
-        "coverage_ratio": _float_or_none(obstruction.get("coverage_ratio")),
+        "coverage_ratio": _float_or_none(obstruction.get("coverage_ratio"), digits=3),
         "first_impression_valid": bool(obstruction.get("first_impression_valid", True)),
-        "confidence": _float_or_none(obstruction.get("confidence")),
+        "confidence": _float_or_none(obstruction.get("confidence"), digits=3),
         "signals": signals[:12],
     }
 
@@ -291,8 +294,6 @@ def _score_label(score: float) -> str:
         return "mixed"
     return "weak"
 
-def _dict(value: Any) -> dict[str, Any]:
-    return value if isinstance(value, dict) else {}
 
 def _score01(value: Any) -> float:
     try:
@@ -303,12 +304,6 @@ def _score01(value: Any) -> float:
         number = number / 100
     return max(0.0, min(1.0, number))
 
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return round(float(value), 3)
-    except (TypeError, ValueError):
-        return None
 
 def _clamp100(value: float) -> float:
     return max(0.0, min(100.0, float(value)))
-

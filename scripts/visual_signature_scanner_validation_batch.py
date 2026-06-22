@@ -25,7 +25,7 @@ from src.services.brand_service import (
     _take_screenshot_with_budget,
     _visual_signature_shadow_screenshot_payload,
 )
-from src.services.feature_pipeline import ScreenshotResult, capture_screenshot
+from src.services.feature_pipeline_support import ScreenshotResult, capture_screenshot
 from src.visual_signature import run_visual_signature_scan
 from src.visual_signature.capture.playwright_capture_runtime import capture_with_playwright as _capture_with_playwright
 

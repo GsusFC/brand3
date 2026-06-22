@@ -10,32 +10,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 from urllib.parse import urlparse
-import hashlib
 import re
 
-from src.reports.derivation import collect_evidences
-from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
-from src.reports.strategic_evidence_packet import StrategicEvidenceLine, build_strategic_evidence_packet
+from src.reports.strategic_evidence_packet import build_strategic_evidence_packet
+from src.research.evidence_graph_sources import ALLOWED_SOURCE_TYPES, ResearchSource, build_sources
+from src.research.evidence_graph_sources import _dict, _host, _is_social, _normalize_url, _root_domain, _source_id, _str_list, _unique, _validate
 
 
 GRAPH_VERSION = "brand_research_evidence_graph_v0_1"
-
-ALLOWED_SOURCE_TYPES = {
-    "owned_home",
-    "owned_about",
-    "owned_product",
-    "owned_pricing",
-    "owned_security",
-    "owned_docs",
-    "owned_proof",
-    "press_founder",
-    "third_party_review",
-    "third_party_context",
-    "social",
-    "competitor_context",
-    "noise",
-    "unknown",
-}
 
 ALLOWED_CLAIM_TYPES = {
     "hero_claim",
@@ -80,51 +62,6 @@ _GROUP_TO_BLOCKS = {
     "proof_points": ["value_proposition", "magnetism"],
     "third_party_context": ["brand_idea", "mission", "vision"],
 }
-
-
-@dataclass(slots=True)
-class ResearchSource:
-    """One discovered or analyzed surface."""
-
-    source_id: str
-    url: str
-    source_type: str
-    label: str = ""
-    surface_role: str = ""
-    entity_scope: str = ""
-    title: str = ""
-    origin: str = ""
-    notes: list[str] = field(default_factory=list)
-
-    def __post_init__(self) -> None:
-        _validate(self.source_type, ALLOWED_SOURCE_TYPES, "source_type")
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "source_id": self.source_id,
-            "url": self.url,
-            "source_type": self.source_type,
-            "label": self.label,
-            "surface_role": self.surface_role,
-            "entity_scope": self.entity_scope,
-            "title": self.title,
-            "origin": self.origin,
-            "notes": list(self.notes),
-        }
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "ResearchSource":
-        return cls(
-            source_id=str(data.get("source_id") or ""),
-            url=str(data.get("url") or ""),
-            source_type=str(data.get("source_type") or "unknown"),
-            label=str(data.get("label") or ""),
-            surface_role=str(data.get("surface_role") or ""),
-            entity_scope=str(data.get("entity_scope") or ""),
-            title=str(data.get("title") or ""),
-            origin=str(data.get("origin") or ""),
-            notes=_str_list(data.get("notes")),
-        )
 
 
 @dataclass(slots=True)
@@ -308,6 +245,9 @@ class EvidenceGraph:
         }
 
 
+from src.research.evidence_graph_claims import build_claims_from_snapshot
+
+
 def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGraph:
     """Build an evidence graph from an existing Brand Audit snapshot."""
 
@@ -326,11 +266,8 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
         notes=_str_list((entity_packet or {}).get("limitations")),
     )
 
-    sources = _build_sources(snapshot, entity_packet=entity_packet)
-    claims, dedupe_stats = _dedupe_claims(
-        _build_claims(snapshot, sources=sources, strategic_packet=strategic_packet),
-        sources=sources,
-    )
+    sources = build_sources(snapshot, entity_packet=entity_packet)
+    claims, dedupe_stats = build_claims_from_snapshot(snapshot, sources=sources, strategic_packet=strategic_packet)
     gaps = _graph_gaps(sources, claims)
     warnings = _unique(_str_list(strategic_packet.warnings) + _entity_boundary_warnings(sources))
     return EvidenceGraph(
@@ -345,523 +282,14 @@ def build_evidence_graph_from_snapshot(snapshot: dict[str, Any]) -> EvidenceGrap
     )
 
 
-def _build_sources(snapshot: dict[str, Any], *, entity_packet: dict[str, Any] | None) -> dict[str, ResearchSource]:
-    run = _dict(snapshot.get("run"))
-    input_url = _normalize_url(str(run.get("url") or ""))
-    brand_name = str((entity_packet or {}).get("entity_name") or run.get("brand_name") or "")
-    brand_domain = _root_domain(_host(input_url))
-    sources: dict[str, ResearchSource] = {}
-
-    def add(
-        url: str,
-        *,
-        source_type: str,
-        label: str = "",
-        title: str = "",
-        origin: str = "",
-        surface_role: str = "",
-        entity_scope: str = "",
-        notes: list[str] | None = None,
-    ) -> None:
-        normalized = _normalize_url(url)
-        if not normalized:
-            return
-        source_type = source_type if source_type in ALLOWED_SOURCE_TYPES else "unknown"
-        source_id = _source_id(normalized)
-        if source_id in sources:
-            existing = sources[source_id]
-            merged_notes = list(existing.notes)
-            if origin and origin != existing.origin:
-                merged_notes.append(f"Also observed via {origin}.")
-            sources[source_id] = ResearchSource(
-                source_id=source_id,
-                url=existing.url,
-                source_type=_prefer_source_type(existing.source_type, source_type),
-                label=existing.label or label,
-                surface_role=_prefer_annotation(existing.surface_role, surface_role),
-                entity_scope=_prefer_annotation(existing.entity_scope, entity_scope),
-                title=existing.title or title,
-                origin=existing.origin or origin,
-                notes=_unique(merged_notes + (notes or [])),
-            )
-            return
-        sources[source_id] = ResearchSource(
-            source_id=source_id,
-            url=normalized,
-            source_type=source_type,
-            label=label,
-            surface_role=surface_role,
-            entity_scope=entity_scope,
-            title=title,
-            origin=origin,
-            notes=_unique(notes or []),
-        )
-
-    if input_url:
-        add(
-            input_url,
-            source_type="owned_home",
-            label="input_url",
-            title=str(run.get("brand_name") or ""),
-            origin="run",
-            surface_role="audited_surface",
-            entity_scope="audited_surface",
-            notes=["Initial URL supplied to Brand Audit."],
-        )
-
-    for raw_input in snapshot.get("raw_inputs") or []:
-        source = str(raw_input.get("source") or "")
-        payload = _dict(raw_input.get("payload"))
-        if source in {"web", "hyperbrowser"}:
-            text = str(payload.get("markdown_content") or payload.get("content") or "")
-            for url in _web_urls(payload, fallback=input_url) or [str(payload.get("source_url") or payload.get("url") or input_url)]:
-                add(
-                    url,
-                    source_type=_classify_source_url(url, brand_domain=brand_domain, text=text),
-                    label=str(payload.get("title") or source),
-                    title=str(payload.get("title") or ""),
-                    origin=f"raw_inputs.{source}",
-                    surface_role=surface_role_for_url(url, entity_packet),
-                    entity_scope=entity_scope_for_url(url, entity_packet),
-                    notes=[
-                        "Owned web content collected by Brand Audit."
-                        if source == "web"
-                        else "Owned web shadow content collected by Hyperbrowser."
-                    ],
-                )
-        elif source == "exa":
-            for collection in ("mentions", "news", "ai_visibility_results", "competitors"):
-                for item in payload.get(collection) or []:
-                    if not isinstance(item, dict):
-                        continue
-                    url = str(item.get("url") or "")
-                    text = " ".join(
-                        part
-                        for part in [
-                            str(item.get("title") or ""),
-                            str(item.get("summary") or ""),
-                            str(item.get("text") or ""),
-                            " ".join(str(h) for h in item.get("highlights") or []),
-                        ]
-                        if part.strip()
-                    )
-                    source_type = "competitor_context" if collection == "competitors" else _classify_source_url(
-                        url,
-                        brand_domain=brand_domain,
-                        text=text,
-                        external=True,
-                    )
-                    notes = ["External discovery evidence collected by Brand Audit."]
-                    if collection != "competitors" and _external_entity_boundary_collision(
-                        url,
-                        text,
-                        brand_name=brand_name,
-                        brand_domain=brand_domain,
-                    ):
-                        source_type = "noise"
-                        notes.append(
-                            "entity_boundary_collision: external evidence appears to reference a near-name entity, not the audited entity."
-                        )
-                    add(
-                        url,
-                        source_type=source_type,
-                        label=str(item.get("title") or collection),
-                        title=str(item.get("title") or ""),
-                        origin=f"raw_inputs.exa.{collection}",
-                        surface_role="external_context",
-                        entity_scope="external_context",
-                        notes=notes,
-                    )
-        elif source == "social":
-            for url in _social_urls(payload):
-                add(
-                    url,
-                    source_type="social",
-                    label=str(payload.get("brand_name") or "social"),
-                    origin="raw_inputs.social",
-                    surface_role="social",
-                    entity_scope="external_context",
-                )
-        elif source == "competitors":
-            for url in _competitor_urls(payload):
-                add(
-                    url,
-                    source_type="competitor_context",
-                    label="competitor",
-                    origin="raw_inputs.competitors",
-                    surface_role="external_context",
-                    entity_scope="external_context",
-                )
-
-    if entity_packet:
-        for surface in list(entity_packet.get("owned_surfaces") or []) + list(entity_packet.get("product_surfaces") or []):
-            if not isinstance(surface, dict):
-                continue
-            url = str(surface.get("url") or "")
-            role = str(surface.get("role") or "")
-            add(
-                url,
-                source_type=_source_type_from_entity_role(role, url),
-                label=role or "owned_surface",
-                origin="entity_research_packet",
-                surface_role=role,
-                entity_scope=str(surface.get("entity_scope") or ""),
-                notes=[str(surface.get("reason") or "Owned surface from entity research packet.")],
-            )
-
-    for evidence in collect_evidences(snapshot):
-        if not evidence.url:
-            continue
-        add(
-            str(evidence.url),
-            source_type=_classify_source_url(str(evidence.url), brand_domain=brand_domain, text=str(evidence.quote or "")),
-            label=str(evidence.feature_name or "feature_evidence"),
-            origin="feature_or_evidence_item",
-            surface_role="evidence",
-            entity_scope="evidence",
-            notes=[f"Feature evidence from {evidence.dimension}."],
-        )
-
-    return dict(sorted(sources.items()))
-
-
-def _build_claims(snapshot: dict[str, Any], *, sources: dict[str, ResearchSource], strategic_packet) -> list[EvidenceClaim]:
-    claims: list[EvidenceClaim] = []
-    seen: set[tuple[str, str, str]] = set()
-
-    def add(
-        text: str,
-        *,
-        claim_type: str,
-        source_url: str = "",
-        quote: str = "",
-        confidence: str = "",
-        supports_blocks: list[str] | None = None,
-        noise_reason: str = "",
-        notes: list[str] | None = None,
-        surface_role: str = "",
-        entity_scope: str = "",
-    ) -> None:
-        cleaned = _clean(text)
-        source_url_norm = _normalize_url(source_url)
-        if not cleaned and not source_url_norm:
-            return
-        source_id = _source_id(source_url_norm) if source_url_norm else ""
-        source = sources.get(source_id)
-        source_type = source.source_type if source else ("noise" if claim_type == "noise" else "unknown")
-        if source and _is_entity_boundary_quarantined_source(source) and claim_type != "noise":
-            claim_type = "noise"
-            supports_blocks = []
-            noise_reason = noise_reason or "entity_boundary_collision"
-            notes = _unique(
-                (notes or [])
-                + [
-                    "Quarantined from TLDR input because the external source appears to reference a near-name entity."
-                ]
-            )
-        key = (cleaned.lower(), source_id, claim_type)
-        if key in seen:
-            return
-        seen.add(key)
-        claims.append(
-            EvidenceClaim(
-                claim_id=_claim_id(claim_type, cleaned, source_id),
-                text=cleaned,
-                claim_type=claim_type if claim_type in ALLOWED_CLAIM_TYPES else "unknown",
-                quote=quote or cleaned,
-                source_id=source_id,
-                source_url=source_url_norm,
-                source_type=source_type,
-                surface_role=surface_role or (source.surface_role if source else ""),
-                entity_scope=entity_scope or (source.entity_scope if source else ""),
-                confidence=confidence or ("high" if source_url_norm and claim_type != "noise" else "low"),
-                supports_blocks=_unique(supports_blocks or []),
-                noise_reason=noise_reason,
-                notes=_unique(notes or []),
-            )
-        )
-
-    for group, lines in strategic_packet.groups.items():
-        claim_type = _GROUP_TO_CLAIM_TYPE.get(group, "unknown")
-        supports_blocks = _GROUP_TO_BLOCKS.get(group, [])
-        for line in lines:
-            if not isinstance(line, StrategicEvidenceLine):
-                continue
-            add(
-                line.text,
-                claim_type=claim_type,
-                source_url=str(line.url or ""),
-                confidence="high" if line.url else "medium",
-                supports_blocks=supports_blocks,
-                notes=[f"Strategic evidence group: {group}."],
-                surface_role=str(line.surface_role or ""),
-                entity_scope=str(line.entity_scope or ""),
-            )
-
-    for evidence in collect_evidences(snapshot):
-        add(
-            str(evidence.quote or evidence.url or ""),
-            claim_type="feature_evidence",
-            source_url=str(evidence.url or ""),
-            confidence="medium",
-            notes=[f"Feature evidence: {evidence.dimension}/{evidence.feature_name}."],
-        )
-
-    for raw_input in snapshot.get("raw_inputs") or []:
-        if raw_input.get("source") != "exa":
-            continue
-        payload = _dict(raw_input.get("payload"))
-        for collection in ("news", "mentions", "ai_visibility_results"):
-            for item in payload.get(collection) or []:
-                if not isinstance(item, dict):
-                    continue
-                text = _clean(
-                    " ".join(
-                        part
-                        for part in [
-                            str(item.get("title") or ""),
-                            str(item.get("summary") or ""),
-                            str(item.get("text") or ""),
-                        ]
-                        if part.strip()
-                    )
-                )
-                url = str(item.get("url") or "")
-                if not text or not url:
-                    continue
-                source = sources.get(_source_id(_normalize_url(url)))
-                claim_type = _claim_type_for_external_source(source.source_type if source else "unknown", text)
-                add(
-                    text,
-                    claim_type=claim_type,
-                    source_url=url,
-                    confidence="medium",
-                    supports_blocks=_blocks_for_external_claim_type(claim_type),
-                    notes=[f"Supplemental external evidence from raw_inputs.exa.{collection}."],
-                )
-
-    web_url = _snapshot_web_url(snapshot)
-    for item in strategic_packet.rejected:
-        if not isinstance(item, dict):
-            continue
-        text = str(item.get("text") or "")
-        recovered_type = _recovered_claim_type(text, str(item.get("reason") or ""))
-        if recovered_type:
-            add(
-                text,
-                claim_type=recovered_type,
-                source_url=web_url,
-                confidence="medium",
-                supports_blocks=_blocks_for_recovered_claim_type(recovered_type),
-                notes=["Recovered from low-signal strategic packet rejection for EvidenceGraph review."],
-            )
-        add(
-            text,
-            claim_type="noise",
-            source_url=web_url,
-            confidence="low",
-            noise_reason=str(item.get("reason") or "rejected_by_strategic_packet"),
-            notes=["Rejected while grouping strategic evidence."],
-        )
-
-    return sorted(claims, key=lambda claim: (claim.claim_type, claim.source_url, claim.text))
-
-
 def _dedupe_claims(
     claims: list[EvidenceClaim],
     *,
     sources: dict[str, ResearchSource],
 ) -> tuple[list[EvidenceClaim], dict[str, Any]]:
-    deduped: list[EvidenceClaim] = []
-    seen: dict[tuple[str, str, str], int] = {}
-    duplicate_count = 0
-    for claim in claims:
-        key = (
-            _normalize_url(claim.source_url),
-            _claim_family(claim),
-            _claim_fingerprint(claim),
-        )
-        if not any(key):
-            deduped.append(claim)
-            continue
-        existing_index = seen.get(key)
-        if existing_index is None:
-            seen[key] = len(deduped)
-            deduped.append(claim)
-            continue
-        duplicate_count += 1
-        winner, duplicate = _preferred_claim(deduped[existing_index], claim)
-        merged = _merge_duplicate_claim(winner, duplicate, sources=sources)
-        deduped[existing_index] = merged
-    total = len(claims)
-    dedupe_rate = float(duplicate_count / total) if total else 0.0
-    return deduped, {
-        "input_claim_count": total,
-        "deduped_claim_count": len(deduped),
-        "duplicate_claim_count": duplicate_count,
-        "dedupe_rate": round(dedupe_rate, 4),
-    }
+    from src.research.evidence_graph_claims import _dedupe_claims as _claims_dedupe_claims
 
-
-def _claim_family(claim: EvidenceClaim) -> str:
-    return claim.claim_type or "unknown"
-
-
-def _claim_fingerprint(claim: EvidenceClaim) -> str:
-    text = " ".join((claim.text or claim.quote or "").lower().split())
-    return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16] if text else ""
-
-
-def _preferred_claim(left: EvidenceClaim, right: EvidenceClaim) -> tuple[EvidenceClaim, EvidenceClaim]:
-    return (left, right) if _claim_priority(left) <= _claim_priority(right) else (right, left)
-
-
-def _claim_priority(claim: EvidenceClaim) -> tuple[int, int, int]:
-    source_rank = {
-        "owned_home": 0,
-        "owned_about": 1,
-        "owned_product": 2,
-        "owned_pricing": 3,
-        "owned_security": 4,
-        "owned_docs": 5,
-        "owned_proof": 6,
-        "social": 7,
-        "press_founder": 8,
-        "third_party_review": 9,
-        "third_party_context": 10,
-        "competitor_context": 11,
-        "noise": 12,
-        "unknown": 13,
-    }.get(claim.source_type, 13)
-    confidence_rank = {"high": 0, "medium": 1, "low": 2}.get((claim.confidence or "").lower(), 3)
-    return (source_rank, confidence_rank, -len(claim.text or ""))
-
-
-def _merge_duplicate_claim(
-    primary: EvidenceClaim,
-    duplicate: EvidenceClaim,
-    *,
-    sources: dict[str, ResearchSource],
-) -> EvidenceClaim:
-    duplicate_source = sources.get(duplicate.source_id)
-    duplicate_origin = duplicate_source.origin if duplicate_source else ""
-    return EvidenceClaim(
-        claim_id=primary.claim_id,
-        text=primary.text,
-        claim_type=primary.claim_type,
-        quote=primary.quote,
-        source_id=primary.source_id,
-        source_url=primary.source_url,
-        source_type=primary.source_type,
-        surface_role=primary.surface_role,
-        entity_scope=primary.entity_scope,
-        confidence=primary.confidence,
-        freshness_days=primary.freshness_days,
-        supports_blocks=_unique(primary.supports_blocks + duplicate.supports_blocks),
-        contradicts=_unique(primary.contradicts + duplicate.contradicts),
-        secondary_source_ids=_unique(
-            primary.secondary_source_ids
-            + ([duplicate.source_id] if duplicate.source_id and duplicate.source_id != primary.source_id else [])
-            + duplicate.secondary_source_ids
-        ),
-        secondary_source_urls=_unique(
-            primary.secondary_source_urls
-            + ([duplicate.source_url] if duplicate.source_url and duplicate.source_url != primary.source_url else [])
-            + duplicate.secondary_source_urls
-        ),
-        secondary_origins=_unique(
-            primary.secondary_origins
-            + ([duplicate_origin] if duplicate_origin else [])
-            + duplicate.secondary_origins
-        ),
-        noise_reason=primary.noise_reason or duplicate.noise_reason,
-        notes=_unique(primary.notes + duplicate.notes + ["deduped_multi_source_evidence"]),
-    )
-
-
-def _claim_type_for_external_source(source_type: str, text: str) -> str:
-    low = text.lower()
-    if source_type == "press_founder" or any(marker in low for marker in ("founder", "interview", "launch", "raises", "funding", "acquired")):
-        return "founder_press"
-    if source_type == "third_party_review" or any(marker in low for marker in ("review", "customer", "testimonial", "case study")):
-        return "proof"
-    if source_type == "competitor_context":
-        return "unknown"
-    return "unknown"
-
-
-def _blocks_for_external_claim_type(claim_type: str) -> list[str]:
-    if claim_type == "founder_press":
-        return ["brand_idea", "mission", "vision"]
-    if claim_type == "proof":
-        return ["value_proposition", "magnetism"]
-    return []
-
-
-def _recovered_claim_type(text: str, reason: str) -> str:
-    if reason not in {"low_strategic_signal", "duplicate"}:
-        return ""
-    low = text.lower()
-    if not low.strip() or _looks_like_form_or_chrome(low):
-        return ""
-    if any(marker in low for marker in ("smarter way", "new home for your internet", "fresh take")):
-        return "hero_claim"
-    if any(
-        marker in low
-        for marker in (
-            "browser",
-            "tabs",
-            "workspaces",
-            "split screen",
-            "search your internet",
-            "ask anything",
-            "answers in context",
-            "airis",
-        )
-    ):
-        return "product_offer"
-    if any(marker in low for marker in ("organize", "flow through", "work smarter", "multitasking", "easier", "faster")):
-        return "outcome"
-    return ""
-
-
-def _blocks_for_recovered_claim_type(claim_type: str) -> list[str]:
-    return {
-        "hero_claim": ["magnetism", "brand_idea"],
-        "product_offer": ["value_proposition", "brand_idea"],
-        "outcome": ["core_purpose", "value_proposition"],
-    }.get(claim_type, [])
-
-
-def _looks_like_form_or_chrome(text: str) -> bool:
-    return any(
-        marker in text
-        for marker in (
-            "download free",
-            "download started",
-            "click here",
-            "email below",
-            "submit",
-            "continue without accepting",
-            "privacy policy",
-            "terms",
-            "copyright",
-            "©",
-            "in 2022",
-            "recap",
-            "year in review",
-            "blog",
-            "what should we call you",
-            "how can we reach you",
-            "slack",
-            "wrong answers",
-            "sitemap.xml",
-            "robots.txt",
-            "key pages found",
-            "local image analysis",
-            "whitespace ratio",
-        )
-    )
+    return _claims_dedupe_claims(claims, sources=sources)
 
 
 def _graph_gaps(sources: dict[str, ResearchSource], claims: list[EvidenceClaim]) -> list[str]:
@@ -914,45 +342,6 @@ def _entity_type(entity_packet: dict[str, Any] | None, input_url: str) -> str:
     if host and root and host != root and not host.startswith("www."):
         return "product"
     return "company" if input_url else "unknown"
-
-
-def _web_urls(payload: dict[str, Any], *, fallback: str = "") -> list[str]:
-    urls: list[str] = []
-    for key in ("canonical_url", "url", "page_url", "input_url"):
-        value = str(payload.get(key) or "").strip()
-        if value:
-            urls.append(value)
-    urls.extend(str(url) for url in payload.get("owned_fallback_urls") or [] if str(url).strip())
-    markdown = str(payload.get("markdown_content") or payload.get("content") or "")
-    urls.extend(match.group("url") for match in _SUBPAGE_RE.finditer(markdown))
-    if fallback:
-        urls.append(fallback)
-    return _unique(_normalize_url(url) for url in urls)
-
-
-def _social_urls(payload: dict[str, Any]) -> list[str]:
-    urls: list[str] = []
-    for key in ("profiles", "platforms", "profile_urls"):
-        value = payload.get(key)
-        if isinstance(value, dict):
-            for item in value.values():
-                if isinstance(item, dict):
-                    urls.append(str(item.get("url") or item.get("profile_url") or ""))
-                else:
-                    urls.append(str(item))
-        elif isinstance(value, list):
-            for item in value:
-                if isinstance(item, dict):
-                    urls.append(str(item.get("url") or item.get("profile_url") or ""))
-    return _unique(_normalize_url(url) for url in urls)
-
-
-def _competitor_urls(payload: dict[str, Any]) -> list[str]:
-    urls: list[str] = []
-    for item in payload.get("competitors") or []:
-        if isinstance(item, dict):
-            urls.append(str(item.get("url") or item.get("website") or ""))
-    return _unique(_normalize_url(url) for url in urls)
 
 
 def _snapshot_web_url(snapshot: dict[str, Any]) -> str:
@@ -1120,56 +509,8 @@ def _claim_id(claim_type: str, text: str, source_id: str) -> str:
     return f"claim_{hashlib.sha1(raw.encode('utf-8')).hexdigest()[:12]}"
 
 
-def _normalize_url(value: str) -> str:
-    candidate = str(value or "").strip()
-    if not candidate:
-        return ""
-    if "://" not in candidate:
-        candidate = f"https://{candidate}"
-    parsed = urlparse(candidate)
-    host = (parsed.netloc or parsed.path).split("@")[-1].split(":")[0].lower()
-    path = parsed.path if parsed.netloc else ""
-    if path == "/":
-        path = ""
-    return f"{parsed.scheme or 'https'}://{host}{path}".rstrip("/")
-
-
-def _host(url: str) -> str:
-    if not url:
-        return ""
-    parsed = urlparse(url if "://" in url else f"https://{url}")
-    host = (parsed.netloc or parsed.path).split("@")[-1].split(":")[0].lower()
-    return host[4:] if host.startswith("www.") else host
-
-
-def _root_domain(host: str) -> str:
-    if not host:
-        return ""
-    parts = host.split(".")
-    if len(parts) <= 2:
-        return host
-    return ".".join(parts[-2:])
-
-
-def _is_social(host: str) -> bool:
-    return host.endswith((
-        "linkedin.com",
-        "x.com",
-        "twitter.com",
-        "instagram.com",
-        "youtube.com",
-        "tiktok.com",
-        "facebook.com",
-        "github.com",
-    ))
-
-
 def _clean(value: str) -> str:
     return re.sub(r"\s+", " ", str(value or "")).strip()
-
-
-def _dict(value: Any) -> dict[str, Any]:
-    return value if isinstance(value, dict) else {}
 
 
 def _optional_int(value: Any) -> int | None:
@@ -1177,12 +518,6 @@ def _optional_int(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
-
-
-def _str_list(value: Any) -> list[str]:
-    if not isinstance(value, list):
-        return []
-    return [str(item) for item in value if str(item).strip()]
 
 
 def _dict_list(value: Any) -> list[dict[str, Any]]:
@@ -1245,20 +580,3 @@ def _shadow_results(value: Any) -> list[dict[str, str]]:
             }
         )
     return rows
-
-
-def _unique(values) -> list[str]:
-    seen: set[str] = set()
-    result: list[str] = []
-    for value in values:
-        text = str(value or "").strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
-        result.append(text)
-    return result
-
-
-def _validate(value: str, allowed: set[str], field_name: str) -> None:
-    if value not in allowed:
-        raise ValueError(f"{field_name} must be one of {sorted(allowed)}")

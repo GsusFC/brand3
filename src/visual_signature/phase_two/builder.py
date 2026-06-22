@@ -6,6 +6,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from typing import Any
 
+from src.visual_signature._internal.utils import unique as _unique
 from src.visual_signature.phase_one.types import PhaseOneCaptureBundle
 from src.visual_signature.phase_two.types import PhaseTwoCaptureBundle
 from src.visual_signature.phase_zero.eligibility import evaluate_dataset_eligibility
@@ -87,20 +88,9 @@ def build_reviewed_dataset_eligibility_record(
     candidate["lineage_refs"] = lineage_refs
     result = evaluate_dataset_eligibility(candidate).model_dump(mode="json")
     if blocked_reasons:
-        result["blocked_reasons"] = _dedupe([*result.get("blocked_reasons", []), *blocked_reasons])
+        result["blocked_reasons"] = _unique([*result.get("blocked_reasons", []), *blocked_reasons])
         result["eligible"] = False
     return result
-
-
-def _dedupe(items: list[str]) -> list[str]:
-    seen: set[str] = set()
-    out: list[str] = []
-    for item in items:
-        if item in seen:
-            continue
-        seen.add(item)
-        out.append(item)
-    return out
 
 
 def _created_at() -> str:

@@ -9,11 +9,11 @@ from fastapi import APIRouter, Query, Request
 from fastapi.responses import FileResponse
 
 from ..templates_env import templates
-from ..visual_signature_data import artifact_file_response_payload
-from ..visual_signature_data import build_human_review_model
-from ..visual_signature_data import build_screenshot_preview_model_for_lang
-from ..visual_signature_data import build_visual_signature_model
-from ..visual_signature_data import screenshot_file_response_payload
+from ..visual_signature_data_support import artifact_file_response_payload
+from ..visual_signature_data_support import screenshot_file_response_payload
+from ..visual_signature_human_review_data import build_human_review_model
+from ..visual_signature_overview_data import build_screenshot_preview_model_for_lang
+from ..visual_signature_overview_data import build_visual_signature_model
 
 router = APIRouter()
 

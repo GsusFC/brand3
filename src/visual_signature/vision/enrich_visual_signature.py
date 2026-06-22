@@ -13,8 +13,12 @@ from src.visual_signature.vision.screenshot_quality import (
     screenshot_evidence_for_path,
 )
 from src.visual_signature.vision.types import RasterImage, VisionEvidence
+from src.visual_signature._internal.utils import (
+    float_or_none as _float_or_none,
+    int_or_none as _int_or_none,
+    normalize_capture_type as _normalize_capture_type,
+)
 from src.visual_signature.vision.viewport_obstruction import analyze_viewport_obstruction
-from src.visual_signature._internal.utils import int_or_none as _int_or_none, float_or_none as _float_or_none
 
 
 def enrich_visual_signature_with_vision(
@@ -109,13 +113,6 @@ def _viewport_image(image: RasterImage | None, screenshot: Any) -> RasterImage |
     if viewport_width == image.width and viewport_height == image.height:
         return image
     return image.crop(width=viewport_width, height=viewport_height)
-
-
-def _normalize_capture_type(value: Any) -> str:
-    capture_type = str(value or "").strip().lower()
-    if capture_type in {"viewport", "full_page"}:
-        return capture_type
-    return "unknown"
 
 
 def compare_dom_and_viewport(
@@ -269,4 +266,3 @@ def _density_rank(value: Any) -> int:
     if density == "sparse":
         return 0
     return 1
-

@@ -132,6 +132,9 @@ from src.services.public_presence import _public_presence_inventory_summary
 from src.services.report_readiness import _persist_report_readiness as _persist_report_readiness_impl
 from src.services.report_summaries import _context_confidence_summary, _dimension_confidence_summary, _llm_model_roles_payload, _trust_summary_payload
 from src.services.run_support import _build_research_pack_for_feature_prompts as _build_research_pack_for_feature_prompts_impl, _check_cancel, _emit_progress
+from src.reports.entity_research_packet import build_entity_research_packet
+from src.reports.brand_audit_analyst import run_brand_audit_analyst_pass
+from src.research.research_pack_facade import build_recommended_research_pack
 from src.services.reporting_queries import (
     benchmark_profiles as _benchmark_profiles_impl,
     compare_benchmarks as _compare_benchmarks_impl,
@@ -246,7 +249,11 @@ def _build_research_pack_for_feature_prompts(
     store: SQLiteStore | None,
     run_id: int | None,
 ):
-    return _build_research_pack_for_feature_prompts_impl(store=store, run_id=run_id)
+    return _build_research_pack_for_feature_prompts_impl(
+        store=store,
+        run_id=run_id,
+        build_recommended_research_pack_fn=build_recommended_research_pack,
+    )
 
 
 def _audit_analyst_llm(feature_llm: LLMAnalyzer | None) -> LLMAnalyzer | None:

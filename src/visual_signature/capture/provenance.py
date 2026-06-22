@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
+from src.visual_signature._internal.utils import unique_text as _unique_text
+
 
 SignalKind = Literal["antipattern", "positive", "negative", "limitation"]
 EvidenceLevel = Literal["observed", "inferred", "conflicting", "weak_evidence"]
@@ -167,7 +169,7 @@ def _sources_reporting_signal(
             source = str(row.get("source_type") or "")
             if source:
                 sources.append(source)
-    return _dedupe(sources)
+    return _unique_text(sources)
 
 
 def _confidence_for_sources(sources: list[str]) -> ConfidenceLevel:
@@ -184,22 +186,9 @@ def _confidence_for_sources(sources: list[str]) -> ConfidenceLevel:
 def _intersection(values: list[str], wanted: list[str]) -> list[str]:
     return [item for item in wanted if item in values]
 
-
 def _dedupe_sources(row: VisualSignalProvenance) -> VisualSignalProvenance:
-    row.sources = _dedupe(row.sources)
+    row.sources = _unique_text(row.sources)
     if row.sources == ["external_candidate_summary_legacy"]:
         row.confidence = "low"
         row.notes = [*row.notes, "legacy external evidence is low-confidence by policy"]
     return row
-
-
-def _dedupe(values: list[str]) -> list[str]:
-    seen = set()
-    result = []
-    for value in values:
-        text = str(value).strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
-        result.append(text)
-    return result

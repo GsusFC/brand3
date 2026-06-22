@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.visual_signature._internal.utils import first_dict as _first_dict
+from src.visual_signature._internal.utils import unique as _unique
 from src.visual_signature.capture.models import (
     VisualDiagnosis,
     VisualDiagnosisCapture,
@@ -39,7 +41,7 @@ def build_visual_diagnosis(
     } and has_visual_analysis_evidence
 
     if (not capture.available or capture.quality in {"missing", "poor"}) and not can_diagnose_without_capture:
-        limitations = _dedupe([*capture.limitations, "visual_evidence_not_evaluable"])
+        limitations = _unique([*capture.limitations, "visual_evidence_not_evaluable"])
         return VisualDiagnosis(
             status="unavailable",
             capture=capture,
@@ -61,7 +63,7 @@ def build_visual_diagnosis(
             limitations=limitations,
         )
     if not has_visual_analysis_evidence:
-        limitations = _dedupe([*capture.limitations, "visual_analysis_not_interpretable"])
+        limitations = _unique([*capture.limitations, "visual_analysis_not_interpretable"])
         return VisualDiagnosis(
             status="unavailable",
             capture=capture,
@@ -119,9 +121,9 @@ def build_visual_diagnosis(
             template_likeness=template_likeness,
         ),
         signals=VisualDiagnosisSignals(
-            positive=_dedupe(positive),
-            negative=_dedupe(negative),
-            antipatterns=_dedupe(antipatterns),
+            positive=_unique(positive),
+            negative=_unique(negative),
+            antipatterns=_unique(antipatterns),
         ),
         evidence_refs=evidence_refs,
         confidence=confidence,
@@ -177,7 +179,7 @@ def _capture(screenshot_capture: dict[str, Any] | None, payload: dict[str, Any])
         type=capture_type,  # type: ignore[arg-type]
         quality=quality,  # type: ignore[arg-type]
         obstruction=obstruction,  # type: ignore[arg-type]
-        limitations=_dedupe(limitations),
+        limitations=_unique(limitations),
     )
 
 
@@ -279,7 +281,7 @@ def _antipatterns(
             result.append("low_distinctiveness_hero")
     if capture.obstruction != "none":
         result.append(f"viewport_obstruction_{capture.obstruction}")
-    return _dedupe(result)
+    return _unique(result)
 
 
 def _positive_signals(payload: dict[str, Any], capture: VisualDiagnosisCapture) -> list[str]:
@@ -446,7 +448,7 @@ def _limitations(
         if limitation == "screenshot_not_available" and capture.available:
             continue
         limitations.append(limitation)
-    return _dedupe(limitations)
+    return _unique(limitations)
 
 
 def _evidence_refs(
@@ -535,34 +537,14 @@ def _palette_has_ai_gradient_like_colors(colors: dict[str, Any]) -> bool:
     ]
     return any(color.startswith(("#6", "#7", "#8", "#9", "#a", "#b")) for color in candidates)
 
-
-def _first_dict(*items: Any) -> dict[str, Any]:
-    for item in items:
-        if isinstance(item, dict):
-            return item
-    return {}
-
-
 def _as_float(value: Any, *, default: float = 0.0) -> float:
     try:
         return float(value)
     except (TypeError, ValueError):
         return default
 
-
 def _as_int(value: Any, *, default: int = 0) -> int:
     try:
         return int(value)
     except (TypeError, ValueError):
         return default
-
-
-def _dedupe(items: list[str]) -> list[str]:
-    seen: set[str] = set()
-    out: list[str] = []
-    for item in items:
-        if not item or item in seen:
-            continue
-        seen.add(item)
-        out.append(item)
-    return out

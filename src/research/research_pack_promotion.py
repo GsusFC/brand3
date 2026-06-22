@@ -19,6 +19,13 @@ PROMOTABLE = "promotable"
 REVIEW_REQUIRED = "review_required"
 BLOCKED = "blocked"
 
+CRITICAL_LOST_FIELDS = {
+    "company_summary",
+    "product_summary",
+    "audience",
+    "offer",
+}
+
 
 @dataclass(frozen=True, slots=True)
 class ResearchPackPromotionDecision:
@@ -91,33 +98,37 @@ def evaluate_research_pack_promotion(snapshot: dict[str, Any]) -> ResearchPackPr
             reason_codes=("graph_empty",),
             notes=("The graph builder produced no usable evidence for this snapshot.",),
         )
-    elif summary["lost_count"] > 0:
-        decision = _build_decision(
-            comparison,
-            run_id=run_id,
-            status=BLOCKED,
-            target_contract="research_pack.graph",
-            reason_codes=("legacy_fields_lost", *tuple(summary["lost_fields"])),
-            notes=("The graph builder regressed fields that were already present in the legacy pack.",),
-        )
-    elif summary["entity_type_changed"] or summary["parent_brand_changed"]:
-        decision = _build_decision(
-            comparison,
-            run_id=run_id,
-            status=REVIEW_REQUIRED,
-            target_contract="research_pack.graph",
-            reason_codes=_identity_change_codes(summary),
-            notes=("Identity-sensitive fields changed and need human review before promotion.",),
-        )
     else:
-        decision = _build_decision(
-            comparison,
-            run_id=run_id,
-            status=PROMOTABLE,
-            target_contract="research_pack.graph",
-            reason_codes=("graph_no_regressions",),
-            notes=_promotion_notes(summary),
+        critical_lost_fields = tuple(
+            field for field in summary.get("lost_fields") or [] if field in CRITICAL_LOST_FIELDS
         )
+        if critical_lost_fields:
+            decision = _build_decision(
+                comparison,
+                run_id=run_id,
+                status=BLOCKED,
+                target_contract="research_pack.graph",
+                reason_codes=("legacy_fields_lost", *critical_lost_fields),
+                notes=("The graph builder regressed core pack fields that are required for promotion.",),
+            )
+        elif summary["entity_type_changed"] or summary["parent_brand_changed"]:
+            decision = _build_decision(
+                comparison,
+                run_id=run_id,
+                status=REVIEW_REQUIRED,
+                target_contract="research_pack.graph",
+                reason_codes=_identity_change_codes(summary),
+                notes=("Identity-sensitive fields changed and need human review before promotion.",),
+            )
+        else:
+            decision = _build_decision(
+                comparison,
+                run_id=run_id,
+                status=PROMOTABLE,
+                target_contract="research_pack.graph",
+                reason_codes=("graph_no_regressions",),
+                notes=_promotion_notes(summary),
+            )
     return ResearchPackPromotionReport(version=RESEARCH_PACK_PROMOTION_VERSION, decisions=(decision,))
 
 

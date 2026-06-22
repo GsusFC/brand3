@@ -9,6 +9,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from src.visual_signature._internal.utils import unique_text as _unique_text
+
 
 def computed_style_snapshot_to_visual_signature(
     snapshot: dict[str, Any],
@@ -109,8 +111,8 @@ def _colors(snapshot: dict[str, Any], elements: list[dict[str, Any]]) -> dict[st
                     accents.append(value)
 
     return {
-        "dominant_colors": _dedupe(dominant)[:8],
-        "accent_candidates": _dedupe(accents)[:4],
+        "dominant_colors": _unique_text(dominant)[:8],
+        "accent_candidates": _unique_text(accents)[:4],
     }
 
 
@@ -165,7 +167,7 @@ def _components(elements: list[dict[str, Any]]) -> dict[str, Any]:
     if nav_count:
         components.append({"type": "navigation", "count": nav_count})
     return {
-        "primary_ctas": _dedupe(primary_ctas)[:5],
+        "primary_ctas": _unique_text(primary_ctas)[:5],
         "components": components,
     }
 
@@ -202,7 +204,7 @@ def _layout(snapshot: dict[str, Any], elements: list[dict[str, Any]]) -> dict[st
         "has_navigation": has_navigation,
         "has_hero": has_hero,
         "visual_density": density,
-        "layout_patterns": _dedupe(patterns)[:8],
+        "layout_patterns": _unique_text(patterns)[:8],
     }
 
 
@@ -308,15 +310,3 @@ def _css_px(value: Any) -> float:
 def _is_color(value: str) -> bool:
     text = value.strip().lower()
     return text.startswith("#") or text.startswith("rgb(") or text.startswith("rgba(")
-
-
-def _dedupe(items: list[str]) -> list[str]:
-    seen = set()
-    result = []
-    for item in items:
-        text = str(item).strip()
-        if not text or text in seen:
-            continue
-        seen.add(text)
-        result.append(text)
-    return result

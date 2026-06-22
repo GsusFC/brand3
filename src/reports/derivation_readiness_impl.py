@@ -1,4 +1,4 @@
-"""Facade for derivation readiness implementation."""
+"""Compatibility facade for derivation readiness implementation."""
 
 from __future__ import annotations
 

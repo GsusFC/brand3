@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.reports import derivation_readiness_impl as _impl
+from src.reports import derivation_readiness_impl_impl as _impl
 
 # Preserve the previous public contract, including private helper names that are
 # imported directly from this module in sibling report helpers.

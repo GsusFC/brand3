@@ -8,6 +8,7 @@ from src.reports.derivation import collect_evidences
 from src.reports.strategic_evidence_packet import StrategicEvidenceLine, build_strategic_evidence_packet
 from src.research.evidence_graph import ALLOWED_CLAIM_TYPES, EvidenceClaim
 from src.research.evidence_graph_sources import ResearchSource, _dict, _normalize_url, _source_id, _unique
+from src.research.evidence_graph_support import _clean, _is_entity_boundary_quarantined_source, _snapshot_web_url
 
 
 _GROUP_TO_CLAIM_TYPE = {
@@ -45,10 +46,6 @@ def build_claims_from_snapshot(
 ) -> tuple[list[EvidenceClaim], dict[str, Any]]:
     claims = _build_claims(snapshot, sources=sources, strategic_packet=strategic_packet)
     return _dedupe_claims(claims, sources=sources)
-
-
-def _clean(value: str) -> str:
-    return " ".join(str(value or "").split()).strip()
 
 
 def _build_claims(snapshot: dict[str, Any], *, sources: dict[str, ResearchSource], strategic_packet) -> list[EvidenceClaim]:
@@ -399,10 +396,3 @@ def _looks_like_form_or_chrome(text: str) -> bool:
             "whitespace ratio",
         )
     )
-
-
-def _snapshot_web_url(snapshot: dict[str, Any]) -> str:
-    for raw_input in reversed(snapshot.get("raw_inputs") or []):
-        if raw_input.get("source") == "web" and isinstance(raw_input.get("payload"), dict):
-            return _normalize_url(str(raw_input["payload"].get("canonical_url") or raw_input["payload"].get("url") or ""))
-    return _normalize_url(str(_dict(snapshot.get("run")).get("url") or ""))

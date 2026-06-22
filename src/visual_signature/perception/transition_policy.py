@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.visual_signature.perception.mutation_audit import build_mutation_audit_record
 from src.visual_signature.perception.state_models import (
     MutationClassification,
+    build_mutation_audit_record,
     PerceptualState,
     StateEvaluation,
     TransitionRecord,

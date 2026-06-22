@@ -469,14 +469,34 @@ class MagnetismExtractor:
         enriched_pack = dry_run.get("enriched_pack", {})
         if not isinstance(enriched_pack, dict):
             enriched_pack = {}
+        field_updates = dry_run.get("field_updates") or []
+        if not isinstance(field_updates, list):
+            field_updates = list(field_updates or [])
+        visual_or_conceptual_delta = [
+            str(update.get("value") or "")
+            for update in field_updates
+            if isinstance(update, dict)
+            and update.get("field") == "visual_or_conceptual_signals"
+            and isinstance(update.get("value"), str)
+        ]
+        product_summary_delta = next(
+            (
+                str(update.get("value") or "")
+                for update in field_updates
+                if isinstance(update, dict)
+                and update.get("field") == "product_summary"
+                and isinstance(update.get("value"), str)
+            ),
+            None,
+        )
         result["contextdev_visual_enrichment_shadow"] = {
             "status": "evaluated",
             "version": dry_run.get("version"),
             "field_updates": dry_run.get("field_updates") or [],
             "promotion_report": dry_run.get("promotion_report") or {},
             "enriched_pack_delta": {
-                "visual_or_conceptual_signals": enriched_pack.get("visual_or_conceptual_signals", []),
-                "product_summary": enriched_pack.get("product_summary"),
+                "visual_or_conceptual_signals": visual_or_conceptual_delta,
+                "product_summary": product_summary_delta or enriched_pack.get("product_summary"),
                 "confidence_notes": enriched_pack.get("confidence_notes", []),
             },
         }

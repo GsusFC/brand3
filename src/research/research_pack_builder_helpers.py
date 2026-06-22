@@ -8,6 +8,7 @@ from urllib.parse import urlparse
 from src.reports.brand_research_pack import ResearchEvidence
 from src.reports.brand_research_pack_building_helpers import _looks_like_crypto_product
 from src.research.evidence_graph import EvidenceClaim, EvidenceGraph
+from src.research.research_pack_builder_text_preprocessing import _looks_like_url_only
 from src.research.research_pack_builder_text_helpers import *  # noqa: F401,F403
 
 def _research_evidence(claims: Iterable[EvidenceClaim], *, kind: str) -> list[ResearchEvidence]:

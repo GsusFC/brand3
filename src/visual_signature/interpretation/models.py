@@ -5,9 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
-
-VISUAL_EVIDENCE_PACK_SCHEMA_VERSION = "visual-evidence-pack-v1"
-VISUAL_INTERPRETATION_SCHEMA_VERSION = "visual-interpretation-v1"
+from src.visual_signature.versions import VISUAL_EVIDENCE_PACK_SCHEMA_VERSION, VISUAL_INTERPRETATION_SCHEMA_VERSION
 
 PackStatus = Literal["ready", "limited", "not_evaluable"]
 CaptureQuality = Literal["clean", "usable", "partial", "blocked", "missing", "unknown"]
@@ -32,7 +30,7 @@ class VisualEvidencePack:
     human_review: dict[str, Any] = field(default_factory=dict)
     evidence_refs: list[str] = field(default_factory=list)
     limitations: list[str] = field(default_factory=list)
-    schema_version: Literal["visual-evidence-pack-v1"] = VISUAL_EVIDENCE_PACK_SCHEMA_VERSION
+    schema_version: Literal[VISUAL_EVIDENCE_PACK_SCHEMA_VERSION] = VISUAL_EVIDENCE_PACK_SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -61,7 +59,7 @@ class VisualInterpretation:
     limitations: list[str] = field(default_factory=list)
     model: str = ""
     adjudicator_model: str | None = None
-    schema_version: Literal["visual-interpretation-v1"] = VISUAL_INTERPRETATION_SCHEMA_VERSION
+    schema_version: Literal[VISUAL_INTERPRETATION_SCHEMA_VERSION] = VISUAL_INTERPRETATION_SCHEMA_VERSION
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

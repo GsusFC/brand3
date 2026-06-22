@@ -10,6 +10,9 @@ from __future__ import annotations
 # --- Top-level contracts ---
 VISUAL_SIGNATURE_SCAN_VERSION = "visual-signature-scan-v1"
 VISUAL_SIGNATURE_PLATFORM_SCHEMA_VERSION = "brand3-platform-1"
+VISUAL_DIAGNOSIS_SCHEMA_VERSION = "visual-diagnosis-v1"
+VISUAL_EVIDENCE_PACK_SCHEMA_VERSION = "visual-evidence-pack-v1"
+VISUAL_INTERPRETATION_SCHEMA_VERSION = "visual-interpretation-v1"
 
 # --- Prompt versions (two distinct prompts, two distinct constants) ---
 ANNOTATION_PROMPT_VERSION = "visual-signature-annotation-prompt-1"

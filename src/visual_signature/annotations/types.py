@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Any, Literal
 
+from src.visual_signature.versions import ANNOTATION_PROMPT_VERSION
 
 AnnotationStatus = Literal["annotated", "partial", "not_interpretable", "failed"]
 AnnotationSource = Literal["viewport_screenshot", "full_page_screenshot", "visual_signature_payload", "unknown"]
@@ -33,7 +34,7 @@ class AnnotationRequest:
     full_page_screenshot_path: str | None = None
     baseline_context: dict[str, Any] | None = None
     metric_audit_context: dict[str, Any] | None = None
-    prompt_version: str = "visual-signature-annotation-prompt-1"
+    prompt_version: str = ANNOTATION_PROMPT_VERSION
 
 
 @dataclass

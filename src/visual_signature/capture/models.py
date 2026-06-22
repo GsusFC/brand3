@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, field
 from typing import Literal
 
-
-VISUAL_DIAGNOSIS_SCHEMA_VERSION = "visual-diagnosis-v1"
+from src.visual_signature.versions import VISUAL_DIAGNOSIS_SCHEMA_VERSION
 
 DiagnosisStatus = Literal["usable", "limited", "unavailable"]
 CaptureQuality = Literal["good", "partial", "poor", "missing", "unknown"]
@@ -75,7 +74,7 @@ class VisualDiagnosis:
     evidence_refs: list[str] = field(default_factory=list)
     confidence: ConfidenceLevel = "low"
     limitations: list[str] = field(default_factory=list)
-    schema_version: Literal["visual-diagnosis-v1"] = VISUAL_DIAGNOSIS_SCHEMA_VERSION
+    schema_version: Literal[VISUAL_DIAGNOSIS_SCHEMA_VERSION] = VISUAL_DIAGNOSIS_SCHEMA_VERSION
 
     def to_dict(self) -> dict:
         return asdict(self)

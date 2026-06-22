@@ -11,73 +11,40 @@ Provider is configured via src.config (OpenAI-compatible API).
 """
 
 import json
+import logging
 import os
 import urllib.parse
 from typing import Any
 
-from src.config import BRAND3_DB_PATH, LLM_BASE_URL, LLM_MODEL
+from src.config import BRAND3_DB_PATH
 from src.features import llm_analyzer_support as _llm_support
+from src.features import llm_analyzer_runtime as _llm_runtime
 
 PROMPT_VERSION = _llm_support.PROMPT_VERSION
 LLM_CALL_TIMEOUT_SECONDS = _llm_support.LLM_CALL_TIMEOUT_SECONDS
 STRUCTURED_RESEARCH_PACK_LIMIT = _llm_support.STRUCTURED_RESEARCH_PACK_LIMIT
 
 _llm_prompt_input = _llm_support._llm_prompt_input
-_looks_like_timeout = _llm_support._looks_like_timeout
-_llm_http_request_once = _llm_support._llm_http_request_once
-_gemini_http_request_once = _llm_support._gemini_http_request_once
-_llm_http_worker = _llm_support._llm_http_worker
 _run_llm_http_call = _llm_support._run_llm_http_call
 _run_gemini_http_call = _llm_support._run_gemini_http_call
-_provider_error_payload = _llm_support._provider_error_payload
-_llm_error_type = _llm_support._llm_error_type
 _transport_debug_enabled = _llm_support._transport_debug_enabled
 _chat_completions_url = _llm_support._chat_completions_url
-_gemini_native_base_url = _llm_support._gemini_native_base_url
 _gemini_generate_content_url = _llm_support._gemini_generate_content_url
 _redacted_headers = _llm_support._redacted_headers
 _body_top_level_keys = _llm_support._body_top_level_keys
 _looks_like_transport_error = _llm_support._looks_like_transport_error
-_json_type_matches = _llm_support._json_type_matches
-_validate_json_schema_value = _llm_support._validate_json_schema_value
 _validate_json_schema = _llm_support._validate_json_schema
 _json_response_format = _llm_support._json_response_format
 _parse_json_content = _llm_support._parse_json_content
-_llm_cache_digest = _llm_support._llm_cache_digest
+_safe_excerpt = _llm_runtime._safe_excerpt
+llm_failure_reason = _llm_runtime.llm_failure_reason
 
 
-def llm_failure_reason(llm, default: str) -> str:
-    reason = getattr(llm, "last_failure_reason", None)
-    if reason in {"llm_timeout", "llm_error", "transport_error", "schema_validation_error", "provider_http_error"}:
-        return reason
-    return default
+_LOG = logging.getLogger(__name__)
 
 
-class LLMAnalyzer:
+class LLMAnalyzer(_llm_runtime._LLMAnalyzerRuntime):
     """LLM-powered brand content analyzer."""
-
-    @staticmethod
-    def _resolve_api_key(api_key: str | None) -> str:
-        if api_key:
-            return api_key
-        return (
-            os.environ.get("BRAND3_LLM_API_KEY")
-            or os.environ.get("GEMINI_API_KEY")
-            or os.environ.get("GOOGLE_API_KEY")
-            or os.environ.get("OPENROUTER_API_KEY", "")
-        )
-
-    @staticmethod
-    def _resolve_base_url(base_url: str | None) -> str:
-        if base_url:
-            return base_url
-        return os.environ.get("BRAND3_LLM_BASE_URL", LLM_BASE_URL)
-
-    @staticmethod
-    def _resolve_model(model: str | None) -> str:
-        if model:
-            return model
-        return os.environ.get("BRAND3_LLM_MODEL", LLM_MODEL)
 
     def __init__(self, api_key: str = None, base_url: str = None, model: str = None):
         self.api_key = self._resolve_api_key(api_key)
@@ -97,96 +64,6 @@ class LLMAnalyzer:
         self.last_raw_response: str | None = None
         self.call_failures: list[dict[str, Any]] = []
         self.last_request_debug: dict[str, Any] | None = None
-
-    def _record_failure(
-        self,
-        reason: str,
-        error: str,
-        *,
-        error_type: str | None = None,
-        response_empty: bool = False,
-        json_parse_error: bool = False,
-    ) -> None:
-        self.last_failure_reason = reason
-        provider_payload = _provider_error_payload(error)
-        self.call_failures.append({
-            "reason": reason,
-            "error": error[:200],
-            "error_type": error_type or _llm_error_type(reason, error),
-            "http_status": provider_payload["http_status"],
-            "provider_error_code": provider_payload["provider_error_code"],
-            "provider_error_message": provider_payload["provider_error_message"],
-            "response_empty": bool(response_empty),
-            "json_parse_error": bool(json_parse_error),
-            "model": self.model,
-            "base_url": self.base_url,
-        })
-
-    def _clear_failure(self) -> None:
-        self.last_failure_reason = None
-
-    def _cache_key(
-        self,
-        response_type: str,
-        system: str,
-        user: str,
-        max_tokens: int,
-        *,
-        schema_name: str | None = None,
-    ) -> str:
-        payload = {
-            "prompt_version": PROMPT_VERSION,
-            "model": self.model,
-            "response_type": response_type,
-            "schema_name": schema_name or "",
-            "system": system,
-            "user": user,
-            "max_tokens": max_tokens,
-            "temperature": 0.1,
-        }
-        return _llm_cache_digest(payload)
-
-    def _cache_get(self, cache_key: str, response_type: str):
-        if not self.use_cache:
-            return None
-        try:
-            from src.storage.sqlite_store import SQLiteStore
-            store = SQLiteStore(BRAND3_DB_PATH)
-            try:
-                cached = store.get_llm_cache(cache_key)
-            finally:
-                store.close()
-        except Exception:
-            return None
-        if not cached or cached.get("response_type") != response_type:
-            return None
-        self.cache_hits += 1
-        if response_type == "json":
-            return cached.get("response_json") or {}
-        return cached.get("response_text") or ""
-
-    def _cache_save(self, cache_key: str, response_type: str, value) -> None:
-        if not self.use_cache:
-            return
-        if value in ("", None, {}):
-            return
-        try:
-            from src.storage.sqlite_store import SQLiteStore
-            store = SQLiteStore(BRAND3_DB_PATH)
-            try:
-                store.save_llm_cache(
-                    cache_key=cache_key,
-                    prompt_version=PROMPT_VERSION,
-                    model=self.model,
-                    response_type=response_type,
-                    response_json=value if response_type == "json" else None,
-                    response_text=value if response_type == "text" else None,
-                )
-            finally:
-                store.close()
-            self.cache_writes += 1
-        except Exception:
-            return
 
     def _call(self, system: str, user: str, max_tokens: int = 8000) -> str:
         """Make an LLM call via the OpenAI-compatible endpoint.
@@ -245,7 +122,7 @@ class LLMAnalyzer:
         else:
             reason = "llm_error"
         self._record_failure(reason, content)
-        print(f"  LLM call failed: {content}")
+        _LOG.warning("llm call failed", extra={"reason": reason, "error": _safe_excerpt(content)})
         return ""
 
     def _call_json(
@@ -316,7 +193,7 @@ class LLMAnalyzer:
                 "body_top_level_keys": _body_top_level_keys(payload),
                 "timeout_seconds": effective_timeout,
             }
-            print(f"[LLMAnalyzer transport] {json.dumps(self.last_request_debug, ensure_ascii=False)}")
+            _LOG.debug("llm transport debug", extra={"request_debug": self.last_request_debug})
         status, content = _run_llm_http_call(
             url=final_url,
             payload=payload,
@@ -346,7 +223,7 @@ class LLMAnalyzer:
                 reason = "llm_error"
             self._record_failure(reason, content)
             self.last_raw_response = content
-            print(f"  LLM JSON call failed: {content}")
+            _LOG.warning("llm json call failed", extra={"reason": reason, "error": _safe_excerpt(content)})
             return {}
 
         if not content:
@@ -383,7 +260,10 @@ class LLMAnalyzer:
             self._clear_failure()
             return parsed
         except json.JSONDecodeError as e:
-            print(f"  LLM JSON parse failed: {e}; got: {content[:200]}")
+            _LOG.warning(
+                "llm json parse failed",
+                extra={"error": str(e), "snippet": _safe_excerpt(content, max_chars=220)},
+            )
             self._record_failure(
                 "llm_error",
                 str(e),
@@ -457,7 +337,10 @@ class LLMAnalyzer:
                 reason = "llm_error"
             self._record_failure(reason, content)
             self.last_raw_response = content
-            print(f"  Gemini native JSON call failed: {content}")
+            _LOG.warning(
+                "gemini native json call failed",
+                extra={"reason": reason, "error": _safe_excerpt(content)},
+            )
             return {}
 
         if not content:
@@ -486,7 +369,10 @@ class LLMAnalyzer:
             self._clear_failure()
             return parsed
         except json.JSONDecodeError as e:
-            print(f"  Gemini native JSON parse failed: {e}; got: {content[:200]}")
+            _LOG.warning(
+                "gemini native json parse failed",
+                extra={"error": str(e), "snippet": _safe_excerpt(content, max_chars=220)},
+            )
             self._record_failure(
                 "llm_error",
                 str(e),

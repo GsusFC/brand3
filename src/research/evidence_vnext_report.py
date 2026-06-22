@@ -14,7 +14,6 @@ from src.research.evidence_vnext_acquisition_contracts import (
     finalize_acquisition_matrix as _finalize_acquisition_matrix,
 )
 from src.research.evidence_vnext_report_decisions import (
-    _adjudication_intake,
     _blocked_evidence_queue_item,
     _contract_projection_row,
     _contract_projection_summary,
@@ -26,9 +25,15 @@ from src.research.evidence_vnext_report_decisions import (
     _material_quote_contract_queue_item,
     _run_manual_audit_decision,
     _run_promotion_decision,
+    _triage_actions,
+)
+from src.research.evidence_vnext_report_work_orders import (
+    _adjudication_intake,
+    _intervention_packets,
+    _readiness_matrix,
     _shadow_policy_action_counts,
     _shadow_policy_runs,
-    _triage_actions,
+    _work_orders,
 )
 from src.research.evidence_vnext_report_helpers import (
     _accumulate_semantic_evidence,
@@ -809,27 +814,6 @@ def render_batch_report_markdown(report: dict[str, Any]) -> str:
     for reason in recommendation.get("reason_codes") or []:
         lines.append(f"- `{reason}`")
     return "\n".join(lines).rstrip() + "\n"
-
-
-def _print_changed_fields(comparison: dict[str, Any]) -> None:
-    for field in comparison.get("fields") or []:
-        if not field.get("changed"):
-            continue
-        name = field.get("field")
-        if name not in {"offer", "audience", "outcome", "proof_points", "founder_or_press_context", "noise_rejected"}:
-            continue
-        print(f"  {name}:")
-        print(f"    current: {field.get('legacy_preview') or '-'}")
-        print(f"    vnext  : {field.get('graph_preview') or '-'}")
-
-
-def _print_gate_reasons(gate: dict[str, Any]) -> None:
-    review = _top_counts(gate.get("review_reason_counts") or {})
-    rejected = _top_counts(gate.get("rejected_reason_counts") or {})
-    if review:
-        print("  review reasons:", ", ".join(f"{key}={value}" for key, value in review))
-    if rejected:
-        print("  rejected reasons:", ", ".join(f"{key}={value}" for key, value in rejected))
 
 
 from src.research.evidence_vnext_report_workflow import (

@@ -1,103 +1,281 @@
-"""Strategic evidence packet derived from Brand Audit snapshots.
-
-Brand Audit owns data collection. This module turns a persisted run snapshot into
-small, named evidence groups that downstream interpreters can reuse without
-reading raw scraper text or internal feature metadata.
-"""
+"""Heuristics and candidate-building helpers for strategic evidence packets."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import re
 from typing import Any
+from urllib.parse import urlparse
 
-from src.reports.derivation import Evidence, collect_evidences
-from src.reports.strategic_evidence_packet_helpers import (
-    CONTEXT_SOURCE_TYPES,
-    GROUP_KEYWORDS,
-    NOISE_MARKERS,
-    OWNED_SOURCE_TYPES,
-    _add_candidate_line as _add_candidate_line_impl,
-    _add_owned_raw_web_candidates as _add_owned_raw_web_candidates_impl,
-    _entity_research_packet as _entity_research_packet_impl,
-    _rank_packet_groups as _rank_packet_groups_impl,
-    _rejected_reason_counts as _rejected_reason_counts_impl,
+from src.reports.evidence_noise import looks_like_article_or_product_card_feed
+from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
+from src.reports.vertical_signals import vertical_group_keywords
+
+
+GROUP_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "hero_claims": (
+        "introducing",
+        "meet ",
+        "built for",
+        "designed for",
+        "purpose-built",
+        "just do it",
+        "earn every",
+        "system for",
+        "platform for",
+    ),
+    "product_offer": (
+        "platform",
+        "plataforma",
+        "infrastructure",
+        "infraestructura",
+        "api",
+        "payments",
+        "pagos",
+        "billing",
+        "facturacion",
+        "facturación",
+        "services",
+        "servicios",
+        "products",
+        "productos",
+        "software",
+        "model",
+        "ai assistant",
+        "chatbot",
+        "banking",
+        "wealth management",
+        "private banking",
+        "business analyst",
+        "human intelligence",
+        "research people",
+        "research people and companies",
+        "brand identities",
+        "ai-powered search",
+        "product discovery",
+        "merchandising",
+        "conversions",
+        "shopper intent",
+        "ecommerce",
+        "e-commerce",
+        "branding solution",
+        "brand execution",
+        "brand and website",
+        "deliverables",
+        "calendar app",
+        "productivity tools",
+        "extendable launcher",
+        "application launcher",
+        "observability service",
+        "monitoring",
+        "portfolio platform",
+        "jobs and recruiting site",
+    )
+    + vertical_group_keywords("product_offer"),
+    "audience": (
+        "teams",
+        "agents",
+        "developers",
+        "businesses",
+        "founders",
+        "startups",
+        "finance teams",
+        "sales teams",
+        "wealth managers",
+        "creators",
+        "customers",
+        "clients",
+        "shopper",
+        "shoppers",
+        "manufacturer",
+        "manufacturers",
+        "people and companies",
+        "enterprise",
+        "fortune 100",
+        "asesores",
+        "empresas",
+        "clientes",
+        "fabricante",
+        "fabricantes",
+        "distribuidor",
+        "distribuidores",
+        "atletas",
+        "athletes",
+    ),
+    "outcome": (
+        "helps",
+        "help ",
+        "eliminate risks",
+        "secure your competitive advantage",
+        "grow",
+        "increase",
+        "reduce",
+        "automate",
+        "productive",
+        "productivity",
+        "efficient",
+        "efficiency",
+        "drive success",
+        "build relationships",
+        "get things done",
+        "make people talk",
+        "solve problems",
+        "learn faster",
+        "faster",
+        "deploy instantly",
+        "build and ship",
+        "develop and ship",
+        "ship digital products",
+        "scale",
+        "improve product discovery",
+        "increasing conversions",
+        "boosts conversions",
+        "reduce no-result searches",
+        "streamline",
+        "centralise",
+        "centralize",
+        "gestionar",
+        "hacer crecer",
+        "automatizar",
+        "reducir costes",
+        "reduce costes",
+        "facilitar",
+        "optimiza",
+        "asegura",
+        "empowering",
+        "impulsando",
+    )
+    + vertical_group_keywords("outcome"),
+    "mission_language": (
+        "we build",
+        "we create",
+        "we provide",
+        "we help",
+        "we make",
+        "we enable",
+        "we develop",
+        "we empower",
+        "our mission",
+        "on a mission to",
+        "make developers",
+        "make teams",
+        "help companies",
+        "ayuda a",
+        "ofrece",
+        "creamos",
+        "proporcionamos",
+    ),
+    "vision_language": (
+        "future of",
+        "built for the future",
+        "new model",
+        "new paradigm",
+        "transform the future",
+        "transforming the future",
+        "shape the future",
+        "creative entity",
+        "creative work",
+        "wield power",
+        "world stage",
+        "futuro de",
+        "nuevo modelo",
+        "nueva generación",
+        "transformar la categoría",
+        "transformar el futuro",
+    ),
+    "values_language": (
+        "trusted",
+        "trust",
+        "secure",
+        "security",
+        "privacy",
+        "transparent",
+        "sustainable",
+        "regenerative",
+        "confianza",
+        "seguro",
+        "seguridad",
+        "sostenible",
+    )
+    + vertical_group_keywords("values_language"),
+    "personality_tone": (
+        "bold",
+        "fast",
+        "simple",
+        "powerful",
+        "precise",
+        "creative",
+        "ambition",
+        "culture",
+        "inspire",
+        "inspirar",
+        "innovative",
+        "innovadores",
+    ),
+    "proof_points": (
+        "customers",
+        "customer",
+        "clients",
+        "client",
+        "clientes",
+        "cliente",
+        "trusted by",
+        "con la confianza",
+        "case study",
+        "case studies",
+        "customer story",
+        "success story",
+        "caso de éxito",
+        "casos de éxito",
+        "testimonial",
+        "testimonials",
+        "testimonio",
+        "testimonios",
+        "reviews",
+        "review",
+        "reseñas",
+        "resenas",
+        "opiniones",
+        "millions",
+        "global",
+        "leader",
+        "used by",
+        "raises",
+        "funding",
+    ),
+    "third_party_context": (
+        "raises",
+        "funding",
+        "report",
+        "market",
+        "competitor",
+        "news",
+    ),
+}
+
+OWNED_SOURCE_TYPES = {"owned", "social", "owned_raw"}
+CONTEXT_SOURCE_TYPES = {"encyclopedic", "news", "review", "other", "changelog"}
+_EMBEDDED_SUBPAGE_RE = re.compile(r"(?:^|\n)## Subpage:\s*(?P<url>\S+)\s*\n", re.IGNORECASE)
+
+
+NOISE_MARKERS = (
+    "; evidence=",
+    "source_type=",
+    "dimension=",
+    "feature=",
+    "__next_data__",
+    "graphql api",
+    "product roadmap",
+    "rg --files",
+    "/bin/bash",
 )
 
 
-@dataclass
-class StrategicEvidenceLine:
-    text: str
-    source_type: str
-    source_domain: str | None = None
-    url: str | None = None
-    feature_name: str | None = None
-    dimension: str | None = None
-    surface_role: str | None = None
-    entity_scope: str | None = None
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            "text": self.text,
-            "source_type": self.source_type,
-            "source_domain": self.source_domain,
-            "url": self.url,
-            "feature_name": self.feature_name,
-            "dimension": self.dimension,
-            "surface_role": self.surface_role,
-            "entity_scope": self.entity_scope,
-        }
-
-
-@dataclass
-class StrategicEvidencePacket:
-    brand_name: str
-    url: str
-    run_id: int | None
-    groups: dict[str, list[StrategicEvidenceLine]] = field(default_factory=dict)
-    rejected: list[dict[str, str]] = field(default_factory=list)
-    warnings: list[str] = field(default_factory=list)
-    source_counts: dict[str, int] = field(default_factory=dict)
-
-    def group_text(self, group: str, limit: int = 6) -> list[str]:
-        return [line.text for line in self.groups.get(group, [])[:limit]]
-
-    def to_interpreter_text(self) -> str:
-        lines: list[str] = []
-        seen: set[str] = set()
-        for group in GROUP_KEYWORDS:
-            for line in self.group_text(group):
-                key = line.lower()
-                if key in seen:
-                    continue
-                seen.add(key)
-                lines.append(line)
-        return '\n'.join(lines).strip()
-
-    def to_summary(self) -> dict[str, Any]:
-        return {
-            "source": "strategic_evidence_packet",
-            "source_label": "Strategic Evidence Packet",
-            "evidence_basis": "Grouped Brand Audit evidence reused by TLDR interpreters.",
-            "run_id": self.run_id,
-            "group_counts": {key: len(value) for key, value in self.groups.items()},
-            "source_counts": self.source_counts,
-            "rejected_count": len(self.rejected),
-            "rejected_reason_counts": _rejected_reason_counts_impl(self.rejected),
-            "warnings": self.warnings,
-            "value_policy": "Brand Audit owns collection; this packet only groups strategically relevant public evidence.",
-        }
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            **self.to_summary(),
-            "brand_name": self.brand_name,
-            "url": self.url,
-            "groups": {
-                key: [line.to_dict() for line in value]
-                for key, value in self.groups.items()
-            },
-            "rejected": self.rejected[:40],
-        }
+def _rejected_reason_counts(rejected: list[dict[str, str]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for item in rejected:
+        reason = str(item.get("reason") or "unknown")
+        counts[reason] = counts.get(reason, 0) + 1
+    return dict(sorted(counts.items()))
 
 
 def _entity_research_packet(snapshot: dict[str, Any]) -> dict[str, Any] | None:
@@ -109,79 +287,12 @@ def _entity_research_packet(snapshot: dict[str, Any]) -> dict[str, Any] | None:
     return packet if isinstance(packet, dict) else None
 
 
-def _rejected_reason_counts(rejected: list[dict[str, str]]) -> dict[str, int]:
-    counts: dict[str, int] = {}
-    for item in rejected:
-        reason = str(item.get("reason") or "unknown")
-        counts[reason] = counts.get(reason, 0) + 1
-    return dict(sorted(counts.items()))
-
-
-def build_strategic_evidence_packet(snapshot: dict[str, Any]) -> StrategicEvidencePacket:
-    run = snapshot.get("run") or {}
-    packet = StrategicEvidencePacket(
-        brand_name=str(run.get("brand_name") or "Unknown Brand"),
-        url=str(run.get("url") or ""),
-        run_id=run.get("id"),
-    )
-    evidences = collect_evidences(snapshot)
-    preferred = [ev for ev in evidences if str(ev.source_type) in OWNED_SOURCE_TYPES]
-    context = [ev for ev in evidences if str(ev.source_type) in CONTEXT_SOURCE_TYPES]
-    seen: set[tuple[str, str, str]] = set()
-    for ev in preferred:
-        source_type = str(ev.source_type)
-        packet.source_counts[source_type] = packet.source_counts.get(source_type, 0) + 1
-        _add_candidate_line_impl(
-            packet,
-            seen,
-            text=str(ev.quote or ""),
-            source_type=source_type,
-            source_domain=ev.source_domain,
-            url=ev.url,
-            feature_name=ev.feature_name,
-            dimension=ev.dimension,
-            entity_research_packet=_entity_research_packet_impl(snapshot),
-        )
-
-    # Raw owned web copy is the brand's own voice. Process it before
-    # contextual evidence so a duplicated search/context snippet cannot
-    # downgrade the same claim to third-party context.
-    _add_owned_raw_web_candidates_impl(packet, snapshot, seen)
-
-    for ev in context:
-        source_type = str(ev.source_type)
-        packet.source_counts[source_type] = packet.source_counts.get(source_type, 0) + 1
-        _add_candidate_line_impl(
-            packet,
-            seen,
-            text=str(ev.quote or ""),
-            source_type=source_type,
-            source_domain=ev.source_domain,
-            url=ev.url,
-            feature_name=ev.feature_name,
-            dimension=ev.dimension,
-            entity_research_packet=_entity_research_packet_impl(snapshot),
-        )
-
-    if not preferred:
-        packet.warnings.append("No owned/social evidence found; packet relies on contextual evidence.")
-    if not packet.groups:
-        packet.warnings.append("No strategically usable evidence groups found.")
-    _rank_packet_groups_impl(packet)
-    if not packet.groups.get("product_offer"):
-        packet.warnings.append("No product offer evidence group found.")
-    if not packet.groups.get("audience"):
-        packet.warnings.append("No audience evidence group found.")
-    return packet
-
-
-
-def _rank_packet_groups(packet: StrategicEvidencePacket) -> None:
+def _rank_packet_groups(packet: Any) -> None:
     for group, lines in list(packet.groups.items()):
         packet.groups[group] = sorted(lines, key=lambda line: _line_priority(line, group))
 
 
-def _line_priority(line: StrategicEvidenceLine, group: str) -> tuple[int, int, int, int, int, int]:
+def _line_priority(line: Any, group: str) -> tuple[int, int, int, int, int, int]:
     low = line.text.lower()
     source_rank = {"owned_raw": 0, "owned": 1, "social": 2}.get(line.source_type, 3)
     feature_rank = 2 if line.feature_name == "search_visibility" else 0
@@ -200,73 +311,8 @@ def _line_priority(line: StrategicEvidenceLine, group: str) -> tuple[int, int, i
     return (source_rank, proof_page_rank, noise_rank, feature_rank, context_rank, -useful_length)
 
 
-def _looks_like_promotion_or_event(low: str) -> bool:
-    return any(
-        marker in low
-        for marker in (
-            "off your first payment",
-            "use code",
-            "welcome20",
-            "conference",
-            "webinar",
-            "register now",
-            "save your spot",
-            "named a leader",
-            "magic quadrant",
-        )
-    )
-
-
-def _looks_like_short_label(low: str) -> bool:
-    if len(low) > 64:
-        return False
-    if any(mark in low for mark in (".", "?", "!")):
-        return False
-    if low.startswith(("we ", "our ", "built ", "build ", "make ", "meet ", "earn ")):
-        return False
-    if re.search(r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces)\b", low):
-        return False
-    if low in {
-        "case studies",
-        "customer stories",
-        "testimonials",
-        "reviews",
-        "estudios de caso",
-        "casos de éxito",
-        "testimonios",
-        "reseñas",
-        "opiniones",
-    }:
-        return True
-    return any(marker in low for marker in (" + ", "products", "services", "platform", "infrastructure", "software delivery", "financial services"))
-
-
-
-def _looks_like_bare_page_label(low: str) -> bool:
-    if len(low) > 40:
-        return False
-    if any(mark in low for mark in (".", "?", "!", ":", "|")):
-        return False
-    if any(char.isdigit() for char in low):
-        return False
-    return not re.search(
-        r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces|usó|logró|alcanzo|alcanzó|genera|mejora|reduce|optimiza|escala|scaled)\b",
-        low,
-    )
-
-
-def _looks_like_title_or_directory(low: str) -> bool:
-    return (
-        " | " in low
-        or " - " in low[:120]
-        or "company details" in low
-        or "industry:" in low
-        or "employees:" in low
-    )
-
-
 def _add_owned_raw_web_candidates(
-    packet: StrategicEvidencePacket,
+    packet: Any,
     snapshot: dict[str, Any],
     seen: set[tuple[str, str, str]],
 ) -> None:
@@ -298,7 +344,7 @@ def _add_owned_raw_web_candidates(
 
 
 def _add_owned_raw_page_candidates(
-    packet: StrategicEvidencePacket,
+    packet: Any,
     seen: set[tuple[str, str, str]],
     text: str,
     source_url: str,
@@ -327,7 +373,6 @@ def _add_owned_raw_page_candidates(
             break
 
 
-
 def _primary_web_page_text(markdown: str) -> str:
     match = _EMBEDDED_SUBPAGE_RE.search(markdown or "")
     if not match:
@@ -347,8 +392,9 @@ def _embedded_web_subpage_texts(markdown: str) -> list[tuple[str, str]]:
             pages.append((page_url, text))
     return pages
 
+
 def _add_candidate_line(
-    packet: StrategicEvidencePacket,
+    packet: Any,
     seen: set[tuple[str, str, str]],
     *,
     text: str,
@@ -368,15 +414,14 @@ def _add_candidate_line(
     if not groups:
         packet.rejected.append({"text": cleaned[:220], "reason": "low_strategic_signal"})
         return
-    line = StrategicEvidenceLine(
-        text=cleaned,
+    line = _make_line(
+        cleaned,
         source_type=source_type,
         source_domain=source_domain,
         url=url,
         feature_name=feature_name,
         dimension=dimension,
-        surface_role=surface_role_for_url(url or "", entity_research_packet),
-        entity_scope=entity_scope_for_url(url or "", entity_research_packet),
+        entity_research_packet=entity_research_packet,
     )
     for group in groups:
         key = _candidate_dedupe_key(cleaned, url=url, group=group)
@@ -386,6 +431,30 @@ def _add_candidate_line(
         seen.add(key)
         if len(packet.groups.setdefault(group, [])) < 8:
             packet.groups[group].append(line)
+
+
+def _make_line(
+    text: str,
+    *,
+    source_type: str,
+    source_domain: str | None = None,
+    url: str | None = None,
+    feature_name: str | None = None,
+    dimension: str | None = None,
+    entity_research_packet: dict[str, Any] | None = None,
+) -> Any:
+    from src.reports.strategic_evidence_packet import StrategicEvidenceLine
+
+    return StrategicEvidenceLine(
+        text=text,
+        source_type=source_type,
+        source_domain=source_domain,
+        url=url,
+        feature_name=feature_name,
+        dimension=dimension,
+        surface_role=surface_role_for_url(url or "", entity_research_packet),
+        entity_scope=entity_scope_for_url(url or "", entity_research_packet),
+    )
 
 
 def _candidate_dedupe_key(text: str, *, url: str | None, group: str) -> tuple[str, str, str]:
@@ -522,6 +591,7 @@ def _clean_quote(value: str) -> str:
     text = re.sub(r"\s+(for|para|with|by|to)$", "", text, flags=re.I).strip()
     return text.strip()
 
+
 def _reject_reason(text: str) -> str | None:
     low = text.lower().strip()
     if not low or len(low) < 6:
@@ -560,8 +630,6 @@ def _reject_reason(text: str) -> str | None:
         return "navigation_or_section_heading_noise"
     if "differentiates from" in low and any(marker in low for marker in ("logo", "mark", "blue", "green", "visual", "sterility", "wellness")):
         return "visual_comparison_noise"
-    # Testimonial quotes are valid proof evidence, while group selection keeps
-    # them out of mission/value-proposition groups.
     if (
         "api dashboard try" in low
         or "try api for free" in low
@@ -773,4 +841,68 @@ def _looks_like_testimonial_quote(low: str) -> bool:
             " servicio al cliente",
             " procesos de trabajo",
         )
+    )
+
+
+def _looks_like_promotion_or_event(low: str) -> bool:
+    return any(
+        marker in low
+        for marker in (
+            "off your first payment",
+            "use code",
+            "welcome20",
+            "conference",
+            "webinar",
+            "register now",
+            "save your spot",
+            "named a leader",
+            "magic quadrant",
+        )
+    )
+
+
+def _looks_like_short_label(low: str) -> bool:
+    if len(low) > 64:
+        return False
+    if any(mark in low for mark in (".", "?", "!")):
+        return False
+    if low.startswith(("we ", "our ", "built ", "build ", "make ", "meet ", "earn ")):
+        return False
+    if re.search(r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces)\b", low):
+        return False
+    if low in {
+        "case studies",
+        "customer stories",
+        "testimonials",
+        "reviews",
+        "estudios de caso",
+        "casos de éxito",
+        "testimonios",
+        "reseñas",
+        "opiniones",
+    }:
+        return True
+    return any(marker in low for marker in (" + ", "products", "services", "platform", "infrastructure", "software delivery", "financial services"))
+
+
+def _looks_like_bare_page_label(low: str) -> bool:
+    if len(low) > 40:
+        return False
+    if any(mark in low for mark in (".", "?", "!", ":", "|")):
+        return False
+    if any(char.isdigit() for char in low):
+        return False
+    return not re.search(
+        r"\b(?:is|are|helps|help|enables|enable|offers|provides|builds|creates|automates|streamlines|improves|reduces|usó|logró|alcanzo|alcanzó|genera|mejora|reduce|optimiza|escala|scaled)\b",
+        low,
+    )
+
+
+def _looks_like_title_or_directory(low: str) -> bool:
+    return (
+        " | " in low
+        or " - " in low[:120]
+        or "company details" in low
+        or "industry:" in low
+        or "employees:" in low
     )

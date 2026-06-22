@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any, Iterable
 
-from src.visual_signature._internal.utils import unique as _unique
+from src.visual_signature._internal.utils import slug as _slug, unique as _unique
 from src.visual_signature.affordance_semantics.affordance_models import (
     AFFORDANCE_SEMANTICS_SCHEMA_VERSION,
     AffordanceClassification,
@@ -271,17 +271,8 @@ def _evidence_sources(evidence: AffordanceEvidence) -> list[str]:
 
 def _affordance_id(evidence: AffordanceEvidence, category: str) -> str:
     primary = next(iter(evidence.visible_text or evidence.aria_labels or evidence.titles or evidence.svg_icon_semantics or [category]))
-    return _slug(f"{category}-{primary}")
+    return _slug(f"{category}-{primary}", default="affordance")
 
-
-def _slug(value: str) -> str:
-    out: list[str] = []
-    for char in value.lower().strip():
-        if char.isalnum():
-            out.append(char)
-        elif out and out[-1] != "-":
-            out.append("-")
-    return "".join(out).strip("-") or "affordance"
 
 def _normalize(value: str) -> str:
     return " ".join(

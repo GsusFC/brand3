@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import Any
 
 from src.visual_signature.capture.clean_capture import clean_attempt_quality
+from src.visual_signature._internal.utils import float_or_none as _float_or_none
 
 
 def build_dismissal_audit(manifest: dict[str, Any]) -> dict[str, Any]:
@@ -284,13 +285,6 @@ def _clean_attempt_quality_distribution(rows: list[dict[str, Any]]) -> dict[str,
 def _severity_rank(value: str) -> int:
     order = {"none": 0, "minor": 1, "moderate": 2, "major": 3, "blocking": 4}
     return order.get(value, 0)
-
-
-def _float_or_none(value: Any) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
 
 
 def _rate(numerator: int, denominator: int) -> float:

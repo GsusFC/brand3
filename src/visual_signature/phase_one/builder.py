@@ -18,6 +18,7 @@ from src.visual_signature.phase_zero.models import (
     TRANSITION_RECORD_SCHEMA_VERSION,
     UNCERTAINTY_PROFILE_SCHEMA_VERSION,
 )
+from src.visual_signature._internal.utils import slug as _slug
 
 
 def build_phase_one_bundle(source: PhaseOneSourceCapture) -> PhaseOneCaptureBundle:
@@ -410,17 +411,6 @@ def _uncertainty_profile(
 
 def _created_at(source: PhaseOneSourceCapture) -> str:
     return source.captured_at or datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
-
-
-def _slug(value: str) -> str:
-    value = value.lower().strip()
-    out = []
-    for char in value:
-        if char.isalnum():
-            out.append(char)
-        elif out and out[-1] != "-":
-            out.append("-")
-    return "".join(out).strip("-") or "capture"
 
 
 def _float(value: Any, default: float = 0.0) -> float:

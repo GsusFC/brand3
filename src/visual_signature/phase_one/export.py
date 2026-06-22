@@ -9,7 +9,12 @@ from pathlib import Path
 from typing import Any
 
 from src.visual_signature.phase_one.types import PhaseOneCaptureBundle, PhaseOneExportManifest
-from src.visual_signature._internal.utils import utc_now as _utc_now, json_default as _json_default, write_json as _write_json
+from src.visual_signature._internal.utils import (
+    slug as _slug,
+    utc_now as _utc_now,
+    json_default as _json_default,
+    write_json as _write_json,
+)
 
 
 def export_phase_one_bundle(
@@ -109,16 +114,4 @@ def export_phase_one_bundle(
     )
     _write_json(manifests_root / "phase_one_manifest.json", manifest.to_dict())
     return manifest
-
-
-def _slug(value: str) -> str:
-    value = value.lower().strip()
-    out = []
-    for char in value:
-        if char.isalnum():
-            out.append(char)
-        elif out and out[-1] != "-":
-            out.append("-")
-    return "".join(out).strip("-") or "capture"
-
 

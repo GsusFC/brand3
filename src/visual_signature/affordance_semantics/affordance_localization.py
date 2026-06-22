@@ -11,7 +11,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import Any, Literal
 
-from src.visual_signature._internal.utils import float_or_none as _float_or_none
+from src.visual_signature._internal.utils import float_or_none as _float_or_none, slug as _slug
 from src.visual_signature.versions import AFFORDANCE_LOCALIZATION_SCHEMA_VERSION
 from src.visual_signature.affordance_semantics.affordance_models import (
     AFFORDANCE_SEMANTICS_SCHEMA_VERSION,
@@ -448,7 +448,7 @@ def _affordance_id(evidence: AffordanceLocalizationEvidence, owner: str) -> str:
             or [owner]
         )
     )
-    return _slug(f"{owner}-{primary}")
+    return _slug(f"{owner}-{primary}", default="affordance-owner")
 
 def _flatten_ancestry(values: list[Any]) -> list[str]:
     tokens: list[str] = []
@@ -479,15 +479,6 @@ def _normalize(value: str) -> str:
         "".join(ch if ch.isalnum() or ch.isspace() else " " for ch in (value or "").lower().replace("-", " ").replace("/", " "))
         .split()
     )
-
-def _slug(value: str) -> str:
-    out: list[str] = []
-    for char in value.lower().strip():
-        if char.isalnum():
-            out.append(char)
-        elif out and out[-1] != "-":
-            out.append("-")
-    return "".join(out).strip("-") or "affordance-owner"
 
 def _string_list(value: Any) -> list[str]:
     if value is None:
@@ -537,4 +528,3 @@ def _bool_or_none(value: Any) -> bool | None:
     if text in {"false", "0", "no"}:
         return False
     return None
-

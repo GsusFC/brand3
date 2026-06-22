@@ -39,13 +39,18 @@ from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
 from src.features.magnetism.extractor_tail import (
+    absence_of_contradiction_score as _tail_absence_of_contradiction_score,
     brand_audit_evidence_text as _tail_brand_audit_evidence_text,
     has_tldr_v03_contract as _tail_has_tldr_v03_contract,
+    int_between as _tail_int_between,
     is_unusable_audit_quote as _tail_is_unusable_audit_quote,
     default_counter_evidence as _tail_default_counter_evidence,
     infer_claim_type as _tail_infer_claim_type,
+    legacy_value as _tail_legacy_value,
     observations_for_block as _tail_observations_for_block,
+    semantic_alignment_score as _tail_semantic_alignment_score,
     normalized_tldr_confidence as _tail_normalized_tldr_confidence,
+    weighted_score as _tail_weighted_score,
     should_recommend_human_review as _tail_should_recommend_human_review,
     snapshot_limitations as _tail_snapshot_limitations,
     visual_semantics_from_snapshot as _tail_visual_semantics_from_snapshot,
@@ -888,11 +893,11 @@ Return exactly this JSON shape:
             layers,
             tldr,
             scoring_context=scoring_context,
-            int_between_fn=self._int_between,
+            int_between_fn=_tail_int_between,
             earned_magnetism_adjustment_fn=self._earned_magnetism_adjustment,
-            semantic_alignment_score_fn=self._semantic_alignment_score,
-            absence_of_contradiction_score_fn=self._absence_of_contradiction_score,
-            weighted_score_fn=self._weighted_score,
+            semantic_alignment_score_fn=_tail_semantic_alignment_score,
+            absence_of_contradiction_score_fn=_tail_absence_of_contradiction_score,
+            weighted_score_fn=_tail_weighted_score,
         )
 
     def _derive_diagnosis(self, layers: dict[str, Any], metrics: dict[str, Any]) -> dict[str, Any]:
@@ -1036,15 +1041,15 @@ Return exactly this JSON shape:
         payload["executive_headline"] = diagnosis["headline"]
         payload["observations"] = diagnosis["key_observations"][:3]
         payload["tldr_grid"] = {
-            "niche": self._legacy_value(tldr["core_purpose"]),
-            "value_proposition": self._legacy_value(tldr["value_proposition"]),
+            "niche": _tail_legacy_value(tldr["core_purpose"]),
+            "value_proposition": _tail_legacy_value(tldr["value_proposition"]),
             "target_audience": "(no detectado)",
             "friction": "(no detectado)",
-            "uniqueness": self._legacy_value(tldr["brand_idea"]),
-            "primary_cta": self._legacy_value(tldr["mission"]),
-            "core_promise": self._legacy_value(tldr["magnetism"]),
-            "behavioral_hook": self._legacy_value(tldr["vision"]),
-            "tone": self._legacy_value(tldr["personality"]),
+            "uniqueness": _tail_legacy_value(tldr["brand_idea"]),
+            "primary_cta": _tail_legacy_value(tldr["mission"]),
+            "core_promise": _tail_legacy_value(tldr["magnetism"]),
+            "behavioral_hook": _tail_legacy_value(tldr["vision"]),
+            "tone": _tail_legacy_value(tldr["personality"]),
         }
         payload["score_breakdown"] = {
             "magnetism": {
@@ -1316,91 +1321,3 @@ Return exactly this JSON shape:
     @staticmethod
     def _magnetism_phrase_breakdown(text: str) -> dict[str, int]:
         return _scoring_magnetism_phrase_breakdown(text)
-
-    @staticmethod
-    def _semantic_alignment_score(layers: dict[str, Any], *, clamp_fn=None) -> int:
-        pairs = [
-            ("mindspace", "gamespace"),
-            ("aetherspace", "tactispace"),
-            ("netspace", "ambientspace"),
-        ]
-        scores = []
-        for left, right in pairs:
-            left_detected = layers[left]["detected"]
-            right_detected = layers[right]["detected"]
-            if left_detected and right_detected:
-                scores.append(85)
-            elif left_detected or right_detected:
-                scores.append(45)
-            else:
-                scores.append(55)
-
-        envispace_bonus = 10 if layers["envispace"]["detected"] else -10
-        clamp = clamp_fn or MagnetismExtractor._clamp
-        return clamp(round(sum(scores) / len(scores)) + envispace_bonus)
-
-    @staticmethod
-    def _absence_of_contradiction_score(tldr: dict[str, Any], *, clamp_fn=None) -> int:
-        values_text = " ".join(
-            str(block.get("content") or "") for block in tldr.values() if block.get("content")
-        ).lower()
-        contradiction_pairs = [
-            ("playful", "institutional"),
-            ("rebel", "compliance"),
-            ("simple", "configurable"),
-            ("premium", "cheap"),
-        ]
-        penalties = sum(1 for a, b in contradiction_pairs if a in values_text and b in values_text)
-        clamp = clamp_fn or MagnetismExtractor._clamp
-        return clamp(92 - penalties * 18)
-
-    @staticmethod
-    def _weighted_score(scores: dict[str, int], weights: dict[str, float]) -> int:
-        return round(sum(scores[key] * weight for key, weight in weights.items()))
-
-    @staticmethod
-    def _int_between(value: Any, minimum: int, maximum: int) -> int | None:
-        try:
-            number = int(round(float(value)))
-        except (TypeError, ValueError):
-            return None
-        return max(minimum, min(maximum, number))
-
-    @staticmethod
-    def _quadrant(magnetism_score: int, coherence_score: int) -> str:
-        high_magnetism = magnetism_score >= 70
-        high_coherence = coherence_score >= 70
-        if high_magnetism and high_coherence:
-            return "Señal fuerte · validar antes de escalar"
-        if high_magnetism and not high_coherence:
-            return "Eslogan sin estructura · peligrosa"
-        if not high_magnetism and high_coherence:
-            return "Bien pensada sin alma comercial"
-        return "Marca sin escribir · target FLOC*"
-
-    @staticmethod
-    def _magnetism_tier(score: int) -> str:
-        if score >= 85:
-            return "Magnetic"
-        if score >= 70:
-            return "Memorable"
-        return "Forgettable"
-
-    @staticmethod
-    def _coherence_tier(score: int) -> str:
-        if score >= 80:
-            return "Aligned"
-        if score >= 50:
-            return "Functional"
-        return "Fragmented"
-
-    @staticmethod
-    def _legacy_value(block: dict[str, Any]) -> str:
-        value = block.get("content")
-        if isinstance(value, list):
-            return ", ".join(str(item) for item in value)
-        return str(value or "(no detectado)")
-
-    @staticmethod
-    def _clamp(value: int | float) -> int:
-        return max(0, min(100, int(round(value))))

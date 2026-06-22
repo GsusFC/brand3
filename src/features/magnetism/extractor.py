@@ -39,6 +39,7 @@ from src.reports.brand_context_brief import build_brand_context_brief
 from src.reports.canonical_evidence import build_canonical_brand_evidence
 from src.reports.strategic_evidence_packet import StrategicEvidencePacket
 from src.features.magnetism.extractor_tail import (
+    clamp as _tail_clamp,
     absence_of_contradiction_score as _tail_absence_of_contradiction_score,
     brand_audit_evidence_text as _tail_brand_audit_evidence_text,
     has_tldr_v03_contract as _tail_has_tldr_v03_contract,
@@ -895,8 +896,8 @@ Return exactly this JSON shape:
             scoring_context=scoring_context,
             int_between_fn=_tail_int_between,
             earned_magnetism_adjustment_fn=self._earned_magnetism_adjustment,
-            semantic_alignment_score_fn=_tail_semantic_alignment_score,
-            absence_of_contradiction_score_fn=_tail_absence_of_contradiction_score,
+            semantic_alignment_score_fn=self._semantic_alignment_score,
+            absence_of_contradiction_score_fn=self._absence_of_contradiction_score,
             weighted_score_fn=_tail_weighted_score,
         )
 
@@ -917,6 +918,24 @@ Return exactly this JSON shape:
             clamp_fn=clamp_fn or MagnetismExtractor._clamp,
             int_between_fn=int_between_fn or MagnetismExtractor._int_between,
         )
+
+    @staticmethod
+    def _semantic_alignment_score(layers: dict[str, Any], clamp_fn=None) -> int:
+        score = _tail_semantic_alignment_score(layers)
+        return clamp_fn(score) if callable(clamp_fn) else score
+
+    @staticmethod
+    def _absence_of_contradiction_score(tldr: dict[str, Any], clamp_fn=None) -> int:
+        score = _tail_absence_of_contradiction_score(tldr)
+        return clamp_fn(score) if callable(clamp_fn) else score
+
+    @staticmethod
+    def _clamp(value: int | float) -> int:
+        return _tail_clamp(value)
+
+    @staticmethod
+    def _int_between(value: Any, minimum: int, maximum: int) -> int | None:
+        return _tail_int_between(value, minimum, maximum)
 
     def _derive_evidence_packet_summary(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Summarize the shared evidence basis without embedding a second report."""

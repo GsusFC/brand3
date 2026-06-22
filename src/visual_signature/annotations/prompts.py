@@ -16,6 +16,7 @@ def build_annotation_prompt(request: AnnotationRequest) -> str:
     targets = ", ".join(ANNOTATION_TARGETS)
     return "\n".join(
         [
+            f"Prompt version: {PROMPT_VERSION}",
             "You are annotating visual evidence for Brand3 calibration.",
             "Return JSON only. Do not score the brand. Do not infer strategy.",
             "Use unknown when evidence is not visible in the supplied screenshot.",

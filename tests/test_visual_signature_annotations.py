@@ -7,6 +7,7 @@ from pathlib import Path
 
 from src.visual_signature.annotations import annotate_visual_signature, build_annotation_audit
 from src.visual_signature.annotations.annotate_visual_signature import validate_annotation_overlay
+from src.visual_signature.annotations.prompts import build_annotation_prompt
 from src.visual_signature.annotations.providers.mock_provider import MockMultimodalAnnotationProvider
 from src.visual_signature.annotations.types import ANNOTATION_TARGETS
 
@@ -107,6 +108,16 @@ def test_annotate_visual_signature_handles_provider_failure():
     assert annotated["annotations"]["status"] == "failed"
     assert "mock_provider_failure" in annotated["annotations"]["errors"]
     assert annotated["annotations"]["overall_confidence"]["score"] == 0.0
+
+
+def test_annotation_prompt_carries_version_and_targets():
+    prompt = build_annotation_prompt(
+        _payload(),
+    )
+
+    assert "Prompt version: visual-signature-annotation-prompt-1" in prompt
+    assert "Annotation targets:" in prompt
+    assert "logo_prominence" in prompt
 
 
 def test_annotation_audit_summarizes_targets_and_statuses():

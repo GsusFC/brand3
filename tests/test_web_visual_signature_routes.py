@@ -134,6 +134,30 @@ class WebVisualSignatureRouteTests(unittest.TestCase):
         self.assertEqual(response.headers["content-type"], "image/png")
         self.assertNotIn("content-disposition", response.headers)
 
+    def test_visual_signature_screenshot_blocks_dotdot_path_traversal(self):
+        response = self.client.get("/visual-signature/screenshots/../secret.png")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("not found", response.text.lower())
+
+    def test_visual_signature_screenshot_preview_blocks_dotdot_path_traversal(self):
+        response = self.client.get("/visual-signature/screenshots/../secret.png/preview")
+
+        self.assertEqual(response.status_code, 404)
+        self.assertIn("not found", response.text.lower())
+
+    def test_visual_signature_screenshot_blocks_symlink_escape(self):
+        if os.name == "nt":
+            self.skipTest("symlink behavior differs on Windows")
+        outside = self.root / "outside.png"
+        outside.write_bytes(b"\x89PNG\r\n\x1a\n")
+        link = self.visual_root / "screenshots" / "link.png"
+        os.symlink(outside, link)
+
+        response = self.client.get("/visual-signature/screenshots/link.png")
+
+        self.assertEqual(response.status_code, 404)
+
     def test_visual_signature_screenshot_preview_renders_headspace_in_site(self):
         response = self.client.get("/visual-signature/screenshots/headspace.png/preview")
 

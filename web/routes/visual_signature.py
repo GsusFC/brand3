@@ -96,7 +96,7 @@ async def visual_signature_screenshot_preview(
     )
 
 
-@router.get("/visual-signature/screenshots/{filename:path}")
+@router.get("/visual-signature/screenshots/{filename}")
 async def visual_signature_screenshot(
     request: Request,
     filename: str,

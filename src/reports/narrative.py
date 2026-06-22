@@ -41,6 +41,16 @@ from .derivation import DimensionEvidences, Evidence
 from .experimental_perceptual_narrative import (
     PerceptualNarrativeHints,
     build_perceptual_narrative_hints,
+)
+from .narrative_support import (
+    _build_findings_user_prompt,
+    _build_synthesis_user_prompt,
+    _build_tensions_user_prompt,
+    _date_anchor_clause,
+    _default_analyzer,
+    _format_evidences_for_prompt,
+    _unique_preserve,
+    _validate_urls,
     format_perceptual_hints_for_prompt,
 )
 
@@ -847,107 +857,3 @@ def _try_tensions(
         return None
     text = value.strip()
     return text or None
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-def _default_analyzer():
-    """Instantiate the shared LLMAnalyzer, returning None if no API key."""
-    try:
-        from src.features.llm_analyzer import LLMAnalyzer
-        from src.config import LLM_PREMIUM_MODEL
-    except Exception as exc:
-        log.warning("LLMAnalyzer import failed: %s", exc)
-        return None
-    analyzer = LLMAnalyzer(model=LLM_PREMIUM_MODEL)
-    if not analyzer.api_key:
-        return None
-    return analyzer
-
-
-def _format_evidences_for_prompt(evidences: list[Evidence], limit: int) -> str:
-    lines = []
-    for ev in evidences[:limit]:
-        quote = (ev.quote or "").strip()
-        if len(quote) > 240:
-            quote = quote[:237] + "…"
-        quote_part = f'"{quote}"' if quote else "(no quote)"
-        src_bits = [ev.source_type]
-        if ev.source_domain:
-            src_bits.append(ev.source_domain)
-        if ev.sentiment:
-            src_bits.append(ev.sentiment)
-        tag = " · ".join(src_bits)
-        url_part = f" → {ev.url}" if ev.url else ""
-        lines.append(f"[{tag}] {quote_part}{url_part}")
-    return "\n".join(lines)
-
-
-def _validate_urls(urls: list, allowlist: set[str]) -> list[str]:
-    """Keep only http(s) URLs present in the input evidences, dedupe, cap at 4."""
-    out: list[str] = []
-    seen: set[str] = set()
-    for u in urls:
-        if not isinstance(u, str):
-            continue
-        s = u.strip()
-        if not (s.startswith("http://") or s.startswith("https://")):
-            continue
-        if allowlist and s not in allowlist:
-            continue
-        if s in seen:
-            continue
-        seen.add(s)
-        out.append(s)
-        if len(out) >= 4:
-            break
-    return out
-
-
-def _unique_preserve(items: list[str]) -> list[str]:
-    seen: set[str] = set()
-    out: list[str] = []
-    for i in items:
-        if i not in seen:
-            seen.add(i)
-            out.append(i)
-    return out
-
-
-def _band_letter(score: float | None) -> str:
-    if score is None:
-        return "?"
-    if score >= 85:
-        return "A"
-    if score >= 70:
-        return "B"
-    if score >= 55:
-        return "C+"
-    if score >= 40:
-        return "C"
-    if score >= 20:
-        return "D"
-    return "F"
-
-
-def _resolve_analysis_date(date_str: str | None) -> str:
-    """Return an ISO date (YYYY-MM-DD) for prompt injection."""
-    if date_str:
-        return str(date_str).split("T")[0].split(" ")[0].strip()
-    from datetime import date
-    return date.today().isoformat()
-
-
-def _date_anchor_clause(analysis_date: str | None) -> str:
-    """Prompt fragment that anchors the model's sense of now."""
-    today = _resolve_analysis_date(analysis_date)
-    return (
-        f"Today's date is {today}. When evaluating any temporal claim "
-        f"(founding dates, effective dates, 'recent', 'new', 'upcoming', "
-        f"copyright years, version numbers tied to a year), treat this as "
-        f"the current date, NOT your training cutoff. Anything dated on or "
-        f"before {today} is past or present, never future."
-    )

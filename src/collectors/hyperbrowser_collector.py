@@ -1,3 +1,7 @@
 """Facade for Hyperbrowser collector implementation."""
 
-from src.collectors.hyperbrowser_collector_impl import *  # noqa: F401,F403
+import sys
+
+from src.collectors import hyperbrowser_collector_impl as _impl
+
+sys.modules[__name__] = _impl

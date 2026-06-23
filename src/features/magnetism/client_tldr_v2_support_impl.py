@@ -26,9 +26,11 @@ from src.features.magnetism.client_tldr_v2_support_runtime import (
 )
 from src.features.magnetism.client_tldr_v2_support_normalization import (
     _client_score_provenance,
-    _fallback_payload,
     _normalize_tldr_blocks,
     normalize_client_tldr_v2_response,
+)
+from src.features.magnetism.client_tldr_v2_support_normalization_system import (
+    _fallback_payload,
 )
 
 

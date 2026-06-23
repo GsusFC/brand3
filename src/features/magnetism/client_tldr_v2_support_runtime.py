@@ -12,12 +12,10 @@ from typing import Any, Callable
 from src.config import CLIENT_TLDR_V2_MODEL
 from src.features.llm_analyzer import LLMAnalyzer
 from src.features.magnetism.client_tldr_v2_support_contract import (
-    _client_tldr_v2_system_prompt,
-    _coerce_client_tldr_v2_raw_json,
-    _parse_plain_text_client_tldr_v2,
     _safe_raw_response_preview,
-    CLIENT_TLDR_V2_TIMEOUT_SECONDS,
-    client_tldr_v2_response_schema,
+)
+from src.features.magnetism.client_tldr_v2_support_runtime_response import (
+    call_client_tldr_v2_llm,
 )
 
 import os
@@ -135,74 +133,27 @@ def run_client_tldr_v2_pass(
             }
         }
 
-    perceptual_hints = compact_hints_fn(report_base)
-    prompt = build_prompt_fn(
+    raw_response_preview: str | None
+    metadata: dict[str, Any]
+    raw, raw_response_preview, metadata = call_client_tldr_v2_llm(
+        llm=llm,
         brand_name=brand_name,
         url=url,
         current_tldr=current_tldr,
         score_provenance=score_provenance,
         report_base=report_base,
         lang=lang,
-        perceptual_hints=perceptual_hints,
+        build_prompt_fn=build_prompt_fn,
+        compact_hints_fn=compact_hints_fn,
     )
-    try:
-        raw_response = llm._call_json(
-            _client_tldr_v2_system_prompt(lang),
-            prompt,
-            max_tokens=5000,
-            json_schema=client_tldr_v2_response_schema(),
-            schema_name="brand3_client_tldr_v2",
-            strict_schema=False,
-            timeout_seconds=CLIENT_TLDR_V2_TIMEOUT_SECONDS,
-        )
-    except Exception as exc:
+    if raw is None:
         return {
-            "analysis_error": {
-                "reason": "llm_error",
-                "detail": f"The client TLDR v2 pass failed: {exc}",
-            }
+            "analysis_error": metadata["analysis_error"],
+            "raw": metadata.get("raw", {}),
+            "raw_response_preview": metadata.get("raw_response_preview"),
         }
 
-    raw_response_preview = _safe_raw_response_preview(llm)
-    raw = _coerce_client_tldr_v2_raw_json(raw_response)
-    if not raw and raw_response_preview:
-        raw = _parse_plain_text_client_tldr_v2(raw_response_preview)
-
-    if not raw:
-        failure_type = None
-        failures = getattr(llm, "call_failures", None)
-        if isinstance(failures, list) and failures:
-            latest_failure = failures[-1]
-            if isinstance(latest_failure, dict):
-                failure_type = latest_failure.get("error_type")
-        failure_reason = (
-            "transport_error"
-            if failure_type == "transport_error"
-            else "schema_validation_error"
-            if failure_type == "schema_validation_error"
-            else "llm_error"
-        )
-        failure_detail = {
-            "transport_error": "The client TLDR v2 pass hit a transport error before any usable provider payload was returned.",
-            "schema_validation_error": "The client TLDR v2 pass returned JSON that did not satisfy the expected schema.",
-            "llm_error": "The client TLDR v2 pass did not return usable JSON.",
-        }[failure_reason]
-        return {
-            "analysis_error": {
-                "reason": failure_reason,
-                "detail": failure_detail,
-                "error_type": failure_type
-                or (
-                    "transport_error"
-                    if failure_reason == "transport_error"
-                    else "schema_validation_error"
-                    if failure_reason == "schema_validation_error"
-                    else "json_parse_error"
-                ),
-            },
-            "raw": raw_response if isinstance(raw_response, dict) else {},
-            "raw_response_preview": raw_response_preview,
-        }
+    perceptual_hints = compact_hints_fn(report_base)
 
     if normalize_response_fn is None:
         try:
@@ -233,6 +184,6 @@ def run_client_tldr_v2_pass(
     )
     return {
         "validated": validated,
-        "raw": raw,
-        "raw_response_preview": raw_response_preview or (raw_response if isinstance(raw_response, str) else None),
-    }
+            "raw": raw,
+            "raw_response_preview": raw_response_preview or _safe_raw_response_preview(llm),
+        }

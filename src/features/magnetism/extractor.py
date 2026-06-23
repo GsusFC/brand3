@@ -6,14 +6,26 @@ from typing import Any
 
 from src.features.magnetism import extractor_impl as _impl
 from src.features.magnetism import extractor_runtime_impl as _runtime_impl
-from src.features.magnetism.analyst_tldr import maybe_build_system_reading, run_analyst_tldr_pass
-from src.features.magnetism.extractor_impl import *  # noqa: F401,F403
+from src.features.magnetism.analyst_tldr import (
+    maybe_build_system_reading,
+    run_analyst_tldr_pass,
+)
 from src.features.magnetism.extractor_runtime_impl import (  # noqa: F401
     BRAND3_BRAND_RESEARCH_GRAPH_PACK,
     BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT,
     BRAND3_MAGNETISM_RESEARCH_PACK_TLDR,
     build_recommended_research_pack,
 )
+
+__all__ = [
+    "MagnetismExtractor",
+    "maybe_build_system_reading",
+    "run_analyst_tldr_pass",
+    "BRAND3_MAGNETISM_RESEARCH_PACK_TLDR",
+    "BRAND3_BRAND_RESEARCH_GRAPH_PACK",
+    "BRAND3_CONTEXTDEV_VISUAL_ENRICHMENT",
+    "build_recommended_research_pack",
+]
 
 
 # Re-export legacy tunables so tests patching `src.features.magnetism.extractor.*` keep working

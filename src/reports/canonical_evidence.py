@@ -1,3 +1,9 @@
 """Facade for Canonical Evidence implementation."""
 
-from src.reports.canonical_evidence_impl import *  # noqa: F401,F403
+from __future__ import annotations
+
+from src.reports import canonical_evidence_impl as _impl
+
+import sys
+
+sys.modules[__name__] = _impl

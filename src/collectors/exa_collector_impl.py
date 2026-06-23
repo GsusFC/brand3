@@ -1,3 +1,7 @@
 """Exa collector implementation façade."""
 
-from src.collectors.exa_collector_support import *  # noqa: F401, F403
+import sys
+
+from src.collectors import exa_collector_support_impl as _impl
+
+sys.modules[__name__] = _impl

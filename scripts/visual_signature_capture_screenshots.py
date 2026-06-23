@@ -16,8 +16,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.visual_signature.capture.dismissal_audit import build_dismissal_audit  # noqa: E402
-from src.visual_signature.capture.dismissal_audit import dismissal_audit_markdown  # noqa: E402
+from src.visual_signature._internal.dismissal_audit import build_dismissal_audit  # noqa: E402
+from src.visual_signature._internal.dismissal_audit import dismissal_audit_markdown  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import capture_with_playwright as _shared_capture_with_playwright  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import DISMISSAL_TARGET_SELECTOR  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import PerceptualStateMachine  # noqa: E402

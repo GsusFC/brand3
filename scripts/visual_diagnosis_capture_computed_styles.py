@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from src.visual_signature.capture.style_capture import capture_computed_style_snapshot
+from src.visual_signature.capture.computed_style import capture_computed_style_snapshot
 
 
 DEFAULT_OUTPUT_ROOT = Path("out") / "visual_diagnosis_computed_styles"

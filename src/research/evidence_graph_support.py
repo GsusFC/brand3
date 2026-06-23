@@ -6,7 +6,6 @@ from typing import Any
 from urllib.parse import urlparse
 import re
 
-from src.research.evidence_graph_sources import ResearchSource
 from src.research.evidence_graph_sources_support import (
     _dict,
     _edit_distance_at_most,
@@ -84,7 +83,7 @@ def _snapshot_web_url(snapshot: dict[str, Any]) -> str:
     return _normalize_url(str(_dict(snapshot.get("run")).get("url") or ""))
 
 
-def _is_entity_boundary_quarantined_source(source: ResearchSource) -> bool:
+def _is_entity_boundary_quarantined_source(source: Any) -> bool:
     return source.source_type == "noise" and any(
         str(note).startswith("entity_boundary_collision") for note in source.notes
     )

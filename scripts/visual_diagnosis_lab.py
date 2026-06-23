@@ -11,14 +11,14 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.visual_signature.capture import build_visual_diagnosis
-from src.visual_signature.capture.bundle import (
+from src.visual_signature.capture.visual_evidence import (
     VisualEvidenceBundle,
     VisualEvidenceSource,
     fuse_visual_signature_payloads,
 )
 from src.visual_signature.capture.computed_style import computed_style_snapshot_to_visual_signature
 from src.visual_signature.capture.clean_capture import build_clean_capture_decision
-from src.visual_signature.capture.evidence import (
+from src.visual_signature.capture.visual_evidence import (
     build_visual_evidence_from_local_inputs,
     enrich_visual_signature_with_local_screenshot,
     screenshot_capture_to_visual_signature,

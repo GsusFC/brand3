@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import pytest
 from unittest.mock import patch
 
 from fastapi.testclient import TestClient
@@ -208,3 +209,90 @@ def test_review_viewer_persistence_helpers_append_records(tmp_path):
     records = load_viewer_review_records(path)
     assert len(records) == 2
     assert records[0]["hallucination_or_overreach"] == "yes"
+
+
+def test_review_viewer_screenshot_endpoint_blocks_dotdot_paths(tmp_path):
+    sample_path = tmp_path / "review_sample.json"
+    records_path = tmp_path / "review_records.json"
+    annotation_path = tmp_path / "linear.json"
+    outside_screenshot = tmp_path.parent / "outside.png"
+    outside_screenshot.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    annotation_payload = {
+        "brand_name": "Linear",
+        "website_url": "https://linear.app",
+        "vision": {
+            "screenshot": {
+                "available": True,
+                "quality": "usable",
+                "path": "../outside.png",
+            }
+        },
+    }
+    annotation_path.write_text(json.dumps(annotation_payload), encoding="utf-8")
+
+    sample_path.write_text(
+        json.dumps(
+            {
+                "version": "visual-signature-review-batch-1",
+                "items": [
+                    {
+                        "annotation_id": "linear",
+                        "annotation_path": str(annotation_path),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    app = create_review_viewer_app(sample_path=sample_path, review_records_path=records_path)
+    client = TestClient(app)
+
+    response = client.get("/case/linear/screenshot")
+    assert response.status_code == 404
+
+
+def test_review_viewer_screenshot_endpoint_blocks_symlink_escape(tmp_path):
+    sample_path = tmp_path / "review_sample.json"
+    records_path = tmp_path / "review_records.json"
+    annotation_path = tmp_path / "linear.json"
+    real_root = tmp_path / "real"
+    real_root.mkdir()
+    outside_root = tmp_path.parent / "outside_root"
+    outside_root.mkdir()
+    outside_image = outside_root / "outside.png"
+    outside_image.write_bytes(b"\x89PNG\r\n\x1a\n")
+
+    link = real_root / "link.png"
+    try:
+        link.symlink_to(outside_image)
+    except OSError:
+        pytest.skip("symlinks not supported in test environment")
+
+    annotation_payload = {
+        "brand_name": "Linear",
+        "website_url": "https://linear.app",
+        "vision": {"screenshot": {"available": True, "quality": "usable", "path": str(link)}},
+    }
+    annotation_path.write_text(json.dumps(annotation_payload), encoding="utf-8")
+    sample_path.write_text(
+        json.dumps(
+            {
+                "version": "visual-signature-review-batch-1",
+                "items": [
+                    {
+                        "annotation_id": "linear",
+                        "annotation_path": str(annotation_path),
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    app = create_review_viewer_app(sample_path=sample_path, review_records_path=records_path)
+    client = TestClient(app)
+
+    response = client.get("/case/linear/screenshot")
+    assert response.status_code == 404

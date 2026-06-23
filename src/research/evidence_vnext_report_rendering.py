@@ -5,87 +5,20 @@ from __future__ import annotations
 from typing import Any
 
 from src.research.evidence_vnext_report_debug import print_changed_fields, print_gate_reasons
+from src.research.evidence_vnext_report_rendering_support import (
+    _acquisition_matrix_lines,
+    _recommendation_lines,
+    _semantic_evidence_lines,
+    _semantic_llm_lines,
+    _summary_lines,
+)
 
 
 def render_batch_report_markdown(report: dict[str, Any]) -> str:
-    totals = report.get("totals") or {}
-    recommendation = report.get("recommendation") or {}
-    lines = [
-        "# Evidence vNext Batch Report",
-        "",
-        "## Summary",
-        "",
-        f"- Runs: `{totals.get('run_count', 0)}`",
-        f"- Status: `{recommendation.get('status', 'unknown')}`",
-        f"- Accepted: `{totals.get('accepted', 0)}`",
-        f"- Review required: `{totals.get('review_required', 0)}`",
-        f"- Rejected: `{totals.get('rejected', 0)}`",
-        f"- Reclassified to noise: `{totals.get('reclassified_to_noise', 0)}`",
-        f"- Material lost fields: `{totals.get('material_lost_fields', 0)}`",
-        "",
-    ]
-    acquisition = report.get("acquisition_matrix") or {}
-    provider_rows = acquisition.get("provider_rows") or []
-    lines.extend(["## Acquisition Matrix", ""])
-    if provider_rows:
-        lines.extend(["| Provider | Accepted | Review | Rejected | Top reasons |", "| --- | ---: | ---: | ---: | --- |"])
-        for row in provider_rows:
-            reasons = ", ".join(f"{key}={value}" for key, value in (row.get("reason_counts") or {}).items())
-            lines.append(
-                "| {provider} | {accepted} | {review} | {rejected} | {reasons} |".format(
-                    provider=row.get("provider") or "unknown_provider",
-                    accepted=row.get("accepted") or 0,
-                    review=row.get("review_required") or 0,
-                    rejected=row.get("rejected") or 0,
-                    reasons=reasons or "-",
-                )
-            )
-    else:
-        lines.append("- None")
-    semantic = report.get("semantic_evidence") or {}
-    lines.extend(["", "## Semantic Evidence Shadow", ""])
-    lines.append(f"- Classifier: `{semantic.get('classifier') or 'none'}`")
-    lines.append(f"- Accepted material: `{semantic.get('accepted_material', 0)}`")
-    lines.append(f"- Accepted weak: `{semantic.get('accepted_weak', 0)}`")
-    class_counts = semantic.get("semantic_class_counts") or {}
-    if class_counts:
-        lines.extend(["", "| Semantic class | Count |", "| --- | ---: |"])
-        for key, value in class_counts.items():
-            lines.append(f"| {key} | {value} |")
-    weak_examples = semantic.get("weak_examples") or []
-    if weak_examples:
-        lines.extend(["", "Weak accepted examples:"])
-        for item in weak_examples[:10]:
-            lines.append(
-                "- run `{run_id}` `{brand_name}` · `{semantic_class}` `{url}`: {text_preview}".format(
-                    run_id=item.get("run_id"),
-                    brand_name=item.get("brand_name") or "",
-                    semantic_class=item.get("semantic_class") or "",
-                    url=item.get("url") or "-",
-                    text_preview=item.get("text_preview") or "-",
-                )
-            )
-    semantic_llm = report.get("semantic_llm") or {}
-    lines.extend(["", "## Semantic LLM Shadow", ""])
-    lines.append(f"- Status counts: `{semantic_llm.get('status_counts') or {}}`")
-    lines.append(f"- Models: `{semantic_llm.get('models') or {}}`")
-    lines.append(
-        f"- Semantic class disagreements: `{semantic_llm.get('semantic_class_disagreement_count', 0)}`"
-    )
-    lines.append(
-        f"- Materiality disagreements: `{semantic_llm.get('materiality_disagreement_count', 0)}`"
-    )
-    for item in (semantic_llm.get("rows") or [])[:10]:
-        lines.append(
-            "- run `{run_id}` `{brand_name}` · status `{status}` · model `{model}` · class_delta `{class_delta}` · materiality_delta `{materiality_delta}`".format(
-                run_id=item.get("run_id"),
-                brand_name=item.get("brand_name") or "",
-                status=item.get("status") or "",
-                model=item.get("model") or "",
-                class_delta=item.get("semantic_class_disagreement_count") or 0,
-                materiality_delta=item.get("materiality_disagreement_count") or 0,
-            )
-        )
+    lines = _summary_lines(report)
+    lines.extend(_acquisition_matrix_lines(report))
+    lines.extend(_semantic_evidence_lines(report))
+    lines.extend(_semantic_llm_lines(report))
     exclusions = report.get("acquisition_contract_exclusions") or {}
     lines.extend(["", "## Acquisition Contract Exclusions", ""])
     lines.append(f"- Shadow exclusions: `{exclusions.get('total', 0)}`")
@@ -456,18 +389,16 @@ def render_batch_report_markdown(report: dict[str, Any]) -> str:
                 )
             )
         lines.append("")
-    lines.extend(["", "## Runs", ""])
-    lines.append("| Run | Brand | Status | Promotion | Audit | Accepted | Review | Rejected | Reclassified | Material Lost |")
-    lines.append("| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |")
-    for row in report.get("rows") or []:
-        audit = "yes" if row.get("manual_audit_required") else "no"
+        lines.extend(["", "## Runs", ""])
+        lines.append("| Run | Brand | Status | Promotion | Audit | Accepted | Review | Rejected | Reclassified | Material Lost |")
+        lines.append("| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |")
+        for row in report.get("rows") or []:
+            audit = "yes" if row.get("manual_audit_required") else "no"
         lines.append(
-            "| {run_id} | {brand_name} | {status} | {promotion_status} | {audit} | {accepted} | {review_required} | {rejected} | {reclassified_to_noise} | {material_lost_fields} |".format(
-                audit=audit,
-                **row
+                "| {run_id} | {brand_name} | {status} | {promotion_status} | {audit} | {accepted} | {review_required} | {rejected} | {reclassified_to_noise} | {material_lost_fields} |".format(
+                    audit=audit,
+                    **row
+                )
             )
-        )
-    lines.extend(["", "## Recommendation", ""])
-    for reason in recommendation.get("reason_codes") or []:
-        lines.append(f"- `{reason}`")
+        lines.extend(_recommendation_lines(report))
     return "\n".join(lines).rstrip() + "\n"

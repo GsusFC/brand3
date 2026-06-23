@@ -1,11 +1,7 @@
 """Facade for scoring replay implementation."""
 
-from src.scoring.replay_impl import *  # noqa: F401,F403
-from src.scoring.replay_impl import _compute_scoring_state_fingerprint, _default_gate_config
+import sys
 
-__all__ = []
-__all__ += [
-    name
-    for name in globals()
-    if not name.startswith("_") or name in {"_compute_scoring_state_fingerprint", "_default_gate_config"}
-]
+from src.scoring import replay_impl as _impl
+
+sys.modules[__name__] = _impl

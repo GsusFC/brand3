@@ -1,3 +1,9 @@
 """Facade for visual analyzer implementation."""
 
-from src.features.visual_analyzer_impl import *  # noqa: F401,F403
+from __future__ import annotations
+
+from src.features import visual_analyzer_impl as _impl
+
+import sys
+
+sys.modules[__name__] = _impl

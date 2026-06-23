@@ -1,3 +1,9 @@
 """Facade for Presencia extractor implementation."""
 
-from src.features.presencia_impl import *  # noqa: F401,F403
+from __future__ import annotations
+
+from src.features import presencia_impl as _impl
+
+import sys
+
+sys.modules[__name__] = _impl

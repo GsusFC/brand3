@@ -2,4 +2,8 @@
 
 from __future__ import annotations
 
-from src.features.percepcion_impl import *  # noqa: F401,F403
+from src.features import percepcion_impl as _impl
+
+import sys
+
+sys.modules[__name__] = _impl

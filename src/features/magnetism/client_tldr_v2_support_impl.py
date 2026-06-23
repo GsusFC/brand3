@@ -15,10 +15,6 @@ from src.features.magnetism.client_tldr_v2_support_contract import (
     CLIENT_TLDR_V2_PROMPT_VERSION,
     CLIENT_TLDR_V2_TIMEOUT_SECONDS,
     _compact_perceptual_hints_for_prompt,
-    _compact_readiness_for_prompt,
-    _compact_score_state_for_prompt,
-    _compact_dimensions_for_prompt,
-    _compact_perceptual_guidance,
     build_client_tldr_v2_prompt as _build_client_tldr_v2_prompt,
 )
 from src.features.magnetism.client_tldr_v2_support_runtime import (

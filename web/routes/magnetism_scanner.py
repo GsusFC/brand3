@@ -16,6 +16,7 @@ from web.routes.magnetism_scanner_impl import (  # noqa: F401
     _sv9_scan_id_for_run,
     _ui,
 )
+from src.research.evidence_semantic_llm import build_llm_semantic_assessment
 from ..i18n import magnetism_landing_copy
 from ..workers.url_validator import validate_url
 from ..workers import url_validator  # keep module compatibility for historical references

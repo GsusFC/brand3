@@ -21,7 +21,6 @@ from .magnetism_scanner_impl import (
     _LOG,
     _elapsed,
     _elapsed_label,
-    _evidence_vnext_research_summary,
     _evidence_reliability_model,
     _executive_analysis_for_language,
     _internal_audit_display_decision,
@@ -44,6 +43,7 @@ from .magnetism_scanner_impl import (
     build_audit_aware_tldr_v2,
     build_client_tldr_v2,
 )
+from .magnetism_scanner_vnext import _evidence_vnext_research_summary
 
 router = APIRouter()
 

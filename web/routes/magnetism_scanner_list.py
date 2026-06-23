@@ -16,8 +16,6 @@ from ..workers.slug import slug_from_url
 
 from .magnetism_scanner_impl import (
     _Lang,
-    _load_evidence_vnext_diagnostic,
-    _load_evidence_vnext_llm_shadow,
     _load_magnetism_index_data,
     _load_run_summary,
     _lang_q,
@@ -25,6 +23,7 @@ from .magnetism_scanner_impl import (
     _ui,
     _with_lang,
 )
+from .magnetism_scanner_vnext import _load_evidence_vnext_diagnostic, _load_evidence_vnext_llm_shadow
 
 router = APIRouter()
 

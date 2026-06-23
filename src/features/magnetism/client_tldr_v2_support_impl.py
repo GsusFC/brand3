@@ -19,21 +19,17 @@ from src.features.magnetism.client_tldr_v2_support_runtime import (
     _ensure_client_tldr_runtime_env_loaded,
     _log_client_tldr_v2_runtime_context,
     _normalize_choice,
+    run_client_tldr_v2_pass as _runtime_run_client_tldr_v2_pass,
 )
 from src.features.magnetism.client_tldr_v2_support_contract import (
     CLIENT_TLDR_V2_PROMPT_VERSION,
     CLIENT_TLDR_V2_TIMEOUT_SECONDS,
-    _client_tldr_v2_system_prompt,
-    _coerce_client_tldr_v2_raw_json,
     _compact_dimensions_for_prompt,
     _compact_perceptual_guidance,
     _compact_perceptual_hints_for_prompt,
     _compact_readiness_for_prompt,
     _compact_score_state_for_prompt,
-    _parse_plain_text_client_tldr_v2,
-    _safe_raw_response_preview,
     build_client_tldr_v2_prompt as _build_client_tldr_v2_prompt,
-    client_tldr_v2_response_schema,
 )
 
 def build_client_tldr_v2_prompt(
@@ -185,82 +181,18 @@ def run_client_tldr_v2_pass(
     lang: str,
 ) -> dict[str, Any]:
     """Call the LLM once and normalize the client TLDR v2 response."""
-    if llm is None or not getattr(llm, "api_key", None):
-        return {
-            "analysis_error": {
-                "reason": "llm_unavailable",
-                "detail": "No LLM API key is available for the client TLDR v2 preview.",
-            }
-        }
-
-    perceptual_hints = _compact_perceptual_hints_for_prompt(report_base)
-    prompt = build_client_tldr_v2_prompt(
+    return _runtime_run_client_tldr_v2_pass(
+        llm=llm,
         brand_name=brand_name,
         url=url,
         current_tldr=current_tldr,
         score_provenance=score_provenance,
         report_base=report_base,
         lang=lang,
-        perceptual_hints=perceptual_hints,
+        build_prompt_fn=build_client_tldr_v2_prompt,
+        compact_hints_fn=_compact_perceptual_hints_for_prompt,
+        normalize_response_fn=normalize_client_tldr_v2_response,
     )
-    try:
-        raw_response = llm._call_json(
-            _client_tldr_v2_system_prompt(lang),
-            prompt,
-            max_tokens=5000,
-            json_schema=client_tldr_v2_response_schema(),
-            schema_name="brand3_client_tldr_v2",
-            strict_schema=False,
-            timeout_seconds=CLIENT_TLDR_V2_TIMEOUT_SECONDS,
-        )
-    except Exception as exc:
-        return {
-            "analysis_error": {
-                "reason": "llm_error",
-                "detail": f"The client TLDR v2 pass failed: {exc}",
-            }
-        }
-    raw_response_preview = _safe_raw_response_preview(llm)
-    raw = _coerce_client_tldr_v2_raw_json(raw_response)
-    if not raw and raw_response_preview:
-        raw = _parse_plain_text_client_tldr_v2(raw_response_preview)
-    if not raw:
-        failure_type = None
-        failures = getattr(llm, "call_failures", None)
-        if isinstance(failures, list) and failures:
-            latest_failure = failures[-1]
-            if isinstance(latest_failure, dict):
-                failure_type = latest_failure.get("error_type")
-        failure_reason = "transport_error" if failure_type == "transport_error" else "schema_validation_error" if failure_type == "schema_validation_error" else "llm_error"
-        failure_detail = {
-            "transport_error": "The client TLDR v2 pass hit a transport error before any usable provider payload was returned.",
-            "schema_validation_error": "The client TLDR v2 pass returned JSON that did not satisfy the expected schema.",
-            "llm_error": "The client TLDR v2 pass did not return usable JSON.",
-        }[failure_reason]
-        return {
-            "analysis_error": {
-                "reason": failure_reason,
-                "detail": failure_detail,
-                "error_type": failure_type or ("transport_error" if failure_reason == "transport_error" else "schema_validation_error" if failure_reason == "schema_validation_error" else "json_parse_error"),
-            },
-            "raw": raw_response if isinstance(raw_response, dict) else {},
-            "raw_response_preview": raw_response_preview,
-        }
-    validated = normalize_client_tldr_v2_response(
-        raw,
-        brand_name=brand_name,
-        url=url,
-        current_tldr=current_tldr,
-        score_provenance=score_provenance,
-        report_base=report_base,
-        lang=lang,
-        perceptual_guidance=perceptual_hints,
-    )
-    return {
-        "validated": validated,
-        "raw": raw,
-        "raw_response_preview": raw_response_preview or (raw_response if isinstance(raw_response, str) else None),
-    }
 
 
 def normalize_client_tldr_v2_response(

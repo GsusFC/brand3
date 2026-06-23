@@ -92,8 +92,6 @@ def _source_observation_metrics(observations: list[BrandSourceObservation]) -> d
 
 
 def _evaluate_source_case(case: BrandSourceBakeoffCase) -> BrandSourceBakeoffResult:
-    from src.research.brand_intelligence_core import build_brand_source_inventory
-
     inventory = build_brand_source_inventory(case.plan, case.observations)
     inventory_ready = not inventory.missing_required_channels and not case.plan.required_missing
     return BrandSourceBakeoffResult(

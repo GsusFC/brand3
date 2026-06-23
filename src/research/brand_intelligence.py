@@ -423,17 +423,118 @@ def review_identity_signal(listing: dict[str, object]) -> BrandIdentitySignal | 
     return _impl(listing)
 
 
-from src.research.brand_intelligence_core import (
-    build_brand_evidence_graph,
-    build_brand_source_inventory,
-    build_brand_source_plan,
-    evaluate_brand_identity_bakeoff,
-    evaluate_brand_source_bakeoff,
-    evidence_item_from_observation,
-    owned_web_source_observation,
-    plan_brand_intelligence,
-    profile_source_observation,
-    review_source_observation,
-    scope_external_observation_to_entity,
-    search_source_observation,
-)
+def build_brand_source_plan(entity: ResolvedBrandEntity) -> BrandSourcePlan:
+    from src.research.brand_intelligence_core import build_brand_source_plan as _impl
+
+    return _impl(entity)
+
+
+def plan_brand_intelligence(seed: BrandSeed) -> tuple[ResolvedBrandEntity, BrandSourcePlan]:
+    from src.research.brand_intelligence_core import plan_brand_intelligence as _impl
+
+    return _impl(seed)
+
+
+def build_brand_source_inventory(
+    plan: BrandSourcePlan,
+    observations: list[BrandSourceObservation],
+) -> BrandSourceInventory:
+    from src.research.brand_intelligence_core import build_brand_source_inventory as _impl
+
+    return _impl(plan, observations)
+
+
+def search_source_observation(
+    result: dict[str, object],
+    *,
+    provider: str = "exa",
+    channel: SourceChannel = "search",
+) -> BrandSourceObservation:
+    from src.research.brand_intelligence_core import search_source_observation as _impl
+
+    return _impl(result, provider=provider, channel=channel)
+
+
+def scope_external_observation_to_entity(
+    observation: BrandSourceObservation,
+    result: dict[str, object],
+    *,
+    entity: ResolvedBrandEntity,
+    seed_url: str = "",
+    brand: str = "",
+) -> BrandSourceObservation:
+    from src.research.brand_intelligence_core import scope_external_observation_to_entity as _impl
+
+    return _impl(
+        observation,
+        result,
+        entity=entity,
+        seed_url=seed_url,
+        brand=brand,
+    )
+
+
+def owned_web_source_observation(
+    capture: dict[str, object],
+    *,
+    provider: str = "firecrawl",
+    channel: SourceChannel = "owned_web",
+) -> BrandSourceObservation:
+    from src.research.brand_intelligence_core import owned_web_source_observation as _impl
+
+    return _impl(capture, provider=provider, channel=channel)
+
+
+def review_source_observation(
+    listing: dict[str, object],
+    *,
+    provider: str = "review-source",
+    channel: SourceChannel = "reviews",
+) -> BrandSourceObservation:
+    from src.research.brand_intelligence_core import review_source_observation as _impl
+
+    return _impl(listing, provider=provider, channel=channel)
+
+
+def profile_source_observation(
+    profile: dict[str, object],
+    *,
+    provider: str = "profile-source",
+    channel: SourceChannel = "social",
+) -> BrandSourceObservation:
+    from src.research.brand_intelligence_core import profile_source_observation as _impl
+
+    return _impl(profile, provider=provider, channel=channel)
+
+
+def evidence_item_from_observation(
+    observation: BrandSourceObservation,
+    text: str,
+    *,
+    kind: BrandEvidenceKind | None = None,
+    supports: list[str] | None = None,
+) -> BrandEvidenceItem:
+    from src.research.brand_intelligence_core import evidence_item_from_observation as _impl
+
+    return _impl(observation, text, kind=kind, supports=supports)
+
+
+def build_brand_evidence_graph(
+    inventory: BrandSourceInventory,
+    evidence_items: list[BrandEvidenceItem],
+) -> BrandEvidenceGraph:
+    from src.research.brand_intelligence_core import build_brand_evidence_graph as _impl
+
+    return _impl(inventory, evidence_items)
+
+
+def evaluate_brand_identity_bakeoff(cases: list[BrandIdentityBakeoffCase]) -> dict[str, object]:
+    from src.research.brand_intelligence_core import evaluate_brand_identity_bakeoff as _impl
+
+    return _impl(cases)
+
+
+def evaluate_brand_source_bakeoff(cases: list[BrandSourceBakeoffCase]) -> dict[str, object]:
+    from src.research.brand_intelligence_core import evaluate_brand_source_bakeoff as _impl
+
+    return _impl(cases)

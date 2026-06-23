@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from src.research import exa_vnext_bakeoff_impl as _impl
+import sys
 
-globals().update({name: getattr(_impl, name) for name in dir(_impl) if not name.startswith("__")})
-__all__ = [name for name in globals() if name not in {"_impl", "__all__"}]
-
+sys.modules[__name__] = _impl

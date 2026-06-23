@@ -1,4 +1,7 @@
 """Web collector implementation façade."""
 
-from src.collectors.web_collector_support import *  # noqa: F401, F403
+import sys
 
+from src.collectors import web_collector_support_impl as _impl
+
+sys.modules[__name__] = _impl

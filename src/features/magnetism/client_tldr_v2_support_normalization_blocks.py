@@ -5,8 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from src.features.magnetism.analyst_tldr import TLDR_KEYS
-from src.features.magnetism.client_tldr_v2_support_normalization_system import _question_for_block
 from src.features.magnetism.client_tldr_v2_support_runtime import _normalize_choice
+from src.features.magnetism.client_tldr_v2_support_normalization_system_text import (
+    _question_for_block,
+)
 
 
 def _normalize_client_block(

@@ -21,10 +21,12 @@ from .magnetism_scanner_impl import (
     _with_lang,
 )
 from .magnetism_scanner_status_copy import (
+    _build_scanner_status_context,
     _LOADER_PHASE_CAPTIONS,
     _MAGNETISM_PHASE_FINAL_LABELS,
     _MAGNETISM_PHASES,
     _MAGNETISM_STATUS_COPY,
+    _scan_status_not_found_response,
 )
 from ..storage import get_magnetism_scan_by_token
 from ..scan_links import sv9_scan_id_for_run
@@ -43,12 +45,7 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
     """Render the shared waiting page for an in-flight Magnetism scan."""
     row = await asyncio.to_thread(get_magnetism_scan_by_token, token)
     if row is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan token {token}", "ui_lang": lang},
-            status_code=404,
-        )
+        return _scan_status_not_found_response(request, token, lang)
     if row.get("status") == "ready":
         return RedirectResponse(_primary_scan_ready_href(row, lang=lang), status_code=303)
 
@@ -58,35 +55,25 @@ async def magnetism_scanner_status(request: Request, token: str, lang: _Lang = Q
         **_MAGNETISM_PHASE_FINAL_LABELS[lang],
     }
     status_copy = _MAGNETISM_STATUS_COPY[lang]
+    elapsed_seconds = _elapsed(row.get("started_at"))
+    elapsed_label = _elapsed_label(elapsed_seconds)
     return templates.TemplateResponse(
         request,
         "status.html.j2",
-        {
-            "ui_lang": lang,
-            "token": token,
-            "brand_slug": row.get("brand_name") or "brand scan",
-            "status": row.get("status") or "queued",
-            "elapsed_seconds": _elapsed(row.get("started_at")),
-            "elapsed_label": _elapsed_label(_elapsed(row.get("started_at"))),
-            "error_message": row.get("error_message"),
-            "failure_diagnostics": _scanner_failure_diagnostics(row),
-            "phase": phase,
-            "phase_label": phase_labels.get(phase, "Working" if lang == "en" else "Trabajando"),
-            "phase_steps": _phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
-            "assets_href": "/magnetism-scanner/{}/assets".format(token),
-            "loader_phase_captions": _LOADER_PHASE_CAPTIONS[lang],
-            "ready_href": _primary_scan_ready_href(row, lang=lang),
-            "back_href": _with_lang("/magnetism-scanner", lang),
-            "status_label": "brand_scanner_status",
-            "typical_run_label": "3-5 min",
-            "status_note": status_copy["note"],
-            "queued_message": status_copy["queued"],
-            "ready_message": status_copy["ready"],
-            "ready_link_label": status_copy["ready_link"],
-            "back_link_label": status_copy["back_link"],
-            "failed_headline": status_copy["failed"],
-            "retry_url": row.get("url") if (row.get("status") == "failed" and row.get("url") not in (None, "", "manual")) else None,
-        },
+        _build_scanner_status_context(
+            row=row,
+            token=token,
+            lang=lang,
+            phase=phase,
+            phase_label=phase_labels.get(phase, "Working" if lang == "en" else "Trabajando"),
+            phase_steps=_phase_steps(_MAGNETISM_PHASES[lang], phase, row.get("status") or "queued", lang=lang),
+            failure_diagnostics=_scanner_failure_diagnostics(row),
+            elapsed_seconds=elapsed_seconds,
+            elapsed_label=elapsed_label,
+            status_copy=status_copy,
+            ready_href=_primary_scan_ready_href(row, lang=lang),
+            back_href=_with_lang("/magnetism-scanner", lang),
+        ),
     )
 
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from time import perf_counter
+
 from src.services.run_result_assembly import build_run_result
 from src.services.run_finalization_persistence import persist_finalization_artifacts
 
@@ -52,6 +54,8 @@ def finalize_run(
     progress_cb=None,
     cancel_check=None,
 ) -> dict:
+    phase_started = perf_counter()
+    step_started = phase_started
     result, run_audit_context, _, _ = build_run_result(
         service=service,
         store=store,
@@ -93,7 +97,7 @@ def finalize_run(
         brand_score=brand_score,
         summary=summary,
     )
-    persist_finalization_artifacts(
+    step_started, phase_started = persist_finalization_artifacts(
         service=service,
         store=store,
         run_id=run_id,
@@ -104,5 +108,7 @@ def finalize_run(
         summary=summary,
         brand_score=brand_score,
         run_audit_context=run_audit_context,
+        step_started=step_started,
+        phase_started=phase_started,
     )
     return result

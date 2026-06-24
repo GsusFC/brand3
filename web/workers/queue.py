@@ -19,11 +19,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from src.features.magnetism.readiness import assess_scanner_readiness
-from src.quality.publication_readiness import (
-    attach_scanner_publication_decision,
-    is_publishable_report,
-)
-from src.services.magnetism_service import ensure_sv9_scan_for_source_run
+from src.quality.publication_readiness import attach_scanner_publication_decision
+from . import queue_support
 from ..config import settings
 
 log = logging.getLogger("brand3.web.queue")
@@ -55,14 +52,7 @@ def _call_engine(url: str, progress_cb=None) -> dict:
         if "progress_cb" in signature.parameters:
             return _run_analysis_override(url, progress_cb=progress_cb)
         return _run_analysis_override(url)
-    from src.services.brand_service import run as brand_service_run
-    return brand_service_run(
-        url,
-        use_social=True,
-        use_llm=True,
-        enable_visual_signature_shadow_run=settings.visual_signature_scan_enabled,
-        progress_cb=progress_cb,
-    )
+    return queue_support._run_brand_scan(url, progress_cb=progress_cb)
 
 
 def _call_magnetism_engine(job: dict, progress_cb=None) -> dict:
@@ -72,26 +62,7 @@ def _call_magnetism_engine(job: dict, progress_cb=None) -> dict:
         if "progress_cb" in signature.parameters:
             return _run_magnetism_override(job, progress_cb=progress_cb)
         return _run_magnetism_override(job)
-
-    from src.services.magnetism_service import (
-        run_legacy_manual_magnetism,
-        run_magnetism_from_audit_run,
-        run_magnetism_from_url,
-    )
-
-    input_type = str(job.get("input_type") or "url")
-    input_value = str(job.get("input_value") or "")
-    if input_type == "audit_run":
-        if progress_cb is not None:
-            progress_cb("interpreting")
-        return run_magnetism_from_audit_run(int(input_value))
-    if input_type == "manual":
-        if progress_cb is not None:
-            progress_cb("extracting")
-        return run_legacy_manual_magnetism(input_value)
-    if progress_cb is not None:
-        progress_cb("collecting")
-    return run_magnetism_from_url(input_value, progress_cb=progress_cb)
+    return queue_support._run_magnetism_scan(job, progress_cb=progress_cb)
 
 
 def _db_path() -> Path:
@@ -377,34 +348,15 @@ def _now() -> str:
 
 
 def _analysis_report_readiness(result: dict, *, run_id: int | None = None) -> dict | None:
-    audit = result.get("audit") if isinstance(result, dict) else None
-    if not isinstance(audit, dict):
-        audit = {}
-    readiness = audit.get("report_readiness")
-    if isinstance(readiness, dict):
-        return readiness
-    if not run_id:
-        return None
-    try:
-        from src.reports.derivation import build_report_readiness_from_snapshot
-        from src.storage.sqlite_store import SQLiteStore
-
-        store = SQLiteStore(str(_db_path()))
-        try:
-            snapshot = store.get_run_snapshot(run_id)
-        finally:
-            store.close()
-        if not snapshot:
-            return None
-        derived = build_report_readiness_from_snapshot(snapshot)
-        return derived if isinstance(derived, dict) else None
-    except Exception:  # noqa: BLE001
-        log.exception("report readiness derivation failed run_id=%s", run_id)
-        return None
+    return queue_support._analysis_report_readiness(
+        result,
+        run_id=run_id,
+        db_path=str(_db_path()),
+    )
 
 
 def _is_publishable_report(readiness: dict | None) -> bool:
-    return is_publishable_report(readiness)
+    return queue_support._is_publishable_report(readiness)
 
 
 def _load_request(token: str) -> dict | None:
@@ -452,64 +404,22 @@ def _set_magnetism_status(token: str, **columns) -> None:
 
 
 def _fail_magnetism_scan_with_payload(token: str, reason: str, payload: dict) -> None:
-    import json
-
-    with sqlite3.connect(str(_db_path())) as conn:
-        conn.execute(
-            """
-            UPDATE magnetism_scans
-            SET raw_payload = ?,
-                status = 'failed',
-                phase = 'failed',
-                phase_updated_at = ?,
-                completed_at = ?,
-                error_message = ?
-            WHERE token = ?
-            """,
-            (
-                json.dumps(payload, ensure_ascii=False),
-                _now(),
-                _now(),
-                reason[:500],
-                token,
-            ),
-        )
-        conn.commit()
+    queue_support._fail_magnetism_scan_with_payload(
+        token,
+        reason=reason,
+        payload=payload,
+        now=_now(),
+        db_path=str(_db_path()),
+    )
 
 
 def _complete_magnetism_scan(token: str, payload: dict) -> None:
-    import json
-
-    with sqlite3.connect(str(_db_path())) as conn:
-        conn.execute(
-            """
-            UPDATE magnetism_scans
-            SET brand_name = ?,
-                url = ?,
-                magnetism_score = ?,
-                coherence_score = ?,
-                quadrant = ?,
-                raw_payload = ?,
-                status = 'ready',
-                phase = 'ready',
-                phase_updated_at = ?,
-                completed_at = ?,
-                error_message = NULL
-            WHERE token = ?
-            """,
-            (
-                str(payload.get("brand_name") or "Unknown Brand"),
-                str(payload.get("url") or "Manual Upload"),
-                int(payload.get("magnetism_score") or 0),
-                int(payload.get("coherence_score") or 0),
-                str(payload.get("quadrant") or "pending"),
-                json.dumps(payload, ensure_ascii=False),
-                _now(),
-                _now(),
-                token,
-            ),
-        )
-        conn.commit()
+    queue_support._complete_magnetism_scan(
+        token,
+        payload=payload,
+        now=_now(),
+        db_path=str(_db_path()),
+    )
 
 
 def _ensure_sv9_scan_for_magnetism_result(payload: dict) -> int | None:
@@ -518,23 +428,10 @@ def _ensure_sv9_scan_for_magnetism_result(payload: dict) -> int | None:
     SV9 is the primary public destination when available, but materialization
     failures stay best-effort and never block the Magnetism fallback result.
     """
-    source_run_id = _payload_source_run_id(payload)
-    return ensure_sv9_scan_for_source_run(
-        source_run_id,
+    return queue_support._ensure_sv9_scan_for_magnetism_result(
+        payload=payload,
         db_path=str(_db_path()),
-        magnetism_result=payload,
     )
-
-
-def _payload_source_run_id(payload: dict) -> int | None:
-    try:
-        value = payload.get("source_run_id")
-        if value is None:
-            return None
-        source_run_id = int(value)
-    except (TypeError, ValueError):
-        return None
-    return source_run_id if source_run_id > 0 else None
 
 
 # Module-level singleton — the FastAPI lifespan owns start/stop.

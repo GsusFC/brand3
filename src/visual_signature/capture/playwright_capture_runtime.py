@@ -11,13 +11,15 @@ from src.visual_signature.capture.screenshot_capture_models import CaptureResult
 from src.visual_signature._internal.playwright_capture_helpers import DISMISSAL_TARGET_SELECTOR
 from src.visual_signature._internal.playwright_capture_helpers import _attempt_obstruction_dismissal
 from src.visual_signature._internal.playwright_capture_helpers import _attempt_obstruction_dismissal_with_discovery
-from src.visual_signature._internal.playwright_capture_helpers import _coerce_dict_or_none
-from src.visual_signature._internal.playwright_capture_helpers import _coerce_transition_list
-from src.visual_signature._internal.playwright_capture_helpers import _derived_capture_path
 from src.visual_signature._internal.playwright_capture_helpers import _discover_dismissal_targets
 from src.visual_signature._internal.playwright_capture_helpers import _prepare_perceptual_state_machine
-from src.visual_signature._internal.playwright_capture_helpers import _snapshot_for_path
-from src.visual_signature._internal.playwright_capture_helpers import _visible_obstruction_dom_snapshot
+from src.visual_signature._internal.playwright_capture_helpers_capture_runtime import (
+    _coerce_dict_or_none,
+    _coerce_transition_list,
+    _derived_capture_path,
+    _snapshot_for_path,
+    _visible_obstruction_dom_snapshot,
+)
 from src.visual_signature.perception import PerceptualStateMachine
 
 

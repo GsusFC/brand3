@@ -33,32 +33,17 @@ from src.features.magnetism.extractor_normalization import (
     contains_keyword as _norm_contains_keyword,
     extract_three_terms as _norm_extract_three_terms,
 )
-from src.features.magnetism.extractor_scoring import (
-    derive_diagnosis as _scoring_derive_diagnosis,
-    derive_metrics as _scoring_derive_metrics,
-    earned_magnetism_adjustment as _scoring_earned_magnetism_adjustment,
-    magnetism_phrase_breakdown as _scoring_magnetism_phrase_breakdown,
-)
-from src.features.magnetism.extractor_system_reading import (
-    derive_system_reading as _system_reading_derive_system_reading,
-)
 from src.features.magnetism.extractor_tail import (
-    clamp as _tail_clamp,
-    absence_of_contradiction_score as _tail_absence_of_contradiction_score,
     brand_audit_evidence_text as _tail_brand_audit_evidence_text,
     default_counter_evidence as _tail_default_counter_evidence,
     has_tldr_v03_contract as _tail_has_tldr_v03_contract,
     is_unusable_audit_quote as _tail_is_unusable_audit_quote,
     infer_claim_type as _tail_infer_claim_type,
-    int_between as _tail_int_between,
     legacy_value as _tail_legacy_value,
-    normalized_tldr_confidence as _tail_normalized_tldr_confidence,
     observations_for_block as _tail_observations_for_block,
     should_recommend_human_review as _tail_should_recommend_human_review,
-    semantic_alignment_score as _tail_semantic_alignment_score,
     snapshot_limitations as _tail_snapshot_limitations,
     visual_semantics_from_snapshot as _tail_visual_semantics_from_snapshot,
-    weighted_score as _tail_weighted_score,
 )
 from src.features.magnetism.extractor_tldr import (
     derive_tldr as _tldr_derive_tldr,
@@ -69,6 +54,9 @@ from src.features.magnetism.extractor_tldr import (
 )
 from src.features.magnetism.extractor_derivation_blocks_runtime import (
     MagnetismExtractorDerivationBlocksMixin,
+)
+from src.features.magnetism.extractor_derivation_scoring_runtime import (
+    MagnetismExtractorDerivationScoringMixin,
 )
 
 
@@ -110,7 +98,10 @@ def _resolve_maybe_build_system_reading(
     )
 
 
-class MagnetismExtractorDerivationMixin(MagnetismExtractorDerivationBlocksMixin):
+class MagnetismExtractorDerivationMixin(
+    MagnetismExtractorDerivationBlocksMixin,
+    MagnetismExtractorDerivationScoringMixin,
+):
     """Post-parse derivation and scoring helpers for Magnetism extraction."""
 
     def _normalize_analysis(self, raw: dict[str, Any]) -> dict[str, Any]:
@@ -199,6 +190,7 @@ class MagnetismExtractorDerivationMixin(MagnetismExtractorDerivationBlocksMixin)
             metrics=metrics,
             evidence_packet_summary=evidence_packet_summary,
         )
+
     @staticmethod
     def _has_tldr_v03_contract(block: dict[str, Any]) -> bool:
         return _tail_has_tldr_v03_contract(block)
@@ -287,10 +279,6 @@ class MagnetismExtractorDerivationMixin(MagnetismExtractorDerivationBlocksMixin)
         return _tldr_with_tldr_contract(key, block, layers)
 
     @staticmethod
-    def _normalize_tldr_confidence(value: Any, detected: bool) -> str:
-        return _tail_normalized_tldr_confidence(value, detected)
-
-    @staticmethod
     def _infer_claim_type(key: str, mode: str, detected: bool) -> str:
         return _tail_infer_claim_type(key, mode, detected)
 
@@ -317,60 +305,6 @@ class MagnetismExtractorDerivationMixin(MagnetismExtractorDerivationBlocksMixin)
         evidence_used: list[str],
     ) -> bool:
         return _tail_should_recommend_human_review(key, claim_type, mode, confidence, detected, evidence_used)
-
-    def _derive_metrics(
-        self,
-        layers: dict[str, Any],
-        tldr: dict[str, Any],
-        *,
-        scoring_context: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
-        return _scoring_derive_metrics(
-            layers,
-            tldr,
-            scoring_context=scoring_context,
-            int_between_fn=_tail_int_between,
-            earned_magnetism_adjustment_fn=self._earned_magnetism_adjustment,
-            semantic_alignment_score_fn=self._semantic_alignment_score,
-            absence_of_contradiction_score_fn=self._absence_of_contradiction_score,
-            weighted_score_fn=_tail_weighted_score,
-        )
-
-    def _derive_diagnosis(self, layers: dict[str, Any], metrics: dict[str, Any]) -> dict[str, Any]:
-        return _scoring_derive_diagnosis(layers, metrics)
-
-    @staticmethod
-    def _earned_magnetism_adjustment(
-        expressive_score: int,
-        scoring_context: dict[str, Any] | None,
-        *,
-        clamp_fn=None,
-        int_between_fn=None,
-    ) -> dict[str, Any]:
-        return _scoring_earned_magnetism_adjustment(
-            expressive_score,
-            scoring_context,
-            clamp_fn=clamp_fn or MagnetismExtractorDerivationMixin._clamp,
-            int_between_fn=int_between_fn or MagnetismExtractorDerivationMixin._int_between,
-        )
-
-    @staticmethod
-    def _semantic_alignment_score(layers: dict[str, Any], clamp_fn=None) -> int:
-        score = _tail_semantic_alignment_score(layers)
-        return clamp_fn(score) if callable(clamp_fn) else score
-
-    @staticmethod
-    def _absence_of_contradiction_score(tldr: dict[str, Any], clamp_fn=None) -> int:
-        score = _tail_absence_of_contradiction_score(tldr)
-        return clamp_fn(score) if callable(clamp_fn) else score
-
-    @staticmethod
-    def _clamp(value: int | float) -> int:
-        return _tail_clamp(value)
-
-    @staticmethod
-    def _int_between(value: Any, minimum: int, maximum: int) -> int | None:
-        return _tail_int_between(value, minimum, maximum)
 
     def _derive_evidence_packet_summary(self, payload: dict[str, Any]) -> dict[str, Any]:
         """Summarize the shared evidence basis without embedding a second report."""
@@ -464,24 +398,6 @@ class MagnetismExtractorDerivationMixin(MagnetismExtractorDerivationBlocksMixin)
                 ),
             }
         return summary
-
-    @staticmethod
-    def _derive_system_reading(
-        tldr: dict[str, Any],
-        layers: dict[str, Any],
-        metrics: dict[str, Any],
-        evidence_packet_summary: dict[str, Any] | None = None,
-        url: str = "",
-        brand_name: str = "Unknown Brand",
-    ) -> dict[str, Any]:
-        return _system_reading_derive_system_reading(
-            tldr=tldr,
-            layers=layers,
-            metrics=metrics,
-            evidence_packet_summary=evidence_packet_summary,
-            url=url,
-            brand_name=brand_name,
-        )
 
     def _add_legacy_fields(self, payload: dict[str, Any]) -> None:
         """Keep current storage/routes/templates working while the UI migrates."""
@@ -637,7 +553,3 @@ class MagnetismExtractorDerivationMixin(MagnetismExtractorDerivationBlocksMixin)
     @staticmethod
     def _extract_three_terms(text: str, key: str) -> list[str] | None:
         return _norm_extract_three_terms(text, key)
-
-    @staticmethod
-    def _magnetism_phrase_breakdown(text: str) -> dict[str, int]:
-        return _scoring_magnetism_phrase_breakdown(text)

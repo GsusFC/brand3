@@ -13,11 +13,15 @@ from .magnetism_scanner_impl import (
     _Lang,
     _attach_sv9_link,
     _attach_ui,
+    _elapsed,
     _executive_analysis_for_language,
     _internal_audit_display_decision,
     _internal_audit_status_class,
     _internal_audit_status_label,
     _internal_audit_summary_text,
+    _sv9_generation_phase_label,
+    _sv9_generation_phase_steps,
+    _elapsed_label,
     _load_audit_read_context,
     _magnetism_scan_model_async as _load_scan_model_async,
     _REPORT_READ_ANALYZER,
@@ -185,11 +189,3 @@ def _build_sv9_status_context(job: dict, lang: _Lang, phase: str, copy: dict) ->
         "back_link_label": copy["back_link_label"],
         "ui_lang": lang,
     }
-
-
-from .magnetism_scanner_impl import (
-    _elapsed,
-    _elapsed_label,
-    _sv9_generation_phase_label,
-    _sv9_generation_phase_steps,
-)

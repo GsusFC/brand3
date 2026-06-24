@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import re
 import sys
 from dataclasses import asdict
 from datetime import datetime
@@ -18,7 +17,8 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.visual_signature._internal.dismissal_audit import build_dismissal_audit  # noqa: E402
 from src.visual_signature._internal.dismissal_audit import dismissal_audit_markdown  # noqa: E402
-from src.visual_signature.capture.playwright_capture_runtime import capture_with_playwright as _shared_capture_with_playwright  # noqa: E402
+from src.visual_signature.capture.playwright_capture_runtime import capture_with_playwright as _capture_with_playwright  # noqa: E402
+from src.visual_signature.capture.playwright_capture_runtime import _normalize_capture_type  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import DISMISSAL_TARGET_SELECTOR  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import PerceptualStateMachine  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import _attempt_obstruction_dismissal  # noqa: E402
@@ -28,6 +28,7 @@ from src.visual_signature.capture.playwright_capture_runtime import _coerce_tran
 from src.visual_signature.capture.playwright_capture_runtime import _discover_dismissal_targets  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import _prepare_perceptual_state_machine  # noqa: E402
 from src.visual_signature.capture.playwright_capture_runtime import _visible_obstruction_dom_snapshot  # noqa: E402
+from src.visual_signature._internal.playwright_capture_helpers_capture_runtime import _derived_capture_path  # noqa: E402
 from src.visual_signature.capture.screenshot_capture_models import CaptureBrand  # noqa: E402
 from src.visual_signature.capture.screenshot_capture_models import CaptureResult  # noqa: E402
 from src.visual_signature.capture.screenshot_capture_models import load_capture_brands  # noqa: E402
@@ -223,36 +224,6 @@ def _int_or_none(value: Any) -> int | None:
         return int(value)
     except (TypeError, ValueError):
         return None
-
-
-def _normalize_capture_type(value: Any) -> str:
-    capture_type = str(value or "").strip().lower()
-    if capture_type in {"viewport", "full_page"}:
-        return capture_type
-    return "viewport"
-
-
-def _derived_capture_path(path: Path, capture_type: str) -> Path:
-    suffix = ".png"
-    stem = path.name[:-len(suffix)] if path.name.endswith(suffix) else path.name
-    return path.with_name(f"{stem}.{capture_type.replace('_', '-')}{path.suffix or '.png'}")
-
-
-def _capture_with_playwright(
-    brand_name: str,
-    website_url: str,
-    screenshot_path: str,
-    capture_type: str,
-    *,
-    attempt_dismiss_obstructions: bool = False,
-) -> dict[str, Any]:
-    return _shared_capture_with_playwright(
-        brand_name,
-        website_url,
-        screenshot_path,
-        capture_type,
-        attempt_dismiss_obstructions=attempt_dismiss_obstructions,
-    )
 
 
 def main(argv: list[str] | None = None) -> int:

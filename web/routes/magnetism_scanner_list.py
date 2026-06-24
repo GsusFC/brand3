@@ -8,7 +8,6 @@ import secrets
 from fastapi import APIRouter, Form, HTTPException, Query, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 
-from ..i18n import magnetism_landing_copy
 from ..storage import insert_magnetism_job
 from ..templates_env import templates
 from ..workers.queue import get_queue
@@ -18,12 +17,10 @@ from .magnetism_scanner_impl import (
     _Lang,
     _load_magnetism_index_data,
     _load_run_summary,
-    _lang_q,
-    _magnetism_display_name,
-    _ui,
     _with_lang,
 )
 from .magnetism_scanner_vnext import _load_evidence_vnext_diagnostic, _load_evidence_vnext_llm_shadow
+from .magnetism_scanner_list_copy import _build_not_found_response, _build_scanner_index_context, _build_vnext_view_context
 
 router = APIRouter()
 
@@ -52,44 +49,19 @@ async def magnetism_scanner_index(
         lang=lang,
     )
     observatory = index_data["observatory"]
-    scans = observatory["rows"]
     audit_runs = index_data["audit_runs"]
-
-    for run in audit_runs:
-        run["display_name"] = _magnetism_display_name(
-            str(run.get("brand_name") or ""),
-            str(run.get("url") or ""),
-        )
 
     return templates.TemplateResponse(
         request,
         "magnetism_scanner.html.j2",
-        {
-            "ui_lang": lang,
-            "landing": magnetism_landing_copy(lang),
-            "show_sv9_nav": True,
-            "model": {
-                "scans": scans,
-                "audit_runs": audit_runs,
-                "observatory": {
-                    "query": q or "",
-                    "sort": sort,
-                    "category": category,
-                    "tag": observatory["tag"],
-                    "categories": observatory["categories"],
-                    "tags": observatory["tags"],
-                    "page": observatory["page"],
-                    "total": observatory["total"],
-                    "total_pages": observatory["total_pages"],
-                    "has_prev": observatory["has_prev"],
-                    "has_next": observatory["has_next"],
-                },
-                "lang": lang,
-                "other_lang": "en" if lang == "es" else "es",
-                "lang_query": _lang_q(lang),
-                "t": _ui(lang),
-            },
-        },
+        _build_scanner_index_context(
+            observatory=observatory,
+            audit_runs=audit_runs,
+            lang=lang,
+            q=q,
+            sort=sort,
+            category=category,
+        ),
     )
 
 
@@ -164,12 +136,7 @@ async def magnetism_scanner_from_run(
     run = await asyncio.to_thread(_load_run_summary, run_id)
 
     if run is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Brand Audit run #{run_id}", "ui_lang": lang},
-            status_code=404,
-        )
+        return _build_not_found_response(request, f"Brand Audit run #{run_id}", lang)
 
     token = secrets.token_urlsafe(12)
     await asyncio.to_thread(
@@ -215,32 +182,11 @@ async def magnetism_scanner_evidence_vnext_view(
     """Render read-only evidence vNext diagnostics for a Brand Audit run."""
     diagnostic = await asyncio.to_thread(_load_evidence_vnext_diagnostic, run_id)
     if diagnostic is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Brand Audit run #{run_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    report = diagnostic["report"]
-    rows = report.get("rows") or []
-    row = rows[0] if rows else {}
+        return _build_not_found_response(request, f"Brand Audit run #{run_id}", lang)
+    context = _build_vnext_view_context(run_id, lang, diagnostic)
+    context["model"]["back_href"] = _with_lang("/magnetism-scanner", lang)
     return templates.TemplateResponse(
         request,
         "magnetism_evidence_vnext.html.j2",
-        {
-            "ui_lang": lang,
-            "model": {
-                "lang": lang,
-                "lang_query": _lang_q(lang),
-                "t": _ui(lang),
-                "run_id": run_id,
-                "brand_name": row.get("brand_name") or f"Brand Audit run #{run_id}",
-                "url": row.get("url") or "",
-                "diagnostic": diagnostic,
-                "report": report,
-                "row": row,
-                "json_href": f"/magnetism-scanner/run/{run_id}/evidence-vnext",
-                "back_href": _with_lang("/magnetism-scanner", lang),
-            },
-        },
+        context,
     )

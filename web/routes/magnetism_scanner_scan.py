@@ -19,31 +19,24 @@ from .magnetism_scanner_impl import (
     _attach_sv9_link,
     _attach_ui,
     _LOG,
-    _elapsed,
-    _elapsed_label,
-    _evidence_reliability_model,
-    _executive_analysis_for_language,
-    _internal_audit_display_decision,
-    _internal_audit_status_class,
-    _internal_audit_status_label,
-    _internal_audit_summary_text,
-    _load_audit_read_context,
     _magnetism_scan_model_async,
     _methodology_model,
     _moodboard_model,
     _run_sv9_generation_job,
     _research_evidence_model,
-    build_brand_dossier,
     _sv9_generation_copy,
     _sv9_generation_phase,
-    _sv9_generation_phase_label,
-    _sv9_generation_phase_steps,
     _with_lang,
-    _REPORT_READ_ANALYZER,
-    build_audit_aware_tldr_v2,
-    build_client_tldr_v2,
 )
+from .magnetism_scanner_impl import _evidence_reliability_model
 from .magnetism_scanner_vnext import _evidence_vnext_research_summary
+from .magnetism_scanner_scan_copy import (
+    _attach_audit_data,
+    _attach_client_tldr_v2_data,
+    _build_sv9_status_context,
+    _load_scanner_page_model,
+    _scan_not_found_response,
+)
 
 router = APIRouter()
 
@@ -125,12 +118,7 @@ async def magnetism_scanner_sv9_status(request: Request, token: str, lang: _Lang
     """Intermediate loading page while the shadow SV9 scan is materialized."""
     job = await asyncio.to_thread(get_sv9_generation_job, token)
     if job is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"SV9 generation job {token}", "ui_lang": lang},
-            status_code=404,
-        )
+        return _scan_not_found_response(request, f"SV9 generation job {token}", lang)
     if job.get("status") == "ready" and job.get("sv9_scan_id"):
         return RedirectResponse(_with_lang(f"/sv9/scan/{job['sv9_scan_id']}", lang), status_code=303)
 
@@ -139,46 +127,18 @@ async def magnetism_scanner_sv9_status(request: Request, token: str, lang: _Lang
     return templates.TemplateResponse(
         request,
         "status.html.j2",
-        {
-            "token": token,
-            "brand_slug": job.get("brand_name") or f"SV9 scan #{job.get('scan_id')}",
-            "status": job.get("status") or "queued",
-            "elapsed_seconds": _elapsed(job.get("started_at")),
-            "elapsed_label": _elapsed_label(_elapsed(job.get("started_at"))),
-            "error_message": job.get("error_message"),
-            "phase": phase,
-            "phase_label": _sv9_generation_phase_label(phase, job.get("status"), lang=lang),
-            "phase_steps": _sv9_generation_phase_steps(phase, job.get("status"), lang=lang),
-            "ready_href": _with_lang(f"/sv9/scan/{job['sv9_scan_id']}", lang) if job.get("sv9_scan_id") else None,
-            "back_href": _with_lang(f"/magnetism-scanner/scan/{job['scan_id']}", lang),
-            "status_label": copy["status_label"],
-            "typical_run_label": "30-90 sec",
-            "status_note": copy["status_note"],
-            "queued_message": copy["queued_message"],
-            "ready_message": copy["ready_message"],
-            "ready_link_label": copy["ready_link_label"],
-            "back_link_label": copy["back_link_label"],
-            "ui_lang": lang,
-        },
+        {"token": token, **_build_sv9_status_context(job, lang=lang, phase=phase, copy=copy)},
     )
 
 
 @router.get("/magnetism-scanner/scan/{scan_id}/research")
 async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render research evidence for a specific Magnetism scan."""
-    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    model = await _load_scanner_page_model(scan_id, lang=lang, active_tab="research")
     if model is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    model["active_tab"] = "research"
+        return _scan_not_found_response(request, f"Magnetism scan #{scan_id}", lang)
     model["research"] = _research_evidence_model(model["payload"])
     model["research"]["evidence_vnext_summary"] = _evidence_vnext_research_summary(model.get("source_run_id"))
-    _attach_ui(model, lang)
-    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -190,18 +150,10 @@ async def magnetism_scanner_research(request: Request, scan_id: int, lang: _Lang
 @router.get("/magnetism-scanner/scan/{scan_id}/moodboard")
 async def magnetism_scanner_moodboard(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render the visual moodboard for a specific Magnetism scan."""
-    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    model = await _load_scanner_page_model(scan_id, lang=lang, active_tab="moodboard")
     if model is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    model["active_tab"] = "moodboard"
+        return _scan_not_found_response(request, f"Magnetism scan #{scan_id}", lang)
     model["moodboard"] = _moodboard_model(model)
-    _attach_ui(model, lang)
-    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -213,80 +165,10 @@ async def magnetism_scanner_moodboard(request: Request, scan_id: int, lang: _Lan
 @router.get("/magnetism-scanner/scan/{scan_id}/audit")
 async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render the Brand Audit tab inside the unified Scanner layout."""
-    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    model = await _load_scanner_page_model(scan_id, lang=lang, active_tab="audit")
     if model is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    model["active_tab"] = "audit"
-    _attach_ui(model, lang)
-    await _attach_sv9_link(model)
-    source_run_id = model.get("source_run_id")
-    if not source_run_id:
-        model["audit"] = {"available": False, "reason": "missing_source_run"}
-        model["internal_audit"] = {"available": False, "reason": "missing_source_run"}
-        return templates.TemplateResponse(
-            request,
-            "magnetism_audit.html.j2",
-            {"model": model, "ui_lang": lang},
-        )
-
-    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
-        _load_audit_read_context,
-        int(source_run_id),
-        lang,
-    )
-    if snapshot is None:
-        model["audit"] = {
-            "available": False,
-            "reason": "missing_snapshot",
-            "source_run_id": source_run_id,
-        }
-        model["internal_audit"] = {
-            "available": False,
-            "reason": "missing_snapshot",
-            "source_run_id": source_run_id,
-        }
-    else:
-        audit_context = build_brand_dossier(
-            snapshot,
-            theme="light",
-            analyzer=_REPORT_READ_ANALYZER,
-            narrative_payload=narrative_payload,
-        )
-        audit_context["executive_analysis_v2"] = _executive_analysis_for_language(
-            audit_context,
-            narrative_payload,
-            lang,
-        )
-        current_tldr = {}
-        if isinstance(model.get("payload"), dict):
-            current_tldr = model["payload"].get("tldr_brand3") or {}
-        tldr_v2 = build_audit_aware_tldr_v2(
-            score_provenance=score_provenance,
-            current_tldr=current_tldr,
-        )
-        status_label = _internal_audit_status_label(tldr_v2.get("score_state") or {}, score_provenance)
-        model["audit"] = {
-            "available": True,
-            "source_run_id": int(source_run_id),
-            "context": audit_context,
-        }
-        model["internal_audit"] = {
-            "available": True,
-            "source_run_id": int(source_run_id),
-            "score_provenance": score_provenance,
-            "tldr_v2": tldr_v2,
-            "score_state": tldr_v2.get("score_state") or {},
-            "reviewed_score": score_provenance.get("reviewed_score") or None,
-            "status_label": status_label,
-            "display_decision_label": _internal_audit_display_decision(tldr_v2.get("score_state") or {}),
-            "status_class": _internal_audit_status_class(status_label),
-            "summary": _internal_audit_summary_text(score_provenance, tldr_v2, lang=lang),
-        }
+        return _scan_not_found_response(request, f"Magnetism scan #{scan_id}", lang)
+    await _attach_audit_data(model, model.get("source_run_id"), lang)
 
     return templates.TemplateResponse(
         request,
@@ -298,64 +180,10 @@ async def magnetism_scanner_audit(request: Request, scan_id: int, lang: _Lang = 
 @router.get("/magnetism-scanner/scan/{scan_id}/client-tldr-v2")
 async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render the experimental client-facing TLDR v2 preview."""
-    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    model = await _load_scanner_page_model(scan_id, lang=lang, active_tab="client_tldr_v2")
     if model is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    model["active_tab"] = "client_tldr_v2"
-    _attach_ui(model, lang)
-    await _attach_sv9_link(model)
-    source_run_id = model.get("source_run_id")
-    if not source_run_id:
-        model["client_tldr_v2"] = {
-            "available": False,
-            "reason": "missing_source_run",
-            "message": "This preview requires an attached Brand Audit run.",
-        }
-        return templates.TemplateResponse(
-            request,
-            "magnetism_client_tldr_v2.html.j2",
-            {"model": model, "ui_lang": lang},
-        )
-
-    snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
-        _load_audit_read_context,
-        int(source_run_id),
-        lang,
-    )
-
-    if snapshot is None:
-        model["client_tldr_v2"] = {
-            "available": False,
-            "reason": "missing_snapshot",
-            "message": "The attached Brand Audit snapshot is unavailable.",
-        }
-    else:
-        report_context = build_brand_dossier(
-            snapshot,
-            theme="light",
-            analyzer=_REPORT_READ_ANALYZER,
-            narrative_payload=narrative_payload,
-        )
-        current_tldr = {}
-        if isinstance(model.get("payload"), dict):
-            current_tldr = model["payload"].get("tldr_brand3") or {}
-        model["client_tldr_v2"] = {
-            "available": True,
-            **build_client_tldr_v2(
-                brand_name=str(model.get("brand_name") or "brand scan"),
-                url=str(model.get("url") or ""),
-                current_tldr=current_tldr,
-                score_provenance=score_provenance,
-                report_base=report_context,
-                lang=lang,
-                scanner_display_score=model.get("magnetism_score"),
-            ),
-        }
+        return _scan_not_found_response(request, f"Magnetism scan #{scan_id}", lang)
+    await _attach_client_tldr_v2_data(model, model.get("source_run_id"), lang)
 
     return templates.TemplateResponse(
         request,
@@ -367,18 +195,10 @@ async def magnetism_scanner_client_tldr_v2(request: Request, scan_id: int, lang:
 @router.get("/magnetism-scanner/scan/{scan_id}/evidence-reliability")
 async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render Research Pack quality diagnostics for a specific Magnetism scan."""
-    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    model = await _load_scanner_page_model(scan_id, lang=lang, active_tab="evidence_reliability")
     if model is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    model["active_tab"] = "evidence_reliability"
+        return _scan_not_found_response(request, f"Magnetism scan #{scan_id}", lang)
     model["quality"] = _evidence_reliability_model(model["payload"])
-    _attach_ui(model, lang)
-    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,
@@ -390,18 +210,10 @@ async def magnetism_scanner_evidence_reliability(request: Request, scan_id: int,
 @router.get("/magnetism-scanner/scan/{scan_id}/methodology")
 async def magnetism_scanner_methodology(request: Request, scan_id: int, lang: _Lang = Query("es")):
     """Render methodology details for a specific Magnetism scan."""
-    model = await _magnetism_scan_model_async(scan_id, lang=lang)
+    model = await _load_scanner_page_model(scan_id, lang=lang, active_tab="methodology")
     if model is None:
-        return templates.TemplateResponse(
-            request,
-            "not_found.html.j2",
-            {"resource": f"Magnetism scan #{scan_id}", "ui_lang": lang},
-            status_code=404,
-        )
-    model["active_tab"] = "methodology"
+        return _scan_not_found_response(request, f"Magnetism scan #{scan_id}", lang)
     model["methodology"] = _methodology_model(model["payload"])
-    _attach_ui(model, lang)
-    await _attach_sv9_link(model)
 
     return templates.TemplateResponse(
         request,

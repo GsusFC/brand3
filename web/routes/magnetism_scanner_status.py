@@ -10,10 +10,6 @@ from fastapi.responses import RedirectResponse
 from ..templates_env import templates
 from .magnetism_scanner_impl import (
     _Lang,
-    _LOADER_PHASE_CAPTIONS,
-    _MAGNETISM_PHASES,
-    _MAGNETISM_PHASE_FINAL_LABELS,
-    _MAGNETISM_STATUS_COPY,
     _elapsed,
     _elapsed_label,
     _inflight_moodboard_images,
@@ -23,6 +19,12 @@ from .magnetism_scanner_impl import (
     _primary_scan_ready_href,
     _ui,
     _with_lang,
+)
+from .magnetism_scanner_status_copy import (
+    _LOADER_PHASE_CAPTIONS,
+    _MAGNETISM_PHASE_FINAL_LABELS,
+    _MAGNETISM_PHASES,
+    _MAGNETISM_STATUS_COPY,
 )
 from ..storage import get_magnetism_scan_by_token
 from ..scan_links import sv9_scan_id_for_run

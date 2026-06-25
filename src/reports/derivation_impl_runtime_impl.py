@@ -1,11 +1,123 @@
-"""Backward-compatible shim for pre-refactor module import path."""
+"""
+Pure helpers that turn a SQLite run snapshot into the flat context a Jinja2
+template can render without further data access. No I/O — tested in isolation.
+"""
 
 from __future__ import annotations
 
-from src.reports import derivation_impl_runtime_impl as _impl
-import sys
+import json
+from dataclasses import dataclass, field
+from typing import Any
 
-sys.modules[__name__] = _impl
+from src.reports.editorial_policy import (
+    allowed_language_for_dimension_state,
+    evidence_language_hint,
+    label_dimension_state,
+    label_report_mode,
+    tone_for_dimension_state,
+    tone_for_report_mode,
+)
+from src.quality.dimension_confidence import dimension_confidence_from_snapshot
+from src.quality.evidence_summary import summarize_evidence_records
+from src.quality.report_readiness import evaluate_report_readiness
+from src.quality.trust import (
+    build_trust_summary,
+    dimension_status_counts_from_report_dimensions,
+    limited_dimensions_from_report_dimensions,
+    quality_label,
+)
+from src.reports.derivation_support import (
+    _badge_type_from_band,
+    _build_evidence,
+    _cost_policy_from_snapshot,
+    _dedupe_report_evidence,
+    _DIMENSION_LABELS,
+    _DIMENSION_ORDER,
+    _EVIDENCE_KEYS,
+    _extract_domain,
+    _first_nonempty,
+    _group_sources,
+    _host_suffix_match,
+    _infer_source_type,
+    _load_dimension_labels,
+    _parse_json_list,
+    _report_evidence_items_by_dimension,
+    _SOURCE_GROUP_ORDER,
+    SourceType,
+    _unique,
+    _verdict_from,
+    _iter_feature_evidences,
+)
+from src.reports.derivation_readiness import (
+    _annotate_readiness_diagnostics,
+    _confidence_reason_labels,
+    _context_readiness_from_snapshot,
+    _effective_context_readiness_for_trust,
+    _editorial_policy_from_readiness,
+    _format_analysis_date,
+    _owned_content_capture_from_snapshot,
+    _presentation_policy_from_readiness,
+    _readiness_inputs_from_snapshot,
+    parse_raw_value,
+    _as_str,
+)
+
+
+@dataclass(frozen=True)
+class Evidence:
+    """Normalized evidence item extracted from any feature's raw_value."""
+
+    dimension: str
+    quote: str | None
+    url: str | None
+    source_type: SourceType
+    source_domain: str | None
+    sentiment: str | None
+    feature_name: str | None
+    extra: dict = field(default_factory=dict)
+
+
+@dataclass
+class DimensionEvidences:
+    """One dimension's score + verdict + all evidences belonging to it."""
+
+    dimension: str
+    display_name: str
+    score: float | None
+    verdict: str
+    verdict_adjective: str
+    evidences: list[Evidence] = field(default_factory=list)
+
+
+_BANDS = (
+    (20, "F", "critico"),
+    (40, "D", "debil"),
+    (55, "C", "mixed"),
+    (70, "C+", "mixed"),
+    (85, "B", "solido"),
+    (100, "A", "fuerte"),
+)
+
+
+def slugify(text: str) -> str:
+    # REVIEW: D5 — kept local (5 lines) instead of importing from
+    # brand_service to avoid pulling in the whole analyze pipeline.
+    cleaned = "".join(ch.lower() if ch.isalnum() else "-" for ch in text)
+    return "-".join(part for part in cleaned.split("-") if part) or "brand"
+
+
+def band_from_score(score: float | None) -> tuple[str, str]:
+    """Map 0-100 to (letter, label). None → ('?', 'n/a')."""
+    if score is None:
+        return ("?", "n/a")
+    for ceiling, letter, label in _BANDS:
+        if score < ceiling:
+            return (letter, label)
+    return ("A", "fuerte")
+
+
+def ascii_bar(score: float | None, width: int = 20) -> str:
+    """Render [███░░░] bar. 5% per block at width=20."""
     if score is None:
         return "[" + "·" * width + "]"
     filled = max(0, min(width, round(score / (100 / width))))

@@ -11,6 +11,7 @@ from src.reports.evidence_packet_analysis import (
     _map_exa_source_class_to_packet as _map_exa_source_class_to_packet_impl,
 )
 from src.reports.evidence_packet_builder_support import (
+    OUTPUT_FIELDS,
     empty_packet as _empty_packet,
     finalize_metadata_counts as _finalize_metadata_counts,
     packet_identity as _packet_identity,

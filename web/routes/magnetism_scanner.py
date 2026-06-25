@@ -49,7 +49,7 @@ from ..scanner_api.models import (
     scan_model_from_payload as _scan_model_from_payload,
     scanner_result_metadata_model as _scanner_result_metadata,
 )
-from .magnetism_scanner_ui_copy import _MAGNETISM_UI
+from .magnetism_scanner_ui import _MAGNETISM_UI
 
 
 _LOG = logging.getLogger(__name__)

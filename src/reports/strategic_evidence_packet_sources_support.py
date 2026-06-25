@@ -182,7 +182,7 @@ def _add_owned_raw_web_candidates(
     entity_research_packet: dict[str, Any] | None = None,
 ) -> None:
     if entity_research_packet is None:
-        from src.reports.strategic_evidence_packet_helpers_support import _entity_research_packet
+        from src.reports.strategic_evidence_packet_helpers import _entity_research_packet
 
         entity_research_packet = _entity_research_packet(snapshot)
     run_url = ((snapshot.get("run") or {}).get("url") or packet.url or "")

@@ -1,11 +1,43 @@
-"""Legacy compatibility for pre-refactor import path."""
+"""
+Percepción feature extractor.
+
+Measures how people talk about the brand.
+
+Four features (weights set in src/dimensions.py):
+    brand_sentiment   — LLM verdict on overall sentiment + controversy flag,
+                        with literal quotes as evidence
+    mention_volume    — heuristic, how much coverage exists
+    sentiment_trend   — LLM (or heuristic fallback): is sentiment improving
+                        or declining over time?
+    review_quality    — heuristic, presence and nature of review platforms
+
+Unified single-file design. LLM-first where it matters (sentiment, trend);
+heuristic for purely structural signals (volume, review presence).
+"""
 
 from __future__ import annotations
 
-from src.features import percepcion_impl_runtime_impl as _impl
-import sys
+from collections import Counter
+from datetime import datetime
+from urllib.parse import urlparse
 
-sys.modules[__name__] = _impl
+from ..models.brand import FeatureValue
+from ..collectors.context_collector import ContextData
+from ..collectors.web_collector import WebData
+from ..collectors.exa_collector import ExaData
+from .llm_analyzer import LLMAnalyzer, llm_failure_reason
+from .score_reconciliation import reconcile_label_score
+
+
+_VALID_SENTIMENT_VERDICTS = frozenset({"positive", "mixed", "negative", "unclear"})
+_VALID_SENTIMENT_SIGNALS = frozenset({"positive", "negative", "neutral"})
+_CONTROVERSY_CAP = 35.0
+_SENTIMENT_VERDICT_SCORES = {
+    "positive": 80.0,
+    "mixed": 55.0,
+    "negative": 25.0,
+    "unclear": 50.0,
+}
 
 POSITIVE_WORDS = frozenset({
     "excellent", "amazing", "outstanding", "great", "fantastic", "wonderful",

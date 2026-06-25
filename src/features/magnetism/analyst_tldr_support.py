@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.features.magnetism import analyst_tldr_support_impl as _impl
+from src.features.magnetism import analyst_tldr_support_runtime as _impl
 
 import sys
 

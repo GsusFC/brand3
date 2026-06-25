@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.features.magnetism import extractor_normalization_impl as _impl
+from src.features.magnetism import extractor_normalization_impl_runtime_impl as _impl
 
 import sys
 

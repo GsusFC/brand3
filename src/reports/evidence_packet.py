@@ -15,7 +15,7 @@ from src.reports.evidence_packet_analysis import (
 )
 from src.reports.evidence_packet_candidates import build_evidence_candidates as _evidence_candidates
 from src.reports.evidence_packet_inventory import build_source_inventory as _source_inventory
-from src.reports.evidence_packet_readiness import (
+from src.reports.evidence_packet_readiness_support import (
     _add_entity_ambiguity as _add_entity_ambiguity_impl,
     _add_missing as _add_missing_impl,
     _add_review as _add_review_impl,

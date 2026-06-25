@@ -61,7 +61,7 @@ _DEFAULT_OUTPUT_BASE = _PROJECT_ROOT / "output" / "reports"
 
 
 def _report_labels(lang: str, *, app_chrome: bool) -> dict[str, str]:
-    from .renderer_impl import _REPORT_LABELS
+    from .renderer import _REPORT_LABELS
 
     if not app_chrome:
         return _REPORT_LABELS["legacy"]

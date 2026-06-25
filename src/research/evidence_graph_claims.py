@@ -4,7 +4,7 @@ from typing import Any
 
 from src.reports.derivation import collect_evidences
 from src.reports.strategic_evidence_packet import StrategicEvidenceLine, build_strategic_evidence_packet
-from src.research.evidence_graph_impl import ALLOWED_CLAIM_TYPES, EvidenceClaim
+from src.research.evidence_graph import ALLOWED_CLAIM_TYPES, EvidenceClaim
 from src.research.evidence_graph_sources import ResearchSource, _dict, _normalize_url, _source_id, _unique
 from src.research.evidence_graph_support import _clean, _is_entity_boundary_quarantined_source, _snapshot_web_url
 from src.research.evidence_graph_claims_support import (

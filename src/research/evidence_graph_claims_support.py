@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 
-from src.research.evidence_graph_impl import EvidenceClaim
+from src.research.evidence_graph import EvidenceClaim
 from src.research.evidence_graph_sources import ResearchSource, _normalize_url, _unique
 
 

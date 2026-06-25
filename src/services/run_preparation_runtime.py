@@ -2,48 +2,17 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from time import perf_counter
 
 from src.services.analysis_exceptions import AnalysisJobCancelled
 from src.services.run_support import _check_cancel
 from src.services.run_preparation import build_discovery_preparation
-
-
-@dataclass
-class PreparedRun:
-    context_data: object
-    web_data: object
-    effective_brand_url: str | None
-    exa_data: object
-    social_data: object
-    social_limitation: str | None
-    competitor_data: object
-    raw_input_cache: dict
-    acquisition_steps: dict
-    web_collector: object
-    niche_classification: dict
-    calibration_profile: str
-    profile_source: str
-    content_web: object
-    content_source: str
-    data_sources: dict
-    data_quality: str
-    partial_dimensions: list[str]
-    entity_discovery: dict
-    discovery_search_plan: dict
-    entity_research_packet: dict
-    discovery_evidence_preview: dict
-    discovery_enrichment_payload: dict
-    acquisition_provenance: dict
-    discovery_trust_basis: dict
-    discovery_calibration_hint: dict
-    discovery_calibration_decision: dict
-    discovery_payload: dict
-    research_pack_for_feature_prompts: object
-    llm: object | None
-    llm_provider: dict | None
-    llm_skipped_reason: str | None
+from src.services.run_preparation_runtime_support import (
+    PreparedRun,
+    build_prepared_run,
+    discovery_state,
+    raw_inputs_state,
+)
 
 
 def prepare_run(
@@ -83,24 +52,15 @@ def prepare_run(
         web_collector_cls=service.WebCollector,
         exa_collector_cls=service.ExaCollector,
     )
-    context_data = raw_inputs.context_data
-    web_data = raw_inputs.web_data
-    effective_brand_url = raw_inputs.effective_brand_url
-    exa_data = raw_inputs.exa_data
-    social_data = raw_inputs.social_data
-    social_limitation = raw_inputs.social_limitation
-    competitor_data = raw_inputs.competitor_data
-    raw_input_cache = raw_inputs.raw_input_cache
-    acquisition_steps = raw_inputs.acquisition_steps
-    web_collector = raw_inputs.web_collector
+    raw_state = raw_inputs_state(raw_inputs)
     step_started = service._log_timing("phase 1a raw inputs", step_started)
 
     niche = service.select_niche_profile(
         brand_name=brand_name,
         url=url,
-        web_data=web_data,
-        exa_data=exa_data,
-        competitor_data=competitor_data,
+        web_data=raw_state["web_data"],
+        exa_data=raw_state["exa_data"],
+        competitor_data=raw_state["competitor_data"],
         calibration_profile_override=calibration_profile_override,
         min_confidence=service.BRAND3_NICHE_AUTO_APPLY_MIN_CONFIDENCE,
         classify_brand_niche=service.classify_brand_niche,
@@ -120,20 +80,15 @@ def prepare_run(
     content_plan = service.plan_content(
         url=url,
         brand_name=brand_name,
-        web_data=web_data,
-        context_data=context_data,
-        web_collector=web_collector,
-        exa_data=exa_data,
+        web_data=raw_state["web_data"],
+        context_data=raw_state["context_data"],
+        web_collector=raw_state["web_collector"],
+        exa_data=raw_state["exa_data"],
         recover_owned_web_content=service._recover_owned_web_content,
         build_content_web=service._build_content_web,
         compute_data_quality=service._compute_data_quality,
         partial_dimensions=service._PARTIAL_DIMENSIONS,
     )
-    content_web = content_plan.content_web
-    content_source = content_plan.content_source
-    data_sources = content_plan.data_sources
-    data_quality = content_plan.data_quality
-    partial_dimensions = content_plan.partial_dimensions
     step_started = service._log_timing("phase 1c content plan", step_started)
     discovery = build_discovery_preparation(
         service=service,
@@ -141,84 +96,39 @@ def prepare_run(
         run_id=run_id,
         brand_name=brand_name,
         url=url,
-        web_data=web_data,
-        content_web=content_web,
-        exa_data=exa_data,
-        context_data=context_data,
-        web_collector=web_collector,
-        exa_collector=raw_inputs.exa_collector,
-        raw_input_cache=raw_input_cache,
-        content_source=content_source,
-        data_quality=data_quality,
+        web_data=raw_state["web_data"],
+        content_web=content_plan.content_web,
+        exa_data=raw_state["exa_data"],
+        context_data=raw_state["context_data"],
+        web_collector=raw_state["web_collector"],
+        exa_collector=raw_state["exa_collector"],
+        raw_input_cache=raw_state["raw_input_cache"],
+        content_source=content_plan.content_source,
+        data_quality=content_plan.data_quality,
         calibration_profile=calibration_profile,
         profile_source=profile_source,
         niche_classification=niche_classification,
     )
-    entity_discovery = discovery.entity_discovery
-    discovery_search_plan = discovery.discovery_search_plan
-    entity_research_packet = discovery.entity_research_packet
-    discovery_evidence_preview = discovery.discovery_evidence_preview
-    discovery_enrichment_payload = discovery.discovery_enrichment_payload
-    acquisition_provenance = discovery.acquisition_provenance
-    discovery_trust_basis = discovery.discovery_trust_basis
-    discovery_calibration_hint = discovery.discovery_calibration_hint
-    discovery_calibration_decision = discovery.discovery_calibration_decision
-    discovery_payload = discovery.discovery_payload
-    research_pack_for_feature_prompts = discovery.research_pack_for_feature_prompts
-    calibration_profile = discovery.calibration_profile
-    profile_source = discovery.profile_source
-    web_data = discovery.web_data
-    exa_data = discovery.exa_data
-    content_web = discovery.content_web
+    prepared_discovery = discovery_state(discovery)
     step_started = service._log_timing("phase 1d discovery+calibration", step_started)
 
     llm_setup = service.setup_llm(
         use_llm=use_llm,
-        context_data=context_data,
-        content_web=content_web,
-        content_source=content_source,
+        context_data=raw_state["context_data"],
+        content_web=prepared_discovery["content_web"],
+        content_source=content_plan.content_source,
         llm_cls=service.LLMAnalyzer,
         cheap_model=service.LLM_CHEAP_MODEL,
         provider_payload_builder=service._llm_provider_payload,
         should_skip_llm_for_low_context=service._should_skip_llm_for_low_context,
     )
-    llm = llm_setup.llm
-    llm_provider = llm_setup.provider
-    llm_skipped_reason = llm_setup.skipped_reason
     service._log_timing("phase 1g llm setup", step_started)
     service._log_timing("phase 1 collect+prepare", phase_started)
 
-    return PreparedRun(
-        context_data=context_data,
-        web_data=web_data,
-        effective_brand_url=effective_brand_url,
-        exa_data=exa_data,
-        social_data=social_data,
-        social_limitation=social_limitation,
-        competitor_data=competitor_data,
-        raw_input_cache=raw_input_cache,
-        acquisition_steps=acquisition_steps,
-        web_collector=web_collector,
+    return build_prepared_run(
+        raw_state=raw_state,
+        discovery_state=prepared_discovery,
+        llm_setup=llm_setup,
         niche_classification=niche_classification,
-        calibration_profile=calibration_profile,
-        profile_source=profile_source,
-        content_web=content_web,
-        content_source=content_source,
-        data_sources=data_sources,
-        data_quality=data_quality,
-        partial_dimensions=partial_dimensions,
-        entity_discovery=entity_discovery,
-        discovery_search_plan=discovery_search_plan,
-        entity_research_packet=entity_research_packet,
-        discovery_evidence_preview=discovery_evidence_preview,
-        discovery_enrichment_payload=discovery_enrichment_payload,
-        acquisition_provenance=acquisition_provenance,
-        discovery_trust_basis=discovery_trust_basis,
-        discovery_calibration_hint=discovery_calibration_hint,
-        discovery_calibration_decision=discovery_calibration_decision,
-        discovery_payload=discovery_payload,
-        research_pack_for_feature_prompts=research_pack_for_feature_prompts,
-        llm=llm,
-        llm_provider=llm_provider,
-        llm_skipped_reason=llm_skipped_reason,
+        content_plan=content_plan,
     )

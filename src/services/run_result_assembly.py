@@ -5,6 +5,10 @@ from __future__ import annotations
 from time import perf_counter
 
 from src.services.run_result_payloads import build_run_result_payload
+from src.services.run_result_assembly_support import (
+    build_result_payload_kwargs,
+    emit_summary_output,
+)
 from src.services.run_result_summaries import _build_run_result_summaries
 
 
@@ -53,10 +57,12 @@ def build_run_result(
     phase_started = perf_counter()
     step_started = phase_started
 
-    print("[4/4] Generating report...\n")
-    print(summary)
-    print("\n".join([""] + service.format_discovery_summary(discovery_payload)))
-    service._print_feature_details(brand_score)
+    emit_summary_output(
+        service=service,
+        discovery_payload=discovery_payload,
+        brand_score=brand_score,
+        summary=summary,
+    )
     step_started = service._log_timing("phase 4a summary output", step_started)
     (
         dimension_confidence,
@@ -94,51 +100,53 @@ def build_run_result(
     result = build_run_result_payload(
         service=service,
         store=store,
-        run_id=run_id,
-        web_data=web_data,
-        content_web=content_web,
-        exa_data=exa_data,
-        content_source=content_source,
-        data_quality=data_quality,
-        partial_dimensions=partial_dimensions,
-        social_data=social_data,
-        use_llm=use_llm,
-        use_social=use_social,
-        use_competitors=use_competitors,
-        skip_visual_analysis=skip_visual_analysis,
-        llm=llm,
-        llm_provider=llm_provider,
-        llm_skipped_reason=llm_skipped_reason,
-        calibration_profile=calibration_profile,
-        niche_classification=niche_classification,
-        research_pack_for_feature_prompts=research_pack_for_feature_prompts,
-        entity_discovery=entity_discovery,
-        discovery_search_plan=discovery_search_plan,
-        discovery_evidence_preview=discovery_evidence_preview,
-        discovery_enrichment_payload=discovery_enrichment_payload,
-        discovery_payload=discovery_payload,
-        discovery_trust_basis=discovery_trust_basis,
-        discovery_calibration_hint=discovery_calibration_hint,
-        discovery_calibration_decision=discovery_calibration_decision,
-        entity_research_packet=entity_research_packet,
-        acquisition_provenance=acquisition_provenance,
-        acquisition_steps=acquisition_steps,
-        raw_input_cache=raw_input_cache,
-        screenshot_capture=screenshot_capture,
-        base_data_sources=base_data_sources,
-        social_limitation=social_limitation,
-        context_data=context_data,
-        features_by_dim=features_by_dim,
-        brand_score=brand_score,
-        summary=summary,
-        run_audit_context=run_audit_context,
-        dimension_confidence=dimension_confidence,
-        evidence_summary=evidence_summary,
-        confidence_summary=confidence_summary,
-        llm_cache=llm_cache,
-        public_presence_inventory=public_presence_inventory,
-        context_enrichment_summary=context_enrichment_summary,
-        context_effective_readiness=context_effective_readiness,
-        trust_summary=trust_summary,
+        **build_result_payload_kwargs(
+            run_id=run_id,
+            web_data=web_data,
+            content_web=content_web,
+            exa_data=exa_data,
+            content_source=content_source,
+            data_quality=data_quality,
+            partial_dimensions=partial_dimensions,
+            social_data=social_data,
+            use_llm=use_llm,
+            use_social=use_social,
+            use_competitors=use_competitors,
+            skip_visual_analysis=skip_visual_analysis,
+            llm=llm,
+            llm_provider=llm_provider,
+            llm_skipped_reason=llm_skipped_reason,
+            calibration_profile=calibration_profile,
+            niche_classification=niche_classification,
+            research_pack_for_feature_prompts=research_pack_for_feature_prompts,
+            entity_discovery=entity_discovery,
+            discovery_search_plan=discovery_search_plan,
+            discovery_evidence_preview=discovery_evidence_preview,
+            discovery_enrichment_payload=discovery_enrichment_payload,
+            discovery_payload=discovery_payload,
+            discovery_trust_basis=discovery_trust_basis,
+            discovery_calibration_hint=discovery_calibration_hint,
+            discovery_calibration_decision=discovery_calibration_decision,
+            entity_research_packet=entity_research_packet,
+            acquisition_provenance=acquisition_provenance,
+            acquisition_steps=acquisition_steps,
+            raw_input_cache=raw_input_cache,
+            screenshot_capture=screenshot_capture,
+            base_data_sources=base_data_sources,
+            social_limitation=social_limitation,
+            context_data=context_data,
+            features_by_dim=features_by_dim,
+            brand_score=brand_score,
+            summary=summary,
+            run_audit_context=run_audit_context,
+            dimension_confidence=dimension_confidence,
+            evidence_summary=evidence_summary,
+            confidence_summary=confidence_summary,
+            llm_cache=llm_cache,
+            public_presence_inventory=public_presence_inventory,
+            context_enrichment_summary=context_enrichment_summary,
+            context_effective_readiness=context_effective_readiness,
+            trust_summary=trust_summary,
+        ),
     )
     return result, run_audit_context, phase_started, step_started

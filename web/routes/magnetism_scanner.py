@@ -34,9 +34,6 @@ from ..storage import (
     update_sv9_generation_job,
 )
 from ..templates_env import templates
-from .magnetism_scanner_status_copy import (
-    _MAGNETISM_STATUS_COPY,
-)
 from ..workers.queue import get_queue
 from ..workers.slug import slug_from_url
 from ..workers import url_validator

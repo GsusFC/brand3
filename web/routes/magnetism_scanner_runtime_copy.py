@@ -15,16 +15,55 @@ from ..scan_links import sv9_scan_id_for_run
 from src.storage.sqlite_store import SQLiteStore
 
 from ..observatory_index import build_observatory_index
-from .magnetism_scanner_status_copy import (
-    _MAGNETISM_PHASE_FINAL_LABELS,
-    _SV9_GENERATION_PHASES,
-    _SV9_GENERATION_STATUS_COPY,
-)
 from .magnetism_scanner_ui_copy import _MAGNETISM_UI
 
 _Log = logging.getLogger(__name__)
 
 _Lang = Literal["es", "en"]
+
+
+_MAGNETISM_PHASE_FINAL_LABELS = {
+    "es": {
+        "ready": "Informe de marca listo",
+        "failed": "Análisis de marca fallido",
+    },
+    "en": {
+        "ready": "Brand report ready",
+        "failed": "Brand analysis failed",
+    },
+}
+
+_SV9_GENERATION_PHASES = {
+    "es": [
+        ("queued", "En cola"),
+        ("generating", "Generando SV9"),
+        ("saving", "Guardando scan"),
+    ],
+    "en": [
+        ("queued", "Queued"),
+        ("generating", "Generating SV9"),
+        ("saving", "Saving scan"),
+    ],
+}
+
+_SV9_GENERATION_STATUS_COPY = {
+    "es": {
+        "status_label": "Generación SV9",
+        "status_note": "La página se actualiza cada 5 segundos mientras se materializa el scan sombra.",
+        "queued_message": "esperando para materializar el scan sombra",
+        "ready_message": "scan sombra listo ...",
+        "ready_link_label": "→ abrir scan SV9",
+        "back_link_label": "← volver al scan",
+    },
+    "en": {
+        "status_label": "SV9 generation",
+        "status_note": "Page auto-refreshes every 5 seconds while the shadow scan is materialized.",
+        "queued_message": "waiting to materialize the shadow scan",
+        "ready_message": "shadow scan ready ...",
+        "ready_link_label": "→ open SV9 scan",
+        "back_link_label": "← back to scan",
+    },
+}
 
 
 def _sv9_scan_id_for_run(source_run_id: object) -> int | None:

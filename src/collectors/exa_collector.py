@@ -2,6 +2,6 @@
 
 import sys
 
-from src.collectors import exa_collector_impl as _impl
+from src.collectors import exa_collector_support_runtime_impl as _impl
 
 sys.modules[__name__] = _impl

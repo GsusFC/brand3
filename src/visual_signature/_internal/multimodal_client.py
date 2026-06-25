@@ -15,7 +15,7 @@ from src.config import (
     BRAND3_VISUAL_SIGNATURE_TIMEOUT_SECONDS,
     LLM_BASE_URL,
 )
-from src.features.llm_analyzer_impl import LLM_CALL_TIMEOUT_SECONDS, _run_llm_http_call
+from src.features.llm_analyzer import LLM_CALL_TIMEOUT_SECONDS, _run_llm_http_call
 
 
 class MultimodalRequestExecutor(Protocol):

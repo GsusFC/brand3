@@ -20,9 +20,9 @@ def _safe_excerpt(value: str | None, max_chars: int = 500) -> str:
 
 
 def _current_impl_module():
-    from src.features import llm_analyzer_impl
+    from src.features import llm_analyzer as llm_analyzer
 
-    return llm_analyzer_impl
+    return llm_analyzer
 
 
 def llm_failure_reason(llm, default: str) -> str:

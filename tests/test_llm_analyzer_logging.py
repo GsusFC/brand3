@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
-from src.features import llm_analyzer_impl as impl
+from src.features import llm_analyzer as impl
 
 
 def test_llm_json_parse_failure_logs_warning():

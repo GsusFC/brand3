@@ -4,20 +4,33 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any
-from urllib.parse import urlparse
-
 from src.reports.derivation import collect_evidences
-from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
 from src.reports.brand_research_pack_sources_support import (
     _clean_text,
     _confidence_notes,
     _evidence_gaps,
+    _entity_packet,
+    _payload_for_source,
+    _payload_url,
+    _normalize_url,
+    _extract_host,
+    _root_domain,
+    _subdomain,
+    _parent_name_from_root,
     _looks_like_page_chrome,
     _looks_like_press_or_founder_text,
     _primary_web_text,
+    _site_role_from_url,
+    _source_type_from_url,
+    _classify_entity_type,
+    _web_urls,
+    _social_urls,
+    _competitor_urls,
     _str_list,
     _unique_texts,
+    _validate_entity_type,
 )
+from src.reports.entity_research_packet import entity_scope_for_url, surface_role_for_url
 
 
 ALLOWED_ENTITY_TYPES = {
@@ -107,153 +120,6 @@ class EntityResolution:
             confidence=str(data.get("confidence") or ""),
             notes=_str_list(data.get("notes")),
         )
-
-
-def _entity_packet(snapshot: dict[str, Any]) -> dict[str, Any] | None:
-    for raw_input in reversed(snapshot.get("raw_inputs") or []):
-        if raw_input.get("source") == "entity_research_packet" and isinstance(raw_input.get("payload"), dict):
-            return raw_input["payload"]
-    run = snapshot.get("run") or {}
-    audit = run.get("audit") if isinstance(run.get("audit"), dict) else {}
-    packet = audit.get("entity_research_packet") if isinstance(audit, dict) else None
-    return packet if isinstance(packet, dict) else None
-
-
-def _payload_for_source(raw_inputs: list[dict[str, Any]], source: str) -> dict[str, Any]:
-    for raw_input in reversed(raw_inputs):
-        if raw_input.get("source") == source and isinstance(raw_input.get("payload"), dict):
-            return raw_input["payload"]
-    return {}
-
-
-def _payload_url(payload: dict[str, Any]) -> str:
-    if not payload:
-        return ""
-    for key in ("canonical_url", "url", "page_url", "input_url"):
-        value = str(payload.get(key) or "").strip()
-        if value:
-            return _normalize_url(value)
-    return ""
-
-
-def _normalize_url(value: str) -> str:
-    candidate = (value or "").strip()
-    if not candidate:
-        return ""
-    if "://" not in candidate:
-        candidate = f"https://{candidate}"
-    parsed = urlparse(candidate)
-    host = (parsed.netloc or parsed.path).lower()
-    path = parsed.path if parsed.netloc else ""
-    return f"{parsed.scheme or 'https'}://{host}{path}".rstrip("/")
-
-
-def _extract_host(value: str) -> str:
-    if not value:
-        return ""
-    parsed = urlparse(value if "://" in value else f"https://{value}")
-    host = (parsed.netloc or parsed.path).split("@")[-1].split(":")[0].lower()
-    return host[4:] if host.startswith("www.") else host
-
-
-def _root_domain(host: str) -> str:
-    if not host:
-        return ""
-    parts = host.split(".")
-    if len(parts) <= 2:
-        return host
-    return ".".join(parts[-2:])
-
-
-def _subdomain(host: str, root: str) -> str:
-    if not host or not root or host == root:
-        return ""
-    suffix = f".{root}"
-    if not host.endswith(suffix):
-        return ""
-    return host[: -len(suffix)].split(".")[-1]
-
-
-def _parent_name_from_root(root: str) -> str:
-    if not root:
-        return ""
-    label = root.split(".")[0]
-    return label.replace("-", " ").title()
-
-
-def _site_role_from_url(url: str) -> str:
-    parsed = urlparse(_normalize_url(url))
-    path = (parsed.path or "/").lower().rstrip("/") or "/"
-    if path == "/":
-        return "owned_official"
-    if any(marker in path for marker in ("/about", "/mission", "/manifesto", "/team", "/company", "/story", "/principles")):
-        return "owned_about"
-    if any(marker in path for marker in ("/privacy", "/security", "/trust", "/legal", "/terms", "/compliance")):
-        return "owned_security_trust"
-    if any(marker in path for marker in ("/product", "/products", "/platform", "/solution", "/solutions", "/app", "/pricing", "/plans", "/demo", "/beta", "/lab", "/natureos")):
-        return "owned_product"
-    if any(marker in path for marker in ("/blog", "/news", "/press", "/article", "/post", "/feed", "/resources")):
-        return "noise"
-    if any(marker in path for marker in ("/customers", "/clients", "/case", "/stories", "/reviews", "/testimonials", "/casos", "/opiniones")):
-        return "proof_point"
-    return "owned_official"
-
-
-def _source_type_from_url(url: str, *, brand_domain: str, text: str = "", source: str = "") -> str:
-    normalized = _normalize_url(url)
-    host = _extract_host(normalized)
-    text_low = (text or "").lower()
-    path = (urlparse(normalized).path or "").lower()
-    if source == "social" or host.endswith(("linkedin.com", "x.com", "twitter.com", "instagram.com", "youtube.com", "tiktok.com", "facebook.com", "github.com")):
-        return "social"
-    if brand_domain and (host == brand_domain or host.endswith("." + brand_domain)):
-        role = _site_role_from_url(normalized)
-        if role == "owned_official":
-            return "owned_official"
-        return role
-    if any(marker in text_low for marker in ("founder", "founders", "interview", "press", "announc", "launch", "raises", "raised", "acquired", "acquisition")):
-        return "press_or_founder"
-    if any(marker in text_low for marker in ("testimonial", "testimonials", "customer", "customers", "client", "clients", "trusted by", "used by", "case study", "case studies", "review", "reviews", "proof")):
-        return "proof_point"
-    if any(marker in path for marker in ("/customers", "/client", "/case", "/stories", "/reviews", "/testimonials")):
-        return "proof_point"
-    if any(marker in path for marker in ("/blog", "/news", "/press", "/article", "/post", "/feed", "/resources")):
-        return "noise"
-    return "noise"
-
-
-def _classify_entity_type(
-    *,
-    input_url: str,
-    brand_name: str,
-    entity_packet: dict[str, Any] | None,
-    web_payload: dict[str, Any],
-) -> str:
-    if entity_packet:
-        architecture = str(entity_packet.get("brand_architecture") or "")
-        audited_type = str(entity_packet.get("audited_surface_type") or "")
-        if architecture == "single_brand_surface":
-            return "company"
-        if audited_type in {"product_surface", "product_lab"}:
-            return "product"
-        if audited_type == "secondary_surface":
-            return "sub_brand"
-        if str(entity_packet.get("parent_brand") or ""):
-            return "product"
-
-    host = _extract_host(input_url)
-    root = _root_domain(host)
-    subdomain = _subdomain(host, root)
-    path = (urlparse(input_url).path or "").lower()
-    if any(marker in path for marker in ("/blog", "/news", "/press", "/article", "/post", "/resources")):
-        return "content"
-    if any(marker in path for marker in ("/campaign", "/promo", "/launch", "/event", "/sale")):
-        return "campaign"
-    if subdomain and subdomain not in {"www", "m"}:
-        return "product"
-    if root and (brand_name or root):
-        return "company"
-    return "unknown"
 
 
 def _resolve_entity_resolution(
@@ -545,38 +411,6 @@ def _build_source_map(
     return dict(sorted(sources.items(), key=lambda item: item[0]))
 
 
-def _web_urls(payload: dict[str, Any], *, fallback: str = "") -> list[str]:
-    urls = []
-    for key in ("canonical_url", "url", "page_url", "input_url"):
-        value = str(payload.get(key) or "").strip()
-        if value:
-            urls.append(_normalize_url(value))
-    for value in payload.get("owned_fallback_urls") or []:
-        if isinstance(value, str) and value.strip():
-            urls.append(_normalize_url(value))
-    if not urls and fallback:
-        urls.append(_normalize_url(fallback))
-    return _unique_texts(urls)
-
-
-def _social_urls(payload: dict[str, Any]) -> list[str]:
-    urls: list[str] = []
-    for value in payload.get("profiles_found") or []:
-        if isinstance(value, str) and value.strip():
-            urls.append(_normalize_url(value))
-    return _unique_texts(urls)
-
-
-def _competitor_urls(payload: dict[str, Any]) -> list[str]:
-    urls: list[str] = []
-    for item in payload.get("competitors") or []:
-        if isinstance(item, dict):
-            value = str(item.get("url") or "").strip()
-            if value:
-                urls.append(_normalize_url(value))
-    return _unique_texts(urls)
-
-
 def _collect_official_urls(
     source_map: dict[str, ResearchSource],
     *,
@@ -608,8 +442,3 @@ def _collect_analyzed_urls(snapshot: dict[str, Any], *, source_map: dict[str, Re
         if evidence.url:
             urls.append(_normalize_url(str(evidence.url)))
     return _unique_texts(urls)
-
-
-def _validate_entity_type(value: str) -> None:
-    if value not in ALLOWED_ENTITY_TYPES:
-        raise ValueError(f"entity_type must be one of {sorted(ALLOWED_ENTITY_TYPES)}")

@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
-import ast
-import json
 from typing import Any
+
+from src.reports.evidence_packet_analysis_support import (
+    _is_http_url,
+    _parse_raw_value,
+)
 
 
 def build_evidence_candidates(snapshot: dict) -> list[dict]:
@@ -34,23 +37,6 @@ def build_evidence_candidates(snapshot: dict) -> list[dict]:
             }
         )
     return [candidate for candidate in candidates if candidate.get("text") or candidate.get("url")]
-
-
-def _parse_raw_value(raw: Any) -> Any:
-    if raw is None or raw == "":
-        return None
-    if not isinstance(raw, str):
-        return raw
-    stripped = raw.strip()
-    try:
-        return ast.literal_eval(stripped)
-    except (ValueError, SyntaxError, MemoryError):
-        pass
-    try:
-        return json.loads(stripped)
-    except (ValueError, TypeError):
-        return raw
-
 
 def _candidates_from_raw(raw: Any, base: dict) -> list[dict]:
     if not isinstance(raw, dict):
@@ -163,8 +149,3 @@ def _competitor_comparison_candidates(raw: dict, base: dict) -> list[dict]:
     if isinstance(most_different, dict):
         add("most different measured competitor", most_different, "most_different")
     return candidates
-
-
-def _is_http_url(value: Any) -> bool:
-    candidate = str(value or "").strip()
-    return candidate.startswith("http://") or candidate.startswith("https://")

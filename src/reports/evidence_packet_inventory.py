@@ -5,6 +5,11 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Any
 
+from src.reports.evidence_packet_analysis_support import (
+    _first_url,
+    _is_http_url,
+)
+
 
 def build_source_inventory(snapshot: dict, classified_candidates: list[dict]) -> list[dict]:
     inventory: list[dict] = []
@@ -109,32 +114,6 @@ def _source_role(item: dict) -> str:
         "marketplace_listing": "marketplace_or_directory_listing",
         "noise": "excluded_noise_candidate",
     }.get(source_class, "unknown")
-
-
-def _first_url(value: Any) -> str:
-    if isinstance(value, str):
-        return value if _is_http_url(value) else ""
-    if isinstance(value, dict):
-        for key in ("url", "source_url", "homepage", "target_url"):
-            found = value.get(key)
-            if _is_http_url(found):
-                return str(found)
-        for item in value.values():
-            found = _first_url(item)
-            if found:
-                return found
-    if isinstance(value, list):
-        for item in value:
-            found = _first_url(item)
-            if found:
-                return found
-    return ""
-
-
-def _is_http_url(value: Any) -> bool:
-    candidate = str(value or "").strip()
-    return candidate.startswith("http://") or candidate.startswith("https://")
-
 
 def _dedupe(items: list[dict]) -> list[dict]:
     seen: set[str] = set()

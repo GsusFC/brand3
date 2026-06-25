@@ -1,11 +1,9 @@
-"""Facade for percepcion implementation."""
+"""Facade for percepcion runtime implementation."""
 
 from __future__ import annotations
 
-from src.features import percepcion_impl_runtime_impl as _impl
+from src.features import percepcion_impl_runtime_impl_impl as _impl
 
 import sys
 
-# Preserve private module behavior and monkeypatch compatibility by delegating module
-# namespace to the runtime implementation.
 sys.modules[__name__] = _impl

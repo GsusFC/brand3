@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.research import evidence_vnext_report_projection_queue_impl_runtime as _impl
+from src.research import evidence_vnext_report_projection_queue_impl_runtime_impl as _impl
 
 import sys
 

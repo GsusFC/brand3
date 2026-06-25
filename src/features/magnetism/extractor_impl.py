@@ -11,7 +11,7 @@ from typing import Any
 
 from src.config import BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT
 from src.features.llm_analyzer import LLMAnalyzer
-from src.features.magnetism.extractor_derivation_runtime_impl_runtime_impl import MagnetismExtractorDerivationMixin
+from src.features.magnetism.extractor_derivation_runtime import MagnetismExtractorDerivationMixin
 from src.features.magnetism.extractor_heuristics import (
     extract_via_heuristic as _heuristic_extract_via_heuristic,
 )

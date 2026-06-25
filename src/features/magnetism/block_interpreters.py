@@ -25,15 +25,14 @@ from src.features.magnetism.block_interpreters_selection import (
     strategic_packet_candidates,
     strategic_packet_candidate_priority,
 )
-from src.features.magnetism.block_interpreters_helpers import (
+from src.features.magnetism.block_interpreters_helpers_signals_impl import (
     _contains_keyword,
     _has_audience_signal,
-    _has_future_signal,
     _has_formal_mission_signal,
+    _has_future_signal,
     _has_operating_activity_signal,
     _has_offer_signal,
     _has_outcome_signal,
-    _is_bad_value_prop_candidate,
     _is_feed_or_article_noise,
     _is_market_prediction_noise,
     _is_navigation_noise,
@@ -42,6 +41,9 @@ from src.features.magnetism.block_interpreters_helpers import (
     _is_truncated_evidence,
     _is_vague_mission_slogan,
     _is_values_statement_as_mission,
+)
+from src.features.magnetism.block_interpreters_helpers_text_impl import (
+    _is_bad_value_prop_candidate,
 )
 from src.features.magnetism.block_interpreters_outputs_impl import (
     apply_editorial_policy_guardrails,

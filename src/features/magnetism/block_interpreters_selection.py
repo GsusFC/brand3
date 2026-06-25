@@ -7,18 +7,14 @@ from typing import Any
 from urllib.parse import urlparse
 
 from src.reports.brand_context_brief import brand_context_candidates
-from src.features.magnetism.block_interpreters_helpers import (
-    _clean_candidate_text,
-    _clean_layer_candidate_text,
+from src.features.magnetism.block_interpreters_helpers_signals_impl import (
     _contains_keyword,
-    _evidence_list,
     _has_audience_signal,
-    _has_future_signal,
     _has_formal_mission_signal,
+    _has_future_signal,
     _has_operating_activity_signal,
     _has_offer_signal,
     _has_outcome_signal,
-    _is_bad_value_prop_candidate,
     _is_feed_or_article_noise,
     _is_market_prediction_noise,
     _is_navigation_noise,
@@ -30,6 +26,12 @@ from src.features.magnetism.block_interpreters_helpers import (
     _looks_like_concatenated_copy,
     _looks_like_portfolio_case_card,
     _looks_like_web_chrome_or_navigation_blob,
+)
+from src.features.magnetism.block_interpreters_helpers_text_impl import (
+    _clean_candidate_text,
+    _clean_layer_candidate_text,
+    _evidence_list,
+    _is_bad_value_prop_candidate,
     _sentence_like_evidence_segments,
     _sentences,
 )

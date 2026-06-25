@@ -11,11 +11,11 @@ from typing import Any
 
 from src.config import BRAND3_MAGNETISM_EXTRACTOR_WEB_CHAR_LIMIT
 from src.features.llm_analyzer import LLMAnalyzer
-from src.features.magnetism.extractor_derivation_impl import MagnetismExtractorDerivationMixin
+from src.features.magnetism.extractor_derivation_runtime_impl_runtime_impl import MagnetismExtractorDerivationMixin
 from src.features.magnetism.extractor_heuristics import (
     extract_via_heuristic as _heuristic_extract_via_heuristic,
 )
-from src.features.magnetism.extractor_runtime_impl import MagnetismExtractorRuntimeMixin
+from src.features.magnetism.extractor_runtime_impl_runtime import MagnetismExtractorRuntimeMixin
 from src.features.magnetism.extractor_constants import (
     LEGACY_DIRECT_DEPRECATION,
     LEGACY_DIRECT_EXTRACTION_MODE,

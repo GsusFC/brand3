@@ -6,7 +6,7 @@ from typing import Any
 
 from src.reports.editorial_policy import overreach_warnings
 
-from src.features.magnetism.block_interpreters_helpers import (
+from src.features.magnetism.block_interpreters_helpers_text_impl import (
     _representative_evidence_phrase,
     _mission_answer,
     _value_proposition_answer,

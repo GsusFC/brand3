@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from src.reports import derivation_impl as _impl
+from src.reports import derivation_impl_runtime_impl as _impl
 
 import sys
 

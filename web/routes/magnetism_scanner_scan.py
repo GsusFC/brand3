@@ -14,7 +14,7 @@ from ..storage import (
     get_sv9_generation_job_by_scan_id,
     insert_sv9_generation_job,
 )
-from .magnetism_scanner_impl import (
+from .magnetism_scanner import (
     _Lang,
     _attach_sv9_link,
     _attach_ui,
@@ -28,7 +28,7 @@ from .magnetism_scanner_impl import (
     _sv9_generation_phase,
     _with_lang,
 )
-from .magnetism_scanner_impl import _evidence_reliability_model
+from .magnetism_scanner import _evidence_reliability_model
 from .magnetism_scanner_vnext import _evidence_vnext_research_summary
 from .magnetism_scanner_scan_copy import (
     _attach_audit_data,

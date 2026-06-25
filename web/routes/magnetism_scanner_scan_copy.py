@@ -9,7 +9,7 @@ from fastapi import Request
 from src.reports.dossier import build_brand_dossier
 
 from ..templates_env import templates
-from .magnetism_scanner_impl import (
+from .magnetism_scanner import (
     _Lang,
     _attach_sv9_link,
     _attach_ui,
@@ -21,14 +21,14 @@ from .magnetism_scanner_impl import (
     _internal_audit_summary_text,
     _sv9_generation_phase_label,
     _sv9_generation_phase_steps,
-    _elapsed_label,
-    _load_audit_read_context,
     _magnetism_scan_model_async as _load_scan_model_async,
     _REPORT_READ_ANALYZER,
     _with_lang,
     build_audit_aware_tldr_v2,
     build_client_tldr_v2,
 )
+
+from . import magnetism_scanner as _magnetism_scanner
 
 
 async def _load_scanner_page_model(
@@ -65,7 +65,7 @@ async def _attach_audit_data(model: dict, source_run_id: object, lang: _Lang) ->
         return model
 
     snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
-        _load_audit_read_context,
+        _magnetism_scanner._load_audit_read_context,
         int(source_run_id),
         lang,
     )
@@ -131,7 +131,7 @@ async def _attach_client_tldr_v2_data(model: dict, source_run_id: object, lang: 
         return model
 
     snapshot, narrative_payload, score_provenance = await asyncio.to_thread(
-        _load_audit_read_context,
+        _magnetism_scanner._load_audit_read_context,
         int(source_run_id),
         lang,
     )
@@ -173,7 +173,7 @@ def _build_sv9_status_context(job: dict, lang: _Lang, phase: str, copy: dict) ->
         "brand_slug": job.get("brand_name") or f"SV9 scan #{job.get('scan_id')}",
         "status": job.get("status") or "queued",
         "elapsed_seconds": _elapsed(job.get("started_at")),
-        "elapsed_label": _elapsed_label(_elapsed(job.get("started_at"))),
+        "elapsed_label": _magnetism_scanner._elapsed_label(_elapsed(job.get("started_at"))),
         "error_message": job.get("error_message"),
         "phase": phase,
         "phase_label": _sv9_generation_phase_label(phase, job.get("status"), lang=lang),

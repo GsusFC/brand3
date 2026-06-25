@@ -13,12 +13,11 @@ from ..templates_env import templates
 from ..workers.queue import get_queue
 from ..workers.slug import slug_from_url
 
-from .magnetism_scanner_impl import (
+from .magnetism_scanner import (
     _Lang,
-    _load_magnetism_index_data,
-    _load_run_summary,
     _with_lang,
 )
+from . import magnetism_scanner as _magnetism_scanner
 from .magnetism_scanner_vnext import _load_evidence_vnext_diagnostic, _load_evidence_vnext_llm_shadow
 from .magnetism_scanner_list_copy import _build_not_found_response, _build_scanner_index_context, _build_vnext_view_context
 
@@ -40,7 +39,7 @@ async def magnetism_scanner_index(
     if sort not in {"newest", "score_desc", "score_asc", "scans_desc"}:
         sort = "newest"
     index_data = await asyncio.to_thread(
-        _load_magnetism_index_data,
+        _magnetism_scanner._load_magnetism_index_data,
         query=q,
         sort=sort,
         category=category,
@@ -133,7 +132,7 @@ async def magnetism_scanner_from_run(
     lang: _Lang = Form("es"),
 ):
     """Queue a Magnetism scan from an existing Brand Audit run snapshot."""
-    run = await asyncio.to_thread(_load_run_summary, run_id)
+    run = await asyncio.to_thread(_magnetism_scanner._load_run_summary, run_id)
 
     if run is None:
         return _build_not_found_response(request, f"Brand Audit run #{run_id}", lang)

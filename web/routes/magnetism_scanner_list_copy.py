@@ -8,7 +8,7 @@ from fastapi import Request
 
 from ..i18n import magnetism_landing_copy
 from ..templates_env import templates
-from .magnetism_scanner_impl import _lang_q, _magnetism_display_name, _ui
+from .magnetism_scanner import _lang_q, _magnetism_display_name, _ui
 
 
 def _build_scanner_index_context(

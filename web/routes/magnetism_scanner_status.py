@@ -8,7 +8,7 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 
 from ..templates_env import templates
-from .magnetism_scanner_impl import (
+from .magnetism_scanner import (
     _Lang,
     _elapsed,
     _elapsed_label,

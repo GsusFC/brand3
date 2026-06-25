@@ -1,35 +1,424 @@
-"""FastAPI route facade for magnetism scanner endpoints."""
+"""FastAPI routes for the Brand3 Magnetism Scanner."""
 
-from fastapi import APIRouter
+from __future__ import annotations
 
-from web.routes.magnetism_scanner_impl import *  # noqa: F401,F403
-from web.routes.magnetism_scanner_list import router as _list_router
-from web.routes.magnetism_scanner_scan import router as _scan_router
-from web.routes.magnetism_scanner_status import router as _status_router
-from web.routes.magnetism_scanner_impl import (  # noqa: F401
-    _Lang,
+import asyncio
+import logging
+import secrets
+from datetime import datetime, timezone
+from urllib.parse import urlparse
+
+from typing import Literal
+
+from fastapi import APIRouter, Form, HTTPException, Query, Request
+from fastapi.responses import JSONResponse, RedirectResponse
+
+from src.config import BRAND3_DB_PATH
+from src.features.magnetism.client_tldr_v2 import build_client_tldr_v2
+from src.features.magnetism.translation import apply_magnetism_translation
+from src.features.magnetism.tldr_v2 import build_audit_aware_tldr_v2
+from src.scoring.provenance import build_score_provenance_report
+from src.reports.dossier import build_brand_dossier
+from src.storage.sqlite_store import SQLiteStore
+from src.research.evidence_semantic_llm import build_llm_semantic_assessment
+
+from ..i18n import magnetism_landing_copy
+from ..storage import (
+    get_magnetism_scan,
+    get_magnetism_scan_by_token,
+    get_sv9_generation_job,
+    get_sv9_generation_job_by_scan_id,
+    insert_magnetism_job,
+    insert_magnetism_scan,
+    insert_sv9_generation_job,
+    update_sv9_generation_job,
+)
+from ..templates_env import templates
+from .magnetism_scanner_status_copy import (
+    _MAGNETISM_STATUS_COPY,
+)
+from ..workers.queue import get_queue
+from ..workers.slug import slug_from_url
+from ..workers import url_validator
+from ..workers.url_validator import validate_url
+from ..scanner_api.models import (
+    scanner_failure_diagnostics_from_row as _scanner_failure_diagnostics,
+    methodology_model as _methodology_model,
+    normalized_scan_payload as _normalized_scan_payload,
+    research_evidence_model as _research_evidence_model,
+    scan_model_from_payload as _scan_model_from_payload,
+    scanner_result_metadata_model as _scanner_result_metadata,
+)
+from .magnetism_scanner_runtime_copy import (
+    _attach_sv9_link,
+    _attach_ui,
+    _elapsed,
+    _elapsed_label,
+    _inflight_moodboard_images,
     _lang_q,
-    _magnetism_display_name,
-    _load_audit_read_context,
     _load_magnetism_index_data,
     _load_run_summary,
+    _magnetism_phase,
+    _moodboard_model,
+    _phase_steps,
+    _primary_scan_ready_href,
+    _sv9_generation_copy,
+    _sv9_generation_phase,
+    _sv9_generation_phase_label,
+    _sv9_generation_phase_steps,
     _sv9_scan_id_for_run,
     _ui,
+    _with_lang,
 )
-from src.research.evidence_semantic_llm import build_llm_semantic_assessment
-from ..i18n import magnetism_landing_copy
-from ..workers.url_validator import validate_url
-from ..workers import url_validator  # keep module compatibility for historical references
 
-# Public router consumed by the app entrypoint.
-router = APIRouter()
-router.include_router(_list_router)
-router.include_router(_status_router)
-router.include_router(_scan_router)
 
-# Re-exported by hidden/internal callers in tests.
+_LOG = logging.getLogger(__name__)
+
+
+_Lang = Literal["es", "en"]
+
+
+class _ReportReadAnalyzer:
+    """Keep scanner audit reads deterministic and side-effect free."""
+
+    def _call(self, *args, **kwargs) -> str:
+        return ""
+
+    def _call_json(self, *args, **kwargs) -> dict:
+        return {}
+
+
+_REPORT_READ_ANALYZER = _ReportReadAnalyzer()
+
+
+async def _run_sv9_generation_job(token: str) -> None:
+    await _update_sv9_generation_job_async(
+        token,
+        status="running",
+        phase="generating",
+        phase_updated_at=datetime.now(timezone.utc).isoformat(),
+        started_at=datetime.now(timezone.utc).isoformat(),
+    )
+    job = await asyncio.to_thread(get_sv9_generation_job, token)
+    if job is None:
+        return
+    try:
+        await _update_sv9_generation_job_async(
+            token,
+            phase="generating",
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+        )
+        sv9_scan_id = await asyncio.to_thread(
+            ensure_sv9_scan_for_source_run,
+            int(job["source_run_id"]),
+            db_path=BRAND3_DB_PATH,
+        )
+        if sv9_scan_id is None:
+            raise RuntimeError("SV9 generation failed")
+        await _update_sv9_generation_job_async(
+            token,
+            status="ready",
+            phase="ready",
+            sv9_scan_id=int(sv9_scan_id),
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+            error_message=None,
+        )
+    except Exception as exc:  # noqa: BLE001
+        await _update_sv9_generation_job_async(
+            token,
+            status="failed",
+            phase="failed",
+            phase_updated_at=datetime.now(timezone.utc).isoformat(),
+            completed_at=datetime.now(timezone.utc).isoformat(),
+            error_message=str(exc)[:500],
+        )
+
+
+async def _update_sv9_generation_job_async(token: str, **columns) -> None:
+    await asyncio.to_thread(update_sv9_generation_job, token, **columns)
+
+
+async def _magnetism_scan_model_async(scan_id: int, *, lang: _Lang = "es") -> dict | None:
+    row = await asyncio.to_thread(get_magnetism_scan, scan_id)
+    if row is None:
+        return None
+
+    payload = _normalized_scan_payload(row)
+    payload = _payload_for_language(scan_id, payload, lang)
+    model = _scan_model_from_payload(row, payload, scan_id=scan_id)
+    model["display_name"] = _magnetism_display_name(
+        str(model.get("brand_name") or ""),
+        str(model.get("url") or ""),
+    )
+    model["display_url"] = _display_url(str(model.get("url") or ""))
+    return model
+
+
+def _magnetism_display_name(brand_name: str, url: str) -> str:
+    raw_name = str(brand_name or "").strip()
+    if raw_name and not _looks_like_url_or_domain(raw_name):
+        return raw_name
+    return _domain_label(url or raw_name) or raw_name or "Brand"
+
+
+def _looks_like_url_or_domain(value: str) -> bool:
+    text = str(value or "").strip().lower()
+    return text.startswith(("http://", "https://")) or ("." in text and " " not in text)
+
+
+def _domain_label(url: str) -> str:
+    parsed = urlparse(str(url or "").strip() if "://" in str(url or "") else f"https://{url}")
+    host = (parsed.hostname or "").removeprefix("www.")
+    if not host:
+        return ""
+    stem = host.split(".")[0]
+    return stem.replace("-", " ").replace("_", " ").title()
+
+
+def _display_url(url: str) -> str:
+    value = str(url or "").strip()
+    if value.startswith(("http://", "https://")):
+        return value
+    return ""
+
+
+def _payload_for_language(scan_id: int, payload: dict, lang: _Lang) -> dict:
+    """Apply cached Magnetism prose translations without mutating persisted scans."""
+    translations = payload.get("translations")
+    if not isinstance(translations, dict):
+        translations = {}
+    magnetism_translations = translations.get("magnetism_tldr")
+    if not isinstance(magnetism_translations, dict):
+        magnetism_translations = {}
+
+    cached = magnetism_translations.get(lang)
+    if isinstance(cached, dict):
+        return apply_magnetism_translation(payload, cached)
+    return payload
+
+
+def _report_translation_payload(store: SQLiteStore, run_id: int, lang: _Lang) -> dict | None:
+    if lang == "en":
+        return None
+    try:
+        return store.get_report_translation(run_id, lang)
+    except Exception:
+        return None
+
+
+def _load_audit_read_context(run_id: int, lang: _Lang) -> tuple[dict | None, dict | None, dict]:
+    store = SQLiteStore(BRAND3_DB_PATH)
+    try:
+        snapshot = store.get_run_snapshot(run_id)
+        narrative_payload = _report_translation_payload(store, run_id, lang)
+        score_provenance = build_score_provenance_report(store, run_id)
+        return snapshot, narrative_payload, score_provenance
+    finally:
+        store.close()
+
+
+def _executive_analysis_for_language(
+    audit_context: dict,
+    narrative_payload: dict | None,
+    lang: _Lang,
+) -> dict:
+    original = audit_context.get("executive_analysis_v2")
+    if not isinstance(original, dict):
+        original = {}
+    if lang == "en":
+        return original
+
+    translated_from_report = (
+        narrative_payload.get("executive_analysis_v2")
+        if isinstance(narrative_payload, dict)
+        else None
+    )
+    if isinstance(translated_from_report, dict) and translated_from_report:
+        return translated_from_report
+
+    translations = audit_context.get("executive_analysis_v2_translations")
+    translated = translations.get(lang) if isinstance(translations, dict) else None
+    if isinstance(translated, dict) and translated:
+        return translated
+    return original
+
+
+def _internal_audit_summary_text(
+    score_provenance: dict,
+    tldr_v2: dict,
+    *,
+    lang: _Lang,
+) -> str:
+    state = tldr_v2.get("score_state") if isinstance(tldr_v2, dict) else {}
+    if not isinstance(state, dict):
+        state = {}
+
+    computed = state.get("computed_composite_score")
+    reviewed = state.get("reviewed_composite_score")
+    display = state.get("recommended_display_score")
+    source = str(state.get("display_score_source") or "blocked")
+    integrity = str(state.get("score_integrity") or "unverifiable")
+    drift_type = str(state.get("drift_type") or "none")
+    score_values_match = state.get("score_values_match_persisted_data")
+    limited_confidence = bool(state.get("limited_confidence"))
+    fallback_flags = score_provenance.get("fallback_flags") if isinstance(score_provenance, dict) else {}
+    neutral_fallback_dimensions = []
+    if isinstance(fallback_flags, dict):
+        neutral_fallback_dimensions = list(fallback_flags.get("replay_neutral_fallback_dimensions") or [])
+
+    def _base_message() -> str:
+        if lang == "en":
+            if integrity == "valid":
+                return "Score replay is valid. Persisted, recomputed and artifact scores match."
+            if drift_type == "fingerprint_only_mismatch" and score_values_match is True:
+                return "Score values match persisted data, but the scoring fingerprint differs from the current config. Treat as legacy/config mismatch, not data tampering."
+            if drift_type == "artifact_mismatch" and score_values_match is True:
+                return "Artifact score does not match persisted scoring data. Technical review required."
+            if drift_type in {"feature_score_mismatch", "score_data_mismatch"}:
+                return "Persisted score values differ from recomputed scoring data. Do not use as definitive."
+            return "Replay could not verify this score with available persisted data."
+        if integrity == "valid":
+            return "La replay del score es válida. Los scores persistidos, recomputados y del artifact coinciden."
+        if drift_type == "fingerprint_only_mismatch" and score_values_match is True:
+            return "Los score values coinciden con los datos persistidos, pero el fingerprint de scoring difiere de la config actual. Trátalo como mismatch legacy/config, no como data tampering."
+        if drift_type == "artifact_mismatch" and score_values_match is True:
+            return "El score del artifact no coincide con los datos de scoring persistidos. Requiere revisión técnica."
+        if drift_type in {"feature_score_mismatch", "score_data_mismatch"}:
+            return "Los score values persistidos difieren de los datos recomputados. No lo uses como definitivo."
+        return "La replay no pudo verificar este score con los datos persistidos disponibles."
+
+    def _display_message() -> str:
+        if source == "reviewed":
+            if lang == "en":
+                return f"Reviewed score {display} is the internal display recommendation; computed score is {computed}."
+            return f"El score revisado {display} es la recomendación interna de display; el score computado es {computed}."
+        if lang == "en":
+            return f"Computed score {display} is the internal display recommendation."
+        return f"El score computado {display} es la recomendación interna de display."
+
+    if lang == "en":
+        summary = _base_message()
+        if source == "blocked":
+            summary += " Display is blocked for internal use."
+        else:
+            summary += f" {_display_message()}"
+        if reviewed is not None and source != "reviewed":
+            summary += f" A reviewed score of {reviewed} is also present."
+        if limited_confidence:
+            summary += " Replay integrity is unverifiable, so treat this as limited confidence."
+        if neutral_fallback_dimensions:
+            summary += f" Neutral fallback 50.0 was used for: {', '.join(neutral_fallback_dimensions)}."
+        return summary
+
+    summary = _base_message()
+    if source == "blocked":
+        summary += " El display está bloqueado para uso interno."
+    else:
+        summary += f" {_display_message()}"
+    if reviewed is not None and source != "reviewed":
+        summary += f" También existe un score revisado de {reviewed}."
+    if limited_confidence:
+        summary += " La replay integrity es unverifiable, así que debe tratarse como confianza limitada."
+    if neutral_fallback_dimensions:
+        summary += f" El fallback neutral 50.0 se usó en: {', '.join(neutral_fallback_dimensions)}."
+    return summary
+
+
+def _internal_audit_status_label(score_state: dict, provenance: dict) -> str:
+    integrity = str(score_state.get("score_integrity") or "unverifiable")
+    source = str(score_state.get("display_score_source") or "blocked")
+    if source == "blocked":
+        return "blocked"
+    if integrity == "valid":
+        return "valid"
+    if integrity == "unverifiable":
+        return "review-required"
+    if provenance.get("warnings"):
+        return "warning"
+    return "internal-only"
+
+
+def _internal_audit_status_class(status_label: str) -> str:
+    if status_label == "valid":
+        return "badge-ready"
+    if status_label == "blocked":
+        return "badge-error"
+    if status_label == "warning":
+        return "badge-missing"
+    if status_label == "review-required":
+        return "badge-missing"
+    return "badge"
+
+
+def _internal_audit_display_decision(score_state: dict) -> str:
+    source = str(score_state.get("display_score_source") or "blocked")
+    if source == "reviewed":
+        return "reviewed"
+    if source == "computed":
+        return "computed"
+    return "blocked"
+
+
+def _evidence_reliability_model(payload: dict) -> dict:
+    quality = payload.get("research_pack_quality")
+    if not isinstance(quality, dict):
+        return {
+            "available": False,
+            "status": "missing",
+            "total_score": None,
+            "gate": {"passed": False, "failures": []},
+            "dimensions": [],
+            "warnings": [],
+            "pack_summary": {},
+            "reason": "missing_research_pack_quality",
+        }
+
+    raw_dimensions = quality.get("dimensions") if isinstance(quality.get("dimensions"), dict) else {}
+    dimensions = []
+    for name in ("offer", "audience", "differentiation", "frictions", "proof", "traceability", "noise"):
+        dimension = raw_dimensions.get(name)
+        if not isinstance(dimension, dict):
+            continue
+        dimensions.append(
+            {
+                "name": name,
+                "label": name.replace("_", " ").title(),
+                "score": dimension.get("score"),
+                "status": dimension.get("status") or "unknown",
+                "reasons": dimension.get("reasons") or [],
+            }
+        )
+
+    gate = quality.get("gate") if isinstance(quality.get("gate"), dict) else {}
+    return {
+        "available": True,
+        "version": quality.get("version") or "unknown",
+        "status": quality.get("status") or "unknown",
+        "total_score": quality.get("total_score"),
+        "gate": {
+            "passed": bool(gate.get("passed")),
+            "failures": gate.get("failures") or [],
+        },
+        "dimensions": dimensions,
+        "warnings": quality.get("warnings") or [],
+        "pack_summary": quality.get("pack_summary") or {},
+        "reason": quality.get("reason") or "",
+    }
+
 
 def ensure_sv9_scan_for_source_run(*args, **kwargs):
     from src.services.magnetism_service import ensure_sv9_scan_for_source_run as _service_ensure
 
     return _service_ensure(*args, **kwargs)
+
+
+# Public router consumed by the app entrypoint.
+from .magnetism_scanner_list import router as _list_router
+from .magnetism_scanner_scan import router as _scan_router
+from .magnetism_scanner_status import router as _status_router
+
+router = APIRouter()
+router.include_router(_list_router)
+router.include_router(_status_router)
+router.include_router(_scan_router)

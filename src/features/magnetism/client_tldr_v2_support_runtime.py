@@ -157,10 +157,10 @@ def run_client_tldr_v2_pass(
 
     if normalize_response_fn is None:
         try:
-            from src.features.magnetism import client_tldr_v2_support_impl as _impl
+            from src.features.magnetism import client_tldr_v2_support as _support
         except Exception:  # pragma: no cover - runtime fallback
-            _impl = None
-        normalize_response_fn = getattr(_impl, "normalize_client_tldr_v2_response", None)
+            _support = None
+        normalize_response_fn = getattr(_support, "normalize_client_tldr_v2_response", None)
 
     if not callable(normalize_response_fn):
         return {

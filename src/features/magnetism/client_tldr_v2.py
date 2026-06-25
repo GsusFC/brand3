@@ -12,7 +12,6 @@ from typing import Any
 
 from src.features.magnetism import client_tldr_v2_impl as _impl
 from src.features.magnetism import client_tldr_v2_support as _support
-from src.features.magnetism import client_tldr_v2_support_impl as _support_impl
 from src.features.magnetism.client_tldr_v2_impl import (  # noqa: F401
     CLIENT_TLDR_V2_PROMPT_VERSION,
     CLIENT_TLDR_V2_TIMEOUT_SECONDS,
@@ -44,12 +43,6 @@ def _sync_client_tldr_runtime_overrides() -> None:
     _support._ensure_client_tldr_runtime_env_loaded = _ensure_client_tldr_runtime_env_loaded
     _support.LLMAnalyzer = LLMAnalyzer
     _support._default_analyzer = _default_analyzer
-    _support_impl._client_tldr_v2_model = _client_tldr_v2_model
-    _support_impl._compact_perceptual_hints_for_prompt = _compact_perceptual_hints_for_prompt
-    _support_impl._ensure_client_tldr_runtime_env_loaded = _ensure_client_tldr_runtime_env_loaded
-    _support_impl.LLMAnalyzer = LLMAnalyzer
-    _support_impl._default_analyzer = _default_analyzer
-
 
 def _default_analyzer() -> Any | None:
     _sync_client_tldr_runtime_overrides()

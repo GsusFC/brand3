@@ -1,20 +1,82 @@
-"""Runtime facade for Search Enrichment Lab.
+#!/usr/bin/env python3
+"""Online Search Enrichment Lab runner.
 
-Keep historical module path stable while moving heavy implementation into
-`search_enrichment_lab_runtime_impl.py`.
+This script is intentionally isolated from canonical Brand3 flows. It can call
+real providers when their keys exist in `.env`, normalizes outputs into
+BrandSourceObservation, and writes artifacts under `out/`.
 """
 
 from __future__ import annotations
 
-import sys
+import argparse
+import json
+import os
+import time
+from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+from urllib.error import HTTPError
+from urllib.parse import urlencode, urlparse
+from urllib.request import Request, urlopen
 
-import search_enrichment_lab_runtime_impl as _impl
+from src.collectors.exa_collector import ExaCollector
+from src.collectors.parallel_shadow_collector import ParallelShadowCollector
+from src.collectors.web_collector import WebCollector
+from src.config import EXA_API_KEY, FIRECRAWL_API_KEY
+from src.research.brand_intelligence import (
+    BrandSeed,
+    BrandSourceBakeoffCase,
+    BrandSourceObservation,
+    build_brand_source_inventory,
+    build_brand_source_plan,
+    evaluate_brand_source_bakeoff,
+    owned_web_source_observation,
+    resolve_brand_seed,
+    scope_external_observation_to_entity,
+    search_source_observation,
+)
+from src.research.search_enrichment_promotion import evaluate_search_enrichment_promotion
 
-if hasattr(_impl, "__name__"):
-    sys.modules[__name__] = _impl
 
-if __name__ == "__main__":
-    raise SystemExit(_impl.main())
+LAB_VERSION = "search_enrichment_lab_v0_1"
+USER_AGENT = "Brand3-Search-Enrichment-Lab/0.1"
+
+DEFAULT_CASES = (
+    ("LangChain", "https://www.langchain.com"),
+    ("ChatGPT", "https://chatgpt.com"),
+    ("Base", "https://base.org"),
+)
+
+SEARCH_PROVIDER_KEYS = {
+    "exa": "EXA_API_KEY",
+    "exa-fast": "EXA_API_KEY",
+    "exa-auto": "EXA_API_KEY",
+    "exa-deep-lite": "EXA_API_KEY",
+    "exa-deep": "EXA_API_KEY",
+    "exa-deep-reasoning": "EXA_API_KEY",
+    "parallel": "PARALLEL_API_KEY",
+    "tavily": "TAVILY_API_KEY",
+    "linkup": "LINKUP_API_KEY",
+    "brave": "BRAVE_SEARCH_API_KEY",
+    "serpapi": "SERPAPI_API_KEY",
+}
+
+DEFAULT_SEARCH_PROVIDERS = (
+    "exa",
+    "parallel",
+    "tavily",
+    "linkup",
+    "brave",
+    "serpapi",
+)
+
+OWNED_FETCH_PROVIDER_KEYS = {
+    "firecrawl": "FIRECRAWL_API_KEY",
+    "tinyfish": "TINYFISH_API_KEY",
+}
+
+DEFAULT_OWNED_FETCH_PROVIDERS = tuple(OWNED_FETCH_PROVIDER_KEYS)
 
 INTENT_CHANNEL = {
     "entity_disambiguation": "search",

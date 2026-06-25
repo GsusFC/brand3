@@ -23,7 +23,12 @@ from src.storage.sqlite_store import SQLiteStore
 
 
 def _db_path() -> Path:
-    return Path(BRAND3_DB_PATH)
+    try:
+        import web.storage
+
+        return Path(getattr(web.storage, "BRAND3_DB_PATH", BRAND3_DB_PATH))
+    except Exception:
+        return Path(BRAND3_DB_PATH)
 
 
 def ensure_schema() -> None:

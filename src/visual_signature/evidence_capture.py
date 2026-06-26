@@ -7,6 +7,9 @@ from typing import Any
 from src.visual_signature._internal.utils import dict_or_empty as _dict
 from src.visual_signature._internal.utils import float_or_none as _float_or_none
 
+BLOCKED_QUALITIES = {"missing", "blocked", "unreadable", "blank"}
+LIMITED_QUALITIES = {"poor", "partial", "low_detail"}
+
 
 def screenshot_payload(payload: dict[str, Any], screenshot_payload: dict[str, Any] | None) -> dict[str, Any]:
     if isinstance(screenshot_payload, dict):
@@ -90,7 +93,7 @@ def capture_obstruction(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def first_fold_evaluable_for_capture(obstruction: dict[str, Any], *, available: bool, quality: str) -> bool:
-    if not available or quality in {"missing", "blocked", "poor"}:
+    if not available or quality in BLOCKED_QUALITIES or quality in LIMITED_QUALITIES:
         return False
     if obstruction.get("present") and obstruction.get("first_impression_valid") is False:
         return False
@@ -110,9 +113,9 @@ def capture_status(
         return "missing"
     if obstruction.get("present") and (obstruction.get("severity") == "blocking" or not first_fold_evaluable):
         return "blocked"
-    if quality in {"missing", "blocked"}:
+    if quality in BLOCKED_QUALITIES:
         return "blocked"
-    if quality in {"poor", "partial"} or not first_fold_evaluable:
+    if quality in LIMITED_QUALITIES or not first_fold_evaluable:
         return "limited"
     return "usable"
 

@@ -120,6 +120,29 @@ def test_visual_signature_evidence_gate_blocks_positive_signals_for_unreliable_c
     assert all(signal["rationale"] == "capture_unreliable:blocked" for signal in evidence["tile_signals"])
 
 
+def test_visual_signature_evidence_gate_blocks_positive_signals_for_blank_capture():
+    payload = _payload()
+    payload["vision"]["screenshot"]["quality"] = "blank"
+
+    evidence = build_visual_signature_evidence_v1(payload)
+
+    assert evidence["capture"]["status"] == "blocked"
+    assert evidence["capture"]["first_fold_evaluable"] is False
+    assert all(signal["effect"] == "insufficient_evidence" for signal in evidence["tile_signals"])
+
+
+def test_visual_signature_evidence_marks_low_detail_capture_as_limited():
+    payload = _payload()
+    payload["vision"]["screenshot"]["quality"] = "low_detail"
+
+    evidence = build_visual_signature_evidence_v1(payload)
+
+    assert evidence["capture"]["status"] == "limited"
+    assert evidence["capture"]["first_fold_evaluable"] is False
+    assert "capture_unreliable:limited" in evidence["limitations"]
+    assert all(signal["effect"] == "insufficient_evidence" for signal in evidence["tile_signals"])
+
+
 def test_visual_signature_evidence_hashes_screenshot_file_when_available(tmp_path: Path):
     screenshot = tmp_path / "shot.png"
     screenshot.write_bytes(b"brand3-shot")

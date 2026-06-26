@@ -33,9 +33,10 @@ def test_analyze_visual_semantics_missing_screenshot_returns_stable_fallback():
     )
 
     assert result == multimodal_analyzer.fallback_semantics("screenshot_file_not_found")
-    assert set(result) == {"status", "model", "prompt_version", "fallback_used", "error_type", "data"}
+    assert set(result) == {"status", "model", "prompt_version", "fallback_used", "error_type", "audit", "data"}
     assert result["data"]["aesthetic_style"] == "not_detected"
     assert result["data"]["visual_polish_score"] is None
+    assert result["data"]["observed_strengths"] == []
 
 
 def test_build_multimodal_payload_uses_openai_compatible_image_url_block():
@@ -73,6 +74,17 @@ def test_analyze_visual_semantics_encodes_image_and_normalizes_success(tmp_path,
                 "reasoning": "Strong hierarchy and restrained palette.",
             },
             "visual_coherence": "The layout supports a coherent product identity.",
+            "brand_distinctiveness": "medium",
+            "category_fit": "Strong fit for a B2B SaaS homepage.",
+            "copy_visual_alignment": "Visible copy and interface cues are aligned.",
+            "logo_prominence": "clear",
+            "hierarchy_clarity": "clear",
+            "cta_salience": "clear",
+            "trust_signal_presence": "partial",
+            "first_impression_summary": "Polished, product-first and trustworthy.",
+            "observed_strengths": ["clear hierarchy", "restrained palette"],
+            "observed_risks": ["limited differentiation"],
+            "notable_absences": ["no strong social proof visible"],
         })
 
     monkeypatch.setattr(multimodal_analyzer, "BRAND3_LLM_API_KEY", "test-key")
@@ -89,12 +101,24 @@ def test_analyze_visual_semantics_encodes_image_and_normalizes_success(tmp_path,
     assert result["status"] == "detected"
     assert result["fallback_used"] is False
     assert result["error_type"] is None
+    assert result["audit"]["analysis_scope"] == "single_capture"
     assert result["data"] == {
         "aesthetic_style": "minimalist SaaS",
         "visual_mood": "high-trust",
         "visual_polish_score": 10,
         "visual_polish_rationale": "Strong hierarchy and restrained palette.",
         "visual_coherence": "The layout supports a coherent product identity.",
+        "brand_distinctiveness": "medium",
+        "category_fit": "Strong fit for a B2B SaaS homepage.",
+        "copy_visual_alignment": "Visible copy and interface cues are aligned.",
+        "logo_prominence": "clear",
+        "hierarchy_clarity": "clear",
+        "cta_salience": "clear",
+        "trust_signal_presence": "partial",
+        "first_impression_summary": "Polished, product-first and trustworthy.",
+        "observed_strengths": ["clear hierarchy", "restrained palette"],
+        "observed_risks": ["limited differentiation"],
+        "notable_absences": ["no strong social proof visible"],
     }
 
 

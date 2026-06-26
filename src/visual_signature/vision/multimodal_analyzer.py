@@ -39,10 +39,22 @@ Return ONLY valid JSON with this exact shape:
   "visual_mood": "visual mood / emotional tone, or not_detected",
   "visual_polish_score": 1-10,
   "visual_polish_rationale": "one short justification",
-  "visual_coherence": "how imagery/layout supports brand promises, or not_detected"
+  "visual_coherence": "how imagery/layout supports brand promises, or not_detected",
+  "brand_distinctiveness": "high, medium, low, or not_detected",
+  "category_fit": "how well the visible execution fits its likely category, or not_detected",
+  "copy_visual_alignment": "whether visible copy and design appear aligned, or not_detected",
+  "logo_prominence": "clear, partial, weak, or not_detected",
+  "hierarchy_clarity": "clear, mixed, weak, or not_detected",
+  "cta_salience": "clear, partial, weak, or not_detected",
+  "trust_signal_presence": "clear, partial, weak, or not_detected",
+  "first_impression_summary": "one short first-impression summary, or not_detected",
+  "observed_strengths": ["short visible strengths"],
+  "observed_risks": ["short visible risks"],
+  "notable_absences": ["important missing visual signals"]
 }}
 
 Use not_detected for fields where the screenshot does not provide enough evidence.
+Use [] for list fields when there is insufficient evidence.
 Do not infer facts that are not visible in the image."""
 
 
@@ -110,6 +122,11 @@ def analyze_visual_semantics(screenshot_path: str | None, brand_name: str) -> di
         "prompt_version": PROMPT_VERSION,
         "fallback_used": False,
         "error_type": None,
+        "audit": {
+            "analysis_scope": "single_capture",
+            "capture_count": 1,
+            "response_normalized": True,
+        },
         "data": data,
     }
 
@@ -121,12 +138,28 @@ def fallback_semantics(error_type: str | None) -> dict[str, Any]:
         "prompt_version": PROMPT_VERSION,
         "fallback_used": True,
         "error_type": error_type,
+        "audit": {
+            "analysis_scope": "single_capture",
+            "capture_count": 1,
+            "response_normalized": True,
+        },
         "data": {
             "aesthetic_style": "not_detected",
             "visual_mood": "not_detected",
             "visual_polish_score": None,
             "visual_polish_rationale": "",
             "visual_coherence": "not_detected",
+            "brand_distinctiveness": "not_detected",
+            "category_fit": "not_detected",
+            "copy_visual_alignment": "not_detected",
+            "logo_prominence": "not_detected",
+            "hierarchy_clarity": "not_detected",
+            "cta_salience": "not_detected",
+            "trust_signal_presence": "not_detected",
+            "first_impression_summary": "not_detected",
+            "observed_strengths": [],
+            "observed_risks": [],
+            "notable_absences": [],
         },
     }
 

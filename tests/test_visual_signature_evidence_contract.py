@@ -67,6 +67,12 @@ def _payload() -> dict:
             "data": {
                 "visual_polish_score": 8,
                 "visual_coherence": "Visual system aligns with the product promise.",
+                "copy_visual_alignment": "Visible copy and interface cues are aligned.",
+                "first_impression_summary": "Polished, product-first and trustworthy.",
+                "logo_prominence": "clear",
+                "hierarchy_clarity": "clear",
+                "cta_salience": "clear",
+                "trust_signal_presence": "partial",
             },
         },
     }
@@ -84,6 +90,8 @@ def test_visual_signature_evidence_v1_builds_stable_contract_for_usable_capture(
         "visual_system",
         "first_impression",
         "copy_visual_alignment",
+        "semantics_audit",
+        "evidence_health",
         "tile_signals",
         "limitations",
     }
@@ -91,11 +99,20 @@ def test_visual_signature_evidence_v1_builds_stable_contract_for_usable_capture(
     assert evidence["capture"]["first_fold_evaluable"] is True
     assert len(evidence["fingerprint"]["normalized_payload_sha256"]) == 64
     assert evidence["identity"]["candidates"][0]["role"] == "real_logo"
+    assert evidence["visual_system"]["synthesis"]["visual_tone"] in {"functional", "expressive", "editorial", "unknown"}
+    assert evidence["visual_system"]["synthesis"]["distinctiveness"] in {"high", "medium", "low"}
+    assert evidence["evidence_health"]["overall"] in {"strong", "limited", "unreliable"}
+    assert evidence["evidence_health"]["identity_status"] in {"strong", "partial", "weak"}
+    assert evidence["first_impression"]["summary"] == "Polished, product-first and trustworthy."
+    assert evidence["copy_visual_alignment"]["summary"] == "Visible copy and interface cues are aligned."
+    assert evidence["semantics_audit"]["status"] == "detected"
+    assert evidence["evidence_health"]["logo_prominence_status"] == "clear"
     assert evidence["tile_signals"]
     assert {signal["tile"] for signal in evidence["tile_signals"]} >= {"coherencia.C6", "magnetism.MG1", "brand_idea.I1"}
     assert any(signal["effect"] == "supports" for signal in evidence["tile_signals"])
     assert all(signal["source"] in {"heuristic", "llm_multimodal"} for signal in evidence["tile_signals"])
     assert all(signal["evidence_refs"] for signal in evidence["tile_signals"])
+    assert all("visual_signal_score:" in signal["rationale"] or signal["rationale"] == "capture_unreliable:blocked" for signal in evidence["tile_signals"])
 
 
 def test_visual_signature_evidence_gate_blocks_positive_signals_for_unreliable_capture():
@@ -114,6 +131,7 @@ def test_visual_signature_evidence_gate_blocks_positive_signals_for_unreliable_c
 
     assert evidence["capture"]["status"] == "blocked"
     assert evidence["capture"]["first_fold_evaluable"] is False
+    assert evidence["evidence_health"]["overall"] == "unreliable"
     assert "capture_unreliable:blocked" in evidence["limitations"]
     assert "first_fold_not_evaluable" in evidence["limitations"]
     assert all(signal["effect"] == "insufficient_evidence" for signal in evidence["tile_signals"])
@@ -141,6 +159,41 @@ def test_visual_signature_evidence_marks_low_detail_capture_as_limited():
     assert evidence["capture"]["first_fold_evaluable"] is False
     assert "capture_unreliable:limited" in evidence["limitations"]
     assert all(signal["effect"] == "insufficient_evidence" for signal in evidence["tile_signals"])
+
+
+def test_visual_signature_evidence_treats_multimodal_fallback_as_missing_evidence():
+    payload = _payload()
+    payload["semantics"] = {
+        "status": "unavailable",
+        "fallback_used": True,
+        "error_type": "api_key_missing",
+        "data": {
+            "visual_polish_score": None,
+            "visual_coherence": "not_detected",
+            "copy_visual_alignment": "not_detected",
+            "first_impression_summary": "not_detected",
+            "logo_prominence": "not_detected",
+            "hierarchy_clarity": "not_detected",
+            "cta_salience": "not_detected",
+            "trust_signal_presence": "not_detected",
+        },
+    }
+
+    evidence = build_visual_signature_evidence_v1(payload)
+    by_tile = {signal["tile"]: signal for signal in evidence["tile_signals"]}
+
+    assert evidence["first_impression"]["summary"] == ""
+    assert evidence["copy_visual_alignment"]["summary"] == ""
+    assert evidence["evidence_health"]["semantic_alignment_status"] == "unknown"
+    assert "multimodal_semantics_unavailable" in evidence["evidence_health"]["warnings"]
+    assert by_tile["brand_idea.I3"]["effect"] == "insufficient_evidence"
+    assert by_tile["brand_idea.I3"]["rationale"].startswith("multimodal_semantics_unavailable")
+    assert by_tile["core_purpose.PR8"]["effect"] == "insufficient_evidence"
+    assert by_tile["core_purpose.PR8"]["rationale"].startswith("multimodal_semantics_unavailable")
+    assert by_tile["magnetism.MG1"]["effect"] == "insufficient_evidence"
+    assert by_tile["magnetism.MG1"]["rationale"].startswith("multimodal_semantics_unavailable")
+    assert by_tile["magnetism.MG7"]["effect"] == "insufficient_evidence"
+    assert by_tile["magnetism.MG7"]["rationale"].startswith("multimodal_semantics_unavailable")
 
 
 def test_visual_signature_evidence_hashes_screenshot_file_when_available(tmp_path: Path):

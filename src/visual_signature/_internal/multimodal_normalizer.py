@@ -21,6 +21,17 @@ def normalize_semantics_data(payload: dict[str, Any]) -> dict[str, Any]:
         "visual_polish_score": _score_or_none(score),
         "visual_polish_rationale": str(rationale or "").strip(),
         "visual_coherence": _non_empty_text(payload.get("visual_coherence")),
+        "brand_distinctiveness": _non_empty_text(payload.get("brand_distinctiveness")),
+        "category_fit": _non_empty_text(payload.get("category_fit")),
+        "copy_visual_alignment": _non_empty_text(payload.get("copy_visual_alignment")),
+        "logo_prominence": _non_empty_text(payload.get("logo_prominence")),
+        "hierarchy_clarity": _non_empty_text(payload.get("hierarchy_clarity")),
+        "cta_salience": _non_empty_text(payload.get("cta_salience")),
+        "trust_signal_presence": _non_empty_text(payload.get("trust_signal_presence")),
+        "first_impression_summary": _non_empty_text(payload.get("first_impression_summary")),
+        "observed_strengths": _string_list(payload.get("observed_strengths")),
+        "observed_risks": _string_list(payload.get("observed_risks")),
+        "notable_absences": _string_list(payload.get("notable_absences")),
     }
 
 
@@ -35,3 +46,14 @@ def _score_or_none(value: Any) -> int | None:
     except (TypeError, ValueError):
         return None
     return max(1, min(10, score))
+
+
+def _string_list(value: Any) -> list[str]:
+    if not isinstance(value, list):
+        return []
+    values: list[str] = []
+    for item in value:
+        text = str(item or "").strip()
+        if text:
+            values.append(text)
+    return values[:8]

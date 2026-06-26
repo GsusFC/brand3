@@ -8,7 +8,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.visual_signature._internal.utils import float_or_none as _float_or_none
+from src.visual_signature.capture.clean_capture_support import clean_capture_improvement_state as _clean_capture_improvement_state_impl
+from src.visual_signature.capture.clean_capture_support import clean_capture_metrics_delta as _clean_capture_metrics_delta_impl
+from src.visual_signature.capture.clean_capture_support import clean_capture_obstruction_delta as _clean_capture_obstruction_delta_impl
+from src.visual_signature.capture.clean_capture_support import severity_rank as _severity_rank_impl
 from src.visual_signature.versions import VISUAL_DIAGNOSIS_CLEAN_CAPTURE_DECISION_SCHEMA_VERSION
 
 
@@ -94,63 +97,20 @@ def clean_capture_improvement_state(
     obstruction_delta: dict[str, Any],
     metrics_delta: dict[str, Any],
 ) -> str:
-    if successful and obstruction_delta.get("after_present") is False:
-        return "clear_improvement"
-    if obstruction_delta.get("severity_delta", 0) < 0 or obstruction_delta.get("coverage_delta", 0.0) < -0.05:
-        return "degraded"
-    if metrics_delta.get("visual_density_changed") and (metrics_delta.get("whitespace_delta") or 0.0) < -0.08:
-        return "degraded"
-    if obstruction_delta.get("severity_delta", 0) > 0 or obstruction_delta.get("coverage_delta", 0.0) >= 0.12:
-        return "clear_improvement"
-    if obstruction_delta.get("coverage_delta", 0.0) >= 0.05 or (metrics_delta.get("whitespace_delta") or 0.0) >= 0.08:
-        return "partial_improvement"
-    return "no_material_improvement"
+    return _clean_capture_improvement_state_impl(
+        successful=successful,
+        obstruction_delta=obstruction_delta,
+        metrics_delta=metrics_delta,
+    )
 
 
 def clean_capture_obstruction_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
-    before_present = before.get("present") is True if before else None
-    after_present = after.get("present") is True if after else None
-    before_severity = str(before.get("severity") or "none") if before else "none"
-    after_severity = str(after.get("severity") or "none") if after else "none"
-    before_coverage = _float_or_none(before.get("coverage_ratio")) or 0.0
-    after_coverage = _float_or_none(after.get("coverage_ratio")) or 0.0
-    return {
-        "before_present": before_present,
-        "after_present": after_present,
-        "before_type": before.get("type") if before else None,
-        "after_type": after.get("type") if after else None,
-        "before_severity": before_severity,
-        "after_severity": after_severity,
-        "severity_delta": _severity_rank(before_severity) - _severity_rank(after_severity),
-        "before_coverage_ratio": before_coverage,
-        "after_coverage_ratio": after_coverage,
-        "coverage_delta": round(before_coverage - after_coverage, 3),
-    }
+    return _clean_capture_obstruction_delta_impl(before, after)
 
 
 def clean_capture_metrics_delta(before: dict[str, Any], after: dict[str, Any]) -> dict[str, Any]:
-    before_whitespace = _float_or_none(before.get("viewport_whitespace_ratio"))
-    after_whitespace = _float_or_none(after.get("viewport_whitespace_ratio"))
-    before_palette = _float_or_none(before.get("palette_color_count"))
-    after_palette = _float_or_none(after.get("palette_color_count"))
-    whitespace_delta = None
-    palette_delta = None
-    if before_whitespace is not None and after_whitespace is not None:
-        whitespace_delta = round(after_whitespace - before_whitespace, 3)
-    if before_palette is not None and after_palette is not None:
-        palette_delta = round(after_palette - before_palette, 3)
-    return {
-        "before_visual_density": before.get("viewport_visual_density"),
-        "after_visual_density": after.get("viewport_visual_density"),
-        "visual_density_changed": bool(before and after and before.get("viewport_visual_density") != after.get("viewport_visual_density")),
-        "before_composition": before.get("viewport_composition"),
-        "after_composition": after.get("viewport_composition"),
-        "composition_changed": bool(before and after and before.get("viewport_composition") != after.get("viewport_composition")),
-        "whitespace_delta": whitespace_delta,
-        "palette_color_count_delta": palette_delta,
-    }
+    return _clean_capture_metrics_delta_impl(before, after)
 
 
 def _severity_rank(value: str) -> int:
-    order = {"none": 0, "minor": 1, "moderate": 2, "major": 3, "blocking": 4}
-    return order.get(str(value or "none").lower(), 0)
+    return _severity_rank_impl(value)

@@ -13,6 +13,26 @@ from typing import Any, Literal
 
 from src.visual_signature.vision.types import RasterImage
 from src.visual_signature._internal.utils import float_or_none as _float_or_none, unique as _unique
+from src.visual_signature._internal.viewport_obstruction_patterns import (
+    BOTTOM_LIKE_RE,
+    COOKIE_TERMS,
+    FIXED_LIKE_RE,
+    FULL_LIKE_RE,
+    HEIGHT_PX_RE,
+    HEIGHT_VH_RE,
+    HIGH_Z_RE,
+    LOGIN_TERMS,
+    NEWSLETTER_TERMS,
+    OVERLAY_TERMS,
+    PROMO_TERMS,
+    context_has_overlay_cues as _context_has_overlay_cues,
+    split_term_signals as _split_term_signals,
+)
+from src.visual_signature._internal.viewport_obstruction_pixels import (
+    bottom_bar_ratio as _bottom_bar_ratio,
+    centered_modal_score as _centered_modal_score,
+    fullscreen_overlay_score as _fullscreen_overlay_score,
+)
 
 
 ObstructionType = Literal[
@@ -25,53 +45,6 @@ ObstructionType = Literal[
     "none",
 ]
 ObstructionSeverity = Literal["minor", "moderate", "major", "blocking", "none"]
-
-COOKIE_TERMS = (
-    "cookie",
-    "cookies",
-    "consent",
-    "privacy",
-    "gdpr",
-    "ccpa",
-    "onetrust",
-    "trustarc",
-    "usercentrics",
-    "cookiebot",
-    "didomi",
-    "quantcast",
-    "cmp",
-)
-NEWSLETTER_TERMS = ("newsletter", "subscribe", "subscription", "email signup")
-LOGIN_TERMS = ("login", "log in", "sign in", "signin", "create account", "members only", "paywall")
-PROMO_TERMS = ("promo", "promotion", "discount", "offer", "sale", "coupon")
-OVERLAY_TERMS = (
-    "modal",
-    "dialog",
-    "overlay",
-    "backdrop",
-    "popup",
-    "pop-up",
-    "popover",
-    "aria-modal",
-    "role=\"dialog",
-    "role='dialog",
-)
-
-FIXED_LIKE_RE = re.compile(r"position\s*:\s*fixed|\bfixed\b|inset-0|fixed-bottom|bottom-0|sticky")
-BOTTOM_LIKE_RE = re.compile(r"bottom\s*:\s*0|bottom-0|fixed-bottom|cookie[-_\s]?bar|consent[-_\s]?bar")
-FULL_LIKE_RE = re.compile(r"inset\s*:\s*0|inset-0|height\s*:\s*100(?:vh|%)|min-height\s*:\s*100vh|w-screen|h-screen")
-HIGH_Z_RE = re.compile(r"z-index\s*:\s*(?:[9]\d{2,}|\d{4,})|z-\[?\d{3,}\]?|z-50")
-OVERLAY_CUES_RE = re.compile(
-    r"modal|dialog|overlay|backdrop|popup|pop-up|popover|aria-modal|role=['\"]?dialog|"
-    r"position\s*:\s*fixed|fixed-bottom|bottom-0|inset-0|z-\[?\d{3,}\]?|z-50|sticky"
-)
-PAGE_CUES_RE = re.compile(
-    r"<(header|nav|footer)\b|site-header|site-nav|navbar|topbar|masthead|breadcrumb|menu|"
-    r"utility-nav|primary-nav|secondary-nav|header__|nav__"
-)
-HEIGHT_VH_RE = re.compile(r"height\s*:\s*(\d+(?:\.\d+)?)(vh|%)")
-HEIGHT_PX_RE = re.compile(r"height\s*:\s*(\d+(?:\.\d+)?)px")
-
 
 @dataclass
 class ViewportObstructionEvidence:
@@ -324,151 +297,6 @@ def _dom_coverage(text: str, obstruction_type: str, *, bottom_like: bool, full_l
     return 0.22
 
 
-def _centered_modal_score(image: RasterImage) -> float:
-    center = _region_stats(image, 0.28, 0.22, 0.72, 0.78)
-    outer = _outer_region_stats(image, 0.12)
-    if not center or not outer:
-        return 0.0
-    brightness_gap = center["brightness"] - outer["brightness"]
-    outer_dark = outer["dark_ratio"]
-    center_light = center["light_ratio"]
-    if outer_dark >= 0.45 and brightness_gap >= 35 and center_light >= 0.25:
-        return round(min(0.72, 0.45 + outer_dark * 0.25 + min(0.2, brightness_gap / 255)), 3)
-    return 0.0
-
-
-def _fullscreen_overlay_score(image: RasterImage) -> float:
-    sample = image.sample_pixels(8000)
-    if not sample:
-        return 0.0
-    dark_ratio = sum(1 for pixel in sample if _brightness(pixel) <= 38) / len(sample)
-    mid_dark_ratio = sum(1 for pixel in sample if _brightness(pixel) <= 75) / len(sample)
-    unique_ratio = len(set(sample)) / len(sample)
-    if dark_ratio >= 0.88 and unique_ratio <= 0.08:
-        return round(dark_ratio, 3)
-    if mid_dark_ratio >= 0.92 and unique_ratio <= 0.04:
-        return round(min(0.95, mid_dark_ratio), 3)
-    return 0.0
-
-
-def _bottom_bar_ratio(image: RasterImage) -> float:
-    if image.height < 10:
-        return 0.0
-    reference_y = max(0, int(image.height * 0.55))
-    reference = _row_average(image, reference_y)
-    bottom = _row_average(image, image.height - 1)
-    if _distance(reference, bottom) < 20:
-        return 0.0
-
-    bar_rows = 0
-    for y in range(image.height - 1, -1, -1):
-        row = _row_average(image, y)
-        if _distance(row, bottom) <= 24:
-            bar_rows += 1
-            continue
-        break
-    ratio = bar_rows / image.height
-    if 0.05 <= ratio <= 0.4:
-        return round(ratio, 3)
-    return 0.0
-
-
-def _region_stats(image: RasterImage, x0: float, y0: float, x1: float, y1: float) -> dict[str, float]:
-    left = max(0, min(image.width - 1, int(image.width * x0)))
-    right = max(left + 1, min(image.width, int(image.width * x1)))
-    top = max(0, min(image.height - 1, int(image.height * y0)))
-    bottom = max(top + 1, min(image.height, int(image.height * y1)))
-    return _pixel_stats(image.sample_grid(max_width=80, max_height=60, left=left, top=top, right=right, bottom=bottom))
-
-
-def _outer_region_stats(image: RasterImage, border_ratio: float) -> dict[str, float]:
-    border_x = max(1, int(image.width * border_ratio))
-    border_y = max(1, int(image.height * border_ratio))
-    pixels = []
-    pixels.extend(image.sample_grid(max_width=100, max_height=20, left=0, top=0, right=image.width, bottom=border_y))
-    pixels.extend(
-        image.sample_grid(
-            max_width=100,
-            max_height=20,
-            left=0,
-            top=max(0, image.height - border_y),
-            right=image.width,
-            bottom=image.height,
-        )
-    )
-    middle_top = border_y
-    middle_bottom = max(border_y, image.height - border_y)
-    if middle_top < middle_bottom:
-        pixels.extend(image.sample_grid(max_width=20, max_height=60, left=0, top=middle_top, right=border_x, bottom=middle_bottom))
-        pixels.extend(
-            image.sample_grid(
-                max_width=20,
-                max_height=60,
-                left=max(0, image.width - border_x),
-                top=middle_top,
-                right=image.width,
-                bottom=middle_bottom,
-            )
-        )
-    return _pixel_stats(pixels)
-
-
-def _pixel_stats(pixels: list[tuple[int, int, int]]) -> dict[str, float]:
-    if not pixels:
-        return {}
-    brightness_values = [_brightness(pixel) for pixel in pixels]
-    return {
-        "brightness": sum(brightness_values) / len(brightness_values),
-        "dark_ratio": sum(1 for value in brightness_values if value <= 70) / len(brightness_values),
-        "light_ratio": sum(1 for value in brightness_values if value >= 210) / len(brightness_values),
-    }
-
-
-def _row_average(image: RasterImage, y: int) -> tuple[int, int, int]:
-    row = image.row_pixels(y)
-    if not row:
-        return (0, 0, 0)
-    return tuple(int(sum(pixel[channel] for pixel in row) / len(row)) for channel in range(3))  # type: ignore[return-value]
-
-
-def _term_hits(text: str, terms: tuple[str, ...]) -> list[str]:
-    return [term for term in terms if term in text]
-
-
-def _split_term_signals(text: str, terms: tuple[str, ...], *, signal_prefix: str) -> tuple[list[str], list[str]]:
-    page_level_signals: list[str] = []
-    overlay_level_signals: list[str] = []
-    for term in terms:
-        for context in _term_contexts(text, term):
-            signal = f"{signal_prefix}:{term}"
-            if _context_has_page_level_cues(context):
-                page_level_signals.append(signal)
-            elif _context_has_overlay_cues(context):
-                overlay_level_signals.append(signal)
-            else:
-                page_level_signals.append(signal)
-    return page_level_signals, overlay_level_signals
-
-
-def _term_contexts(text: str, term: str, *, window: int = 220, limit: int = 3) -> list[str]:
-    contexts: list[str] = []
-    for match in re.finditer(re.escape(term), text):
-        start = max(0, match.start() - window)
-        end = min(len(text), match.end() + window)
-        contexts.append(text[start:end])
-        if len(contexts) >= limit:
-            break
-    return contexts
-
-
-def _context_has_overlay_cues(context: str) -> bool:
-    return bool(OVERLAY_CUES_RE.search(context))
-
-
-def _context_has_page_level_cues(context: str) -> bool:
-    return bool(PAGE_CUES_RE.search(context))
-
-
 def _choose_type(*values: str) -> ObstructionType:
     priority = {
         "login_wall": 6,
@@ -517,14 +345,6 @@ def _confidence(
         score += 0.08
     score += min(0.12, signal_count * 0.025)
     return round(max(0.0, min(1.0, score)), 3)
-
-
-def _brightness(pixel: tuple[int, int, int]) -> float:
-    return pixel[0] * 0.2126 + pixel[1] * 0.7152 + pixel[2] * 0.0722
-
-
-def _distance(left: tuple[int, int, int], right: tuple[int, int, int]) -> float:
-    return sum(abs(left[idx] - right[idx]) for idx in range(3)) / 3
 
 
 def _valid_type(value: Any) -> ObstructionType:

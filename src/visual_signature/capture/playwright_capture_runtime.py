@@ -7,6 +7,7 @@ from typing import Any, Callable
 
 from src.visual_signature._internal.utils import float_or_none as _float_or_none
 from src.visual_signature._internal.utils import normalize_capture_type as _normalize_capture_type
+from src.visual_signature._internal.playwright_capture_dismissal_rules import dismissal_skip_note as _dismissal_skip_note
 from src.visual_signature.capture.screenshot_capture_models import CaptureResult
 from src.visual_signature._internal.playwright_capture_helpers import DISMISSAL_TARGET_SELECTOR
 from src.visual_signature._internal.playwright_capture_helpers import _attempt_obstruction_dismissal

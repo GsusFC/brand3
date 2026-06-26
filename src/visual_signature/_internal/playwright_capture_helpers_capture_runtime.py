@@ -143,7 +143,12 @@ def _visible_obstruction_dom_snapshot(page: Any) -> str:
         )
         text = str(row.get("text") or "")
         parts.append(f"<visible-overlay {attrs}>{text}</visible-overlay>")
-    return "\n".join(parts)
+    if parts:
+        return "\n".join(parts)
+    try:
+        return page.content()
+    except Exception:
+        return ""
 
 
 def _coerce_dict_or_none(value: Any, *, field_name: str) -> dict[str, Any] | None:
@@ -180,4 +185,3 @@ def _derived_capture_path(path: Path, capture_type: str) -> Path:
     suffix = ".png"
     stem = path.name[:-len(suffix)] if path.name.endswith(suffix) else path.name
     return path.with_name(f"{stem}.{capture_type.replace('_', '-')}{path.suffix or '.png'}")
-

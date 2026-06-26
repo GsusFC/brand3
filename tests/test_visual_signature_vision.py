@@ -370,6 +370,61 @@ def test_clean_attempt_obstruction_metadata_overrides_raw_dom_cookie_signals(tmp
     assert "dom_keyword:cookie" not in obstruction["signals"]
 
 
+def test_raw_capture_metadata_without_signals_does_not_override_dom_obstruction(tmp_path):
+    width, height = 80, 60
+    screenshot = tmp_path / "raw-capture.png"
+    _write_png(screenshot, width, height, _solid(width, height, (255, 255, 255)))
+    payload = _payload()
+    payload["acquisition"] = {
+        "rendered_html": """
+        <div role="dialog" style="position: fixed; inset: 0; z-index: 9999">
+          Cookie privacy overlay
+        </div>
+        """,
+        "viewport_obstruction": {
+            "present": True,
+            "type": "cookie_modal",
+            "severity": "blocking",
+            "coverage_ratio": 0.92,
+            "first_impression_valid": False,
+            "confidence": 1.0,
+            "signals": ["dom_keyword:cookie", "dom_overlay_term:dialog"],
+            "limitations": [],
+        },
+    }
+
+    enriched = enrich_visual_signature_with_vision(
+        visual_signature_payload=payload,
+        screenshot_path=str(screenshot),
+        screenshot_payload={
+            "capture_type": "viewport",
+            "viewport_width": width,
+            "viewport_height": height,
+            "selected_capture_variant": "raw_viewport",
+            "viewport_obstruction": {
+                "present": False,
+                "type": "none",
+                "severity": "none",
+                "coverage_ratio": 0.0,
+                "first_impression_valid": True,
+                "confidence": 0.0,
+                "signals": [],
+                "visual_signals": [],
+                "page_level_signals": [],
+                "overlay_level_signals": [],
+                "limitations": ["dom_html_unavailable", "dom_obstruction_signals_unavailable"],
+            },
+        },
+    )
+
+    obstruction = enriched["vision"]["viewport_obstruction"]
+    assert obstruction["present"] is True
+    assert obstruction["type"] == "cookie_modal"
+    assert obstruction["severity"] == "blocking"
+    assert obstruction["first_impression_valid"] is False
+    assert "dom_keyword:cookie" in obstruction["signals"]
+
+
 def test_viewport_obstruction_detects_centered_modal(tmp_path):
     width, height = 90, 70
     pixels = _solid(width, height, (22, 22, 22))
@@ -623,7 +678,7 @@ def test_viewport_obstruction_resists_privacy_text_false_positive(tmp_path):
 def test_multimodal_prompt_version_is_stable_constant():
     from src.visual_signature.vision.multimodal_analyzer import PROMPT_VERSION
 
-    assert PROMPT_VERSION == "visual-signature-multimodal-v1"
+    assert PROMPT_VERSION == "visual-signature-multimodal-v2"
 
 
 def test_build_multimodal_payload_uses_template_with_brand_name():
@@ -675,3 +730,13 @@ def test_build_cache_key_is_deterministic_and_prompt_version_bound():
     assert different_bytes != key1
 
     assert PROMPT_VERSION in key1 or len(key1) == 64
+
+
+def test_playwright_capture_helpers_exports_runtime_api():
+    from src.visual_signature._internal import playwright_capture_helpers as helpers
+
+    assert helpers.DISMISSAL_TARGET_SELECTOR
+    assert callable(helpers._attempt_obstruction_dismissal)
+    assert callable(helpers._attempt_obstruction_dismissal_with_discovery)
+    assert callable(helpers._discover_dismissal_targets)
+    assert callable(helpers._prepare_perceptual_state_machine)

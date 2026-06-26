@@ -1,7 +1,17 @@
-"""Internal helpers for the Playwright capture runtime."""
+"""Internal helpers re-exported for the Playwright capture runtime."""
 
-from src.visual_signature._internal import playwright_capture_helpers_capture_runtime as _capture_runtime
-from src.visual_signature._internal import playwright_capture_helpers_impl as _impl
+from src.visual_signature._internal.playwright_capture_dismissal_rules import DISMISSAL_TARGET_SELECTOR
+from src.visual_signature._internal.playwright_capture_helpers_impl import (
+    _attempt_obstruction_dismissal,
+    _attempt_obstruction_dismissal_with_discovery,
+    _discover_dismissal_targets,
+    _prepare_perceptual_state_machine,
+)
 
-globals().update({name: value for name, value in vars(_impl).items() if not name.startswith("__")})
-globals().update({name: value for name, value in vars(_capture_runtime).items() if not name.startswith("__")})
+__all__ = [
+    "DISMISSAL_TARGET_SELECTOR",
+    "_attempt_obstruction_dismissal",
+    "_attempt_obstruction_dismissal_with_discovery",
+    "_discover_dismissal_targets",
+    "_prepare_perceptual_state_machine",
+]

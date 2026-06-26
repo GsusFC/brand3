@@ -67,10 +67,19 @@ def enrich_visual_signature_with_vision(
     )
     agreement = compare_dom_and_viewport(payload, composition, viewport_composition, palette, viewport_palette)
     acquisition = payload.get("acquisition") if isinstance(payload.get("acquisition"), dict) else {}
+    acquisition_obstruction = acquisition.get("viewport_obstruction") if isinstance(acquisition, dict) and isinstance(acquisition.get("viewport_obstruction"), dict) else None
     payload_obstruction = metadata.get("viewport_obstruction") if isinstance(metadata.get("viewport_obstruction"), dict) else None
     selected_variant = str(metadata.get("selected_capture_variant") or "")
-    existing_obstruction = payload_obstruction or (acquisition.get("viewport_obstruction") if isinstance(acquisition, dict) else None)
-    dom_html = "" if payload_obstruction and selected_variant == "clean_attempt" else (
+    payload_override = (
+        payload_obstruction
+        if _should_use_payload_obstruction(
+            payload_obstruction,
+            selected_variant=selected_variant,
+        )
+        else None
+    )
+    existing_obstruction = payload_override or acquisition_obstruction
+    dom_html = "" if payload_override and selected_variant == "clean_attempt" else (
         str(acquisition.get("rendered_html") or acquisition.get("raw_html") or "") if isinstance(acquisition, dict) else ""
     )
     viewport_obstruction = analyze_viewport_obstruction(
@@ -94,6 +103,28 @@ def enrich_visual_signature_with_vision(
     return payload
 
 
+def _should_use_payload_obstruction(
+    payload_obstruction: dict[str, Any] | None,
+    *,
+    selected_variant: str,
+) -> bool:
+    if not isinstance(payload_obstruction, dict):
+        return False
+    if selected_variant == "clean_attempt":
+        return True
+    if payload_obstruction.get("present") is True:
+        return True
+    if payload_obstruction.get("signals"):
+        return True
+    if payload_obstruction.get("visual_signals"):
+        return True
+    if payload_obstruction.get("overlay_level_signals"):
+        return True
+    if payload_obstruction.get("page_level_signals"):
+        return True
+    return False
+
+
 def _viewport_image(image: RasterImage | None, screenshot: Any) -> RasterImage | None:
     if image is None:
         return None
@@ -113,4 +144,3 @@ def _viewport_image(image: RasterImage | None, screenshot: Any) -> RasterImage |
     if viewport_width == image.width and viewport_height == image.height:
         return image
     return image.crop(width=viewport_width, height=viewport_height)
-

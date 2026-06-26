@@ -27,6 +27,7 @@ class VisualSignaturePersistenceBundle:
     run_metadata: dict[str, Any] = field(default_factory=dict)
     artifact_refs: dict[str, Any] = field(default_factory=dict)
     visual_signature_scan: dict[str, Any] | None = None
+    visual_signature_evidence: dict[str, Any] | None = None
     raw_visual_signature_payload: dict[str, Any] | None = None
     vision_payload: dict[str, Any] | None = None
     agreement_payload: dict[str, Any] | None = None
@@ -50,6 +51,7 @@ def build_visual_signature_persistence_bundle(
     capture_type: str | None = None,
     secondary_capture_type: str | None = None,
     visual_signature_scan: dict[str, Any] | None = None,
+    visual_signature_evidence: dict[str, Any] | None = None,
 ) -> VisualSignaturePersistenceBundle:
     raw = raw_visual_signature_payload or {}
     vision = vision_payload or (raw.get("vision") if isinstance(raw, dict) else None) or {}
@@ -91,6 +93,7 @@ def build_visual_signature_persistence_bundle(
         run_metadata=run_metadata,
         artifact_refs=artifact_refs,
         visual_signature_scan=visual_signature_scan if isinstance(visual_signature_scan, dict) else None,
+        visual_signature_evidence=visual_signature_evidence if isinstance(visual_signature_evidence, dict) else None,
         raw_visual_signature_payload=raw if isinstance(raw, dict) else None,
         vision_payload=vision if isinstance(vision, dict) else None,
         agreement_payload=agreement if isinstance(agreement, dict) else None,
@@ -135,6 +138,9 @@ def persist_visual_signature_result(
         secondary_capture_type=(screenshot or {}).get("secondary_capture_type") if isinstance(screenshot, dict) else None,
         visual_signature_scan=result.get("visual_signature_scan")
         if isinstance(result.get("visual_signature_scan"), dict)
+        else None,
+        visual_signature_evidence=result.get("visual_signature_evidence")
+        if isinstance(result.get("visual_signature_evidence"), dict)
         else None,
     )
     persist_visual_signature_bundle(store, run_id, bundle)

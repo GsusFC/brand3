@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from src.visual_signature import build_visual_signature_scan
+from src.visual_signature import build_visual_signature_evidence_v1, build_visual_signature_scan
 from src.visual_signature.persistence import build_visual_signature_persistence_bundle
 
 
@@ -65,6 +65,10 @@ def build_shadow_bundle(
     vision = payload.get("vision") if isinstance(payload.get("vision"), dict) else None
     screenshot = (vision or {}).get("screenshot") if isinstance(vision, dict) else {}
     visual_signature_scan = build_visual_signature_scan(payload)
+    visual_signature_evidence = build_visual_signature_evidence_v1(
+        payload,
+        screenshot_payload=screenshot if isinstance(screenshot, dict) and screenshot else screenshot_payload,
+    )
     bundle = build_visual_signature_persistence_bundle(
         raw_visual_signature_payload=payload,
         vision_payload=vision,
@@ -75,8 +79,13 @@ def build_shadow_bundle(
         website_url=url,
         screenshot_path=(screenshot or {}).get("path") if isinstance(screenshot, dict) else (screenshot_payload or {}).get("path"),
         capture_type=(screenshot or {}).get("capture_type") if isinstance(screenshot, dict) else (screenshot_payload or {}).get("capture_type"),
+        visual_signature_evidence=visual_signature_evidence,
     )
-    return vision, screenshot, {"visual_signature_scan": visual_signature_scan, "bundle": bundle}
+    return vision, screenshot, {
+        "visual_signature_scan": visual_signature_scan,
+        "visual_signature_evidence": visual_signature_evidence,
+        "bundle": bundle,
+    }
 
 
 def persist_shadow_bundle(
@@ -109,6 +118,7 @@ def shadow_result(
     payload: dict[str, object],
     vision: dict[str, Any] | None,
     visual_signature_scan: dict[str, Any],
+    visual_signature_evidence: dict[str, Any],
 ) -> dict[str, object]:
     return {
         "status": status,
@@ -118,4 +128,5 @@ def shadow_result(
         "agreement_level": ((vision or {}).get("agreement") or {}).get("agreement_level") if isinstance(vision, dict) else None,
         "visual_signature_score": visual_signature_scan.get("score"),
         "visual_signature_scan_status": visual_signature_scan.get("status"),
+        "visual_signature_evidence": visual_signature_evidence,
     }

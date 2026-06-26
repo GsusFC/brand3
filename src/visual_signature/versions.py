@@ -9,6 +9,7 @@ from __future__ import annotations
 
 # --- Top-level contracts ---
 VISUAL_SIGNATURE_SCAN_VERSION = "visual-signature-scan-v1"
+VISUAL_SIGNATURE_EVIDENCE_VERSION = "visual-signature-evidence-v1"
 VISUAL_SIGNATURE_PLATFORM_SCHEMA_VERSION = "brand3-platform-1"
 VISUAL_DIAGNOSIS_SCHEMA_VERSION = "visual-diagnosis-v1"
 VISUAL_EVIDENCE_PACK_SCHEMA_VERSION = "visual-evidence-pack-v1"

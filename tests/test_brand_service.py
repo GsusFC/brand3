@@ -265,8 +265,12 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
         self.assertTrue(payload["run_metadata"]["full_page_available"])
         self.assertEqual(payload["visual_signature_scan"]["schema_version"], "visual-signature-scan-v1")
         self.assertGreaterEqual(payload["visual_signature_scan"]["score"], 0)
+        self.assertEqual(payload["visual_signature_evidence"]["schema_version"], "visual-signature-evidence-v1")
+        self.assertEqual(payload["visual_signature_evidence"]["capture"]["status"], "usable")
+        self.assertTrue(payload["visual_signature_evidence"]["tile_signals"])
         self.assertIn("visual_signature_score", result)
         self.assertIn("visual_signature_scan_status", result)
+        self.assertEqual(result["visual_signature_evidence"]["schema_version"], "visual-signature-evidence-v1")
 
     def test_run_visual_signature_for_existing_run_reuses_persisted_inputs(self):
         with TemporaryDirectory() as tmp:
@@ -345,10 +349,51 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
                     visual_inputs[0]["payload"]["visual_signature_scan"]["schema_version"],
                     "visual-signature-scan-v1",
                 )
+                self.assertEqual(
+                    visual_inputs[0]["payload"]["visual_signature_evidence"]["schema_version"],
+                    "visual-signature-evidence-v1",
+                )
             finally:
                 store.close()
 
-    def test_ensure_visual_signature_for_existing_run_skips_existing_scan(self):
+    def test_ensure_visual_signature_for_existing_run_skips_existing_scan_and_evidence(self):
+        with TemporaryDirectory() as tmp:
+            db_path = str(Path(tmp) / "brand3.sqlite3")
+            store = SQLiteStore(db_path)
+            try:
+                brand_id = store.upsert_brand("Existing", "https://existing.com")
+                run_id = store.create_run(brand_id, "Existing", "https://existing.com", True, True)
+                store.save_raw_input(
+                    run_id,
+                    "visual_signature",
+                    {
+                        "visual_signature_scan": {
+                            "schema_version": "visual-signature-scan-v1",
+                            "score": 70,
+                        },
+                        "visual_signature_evidence": {
+                            "schema_version": "visual-signature-evidence-v1",
+                            "capture": {"status": "usable"},
+                        },
+                    },
+                )
+
+                result = ensure_visual_signature_for_existing_run(
+                    store=store,
+                    run_id=run_id,
+                    extractor=lambda **_kwargs: self.fail("extractor should not run"),
+                )
+
+                self.assertEqual(result["status"], "already_available")
+                snapshot = store.get_run_snapshot(run_id)
+                visual_inputs = [
+                    item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
+                ]
+                self.assertEqual(len(visual_inputs), 1)
+            finally:
+                store.close()
+
+    def test_ensure_visual_signature_for_existing_run_refreshes_legacy_scan_without_evidence_contract(self):
         with TemporaryDirectory() as tmp:
             db_path = str(Path(tmp) / "brand3.sqlite3")
             store = SQLiteStore(db_path)
@@ -365,19 +410,48 @@ class VisualSignatureShadowRunTests(unittest.TestCase):
                         }
                     },
                 )
+                store.save_raw_input(
+                    run_id,
+                    "web",
+                    {
+                        "url": "https://existing.com",
+                        "title": "Existing",
+                        "markdown_content": "Existing homepage.",
+                        "html": "<header>Existing</header>",
+                        "images": [],
+                    },
+                )
+
+                def extractor(**kwargs):
+                    return {
+                        "brand_name": kwargs["brand_name"],
+                        "website_url": kwargs["website_url"],
+                        "analyzed_url": kwargs["website_url"],
+                        "interpretation_status": "interpretable",
+                        "acquisition": {"status": "ok"},
+                        "extraction_confidence": {"score": 0.8, "limitations": []},
+                        "logo": {"logo_detected": True, "confidence": 0.8, "primary_location": "header"},
+                        "consistency": {"overall_consistency": 0.7},
+                        "assets": {},
+                    }
 
                 result = ensure_visual_signature_for_existing_run(
                     store=store,
                     run_id=run_id,
-                    extractor=lambda **_kwargs: self.fail("extractor should not run"),
+                    extractor=extractor,
                 )
 
-                self.assertEqual(result["status"], "already_available")
+                self.assertEqual(result["status"], "completed")
+                self.assertTrue(result["persisted"])
                 snapshot = store.get_run_snapshot(run_id)
                 visual_inputs = [
                     item for item in snapshot["raw_inputs"] if item["source"] == "visual_signature"
                 ]
-                self.assertEqual(len(visual_inputs), 1)
+                self.assertEqual(len(visual_inputs), 2)
+                self.assertEqual(
+                    visual_inputs[-1]["payload"]["visual_signature_evidence"]["schema_version"],
+                    "visual-signature-evidence-v1",
+                )
             finally:
                 store.close()
 

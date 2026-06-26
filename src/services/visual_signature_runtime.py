@@ -12,6 +12,7 @@ from src.visual_signature.vision import enrich_visual_signature_with_vision
 from src.services.visual_signature_snapshot import (
     _content_web_from_snapshot as _content_web_from_snapshot_impl,
     _screenshot_capture_from_snapshot as _screenshot_capture_from_snapshot_impl,
+    _snapshot_has_visual_signature_evidence as _snapshot_has_visual_signature_evidence_impl,
     _snapshot_has_visual_signature_scan as _snapshot_has_visual_signature_scan_impl,
     _visual_signature_shadow_screenshot_payload as _visual_signature_shadow_screenshot_payload_impl,
     _web_data_from_snapshot as _web_data_from_snapshot_impl,
@@ -136,11 +137,16 @@ def _run_visual_signature_shadow(
         payload=payload,
         vision=vision,
         visual_signature_scan=shadow_bundle["visual_signature_scan"],
+        visual_signature_evidence=shadow_bundle["visual_signature_evidence"],
     )
 
 
 def _snapshot_has_visual_signature_scan(snapshot: dict[str, Any]) -> bool:
     return _snapshot_has_visual_signature_scan_impl(snapshot)
+
+
+def _snapshot_has_visual_signature_evidence(snapshot: dict[str, Any]) -> bool:
+    return _snapshot_has_visual_signature_evidence_impl(snapshot)
 
 
 def _web_data_from_snapshot(snapshot: dict[str, Any], *, fallback_url: str):
@@ -192,7 +198,7 @@ def ensure_visual_signature_for_existing_run(
     persistence_fn=persist_visual_signature_bundle,
 ) -> dict[str, object]:
     snapshot = require_snapshot(store, run_id)
-    if _snapshot_has_visual_signature_scan(snapshot):
+    if _snapshot_has_visual_signature_scan(snapshot) and _snapshot_has_visual_signature_evidence(snapshot):
         return {"status": "already_available", "persisted": False, "run_id": run_id}
     return run_visual_signature_for_existing_run(
         store=store,

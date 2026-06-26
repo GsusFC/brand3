@@ -42,6 +42,16 @@ def _snapshot_has_visual_signature_scan(snapshot: dict[str, Any]) -> bool:
     return False
 
 
+def _snapshot_has_visual_signature_evidence(snapshot: dict[str, Any]) -> bool:
+    for item in snapshot.get("raw_inputs") or []:
+        if item.get("source") != "visual_signature" or not isinstance(item.get("payload"), dict):
+            continue
+        evidence = item["payload"].get("visual_signature_evidence")
+        if isinstance(evidence, dict) and evidence.get("schema_version") == "visual-signature-evidence-v1":
+            return True
+    return False
+
+
 def _web_data_from_snapshot(snapshot: dict[str, Any], *, fallback_url: str):
     selected: WebData | None = None
     for item in snapshot.get("raw_inputs") or []:

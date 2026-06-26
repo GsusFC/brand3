@@ -16,18 +16,17 @@ from src.visual_signature.platform.platform_builder_constants import (
     VISUAL_SIGNATURE_ARTIFACT_SPECS,
     VISUAL_SIGNATURE_PLATFORM_RECORD_TYPE,
 )
+from src.visual_signature.platform.platform_builder_artifacts import (
+    absolute_artifact_path as _absolute_artifact_path,
+    build_artifacts as _build_artifacts,
+)
 from src.visual_signature.platform.platform_builder_render import _platform_css
 from src.visual_signature.platform.platform_builder_render import _platform_js
 from src.visual_signature.platform.platform_builder_render import _render_index_html
 from src.visual_signature.platform.platform_builder_sections import _build_scoring_summary
 from src.visual_signature.platform.platform_builder_sections import build_sections
-from src.visual_signature.platform.platform_builder_utils import _artifact_summary
-from src.visual_signature.platform.platform_builder_utils import _filesystem_summary
 from src.visual_signature.platform.platform_builder_utils import _load_json_if_exists
-from src.visual_signature.platform.platform_builder_utils import _safe_get
-from src.visual_signature.platform.platform_builder_utils import _to_output_relative_path
 from src.visual_signature.platform.platform_builder_utils import _write_text
-from src.visual_signature.platform.platform_models import PlatformArtifact
 from src.visual_signature.platform.platform_models import PlatformBundle
 from src.visual_signature.versions import VISUAL_SIGNATURE_PLATFORM_SCHEMA_VERSION
 
@@ -147,74 +146,3 @@ def write_platform_bundle(
         "platform_css": str(platform_root / "platform.css"),
         "platform_js": str(platform_root / "platform.js"),
     }
-
-
-def _build_artifacts(*, output_root: Path, visual_signature_root: Path, scoring_output_root: Path) -> list[PlatformArtifact]:
-    artifacts: list[PlatformArtifact] = []
-    for key, label, relative_path, artifact_type, required in SCORING_ARTIFACT_SPECS:
-        absolute_path = PROJECT_ROOT / relative_path
-        artifacts.append(
-            PlatformArtifact(
-                key=key,
-                label=label,
-                path=_to_output_relative_path(absolute_path, output_root=output_root),
-                artifact_type=artifact_type,
-                required=required,
-                exists=absolute_path.exists(),
-                summary=_filesystem_summary(absolute_path, artifact_type=artifact_type),
-            )
-        )
-    if scoring_output_root != DEFAULT_SCORING_OUTPUT_ROOT:
-        custom_scoring_paths = {
-            "scoring_output_root": scoring_output_root,
-            "scoring_reports_root": scoring_output_root / "reports",
-        }
-        artifacts = [
-            PlatformArtifact(
-                key=artifact.key,
-                label=artifact.label,
-                path=_to_output_relative_path(custom_scoring_paths[artifact.key], output_root=output_root),
-                artifact_type=artifact.artifact_type,
-                required=False,
-                exists=custom_scoring_paths[artifact.key].exists(),
-                summary=_filesystem_summary(custom_scoring_paths[artifact.key], artifact_type=artifact.artifact_type),
-            )
-            if artifact.key in custom_scoring_paths
-            else artifact
-            for artifact in artifacts
-        ]
-    for key, label, relative_path, artifact_type, required in VISUAL_SIGNATURE_ARTIFACT_SPECS:
-        absolute_path = visual_signature_root / relative_path
-        payload = _load_json_if_exists(absolute_path) if artifact_type == "json" else None
-        artifacts.append(
-            PlatformArtifact(
-                key=key,
-                label=label,
-                path=_to_output_relative_path(absolute_path, output_root=output_root),
-                artifact_type=artifact_type,
-                required=required,
-                exists=absolute_path.exists(),
-                record_type=_safe_get(payload, "record_type"),
-                generated_at=_safe_get(payload, "generated_at") or _safe_get(payload, "checked_at") or _safe_get(payload, "completed_at"),
-                summary=_artifact_summary(payload),
-            )
-        )
-    return artifacts
-
-
-def _absolute_artifact_path(
-    artifact: PlatformArtifact,
-    visual_signature_root: Path,
-    scoring_output_root: Path,
-) -> Path:
-    if artifact.key == "scoring_output_root":
-        return scoring_output_root
-    if artifact.key == "scoring_reports_root":
-        return scoring_output_root / "reports"
-    for key, _label, relative_path, _type, _required in SCORING_ARTIFACT_SPECS:
-        if key == artifact.key:
-            return PROJECT_ROOT / relative_path
-    for key, _label, relative_path, _type, _required in VISUAL_SIGNATURE_ARTIFACT_SPECS:
-        if key == artifact.key:
-            return visual_signature_root / relative_path
-    return visual_signature_root / artifact.path

@@ -10,13 +10,20 @@ from typing import Any
 from src.visual_signature._internal.utils import unique as _unique
 from src.visual_signature.calibration.calibration_export import validate_calibration_output_root
 from src.visual_signature.calibration.calibration_models import (
-    CalibrationManifest,
-    CalibrationRecordsFile,
-    CalibrationSummary,
+)
+from src.visual_signature.calibration.calibration_readiness_render import calibration_readiness_markdown
+from src.visual_signature.calibration.calibration_readiness_support import (
+    category_coverage as _category_coverage,
+    confidence_bucket_coverage as _confidence_bucket_coverage,
+    load_bundle as _load_bundle,
+    load_corpus_manifest as _load_corpus_manifest,
+    pct as _pct,
+    readiness_notes as _notes,
+    reviewed_claims as _reviewed_claims,
+    thresholds_for_scope as _thresholds_for_scope,
 )
 from src.visual_signature.calibration.readiness_models import (
     CALIBRATION_READINESS_SCHEMA_VERSION,
-    CoverageStats,
     ReadinessResult,
     ReadinessScope,
     ReadinessStatus,
@@ -141,14 +148,7 @@ def build_calibration_readiness(
         overconfidence_rate=overconfidence_rate,
         minimum_thresholds_used=threshold_model,
         recommendation=recommendation,
-        notes=_notes(
-            validation_errors,
-            corpus_manifest,
-            threshold_model,
-            category_count,
-            confidence_bucket_count,
-            readiness_scope,
-        ),
+        notes=_notes(validation_errors, corpus_manifest, category_count, confidence_bucket_count, readiness_scope),
     )
     return result
 
@@ -176,277 +176,5 @@ def write_calibration_readiness(
     output_json.write_text(json.dumps(readiness.model_dump(mode="json"), indent=2, sort_keys=True) + "\n", encoding="utf-8")
     output_md.write_text(calibration_readiness_markdown(readiness) + "\n", encoding="utf-8")
     return {"calibration_readiness_json": str(output_json), "calibration_readiness_md": str(output_md)}
-
-
-def calibration_readiness_markdown(result: ReadinessResult) -> str:
-    lines = [
-        "# Visual Signature Calibration Readiness",
-        "",
-        "Evidence-only readiness gate for broader calibration corpus use.",
-        "",
-        "- Evidence-only: yes",
-        "- No scoring impact: yes",
-        "- No rubric impact: yes",
-        "- No production UI/report impact: yes",
-        "- Missing review is insufficient_review: yes",
-        "- Unclear review is unresolved: yes",
-        "",
-        "## Bundle Metadata",
-        "",
-        f"- Calibration run ID: `{result.calibration_run_id}`",
-        f"- Checked at: {result.checked_at.isoformat()}",
-        f"- Scope evaluated: `{result.readiness_scope}`",
-        f"- Status: `{result.status}`",
-        f"- Bundle valid: {str(result.bundle_valid).lower()}",
-        f"- Summary count consistency: {str(result.summary_count_consistency).lower()}",
-        f"- Record count: {result.record_count}",
-        f"- Reviewed claims: {result.reviewed_claims}",
-        f"- Source corpus manifest: `{result.source_corpus_manifest_path or 'missing'}`",
-        "",
-        "### Thresholds Used",
-        "",
-        f"- Minimum total claims: {result.minimum_thresholds_used.minimum_total_claims}",
-        f"- Minimum reviewed claims: {result.minimum_thresholds_used.minimum_reviewed_claims}",
-        f"- Minimum categories: {result.minimum_thresholds_used.minimum_categories}",
-        f"- Minimum claims per category: {result.minimum_thresholds_used.minimum_claims_per_category}",
-        f"- Minimum confidence buckets: {result.minimum_thresholds_used.minimum_confidence_buckets}",
-        f"- Maximum contradiction rate: {_pct(result.minimum_thresholds_used.maximum_contradiction_rate)}",
-        f"- Maximum high-confidence contradictions: {result.minimum_thresholds_used.maximum_high_confidence_contradictions}",
-        f"- Maximum unresolved rate: {_pct(result.minimum_thresholds_used.maximum_unresolved_rate)}",
-        "",
-        "### Scope Note",
-        "",
-        "- This `ready` / `not_ready` result applies only to the scope above.",
-        "- It does not imply production readiness, scoring readiness, runtime readiness, provider-pilot readiness, or model-training readiness.",
-        "- Unsupported scopes are reported via warnings and do not silently reuse broader corpus thresholds.",
-        "",
-        "## Summary Metrics",
-        "",
-        f"- Contradiction rate: {_pct(result.contradiction_rate)}",
-        f"- Unresolved rate: {_pct(result.unresolved_rate)}",
-        f"- Overconfidence rate: {_pct(result.overconfidence_rate)}",
-        "",
-        "## Block Reasons",
-        "",
-    ]
-    if result.block_reasons:
-        lines.extend(f"- {reason}" for reason in result.block_reasons)
-    else:
-        lines.append("- none")
-
-    lines.extend(
-        [
-            "",
-            "## Warning Reasons",
-            "",
-        ]
-    )
-    if result.warning_reasons:
-        lines.extend(f"- {reason}" for reason in result.warning_reasons)
-    else:
-        lines.append("- none")
-
-    lines.extend(
-        [
-            "",
-            "## Category Coverage",
-            "",
-            "| Category | Claims | Reviewed | Share | Min required | Meets minimum |",
-            "| --- | ---: | ---: | ---: | ---: | --- |",
-        ]
-    )
-    for category, row in sorted(result.category_coverage.items()):
-        lines.append(
-            f"| {category} | {row.count} | {row.reviewed_count} | {_pct(row.share)} | {row.minimum_required} | {str(row.meets_minimum).lower()} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            "## Confidence Bucket Coverage",
-            "",
-            "| Bucket | Claims | Reviewed | Share | Min required | Meets minimum |",
-            "| --- | ---: | ---: | ---: | ---: | --- |",
-        ]
-    )
-    for bucket, row in sorted(result.confidence_bucket_coverage.items()):
-        lines.append(
-            f"| {bucket} | {row.count} | {row.reviewed_count} | {_pct(row.share)} | {row.minimum_required} | {str(row.meets_minimum).lower()} |"
-        )
-
-    lines.extend(
-        [
-            "",
-            "## Recommendation",
-            "",
-            f"- {result.recommendation}",
-            "",
-            "## Notes",
-            "",
-        ]
-    )
-    if result.notes:
-        lines.extend(f"- {note}" for note in result.notes)
-    else:
-        lines.append("- none")
-    return "\n".join(lines).rstrip()
-
-
 def validate_calibration_readiness_result(payload: dict[str, Any]) -> list[str]:
     return validate_readiness_result(payload)
-
-
-def _load_bundle(root: Path) -> tuple[CalibrationManifest | None, CalibrationRecordsFile | None, CalibrationSummary | None]:
-    manifest = _load_model(root / "calibration_manifest.json", CalibrationManifest)
-    records_file = _load_model(root / "calibration_records.json", CalibrationRecordsFile)
-    summary = _load_model(root / "calibration_summary.json", CalibrationSummary)
-    return manifest, records_file, summary
-
-
-def _load_model(path: Path, model) -> Any | None:
-    if not path.exists():
-        return None
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    if not isinstance(payload, dict):
-        return None
-    return model.model_validate(payload)
-
-
-def _load_corpus_manifest(path: str | Path | None) -> tuple[dict[str, Any] | None, str | None]:
-    if path is None:
-        default_path = Path(__file__).resolve().parents[3] / "examples" / "visual_signature" / "calibration_corpus" / "corpus_manifest.json"
-        if not default_path.exists():
-            return None, None
-        path = default_path
-    corpus_path = Path(path)
-    if not corpus_path.exists():
-        return None, _display_path(corpus_path)
-    payload = json.loads(corpus_path.read_text(encoding="utf-8"))
-    return payload if isinstance(payload, dict) else None, _display_path(corpus_path)
-
-
-def _category_coverage(
-    summary: CalibrationSummary | None,
-    records_file: CalibrationRecordsFile | None,
-    minimum_required: int,
-) -> dict[str, CoverageStats]:
-    if summary is not None:
-        source = summary.category_breakdown
-    elif records_file is not None:
-        source = _category_counts_from_records(records_file)
-    else:
-        source = {}
-    total = sum(row.get("total_claims", 0) for row in source.values())
-    if total <= 0:
-        return {}
-    coverage: dict[str, CoverageStats] = {}
-    for category, row in sorted(source.items()):
-        count = int(row.get("total_claims", 0))
-        reviewed_count = int(row.get("reviewed_claims", 0))
-        coverage[category] = CoverageStats(
-            count=count,
-            share=round(count / total, 3) if total else 0.0,
-            meets_minimum=count >= minimum_required,
-            minimum_required=minimum_required,
-            reviewed_count=reviewed_count,
-        )
-    return coverage
-
-
-def _category_counts_from_records(records_file: CalibrationRecordsFile) -> dict[str, dict[str, int]]:
-    counts: dict[str, dict[str, int]] = {}
-    for record in records_file.records:
-        row = counts.setdefault(record.category, {"total_claims": 0, "reviewed_claims": 0})
-        row["total_claims"] += 1
-        if record.review_outcome is not None:
-            row["reviewed_claims"] += 1
-    return counts
-
-
-def _confidence_bucket_coverage(
-    records_file: CalibrationRecordsFile | None,
-    minimum_required: int,
-) -> dict[str, CoverageStats]:
-    counts = {bucket: 0 for bucket in STANDARD_CONFIDENCE_BUCKETS}
-    reviewed_counts = {bucket: 0 for bucket in STANDARD_CONFIDENCE_BUCKETS}
-    if records_file is not None:
-        total = len(records_file.records)
-        for record in records_file.records:
-            bucket = str(record.confidence_bucket or "unknown")
-            if bucket not in counts:
-                counts[bucket] = 0
-                reviewed_counts[bucket] = 0
-            counts[bucket] += 1
-            if record.review_outcome is not None:
-                reviewed_counts[bucket] += 1
-    else:
-        total = 0
-    total = total or sum(counts.values())
-    if total <= 0:
-        total = 1
-    return {
-        bucket: CoverageStats(
-            count=count,
-            share=round(count / total, 3) if total else 0.0,
-            meets_minimum=count >= 1,
-            minimum_required=1,
-            reviewed_count=reviewed_counts.get(bucket, 0),
-        )
-        for bucket, count in sorted(counts.items())
-    }
-
-
-def _reviewed_claims(records_file: CalibrationRecordsFile | None) -> int:
-    if records_file is None:
-        return 0
-    return sum(1 for record in records_file.records if record.review_outcome is not None)
-
-
-def _notes(
-    validation_errors: list[str],
-    corpus_manifest: dict[str, Any] | None,
-    thresholds: ReadinessThresholds,
-    category_count: int,
-    confidence_bucket_count: int,
-    readiness_scope: ReadinessScope,
-) -> list[str]:
-    notes = [
-        "Evidence-only readiness gate.",
-        "No scoring, rubric dimensions, production reports, or UI are modified.",
-        f"Scope evaluated: {readiness_scope}",
-        "Bundle validation must pass before readiness can be positive.",
-        f"Observed categories: {category_count}",
-        f"Observed confidence buckets: {confidence_bucket_count}",
-        f"Validation errors: {len(validation_errors)}",
-    ]
-    if corpus_manifest is not None:
-        corpus_categories = corpus_manifest.get("categories")
-        if isinstance(corpus_categories, list):
-            notes.append(f"Corpus manifest categories: {len(corpus_categories)}")
-        corpus_minimums = corpus_manifest.get("minimums")
-        if isinstance(corpus_minimums, dict) and corpus_minimums.get("broader_calibration_interpretable_records") is not None:
-            notes.append(
-                "Corpus manifest broader calibration target: "
-                f"{corpus_minimums.get('broader_calibration_interpretable_records')}"
-            )
-    notes.append(
-        "Thresholds are conservative and intended to block broader corpus use until sample size and spread improve."
-    )
-    return notes
-
-
-def _thresholds_for_scope(scope: ReadinessScope, thresholds: ReadinessThresholds) -> ReadinessThresholds:
-    if scope != DEFAULT_READINESS_SCOPE:
-        return thresholds
-    return thresholds
-
-def _display_path(path: Path) -> str:
-    project_root = Path(__file__).resolve().parents[3]
-    try:
-        return str(path.relative_to(project_root))
-    except ValueError:
-        return str(path)
-
-
-def _pct(value: float) -> str:
-    return f"{value:.0%}"

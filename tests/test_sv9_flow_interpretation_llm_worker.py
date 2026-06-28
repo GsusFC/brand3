@@ -85,6 +85,297 @@ def test_normalize_llm_interpretation_rejects_refs_outside_block_shortlist() -> 
     assert "mission_dropped_missing_evidence_refs" in interpretation.limitations
 
 
+def test_values_detection_requires_explicit_values_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="legacy_feature",
+                evidence_type="tone",
+                content="Direct, pragmatic, human-centric tone with clarity and efficiency.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "values": {
+                "detected": True,
+                "content": "Clarity and efficiency as values.",
+                "confidence": "medium",
+                "evidence_refs": ["features.0"],
+                "rationale": "The tone implies values.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"values": ["features.0"]},
+    )
+
+    assert interpretation.blocks["values"]["detected"] is False
+    assert "values_structural_gate_rejected" in interpretation.limitations
+
+
+def test_values_detection_accepts_explicit_values_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content="Our values are transparency, accountability, and care for customers.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "values": {
+                "detected": True,
+                "content": "Transparency, accountability, and customer care.",
+                "confidence": "high",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The page explicitly lists values.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"values": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["values"]["detected"] is True
+    assert interpretation.evidence_refs["values"] == ["raw_inputs.0"]
+
+
+def test_values_detection_rejects_financial_value_language() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content="Acme translates intangible assets into clear financial value for investors.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "values": {
+                "detected": True,
+                "content": "Clarity and investor value.",
+                "confidence": "medium",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The evidence mentions value.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"values": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["values"]["detected"] is False
+    assert "values_structural_gate_rejected" in interpretation.limitations
+
+
+def test_vision_detection_requires_explicit_future_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content="Acme helps financial teams translate intangible assets into defensible arguments.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "vision": {
+                "detected": True,
+                "content": "A future where intangible assets are defensible.",
+                "confidence": "medium",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The positioning implies a future direction.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"vision": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["vision"]["detected"] is False
+    assert "vision_structural_gate_rejected" in interpretation.limitations
+
+
+def test_vision_detection_accepts_explicit_future_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content="Our vision is to become the next generation operating system for finance teams.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "vision": {
+                "detected": True,
+                "content": "Become the next generation operating system for finance teams.",
+                "confidence": "high",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The evidence states a vision directly.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"vision": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["vision"]["detected"] is True
+    assert interpretation.evidence_refs["vision"] == ["raw_inputs.0"]
+
+
+def test_magnetism_detection_requires_structural_momentum_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="visual_signature.tile.0",
+                source="visual_signature",
+                evidence_type="visual_tile_signal",
+                content="Visual polish, distinctive copy, and confident first impression.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "The brand has magnetism through polish.",
+                "confidence": "medium",
+                "evidence_refs": ["visual_signature.tile.0"],
+                "rationale": "The visual system is polished.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["visual_signature.tile.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is False
+    assert "magnetism_structural_gate_rejected" in interpretation.limitations
+
+
+def test_magnetism_detection_rejects_negative_engagement_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="report_narrative",
+                evidence_type="raw_input",
+                content=(
+                    "The brand suffers from stagnation in digital activity and a lack of active engagement "
+                    "across public social channels."
+                ),
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "The brand has engagement signals.",
+                "confidence": "medium",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The evidence mentions engagement.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is False
+    assert "magnetism_structural_gate_rejected" in interpretation.limitations
+
+
+def test_magnetism_detection_accepts_growth_or_engagement_evidence() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content="Revenue growth, community engagement, and press momentum are visible in the evidence.",
+            )
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "Momentum through growth, community engagement, and press.",
+                "confidence": "high",
+                "evidence_refs": ["raw_inputs.0"],
+                "rationale": "The evidence names momentum and engagement.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is True
+    assert interpretation.evidence_refs["magnetism"] == ["raw_inputs.0"]
+
+
 def test_normalize_llm_interpretation_fills_missing_blocks_as_not_detected() -> None:
     pack = BrandEvidencePack(brand_name="Acme", url="https://acme.example")
 

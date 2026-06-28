@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from typing import Any
 
 from src.sv9_flow._utils import truthy_detected, unique_strings
@@ -92,6 +93,65 @@ _BLOCK_EXAMPLES: dict[str, list[dict[str, Any]]] = {
             },
         },
     ],
+}
+
+_STRUCTURAL_DETECTION_TERMS: dict[str, tuple[str, ...]] = {
+    "values": (
+        "our values",
+        "core values",
+        "values are",
+        "principles",
+        "beliefs",
+        "we believe",
+        "guiding principles",
+        "commitment to",
+        "committed to",
+    ),
+    "vision": (
+        "our vision",
+        "vision is",
+        "future of",
+        "future where",
+        "long-term",
+        "long term",
+        "aspire",
+        "aspires",
+        "aspiration",
+        "ambition",
+        "envision",
+        "next generation",
+    ),
+    "magnetism": (
+        "momentum",
+        "demand",
+        "traction",
+        "engagement",
+        "community",
+        "customer love",
+        "customer reviews",
+        "user growth",
+        "revenue growth",
+        "funding",
+        "press",
+        "followers",
+        "market pull",
+        "word of mouth",
+    ),
+}
+
+_STRUCTURAL_REJECTION_TERMS: dict[str, tuple[str, ...]] = {
+    "magnetism": (
+        "lack of active engagement",
+        "lack active engagement",
+        "stagnation",
+        "no active public social channels",
+        "failed to scrape",
+        "insufficient credits",
+        "followers_count\": 0",
+        "avg_engagement_rate\": 0.0",
+        "absence of engagement",
+        "no independent third-party evidence",
+    ),
 }
 
 
@@ -206,7 +266,7 @@ def normalize_llm_interpretation_response(
             evidence_pack,
             allowed_refs=(block_evidence_shortlists or {}).get(key),
         )
-        detected = truthy_detected(block) and bool(refs)
+        detected = _detected_from_evidence_policy(key, block, refs, evidence_pack)
         if truthy_detected(block) and not refs:
             limitations.append(f"{key}_dropped_missing_evidence_refs")
         elif truthy_detected(block) and block_evidence_shortlists is not None:
@@ -214,6 +274,8 @@ def normalize_llm_interpretation_response(
             dropped = [ref for ref in raw_refs if ref and ref not in refs]
             if dropped:
                 limitations.append(f"{key}_dropped_refs_outside_shortlist")
+        if truthy_detected(block) and refs and key in _STRUCTURAL_DETECTION_TERMS and not detected:
+            limitations.append(f"{key}_structural_gate_rejected")
         blocks[key] = {
             "detected": detected,
             "content": str(block.get("content") or "").strip()[:700],
@@ -613,6 +675,46 @@ def _valid_refs(
         if value and value in allowed and value not in refs:
             refs.append(value)
     return refs[:5]
+
+
+def _detected_from_evidence_policy(
+    key: str,
+    block: dict[str, Any],
+    refs: list[str],
+    evidence_pack: BrandEvidencePack,
+) -> bool:
+    if not truthy_detected(block) or not refs:
+        return False
+    terms = _STRUCTURAL_DETECTION_TERMS.get(key)
+    if not terms:
+        return True
+    haystack = _evidence_haystack(refs, evidence_pack)
+    if any(_contains_detection_term(haystack, term) for term in _STRUCTURAL_REJECTION_TERMS.get(key, ())):
+        return False
+    return any(_contains_detection_term(haystack, term) for term in terms)
+
+
+def _evidence_haystack(refs: list[str], evidence_pack: BrandEvidencePack) -> str:
+    refs_set = set(refs)
+    parts: list[str] = []
+    for record in evidence_pack.evidence:
+        if record.ref not in refs_set:
+            continue
+        parts.extend(
+            (
+                record.source,
+                record.evidence_type,
+                record.content,
+                " ".join(str(value) for value in record.metadata.values()),
+            )
+        )
+    return " ".join(parts).lower()
+
+
+def _contains_detection_term(haystack: str, term: str) -> bool:
+    escaped = re.escape(" ".join(term.lower().split()))
+    normalized = " ".join(haystack.split())
+    return re.search(rf"(?<![a-z0-9]){escaped}(?![a-z0-9])", normalized) is not None
 
 
 def _confidence(value: Any) -> str:

@@ -481,6 +481,7 @@ class MagnetismExtractorRuntimeMixin:
             return
 
         result["tldr_brand3"] = tldr
+        self._sync_layers_from_tldr(result["magenta_circle"], result["tldr_brand3"])
         result["tldr_generation_mode"] = "analyst_pass_validated"
         result["tldr_strategy"] = {
             "mode": "llm_analyst_pass",

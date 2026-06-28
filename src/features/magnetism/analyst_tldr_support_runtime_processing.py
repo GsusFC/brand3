@@ -36,7 +36,10 @@ def normalize_analyst_response(
         "verdict_vs_current": _clean_text(raw.get("verdict_vs_current")) or "unknown",
         "main_gain": _clean_text(raw.get("main_gain")),
         "main_risk": _clean_text(raw.get("main_risk")),
-        "scoring_context": _normalize_scoring_context(raw.get("scoring_context")),
+        "scoring_context": _normalize_scoring_context(
+            raw.get("scoring_context"),
+            research_pack=research_pack,
+        ),
         "validation_notes": _unique_texts(validation_notes),
         "tldr_brand3": normalized_blocks,
     }
@@ -76,7 +79,7 @@ def _compact_evidence_basis(evidence_packet_summary: dict[str, Any] | None) -> d
     return evidence_payload
 
 
-def _normalize_scoring_context(value: Any) -> dict[str, Any]:
+def _normalize_scoring_context(value: Any, *, research_pack: Any | None = None) -> dict[str, Any]:
     raw = value if isinstance(value, dict) else {}
     expressive = _bounded_int(raw.get("expressive_magnetism_score"))
     earned = _bounded_int(raw.get("earned_magnetism_score"))
@@ -92,7 +95,7 @@ def _normalize_scoring_context(value: Any) -> dict[str, Any]:
         penalty = 0
     if earned is None:
         earned = expressive
-    return {
+    normalized = {
         "expressive_magnetism_score": expressive,
         "earned_magnetism_score": earned,
         "promise_requires_evidence": requires_evidence,
@@ -100,6 +103,100 @@ def _normalize_scoring_context(value: Any) -> dict[str, Any]:
         "coherence_evidence_duty_penalty": penalty or 0,
         "reasoning": _clean_text(raw.get("reasoning")),
         "evidence_gaps": _clean_list(raw.get("evidence_gaps")),
+    }
+    derived = _derive_structural_scoring_context(normalized, research_pack=research_pack)
+    if derived:
+        normalized.update(derived)
+    return normalized
+
+
+def _derive_structural_scoring_context(
+    normalized: dict[str, Any],
+    *,
+    research_pack: Any | None = None,
+) -> dict[str, Any]:
+    pack = _research_pack_dict(research_pack)
+    if not isinstance(pack, dict) or not pack:
+        return {}
+
+    proof_points = pack.get("proof_points") if isinstance(pack.get("proof_points"), list) else []
+    confidence_notes = _clean_list(pack.get("confidence_notes"))
+    pack_gaps = _clean_list(pack.get("evidence_gaps"))
+    trusted_count = 0
+    mixed_count = 0
+    for item in proof_points:
+        if not isinstance(item, dict):
+            continue
+        source_type = _clean_text(item.get("source_type")).lower()
+        if source_type.startswith("owned") or source_type == "proof_point":
+            trusted_count += 1
+        elif source_type in {"unknown", "press_or_founder", "social", "competitive_context", "noise", ""}:
+            mixed_count += 1
+
+    red_flags: list[str] = []
+    for note in confidence_notes + pack_gaps:
+        low = note.lower()
+        if "entity_boundary_collision" in low:
+            red_flags.append("entity_boundary_collision")
+        if "review_required" in low or "rejected_candidates" in low:
+            red_flags.append("review_required")
+        if "no direct proof-point evidence" in low or "no proof-point evidence" in low:
+            red_flags.append("no_proof_points")
+        if "no strategic owned subpage evidence" in low:
+            red_flags.append("no_owned_subpage_proof")
+
+    structural_override_applicable = bool(proof_points) or bool(
+        {"entity_boundary_collision", "review_required", "no_owned_subpage_proof"} & set(red_flags)
+    )
+    if not structural_override_applicable:
+        return {}
+    requires_evidence = bool(normalized.get("promise_requires_evidence")) or structural_override_applicable
+
+    if trusted_count == 0 and mixed_count == 0:
+        target_status = "weak"
+    elif red_flags:
+        target_status = "partial" if trusted_count > 0 else "weak"
+    elif trusted_count >= 3 and mixed_count == 0:
+        target_status = "satisfied"
+    elif trusted_count >= 2 and mixed_count <= 1:
+        target_status = "satisfied"
+    else:
+        target_status = "partial"
+
+    base_score = normalized.get("expressive_magnetism_score")
+    if base_score is None:
+        base_score = normalized.get("earned_magnetism_score")
+    base_score = _bounded_int(base_score) or 0
+
+    if target_status == "satisfied":
+        target_earned = base_score
+        target_penalty = 0
+    elif target_status == "partial":
+        target_earned = max(0, base_score - 9)
+        target_penalty = 8
+    else:
+        target_earned = max(0, base_score - 15)
+        target_penalty = 12
+
+    original_reason = _clean_text(normalized.get("reasoning"))
+    detail_bits = [
+        f"trusted_proof_points={trusted_count}",
+        f"mixed_proof_points={mixed_count}",
+    ]
+    if red_flags:
+        detail_bits.append("flags=" + ",".join(sorted(set(red_flags))))
+    reasoning = "Derived from research-pack proof structure: " + "; ".join(detail_bits) + "."
+    if original_reason and original_reason.lower() not in reasoning.lower():
+        reasoning += f" Analyst note: {original_reason}"
+
+    gaps = _unique_texts(_clean_list(normalized.get("evidence_gaps")) + pack_gaps)
+    return {
+        "promise_requires_evidence": True,
+        "evidence_duty_status": target_status,
+        "earned_magnetism_score": target_earned,
+        "coherence_evidence_duty_penalty": target_penalty,
+        "reasoning": reasoning,
+        "evidence_gaps": gaps[:8],
     }
 
 

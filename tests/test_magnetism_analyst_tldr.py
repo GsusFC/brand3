@@ -11,6 +11,10 @@ from src.features.magnetism.analyst_tldr import (
     normalize_analyst_response,
     run_analyst_tldr_pass,
 )
+from src.features.magnetism.analyst_tldr_block_candidates import (
+    block_evidence_shortlists,
+    block_signal_candidates,
+)
 from src.reports.brand_research_pack import build_brand_research_pack_from_snapshot
 
 
@@ -150,6 +154,7 @@ def test_analyst_pass_normalizes_base44_and_captures_prompt() -> None:
     assert result["prompt_version"] == ANALYST_TLDR_PROMPT_VERSION
     assert "Brand3's Analyst Pass" in llm.captured_system
     assert "block_exercises" in llm.captured_user
+    assert "block_signal_candidates" in llm.captured_user
     assert "Base44" in llm.captured_user
     assert result["tldr_brand3"]["core_purpose"]["answer"].startswith("To make app creation simple")
     assert result["tldr_brand3"]["core_purpose"]["evidence_sources"][0]["source_key"] == "https://base44.com"
@@ -165,6 +170,19 @@ def test_analyst_pass_normalizes_base44_and_captures_prompt() -> None:
         "tldr_brand3",
     ]
     assert result["scoring_context"]["evidence_duty_status"] == "not_required"
+
+
+def test_block_candidates_drop_structural_blobs_and_synthetic_metrics() -> None:
+    pack = _research_pack().to_dict()
+    pack["offer"] = "# Big homepage blob " + "word " * 40
+    pack["visual_or_conceptual_signals"] = [pack["offer"], "Trusted neutrality"]
+    pack["personality_signals"] = ["web_presence", "search_visibility", "direct", "pragmatic"]
+
+    shortlists = block_evidence_shortlists(pack)
+    signals = block_signal_candidates(pack)
+
+    assert shortlists["brand_idea"][0]["text"] == "Trusted neutrality"
+    assert signals["personality"] == ["direct", "pragmatic"]
 
 
 def test_block_without_evidence_used_remains_visible_and_flagged() -> None:
@@ -225,6 +243,48 @@ def test_analyst_scoring_context_preserves_earned_magnetism_judgement() -> None:
     assert scoring["evidence_duty_status"] == "weak"
     assert scoring["coherence_evidence_duty_penalty"] == 12
     assert "scientific validation" in scoring["evidence_gaps"]
+
+
+def test_analyst_scoring_context_is_downgraded_by_structural_pack_red_flags() -> None:
+    raw = {
+        "entity_reading": "COFI reads as a consultancy for intangible asset valuation.",
+        "verdict_vs_current": "similar",
+        "main_gain": "Cleaner articulation.",
+        "main_risk": "Proof quality is mixed.",
+        "scoring_context": {
+            "expressive_magnetism_score": 77,
+            "earned_magnetism_score": 77,
+            "promise_requires_evidence": True,
+            "evidence_duty_status": "satisfied",
+            "coherence_evidence_duty_penalty": 0,
+            "reasoning": "Methodology and metrics appear sufficient.",
+            "evidence_gaps": [],
+        },
+        "tldr_brand3": {},
+    }
+    pack = _research_pack().to_dict()
+    pack["proof_points"] = [
+        {"text": "Convertimos tus intangibles en valor medible y defendible, en euros.", "source_type": "unknown"},
+        {"text": "Referentes en valoración de activos intangibles de empresas.", "source_type": "owned_official"},
+        {"text": "Capital One Software of Capital One Financial (COF)...", "source_type": "unknown"},
+    ]
+    pack["confidence_notes"] = [
+        "entity_boundary_collision: external evidence includes near-name collisions; quarantined from TLDR input.",
+        "evidence_vnext_review_required",
+    ]
+    pack["evidence_gaps"] = [
+        "No strategic owned subpage evidence is present in the current graph.",
+    ]
+
+    result = normalize_analyst_response(raw, current_tldr={}, research_pack=pack)
+
+    scoring = result["scoring_context"]
+    assert scoring["promise_requires_evidence"] is True
+    assert scoring["evidence_duty_status"] == "partial"
+    assert scoring["earned_magnetism_score"] == 68
+    assert scoring["coherence_evidence_duty_penalty"] == 8
+    assert "entity_boundary_collision" in scoring["reasoning"]
+    assert "No strategic owned subpage evidence is present in the current graph." in scoring["evidence_gaps"]
 
 
 def test_analyst_pass_recovers_schema_failure_from_last_raw_response() -> None:
@@ -429,6 +489,7 @@ def test_prompt_is_driven_by_pack_not_brand_rules() -> None:
     assert "negative_examples" in prompt
     assert "Book a demo" in prompt
     assert "absent/not_detected" in prompt
+    assert "block_evidence_shortlists" in prompt
     assert '"brand": {' in prompt
 
 

@@ -45,6 +45,7 @@ def normalize_analysis(
         ).to_dict()
     normalized["brand_context_brief"] = brand_context_brief
     normalized["tldr_brand3"] = derive_tldr_fn(normalized["magenta_circle"], strategic_packet, brand_context_brief)
+    sync_layers_from_tldr(normalized["magenta_circle"], normalized["tldr_brand3"])
     if strategic_packet:
         normalized["strategic_evidence_packet"] = strategic_packet
     for key in (
@@ -241,6 +242,45 @@ def set_layer_from_packet(
         "findings": finding,
         "evidence_list": [evidence],
     }
+
+
+def sync_layers_from_tldr(layers: dict[str, Any], tldr: dict[str, Any]) -> None:
+    if not isinstance(layers, dict) or not isinstance(tldr, dict):
+        return
+
+    layer_keys = {
+        "core_purpose": "aetherspace",
+        "magnetism": "mindspace",
+        "value_proposition": "netspace",
+        "personality": "gamespace",
+        "brand_idea": "envispace",
+        "attributes": "ambientspace",
+        "values": "ambientspace",
+        "mission": "tactispace",
+        "vision": "tactispace",
+    }
+
+    for block_key, layer_key in layer_keys.items():
+        block = tldr.get(block_key)
+        if not isinstance(block, dict) or not block.get("detected"):
+            continue
+        layer = layers.get(layer_key)
+        if isinstance(layer, dict) and layer.get("detected"):
+            continue
+        raw_evidence = block.get("evidence_used") or block.get("evidence")
+        if isinstance(raw_evidence, list):
+            evidence_used = [str(item).strip() for item in raw_evidence if str(item).strip()]
+        elif raw_evidence:
+            evidence_used = [str(raw_evidence).strip()]
+        else:
+            evidence_used = []
+        evidence = evidence_used[0] if evidence_used else clean_optional_string(block.get("answer") or block.get("content"))
+        if not evidence:
+            continue
+        confidence = str(block.get("confidence") or "").strip().lower()
+        if confidence not in {"high", "medium", "low"}:
+            confidence = "medium"
+        set_layer_from_packet(layers, layer_key, evidence, confidence)
 
 
 def enrich_layers_from_legacy_text(raw: dict[str, Any], layers: dict[str, Any]) -> None:

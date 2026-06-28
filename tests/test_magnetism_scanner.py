@@ -548,7 +548,7 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("Contrato de evidencia vNext", response.text)
-        self.assertIn("precision_vnext_v1", response.text)
+        self.assertIn(EXA_STRATEGY_VERSION, response.text)
         self.assertIn("competitors=False", response.text)
         self.assertIn("accepted=", response.text)
         self.assertIn("material_lost=", response.text)
@@ -3202,6 +3202,180 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(calls[1][1], (789,))
         self.assertEqual(calls[1][2], {})
 
+    def test_scanner_api_audit_snapshot_returns_sanitized_debug_payload(self):
+        from web.routes import scanner_api
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API brand with a debug audit source.",
+            brand_name="API Audit Snapshot",
+        )
+        payload["source_run_id"] = 654
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=654,
+        )
+
+        snapshot = {
+            "run": {
+                "id": 654,
+                "brand_name": "API Audit Snapshot",
+                "url": "https://example.com",
+                "composite_score": 71.4,
+                "completed_at": "2026-06-27T09:00:00",
+                "audit": {"summary": "Example"},
+            },
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "created_at": "2026-06-27T08:58:00",
+                    "payload": {
+                        "url": "https://example.com",
+                        "rendered_html": "<html>" + ("x" * 500) + "</html>",
+                        "markdown": "# Headline\n" + ("y" * 500),
+                    },
+                },
+                {
+                    "source": "visual_signature",
+                    "created_at": "2026-06-27T08:59:00",
+                    "payload": {
+                        "visual_signature_scan": {"schema_version": "visual-signature-scan-v1", "score": 60.3},
+                        "semantics": {"status": "detected"},
+                    },
+                },
+            ],
+            "features": [{"id": "feature-1", "label": "Example"}],
+            "evidence_items": [{"id": "ev-1", "dimension": "coherence"}],
+        }
+
+        with unittest.mock.patch("web.routes.scanner_api._load_run_snapshot", return_value=snapshot):
+            response = self.client.get(
+                f"/api/v1/scanner/{scan_id}/audit-snapshot",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertTrue(body["available"])
+        self.assertEqual(body["source_run_id"], 654)
+        self.assertEqual(body["debug"]["counts"]["raw_inputs"], 2)
+        self.assertEqual(body["debug"]["visual_signature_payload"]["semantics"]["status"], "detected")
+        web_payload = body["debug"]["raw_inputs"][0]["payload"]
+        self.assertEqual(web_payload["rendered_html"]["_redacted"], True)
+        self.assertEqual(web_payload["markdown"]["_redacted"], True)
+
+    def test_scanner_api_audit_snapshot_full_returns_persisted_snapshot_body(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API brand with a full debug audit source.",
+            brand_name="API Audit Snapshot Full",
+        )
+        payload["source_run_id"] = 655
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=655,
+        )
+
+        snapshot = {
+            "run": {
+                "id": 655,
+                "brand_name": "API Audit Snapshot Full",
+                "url": "https://example.com",
+                "composite_score": 72.1,
+                "completed_at": "2026-06-27T09:00:00",
+            },
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "url": "https://example.com",
+                        "rendered_html": "<html>full body</html>",
+                    },
+                }
+            ],
+        }
+
+        with unittest.mock.patch("web.routes.scanner_api._load_run_snapshot", return_value=snapshot):
+            response = self.client.get(
+                f"/api/v1/scanner/{scan_id}/audit-snapshot?full=true",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body["source_run_id"], 655)
+        self.assertEqual(body["debug"]["raw_inputs"][0]["payload"]["rendered_html"], "<html>full body</html>")
+
+    def test_scanner_api_audit_snapshot_loads_snapshot_via_threadpool(self):
+        from web.routes import scanner_api
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API brand with a debug audit source.",
+            brand_name="API Audit Snapshot Threadpool",
+        )
+        payload["source_run_id"] = 321
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(payload),
+            source_run_id=321,
+        )
+        calls = []
+
+        async def fake_to_thread(func, *args, **kwargs):
+            calls.append((func, args, kwargs))
+            if func is scanner_api.get_magnetism_scan:
+                return func(*args, **kwargs)
+            return None
+
+        with unittest.mock.patch("web.routes.scanner_api.asyncio.to_thread", side_effect=fake_to_thread):
+            response = self.client.get(
+                f"/api/v1/scanner/{scan_id}/audit-snapshot",
+                headers=self._scanner_api_headers(),
+            )
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual([call[0] for call in calls], [
+            scanner_api.get_magnetism_scan,
+            scanner_api._load_run_snapshot,
+        ])
+        self.assertEqual(calls[0][1], (scan_id,))
+        self.assertEqual(calls[1][1], (321,))
+        self.assertEqual(calls[1][2], {})
+
     def test_scanner_api_strategic_reading_loads_context_via_threadpool(self):
         from web.routes import scanner_api
         from web.storage import insert_magnetism_scan
@@ -3403,6 +3577,57 @@ class MagnetismScannerTests(unittest.TestCase):
 
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json()["error"]["code"], "scan_not_found")
+
+    def test_scanner_api_result_full_includes_sanitized_debug_payloads(self):
+        from web.storage import insert_magnetism_scan
+
+        payload = MagnetismExtractor(llm=None).extract(
+            url=None,
+            manual_text="A scanner API brand with persisted payload debug.",
+            brand_name="API Result Full Debug",
+        )
+        payload["scanner_readiness"] = {
+            "status": "publishable",
+            "publishable": True,
+            "reason_codes": [],
+        }
+        payload["tldr_brand3"] = {
+            "magnetism": {"detected": True, "answer": "Hard proof, clearly told."}
+        }
+        raw_payload = {
+            **payload,
+            "html": "<html>" + ("x" * 600) + "</html>",
+            "custom_note": "persisted raw payload",
+        }
+        scan_id = insert_magnetism_scan(
+            brand_name=payload["brand_name"],
+            url=payload["url"] or "Manual Upload",
+            magnetism_score=payload["magnetism_score"],
+            coherence_score=payload["coherence_score"],
+            quadrant=payload["quadrant"],
+            raw_payload=json.dumps(raw_payload),
+        )
+
+        response = self.client.get(
+            f"/api/v1/scanner/{scan_id}/result?full=true",
+            headers=self._scanner_api_headers(),
+        )
+
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertIn("debug", body)
+        self.assertEqual(
+            body["debug"]["raw_payload"]["custom_note"],
+            "persisted raw payload",
+        )
+        self.assertEqual(
+            body["debug"]["raw_payload"]["html"]["_redacted"],
+            True,
+        )
+        self.assertEqual(
+            body["debug"]["normalized_payload"]["tldr_brand3"]["magnetism"]["answer"],
+            "Hard proof, clearly told.",
+        )
 
     def test_scan_detail_shows_tldr_strategy_metadata(self):
         from web.storage import insert_magnetism_scan
@@ -4871,6 +5096,174 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertEqual(result["score_breakdown"]["magnetism"]["earned_magnetism"], scoring["earned_magnetism_score"])
         self.assertEqual(result["score_breakdown"]["magnetism"]["evidence_duty_status"], "weak")
         self.assertEqual(result["metrics"]["coherence_breakdown"]["evidence_duty_penalty"], 11)
+
+    def test_analyst_pass_syncs_missing_layers_from_validated_tldr(self):
+        fake_llm = FakeLLMAnalyzer()
+        fake_llm.mock_response = {
+            "entity_reading": "Acme reads as a clearly articulated B2B brand.",
+            "verdict_vs_current": "better",
+            "main_gain": "Completes the missing strategic layers.",
+            "main_risk": "Still needs broader proof coverage.",
+            "tldr_brand3": {
+                "core_purpose": {
+                    "answer": "Make compliance workflows easier to trust and operate.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "reasoning": "Owned evidence states the purpose clearly.",
+                    "evidence_used": ["Make compliance workflows easier to trust and operate."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+                "magnetism": {
+                    "answer": "Operate trust at speed.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "reasoning": "The owned headline is memorable.",
+                    "evidence_used": ["Operate trust at speed."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+                "value_proposition": {
+                    "answer": "Compliance infrastructure for teams that need speed and auditability.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "reasoning": "The product offer is explicit.",
+                    "evidence_used": ["Compliance infrastructure for teams that need speed and auditability."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+                "personality": {
+                    "answer": "Precise, confident, and operator-focused.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "reasoning": "Tone and offer support this reading.",
+                    "evidence_used": ["Precise, confident, and operator-focused."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+                "brand_idea": {
+                    "answer": "Turning compliance into operating confidence.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "reasoning": "The concept ties the system together.",
+                    "evidence_used": ["Turning compliance into operating confidence."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+                "attributes": {
+                    "answer": "Precise, auditable, and fast.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "reasoning": "The evidence suggests these traits.",
+                    "evidence_used": ["Precise, auditable, and fast."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+                "mission": {
+                    "answer": "Help regulated teams move faster without losing control.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "reasoning": "Mission language is explicit.",
+                    "evidence_used": ["Help regulated teams move faster without losing control."],
+                    "evidence_sources": [{"source_key": "https://acme.test", "source_type": "owned_official"}],
+                    "counter_evidence": [],
+                    "human_review_recommended": False,
+                },
+            },
+        }
+        extractor = MagnetismExtractor(llm=fake_llm)  # type: ignore[arg-type]
+        snapshot = {
+            "run": {"id": 700, "brand_name": "Acme", "url": "https://acme.test"},
+            "features": [],
+            "raw_inputs": [
+                {
+                    "source": "web",
+                    "payload": {
+                        "canonical_url": "https://acme.test",
+                        "markdown_content": (
+                            "Operate trust at speed. "
+                            "Compliance infrastructure for teams that need speed and auditability."
+                        ),
+                    },
+                }
+            ],
+            "evidence_items": [],
+        }
+
+        with unittest.mock.patch("src.features.magnetism.extractor.BRAND3_MAGNETISM_RESEARCH_PACK_TLDR", True), \
+             unittest.mock.patch("src.features.magnetism.extractor.BRAND3_BRAND_RESEARCH_GRAPH_PACK", False), \
+             unittest.mock.patch.object(extractor, "_extract_via_llm", return_value=None):
+            result = extractor.extract_from_audit_snapshot(snapshot)
+
+        self.assertEqual(result["tldr_generation_mode"], "analyst_pass_validated")
+        self.assertEqual(result["magenta_circle"]["gamespace"]["status"], "detected")
+        self.assertEqual(result["magenta_circle"]["envispace"]["status"], "detected")
+        self.assertEqual(result["magenta_circle"]["tactispace"]["status"], "detected")
+        self.assertEqual(result["metrics"]["coherence_breakdown"]["semantic_alignment"], 95)
+
+    def test_ensure_tldr_v03_contract_recomputes_layers_and_metrics_for_analyst_payloads(self):
+        extractor = MagnetismExtractor(llm=None)
+        payload = {
+            "brand_name": "Acme",
+            "url": "https://acme.test",
+            "tldr_generation_mode": "analyst_pass_validated",
+            "magenta_circle": {
+                "mindspace": {"finding": "Operate trust at speed.", "evidence": "Operate trust at speed.", "detected": True, "confidence": "medium", "status": "detected", "findings": "Operate trust at speed.", "evidence_list": ["Operate trust at speed."]},
+                "aetherspace": {"finding": None, "evidence": None, "detected": False, "confidence": "insufficient", "status": "not_detected", "findings": "No clear signal detected in the provided sources.", "evidence_list": []},
+                "gamespace": {"finding": None, "evidence": None, "detected": False, "confidence": "insufficient", "status": "not_detected", "findings": "No clear signal detected in the provided sources.", "evidence_list": []},
+                "envispace": {"finding": None, "evidence": None, "detected": False, "confidence": "insufficient", "status": "not_detected", "findings": "No clear signal detected in the provided sources.", "evidence_list": []},
+                "netspace": {"finding": "Compliance infrastructure for teams that need speed and auditability.", "evidence": "Compliance infrastructure for teams that need speed and auditability.", "detected": True, "confidence": "medium", "status": "detected", "findings": "Compliance infrastructure for teams that need speed and auditability.", "evidence_list": ["Compliance infrastructure for teams that need speed and auditability."]},
+                "tactispace": {"finding": None, "evidence": None, "detected": False, "confidence": "insufficient", "status": "not_detected", "findings": "No clear signal detected in the provided sources.", "evidence_list": []},
+                "ambientspace": {"finding": "Precise, auditable, and fast.", "evidence": "Precise, auditable, and fast.", "detected": True, "confidence": "medium", "status": "detected", "findings": "Precise, auditable, and fast.", "evidence_list": ["Precise, auditable, and fast."]},
+            },
+            "tldr_brand3": {
+                "core_purpose": {"block": "core_purpose", "question": "", "answer": "Make compliance workflows easier to trust and operate.", "content": "Make compliance workflows easier to trust and operate.", "detected": True, "claim_type": "declared", "mode": "compressed", "confidence": "high", "reasoning": "", "evidence_used": ["Make compliance workflows easier to trust and operate."], "counter_evidence": [], "human_review_recommended": False},
+                "magnetism": {"block": "magnetism", "question": "", "answer": "Operate trust at speed.", "content": "Operate trust at speed.", "detected": True, "claim_type": "declared", "mode": "compressed", "confidence": "high", "reasoning": "", "evidence_used": ["Operate trust at speed."], "counter_evidence": [], "human_review_recommended": False},
+                "value_proposition": {"block": "value_proposition", "question": "", "answer": "Compliance infrastructure for teams that need speed and auditability.", "content": "Compliance infrastructure for teams that need speed and auditability.", "detected": True, "claim_type": "declared", "mode": "compressed", "confidence": "high", "reasoning": "", "evidence_used": ["Compliance infrastructure for teams that need speed and auditability."], "counter_evidence": [], "human_review_recommended": False},
+                "personality": {"block": "personality", "question": "", "answer": "Precise, confident, and operator-focused.", "content": "Precise, confident, and operator-focused.", "detected": True, "claim_type": "inferred", "mode": "interpreted_from_discourse", "confidence": "medium", "reasoning": "", "evidence_used": ["Precise, confident, and operator-focused."], "counter_evidence": [], "human_review_recommended": False},
+                "brand_idea": {"block": "brand_idea", "question": "", "answer": "Turning compliance into operating confidence.", "content": "Turning compliance into operating confidence.", "detected": True, "claim_type": "inferred", "mode": "interpreted_from_discourse", "confidence": "medium", "reasoning": "", "evidence_used": ["Turning compliance into operating confidence."], "counter_evidence": [], "human_review_recommended": False},
+                "attributes": {"block": "attributes", "question": "", "answer": "Precise, auditable, and fast.", "content": "Precise, auditable, and fast.", "detected": True, "claim_type": "performed", "mode": "interpreted_from_discourse", "confidence": "medium", "reasoning": "", "evidence_used": ["Precise, auditable, and fast."], "counter_evidence": [], "human_review_recommended": False},
+                "values": {"block": "values", "question": "", "answer": None, "content": None, "detected": False, "claim_type": "absent", "mode": "not_detected", "confidence": "low", "reasoning": "", "evidence_used": [], "counter_evidence": [], "human_review_recommended": False},
+                "mission": {"block": "mission", "question": "", "answer": "Help regulated teams move faster without losing control.", "content": "Help regulated teams move faster without losing control.", "detected": True, "claim_type": "declared", "mode": "compressed", "confidence": "high", "reasoning": "", "evidence_used": ["Help regulated teams move faster without losing control."], "counter_evidence": [], "human_review_recommended": False},
+                "vision": {"block": "vision", "question": "", "answer": None, "content": None, "detected": False, "claim_type": "absent", "mode": "not_detected", "confidence": "low", "reasoning": "", "evidence_used": [], "counter_evidence": [], "human_review_recommended": False},
+            },
+            "analyst_tldr_validated": {
+                "scoring_context": {
+                    "expressive_magnetism_score": 77,
+                    "earned_magnetism_score": 68,
+                    "promise_requires_evidence": True,
+                    "evidence_duty_status": "partial",
+                    "coherence_evidence_duty_penalty": 8,
+                    "reasoning": "structured proof is partial",
+                    "evidence_gaps": [],
+                }
+            },
+            "metrics": {
+                "magnetism_score": 68,
+                "coherence_score": 68,
+                "coherence_breakdown": {"semantic_alignment": 68, "completeness": 78, "absence_of_contradiction": 92, "evidence_duty_penalty": 8},
+            },
+        }
+
+        upgraded = extractor.ensure_tldr_v03_contract(payload)
+
+        self.assertEqual(upgraded["magenta_circle"]["gamespace"]["status"], "detected")
+        self.assertEqual(upgraded["magenta_circle"]["envispace"]["status"], "detected")
+        self.assertEqual(upgraded["magenta_circle"]["tactispace"]["status"], "detected")
+        self.assertEqual(upgraded["metrics"]["coherence_breakdown"]["semantic_alignment"], 95)
 
     def test_graph_pack_flag_uses_evidence_graph_research_pack(self):
         fake_llm = FakeLLMAnalyzer()

@@ -6,6 +6,7 @@ TLDR derivation, scoring, and legacy compatibility fields.
 
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from src.reports.derivation import collect_evidences
@@ -26,6 +27,7 @@ from src.features.magnetism.extractor_normalization import (
     normalize_layers as _norm_normalize_layers,
     packet_layer_confidence as _norm_packet_layer_confidence,
     sentences_from_text as _norm_sentences_from_text,
+    sync_layers_from_tldr as _norm_sync_layers_from_tldr,
     set_layer_from_packet as _norm_set_layer_from_packet,
     trim_evidence as _norm_trim_evidence,
     clean_evidence_phrase as _norm_clean_evidence_phrase,
@@ -140,7 +142,27 @@ class MagnetismExtractorDerivationMixin(
         if changed:
             payload = dict(payload)
             payload["tldr_brand3"] = upgraded
-            self._add_legacy_fields(payload)
+            if "metrics" in payload and "diagnosis" in payload:
+                self._add_legacy_fields(payload)
+        elif str(payload.get("tldr_generation_mode") or "") == "analyst_pass_validated":
+            payload = dict(payload)
+
+        if str(payload.get("tldr_generation_mode") or "") == "analyst_pass_validated":
+            before_layers = json.dumps(payload.get("magenta_circle") or {}, sort_keys=True, ensure_ascii=False)
+            self._sync_layers_from_tldr(payload["magenta_circle"], payload["tldr_brand3"])
+            after_layers = json.dumps(payload.get("magenta_circle") or {}, sort_keys=True, ensure_ascii=False)
+            if before_layers != after_layers or "metrics" not in payload:
+                payload["metrics"] = self._derive_metrics(
+                    payload.get("magenta_circle") or {},
+                    payload["tldr_brand3"],
+                    scoring_context=(
+                        payload.get("analyst_tldr_validated", {}).get("scoring_context")
+                        if isinstance(payload.get("analyst_tldr_validated"), dict)
+                        else None
+                    ),
+                )
+                payload["diagnosis"] = self._derive_diagnosis(payload.get("magenta_circle") or {}, payload["metrics"])
+                self._add_legacy_fields(payload)
         if "evidence_packet_summary" not in payload:
             payload = dict(payload)
             payload["evidence_packet_summary"] = self._derive_evidence_packet_summary(payload)
@@ -505,6 +527,9 @@ class MagnetismExtractorDerivationMixin(
 
     def _enrich_layers_from_legacy_text(self, raw: dict[str, Any], layers: dict[str, Any]) -> None:
         _norm_enrich_layers_from_legacy_text(raw, layers)
+
+    def _sync_layers_from_tldr(self, layers: dict[str, Any], tldr: dict[str, Any]) -> None:
+        _norm_sync_layers_from_tldr(layers, tldr)
 
     @staticmethod
     def _infer_brand_name(url_str: str) -> str:

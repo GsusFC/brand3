@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import secrets
 from typing import Literal
 
@@ -59,6 +60,18 @@ class _ReportReadAnalyzer:
 
 
 _REPORT_READ_ANALYZER = _ReportReadAnalyzer()
+_DEBUG_REDACTED_KEYS = {
+    "html",
+    "raw_html",
+    "rendered_html",
+    "markdown_content",
+    "markdown",
+    "content",
+    "screenshot_base64",
+    "image_base64",
+    "bytes",
+}
+_DEBUG_MAX_STRING_LENGTH = 400
 
 
 @router.get("/scanner-api/openapi.json", include_in_schema=False)
@@ -187,6 +200,88 @@ def _load_strategic_read_context(run_id: int, lang: _Lang) -> tuple[dict | None,
         store.close()
 
 
+def _sanitize_debug_value(value):
+    if isinstance(value, dict):
+        sanitized: dict[str, object] = {}
+        for key, item in value.items():
+            key_str = str(key)
+            if key_str in _DEBUG_REDACTED_KEYS:
+                text = str(item or "")
+                sanitized[key_str] = {
+                    "_redacted": True,
+                    "length": len(text),
+                }
+                continue
+            sanitized[key_str] = _sanitize_debug_value(item)
+        return sanitized
+    if isinstance(value, list):
+        return [_sanitize_debug_value(item) for item in value[:50]]
+    if isinstance(value, str):
+        if len(value) <= _DEBUG_MAX_STRING_LENGTH:
+            return value
+        return {
+            "_truncated": True,
+            "length": len(value),
+            "preview": value[:_DEBUG_MAX_STRING_LENGTH],
+        }
+    return value
+
+
+def _debug_snapshot_payload(snapshot: dict) -> dict:
+    run = snapshot.get("run") if isinstance(snapshot.get("run"), dict) else {}
+    raw_inputs = snapshot.get("raw_inputs") if isinstance(snapshot.get("raw_inputs"), list) else []
+    features = snapshot.get("features") if isinstance(snapshot.get("features"), list) else []
+    evidence_items = (
+        snapshot.get("evidence_items") if isinstance(snapshot.get("evidence_items"), list) else []
+    )
+    visual_signature_payload = None
+    for item in reversed(raw_inputs):
+        if item.get("source") == "visual_signature" and isinstance(item.get("payload"), dict):
+            visual_signature_payload = item.get("payload")
+            break
+    return {
+        "raw_inputs": [
+            {
+                "source": str(item.get("source") or ""),
+                "created_at": item.get("created_at"),
+                "payload": _sanitize_debug_value(item.get("payload") if isinstance(item.get("payload"), dict) else {}),
+            }
+            for item in raw_inputs
+            if isinstance(item, dict)
+        ],
+        "visual_signature_payload": _sanitize_debug_value(
+            visual_signature_payload if isinstance(visual_signature_payload, dict) else {}
+        ),
+        "features": _sanitize_debug_value(features[:200]),
+        "evidence_items": _sanitize_debug_value(evidence_items[:200]),
+        "counts": {
+            "raw_inputs": len(raw_inputs),
+            "features": len(features),
+            "evidence_items": len(evidence_items),
+        },
+        "run_audit_keys": sorted((run.get("audit") or {}).keys()) if isinstance(run.get("audit"), dict) else [],
+    }
+
+
+def _full_debug_snapshot_payload(snapshot: dict) -> dict:
+    return snapshot if isinstance(snapshot, dict) else {}
+
+
+def _scanner_result_debug_payload(row: dict, model: dict[str, object]) -> dict:
+    raw_payload = {}
+    try:
+        candidate = json.loads(str(row.get("raw_payload") or "{}"))
+        if isinstance(candidate, dict):
+            raw_payload = candidate
+    except Exception:
+        raw_payload = {}
+    payload = model.get("payload") if isinstance(model.get("payload"), dict) else {}
+    return {
+        "raw_payload": _sanitize_debug_value(raw_payload),
+        "normalized_payload": _sanitize_debug_value(payload if isinstance(payload, dict) else {}),
+    }
+
+
 @router.post("/api/v1/scanner", status_code=202, response_model=None)
 async def scanner_api_create(request: Request, payload: ScannerCreateRequest) -> dict | JSONResponse:
     """Queue a complete Brand3 Scanner run from URL or an existing Brand Audit run."""
@@ -255,7 +350,12 @@ async def scanner_api_status(request: Request, scan_id: int, lang: _Lang = Query
 
 
 @router.get("/api/v1/scanner/{scan_id}/result", response_model=None)
-async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query("es")) -> dict | JSONResponse:
+async def scanner_api_result(
+    request: Request,
+    scan_id: int,
+    lang: _Lang = Query("es"),
+    full: bool = Query(False),
+) -> dict | JSONResponse:
     auth_error = scanner_api_auth_error(request)
     if auth_error is not None:
         return auth_error
@@ -264,13 +364,16 @@ async def scanner_api_result(request: Request, scan_id: int, lang: _Lang = Query
         return row
     model = magnetism_scan_model_from_row(row)
     metadata = scanner_result_metadata_model(model["payload"])
-    return scanner_result_payload(
+    response = scanner_result_payload(
         row,
         model,
         result_metadata=metadata,
         sv9_scan_id=await _sv9_scan_id_for_row(row),
         lang=lang,
     )
+    if full:
+        response["debug"] = _scanner_result_debug_payload(row, model)
+    return response
 
 
 @router.get("/api/v1/scanner/{scan_id}/evidence", response_model=None)
@@ -337,6 +440,45 @@ async def scanner_api_audit(request: Request, scan_id: int) -> dict | JSONRespon
             "completed_at": run.get("completed_at"),
         },
         "audit": run.get("audit") if isinstance(run.get("audit"), dict) else {},
+    }
+
+
+@router.get("/api/v1/scanner/{scan_id}/audit-snapshot", response_model=None)
+async def scanner_api_audit_snapshot(
+    request: Request,
+    scan_id: int,
+    full: bool = Query(False),
+) -> dict | JSONResponse:
+    auth_error = scanner_api_auth_error(request)
+    if auth_error is not None:
+        return auth_error
+    row = await _ready_scan_row_or_error(scan_id)
+    if isinstance(row, JSONResponse):
+        return row
+    model = magnetism_scan_model_from_row(row)
+    source_run_id = model.get("source_run_id")
+    if not source_run_id:
+        return {"id": scan_id, "available": False, "reason": "missing_source_run"}
+    snapshot = await asyncio.to_thread(_load_run_snapshot, int(source_run_id))
+    if snapshot is None:
+        return scanner_api_error_response(
+            404,
+            code="audit_run_not_found",
+            message=f"Brand Audit run #{source_run_id} not found.",
+        )
+    run = snapshot.get("run") or {}
+    return {
+        "id": scan_id,
+        "available": True,
+        "source_run_id": int(source_run_id),
+        "run": {
+            "id": run.get("id"),
+            "brand_name": run.get("brand_name"),
+            "url": run.get("url"),
+            "composite_score": run.get("composite_score"),
+            "completed_at": run.get("completed_at"),
+        },
+        "debug": _full_debug_snapshot_payload(snapshot) if full else _debug_snapshot_payload(snapshot),
     }
 
 

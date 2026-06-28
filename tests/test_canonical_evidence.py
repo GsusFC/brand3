@@ -302,3 +302,50 @@ def test_canonical_brand_evidence_reports_capture_gap_without_owned_web_pages():
     assert report["status"] == "capture_gap"
     assert report["likely_failure_cause"] == "no_owned_web_pages"
     assert "no_owned_web_pages" in report["reasons"]
+
+
+def test_canonical_brand_evidence_ignores_unreliable_visual_semantics():
+    snapshot = {
+        "run": {"id": 910, "brand_name": "Blocked Visual", "url": "https://blocked.test"},
+        "features": [],
+        "evidence_items": [],
+        "raw_inputs": [
+            {
+                "source": "web",
+                "payload": {
+                    "canonical_url": "https://blocked.test",
+                    "markdown_content": "Blocked Visual offers enterprise finance software." * 50,
+                },
+            },
+            {
+                "source": "visual_signature",
+                "payload": {
+                    "run_metadata": {
+                        "visual_signature_scan_status": "review_required",
+                    },
+                    "raw_visual_signature_payload": {
+                        "semantics": {
+                            "data": {
+                                "aesthetic_style": "modern minimalist",
+                                "visual_mood": "professional",
+                            }
+                        }
+                    },
+                    "vision_payload": {
+                        "viewport_obstruction": {
+                            "present": True,
+                            "severity": "blocking",
+                            "first_impression_valid": False,
+                        }
+                    },
+                },
+            },
+        ],
+    }
+
+    evidence = build_canonical_brand_evidence(snapshot)
+
+    assert evidence.visual_semantics["status"] == "unreliable"
+    assert evidence.visual_semantics["data"] == {}
+    assert "blocking_viewport_obstruction" in evidence.visual_semantics["reason_codes"]
+    assert evidence.to_summary()["evidence_quality"]["visual_semantics_detected"] is False

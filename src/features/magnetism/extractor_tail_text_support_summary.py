@@ -297,11 +297,9 @@ def visual_semantics_from_snapshot(snapshot: dict[str, Any]) -> dict[str, Any]:
         if raw_input.get("source") != "visual_signature":
             continue
         payload = raw_input.get("payload") or {}
-        semantics = payload.get("semantics")
-        if semantics:
-            return {"status": "detected", "data": semantics}
-        if payload.get("signature", {}).get("semantics"):
-            return {"status": "detected", "data": payload["signature"]["semantics"]}
+        from src.reports.visual_semantics import reliable_visual_semantics_from_payload
+
+        return reliable_visual_semantics_from_payload(payload)
     return {"status": "not_detected", "data": {}}
 
 

@@ -92,6 +92,8 @@ def dismissal_eligibility(obstruction: dict[str, Any] | None) -> str:
         return "not_eligible"
     if obstruction_type in {"login_wall", "unknown_overlay"}:
         return "not_eligible"
+    if not should_attempt_obstruction_dismissal(obstruction):
+        return "not_eligible"
     if obstruction_type in {"cookie_banner", "cookie_modal", "newsletter_modal", "promo_modal"}:
         return "eligible"
     return "not_eligible"
@@ -117,13 +119,29 @@ def dismissal_context_type_for(obstruction: dict[str, Any] | None) -> str:
 def has_cookie_consent_signal(obstruction: dict[str, Any] | None) -> bool:
     if not isinstance(obstruction, dict):
         return False
-    values: list[str] = []
-    for key in ("signals", "page_level_signals", "overlay_level_signals", "visual_signals", "limitations"):
+    overlay_values: list[str] = []
+    overlay_values = obstruction.get("overlay_level_signals") or []
+    if isinstance(overlay_values, list):
+        overlay_values = [str(value) for value in overlay_values if value is not None]
+    else:
+        overlay_values = []
+    signal_values = obstruction.get("signals") or []
+    if isinstance(signal_values, list):
+        overlay_values.extend(
+            str(value)
+            for value in signal_values
+            if value is not None and any(token in str(value).lower() for token in ("dialog", "modal", "backdrop", "overlay"))
+        )
+    consent_values: list[str] = []
+    for key in ("signals", "page_level_signals", "overlay_level_signals", "visual_signals"):
         raw_values = obstruction.get(key) or []
         if isinstance(raw_values, list):
-            values.extend(str(value) for value in raw_values if value is not None)
-    joined = normalize_label(" ".join(values)).replace("_", " ")
-    return any(token in joined for token in ("cookie", "cookies", "consent", "privacy", "gdpr", "cmp"))
+            consent_values.extend(str(value) for value in raw_values if value is not None)
+    overlay_joined = normalize_label(" ".join(overlay_values)).replace("_", " ")
+    consent_joined = normalize_label(" ".join(consent_values)).replace("_", " ")
+    has_overlay = any(token in overlay_joined for token in ("dialog", "modal", "backdrop", "overlay"))
+    has_consent = any(token in consent_joined for token in ("cookie", "cookies", "consent", "privacy", "gdpr", "cmp"))
+    return has_overlay and has_consent
 
 
 def match_dismissal_pattern(normalized: str, patterns: tuple[tuple[str, str], ...]) -> dict[str, str] | None:
@@ -177,10 +195,15 @@ def dismissal_skip_note(obstruction: dict[str, Any] | None) -> str:
         return "obstruction_unavailable"
     obstruction_type = str(obstruction.get("type") or "none")
     confidence = _float_or_none(obstruction.get("confidence"))
+    signals = " ".join(str(item) for item in obstruction.get("signals") or []).lower()
     if obstruction_type in {"login_wall"}:
         return f"obstruction_type_not_eligible:{obstruction_type}"
+    if any(token in signals for token in ("login", "paywall", "geo")):
+        return "obstruction_signals_not_eligible"
     if obstruction_type == "unknown_overlay" and (confidence is None or confidence < 0.55):
         return "unknown_overlay_low_confidence"
+    if confidence is not None and confidence < 0.55:
+        return "obstruction_confidence_too_low"
     if obstruction.get("present") is not True:
         return "no_obstruction_detected"
     return "dismissal_not_safe"
@@ -206,4 +229,3 @@ def split_context_tokens(value: str) -> list[str]:
     if not tokens and value:
         tokens = [str(value)]
     return tokens
-

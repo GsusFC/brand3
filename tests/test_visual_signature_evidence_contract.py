@@ -186,6 +186,8 @@ def test_visual_signature_evidence_treats_multimodal_fallback_as_missing_evidenc
     assert evidence["copy_visual_alignment"]["summary"] == ""
     assert evidence["evidence_health"]["semantic_alignment_status"] == "unknown"
     assert "multimodal_semantics_unavailable" in evidence["evidence_health"]["warnings"]
+    assert by_tile["coherencia.C6"]["effect"] == "insufficient_evidence"
+    assert by_tile["coherencia.C6"]["rationale"].startswith("multimodal_semantics_unavailable")
     assert by_tile["brand_idea.I3"]["effect"] == "insufficient_evidence"
     assert by_tile["brand_idea.I3"]["rationale"].startswith("multimodal_semantics_unavailable")
     assert by_tile["core_purpose.PR8"]["effect"] == "insufficient_evidence"
@@ -194,6 +196,29 @@ def test_visual_signature_evidence_treats_multimodal_fallback_as_missing_evidenc
     assert by_tile["magnetism.MG1"]["rationale"].startswith("multimodal_semantics_unavailable")
     assert by_tile["magnetism.MG7"]["effect"] == "insufficient_evidence"
     assert by_tile["magnetism.MG7"]["rationale"].startswith("multimodal_semantics_unavailable")
+
+
+def test_visual_signature_evidence_c6_is_insufficient_when_copy_visual_alignment_is_missing():
+    payload = _payload()
+    payload["semantics"] = {
+        "status": "detected",
+        "data": {
+            "visual_polish_score": 8,
+            "visual_coherence": "Visual system aligns with the product promise.",
+            "copy_visual_alignment": "",
+            "first_impression_summary": "Polished, product-first and trustworthy.",
+            "logo_prominence": "clear",
+            "hierarchy_clarity": "clear",
+            "cta_salience": "clear",
+            "trust_signal_presence": "partial",
+        },
+    }
+
+    evidence = build_visual_signature_evidence_v1(payload)
+    by_tile = {signal["tile"]: signal for signal in evidence["tile_signals"]}
+
+    assert by_tile["coherencia.C6"]["effect"] == "insufficient_evidence"
+    assert by_tile["coherencia.C6"]["rationale"].startswith("copy_visual_alignment_missing")
 
 
 def test_visual_signature_evidence_hashes_screenshot_file_when_available(tmp_path: Path):

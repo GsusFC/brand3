@@ -425,6 +425,58 @@ def test_raw_capture_metadata_without_signals_does_not_override_dom_obstruction(
     assert "dom_keyword:cookie" in obstruction["signals"]
 
 
+def test_dom_only_blocking_obstruction_is_downgraded_when_clean_viewport_contradicts_it(tmp_path):
+    width, height = 80, 60
+    screenshot = tmp_path / "cofi-clean.png"
+    _write_png(screenshot, width, height, _solid(width, height, (255, 255, 255)))
+    payload = _payload()
+    payload["acquisition"] = {
+        "rendered_html": """
+        <div class="site-shell fixed bottom-0 z-50">
+          privacy cookies offer backdrop
+        </div>
+        """,
+        "viewport_obstruction": {
+            "present": True,
+            "type": "promo_modal",
+            "severity": "blocking",
+            "coverage_ratio": 0.92,
+            "first_impression_valid": False,
+            "confidence": 0.89,
+            "page_level_signals": ["dom_keyword:cookie", "dom_keyword:cookies", "dom_keyword:offer"],
+            "overlay_level_signals": ["dom_overlay_term:backdrop"],
+            "visual_signals": ["dom_bottom_aligned_container_pattern", "dom_full_viewport_container_pattern"],
+            "signals": [
+                "dom_keyword:cookie",
+                "dom_keyword:cookies",
+                "dom_keyword:offer",
+                "dom_overlay_term:backdrop",
+                "dom_bottom_aligned_container_pattern",
+                "dom_full_viewport_container_pattern",
+            ],
+            "limitations": [
+                "viewport_pixels_unavailable",
+                "viewport_pixels_unavailable_for_obstruction_analysis",
+            ],
+        },
+    }
+
+    enriched = enrich_visual_signature_with_vision(
+        visual_signature_payload=payload,
+        screenshot_path=str(screenshot),
+        screenshot_payload={"capture_type": "viewport", "viewport_width": width, "viewport_height": height},
+    )
+
+    obstruction = enriched["vision"]["viewport_obstruction"]
+    assert obstruction["present"] is True
+    assert obstruction["type"] == "unknown_overlay"
+    assert obstruction["severity"] == "minor"
+    assert obstruction["coverage_ratio"] == 0.12
+    assert obstruction["first_impression_valid"] is True
+    assert obstruction["confidence"] <= 0.45
+    assert "dom_only_obstruction_unconfirmed_by_viewport" in obstruction["limitations"]
+
+
 def test_viewport_obstruction_detects_centered_modal(tmp_path):
     width, height = 90, 70
     pixels = _solid(width, height, (22, 22, 22))

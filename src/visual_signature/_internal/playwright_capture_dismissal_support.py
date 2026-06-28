@@ -105,7 +105,7 @@ def attempt_obstruction_dismissal_with_discovery(
 
     element = candidate["element"]
     try:
-        element.click(timeout=4000, force=True)
+        element.click(timeout=4000)
     except Exception as exc:
         return {
             "attempted": True,

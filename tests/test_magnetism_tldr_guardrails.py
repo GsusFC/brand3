@@ -554,3 +554,47 @@ def test_values_absent_when_only_mission_literal_support_exists() -> None:
     assert block["detected"] is False
     assert block["claim_type"] == "absent"
     assert block["mode"] == "not_detected"
+
+
+def test_brand_idea_absent_when_built_from_generic_platform_plus_proof_point() -> None:
+    pack = _base_pack()
+    pack["visual_or_conceptual_signals"] = []
+    pack["offer"] = "platform"
+    pack["future_direction"] = ""
+    pack["proof_points"] = [
+        {
+            "text": "Zapier serves over 100 million monthly website visits on Vercel.",
+            "kind": "proof",
+            "source_url": "https://base44.com",
+            "source_type": "owned_official",
+            "source_label": "Proof",
+            "surface_role": "homepage",
+            "entity_scope": "company",
+            "topic": "proof_point",
+            "confidence": "high",
+            "notes": [],
+        }
+    ]
+
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "brand_idea": {
+                    "answer": "An automated, high-scale platform that serves as the default deployment layer for modern web experiences.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "evidence_used": [
+                        "platform",
+                        "Zapier serves over 100 million monthly website visits on Vercel.",
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["brand_idea"]
+    assert block["detected"] is False
+    assert block["claim_type"] == "absent"
+    assert block["mode"] == "not_detected"

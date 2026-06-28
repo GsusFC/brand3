@@ -134,6 +134,20 @@ def _validate_block(
             reason="Functional offer language without declared purpose cannot support a core purpose block.",
         )
 
+    if key == "brand_idea" and _should_absent_brand_idea(
+        pack,
+        answer=answer,
+        evidence_used=evidence_used,
+        shortlist_texts=shortlist_texts,
+    ):
+        warnings.append("brand_idea: generic category language plus proof points cannot support a conceptual brand idea.")
+        return _absent_block(
+            key,
+            warnings,
+            degraded,
+            reason="Generic category language plus proof points cannot support a conceptual brand idea block.",
+        )
+
     if key == "personality" and (has_press or _contains_any(answer, ("founder", "founder story", "exit", "press", "interview"))):
         warnings.append("personality: founder story or press context cannot be treated as declared personality.")
         degraded.append(_degrade_entry(key, "claim_type", claim_type, "inferred", "founder_story_is_not_declared_personality"))
@@ -542,6 +556,68 @@ def _should_absent_values(
             return True
         return False
     return True
+
+
+def _should_absent_brand_idea(
+    pack: dict[str, Any],
+    *,
+    answer: str,
+    evidence_used: list[str],
+    shortlist_texts: list[str],
+) -> bool:
+    if not answer:
+        return False
+    normalized_answer = _normalize_for_match(answer)
+    normalized_evidence = [_normalize_for_match(item) for item in evidence_used if item]
+    normalized_shortlist = [_normalize_for_match(item) for item in shortlist_texts if item]
+    if not normalized_evidence and not normalized_shortlist:
+        return False
+    conceptual_pack_items = pack.get("visual_or_conceptual_signals")
+    if isinstance(conceptual_pack_items, list):
+        conceptual_pack = [_normalize_for_match(item) for item in conceptual_pack_items if _clean_text(item)]
+    else:
+        single = _normalize_for_match(conceptual_pack_items)
+        conceptual_pack = [single] if single else []
+    if conceptual_pack:
+        return False
+    generic_category_markers = (
+        "platform",
+        "software",
+        "infrastructure",
+        "deployment layer",
+        "tool",
+        "solution",
+    )
+    proof_markers = (
+        "million monthly",
+        "trusted by",
+        "customers",
+        "faster",
+        "build + deploy",
+        "used by",
+        "serves over",
+        "visits",
+    )
+    conceptual_answer_markers = (
+        "default layer",
+        "default deployment layer",
+        "operating system",
+        "engine",
+        "bridge",
+        "movement",
+        "metaphor",
+        "category shift",
+        "new model",
+        "future of",
+    )
+    evidence_blob = " ".join(normalized_evidence)
+    shortlist_blob = " ".join(normalized_shortlist)
+    generic_evidence = any(marker in evidence_blob for marker in generic_category_markers) or any(
+        marker in shortlist_blob for marker in generic_category_markers
+    )
+    proof_evidence = any(marker in evidence_blob for marker in proof_markers)
+    answer_is_conceptual_but_unbacked = any(marker in normalized_answer for marker in conceptual_answer_markers)
+    return generic_evidence and proof_evidence and answer_is_conceptual_but_unbacked
 
 
 def _unique_texts(values: list[str]) -> list[str]:

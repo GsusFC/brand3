@@ -18,6 +18,7 @@ import unittest
 import unittest.mock
 from typing import Any
 
+from src.collectors.exa_collector import EXA_STRATEGY_VERSION
 from src.features.magnetism.extractor import MagnetismExtractor
 from src.features.llm_analyzer import LLMAnalyzer
 from src.models.brand import FeatureValue
@@ -397,7 +398,7 @@ class MagnetismScannerTests(unittest.TestCase):
                     "ai_visibility_results": [],
                     "news": [],
                     "diagnostics": {
-                        "strategy": "precision_vnext_v1",
+                        "strategy": EXA_STRATEGY_VERSION,
                         "status": "ok",
                         "competitor_intent_enabled": False,
                         "planned_intents": [
@@ -444,7 +445,7 @@ class MagnetismScannerTests(unittest.TestCase):
         self.assertIn("run decision", response.text)
         self.assertIn("acquisition diagnostics", response.text)
         self.assertIn("strategy and runtime contract", response.text)
-        self.assertIn("precision_vnext_v1", response.text)
+        self.assertIn(EXA_STRATEGY_VERSION, response.text)
         self.assertIn("competitor_intent=False", response.text)
         self.assertIn("owned_confirmation", response.text)
         self.assertIn("acquisition matrix", response.text)
@@ -510,7 +511,7 @@ class MagnetismScannerTests(unittest.TestCase):
                     "ai_visibility_results": [],
                     "news": [],
                     "diagnostics": {
-                        "strategy": "precision_vnext_v1",
+                        "strategy": EXA_STRATEGY_VERSION,
                         "status": "ok",
                         "competitor_intent_enabled": False,
                         "planned_intents": [

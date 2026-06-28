@@ -337,7 +337,7 @@ def test_magnetism_detection_rejects_negative_engagement_evidence() -> None:
     )
 
     assert interpretation.blocks["magnetism"]["detected"] is False
-    assert "magnetism_structural_gate_rejected" in interpretation.limitations
+    assert "magnetism_structural_negative_evidence" in interpretation.limitations
 
 
 def test_magnetism_detection_accepts_growth_or_engagement_evidence() -> None:

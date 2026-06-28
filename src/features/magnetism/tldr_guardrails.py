@@ -9,6 +9,12 @@ from __future__ import annotations
 from dataclasses import is_dataclass
 from typing import Any
 
+from src.features.magnetism.analyst_tldr_block_candidates import (
+    shortlist_rows_for_block,
+    shortlist_texts_for_block,
+    signal_candidates_for_block,
+)
+
 
 TLDR_KEYS = [
     "core_purpose",
@@ -40,6 +46,8 @@ _STRATEGIC_BLOCKS = {
     "vision",
 }
 _SOURCE_KIND_ORDER = ("owned_literal", "owned_signal", "proof_point", "press_or_founder", "social", "noise", "unknown")
+_EVIDENCE_SNAP_BLOCKS = {"core_purpose", "magnetism", "value_proposition", "mission"}
+_TERM_CANONICAL_BLOCKS = {"personality", "attributes", "values"}
 
 
 def validate_analyst_tldr(tldr: dict[str, Any], research_pack: Any) -> dict[str, Any]:
@@ -201,7 +209,12 @@ def _validate_block(
     )
     if not validated.get("human_review_recommended"):
         validated["human_review_recommended"] = bool(mode == "needs_human_review")
-    return validated, warnings, degraded
+    return _canonicalize_block_payload(
+        key,
+        validated,
+        pack,
+        evidence_profiles=evidence_profiles,
+    ), warnings, degraded
 
 
 def _absent_block(
@@ -405,3 +418,305 @@ def _unique_texts(values: list[str]) -> list[str]:
         seen.add(key)
         out.append(text)
     return out
+
+
+def _canonicalize_block_payload(
+    key: str,
+    block: dict[str, Any],
+    pack: dict[str, Any],
+    *,
+    evidence_profiles: list[dict[str, str]],
+) -> dict[str, Any]:
+    canonical = dict(block)
+    answer = _clean_text(canonical.get("answer") or canonical.get("content"))
+    if key in {"attributes", "values"}:
+        answer = _canonicalize_term_list_answer(answer)
+    answer = _canonicalize_semantic_answer(key, answer, pack)
+    evidence_used = _canonicalize_evidence_used(
+        key,
+        canonical.get("evidence_used"),
+        pack,
+    )
+    counter_evidence = _sorted_unique_texts(canonical.get("counter_evidence"))
+    warnings = _sorted_unique_texts(canonical.get("validation_warnings"))
+    source_map = pack.get("source_map") if isinstance(pack.get("source_map"), dict) else {}
+    evidence_sources = _canonicalize_evidence_sources(
+        canonical.get("evidence_sources"),
+        source_map if isinstance(source_map, dict) else {},
+        key=key,
+        pack=pack,
+        evidence_used=evidence_used,
+    )
+    reasoning = _canonical_reasoning(
+        key,
+        claim_type=str(canonical.get("claim_type") or "absent"),
+        mode=str(canonical.get("mode") or "not_detected"),
+        evidence_profiles=evidence_profiles,
+        evidence_count=len(evidence_used),
+        human_review=bool(canonical.get("human_review_recommended")),
+    )
+    canonical.update(
+        {
+            "answer": answer or None,
+            "content": answer or None,
+            "evidence_used": evidence_used,
+            "evidence": evidence_used,
+            "evidence_sources": evidence_sources,
+            "counter_evidence": counter_evidence,
+            "validation_warnings": warnings,
+            "reasoning": reasoning,
+            "rationale": reasoning,
+        }
+    )
+    return canonical
+
+
+def _canonicalize_term_list_answer(value: str) -> str:
+    text = _clean_text(value)
+    if not text:
+        return ""
+    parts = [_clean_list_term(part) for part in text.split(",")]
+    parts = [part for part in parts if part]
+    if len(parts) < 2:
+        return text
+    return ", ".join(sorted(parts, key=lambda item: item.lower()))
+
+
+def _clean_list_term(value: str) -> str:
+    return _clean_text(str(value).strip(" [](){}'\""))
+
+
+def _sorted_unique_texts(value: Any) -> list[str]:
+    return sorted(_clean_list(value), key=lambda item: item.lower())
+
+
+def _canonicalize_evidence_used(
+    key: str,
+    value: Any,
+    pack: dict[str, Any],
+) -> list[str]:
+    evidence_used = _sorted_unique_texts(value)
+    if key not in _EVIDENCE_SNAP_BLOCKS:
+        return evidence_used
+    shortlist = shortlist_texts_for_block(pack, key)
+    if not shortlist:
+        return evidence_used
+    matched: list[str] = []
+    for item in evidence_used:
+        normalized_item = _normalize_for_match(item)
+        for candidate in shortlist:
+            normalized_candidate = _normalize_for_match(candidate)
+            if not normalized_candidate:
+                continue
+            if (
+                normalized_item == normalized_candidate
+                or normalized_item in normalized_candidate
+                or normalized_candidate in normalized_item
+            ):
+                if candidate not in matched:
+                    matched.append(candidate)
+                break
+    return matched or evidence_used
+
+
+def _canonicalize_semantic_answer(
+    key: str,
+    answer: str,
+    pack: dict[str, Any],
+) -> str:
+    cleaned = _clean_text(answer)
+    if key not in _TERM_CANONICAL_BLOCKS or not cleaned:
+        return cleaned
+    candidates = signal_candidates_for_block(pack, key)
+    if not candidates:
+        return cleaned
+    matched: list[str] = []
+    normalized_answer = _normalize_for_match(cleaned)
+    for candidate in candidates:
+        normalized_candidate = _normalize_for_match(candidate)
+        if not normalized_candidate:
+            continue
+        if (
+            normalized_answer == normalized_candidate
+            or normalized_candidate in normalized_answer
+            or normalized_answer in normalized_candidate
+        ):
+            if candidate not in matched:
+                matched.append(candidate)
+    if key == "personality":
+        if len(matched) >= 2:
+            return ", ".join(matched[:2])
+        return cleaned
+    if len(matched) < 2:
+        return cleaned
+    return ", ".join(sorted(matched, key=lambda item: item.lower()))
+
+
+def _canonicalize_evidence_sources(
+    value: Any,
+    source_map: dict[str, Any],
+    *,
+    key: str = "",
+    pack: dict[str, Any] | None = None,
+    evidence_used: list[str] | None = None,
+) -> list[dict[str, str]]:
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        value = [value]
+    normalized: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str, str]] = set()
+    source_index = _source_lookup_index(source_map)
+    shortlist_index = _shortlist_source_index(pack or {}, key, evidence_used or [])
+    for item in value:
+        if not isinstance(item, dict):
+            continue
+        source_key = _clean_text(item.get("source_key") or item.get("url") or item.get("label"))
+        matched = shortlist_index.get(_normalize_source_lookup_key(source_key), {})
+        if not matched and source_key.lower() in {"input_url", "homepage", "home"} and shortlist_index:
+            matched = next(iter(shortlist_index.values()))
+        if not matched:
+            matched = source_index.get(_normalize_source_lookup_key(source_key), {})
+        url = _clean_text(item.get("url") or matched.get("url") or source_key)
+        label = _clean_text(item.get("label") or matched.get("label") or matched.get("title"))
+        if label.lower() in {"input_url", "homepage", "home"}:
+            label = ""
+        canonical_source_key = source_key
+        if canonical_source_key.lower() in {"input_url", "homepage", "home"}:
+            canonical_source_key = _clean_text(matched.get("url") or matched.get("label") or matched.get("title"))
+        source_type = _clean_text(item.get("source_type") or matched.get("source_type"))
+        row = {
+            "source_key": _canonical_source_key(canonical_source_key or matched.get("url") or url or label),
+            "source_type": source_type,
+            "url": _canonical_source_key(url),
+            "label": label,
+        }
+        signature = (
+            row["source_key"].lower(),
+            row["source_type"].lower(),
+            row["url"].lower(),
+            row["label"].lower(),
+        )
+        if signature in seen or not any(row.values()):
+            continue
+        seen.add(signature)
+        normalized.append(row)
+    return sorted(
+        normalized,
+        key=lambda item: (
+            item.get("source_key", "").lower(),
+            item.get("source_type", "").lower(),
+            item.get("url", "").lower(),
+            item.get("label", "").lower(),
+        ),
+    )
+
+
+def _shortlist_source_index(
+    pack: dict[str, Any],
+    key: str,
+    evidence_used: list[str],
+) -> dict[str, dict[str, str]]:
+    if not pack or not key or not evidence_used:
+        return {}
+    by_text = {
+        _normalize_for_match(row.get("text")): row
+        for row in shortlist_rows_for_block(pack, key)
+        if _normalize_for_match(row.get("text"))
+    }
+    source_map = pack.get("source_map") if isinstance(pack.get("source_map"), dict) else {}
+    source_index = _source_lookup_index(source_map)
+    result: dict[str, dict[str, str]] = {}
+    for text in evidence_used:
+        normalized_text = _normalize_for_match(text)
+        row = by_text.get(normalized_text)
+        if not row:
+            for candidate_text, candidate_row in by_text.items():
+                if (
+                    normalized_text == candidate_text
+                    or normalized_text in candidate_text
+                    or candidate_text in normalized_text
+                ):
+                    row = candidate_row
+                    break
+        if not row:
+            continue
+        source_key = _canonical_source_key(row.get("source_key"))
+        matched = source_index.get(_normalize_source_lookup_key(source_key), {})
+        payload = {
+            "url": _clean_text(matched.get("url") or source_key),
+            "label": _clean_text(matched.get("label") or matched.get("title")),
+            "title": _clean_text(matched.get("title")),
+            "source_type": _clean_text(matched.get("source_type")),
+        }
+        for alias in (
+            source_key,
+            payload.get("url"),
+            payload.get("label"),
+            payload.get("title"),
+        ):
+            normalized = _normalize_source_lookup_key(alias)
+            if normalized:
+                result[normalized] = payload
+    return result
+
+
+def _source_lookup_index(source_map: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    index: dict[str, dict[str, Any]] = {}
+    for key, value in source_map.items():
+        if not isinstance(value, dict):
+            continue
+        candidates = {
+            _normalize_source_lookup_key(str(key)),
+            _normalize_source_lookup_key(value.get("url")),
+            _normalize_source_lookup_key(value.get("label")),
+            _normalize_source_lookup_key(value.get("title")),
+        }
+        for candidate in candidates:
+            if candidate:
+                index[candidate] = value
+    return index
+
+
+def _normalize_source_lookup_key(value: Any) -> str:
+    text = _clean_text(value).lower()
+    if not text:
+        return ""
+    if text.startswith("http://") or text.startswith("https://"):
+        return text.rstrip("/")
+    return text
+
+
+def _canonical_source_key(value: Any) -> str:
+    text = _clean_text(value)
+    if not text:
+        return ""
+    if text.startswith("http://") or text.startswith("https://"):
+        return text.rstrip("/")
+    return text
+
+
+def _canonical_reasoning(
+    key: str,
+    *,
+    claim_type: str,
+    mode: str,
+    evidence_profiles: list[dict[str, str]],
+    evidence_count: int,
+    human_review: bool,
+) -> str:
+    if mode == "not_detected" or claim_type == "absent":
+        return f"No traceable evidence supported the {key} block."
+    source_kinds = sorted(
+        {
+            str(profile.get("source_kind") or "unknown")
+            for profile in evidence_profiles
+            if str(profile.get("source_kind") or "").strip()
+        }
+    )
+    kinds = ", ".join(source_kinds) if source_kinds else "unknown"
+    review = " Human review recommended." if human_review or mode == "needs_human_review" else ""
+    return (
+        f"{claim_type.capitalize()} {key} reading in {mode} mode from "
+        f"{evidence_count} traceable evidence item(s); source kinds: {kinds}.{review}"
+    )

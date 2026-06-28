@@ -253,6 +253,51 @@ def test_high_inferred_claim_without_strong_support_loses_confidence() -> None:
     assert block["human_review_recommended"] is True
 
 
+def test_personality_answer_snaps_to_signal_candidates() -> None:
+    pack = _base_pack()
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "personality": {
+                    "answer": "Direct and pragmatic builder energy.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "evidence_used": ["direct"],
+                    "evidence_sources": [{"source_key": "https://base44.com", "source_type": "owned_official"}],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["personality"]
+    assert block["answer"] == "direct, pragmatic"
+
+
+def test_evidence_sources_snap_to_shortlist_source() -> None:
+    pack = _base_pack()
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "value_proposition": {
+                    "answer": "An AI app builder for non-technical founders.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "evidence_used": ["AI app builder for non-technical founders."],
+                    "evidence_sources": [{"source_key": "input_url", "source_type": "owned_official"}],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["value_proposition"]
+    assert block["evidence_sources"][0]["source_key"] == "https://base44.com"
+    assert block["evidence_sources"][0]["url"] == "https://base44.com"
+
+
 def test_page_chrome_invalidates_value_proposition() -> None:
     pack = _base_pack()
     validated = validate_analyst_tldr(
@@ -275,3 +320,132 @@ def test_page_chrome_invalidates_value_proposition() -> None:
     assert block["mode"] == "not_detected"
     assert block["detected"] is False
     assert any("value_proposition" in warning for warning in validated["validation_warnings"])
+
+
+def test_attributes_answer_is_canonicalized_and_reasoning_is_deterministic() -> None:
+    pack = _base_pack()
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "attributes": {
+                    "answer": "Specialized, Analytical, Pragmatic",
+                    "claim_type": "inferred",
+                    "mode": "needs_human_review",
+                    "confidence": "high",
+                    "reasoning": "Freeform LLM explanation that should not survive as-is.",
+                    "evidence_used": [
+                        "Consultora boutique especialista",
+                        "Traduce a euros el impacto",
+                    ],
+                    "evidence_sources": [
+                        {"source_key": "https://base44.com", "source_type": "owned_official"},
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["attributes"]
+    assert block["answer"] == "Analytical, Pragmatic, Specialized"
+    assert block["reasoning"] == block["rationale"]
+    assert block["reasoning"].startswith("Inferred attributes reading in needs_human_review mode")
+
+
+def test_attributes_list_like_answer_is_cleaned_and_sorted() -> None:
+    pack = _base_pack()
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "attributes": {
+                    "answer": "['Fast'], 'Simple', ['Developer-first']",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "evidence_used": [
+                        "6× faster to build + deploy.",
+                        "Shipping an agent should be as simple as shipping a site.",
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    assert validated["tldr_brand3"]["attributes"]["answer"] == "Developer-first, Fast, Simple"
+
+
+def test_evidence_sources_are_canonicalized_with_url_and_sorted() -> None:
+    pack = _base_pack()
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "mission": {
+                    "answer": "We are on a mission to help teams ship software.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "evidence_used": ["We are on a mission to help teams ship software."],
+                    "evidence_sources": [
+                        {"source_key": "https://base44.com/about", "source_type": "press_or_founder"},
+                        {"source_key": "https://base44.com", "source_type": "owned_official"},
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["mission"]
+    assert block["evidence_sources"][0]["source_key"] == "https://base44.com"
+    assert block["evidence_sources"][0]["url"] == "https://base44.com"
+    assert block["evidence_sources"][1]["label"] == "About"
+
+
+def test_evidence_sources_normalize_trailing_slash_and_generic_label() -> None:
+    pack = _base_pack()
+    pack["source_map"]["https://base44.com"]["label"] = "input_url"
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "brand_idea": {
+                    "answer": "A clear idea.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "evidence_used": ["Base44 is an AI app builder for non-technical founders."],
+                    "evidence_sources": [
+                        {"source_key": "https://base44.com/", "source_type": "owned_official"},
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    source = validated["tldr_brand3"]["brand_idea"]["evidence_sources"][0]
+    assert source["source_key"] == "https://base44.com"
+    assert source["url"] == "https://base44.com"
+    assert source["label"] == ""
+
+
+def test_evidence_used_snaps_to_block_shortlist_when_matching() -> None:
+    pack = _base_pack()
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "value_proposition": {
+                    "answer": "AI app builder for founders.",
+                    "claim_type": "declared",
+                    "mode": "compressed",
+                    "confidence": "high",
+                    "evidence_used": ["AI app builder for non-technical founders."],
+                }
+            }
+        },
+        pack,
+    )
+
+    assert validated["tldr_brand3"]["value_proposition"]["evidence_used"] == [
+        "Base44 is an AI app builder for non-technical founders."
+    ]

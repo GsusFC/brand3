@@ -167,6 +167,27 @@ class Sv9StoreTests(unittest.TestCase):
         self.assertEqual(
             self.store.get_detection(175)["tldr_brand3"]["mission"]["content"], "v2"
         )
+        runs = self.store.list_detection_runs(175, source="cache_pin")
+        self.assertGreaterEqual(len(runs), 1)
+        self.assertEqual(
+            runs[0]["payload"]["tldr_brand3"]["mission"]["content"],
+            "v2",
+        )
+        self.assertIn("mission", runs[0]["block_hashes"])
+
+    def test_record_detection_run_persists_fingerprint_and_payload(self):
+        payload = {
+            "tldr_brand3": {
+                "mission": {"content": "v1"},
+                "vision": {"content": "v2"},
+            }
+        }
+        row_id = self.store.record_detection_run(188, payload, source="stability_probe")
+        self.assertGreater(row_id, 0)
+        rows = self.store.list_detection_runs(188, source="stability_probe")
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["payload"]["tldr_brand3"]["mission"]["content"], "v1")
+        self.assertIn("mission", rows[0]["block_hashes"])
 
     def test_migration_is_idempotent(self):
         again = Sv9Store(self.db_path)

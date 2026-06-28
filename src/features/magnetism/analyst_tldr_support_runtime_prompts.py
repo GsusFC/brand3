@@ -6,6 +6,10 @@ import json
 import os
 from typing import Any
 
+from src.features.magnetism.analyst_tldr_block_candidates import (
+    block_evidence_shortlists,
+    block_signal_candidates,
+)
 from src.features.magnetism.analyst_tldr_support_runtime_processing import (
     _bounded_int,
     _clean_list,
@@ -273,6 +277,8 @@ def build_analyst_tldr_prompt(
         "current_tldr": _compact_current_tldr(current_tldr or {}),
         "block_questions": ANALYST_BLOCK_QUESTIONS,
         "block_exercises": ANALYST_BLOCK_QUESTIONS,
+        "block_evidence_shortlists": block_evidence_shortlists(_research_pack_dict(research_pack)),
+        "block_signal_candidates": block_signal_candidates(_research_pack_dict(research_pack)),
         "source_rules": ANALYST_TLDR_SOURCE_RULES,
         "negative_examples": ANALYST_TLDR_NEGATIVE_EXAMPLES,
         "required_output": {
@@ -298,7 +304,7 @@ def build_analyst_tldr_prompt(
                     "mode": "literal | compressed | interpreted_from_discourse | needs_human_review | not_detected",
                     "confidence": "high | medium | low",
                     "reasoning": "block-specific reasoning",
-                    "evidence_used": ["traceable evidence strings"],
+                    "evidence_used": ["traceable evidence strings copied verbatim from block_evidence_shortlists when available"],
                     "evidence_sources": [
                         {
                             "source_key": "source_map key, URL, or stable identifier",
@@ -452,4 +458,3 @@ __all__ = [
     "build_analyst_tldr_prompt",
     "analyst_tldr_response_schema",
 ]
-

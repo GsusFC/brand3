@@ -7,7 +7,7 @@ from scripts.sv9_flow_local_eval import (
 
 def test_compare_flow_repeats_detects_stable_structure_but_textual_drift() -> None:
     first = _shadow_payload(content="Help teams ship.")
-    second = _shadow_payload(content="Help teams ship faster.")
+    second = _shadow_payload(content="help, teams ship")
 
     stability = compare_flow_repeats([first, second])
 
@@ -16,8 +16,22 @@ def test_compare_flow_repeats_detects_stable_structure_but_textual_drift() -> No
     assert stability["same_tile_effects"] is True
     assert stability["same_block_detection_decisions"] is True
     assert stability["same_block_content_hashes"] is False
+    assert stability["same_block_content_canonical_hashes"] is True
     assert stability["changed_block_detection_decisions"] == []
     assert stability["changed_content_blocks"] == ["mission"]
+    assert stability["changed_canonical_content_blocks"] == []
+
+
+def test_compare_flow_repeats_detects_canonical_textual_drift() -> None:
+    first = _shadow_payload(content="Help teams ship.")
+    second = _shadow_payload(content="Help finance leaders defend forecasts.")
+
+    stability = compare_flow_repeats([first, second])
+
+    assert stability["same_block_content_hashes"] is False
+    assert stability["same_block_content_canonical_hashes"] is False
+    assert stability["changed_content_blocks"] == ["mission"]
+    assert stability["changed_canonical_content_blocks"] == ["mission"]
 
 
 def test_compare_flow_repeats_detects_block_detection_drift() -> None:
@@ -54,6 +68,38 @@ def test_compare_flow_repeats_detects_block_detection_drift() -> None:
     assert stability["changed_block_detection_decisions"] == ["magnetism"]
 
 
+def test_compare_flow_repeats_ignores_block_detection_ref_order() -> None:
+    first = _shadow_payload(
+        block_detection_decisions=[
+            {
+                "block": "vision",
+                "outcome": "insufficient_evidence",
+                "evidence_refs": ["features.14", "features.11", "raw_inputs.5"],
+                "support_terms": [],
+                "weaken_terms": [],
+                "limitation_code": "vision_structural_gate_rejected",
+            }
+        ]
+    )
+    second = _shadow_payload(
+        block_detection_decisions=[
+            {
+                "block": "vision",
+                "outcome": "insufficient_evidence",
+                "evidence_refs": ["raw_inputs.5", "features.11", "features.14"],
+                "support_terms": [],
+                "weaken_terms": [],
+                "limitation_code": "vision_structural_gate_rejected",
+            }
+        ]
+    )
+
+    stability = compare_flow_repeats([first, second])
+
+    assert stability["same_block_detection_decisions"] is True
+    assert stability["changed_block_detection_decisions"] == []
+
+
 def test_build_local_eval_runs_cached_and_flow_repeats() -> None:
     calls = []
 
@@ -80,6 +126,7 @@ def test_build_local_eval_runs_cached_and_flow_repeats() -> None:
     assert payload["summary"]["flow_llm_run_count"] == 1
     assert payload["summary"]["flow_llm_unstable_detected_run_ids"] == []
     assert payload["summary"]["flow_llm_unstable_block_detection_run_ids"] == []
+    assert payload["summary"]["flow_llm_canonical_textual_drift"] == []
     assert calls == [(123, "cached-pass1"), (123, "flow-llm"), (123, "flow-llm")]
     assert report_only_by_source == {"cached-pass1": [True], "flow-llm": [False, False]}
 

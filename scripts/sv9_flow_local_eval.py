@@ -12,6 +12,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 from typing import Any, Callable
 
@@ -128,19 +129,24 @@ def compare_flow_repeats(payloads: list[dict[str, Any]]) -> dict[str, Any]:
             "same_tile_effects": True,
             "same_block_detection_decisions": True,
             "same_block_content_hashes": True,
+            "same_block_content_canonical_hashes": True,
             "changed_block_detection_decisions": [],
             "changed_content_blocks": [],
+            "changed_canonical_content_blocks": [],
         }
     baseline = compact[0]
     baseline_blocks = set(baseline["detected_blocks"])
     baseline_effects = baseline["tile_signal_effects"]
     baseline_hashes = baseline["block_content_hashes"]
+    baseline_canonical_hashes = baseline["block_content_canonical_hashes"]
     baseline_decisions = baseline["block_detection_decisions"]
     changed_blocks: set[str] = set()
+    changed_canonical_blocks: set[str] = set()
     changed_decisions: set[str] = set()
     same_detected = True
     same_effects = True
     same_hashes = True
+    same_canonical_hashes = True
     same_decisions = True
     for item in compact[1:]:
         if set(item["detected_blocks"]) != baseline_blocks:
@@ -157,14 +163,23 @@ def compare_flow_repeats(payloads: list[dict[str, Any]]) -> dict[str, Any]:
                     changed_blocks.add(block)
             for block in set(baseline_hashes) - set(item["block_content_hashes"]):
                 changed_blocks.add(block)
+        if item["block_content_canonical_hashes"] != baseline_canonical_hashes:
+            same_canonical_hashes = False
+            for block, digest in item["block_content_canonical_hashes"].items():
+                if baseline_canonical_hashes.get(block) != digest:
+                    changed_canonical_blocks.add(block)
+            for block in set(baseline_canonical_hashes) - set(item["block_content_canonical_hashes"]):
+                changed_canonical_blocks.add(block)
     return {
         "repeat_count": len(compact),
         "same_detected_blocks": same_detected,
         "same_tile_effects": same_effects,
         "same_block_detection_decisions": same_decisions,
         "same_block_content_hashes": same_hashes,
+        "same_block_content_canonical_hashes": same_canonical_hashes,
         "changed_block_detection_decisions": sorted(changed_decisions),
         "changed_content_blocks": sorted(changed_blocks),
+        "changed_canonical_content_blocks": sorted(changed_canonical_blocks),
     }
 
 
@@ -174,6 +189,7 @@ def summarize_eval_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
     unstable_effects = []
     unstable_block_detection = []
     textual_drift = []
+    canonical_textual_drift = []
     for run in flow_runs:
         stability = run.get("flow_llm_stability") or {}
         run_id = run.get("run_id")
@@ -190,6 +206,13 @@ def summarize_eval_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
                     "blocks": stability.get("changed_content_blocks") or [],
                 }
             )
+        if stability.get("same_block_content_canonical_hashes") is False:
+            canonical_textual_drift.append(
+                {
+                    "run_id": run_id,
+                    "blocks": stability.get("changed_canonical_content_blocks") or [],
+                }
+            )
     return {
         "run_count": len(runs),
         "flow_llm_run_count": len(flow_runs),
@@ -197,6 +220,7 @@ def summarize_eval_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
         "flow_llm_unstable_tile_effect_run_ids": unstable_effects,
         "flow_llm_unstable_block_detection_run_ids": unstable_block_detection,
         "flow_llm_textual_drift": textual_drift,
+        "flow_llm_canonical_textual_drift": canonical_textual_drift,
     }
 
 
@@ -214,6 +238,10 @@ def _compact_shadow_payload(payload: dict[str, Any]) -> dict[str, Any]:
         block: _text_hash(str(blocks[block].get("content") or ""))
         for block in detected_blocks
     }
+    block_content_canonical_hashes = {
+        block: _canonical_text_hash(str(blocks[block].get("content") or ""))
+        for block in detected_blocks
+    }
     return {
         "source_run_id": payload.get("source_run_id"),
         "detection_source": payload.get("detection_source"),
@@ -227,6 +255,7 @@ def _compact_shadow_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "limitations": report.get("limitations") or [],
         "detected_blocks": detected_blocks,
         "block_content_hashes": block_content_hashes,
+        "block_content_canonical_hashes": block_content_canonical_hashes,
         "block_detection_decisions": _block_detection_decisions(payload),
         "llm_status": (payload.get("llm_payload") or {}).get("status")
         if isinstance(payload.get("llm_payload"), dict)
@@ -256,9 +285,9 @@ def _block_detection_decisions(payload: dict[str, Any]) -> list[dict[str, Any]]:
             {
                 "block": block,
                 "outcome": str(item.get("outcome") or ""),
-                "evidence_refs": [str(ref) for ref in item.get("evidence_refs") or []],
-                "support_terms": [str(term) for term in item.get("support_terms") or []],
-                "weaken_terms": [str(term) for term in item.get("weaken_terms") or []],
+                "evidence_refs": sorted(str(ref) for ref in item.get("evidence_refs") or []),
+                "support_terms": sorted(str(term) for term in item.get("support_terms") or []),
+                "weaken_terms": sorted(str(term) for term in item.get("weaken_terms") or []),
                 "limitation_code": str(item.get("limitation_code") or ""),
             }
         )
@@ -280,6 +309,51 @@ def _changed_decision_blocks(
 
 def _text_hash(value: str) -> str:
     return hashlib.sha256(" ".join(value.split()).encode("utf-8")).hexdigest()
+
+
+def _canonical_text_hash(value: str) -> str:
+    return hashlib.sha256(_canonical_text(value).encode("utf-8")).hexdigest()
+
+
+def _canonical_text(value: str) -> str:
+    normalized = re.sub(r"[^a-z0-9áéíóúüñ]+", " ", value.lower())
+    tokens = [
+        token
+        for token in normalized.split()
+        if len(token) > 2 and token not in _CANONICAL_STOPWORDS
+    ]
+    return " ".join(sorted(set(tokens)))
+
+
+_CANONICAL_STOPWORDS = {
+    "and",
+    "are",
+    "but",
+    "for",
+    "from",
+    "has",
+    "have",
+    "into",
+    "its",
+    "the",
+    "their",
+    "this",
+    "through",
+    "with",
+    "una",
+    "uno",
+    "unos",
+    "unas",
+    "para",
+    "por",
+    "con",
+    "del",
+    "los",
+    "las",
+    "que",
+    "como",
+    "sus",
+}
 
 
 if __name__ == "__main__":

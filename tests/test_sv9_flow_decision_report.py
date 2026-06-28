@@ -24,6 +24,7 @@ def test_build_decision_report_summarizes_stability_and_decisions() -> None:
         "stable_detected_runs": 2,
         "stable_tile_effect_runs": 2,
         "textual_drift_runs": [343, 346],
+        "canonical_textual_drift_runs": [343, 346],
         "changed_block_detection_runs": [{"run_id": 346, "blocks": ["magnetism"]}],
     }
     assert report["runs"][0]["flow_decisions"][0]["outcomes"] == {
@@ -49,7 +50,9 @@ def test_render_markdown_report_includes_human_readable_decisions() -> None:
 
     assert "# SV9 Flow Decision Report" in markdown
     assert "stable block decisions: `1/1`" in markdown
+    assert "canonical textual drift runs: `[343]`" in markdown
     assert "## Run 343 - COFI" in markdown
+    assert "stable canonical text hashes: `False`" in markdown
     assert "repeat 1 decisions: `magnetism: weakens_detection" in markdown
     assert "repeat 1 negative terms: `magnetism: stagnation`" in markdown
 
@@ -102,7 +105,9 @@ def _eval_run(*, run_id: int, same_decisions: bool, changed_blocks: list[str] | 
             "same_detected_blocks": True,
             "same_tile_effects": True,
             "same_block_content_hashes": False,
+            "same_block_content_canonical_hashes": False,
             "changed_block_detection_decisions": changed_blocks or [],
             "changed_content_blocks": ["mission"],
+            "changed_canonical_content_blocks": ["mission"],
         },
     }

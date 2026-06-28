@@ -65,6 +65,7 @@ def render_markdown_report(report: dict[str, Any]) -> str:
             f"- stable detected blocks: `{summary.get('stable_detected_runs')}/{summary.get('run_count')}`",
             f"- stable tile effects: `{summary.get('stable_tile_effect_runs')}/{summary.get('run_count')}`",
             f"- textual drift runs: `{summary.get('textual_drift_runs')}`",
+            f"- canonical textual drift runs: `{summary.get('canonical_textual_drift_runs')}`",
             "",
         ]
     )
@@ -82,6 +83,11 @@ def _summarize_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
         "stable_detected_runs": sum(1 for run in runs if run.get("same_detected_blocks") is True),
         "stable_tile_effect_runs": sum(1 for run in runs if run.get("same_tile_effects") is True),
         "textual_drift_runs": [run.get("run_id") for run in runs if run.get("same_block_content_hashes") is False],
+        "canonical_textual_drift_runs": [
+            run.get("run_id")
+            for run in runs
+            if run.get("same_block_content_canonical_hashes") is False
+        ],
         "changed_block_detection_runs": [
             {
                 "run_id": run.get("run_id"),
@@ -106,8 +112,10 @@ def _summarize_run(run: dict[str, Any]) -> dict[str, Any]:
         "same_detected_blocks": stability.get("same_detected_blocks"),
         "same_tile_effects": stability.get("same_tile_effects"),
         "same_block_content_hashes": stability.get("same_block_content_hashes"),
+        "same_block_content_canonical_hashes": stability.get("same_block_content_canonical_hashes"),
         "changed_block_detection_decisions": stability.get("changed_block_detection_decisions") or [],
         "changed_content_blocks": stability.get("changed_content_blocks") or [],
+        "changed_canonical_content_blocks": stability.get("changed_canonical_content_blocks") or [],
         "flow_decisions": [_decision_snapshot(item) for item in flow_runs],
         "flow_effects": [item.get("tile_signal_effects") or {} for item in flow_runs],
         "flow_detected_blocks": [item.get("detected_blocks") or [] for item in flow_runs],
@@ -152,13 +160,17 @@ def _render_run(run: dict[str, Any]) -> list[str]:
         f"- stable detected blocks: `{run.get('same_detected_blocks')}`",
         f"- stable tile effects: `{run.get('same_tile_effects')}`",
         f"- stable text hashes: `{run.get('same_block_content_hashes')}`",
+        f"- stable canonical text hashes: `{run.get('same_block_content_canonical_hashes')}`",
     ]
     changed_decisions = run.get("changed_block_detection_decisions") or []
     changed_text = run.get("changed_content_blocks") or []
+    changed_canonical_text = run.get("changed_canonical_content_blocks") or []
     if changed_decisions:
         lines.append(f"- changed decision blocks: `{', '.join(changed_decisions)}`")
     if changed_text:
         lines.append(f"- changed text blocks: `{', '.join(changed_text)}`")
+    if changed_canonical_text:
+        lines.append(f"- changed canonical text blocks: `{', '.join(changed_canonical_text)}`")
     snapshots = run.get("flow_decisions") or []
     for index, snapshot in enumerate(snapshots, start=1):
         if not isinstance(snapshot, dict):

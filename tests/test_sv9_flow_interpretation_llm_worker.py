@@ -524,6 +524,52 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
     assert interpretation.evidence_refs["mission"] == ["raw_inputs.0"]
 
 
+def test_llm_worker_reports_block_detection_from_shortlists_not_llm_refs() -> None:
+    class PerBlockLLM:
+        api_key = "test"
+        last_failure_reason = None
+        call_failures = []
+
+        def _call_json(self, system, user, **kwargs):
+            return {
+                "detected": False,
+                "content": "",
+                "confidence": "low",
+                "evidence_refs": [],
+                "rationale": "Not enough evidence.",
+                "limitations": [],
+            }
+
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="report_narrative",
+                evidence_type="raw_input",
+                content="The brand shows stagnation and a lack of active engagement across public social channels.",
+            )
+        ],
+    )
+
+    _interpretation, debug = build_brand_interpretation_with_llm(
+        pack,
+        llm=PerBlockLLM(),
+        block_evidence_shortlists={"magnetism": ["raw_inputs.0"]},
+    )
+
+    assert debug["block_detection_decisions"][0] == {
+        "version": "sv9-flow-block-detection-policy-v1",
+        "block": "magnetism",
+        "outcome": "weakens_detection",
+        "evidence_refs": ["raw_inputs.0"],
+        "support_terms": [],
+        "weaken_terms": ["lack of active engagement", "stagnation"],
+        "limitation_code": "magnetism_structural_negative_evidence",
+    }
+
+
 def test_llm_worker_falls_back_to_text_call_when_json_mode_is_empty() -> None:
     class TextFallbackLLM:
         api_key = "test"

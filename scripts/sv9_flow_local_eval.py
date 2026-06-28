@@ -126,22 +126,30 @@ def compare_flow_repeats(payloads: list[dict[str, Any]]) -> dict[str, Any]:
             "repeat_count": 0,
             "same_detected_blocks": True,
             "same_tile_effects": True,
+            "same_block_detection_decisions": True,
             "same_block_content_hashes": True,
+            "changed_block_detection_decisions": [],
             "changed_content_blocks": [],
         }
     baseline = compact[0]
     baseline_blocks = set(baseline["detected_blocks"])
     baseline_effects = baseline["tile_signal_effects"]
     baseline_hashes = baseline["block_content_hashes"]
+    baseline_decisions = baseline["block_detection_decisions"]
     changed_blocks: set[str] = set()
+    changed_decisions: set[str] = set()
     same_detected = True
     same_effects = True
     same_hashes = True
+    same_decisions = True
     for item in compact[1:]:
         if set(item["detected_blocks"]) != baseline_blocks:
             same_detected = False
         if item["tile_signal_effects"] != baseline_effects:
             same_effects = False
+        if item["block_detection_decisions"] != baseline_decisions:
+            same_decisions = False
+            changed_decisions.update(_changed_decision_blocks(baseline_decisions, item["block_detection_decisions"]))
         if item["block_content_hashes"] != baseline_hashes:
             same_hashes = False
             for block, digest in item["block_content_hashes"].items():
@@ -153,7 +161,9 @@ def compare_flow_repeats(payloads: list[dict[str, Any]]) -> dict[str, Any]:
         "repeat_count": len(compact),
         "same_detected_blocks": same_detected,
         "same_tile_effects": same_effects,
+        "same_block_detection_decisions": same_decisions,
         "same_block_content_hashes": same_hashes,
+        "changed_block_detection_decisions": sorted(changed_decisions),
         "changed_content_blocks": sorted(changed_blocks),
     }
 
@@ -162,6 +172,7 @@ def summarize_eval_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
     flow_runs = [run for run in runs if run.get("flow_llm")]
     unstable_detected = []
     unstable_effects = []
+    unstable_block_detection = []
     textual_drift = []
     for run in flow_runs:
         stability = run.get("flow_llm_stability") or {}
@@ -170,6 +181,8 @@ def summarize_eval_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
             unstable_detected.append(run_id)
         if stability.get("same_tile_effects") is False:
             unstable_effects.append(run_id)
+        if stability.get("same_block_detection_decisions") is False:
+            unstable_block_detection.append(run_id)
         if stability.get("same_block_content_hashes") is False:
             textual_drift.append(
                 {
@@ -182,6 +195,7 @@ def summarize_eval_runs(runs: list[dict[str, Any]]) -> dict[str, Any]:
         "flow_llm_run_count": len(flow_runs),
         "flow_llm_unstable_detected_run_ids": unstable_detected,
         "flow_llm_unstable_tile_effect_run_ids": unstable_effects,
+        "flow_llm_unstable_block_detection_run_ids": unstable_block_detection,
         "flow_llm_textual_drift": textual_drift,
     }
 
@@ -213,6 +227,7 @@ def _compact_shadow_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "limitations": report.get("limitations") or [],
         "detected_blocks": detected_blocks,
         "block_content_hashes": block_content_hashes,
+        "block_detection_decisions": _block_detection_decisions(payload),
         "llm_status": (payload.get("llm_payload") or {}).get("status")
         if isinstance(payload.get("llm_payload"), dict)
         else None,
@@ -223,6 +238,44 @@ def _compact_shadow_payload(payload: dict[str, Any]) -> dict[str, Any]:
         if isinstance(payload.get("llm_payload"), dict)
         else None,
     }
+
+
+def _block_detection_decisions(payload: dict[str, Any]) -> list[dict[str, Any]]:
+    llm_payload = payload.get("llm_payload") if isinstance(payload.get("llm_payload"), dict) else {}
+    decisions = llm_payload.get("block_detection_decisions") if isinstance(llm_payload, dict) else None
+    if not isinstance(decisions, list):
+        return []
+    out: list[dict[str, Any]] = []
+    for item in decisions:
+        if not isinstance(item, dict):
+            continue
+        block = str(item.get("block") or "").strip()
+        if not block:
+            continue
+        out.append(
+            {
+                "block": block,
+                "outcome": str(item.get("outcome") or ""),
+                "evidence_refs": [str(ref) for ref in item.get("evidence_refs") or []],
+                "support_terms": [str(term) for term in item.get("support_terms") or []],
+                "weaken_terms": [str(term) for term in item.get("weaken_terms") or []],
+                "limitation_code": str(item.get("limitation_code") or ""),
+            }
+        )
+    return sorted(out, key=lambda item: item["block"])
+
+
+def _changed_decision_blocks(
+    baseline: list[dict[str, Any]],
+    candidate: list[dict[str, Any]],
+) -> list[str]:
+    baseline_by_block = {str(item.get("block") or ""): item for item in baseline if isinstance(item, dict)}
+    candidate_by_block = {str(item.get("block") or ""): item for item in candidate if isinstance(item, dict)}
+    changed: list[str] = []
+    for block in sorted(set(baseline_by_block) | set(candidate_by_block)):
+        if baseline_by_block.get(block) != candidate_by_block.get(block):
+            changed.append(block)
+    return changed
 
 
 def _text_hash(value: str) -> str:

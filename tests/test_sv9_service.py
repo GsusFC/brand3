@@ -166,6 +166,176 @@ class Sv9ServiceTests(unittest.TestCase):
         editorial_llm = build_editorial.call_args.kwargs["llm"]
         self.assertEqual(editorial_llm.model, "editorial-tier")
 
+    def test_materialize_merges_visual_signature_shadow_signals(self):
+        result = run_sv9_from_audit_snapshot(
+            synthetic_snapshot(),
+            llm=FakeLLM(ok_up_to=3),
+            magnetism_result={
+                "brand_name": "Acme",
+                "source_url": "https://acme.test",
+                "source_run_id": 175,
+                "tldr_brand3": full_tldr(),
+            },
+        )
+
+        class FakeStore:
+            def __init__(self, db_path):
+                self.db_path = db_path
+
+            def get_detection(self, run_id):
+                return {
+                    "brand_name": "Acme",
+                    "source_url": "https://acme.test",
+                    "source_run_id": run_id,
+                    "tldr_brand3": full_tldr(),
+                }
+
+            def save_detection(self, run_id, payload):
+                raise AssertionError("detection should be reused")
+
+            def get_visual_evidence(self, run_id):
+                return None
+
+            def save_visual_evidence(self, run_id, payload):
+                raise AssertionError("visual evidence should not be saved")
+
+            def save_scan(self, scan_result):
+                return 99
+
+            def save_editorial(self, scan_id, *, component_messages, executive_reading):
+                raise AssertionError("editorial should be disabled")
+
+            def close(self):
+                pass
+
+        snapshot = synthetic_snapshot()
+        snapshot["raw_inputs"] = [
+            {
+                "source": "visual_signature",
+                "payload": {
+                    "visual_signature_evidence": {
+                        "schema_version": "visual-signature-evidence-v1",
+                        "capture": {"status": "usable", "first_fold_evaluable": True},
+                        "limitations": [],
+                        "evidence_health": {"warnings": []},
+                        "tile_signals": [
+                            {
+                                "tile": "brand_idea.I1",
+                                "effect": "supports",
+                                "confidence": "high",
+                                "source": "heuristic",
+                                "evidence_refs": ["visual_signature:identity"],
+                                "rationale": "logo_detected:true",
+                            }
+                        ],
+                    }
+                },
+                "created_at": "2026-06-27T10:00:00",
+            }
+        ]
+
+        with patch("src.sv9.service.Sv9Store", FakeStore):
+            with patch("src.sv9.service.load_brand_audit_snapshot", return_value=snapshot):
+                with patch("src.sv9.service.compute_vision_observations", return_value=None):
+                    with patch(
+                        "src.sv9.service.run_sv9_from_audit_snapshot",
+                        return_value=result,
+                    ) as run_snapshot:
+                        scan_id, materialized = materialize_sv9_scan(
+                            175,
+                            db_path=":memory:",
+                            editorial=False,
+                        )
+
+        self.assertEqual(scan_id, 99)
+        self.assertIs(materialized, result)
+        extra_signals = run_snapshot.call_args.kwargs["extra_signals"]
+        self.assertIn("brand_idea", extra_signals)
+        self.assertEqual(extra_signals["brand_idea"][0]["feature"], "visual_signature_shadow")
+
+    def test_materialize_skips_visual_signature_shadow_signals_for_blocked_capture(self):
+        result = run_sv9_from_audit_snapshot(
+            synthetic_snapshot(),
+            llm=FakeLLM(ok_up_to=3),
+            magnetism_result={
+                "brand_name": "Acme",
+                "source_url": "https://acme.test",
+                "source_run_id": 175,
+                "tldr_brand3": full_tldr(),
+            },
+        )
+
+        class FakeStore:
+            def __init__(self, db_path):
+                self.db_path = db_path
+
+            def get_detection(self, run_id):
+                return {
+                    "brand_name": "Acme",
+                    "source_url": "https://acme.test",
+                    "source_run_id": run_id,
+                    "tldr_brand3": full_tldr(),
+                }
+
+            def save_detection(self, run_id, payload):
+                raise AssertionError("detection should be reused")
+
+            def get_visual_evidence(self, run_id):
+                return None
+
+            def save_visual_evidence(self, run_id, payload):
+                raise AssertionError("visual evidence should not be saved")
+
+            def save_scan(self, scan_result):
+                return 99
+
+            def save_editorial(self, scan_id, *, component_messages, executive_reading):
+                raise AssertionError("editorial should be disabled")
+
+            def close(self):
+                pass
+
+        snapshot = synthetic_snapshot()
+        snapshot["raw_inputs"] = [
+            {
+                "source": "visual_signature",
+                "payload": {
+                    "visual_signature_evidence": {
+                        "schema_version": "visual-signature-evidence-v1",
+                        "capture": {"status": "blocked", "first_fold_evaluable": False},
+                        "limitations": ["visual_obstruction:cookie_banner"],
+                        "evidence_health": {"warnings": ["capture_status:blocked"]},
+                        "tile_signals": [
+                            {
+                                "tile": "coherencia.C6",
+                                "effect": "insufficient_evidence",
+                                "confidence": "high",
+                                "source": "heuristic",
+                                "evidence_refs": ["visual_signature:capture"],
+                                "rationale": "capture_unreliable:blocked",
+                            }
+                        ],
+                    }
+                },
+                "created_at": "2026-06-27T10:00:00",
+            }
+        ]
+
+        with patch("src.sv9.service.Sv9Store", FakeStore):
+            with patch("src.sv9.service.load_brand_audit_snapshot", return_value=snapshot):
+                with patch("src.sv9.service.compute_vision_observations", return_value=None):
+                    with patch(
+                        "src.sv9.service.run_sv9_from_audit_snapshot",
+                        return_value=result,
+                    ) as run_snapshot:
+                        materialize_sv9_scan(
+                            175,
+                            db_path=":memory:",
+                            editorial=False,
+                        )
+
+        self.assertIsNone(run_snapshot.call_args.kwargs["extra_signals"])
+
 
 if __name__ == "__main__":
     unittest.main()

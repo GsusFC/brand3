@@ -7,6 +7,8 @@ from src.sv9.signals import (
     compute_vision_observations,
     merge_signals,
     screenshot_url_from_snapshot,
+    visual_signature_evidence_from_snapshot,
+    visual_signature_shadow_signals,
     vision_signals,
 )
 
@@ -134,6 +136,87 @@ class VisionObservationTests(unittest.TestCase):
         self.assertEqual(set(signals), {"brand_idea", "coherencia"})
         self.assertIn("logo_detected", signals["brand_idea"][0]["detail"])
         self.assertEqual(signals["coherencia"][0]["value"], "custom")
+
+
+class VisualSignatureShadowSignalTests(unittest.TestCase):
+    def test_visual_signature_evidence_from_snapshot_returns_latest_packet(self):
+        snapshot = snapshot_with(
+            raw_inputs=[
+                {
+                    "source": "visual_signature",
+                    "payload": {
+                        "visual_signature_evidence": {
+                            "schema_version": "visual-signature-evidence-v1",
+                            "capture": {"status": "limited"},
+                            "tile_signals": [],
+                        }
+                    },
+                },
+                {
+                    "source": "visual_signature",
+                    "payload": {
+                        "visual_signature_evidence": {
+                            "schema_version": "visual-signature-evidence-v1",
+                            "capture": {"status": "usable"},
+                            "tile_signals": [{"tile": "brand_idea.I1", "effect": "supports"}],
+                        }
+                    },
+                },
+            ]
+        )
+        evidence = visual_signature_evidence_from_snapshot(snapshot)
+        self.assertEqual(evidence["capture"]["status"], "usable")
+
+    def test_visual_signature_shadow_signals_group_tiles_by_component(self):
+        evidence = {
+            "schema_version": "visual-signature-evidence-v1",
+            "capture": {"status": "usable", "first_fold_evaluable": True},
+            "limitations": ["cookie_banner_present"],
+            "evidence_health": {"warnings": ["copy_visual_alignment_missing"]},
+            "tile_signals": [
+                {
+                    "tile": "brand_idea.I1",
+                    "effect": "supports",
+                    "confidence": "high",
+                    "source": "heuristic",
+                    "evidence_refs": ["visual_signature:identity"],
+                    "rationale": "logo_detected:true",
+                },
+                {
+                    "tile": "coherencia.C6",
+                    "effect": "weakens",
+                    "confidence": "medium",
+                    "source": "heuristic",
+                    "evidence_refs": ["visual_signature:consistency"],
+                    "rationale": "consistency:0.33",
+                },
+            ],
+        }
+        signals = visual_signature_shadow_signals(evidence)
+        self.assertEqual(set(signals), {"brand_idea", "coherencia"})
+        self.assertEqual(signals["brand_idea"][0]["feature"], "visual_signature_shadow")
+        self.assertEqual(signals["brand_idea"][0]["value"], "supports_present")
+        self.assertIn("brand_idea.I1", signals["brand_idea"][0]["detail"])
+        self.assertEqual(signals["coherencia"][0]["value"], "weakens_present")
+
+    def test_visual_signature_shadow_signals_skip_non_usable_capture(self):
+        evidence = {
+            "schema_version": "visual-signature-evidence-v1",
+            "capture": {"status": "blocked", "first_fold_evaluable": False},
+            "limitations": ["visual_obstruction:cookie_banner"],
+            "evidence_health": {"warnings": ["capture_status:blocked"]},
+            "tile_signals": [
+                {
+                    "tile": "coherencia.C6",
+                    "effect": "insufficient_evidence",
+                    "confidence": "high",
+                    "source": "heuristic",
+                    "evidence_refs": ["visual_signature:capture"],
+                    "rationale": "capture_unreliable:blocked",
+                }
+            ],
+        }
+        self.assertEqual(visual_signature_shadow_signals(evidence), {})
 
 
 if __name__ == "__main__":

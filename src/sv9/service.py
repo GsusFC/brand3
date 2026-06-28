@@ -31,6 +31,8 @@ from src.sv9.signals import (
     collect_signals,
     compute_vision_observations,
     merge_signals,
+    visual_signature_evidence_from_snapshot,
+    visual_signature_shadow_signals,
     vision_signals,
 )
 from src.sv9.store import Sv9Store
@@ -79,6 +81,10 @@ def materialize_sv9_scan(
                 store.save_visual_evidence(run_id, vision_payload)
         if vision_payload is not None:
             extra_signals = vision_signals(vision_payload)
+        visual_signature_evidence = visual_signature_evidence_from_snapshot(snapshot)
+        visual_signature_signals = visual_signature_shadow_signals(visual_signature_evidence)
+        if visual_signature_signals:
+            extra_signals = merge_signals(extra_signals or {}, visual_signature_signals)
 
         result = run_sv9_from_audit_snapshot(
             snapshot, llm=llm, magnetism_result=detection, extra_signals=extra_signals

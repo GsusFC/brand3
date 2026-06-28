@@ -116,6 +116,23 @@ def _validate_block(
     has_owned_literal = any(profile["source_kind"] == "owned_literal" for profile in evidence_profiles)
     mixed_sources = len({kind for kind in source_kinds if kind != "unknown"}) > 1
     weak_evidence = not has_owned_literal and (has_noise or has_press or has_proof or mixed_sources)
+    shortlist_rows = shortlist_rows_for_block(pack, key)
+    shortlist_texts = [row.get("text", "") for row in shortlist_rows if row.get("text")]
+    signal_candidates = signal_candidates_for_block(pack, key)
+
+    if key == "core_purpose" and _should_absent_core_purpose(
+        pack,
+        answer=answer,
+        evidence_used=evidence_used,
+        shortlist_texts=shortlist_texts,
+    ):
+        warnings.append("core_purpose: functional offer language without declared purpose should remain absent.")
+        return _absent_block(
+            key,
+            warnings,
+            degraded,
+            reason="Functional offer language without declared purpose cannot support a core purpose block.",
+        )
 
     if key == "personality" and (has_press or _contains_any(answer, ("founder", "founder story", "exit", "press", "interview"))):
         warnings.append("personality: founder story or press context cannot be treated as declared personality.")
@@ -145,6 +162,20 @@ def _validate_block(
             confidence = "medium"
         mode = "needs_human_review" if mixed_sources or has_proof else mode
         validated["human_review_recommended"] = True
+    if key == "values" and _should_absent_values(
+        pack,
+        answer=answer,
+        evidence_used=evidence_used,
+        signal_candidates=signal_candidates,
+        has_owned_literal=has_owned_literal,
+    ):
+        warnings.append("values: absent because no canonical value signals were present in the research pack.")
+        return _absent_block(
+            key,
+            warnings,
+            degraded,
+            reason="No canonical value signals were present in the research pack for this values block.",
+        )
 
     if key == "vision" and (has_noise or _contains_any(answer, ("feed", "article prediction", "prediction", "blog", "post", "page chrome"))):
         warnings.append("vision: blog/feed predictions and page chrome cannot become vision.")
@@ -403,6 +434,114 @@ def _normalize_for_match(value: str) -> str:
 def _contains_any(text: str, needles: tuple[str, ...]) -> bool:
     low = (text or "").lower()
     return any(needle in low for needle in needles)
+
+
+def _should_absent_core_purpose(
+    pack: dict[str, Any],
+    *,
+    answer: str,
+    evidence_used: list[str],
+    shortlist_texts: list[str],
+) -> bool:
+    if not answer:
+        return False
+    declared_purpose = _clean_text(pack.get("declared_purpose"))
+    if declared_purpose:
+        return False
+    if not evidence_used:
+        return False
+    normalized_answer = _normalize_for_match(answer)
+    normalized_evidence = " ".join(_normalize_for_match(item) for item in evidence_used if item)
+    normalized_shortlist = " ".join(_normalize_for_match(item) for item in shortlist_texts if item)
+    if not normalized_evidence and not normalized_shortlist:
+        return False
+    functional_pack_markers = (
+        "manage spend",
+        "manage spending",
+        "spending",
+        "expense management",
+        "company cards",
+        "cards and expense software",
+        "spend management",
+        "software",
+        "automate",
+        "automation",
+        "streamline",
+        "simplify",
+    )
+    functional_markers = (
+        "manage spend",
+        "manage spending",
+        "spending",
+        "control de gastos",
+        "expense management",
+        "automatizar",
+        "automate",
+        "streamline",
+        "simplify",
+        "software",
+        "tarjetas de empresa",
+        "company cards",
+    )
+    beyond_product_markers = (
+        "why",
+        "purpose",
+        "exists",
+        "exist",
+        "believe",
+        "change the way",
+        "transform the way",
+        "beyond",
+        "make business spending",
+        "free businesses",
+        "unlock",
+        "empower",
+    )
+    looks_functional = any(marker in normalized_answer for marker in functional_markers)
+    if not looks_functional:
+        return False
+    evidence_looks_functional = any(marker in normalized_evidence for marker in functional_pack_markers)
+    shortlist_looks_functional = any(marker in normalized_shortlist for marker in functional_pack_markers)
+    has_pack_purpose_signal = any(marker in normalized_evidence for marker in beyond_product_markers) or any(
+        marker in normalized_shortlist for marker in beyond_product_markers
+    )
+    answer_uses_purpose_rhetoric = any(marker in normalized_answer for marker in beyond_product_markers)
+    if (evidence_looks_functional or shortlist_looks_functional) and not has_pack_purpose_signal:
+        return True
+    if answer_uses_purpose_rhetoric and not has_pack_purpose_signal:
+        return True
+    return False
+
+
+def _should_absent_values(
+    pack: dict[str, Any],
+    *,
+    answer: str,
+    evidence_used: list[str],
+    signal_candidates: list[str],
+    has_owned_literal: bool,
+) -> bool:
+    if not answer:
+        return False
+    if signal_candidates:
+        return False
+    if not evidence_used:
+        return False
+    normalized_evidence = [_normalize_for_match(item) for item in evidence_used if item]
+    declared_mission = _normalize_for_match(pack.get("declared_mission"))
+    declared_purpose = _normalize_for_match(pack.get("declared_purpose"))
+    if has_owned_literal and normalized_evidence:
+        if all(
+            item
+            and (
+                (declared_mission and (item in declared_mission or declared_mission in item))
+                or (declared_purpose and (item in declared_purpose or declared_purpose in item))
+            )
+            for item in normalized_evidence
+        ):
+            return True
+        return False
+    return True
 
 
 def _unique_texts(values: list[str]) -> list[str]:

@@ -449,3 +449,108 @@ def test_evidence_used_snaps_to_block_shortlist_when_matching() -> None:
     assert validated["tldr_brand3"]["value_proposition"]["evidence_used"] == [
         "Base44 is an AI app builder for non-technical founders."
     ]
+
+
+def test_core_purpose_absent_when_only_functional_offer_language_exists() -> None:
+    pack = _base_pack()
+    pack["declared_purpose"] = ""
+    pack["company_summary"] = (
+        "Pleo helps businesses manage spending with company cards and expense software."
+    )
+    pack["product_summary"] = (
+        "Company cards and expense software that automate spend management."
+    )
+
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "core_purpose": {
+                    "answer": "Pleo exists to transform the way businesses manage their spending.",
+                    "claim_type": "inferred",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "medium",
+                    "evidence_used": [
+                        "Pleo helps businesses manage spending with company cards and expense software."
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["core_purpose"]
+    assert block["detected"] is False
+    assert block["claim_type"] == "absent"
+    assert block["mode"] == "not_detected"
+
+
+def test_values_absent_without_canonical_value_signals() -> None:
+    pack = _base_pack()
+    pack["values_signals"] = []
+    pack["declared_purpose"] = ""
+    pack["proof_points"] = [
+        {
+            "text": "98% of users say they feel secure using the product.",
+            "kind": "proof",
+            "source_url": "https://base44.com",
+            "source_type": "proof_point",
+            "source_label": "Proof",
+            "surface_role": "homepage",
+            "entity_scope": "company",
+            "topic": "proof_point",
+            "confidence": "high",
+            "notes": [],
+        }
+    ]
+
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "values": {
+                    "answer": "Security",
+                    "claim_type": "performed",
+                    "mode": "needs_human_review",
+                    "confidence": "medium",
+                    "evidence_used": [
+                        "98% of users say they feel secure using the product."
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["values"]
+    assert block["detected"] is False
+    assert block["claim_type"] == "absent"
+    assert block["mode"] == "not_detected"
+
+
+def test_values_absent_when_only_mission_literal_support_exists() -> None:
+    pack = _base_pack()
+    pack["values_signals"] = []
+    pack["declared_mission"] = (
+        "At Vercel, our mission is to enable developers to build and publish wonderful, high-performant apps and websites."
+    )
+
+    validated = validate_analyst_tldr(
+        {
+            "tldr_brand3": {
+                "values": {
+                    "answer": "Developer empowerment and high performance.",
+                    "claim_type": "performed",
+                    "mode": "interpreted_from_discourse",
+                    "confidence": "high",
+                    "evidence_used": [
+                        "At Vercel, our mission is to enable developers to build and publish wonderful, high-performant apps and websites."
+                    ],
+                }
+            }
+        },
+        pack,
+    )
+
+    block = validated["tldr_brand3"]["values"]
+    assert block["detected"] is False
+    assert block["claim_type"] == "absent"
+    assert block["mode"] == "not_detected"

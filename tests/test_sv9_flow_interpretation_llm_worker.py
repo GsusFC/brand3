@@ -486,6 +486,35 @@ def test_llm_worker_can_build_interpretation_per_block() -> None:
     assert debug["mode"] == "per_block"
     assert debug["status"] == "ok"
     assert debug["detected_count"] == 1
+    assert debug["block_detection_decisions"] == [
+        {
+            "version": "sv9-flow-block-detection-policy-v1",
+            "block": "magnetism",
+            "outcome": "insufficient_evidence",
+            "evidence_refs": [],
+            "support_terms": [],
+            "weaken_terms": [],
+            "limitation_code": "magnetism_insufficient_evidence_refs",
+        },
+        {
+            "version": "sv9-flow-block-detection-policy-v1",
+            "block": "values",
+            "outcome": "insufficient_evidence",
+            "evidence_refs": [],
+            "support_terms": [],
+            "weaken_terms": [],
+            "limitation_code": "values_insufficient_evidence_refs",
+        },
+        {
+            "version": "sv9-flow-block-detection-policy-v1",
+            "block": "vision",
+            "outcome": "insufficient_evidence",
+            "evidence_refs": [],
+            "support_terms": [],
+            "weaken_terms": [],
+            "limitation_code": "vision_insufficient_evidence_refs",
+        },
+    ]
     assert debug["block_call_debug"][0]["json_mode_empty"] is False
     assert debug["block_call_debug"][0]["text_fallback_attempted"] is False
     assert "mission" not in debug["failed_blocks"]

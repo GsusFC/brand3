@@ -88,6 +88,17 @@ class BlockDetectionDecision:
     def supports_detection(self) -> bool:
         return self.outcome == "supports_detection"
 
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "version": self.version,
+            "block": self.block,
+            "outcome": self.outcome,
+            "evidence_refs": list(self.evidence_refs),
+            "support_terms": list(self.support_terms),
+            "weaken_terms": list(self.weaken_terms),
+            "limitation_code": self.limitation_code,
+        }
+
 
 def resolve_block_detection(
     block: str,

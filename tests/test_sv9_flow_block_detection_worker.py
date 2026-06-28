@@ -179,3 +179,30 @@ def test_non_sensitive_blocks_keep_existing_ref_gate_behavior() -> None:
     decision = resolve_block_detection("mission", pack, evidence_refs=["raw_inputs.0"])
 
     assert decision.outcome == "supports_detection"
+
+
+def test_block_detection_decision_serializes_for_debug_payloads() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="homepage",
+                evidence_type="raw_input",
+                content="Revenue growth and press momentum are visible.",
+            )
+        ],
+    )
+
+    decision = resolve_block_detection("magnetism", pack, evidence_refs=["raw_inputs.0"])
+
+    assert decision.to_dict() == {
+        "version": "sv9-flow-block-detection-policy-v1",
+        "block": "magnetism",
+        "outcome": "supports_detection",
+        "evidence_refs": ["raw_inputs.0"],
+        "support_terms": ["momentum", "revenue growth", "press"],
+        "weaken_terms": [],
+        "limitation_code": "",
+    }

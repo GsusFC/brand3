@@ -160,6 +160,11 @@ def build_brand_interpretation_with_llm(
         "detected_count": detected_count,
         "failed_blocks": failed_blocks,
         "block_failures": block_failures,
+        "block_detection_decisions": _block_detection_decisions(
+            raw_blocks=raw_blocks,
+            evidence_pack=evidence_pack,
+            shortlists=shortlists,
+        ),
         "block_call_debug": raw_payload.get("_block_call_debug", []),
         "raw": raw,
     }
@@ -498,6 +503,21 @@ def _block_failures(
             }
         )
     return failures
+
+
+def _block_detection_decisions(
+    *,
+    raw_blocks: dict[str, Any],
+    evidence_pack: BrandEvidencePack,
+    shortlists: dict[str, list[str]],
+) -> list[dict[str, object]]:
+    decisions: list[dict[str, object]] = []
+    for block in sorted(SENSITIVE_BLOCKS):
+        raw_block = raw_blocks.get(block)
+        raw_refs = raw_block.get("evidence_refs") if isinstance(raw_block, dict) else None
+        refs = _valid_refs(raw_refs, evidence_pack, allowed_refs=shortlists.get(block))
+        decisions.append(resolve_block_detection(block, evidence_pack, evidence_refs=refs).to_dict())
+    return decisions
 
 
 def _coerce_response_object(raw: Any) -> dict[str, Any]:

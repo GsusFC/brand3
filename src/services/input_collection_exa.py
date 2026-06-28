@@ -6,6 +6,7 @@ import logging
 
 from src.collectors.exa_collector import ExaCollector, ExaData
 from src.config import BRAND3_CACHE_TTL_HOURS, EXA_API_KEY
+from src.services.legal_identity import derive_legal_name
 from src.services.input_collection_payloads import from_exa_payload
 from src.services.input_collection_state import (
     AcquisitionResult,
@@ -24,6 +25,7 @@ def _collect_exa_input(
     run_id: int | None,
     brand_name: str,
     effective_brand_url: str,
+    web_data=None,
     cache_read,
     raw_input_cache: dict[str, str],
     acquisition_steps: dict[str, AcquisitionResult] | None = None,
@@ -57,7 +59,12 @@ def _collect_exa_input(
         cache_status="miss",
         eligible=True,
     )
-    exa_data = exa_collector.collect_brand_data(brand_name, effective_brand_url)
+    legal_name = derive_legal_name(brand_name=brand_name, web_data=web_data)
+    exa_data = exa_collector.collect_brand_data(
+        brand_name,
+        effective_brand_url,
+        legal_name=legal_name,
+    )
     diagnostics = dict(exa_data.diagnostics or {})
     failed_intents = diagnostics.get("failed_intents") or []
     no_result_intents = diagnostics.get("no_result_intents") or []

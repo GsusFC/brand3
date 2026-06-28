@@ -23,6 +23,7 @@ from ..models.brand import FeatureValue
 from ..collectors.context_collector import ContextData
 from ..collectors.web_collector import WebData
 from ..collectors.exa_collector import ExaData
+from .exa_relevance import filter_relevant_results
 from .llm_analyzer import LLMAnalyzer, llm_failure_reason
 from .score_reconciliation import reconcile_label_score
 
@@ -89,7 +90,7 @@ def _collect_dated_mentions(exa: ExaData | None) -> list[tuple[datetime, str, st
     if not exa:
         return []
     out: list[tuple[datetime, str, str]] = []
-    for r in exa.mentions + exa.news:
+    for r in filter_relevant_results(exa.mentions + exa.news, exa.brand_name):
         d = _parse_exa_date(getattr(r, "published_date", "") or "")
         if not d:
             continue

@@ -28,6 +28,7 @@ def from_exa_payload(payload: dict | None) -> ExaData | None:
     return ExaData(
         brand_name=payload.get("brand_name", ""),
         mentions=[ExaResult(**item) for item in payload.get("mentions", [])],
+        profiles=[ExaResult(**item) for item in payload.get("profiles", [])],
         competitors=[ExaResult(**item) for item in payload.get("competitors", [])],
         ai_visibility_results=[ExaResult(**item) for item in payload.get("ai_visibility_results", [])],
         news=[ExaResult(**item) for item in payload.get("news", [])],

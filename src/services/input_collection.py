@@ -176,6 +176,7 @@ def collect_raw_inputs(
         run_id=run_id,
         brand_name=brand_name,
         effective_brand_url=effective_brand_url,
+        web_data=web_data,
         cache_read=cache_read,
         raw_input_cache=raw_input_cache,
         acquisition_steps=acquisition_steps,

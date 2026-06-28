@@ -194,6 +194,17 @@ class ScannerAuditResponse(BaseModel):
     audit: dict | None = None
 
 
+class ScannerAuditSnapshotResponse(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+    id: int
+    available: bool
+    source_run_id: int | None = None
+    reason: str | None = None
+    run: ScannerAuditRunSummary | None = None
+    debug: dict | None = None
+
+
 class ScannerStrategicReadingResponse(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -247,6 +258,7 @@ def scanner_openapi_spec() -> dict:
     evidence_response_schema = _component_schema(ScannerEvidenceResponse)
     audit_run_summary_schema = _component_schema(ScannerAuditRunSummary)
     audit_response_schema = _component_schema(ScannerAuditResponse)
+    audit_snapshot_response_schema = _component_schema(ScannerAuditSnapshotResponse)
     strategic_reading_response_schema = _component_schema(ScannerStrategicReadingResponse)
     scanner_error_schema = _component_schema(ScannerError)
     error_schema = _component_schema(ScannerErrorResponse)
@@ -447,6 +459,43 @@ def scanner_openapi_spec() -> dict:
                     "security": [{"ScannerApiKey": []}],
                 }
             },
+            "/api/v1/scanner/{scan_id}/audit-snapshot": {
+                "get": {
+                    "operationId": "getScannerAuditSnapshot",
+                    "summary": "Read diagnostic audit snapshot",
+                    "description": (
+                        "Authenticated diagnostic endpoint for comparing persisted Brand Audit inputs "
+                        "behind a scanner run. Returns sanitized raw inputs plus visual/debug context by "
+                        "default, or the persisted snapshot body when full=true."
+                    ),
+                    "parameters": [
+                        {"name": "scan_id", "in": "path", "required": True, "schema": {"type": "integer"}},
+                        {
+                            "name": "full",
+                            "in": "query",
+                            "required": False,
+                            "schema": {"type": "boolean", "default": False},
+                            "description": "When true, return the persisted snapshot body instead of the sanitized debug view.",
+                        },
+                    ],
+                    "responses": {
+                        "200": {
+                            "description": "Sanitized diagnostic snapshot or missing-source indicator",
+                            "content": {
+                                "application/json": {
+                                    "schema": {"$ref": "#/components/schemas/ScannerAuditSnapshotResponse"}
+                                }
+                            },
+                        },
+                        "401": {"description": "Missing or invalid Scanner API token", "content": {"application/json": {"schema": error_schema}}},
+                        "404": {"description": "Scan not found", "content": {"application/json": {"schema": error_schema}}},
+                        "409": {"description": "Scan not ready", "content": {"application/json": {"schema": error_schema}}},
+                        "503": {"description": "Scanner API token is not configured", "content": {"application/json": {"schema": error_schema}}},
+                        "422": {"description": "Request validation error", "content": {"application/json": {"schema": validation_error_schema}}},
+                    },
+                    "security": [{"ScannerApiKey": []}],
+                }
+            },
             "/api/v1/scanner/{scan_id}/strategic-reading": {
                 "get": {
                     "operationId": "getScannerStrategicReading",
@@ -495,6 +544,7 @@ def scanner_openapi_spec() -> dict:
                 "ScannerEvidenceResponse": evidence_response_schema,
                 "ScannerAuditRunSummary": audit_run_summary_schema,
                 "ScannerAuditResponse": audit_response_schema,
+                "ScannerAuditSnapshotResponse": audit_snapshot_response_schema,
                 "ScannerStrategicReadingResponse": strategic_reading_response_schema,
                 "ScannerError": scanner_error_schema,
                 "Error": error_schema,

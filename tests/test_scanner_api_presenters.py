@@ -11,6 +11,7 @@ from web.scanner_api.presenters import (
 from web.scanner_api.schemas import (
     FailureDiagnostics,
     ScannerAuditResponse,
+    ScannerAuditSnapshotResponse,
     ScannerEvidenceResponse,
     ScannerMethodologyResponse,
     ScannerResultMetadata,
@@ -362,6 +363,29 @@ def test_scanner_audit_response_contract_accepts_available_and_missing_shapes():
     assert ScannerAuditResponse.model_validate(missing).reason == "missing_source_run"
 
 
+def test_scanner_audit_snapshot_response_contract_accepts_available_and_missing_shapes():
+    available = {
+        "id": 42,
+        "available": True,
+        "source_run_id": 7,
+        "run": {
+            "id": 7,
+            "brand_name": "Example",
+            "url": "https://example.com",
+            "composite_score": 74.0,
+            "completed_at": "2026-06-04T10:00:00",
+        },
+        "debug": {
+            "raw_inputs": [{"source": "web", "payload": {"url": "https://example.com"}}],
+            "counts": {"raw_inputs": 1, "features": 0, "evidence_items": 0},
+        },
+    }
+    missing = {"id": 43, "available": False, "reason": "missing_source_run"}
+
+    assert ScannerAuditSnapshotResponse.model_validate(available).source_run_id == 7
+    assert ScannerAuditSnapshotResponse.model_validate(missing).reason == "missing_source_run"
+
+
 def test_scanner_strategic_reading_response_contract_accepts_available_and_missing_shapes():
     available = {
         "id": 42,
@@ -400,6 +424,8 @@ def test_scanner_openapi_spec_exposes_strategic_reading_endpoint():
 
     assert "/api/v1/scanner/{scan_id}/strategic-reading" in spec["paths"]
     assert "ScannerStrategicReadingResponse" in spec["components"]["schemas"]
+    assert "/api/v1/scanner/{scan_id}/audit-snapshot" in spec["paths"]
+    assert "ScannerAuditSnapshotResponse" in spec["components"]["schemas"]
 
 
 def test_scanner_research_evidence_payload_falls_back_to_source_map_surfaces():

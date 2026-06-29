@@ -210,7 +210,14 @@ def normalize_llm_interpretation_response(
             evidence_pack,
             allowed_refs=(block_evidence_shortlists or {}).get(key),
         )
-        detected = _detected_from_evidence_policy(key, block, refs, evidence_pack)
+        policy_refs = refs
+        if key in SENSITIVE_BLOCKS and block_evidence_shortlists is not None:
+            policy_refs = _valid_refs(
+                block_evidence_shortlists.get(key) or [],
+                evidence_pack,
+                allowed_refs=block_evidence_shortlists.get(key),
+            )
+        detected = _detected_from_evidence_policy(key, block, policy_refs, evidence_pack)
         if truthy_detected(block) and not refs:
             limitations.append(f"{key}_dropped_missing_evidence_refs")
         elif truthy_detected(block) and block_evidence_shortlists is not None:
@@ -218,8 +225,8 @@ def normalize_llm_interpretation_response(
             dropped = [ref for ref in raw_refs if ref and ref not in refs]
             if dropped:
                 limitations.append(f"{key}_dropped_refs_outside_shortlist")
-        if truthy_detected(block) and refs and key in SENSITIVE_BLOCKS and not detected:
-            decision = resolve_block_detection(key, evidence_pack, evidence_refs=refs)
+        if truthy_detected(block) and policy_refs and key in SENSITIVE_BLOCKS and not detected:
+            decision = resolve_block_detection(key, evidence_pack, evidence_refs=policy_refs)
             if decision.limitation_code:
                 limitations.append(decision.limitation_code)
         blocks[key] = {

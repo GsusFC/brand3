@@ -157,6 +157,48 @@ def test_values_detection_accepts_explicit_values_evidence() -> None:
     assert interpretation.evidence_refs["values"] == ["raw_inputs.0"]
 
 
+def test_sensitive_block_gate_uses_deterministic_shortlist_not_llm_selected_refs() -> None:
+    pack = BrandEvidencePack(
+        brand_name="Acme",
+        url="https://acme.example",
+        evidence=[
+            EvidenceRecord(
+                ref="features.0",
+                source="momentum",
+                evidence_type="vitalidad.momentum",
+                content="Revenue growth, community engagement, and press momentum are visible.",
+            ),
+            EvidenceRecord(
+                ref="raw_inputs.0",
+                source="social",
+                evidence_type="raw_input",
+                content="Failed to scrape social channels; followers_count: 0; avg_engagement_rate: 0.0.",
+            ),
+        ],
+    )
+    raw = {
+        "blocks": {
+            "magnetism": {
+                "detected": True,
+                "content": "Acme shows momentum and community engagement.",
+                "confidence": "high",
+                "evidence_refs": ["features.0"],
+                "rationale": "The evidence mentions momentum.",
+            }
+        },
+        "limitations": [],
+    }
+
+    interpretation = normalize_llm_interpretation_response(
+        raw,
+        pack,
+        block_evidence_shortlists={"magnetism": ["features.0", "raw_inputs.0"]},
+    )
+
+    assert interpretation.blocks["magnetism"]["detected"] is False
+    assert "magnetism_structural_negative_evidence" in interpretation.limitations
+
+
 def test_values_detection_rejects_financial_value_language() -> None:
     pack = BrandEvidencePack(
         brand_name="Acme",

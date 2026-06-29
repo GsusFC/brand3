@@ -134,6 +134,17 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
         cutoff = datetime.now(timezone.utc) - timedelta(days=opts.days)
         where.append("created_at >= ?")
         params.append(cutoff.isoformat())
+    source_run_query = f"""
+        SELECT source_run_id
+        FROM magnetism_scans
+        WHERE {' AND '.join(where)}
+          AND source_run_id IS NOT NULL
+    """
+    source_run_ids = {
+        int(row["source_run_id"])
+        for row in conn.execute(source_run_query, params)
+        if row["source_run_id"] is not None
+    }
     query = f"""
         SELECT id, brand_name, url, magnetism_score, coherence_score, quadrant,
                raw_payload, created_at, source_run_id
@@ -141,12 +152,6 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
         WHERE {' AND '.join(where)}
         ORDER BY created_at ASC, id ASC
     """
-    rows = [dict(row) for row in conn.execute(query, params).fetchall()]
-    source_run_ids = {
-        int(row["source_run_id"])
-        for row in rows
-        if row.get("source_run_id") is not None
-    }
     sv9_by_run = (
         _load_sv9_by_source_run(conn, source_run_ids)
         if source_run_ids and _table_exists(conn, "sv9_scans")
@@ -159,7 +164,8 @@ def _load_samples(conn: sqlite3.Connection, opts: StabilityAuditOptions) -> list
     )
 
     samples: list[dict[str, Any]] = []
-    for row in rows:
+    for raw_row in conn.execute(query, params):
+        row = dict(raw_row)
         payload = _loads_json(row.get("raw_payload"))
         sv9 = sv9_by_run.get(row.get("source_run_id")) or {}
         persisted_raw_inputs = raw_inputs_by_run.get(row.get("source_run_id"))
